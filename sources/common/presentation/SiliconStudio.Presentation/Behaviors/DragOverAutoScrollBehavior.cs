@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Interactivity;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Internal;
 
 // Remark: The drag'n'drop is pretty broken in WPF, especially the DragLeave event (see https://social.msdn.microsoft.com/Forums/vstudio/en-US/d326384b-e182-4f48-ab8b-841a2c2ca4ab/whats-up-with-dragleave-and-egetposition?forum=wpf&prof=required)
 
@@ -34,9 +35,9 @@ namespace SiliconStudio.Presentation.Behaviors
 
         public double ScrollingSpeed { get { return (double)GetValue(ScrollingSpeedWidthProperty); } set { SetValue(ScrollingSpeedWidthProperty, value); } }
 
-        public bool VerticalScroll { get { return (bool)GetValue(VerticalScrollProperty); } set { SetValue(VerticalScrollProperty, value); } }
+        public bool VerticalScroll { get { return (bool)GetValue(VerticalScrollProperty); } set { SetValue(VerticalScrollProperty, value.Box()); } }
         
-        public bool HorizontalScroll { get { return (bool)GetValue(HorizontalScrollProperty); } set { SetValue(HorizontalScrollProperty, value); } }
+        public bool HorizontalScroll { get { return (bool)GetValue(HorizontalScrollProperty); } set { SetValue(HorizontalScrollProperty, value.Box()); } }
 
         protected override void OnAttached()
         {

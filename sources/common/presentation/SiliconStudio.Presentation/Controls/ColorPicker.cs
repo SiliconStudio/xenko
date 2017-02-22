@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Input;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Extensions;
-
+using SiliconStudio.Presentation.Internal;
 using Color = SiliconStudio.Core.Mathematics.Color;
 using Point = System.Windows.Point;
 using Rectangle = System.Windows.Shapes.Rectangle;
@@ -148,7 +148,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether the alpha component of the color should be displayed in the color picker.
         /// </summary>
-        public bool ShowAlpha { get { return (bool)GetValue(ShowAlphaProperty); } set { SetValue(ShowAlphaProperty, value); } }
+        public bool ShowAlpha { get { return (bool)GetValue(ShowAlphaProperty); } set { SetValue(ShowAlphaProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets the length of the input column of the color picker.

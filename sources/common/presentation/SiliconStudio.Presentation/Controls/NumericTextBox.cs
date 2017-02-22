@@ -12,6 +12,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -229,12 +230,12 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether to display Up and Down buttons on the side of the <see cref="NumericTextBox"/>.
         /// </summary>
-        public bool DisplayUpDownButtons { get { return (bool)GetValue(DisplayUpDownButtonsProperty); } set { SetValue(DisplayUpDownButtonsProperty, value); } }
+        public bool DisplayUpDownButtons { get { return (bool)GetValue(DisplayUpDownButtonsProperty); } set { SetValue(DisplayUpDownButtonsProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether dragging the value of the <see cref="NumericTextBox"/> is enabled.
         /// </summary>
-        public bool AllowMouseDrag { get { return (bool)GetValue(AllowMouseDragProperty); } set { SetValue(AllowMouseDragProperty, value); } }
+        public bool AllowMouseDrag { get { return (bool)GetValue(AllowMouseDragProperty); } set { SetValue(AllowMouseDragProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets when the <see cref="NumericTextBox"/> should be validated when the user uses the mouse to change its value.

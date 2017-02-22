@@ -8,6 +8,7 @@ using System.Windows.Input;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -79,7 +80,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets or sets whether this control can be highlighted.
         /// </summary>
         /// <seealso cref="IsHighlighted"/>
-        public bool Highlightable { get { return (bool)GetValue(HighlightableProperty); } set { SetValue(HighlightableProperty, value); } }
+        public bool Highlightable { get { return (bool)GetValue(HighlightableProperty); } set { SetValue(HighlightableProperty, value.Box()); } }
 
         /// <summary>
         /// Gets whether this control is highlighted. The control is highlighted when <see cref="IsHovered"/> and <see cref="Highlightable"/> are both <c>true</c>

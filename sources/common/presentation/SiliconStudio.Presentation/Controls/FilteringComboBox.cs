@@ -12,6 +12,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -134,17 +135,17 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether the drop down is open.
         /// </summary>
-        public bool IsDropDownOpen { get { return (bool)GetValue(IsDropDownOpenProperty); } set { SetValue(IsDropDownOpenProperty, value); } }
+        public bool IsDropDownOpen { get { return (bool)GetValue(IsDropDownOpenProperty); } set { SetValue(IsDropDownOpenProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether to open the dropdown when the control got the focus.
         /// </summary>
-        public bool OpenDropDownOnFocus { get { return (bool)GetValue(OpenDropDownOnFocusProperty); } set { SetValue(OpenDropDownOnFocusProperty, value); } }
+        public bool OpenDropDownOnFocus { get { return (bool)GetValue(OpenDropDownOnFocusProperty); } set { SetValue(OpenDropDownOnFocusProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether the validation will be cancelled if <see cref="Selector.SelectedItem"/> is null.
         /// </summary>
-        public bool RequireSelectedItemToValidate { get { return (bool)GetValue(RequireSelectedItemToValidateProperty); } set { SetValue(RequireSelectedItemToValidateProperty, value); } }
+        public bool RequireSelectedItemToValidate { get { return (bool)GetValue(RequireSelectedItemToValidateProperty); } set { SetValue(RequireSelectedItemToValidateProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets the text of this <see cref="FilteringComboBox"/>
@@ -154,7 +155,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether to clear the text after the validation.
         /// </summary>
-        public bool ClearTextAfterValidation { get { return (bool)GetValue(ClearTextAfterValidationProperty); } set { SetValue(ClearTextAfterValidationProperty, value); } }
+        public bool ClearTextAfterValidation { get { return (bool)GetValue(ClearTextAfterValidationProperty); } set { SetValue(ClearTextAfterValidationProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets the content to display when the TextBox is empty.

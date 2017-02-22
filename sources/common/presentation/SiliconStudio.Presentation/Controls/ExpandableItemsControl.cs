@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -25,7 +26,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether this control is expanded.
         /// </summary>
-        public bool IsExpanded { get { return (bool)GetValue(IsExpandedProperty); } set { SetValue(IsExpandedProperty, value); } }
+        public bool IsExpanded { get { return (bool)GetValue(IsExpandedProperty); } set { SetValue(IsExpandedProperty, value.Box()); } }
 
         /// <summary>
         /// Raised when this <see cref="ExpandableItemsControl"/> is expanded.

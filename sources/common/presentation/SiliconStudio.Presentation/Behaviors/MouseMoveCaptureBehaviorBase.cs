@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -47,19 +48,19 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// <c>true</c> if this behavior is enabled; otherwise, <c>false</c>.
         /// </summary>
-        public bool IsEnabled { get { return (bool)GetValue(IsEnabledProperty); } set { SetValue(IsEnabledProperty, value); } }
+        public bool IsEnabled { get { return (bool)GetValue(IsEnabledProperty); } set { SetValue(IsEnabledProperty, value.Box()); } }
 
         /// <summary>
         /// <c>true</c> if an operation is in progress; otherwise, <c>false</c>.
         /// </summary>
-        public bool IsInProgress { get { return (bool)GetValue(IsInProgressProperty); } private set { SetValue(IsInProgressPropertyKey, value); } }
+        public bool IsInProgress { get { return (bool)GetValue(IsInProgressProperty); } private set { SetValue(IsInProgressPropertyKey, value.Box()); } }
 
         public ModifierKeys? Modifiers { get { return (ModifierKeys?)GetValue(ModifiersProperty); } set { SetValue(ModifiersProperty, value); } }
 
         public bool UsePreviewEvents
         {
             get { return (bool)GetValue(UsePreviewEventsProperty); }
-            set { SetValue(UsePreviewEventsProperty, value); }
+            set { SetValue(UsePreviewEventsProperty, value.Box()); }
         }
 
         private static void IsEnabledChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)

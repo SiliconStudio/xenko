@@ -36,6 +36,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -116,7 +117,7 @@ namespace SiliconStudio.Presentation.Controls
 
         public Point Position { get { return (Point)GetValue(PositionProperty); } set { SetValue(PositionProperty, value); } }
 
-        public bool TrackMouse { get { return (bool)GetValue(TrackMouseProperty); } set { SetValue(TrackMouseProperty, value); } }
+        public bool TrackMouse { get { return (bool)GetValue(TrackMouseProperty); } set { SetValue(TrackMouseProperty, value.Box()); } }
         
         public Visibility VerticalLineVisibility { get { return (Visibility)GetValue(VerticalLineVisibilityProperty); }  set { SetValue(VerticalLineVisibilityProperty, value); } }
 

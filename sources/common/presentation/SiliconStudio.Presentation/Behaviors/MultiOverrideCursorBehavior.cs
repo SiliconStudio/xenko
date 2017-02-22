@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Windows.Interactivity;
 using System.Windows.Markup;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -107,9 +108,9 @@ namespace SiliconStudio.Presentation.Behaviors
 
         public Cursor Cursor { get { return (Cursor)GetValue(CursorProperty); } set { SetValue(CursorProperty, value); } }
 
-        public bool ForceCursor { get { return (bool)GetValue(ForceCursorProperty); } set { SetValue(ForceCursorProperty, value); } }
+        public bool ForceCursor { get { return (bool)GetValue(ForceCursorProperty); } set { SetValue(ForceCursorProperty, value.Box()); } }
 
-        public bool When { get { return (bool)GetValue(WhenProperty); } set { SetValue(WhenProperty, value); } }
+        public bool When { get { return (bool)GetValue(WhenProperty); } set { SetValue(WhenProperty, value.Box()); } }
 
         [NotNull]
         protected override Freezable CreateInstanceCore()

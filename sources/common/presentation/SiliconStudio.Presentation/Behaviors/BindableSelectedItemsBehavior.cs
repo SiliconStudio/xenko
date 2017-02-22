@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Collections;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -56,7 +57,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// Gets or sets whether changes in the selected item collection of the view model should give the focus to the control. The focus is not given if the selection is cleared.
         /// </summary>
-        public bool GiveFocusOnSelectionChange { get { return (bool)GetValue(GiveFocusOnSelectionChangeProperty); } set { SetValue(GiveFocusOnSelectionChangeProperty, value); } }
+        public bool GiveFocusOnSelectionChange { get { return (bool)GetValue(GiveFocusOnSelectionChangeProperty); } set { SetValue(GiveFocusOnSelectionChangeProperty, value.Box()); } }
 
         /// <summary>
         /// Represents the collection of selected items in the associated control. This property must be set in an override of the <see cref="OnAttached"/>

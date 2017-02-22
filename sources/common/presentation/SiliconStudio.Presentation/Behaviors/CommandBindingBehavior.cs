@@ -5,6 +5,7 @@ using System.Windows.Input;
 using System.Windows.Interactivity;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Commands;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -46,12 +47,12 @@ namespace SiliconStudio.Presentation.Behaviors
         /// Gets or sets whether the input routed event that invoked the command should continue to route through the element tree.
         /// </summary>
         /// <seealso cref="CanExecuteRoutedEventArgs.ContinueRouting"/>
-        public bool ContinueRouting { get { return (bool)GetValue(ContinueRoutingProperty); } set { SetValue(ContinueRoutingProperty, value); } }
+        public bool ContinueRouting { get { return (bool)GetValue(ContinueRoutingProperty); } set { SetValue(ContinueRoutingProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether this command binding is enabled. When disabled, the <see cref="Command"/> won't be executed.
         /// </summary>
-        public bool IsEnabled { get { return (bool)GetValue(IsEnabledProperty); } set { SetValue(IsEnabledProperty, value); } }
+        public bool IsEnabled { get { return (bool)GetValue(IsEnabledProperty); } set { SetValue(IsEnabledProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets the <see cref="RoutedCommand"/> to bind.
