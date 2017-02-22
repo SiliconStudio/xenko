@@ -48,9 +48,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return false;
         }
 
-        public override LightShadowMapTexture CreateShadowMapTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize)
+        public override LightShadowMapTexture CreateShadowMapTexture(RenderView renderView, LightComponent lightComponent, IDirectLight light, int shadowMapSize)
         {
-            var shadowMapTexture = base.CreateShadowMapTexture(lightComponent, light, shadowMapSize);
+            var shadowMapTexture = base.CreateShadowMapTexture(renderView, lightComponent, light, shadowMapSize);
             shadowMapTexture.CascadeCount = 6; // 6 faces
             return shadowMapTexture;
         }

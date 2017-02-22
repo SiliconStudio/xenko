@@ -93,9 +93,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return light is LightDirectional;
         }
 
-        public override LightShadowMapTexture CreateShadowMapTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize)
+        public override LightShadowMapTexture CreateShadowMapTexture(RenderView renderView, LightComponent lightComponent, IDirectLight light, int shadowMapSize)
         {
-            var shadowMap = base.CreateShadowMapTexture(lightComponent, light, shadowMapSize);
+            var shadowMap = base.CreateShadowMapTexture(renderView, lightComponent, light, shadowMapSize);
             shadowMap.CascadeCount = ((LightDirectionalShadowMap)light.Shadow).GetCascadeCount();
             return shadowMap;
         }
