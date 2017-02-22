@@ -1,9 +1,12 @@
 ﻿// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using System.Windows;
+
 namespace SiliconStudio.Presentation.Internal
 {
-    internal static class KnownBoxes
+    internal static class BooleanBoxes
     {
         /// <summary>
         /// An object representing the value <c>false</c>.
@@ -15,13 +18,49 @@ namespace SiliconStudio.Presentation.Internal
         internal static readonly object TrueBox = true;
 
         /// <summary>
-        /// Returns an object representing the provided boolean <paramref name="value"/>.
+        /// Returns an object representing the provided <see cref="bool"/> <paramref name="value"/>.
         /// </summary>
         /// <param name="value"></param>
-        /// <returns><see cref="TrueBox"/> if the value is <c>true</c>; otherwise, <see cref="FalseBox"/>.</returns>
+        /// <returns>A boxed <see cref="bool"/> equivalent to the provided <paramref name="value"/>.</returns>
         internal static object Box(this bool value)
         {
             return value ? TrueBox : FalseBox;
+        }
+    }
+
+    internal static class VisibilityBoxes
+    {
+        /// <summary>
+        /// An object representing the value <see cref="Visibility.Visible"/>.
+        /// </summary>
+        internal static object VisibleBox = Visibility.Visible;
+        /// <summary>
+        /// An object representing the value <see cref="Visibility.Hidden"/>.
+        /// </summary>
+        internal static object HiddenBox = Visibility.Hidden;
+        /// <summary>
+        /// An object representing the value <see cref="Visibility.Collapsed"/>.
+        /// </summary>
+        internal static object CollapsedBox = Visibility.Collapsed;
+
+        /// <summary>
+        /// Returns an object representing the provided Visibility <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns>A boxed <see cref="Visibility"/> equivalent to the provided <paramref name="value"/>.</returns>
+        internal static object Box(this Visibility value)
+        {
+            switch (value)
+            {
+                case Visibility.Visible:
+                    return VisibleBox;
+                case Visibility.Hidden:
+                    return HiddenBox;
+                case Visibility.Collapsed:
+                    return CollapsedBox;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
         }
     }
 }

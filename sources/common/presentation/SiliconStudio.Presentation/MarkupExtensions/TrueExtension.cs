@@ -12,7 +12,7 @@ namespace SiliconStudio.Presentation.MarkupExtensions
     {
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            return KnownBoxes.TrueBox;
+            return BooleanBoxes.TrueBox;
         }
     }
 }
