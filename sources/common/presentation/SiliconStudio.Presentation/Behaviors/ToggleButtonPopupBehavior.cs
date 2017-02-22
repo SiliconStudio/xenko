@@ -1,6 +1,7 @@
 ﻿using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interactivity;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -21,7 +22,7 @@ namespace SiliconStudio.Presentation.Behaviors
             AssociatedObject.PreviewMouseLeftButtonUp += MouseUp;
         }
 
-        private void MouseUp(object sender, MouseButtonEventArgs e)
+        private void MouseUp(object sender, [NotNull] MouseButtonEventArgs e)
         {
             if (!mouseDownOccurred)
             {

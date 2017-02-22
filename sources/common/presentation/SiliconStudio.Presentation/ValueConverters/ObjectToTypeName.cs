@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Globalization;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -19,6 +20,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         public const string NullObjectType = "(None)";
 
         /// <inheritdoc/>
+        [NotNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return value?.GetType().Name ?? NullObjectType;

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Transactions;
-using SiliconStudio.Presentation.Dirtiables;
 
 namespace SiliconStudio.Presentation.Services
 {
@@ -81,6 +81,7 @@ namespace SiliconStudio.Presentation.Services
         /// Multiple transactions can be nested. To complete a transaction, either dispose it or call <see cref="ITransaction.Complete"/>.
         /// This method should be used in a <c>using</c> statement as much as possible.
         /// </remarks>
+        [NotNull]
         ITransaction CreateTransaction(TransactionFlags flags = TransactionFlags.None);
 
         /// <summary>
@@ -88,6 +89,7 @@ namespace SiliconStudio.Presentation.Services
         /// </summary>
         /// <returns>A collection of transactions registered into this service.</returns>
         /// <remarks>Transaction currently in progress are not included.</remarks>
+        [ItemNotNull, NotNull]
         IEnumerable<IReadOnlyTransaction> RetrieveAllTransactions();
 
         /// <summary>
@@ -95,42 +97,45 @@ namespace SiliconStudio.Presentation.Services
         /// </summary>
         /// <param name="operation">The operation to name.</param>
         /// <param name="name">The name for the operation.</param>
-        void SetName(Operation operation, string name);
+        void SetName([NotNull] Operation operation, string name);
 
         /// <summary>
         /// Sets the name of the given transaction in the undo/redo service.
         /// </summary>
         /// <param name="transaction">The transaction to name.</param>
         /// <param name="name">The name for the transaction.</param>
-        void SetName(ITransaction transaction, string name);
+        void SetName([NotNull] ITransaction transaction, string name);
 
         /// <summary>
         /// Gets the name of the given operation from the undo/redo service.
         /// </summary>
         /// <param name="operation">The operation for which to retrieve the name.</param>
         /// <returns>The name of the operation, or <c>null</c> if it has not been named with <see cref="SetName(Operation, string)"/>.</returns>
-        string GetName(Operation operation);
+        [CanBeNull]
+        string GetName([NotNull] Operation operation);
 
         /// <summary>
         /// Gets the name of the given transaction from the undo/redo service.
         /// </summary>
         /// <param name="transaction">The transaction for which to retrieve the name.</param>
         /// <returns>The name of the transaction, or <c>null</c> if it has not been named with <see cref="SetName(ITransaction, string)"/>.</returns>
-        string GetName(ITransaction transaction);
+        [CanBeNull]
+        string GetName([NotNull] ITransaction transaction);
 
         /// <summary>
         /// Gets the name of the given transaction from the undo/redo service.
         /// </summary>
         /// <param name="transaction">The transaction for which to retrieve the name.</param>
         /// <returns>The name of the transaction, or <c>null</c> if it was not been named with <see cref="SetName(ITransaction, string)"/>.</returns>
-        string GetName(IReadOnlyTransaction transaction);
+        [CanBeNull]
+        string GetName([NotNull] IReadOnlyTransaction transaction);
 
         /// <summary>
         /// Pushes the given operation to the undo/redo service.
         /// </summary>
         /// <param name="operation">The operation to push.</param>
         /// <remarks>A transaction must be currently in progress in order to use this method.</remarks>
-        void PushOperation(Operation operation);
+        void PushOperation([NotNull] Operation operation);
 
         /// <summary>
         /// Undoes the last currently done transaction.
@@ -143,8 +148,8 @@ namespace SiliconStudio.Presentation.Services
         void Redo();
 
         /// <summary>
-        /// Notifies that the project has been saved, updating the dirty flag of each <see cref="IDirtiable"/> instance
-        /// referenced by each <see cref="IDirtyingOperation"/> contained in this undo/redo service.
+        /// Notifies that the project has been saved, updating the dirty flag of each <see cref="Dirtiables.IDirtiable"/> instance
+        /// referenced by each <see cref="Dirtiables.IDirtyingOperation"/> contained in this undo/redo service.
         /// </summary>
         void NotifySave();
 

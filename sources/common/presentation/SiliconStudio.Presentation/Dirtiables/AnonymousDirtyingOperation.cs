@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Dirtiables
 {
@@ -8,7 +9,7 @@ namespace SiliconStudio.Presentation.Dirtiables
         private Action undo;
         private Action redo;
 
-        public AnonymousDirtyingOperation(IEnumerable<IDirtiable> dirtiables, Action undo, Action redo)
+        public AnonymousDirtyingOperation([NotNull] IEnumerable<IDirtiable> dirtiables, Action undo, Action redo)
             : base(dirtiables)
         {
             this.undo = undo;
