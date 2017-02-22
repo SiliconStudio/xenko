@@ -7,6 +7,7 @@ using System.Windows.Media.Animation;
 using System.Diagnostics;
 using System.Windows.Markup;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Presentation.Internal;
 
 // Code from http://www.wpfmentor.com/2009/01/how-to-debug-triggers-using-trigger.html
 // No license specified - this code is trimmed out from Release build anyway so it should be ok using it this way
@@ -92,7 +93,7 @@ namespace SiliconStudio.Presentation.Diagnostics
             "TraceEnabled",
             typeof(bool),
             typeof(TriggerTracing),
-            new UIPropertyMetadata(false, OnTraceEnabledChanged));
+            new UIPropertyMetadata(BooleanBoxes.FalseBox, OnTraceEnabledChanged));
 
         private static void OnTraceEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {

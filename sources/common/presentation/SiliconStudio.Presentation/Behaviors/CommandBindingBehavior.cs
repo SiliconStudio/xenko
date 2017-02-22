@@ -26,12 +26,12 @@ namespace SiliconStudio.Presentation.Behaviors
         /// Identifies the <see cref="ContinueRouting"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty ContinueRoutingProperty =
-            DependencyProperty.Register(nameof(ContinueRouting), typeof(bool), typeof(CommandBindingBehavior), new PropertyMetadata(true));
+            DependencyProperty.Register(nameof(ContinueRouting), typeof(bool), typeof(CommandBindingBehavior), new PropertyMetadata(BooleanBoxes.TrueBox));
         /// <summary>
         /// Identifies the <see cref="IsEnabled"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IsEnabledProperty =
-            DependencyProperty.Register(nameof(IsEnabled), typeof(bool), typeof(CommandBindingBehavior), new PropertyMetadata(true));
+            DependencyProperty.Register(nameof(IsEnabled), typeof(bool), typeof(CommandBindingBehavior), new PropertyMetadata(BooleanBoxes.TrueBox));
         /// <summary>
         /// Identifies the <see cref="RoutedCommand"/> dependency property.
         /// </summary>

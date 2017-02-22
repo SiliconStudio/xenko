@@ -51,7 +51,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="IsAlternative"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IsAlternativeProperty =
-            DependencyProperty.Register("IsAlternative", typeof(bool), typeof(SearchComboBox), new PropertyMetadata(false));
+            DependencyProperty.Register("IsAlternative", typeof(bool), typeof(SearchComboBox), new PropertyMetadata(BooleanBoxes.FalseBox));
         /// <summary>
         /// Identifies the <see cref="IsDropDownOpen"/> dependency property.
         /// </summary>

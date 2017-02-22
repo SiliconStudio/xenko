@@ -23,7 +23,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="UseTimedValidation"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty UseTimedValidationProperty = DependencyProperty.Register("UseTimedValidation", typeof(bool), typeof(TextBox), new PropertyMetadata(false, OnUseTimedValidationPropertyChanged));
+        public static readonly DependencyProperty UseTimedValidationProperty = DependencyProperty.Register("UseTimedValidation", typeof(bool), typeof(TextBox), new PropertyMetadata(BooleanBoxes.FalseBox, OnUseTimedValidationPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="ValidationDelay"/> dependency property.

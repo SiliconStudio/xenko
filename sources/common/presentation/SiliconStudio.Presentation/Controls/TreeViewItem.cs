@@ -27,17 +27,17 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="IsEditable"/> dependency property.
         /// </summary>
         public static DependencyProperty IsEditableProperty =
-            DependencyProperty.Register(nameof(IsEditable), typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(true, null));
+            DependencyProperty.Register(nameof(IsEditable), typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(BooleanBoxes.TrueBox, null));
         /// <summary>
         /// Identifies the <see cref="IsEditing"/> dependency property.
         /// </summary>
         public static DependencyProperty IsEditingProperty =
-            DependencyProperty.Register(nameof(IsEditing), typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(false, OnIsEditingChanged));
+            DependencyProperty.Register(nameof(IsEditing), typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(BooleanBoxes.FalseBox, OnIsEditingChanged));
         /// <summary>
         /// Identifies the <see cref="IsSelected"/> dependency property.
         /// </summary>
         public static DependencyProperty IsSelectedProperty =
-            DependencyProperty.Register(nameof(IsSelected), typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(false, null));
+            DependencyProperty.Register(nameof(IsSelected), typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(BooleanBoxes.FalseBox, null));
         /// <summary>
         /// Identifies the <see cref="TemplateEdit"/> dependency property.
         /// </summary>
@@ -65,7 +65,7 @@ namespace SiliconStudio.Presentation.Controls
 
             KeyboardNavigation.DirectionalNavigationProperty.OverrideMetadata(typeof(TreeViewItem), new FrameworkPropertyMetadata(KeyboardNavigationMode.Continue));
             KeyboardNavigation.TabNavigationProperty.OverrideMetadata(typeof(TreeViewItem), new FrameworkPropertyMetadata(KeyboardNavigationMode.None));
-            IsTabStopProperty.OverrideMetadata(typeof(TreeViewItem), new FrameworkPropertyMetadata(false));
+            IsTabStopProperty.OverrideMetadata(typeof(TreeViewItem), new FrameworkPropertyMetadata(BooleanBoxes.FalseBox));
         }
 
         public bool IsEditable { get { return (bool)GetValue(IsEditableProperty); } set { SetValue(IsEditableProperty, value.Box()); } }

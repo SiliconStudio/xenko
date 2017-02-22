@@ -19,13 +19,13 @@ namespace SiliconStudio.Presentation.Behaviors
         /// Identifies the <see cref="IsEnabled"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IsEnabledProperty =
-            DependencyProperty.Register(nameof(IsEnabled), typeof(bool), typeof(MouseMoveCaptureBehaviorBase<TElement>), new PropertyMetadata(true, IsEnabledChanged));
+            DependencyProperty.Register(nameof(IsEnabled), typeof(bool), typeof(MouseMoveCaptureBehaviorBase<TElement>), new PropertyMetadata(BooleanBoxes.TrueBox, IsEnabledChanged));
 
         /// <summary>
         /// Identifies the <see cref="IsInProgress"/> dependency property key.
         /// </summary>
         protected static readonly DependencyPropertyKey IsInProgressPropertyKey =
-            DependencyProperty.RegisterReadOnly(nameof(IsInProgress), typeof(bool), typeof(MouseMoveCaptureBehaviorBase<TElement>), new PropertyMetadata(false));
+            DependencyProperty.RegisterReadOnly(nameof(IsInProgress), typeof(bool), typeof(MouseMoveCaptureBehaviorBase<TElement>), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
         /// Identifies the <see cref="IsInProgress"/> dependency property.
@@ -43,7 +43,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// Identifies the <see cref="UsePreviewEvents"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty UsePreviewEventsProperty =
-            DependencyProperty.Register(nameof(UsePreviewEvents), typeof(bool), typeof(MouseMoveCaptureBehaviorBase<TElement>), new PropertyMetadata(false, UsePreviewEventsChanged));
+            DependencyProperty.Register(nameof(UsePreviewEvents), typeof(bool), typeof(MouseMoveCaptureBehaviorBase<TElement>), new PropertyMetadata(BooleanBoxes.FalseBox, UsePreviewEventsChanged));
         
         /// <summary>
         /// <c>true</c> if this behavior is enabled; otherwise, <c>false</c>.

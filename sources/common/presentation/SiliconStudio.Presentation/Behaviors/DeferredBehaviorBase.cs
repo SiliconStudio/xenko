@@ -17,7 +17,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// Represents the <see cref="AttachOnEveryLoadedEvent"/> property.
         /// </summary>
         public static readonly DependencyProperty AttachOnEveryLoadedEventProperty =
-            DependencyProperty.Register(nameof(AttachOnEveryLoadedEvent), typeof(bool), typeof(DeferredBehaviorBase<T>), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(AttachOnEveryLoadedEvent), typeof(bool), typeof(DeferredBehaviorBase<T>), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         private bool currentlyLoaded;
 

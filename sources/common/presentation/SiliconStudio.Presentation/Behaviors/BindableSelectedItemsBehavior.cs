@@ -46,7 +46,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// Identifies the <see cref="GiveFocusOnSelectionChange"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty GiveFocusOnSelectionChangeProperty = DependencyProperty.Register(nameof(GiveFocusOnSelectionChange), typeof(bool), typeof(BindableSelectedItemsBehavior<T>), new PropertyMetadata(true));
+        public static readonly DependencyProperty GiveFocusOnSelectionChangeProperty = DependencyProperty.Register(nameof(GiveFocusOnSelectionChange), typeof(bool), typeof(BindableSelectedItemsBehavior<T>), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Gets or sets the view model collection that should be bound to the selected item collection of the control.

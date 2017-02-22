@@ -108,7 +108,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="ValidateOnLostFocus"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty ValidateOnLostFocusProperty =
-            DependencyProperty.Register(nameof(ValidateOnLostFocus), typeof(bool), typeof(FilteringComboBox), new PropertyMetadata(true));
+            DependencyProperty.Register(nameof(ValidateOnLostFocus), typeof(bool), typeof(FilteringComboBox), new PropertyMetadata(BooleanBoxes.TrueBox));
 
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace SiliconStudio.Presentation.Controls
         static FilteringComboBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(FilteringComboBox), new FrameworkPropertyMetadata(typeof(FilteringComboBox)));
-            IsDropDownOpenProperty.OverrideMetadata(typeof(FilteringComboBox), new FrameworkPropertyMetadata(false, OnIsDropDownOpenChanged));
+            IsDropDownOpenProperty.OverrideMetadata(typeof(FilteringComboBox), new FrameworkPropertyMetadata(BooleanBoxes.FalseBox, OnIsDropDownOpenChanged));
         }
 
         public FilteringComboBox()

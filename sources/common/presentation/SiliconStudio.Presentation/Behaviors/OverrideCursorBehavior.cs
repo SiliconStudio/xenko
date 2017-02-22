@@ -12,7 +12,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         public static readonly DependencyProperty ForceCursorProperty = DependencyProperty.Register("ForceCursor", typeof(bool), typeof(OverrideCursorBehavior), new PropertyMetadata(PropertyChanged));
 
-        public static readonly DependencyProperty IsActiveProperty = DependencyProperty.Register("IsActive", typeof(bool), typeof(OverrideCursorBehavior), new PropertyMetadata(true, PropertyChanged));
+        public static readonly DependencyProperty IsActiveProperty = DependencyProperty.Register("IsActive", typeof(bool), typeof(OverrideCursorBehavior), new PropertyMetadata(BooleanBoxes.TrueBox, PropertyChanged));
 
         public Cursor Cursor { get { return (Cursor)GetValue(CursorProperty); } set { SetValue(CursorProperty, value); } }
 

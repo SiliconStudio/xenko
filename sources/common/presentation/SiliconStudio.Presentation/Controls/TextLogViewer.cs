@@ -40,27 +40,27 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="AutoScroll"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty AutoScrollProperty = DependencyProperty.Register("AutoScroll", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true));
+        public static readonly DependencyProperty AutoScrollProperty = DependencyProperty.Register("AutoScroll", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Identifies the <see cref="IsToolBarVisible"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsToolBarVisibleProperty = DependencyProperty.Register("IsToolBarVisible", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true));
+        public static readonly DependencyProperty IsToolBarVisibleProperty = DependencyProperty.Register("IsToolBarVisible", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Identifies the <see cref="CanClearLog"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CanClearLogProperty = DependencyProperty.Register("CanClearLog", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true));
+        public static readonly DependencyProperty CanClearLogProperty = DependencyProperty.Register("CanClearLog", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Identifies the <see cref="CanFilterLog"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CanFilterLogProperty = DependencyProperty.Register("CanFilterLog", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true));
+        public static readonly DependencyProperty CanFilterLogProperty = DependencyProperty.Register("CanFilterLog", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Identifies the <see cref="CanSearchLog"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CanSearchLogProperty = DependencyProperty.Register("CanSearchLog", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true));
+        public static readonly DependencyProperty CanSearchLogProperty = DependencyProperty.Register("CanSearchLog", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Identifies the <see cref="SearchToken"/> dependency property.
@@ -70,12 +70,12 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="SearchMatchCase"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty SearchMatchCaseProperty = DependencyProperty.Register("SearchMatchCase", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(false, SearchTokenChanged));
+        public static readonly DependencyProperty SearchMatchCaseProperty = DependencyProperty.Register("SearchMatchCase", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.FalseBox, SearchTokenChanged));
 
         /// <summary>
         /// Identifies the <see cref="SearchMatchWord"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty SearchMatchWordProperty = DependencyProperty.Register("SearchMatchWord", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(false, SearchTokenChanged));
+        public static readonly DependencyProperty SearchMatchWordProperty = DependencyProperty.Register("SearchMatchWord", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.FalseBox, SearchTokenChanged));
 
         /// <summary>
         /// Identifies the <see cref="SearchMatchBrush"/> dependency property.
@@ -115,32 +115,32 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="ShowDebugMessages"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ShowDebugMessagesProperty = DependencyProperty.Register("ShowDebugMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true, TextPropertyChanged));
+        public static readonly DependencyProperty ShowDebugMessagesProperty = DependencyProperty.Register("ShowDebugMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox, TextPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="ShowVerboseMessages"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ShowVerboseMessagesProperty = DependencyProperty.Register("ShowVerboseMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true, TextPropertyChanged));
+        public static readonly DependencyProperty ShowVerboseMessagesProperty = DependencyProperty.Register("ShowVerboseMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox, TextPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="ShowInfoMessages"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ShowInfoMessagesProperty = DependencyProperty.Register("ShowInfoMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true, TextPropertyChanged));
+        public static readonly DependencyProperty ShowInfoMessagesProperty = DependencyProperty.Register("ShowInfoMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox, TextPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="ShowWarningMessages"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ShowWarningMessagesProperty = DependencyProperty.Register("ShowWarningMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true, TextPropertyChanged));
+        public static readonly DependencyProperty ShowWarningMessagesProperty = DependencyProperty.Register("ShowWarningMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox, TextPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="ShowErrorMessages"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ShowErrorMessagesProperty = DependencyProperty.Register("ShowErrorMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true, TextPropertyChanged));
+        public static readonly DependencyProperty ShowErrorMessagesProperty = DependencyProperty.Register("ShowErrorMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox, TextPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="ShowFatalMessages"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ShowFatalMessagesProperty = DependencyProperty.Register("ShowFatalMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true, TextPropertyChanged));
+        public static readonly DependencyProperty ShowFatalMessagesProperty = DependencyProperty.Register("ShowFatalMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox, TextPropertyChanged));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextLogViewer"/> class.

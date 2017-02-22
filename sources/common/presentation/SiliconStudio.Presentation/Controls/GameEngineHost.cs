@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Presentation.Internal;
 using SiliconStudio.Presentation.Interop;
 using Point = System.Windows.Point;
 
@@ -33,7 +34,7 @@ namespace SiliconStudio.Presentation.Controls
 
         static GameEngineHost()
         {
-            FocusableProperty.OverrideMetadata(typeof(GameEngineHost), new FrameworkPropertyMetadata(true));
+            FocusableProperty.OverrideMetadata(typeof(GameEngineHost), new FrameworkPropertyMetadata(BooleanBoxes.TrueBox));
         }
 
         /// <summary>

@@ -60,7 +60,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="HorizontalLineVisibility"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty HorizontalLineVisibilityProperty =
-            DependencyProperty.Register(nameof(HorizontalLineVisibility), typeof(Visibility), typeof(TrackerControl), new PropertyMetadata(Visibility.Visible));
+            DependencyProperty.Register(nameof(HorizontalLineVisibility), typeof(Visibility), typeof(TrackerControl), new PropertyMetadata(VisibilityBoxes.VisibleBox));
 
         /// <summary>
         /// Identifies the <see cref="LineExtents"/> dependency property.
@@ -90,13 +90,13 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="TrackMouse"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty TrackMouseProperty =
-            DependencyProperty.Register(nameof(TrackMouse), typeof(bool), typeof(TrackerControl), new PropertyMetadata(false, OnTrackMouseChanged));
+            DependencyProperty.Register(nameof(TrackMouse), typeof(bool), typeof(TrackerControl), new PropertyMetadata(BooleanBoxes.FalseBox, OnTrackMouseChanged));
 
         /// <summary>
         /// Identifies the <see cref="VerticalLineVisibility"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty VerticalLineVisibilityProperty =
-            DependencyProperty.Register(nameof(VerticalLineVisibility), typeof(Visibility), typeof(TrackerControl), new PropertyMetadata(Visibility.Visible));
+            DependencyProperty.Register(nameof(VerticalLineVisibility), typeof(Visibility), typeof(TrackerControl), new PropertyMetadata(VisibilityBoxes.VisibleBox));
 
         private Line horizontalLine;
         private Line verticalLine;

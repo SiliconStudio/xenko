@@ -47,7 +47,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="IsVirtualizing"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IsVirtualizingProperty =
-            DependencyProperty.Register(nameof(IsVirtualizing), typeof(bool), typeof(TreeView), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(IsVirtualizing), typeof(bool), typeof(TreeView), new PropertyMetadata(BooleanBoxes.FalseBox));
         /// <summary>
         /// Identifies the <see cref="PrepareItem"/> routed event.
         /// This attached routed event may be raised by the PropertyGrid itself or by a PropertyItemBase containing sub-items.
