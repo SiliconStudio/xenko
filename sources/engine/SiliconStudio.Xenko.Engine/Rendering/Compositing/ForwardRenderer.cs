@@ -13,63 +13,6 @@ using SiliconStudio.Xenko.Rendering.Images;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
-    public class DefaultRenderTargets : IColorTarget, INormalTarget, IVelocityTarget, IMultipleRenderViews
-    {
-        private readonly Texture[] allTargets = new Texture[3];
-
-        public Texture Color { get; set; }
-
-        public Texture Normal { get; set; }
-
-        public Texture Velocity { get; set; }
-
-        public Texture[] AllTargets
-        {
-            get
-            {
-                //color
-                allTargets[0] = Color;
-
-                //normals
-                if (Normal != null)
-                {
-                    allTargets[1] = Normal;
-                }
-
-                //velocity
-                if (Normal == null)
-                {
-                    allTargets[1] = Velocity;
-                }
-                else
-                {
-                    allTargets[2] = Velocity;
-                }
-
-                return allTargets;
-            }
-        }
-
-        public int NumberOfTargets
-        {
-            get
-            {
-                var n = 0;
-                if (Color != null)
-                    n++;
-                if (Normal != null)
-                    n++;
-                if (Velocity != null)
-                    n++;
-                return n;
-            }
-        }
-
-        public int Count { get; set; }
-
-        public int Index { get; set; }
-    }
-
     /// <summary>
     /// Renders your game. It should use current <see cref="RenderContext.RenderView"/> and <see cref="CameraComponentRendererExtensions.GetCurrentCamera"/>.
     /// </summary>
@@ -577,7 +520,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         using (drawContext.PushRenderTargetsAndRestore())
                         {
                             drawContext.CommandList.SetViewport(new Viewport(0.0f, 0.0f, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2.0f, VRSettings.VRDevice.ActualRenderFrameSize.Height));
-                            drawContext.CommandList.SetRenderTargets(ViewDepthStencil, ViewTargetsComposition.NumberOfTargets, ViewTargetsComposition.AllTargets);
+                            drawContext.CommandList.SetRenderTargets(ViewDepthStencil, ViewTargetsComposition.RenderTargetCount, ViewTargetsComposition.RenderTargets);
 
                             var views = ViewTargetsComposition as IMultipleRenderViews;
                             if (views != null)
@@ -627,7 +570,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
-                        drawContext.CommandList.SetRenderTargetsAndViewport(ViewDepthStencil, ViewTargetsComposition.NumberOfTargets, ViewTargetsComposition.AllTargets);
+                        drawContext.CommandList.SetRenderTargetsAndViewport(ViewDepthStencil, ViewTargetsComposition.RenderTargetCount, ViewTargetsComposition.RenderTargets);
 
                         // Clear render target and depth stencil
                         Clear?.Draw(drawContext);
