@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -9,22 +10,24 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="IsExpanded"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register("IsExpanded", typeof(bool), typeof(ExpandableItemsControl), new FrameworkPropertyMetadata(false, OnIsExpandedChanged));
+        public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register(nameof(IsExpanded), typeof(bool), typeof(ExpandableItemsControl), new FrameworkPropertyMetadata(false, OnIsExpandedChanged));
 
         /// <summary>
         /// Identifies the <see cref="Expanded"/> routed event.
         /// </summary>
-        public static readonly RoutedEvent ExpandedEvent = EventManager.RegisterRoutedEvent("Expanded", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ExpandableItemsControl));
+        public static readonly RoutedEvent ExpandedEvent = EventManager.RegisterRoutedEvent(nameof(Expanded), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ExpandableItemsControl));
 
         /// <summary>
         /// Identifies the <see cref="Collapsed"/> routed event.
         /// </summary>
-        public static readonly RoutedEvent CollapsedEvent = EventManager.RegisterRoutedEvent("Collapsed", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ExpandableItemsControl));
+        public static readonly RoutedEvent CollapsedEvent = EventManager.RegisterRoutedEvent(nameof(Collapsed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ExpandableItemsControl));
 
         /// <summary>
         /// Gets or sets whether this control is expanded.
         /// </summary>
         public bool IsExpanded { get { return (bool)GetValue(IsExpandedProperty); } set { SetValue(IsExpandedProperty, value); } }
+
+        protected bool CanExpand => HasItems;
 
         /// <summary>
         /// Raised when this <see cref="ExpandableItemsControl"/> is expanded.
@@ -40,7 +43,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Invoked when this <see cref="ExpandableItemsControl"/> is expanded. Raises the <see cref="Expanded"/> event.
         /// </summary>
         /// <param name="e">The routed event arguments.</param>
-        protected virtual void OnExpanded(RoutedEventArgs e)
+        protected virtual void OnExpanded([NotNull] RoutedEventArgs e)
         {
             RaiseEvent(e);
         }
@@ -49,7 +52,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Invoked when this <see cref="ExpandableItemsControl"/> is collapsed. Raises the <see cref="Collapsed"/> event.
         /// </summary>
         /// <param name="e">The routed event arguments.</param>
-        protected virtual void OnCollapsed(RoutedEventArgs e)
+        protected virtual void OnCollapsed([NotNull] RoutedEventArgs e)
         {
             RaiseEvent(e);
         }

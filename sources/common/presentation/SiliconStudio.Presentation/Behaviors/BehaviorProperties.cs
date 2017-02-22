@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Extensions;
 using SiliconStudio.Presentation.Interop;
 
@@ -33,7 +34,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         /// <param name="target">The target <see cref="DependencyObject"/>.</param>
         /// <returns>The value of the <see cref="HandlesMouseWheelScrollingProperty"/> dependency property.</returns>
-        public static bool GetHandlesMouseWheelScrolling(DependencyObject target)
+        public static bool GetHandlesMouseWheelScrolling([NotNull] DependencyObject target)
         {
             return (bool)target.GetValue(HandlesMouseWheelScrollingProperty);
         }
@@ -43,7 +44,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         /// <param name="target">The target <see cref="DependencyObject"/>.</param>
         /// <param name="value">The value to set.</param>
-        public static void SetHandlesMouseWheelScrolling(DependencyObject target, bool value)
+        public static void SetHandlesMouseWheelScrolling([NotNull] DependencyObject target, bool value)
         {
             target.SetValue(HandlesMouseWheelScrollingProperty, value);
         }
@@ -53,7 +54,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         /// <param name="target">The target <see cref="DependencyObject"/>.</param>
         /// <returns>The value of the <see cref="KeepTaskbarWhenMaximizedProperty"/> dependency property.</returns>
-        public static bool GetKeepTaskbarWhenMaximized(DependencyObject target)
+        public static bool GetKeepTaskbarWhenMaximized([NotNull] DependencyObject target)
         {
             return (bool)target.GetValue(KeepTaskbarWhenMaximizedProperty);
         }
@@ -63,12 +64,12 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         /// <param name="target">The target <see cref="DependencyObject"/>.</param>
         /// <param name="value">The value to set.</param>
-        public static void SetKeepTaskbarWhenMaximized(DependencyObject target, bool value)
+        public static void SetKeepTaskbarWhenMaximized([NotNull] DependencyObject target, bool value)
         {
             target.SetValue(KeepTaskbarWhenMaximizedProperty, value);
         }
 
-        private static void HandlesMouseWheelScrollingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void HandlesMouseWheelScrollingChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var scrollViewer = d as ScrollViewer ?? d.FindVisualChildOfType<ScrollViewer>();
 
@@ -95,7 +96,7 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
-        private static void KeepTaskbarWhenMaximizedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void KeepTaskbarWhenMaximizedChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var window = d as Window;
             if (window == null)
@@ -120,7 +121,7 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
-        private static IntPtr WindowProc(Window window, IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
+        private static IntPtr WindowProc([NotNull] Window window, IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
         {
             switch (msg)
             {

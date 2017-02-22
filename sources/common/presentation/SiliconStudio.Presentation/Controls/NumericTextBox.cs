@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.Extensions;
@@ -325,6 +326,7 @@ namespace SiliconStudio.Presentation.Controls
         }
 
         /// <inheritdoc/>
+        [NotNull]
         protected override string CoerceTextForValidation(string baseValue)
         {
             baseValue = base.CoerceTextForValidation(baseValue);
@@ -350,6 +352,7 @@ namespace SiliconStudio.Presentation.Controls
             return FormatValue(value);
         }
 
+        [NotNull]
         protected string FormatValue(double value)
         {
             var decimalPlaces = DecimalPlaces;
@@ -471,9 +474,9 @@ namespace SiliconStudio.Presentation.Controls
                 control.UpdateValue(MathUtil.Lerp(control.Minimum, control.Maximum, (double)e.NewValue));
         }
 
-        private static void UpdateValueCommand(object sender, Func<NumericTextBox, double> getValue, bool validate = true)
+        private static void UpdateValueCommand([NotNull] object sender, Func<NumericTextBox, double> getValue, bool validate = true)
         {
-            var control = (sender as NumericTextBox) ?? ((System.Windows.Controls.TextBox)sender).FindVisualParentOfType<NumericTextBox>();
+            var control = sender as NumericTextBox ?? ((System.Windows.Controls.TextBox)sender).FindVisualParentOfType<NumericTextBox>();
             if (control != null)
             {
                 var value = getValue(control);
@@ -484,32 +487,32 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        private static void OnLargeIncreaseCommand(object sender, ExecutedRoutedEventArgs e)
+        private static void OnLargeIncreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
             UpdateValueCommand(sender, x => x.Value + x.LargeChange);
         }
 
-        private static void OnLargeDecreaseCommand(object sender, ExecutedRoutedEventArgs e)
+        private static void OnLargeDecreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
             UpdateValueCommand(sender, x => x.Value - x.LargeChange);
         }
 
-        private static void OnSmallIncreaseCommand(object sender, ExecutedRoutedEventArgs e)
+        private static void OnSmallIncreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
             UpdateValueCommand(sender, x => x.Value + x.SmallChange);
         }
 
-        private static void OnSmallDecreaseCommand(object sender, ExecutedRoutedEventArgs e)
+        private static void OnSmallDecreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
             UpdateValueCommand(sender, x => x.Value - x.SmallChange);
         }
 
-        private static void OnResetValueCommand(object sender, ExecutedRoutedEventArgs e)
+        private static void OnResetValueCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
             UpdateValueCommand(sender, x => 0.0, false);
         }
 
-        private static void OnForbiddenPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnForbiddenPropertyChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var metadata = e.Property.GetMetadata(d);
             if (!Equals(e.NewValue, metadata.DefaultValue))

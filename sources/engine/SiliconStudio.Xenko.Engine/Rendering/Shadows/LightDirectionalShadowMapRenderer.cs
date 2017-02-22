@@ -93,9 +93,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return light is LightDirectional;
         }
 
-        public override LightShadowMapTexture CreateShadowMapTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize)
+        public override LightShadowMapTexture CreateShadowMapTexture(RenderView renderView, LightComponent lightComponent, IDirectLight light, int shadowMapSize)
         {
-            var shadowMap = base.CreateShadowMapTexture(lightComponent, light, shadowMapSize);
+            var shadowMap = base.CreateShadowMapTexture(renderView, lightComponent, light, shadowMapSize);
             shadowMap.CascadeCount = ((LightDirectionalShadowMap)light.Shadow).GetCascadeCount();
             return shadowMap;
         }
@@ -240,8 +240,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 }
 
                 // Update the shadow camera
-                var viewMatrix = Matrix.LookAtRH(target + direction * cascadeMinBoundLS.Z, target, upDirection); // View;;
-                var projectionMatrix = Matrix.OrthoOffCenterRH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, 0.0f, cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z); // Projection
+                var viewMatrix = Matrix.LookAtLH(target + direction * cascadeMinBoundLS.Z, target, upDirection); // View;;
+                var projectionMatrix = Matrix.OrthoOffCenterLH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, 0.0f, cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z); // Projection
                 Matrix viewProjectionMatrix;
                 Matrix.Multiply(ref viewMatrix, ref projectionMatrix, out viewProjectionMatrix);
 

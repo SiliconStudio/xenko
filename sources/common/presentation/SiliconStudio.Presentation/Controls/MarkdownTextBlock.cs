@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -93,7 +94,7 @@ namespace SiliconStudio.Presentation.Controls
             ResetMessage();
         }
 
-        private static void BaseUrlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void BaseUrlChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = d as MarkdownTextBlock;
             if (control == null) throw new ArgumentNullException(nameof(control));
@@ -105,7 +106,7 @@ namespace SiliconStudio.Presentation.Controls
             control.ResetMessage();
         }
 
-        private static void HyperlinkCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void HyperlinkCommandChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = d as MarkdownTextBlock;
             if (control == null) throw new ArgumentNullException(nameof(control));
@@ -117,7 +118,7 @@ namespace SiliconStudio.Presentation.Controls
             control.ResetMessage();
         }
 
-        private static void MarkdownChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void MarkdownChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = d as MarkdownTextBlock;
             if (control == null) throw new ArgumentNullException(nameof(control));
@@ -130,7 +131,7 @@ namespace SiliconStudio.Presentation.Controls
             control.ResetMessage();
         }
 
-        private static void TextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void TextChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = d as MarkdownTextBlock;
             if (control == null) throw new ArgumentNullException(nameof(control));
@@ -138,6 +139,7 @@ namespace SiliconStudio.Presentation.Controls
             control.ResetMessage();
         }
 
+        [NotNull]
         private XamlMarkdown GetMarkdown()
         {
             return Markdown ?? defaultMarkdown.Value;
@@ -151,6 +153,7 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
+        [CanBeNull]
         private FlowDocument ProcessText()
         {
             try

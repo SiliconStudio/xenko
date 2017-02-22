@@ -4574,7 +4574,7 @@
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ctrl:TreeViewItem}">
           <StackPanel Background="Transparent" x:Name="stacki">
-            <Grid Background="Transparent" SnapsToDevicePixels="True" VerticalAlignment="Center" x:Name="border">
+            <Grid x:Name="border" Background="Transparent" SnapsToDevicePixels="True" VerticalAlignment="Center">
               <Rectangle x:Name="Background" IsHitTestVisible="False" Opacity="1" Fill="{TemplateBinding Background}"/>
               <Rectangle x:Name="HoverRectangle" IsHitTestVisible="False" Opacity="0" Fill="{StaticResource NormalBrush}"/>
               <Rectangle x:Name="SelectedRectangle" IsHitTestVisible="False" Opacity="0" Fill="{StaticResource SelectedBackgroundBrush}"/>
@@ -4598,25 +4598,29 @@
                   </ToggleButton.Style>
                 </ToggleButton>
                 <ContentPresenter x:Name="content"
-                                    FocusManager.IsFocusScope="True" 
-                                    Content="{TemplateBinding HeaderedContentControl.Header}"
-                                    ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}"
-                                    ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}"
-                                    ContentTemplateSelector="{TemplateBinding HeaderedItemsControl.HeaderTemplateSelector}"
-                                    ContentSource="Header"
-                                    HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
-                                    VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
-                                    SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                                  FocusManager.IsFocusScope="True" 
+                                  Content="{TemplateBinding HeaderedContentControl.Header}"
+                                  ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}"
+                                  ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}"
+                                  ContentTemplateSelector="{TemplateBinding HeaderedItemsControl.HeaderTemplateSelector}"
+                                  ContentSource="Header"
+                                  HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
+                                  VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                                  SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
               </DockPanel>
-              <Rectangle x:Name="FocusVisualElement" Stroke="{StaticResource HoverShineBrush}" StrokeThickness="0" RadiusX="1" RadiusY="1" Opacity="0" IsHitTestVisible="False" Margin="1,1,1,1"/>
+              <Rectangle x:Name="FocusVisualElement" Stroke="{StaticResource HoverShineBrush}" StrokeThickness="1" RadiusX="1" RadiusY="1" Opacity="0" IsHitTestVisible="False" Margin="1,1,1,1"/>
             </Grid>
             <ItemsPresenter x:Name="itemsPresenter" Visibility="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Converter={cvt:VisibleOrCollapsed}, FallbackValue=Hidden}"/>
           </StackPanel>
           <ControlTemplate.Triggers>
-            <Trigger Property="IsFocused" Value="True">
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsFocused" Value="True" />
+                <Condition Property="IsSelected" Value="False" />
+              </MultiTrigger.Conditions>
               <Setter Property="Opacity" TargetName="FocusVisualElement" Value="1"/>
-            </Trigger>
-            <Trigger Property="IsSelected" Value="true">
+            </MultiTrigger>
+            <Trigger Property="IsSelected" Value="True">
               <Setter Property="Opacity" TargetName="SelectedRectangle" Value="1"/>
             </Trigger>
             <MultiTrigger>
@@ -4632,9 +4636,9 @@
 
             <Trigger Property="ctrl:TreeViewItem.IsEditing" Value="True">
               <Setter TargetName="content" Property="ContentPresenter.ContentTemplate" 
-                                    Value="{Binding TemplateEdit, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ctrl:TreeViewItem}, AncestorLevel=1}}"/>
+                      Value="{Binding TemplateEdit, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ctrl:TreeViewItem}, AncestorLevel=1}}"/>
               <Setter TargetName="content" Property="ContentPresenter.ContentTemplateSelector" 
-                                    Value="{Binding TemplateSelectorEdit, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ctrl:TreeViewItem}, AncestorLevel=1}}"/>
+                      Value="{Binding TemplateSelectorEdit, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ctrl:TreeViewItem}, AncestorLevel=1}}"/>
               <Setter Property="Padding" Value="0" />
             </Trigger>
           </ControlTemplate.Triggers>

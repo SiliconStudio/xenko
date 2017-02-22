@@ -44,6 +44,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         
         void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, LightShadowMapTexture shadowMapTexture);
 
-        LightShadowMapTexture CreateShadowMapTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize);
+        LightShadowMapTexture CreateShadowMapTexture(RenderView renderView, LightComponent lightComponent, IDirectLight light, int shadowMapSize);
     }
 }

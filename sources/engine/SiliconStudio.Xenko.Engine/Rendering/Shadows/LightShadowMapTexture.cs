@@ -15,6 +15,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     public class LightShadowMapTexture
     {
+        public RenderView RenderView { get; private set; }
+
         public LightComponent LightComponent { get; private set; }
 
         public IDirectLight Light { get; private set; }
@@ -37,12 +39,15 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public ILightShadowMapShaderData ShaderData;
 
-        public void Initialize(LightComponent lightComponent, IDirectLight light, LightShadowMap shadowMap, int size, ILightShadowMapRenderer renderer)
+        public void Initialize(RenderView renderView, LightComponent lightComponent, IDirectLight light, LightShadowMap shadowMap, int size, ILightShadowMapRenderer renderer)
         {
-            if (lightComponent == null) throw new ArgumentNullException("lightComponent");
-            if (light == null) throw new ArgumentNullException("light");
-            if (shadowMap == null) throw new ArgumentNullException("shadowMap");
-            if (renderer == null) throw new ArgumentNullException("renderer");
+            if (renderView == null) throw new ArgumentNullException(nameof(renderView));
+            if (lightComponent == null) throw new ArgumentNullException(nameof(lightComponent));
+            if (light == null) throw new ArgumentNullException(nameof(light));
+            if (shadowMap == null) throw new ArgumentNullException(nameof(shadowMap));
+            if (renderer == null) throw new ArgumentNullException(nameof(renderer));
+
+            RenderView = renderView;
             LightComponent = lightComponent;
             Light = light;
             Shadow = shadowMap;
