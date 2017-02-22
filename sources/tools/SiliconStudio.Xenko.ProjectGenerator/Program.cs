@@ -16,6 +16,7 @@ using Microsoft.Build.Evaluation;
 using Mono.Options;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Templates;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
@@ -256,8 +257,8 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
                     bool b;
-                    Dictionary<YamlAssetPath, OverrideType> o;
-                    var asset = AssetFileSerializer.Default.Load(stream, filePath, null, TODO, out b, out o) as Asset;
+                    AttachedYamlAssetMetadata o;
+                    var asset = AssetFileSerializer.Default.Load(stream, filePath, null, false, out b, out o) as Asset;
                     if (asset != null)
                     {
                         guid = (Guid)asset.Id;
