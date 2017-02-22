@@ -12,7 +12,7 @@ namespace SiliconStudio.Assets.Serializers
     /// <summary>
     /// A static class that can be used to fix up object references.
     /// </summary>
-    public static class FixupObjectReference
+    public static class FixupObjectReferences
     {
         /// <summary>
         /// Fix up references represented by the <paramref name="objectReferences"/> dictionary into the <paramref name="root"/> object, by visiting the object
@@ -26,24 +26,38 @@ namespace SiliconStudio.Assets.Serializers
         public static void RunFixupPass(object root, YamlAssetMetadata<Guid> objectReferences, bool throwOnDuplicateIds, [CanBeNull] ILogger logger = null)
         {
             // First collect IIdentifiable objects
+            var referenceTargets = CollectReferenceableObjects(root, objectReferences, throwOnDuplicateIds, logger);
+
+            // Then resolve and update object references
+            FixupReferences(root, objectReferences, referenceTargets, false, logger);
+        }
+
+        public static Dictionary<Guid, IIdentifiable> CollectReferenceableObjects(object root, YamlAssetMetadata<Guid> objectReferences, bool throwOnDuplicateIds, [CanBeNull] ILogger logger = null)
+        {
             var hashSet = new HashSet<MemberPath>(objectReferences.Select(x => x.Key.ToMemberPath(root)));
             var visitor = new FixupObjectReferenceVisitor(hashSet, throwOnDuplicateIds, logger);
             visitor.Visit(root);
-
-            // Then resolve and update object references
-            foreach (var objectReference in objectReferences)
-            {
-                IIdentifiable target;
-                if (!visitor.ReferenceableObjects.TryGetValue(objectReference.Value, out target))
-                {
-                    logger?.Warning($"Unable to resolve target object [{objectReference.Value}] of reference [{objectReference.Key}]");
-                    continue;
-                }
-                var path = objectReference.Key.ToMemberPath(root);
-                path.Apply(root, MemberPathAction.ValueSet, target);
-            }
+            return visitor.ReferenceableObjects;
         }
 
+        public static void FixupReferences(object root, YamlAssetMetadata<Guid> objectReferences, Dictionary<Guid, IIdentifiable> referenceTargets, bool clearMissingReferences, [CanBeNull] ILogger logger = null)
+        {
+            foreach (var objectReference in objectReferences)
+            {
+                var path = objectReference.Key.ToMemberPath(root);
+                IIdentifiable target;
+                if (!referenceTargets.TryGetValue(objectReference.Value, out target))
+                {
+                    logger?.Warning($"Unable to resolve target object [{objectReference.Value}] of reference [{objectReference.Key}]");
+                    if (clearMissingReferences)
+                        path.Apply(root, MemberPathAction.ValueSet, null);
+                }
+                else
+                {
+                    path.Apply(root, MemberPathAction.ValueSet, target);
+                }
+            }
+        }
         private class FixupObjectReferenceVisitor : DataVisitorBase
         {
             public readonly Dictionary<Guid, IIdentifiable> ReferenceableObjects = new Dictionary<Guid, IIdentifiable>();

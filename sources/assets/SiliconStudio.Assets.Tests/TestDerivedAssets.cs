@@ -65,7 +65,7 @@ namespace SiliconStudio.Assets.Tests
             stream.Position = 0;
             bool aliasOccurred;
             AttachedYamlAssetMetadata metadata;
-            var loadedAsset = (MyAsset)serializer.Load(stream, null, null, out aliasOccurred, out metadata);
+            var loadedAsset = (MyAsset)serializer.Load(stream, null, null, true, out aliasOccurred, out metadata);
             var asset2Ids = CollectionItemIdHelper.GetCollectionItemIds(loadedAsset.Strings);
             Assert.AreEqual(2, asset2Ids.KeyCount);
             Assert.AreEqual(asset1Ids[0], asset2Ids[0]);

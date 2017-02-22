@@ -12,6 +12,80 @@ using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Assets.Quantum
 {
+    public class IdentifiableObjectCollector : AssetGraphVisitorBase
+    {
+        private readonly Dictionary<Guid, IIdentifiable> result = new Dictionary<Guid, IIdentifiable>();
+
+        private IdentifiableObjectCollector(AssetPropertyGraph propertyGraph)
+            : base(propertyGraph)
+        {
+        }
+
+        public static Dictionary<Guid, IIdentifiable> Collect(AssetPropertyGraph propertyGraph)
+        {
+            var visitor = new IdentifiableObjectCollector(propertyGraph);
+            visitor.Visit(propertyGraph.RootNode);
+            return visitor.result;
+        }
+
+        protected override void VisitReference(IGraphNode referencer, ObjectReference reference, GraphNodePath targetPath)
+        {
+            var value = reference.ObjectValue as IIdentifiable;
+            if (value != null)
+            {
+                result[value.Id] = value;
+            }
+            base.VisitReference(referencer, reference, targetPath);
+        }
+    }
+
+    public class SubHierarchyVisitor : AssetGraphVisitorBase
+    {
+        private readonly AssetPropertyGraph propertyGraph;
+
+        private readonly HashSet<IIdentifiable> internalReferences = new HashSet<IIdentifiable>();
+        private readonly HashSet<IIdentifiable> externalReferences = new HashSet<IIdentifiable>();
+
+        private SubHierarchyVisitor(AssetPropertyGraph propertyGraph)
+            : base(propertyGraph)
+        {
+            this.propertyGraph = propertyGraph;
+        }
+
+        public static HashSet<IIdentifiable> GetExternalReferences(AssetPropertyGraph propertyGraph)
+        {
+            var visitor = new SubHierarchyVisitor(propertyGraph);
+            visitor.Visit(propertyGraph.RootNode);
+            // An IIdentifiable can have been recorded both as internal and external reference. In this case we still want to clone it so let's remove it from external references
+            visitor.externalReferences.ExceptWith(visitor.internalReferences);
+            return visitor.externalReferences;
+        }
+
+        protected override void VisitMemberTarget(IMemberNode node, GraphNodePath currentPath)
+        {
+            ProcessIdentifiable(node, Index.Empty);
+            base.VisitMemberTarget(node, currentPath);
+        }
+
+        protected override void VisitItemTargets(IObjectNode node, GraphNodePath currentPath)
+        {
+            node.ItemReferences?.ForEach(x => ProcessIdentifiable(node, x.Index));
+            base.VisitItemTargets(node, currentPath);
+        }
+
+        private void ProcessIdentifiable(IGraphNode node, Index index)
+        {
+            var identifiable = node?.Retrieve(index) as IIdentifiable;
+            if (identifiable == null)
+                return;
+
+            if (propertyGraph.IsObjectReference(node, index))
+                externalReferences.Add(identifiable);
+            else
+                internalReferences.Add(identifiable);
+        }
+    }
+
     public abstract class AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> : AssetCompositePropertyGraph
         where TAssetPart : class, IIdentifiable
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
@@ -180,53 +254,6 @@ namespace SiliconStudio.Assets.Quantum
                 AssetPartsAnalysis.GenerateNewBaseInstanceIds(clonedHierarchy);
 
             return clonedHierarchy;
-        }
-
-        private class SubHierarchyVisitor : AssetGraphVisitorBase
-        {
-            private readonly AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> propertyGraph;
-
-            private readonly HashSet<IIdentifiable> internalReferences = new HashSet<IIdentifiable>();
-            private readonly HashSet<IIdentifiable> externalReferences = new HashSet<IIdentifiable>();
-
-            private SubHierarchyVisitor(AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> propertyGraph)
-                : base(propertyGraph)
-            {
-                this.propertyGraph = propertyGraph;
-            }
-
-            public static HashSet<IIdentifiable> GetExternalReferences(AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> propertyGraph)
-            {
-                var visitor = new SubHierarchyVisitor(propertyGraph);
-                visitor.Visit(propertyGraph.RootNode);
-                // An IIdentifiable can have been recorded both as internal and external reference. In this case we still want to clone it so let's remove it from external references
-                visitor.externalReferences.ExceptWith(visitor.internalReferences);
-                return visitor.externalReferences;
-            }
-
-            protected override void VisitMemberTarget(IMemberNode node, GraphNodePath currentPath)
-            {
-                ProcessIdentifiable(node, Index.Empty);
-                base.VisitMemberTarget(node, currentPath);
-            }
-
-            protected override void VisitItemTargets(IObjectNode node, GraphNodePath currentPath)
-            {
-                node.ItemReferences?.ForEach(x => ProcessIdentifiable(node, x.Index));
-                base.VisitItemTargets(node, currentPath);
-            }
-
-            private void ProcessIdentifiable(IGraphNode node, Index index)
-            {
-                var identifiable = node?.Retrieve() as IIdentifiable;
-                if (identifiable == null)
-                    return;
-
-                if (propertyGraph.IsObjectReference(node, index))
-                    externalReferences.Add(identifiable);
-                else
-                    internalReferences.Add(identifiable);
-            }
         }
 
         /// <summary>

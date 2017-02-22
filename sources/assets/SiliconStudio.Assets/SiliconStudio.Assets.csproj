@@ -93,7 +93,7 @@
     <Compile Include="Serializers\AssetPartContainedAttribute.cs" />
     <Compile Include="Serializers\AssetPartReferenceAttribute.cs" />
     <Compile Include="Serializers\AssetCompositeSerializer.cs" />
-    <Compile Include="Serializers\FixupObjectReference.cs" />
+    <Compile Include="Serializers\FixupObjectReferences.cs" />
     <Compile Include="Serializers\IAssetPartReference.cs" />
     <Compile Include="Serializers\IdentifiableAssetPartReference.cs" />
     <Compile Include="Serializers\IdentifiableAssetPartReferenceSerializer.cs" />

@@ -14,7 +14,7 @@ namespace SiliconStudio.Assets.Serializers
     {
         public static readonly SourceCodeAssetSerializer Default = new SourceCodeAssetSerializer();
 
-        public object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out AttachedYamlAssetMetadata yamlMetadata)
+        public object Load(Stream stream, UFile filePath, ILogger log, bool clearBrokenObjectReferences, out bool aliasOccurred, out AttachedYamlAssetMetadata yamlMetadata)
         {
             aliasOccurred = false;
 

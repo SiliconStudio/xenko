@@ -829,7 +829,7 @@ Value*: OverriddenString
             SerializeAndCompare(context.DerivedAsset.MyObject, overrides, expectedYaml);
             bool aliasOccurred;
             AttachedYamlAssetMetadata metadata;
-            var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(DeriveAssetTestBase.ToStream(expectedYaml), null, null, out aliasOccurred, out metadata);
+            var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(DeriveAssetTestBase.ToStream(expectedYaml), null, null, true, out aliasOccurred, out metadata);
             overrides = metadata.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
             Assert.NotNull(overrides);
             overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value);
@@ -862,7 +862,7 @@ Value*: OverriddenString
             SerializeAndCompare(context.DerivedAsset.MyObjects[1], overrides, expectedYaml);
             bool aliasOccurred;
             AttachedYamlAssetMetadata metadata;
-            var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(DeriveAssetTestBase.ToStream(expectedYaml), null, null, out aliasOccurred, out metadata);
+            var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(DeriveAssetTestBase.ToStream(expectedYaml), null, null, true, out aliasOccurred, out metadata);
             overrides = metadata.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
             Assert.NotNull(overrides);
             overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value);

@@ -584,7 +584,7 @@ AbstractRefDictionary:
             stream.Position = 0;
             bool aliasOccurred;
             AttachedYamlAssetMetadata metadata;
-            var instance = new YamlAssetSerializer().Load(stream, "MyAsset", null, out aliasOccurred, out metadata);
+            var instance = new YamlAssetSerializer().Load(stream, "MyAsset", null, true, out aliasOccurred, out metadata);
             return instance;
         }
     }

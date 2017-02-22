@@ -154,7 +154,7 @@ namespace SiliconStudio.Assets.Tests
 
             bool aliasOccurred;
             AttachedYamlAssetMetadata metadata;
-            var assetItems = (List<AssetItem>)AssetFileSerializer.Default.Load(stream, null, null, out aliasOccurred, out metadata);
+            var assetItems = (List<AssetItem>)AssetFileSerializer.Default.Load(stream, null, null, true, out aliasOccurred, out metadata);
             if (aliasOccurred)
             {
                 foreach (var assetItem in assetItems)

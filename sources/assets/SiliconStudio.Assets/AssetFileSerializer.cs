@@ -113,7 +113,7 @@ namespace SiliconStudio.Assets
             }
             bool aliasOccurred;
             AttachedYamlAssetMetadata yamlMetadata;
-            var asset = (T)serializer.Load(stream, filePath, log, out aliasOccurred, out yamlMetadata);
+            var asset = (T)serializer.Load(stream, filePath, log, true, out aliasOccurred, out yamlMetadata);
             return new AssetLoadResult<T>(asset, log, aliasOccurred, yamlMetadata);
         }
 
