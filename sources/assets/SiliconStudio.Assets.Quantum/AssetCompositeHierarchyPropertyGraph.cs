@@ -2,44 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Assets.Quantum.Visitors;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Assets.Quantum
 {
-    public class IdentifiableObjectCollector : AssetGraphVisitorBase
-    {
-        private readonly Dictionary<Guid, IIdentifiable> result = new Dictionary<Guid, IIdentifiable>();
-
-        private IdentifiableObjectCollector(AssetPropertyGraph propertyGraph)
-            : base(propertyGraph)
-        {
-        }
-
-        public static Dictionary<Guid, IIdentifiable> Collect(AssetPropertyGraph propertyGraph)
-        {
-            var visitor = new IdentifiableObjectCollector(propertyGraph);
-            visitor.Visit(propertyGraph.RootNode);
-            return visitor.result;
-        }
-
-        protected override void VisitReference(IGraphNode referencer, ObjectReference reference, GraphNodePath targetPath)
-        {
-            var value = reference.ObjectValue as IIdentifiable;
-            if (value != null)
-            {
-                result[value.Id] = value;
-            }
-            base.VisitReference(referencer, reference, targetPath);
-        }
-    }
-
-    public class SubHierarchyVisitor : AssetGraphVisitorBase
+    public class SubHierarchyVisitor : IdentifiableObjectVisitorBase
     {
         private readonly AssetPropertyGraph propertyGraph;
 
@@ -61,24 +34,8 @@ namespace SiliconStudio.Assets.Quantum
             return visitor.externalReferences;
         }
 
-        protected override void VisitMemberTarget(IMemberNode node, GraphNodePath currentPath)
+        protected override void ProcessIdentifiable(IIdentifiable identifiable, IGraphNode node, Index index)
         {
-            ProcessIdentifiable(node, Index.Empty);
-            base.VisitMemberTarget(node, currentPath);
-        }
-
-        protected override void VisitItemTargets(IObjectNode node, GraphNodePath currentPath)
-        {
-            node.ItemReferences?.ForEach(x => ProcessIdentifiable(node, x.Index));
-            base.VisitItemTargets(node, currentPath);
-        }
-
-        private void ProcessIdentifiable(IGraphNode node, Index index)
-        {
-            var identifiable = node?.Retrieve(index) as IIdentifiable;
-            if (identifiable == null)
-                return;
-
             if (propertyGraph.IsObjectReference(node, index))
                 externalReferences.Add(identifiable);
             else

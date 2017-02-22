@@ -1,3 +1,4 @@
+using SiliconStudio.Assets.Quantum.Visitors;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Assets.Quantum

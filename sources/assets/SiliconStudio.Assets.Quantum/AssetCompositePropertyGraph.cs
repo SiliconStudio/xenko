@@ -1,4 +1,5 @@
 using System;
+using SiliconStudio.Assets.Quantum.Visitors;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Quantum;
 

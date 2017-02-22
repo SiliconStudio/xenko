@@ -5,12 +5,16 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
 
-namespace SiliconStudio.Assets.Quantum
+namespace SiliconStudio.Assets.Quantum.Visitors
 {
-    public abstract class AssetNodeMetadataCollector : GraphVisitorBase
+    /// <summary>
+    /// A visitor that collects metadata to pass to YAML serialization.
+    /// </summary>
+    public abstract class AssetNodeMetadataCollectorBase : GraphVisitorBase
     {
         private int inNonIdentifiableType;
 
+        /// <inheritdoc/>
         protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
         {
             var assetNode = (IAssetNode)node;
@@ -39,12 +43,30 @@ namespace SiliconStudio.Assets.Quantum
                 inNonIdentifiableType--;
         }
 
+        /// <summary>
+        /// Visits a node that is an <see cref="IAssetMemberNode"/>.
+        /// </summary>
+        /// <param name="memberNode">The node to visit.</param>
+        /// <param name="currentPath">The current path in the visit.</param>
         protected abstract void VisitMemberNode(IAssetMemberNode memberNode, YamlAssetPath currentPath);
 
+        /// <summary>
+        /// Visits a node that is an <see cref="IAssetObjectNode"/>.
+        /// </summary>
+        /// <param name="objectNode">The node to visit.</param>
+        /// <param name="currentPath">The current path in the visit.</param>
         protected abstract void VisitObjectNode(IAssetObjectNode objectNode, YamlAssetPath currentPath);
 
-        public static YamlAssetPath ConvertPath(GraphNodePath path, int inNonIdentifiableType)
+        /// <summary>
+        /// Converts the given <see cref="GraphNodePath"/> to a <see cref="YamlAssetPath"/> that can be processed by YAML serialization.
+        /// </summary>
+        /// <param name="path">The path to convert.</param>
+        /// <param name="inNonIdentifiableType">If greater than zero, will ignore collection item ids and write indices instead.</param>
+        /// <returns>An instance of <see cref="YamlAssetPath"/> corresponding to the given <paramref name="path"/>.</returns>
+        [NotNull]
+        public static YamlAssetPath ConvertPath([NotNull] GraphNodePath path, int inNonIdentifiableType = 0)
         {
+            if (path == null) throw new ArgumentNullException(nameof(path));
             var currentNode = (IAssetNode)path.RootNode;
             var result = new YamlAssetPath();
             var i = 0;

@@ -1,24 +1,34 @@
 using System;
-using System.Collections.Generic;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
 
-namespace SiliconStudio.Assets.Quantum
+namespace SiliconStudio.Assets.Quantum.Visitors
 {
-    public class ObjectReferencePathGenerator : AssetNodeMetadataCollector
+    /// <summary>
+    /// An implementation of <see cref="AssetNodeMetadataCollectorBase"/> that generates the path to all object references in the given asset.
+    /// </summary>
+    public class ObjectReferencePathGenerator : AssetNodeMetadataCollectorBase
     {
         private readonly AssetPropertyGraph propertyGraph;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectReferencePathGenerator"/> class.
+        /// </summary>
+        /// <param name="propertyGraph">The <see cref="AssetPropertyGraph"/> used to analyze object references.</param>
         public ObjectReferencePathGenerator(AssetPropertyGraph propertyGraph)
         {
             this.propertyGraph = propertyGraph;
         }
 
+        /// <summary>
+        /// Gets the resulting metadata that can be passed to YAML serialization.
+        /// </summary>
         public YamlAssetMetadata<Guid> Result { get; } = new YamlAssetMetadata<Guid>();
 
+        /// <inheritdoc/>
         protected override void VisitMemberNode(IAssetMemberNode memberNode, YamlAssetPath currentPath)
         {
             if (propertyGraph.IsObjectReference(memberNode, Index.Empty))
@@ -35,6 +45,7 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
+        /// <inheritdoc/>
         protected override void VisitObjectNode(IAssetObjectNode objectNode, YamlAssetPath currentPath)
         {
             if (!objectNode.IsReference)

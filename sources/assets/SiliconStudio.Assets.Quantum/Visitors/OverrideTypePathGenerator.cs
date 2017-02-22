@@ -1,14 +1,20 @@
-﻿using System.Collections.Generic;
-using SiliconStudio.Assets.Yaml;
+﻿using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 
-namespace SiliconStudio.Assets.Quantum
+namespace SiliconStudio.Assets.Quantum.Visitors
 {
-    public class OverrideTypePathGenerator : AssetNodeMetadataCollector
+    /// <summary>
+    /// An implementation of <see cref="AssetNodeMetadataCollectorBase"/> that generates the path to all object references in the given asset.
+    /// </summary>
+    public class OverrideTypePathGenerator : AssetNodeMetadataCollectorBase
     {
+        /// <summary>
+        /// Gets the resulting metadata that can be passed to YAML serialization.
+        /// </summary>
         public YamlAssetMetadata<OverrideType> Result { get; } = new YamlAssetMetadata<OverrideType>();
 
+        /// <inheritdoc/>
         protected override void VisitMemberNode(IAssetMemberNode memberNode, YamlAssetPath currentPath)
         {
             if (memberNode?.IsContentOverridden() == true)
@@ -17,6 +23,7 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
+        /// <inheritdoc/>
         protected override void VisitObjectNode(IAssetObjectNode objectNode, YamlAssetPath currentPath)
         {
             foreach (var index in objectNode.GetOverriddenItemIndices())
