@@ -100,6 +100,8 @@ namespace SiliconStudio.Assets.Quantum
 
         protected IObjectNode HierarchyNode { get; }
 
+        public abstract bool IsChildPartReference(IGraphNode node, Index index);
+
         /// <summary>
         /// Adds a part to this asset. This method updates the <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}.Parts"/> collection.
         /// If <paramref name="parent"/> is null, it also updates the <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}.RootPartIds"/> collection.
