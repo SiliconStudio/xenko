@@ -1,7 +1,6 @@
 !Package
 Id: 69972eae-e2a4-4a4f-9059-59063dbb633c
 SerializedVersion: {Assets: 0.0.4}
-Tags: []
 Meta:
     Name: GravitySensor
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.9.4-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:

@@ -312,8 +312,9 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             {
                 foreach (var testName in game.FrameGameSystem.TestNames)
                 {
-                    if (!ImageTester.RequestImageComparisonStatus(testName))
-                        failedTests.Add(testName);
+                    var localTestName = testName;
+                    if (!ImageTester.RequestImageComparisonStatus(ref localTestName))
+                        failedTests.Add(localTestName);
                 }
             }
 

@@ -1,7 +1,6 @@
 !Package
 Id: 141f872b-dbd5-426f-89c7-64fa6db0b77f
 SerializedVersion: {Assets: 0.0.4}
-Tags: []
 Meta:
     Name: TouchInputs
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.9.4-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:
