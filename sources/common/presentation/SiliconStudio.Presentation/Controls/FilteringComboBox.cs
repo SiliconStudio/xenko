@@ -293,7 +293,7 @@ namespace SiliconStudio.Presentation.Controls
             // If the dropdown is still open and something is selected, use the string from the selected item
             if (SelectedItem != null && IsDropDownOpen)
             {
-                var displayValue = ResolveDisplayMemberValue(SelectedItem);
+                var displayValue = ResolveSortMemberValue(SelectedItem);
                 editableTextBox.Text = displayValue?.ToString();
                 if (editableTextBox.Text != null)
                 {
@@ -521,7 +521,7 @@ namespace SiliconStudio.Presentation.Controls
             if (ItemsToExclude != null && ItemsToExclude.Cast<object>().Contains(obj))
                 return false;
 
-            var value = ResolveDisplayMemberValue(obj);
+            var value = ResolveSortMemberValue(obj);
             var text = value?.ToString();
             return MatchText(filter, text);
         }
@@ -537,12 +537,12 @@ namespace SiliconStudio.Presentation.Controls
             return true;
         }
 
-        private object ResolveDisplayMemberValue(object obj)
+        private object ResolveSortMemberValue(object obj)
         {
             var value = obj;
             try
             {
-                SetBinding(InternalValuePathProperty, new Binding(DisplayMemberPath) { Source = obj });
+                SetBinding(InternalValuePathProperty, new Binding(SortMemberPath) { Source = obj });
                 value = GetValue(InternalValuePathProperty);
             }
             catch (Exception e)
