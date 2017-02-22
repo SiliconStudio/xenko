@@ -60,7 +60,7 @@ namespace SiliconStudio.Packages
         {
             var fileNameBase = packageId;
             fileNameBase += "." + version.ToNormalizedString();
-            return fileNameBase + PackagesConstants.PackageExtension;
+            return fileNameBase + PackageConstants.PackageExtension;
         }
     }
 }
