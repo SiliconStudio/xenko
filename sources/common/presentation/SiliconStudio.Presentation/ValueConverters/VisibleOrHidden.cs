@@ -25,7 +25,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             {
                 result = !result;
             }
-            return result ? Visibility.Visible : Visibility.Hidden;
+            return result ? VisibilityBoxes.VisibleBox : VisibilityBoxes.HiddenBox;
         }
 
         /// <inheritdoc/>
