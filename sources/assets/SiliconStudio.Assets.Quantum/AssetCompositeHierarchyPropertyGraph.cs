@@ -12,37 +12,6 @@ using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum
 {
-    public class SubHierarchyVisitor : IdentifiableObjectVisitorBase
-    {
-        private readonly AssetPropertyGraph propertyGraph;
-
-        private readonly HashSet<IIdentifiable> internalReferences = new HashSet<IIdentifiable>();
-        private readonly HashSet<IIdentifiable> externalReferences = new HashSet<IIdentifiable>();
-
-        private SubHierarchyVisitor(AssetPropertyGraph propertyGraph)
-            : base(propertyGraph)
-        {
-            this.propertyGraph = propertyGraph;
-        }
-
-        public static HashSet<IIdentifiable> GetExternalReferences(AssetPropertyGraph propertyGraph)
-        {
-            var visitor = new SubHierarchyVisitor(propertyGraph);
-            visitor.Visit(propertyGraph.RootNode);
-            // An IIdentifiable can have been recorded both as internal and external reference. In this case we still want to clone it so let's remove it from external references
-            visitor.externalReferences.ExceptWith(visitor.internalReferences);
-            return visitor.externalReferences;
-        }
-
-        protected override void ProcessIdentifiable(IIdentifiable identifiable, IGraphNode node, Index index)
-        {
-            if (propertyGraph.IsObjectReference(node, index))
-                externalReferences.Add(identifiable);
-            else
-                internalReferences.Add(identifiable);
-        }
-    }
-
     public abstract class AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> : AssetCompositePropertyGraph
         where TAssetPart : class, IIdentifiable
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
@@ -231,7 +200,7 @@ namespace SiliconStudio.Assets.Quantum
             var preCloningAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)Activator.CreateInstance(AssetHierarchy.GetType());
             preCloningAsset.Hierarchy = subTreeHierarchy;
             var preCloningAssetGraph = (AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>)AssetQuantumRegistry.ConstructPropertyGraph(Container, new AssetItem("", preCloningAsset), null);
-            var externalReferences = SubHierarchyVisitor.GetExternalReferences(preCloningAssetGraph);
+            var externalReferences = ExternalReferenceCollector.GetExternalReferences(preCloningAssetGraph, preCloningAssetGraph.RootNode);
             preCloningAssetGraph.Dispose();
 
             // clone the parts of the sub-tree
