@@ -615,7 +615,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                 if (pz > 0.0f)
                 {
-                    float c = -(nz * cameraScale + cameraOffset) / nc;
+                    float c = -nz * cameraScale / nc - cameraOffset;
+
                     if (nc > 0.0f)
                     {        // Left side boundary
                         clipMin = Math.Max(clipMin, c);
@@ -656,8 +657,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 clipMin = new Vector2(-1.0f, -1.0f);
                 clipMax = new Vector2(1.0f, 1.0f);
 
-                UpdateClipRegion(lightPosView.X, -lightPosView.Z, lightRadius, projection.M11, +projection.M31, ref clipMin.X, ref clipMax.X);
-                UpdateClipRegion(lightPosView.Y, -lightPosView.Z, lightRadius, projection.M22, -projection.M32, ref clipMin.Y, ref clipMax.Y);
+                UpdateClipRegion(lightPosView.X, -lightPosView.Z, lightRadius, projection.M11, projection.M31, ref clipMin.X, ref clipMax.X);
+                UpdateClipRegion(lightPosView.Y, -lightPosView.Z, lightRadius, projection.M22, projection.M32, ref clipMin.Y, ref clipMax.Y);
             }
 
             // Single linked list of lights (stored in an array)
