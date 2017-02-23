@@ -142,13 +142,13 @@ Hierarchy:
                 Name: Radial Particle system
                 Components:
                     2d9c3f7cc67255449cd620ff3ad913ec: !TransformComponent
-                        Id: 7c3f9c2d-72c6-4455-9cd6-20ff3ad913ec
+                        Id: 48e05fac-72b0-4a7f-96e0-711a91ac02eb
                         Position: {X: 1.0, Y: 0.0, Z: -1.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     06bb0d90dd34b74d9a2caf55521cfc43: !ParticleSystemComponent
-                        Id: 900dbb06-34dd-4db7-9a2c-af55521cfc43
+                        Id: 14dea2bf-adba-4702-86de-b6fdcedd9b0f
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -253,13 +253,13 @@ Hierarchy:
                 Name: Two Textures Particle System
                 Components:
                     2d9c3f7cc67255449cd620ff3ad913ec: !TransformComponent
-                        Id: 7c3f9c2d-72c6-4455-9cd6-20ff3ad913ec
+                        Id: 7ac5e8e9-8e0b-45be-ae58-65402727be6b
                         Position: {X: 0.0, Y: 0.0, Z: 1.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     06bb0d90dd34b74d9a2caf55521cfc43: !ParticleSystemComponent
-                        Id: 900dbb06-34dd-4db7-9a2c-af55521cfc43
+                        Id: d3d88627-602f-4a88-bfc8-ac850b4eb735
                         Control:
                             ResetSeconds: 20.0
                             Control: Play
