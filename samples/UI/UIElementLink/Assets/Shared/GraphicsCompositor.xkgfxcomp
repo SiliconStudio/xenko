@@ -93,8 +93,9 @@ SharedRenderers:
             Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
         OpaqueRenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
         TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
-        ShadowMapRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
-        PostEffects: 608bf04d-8640-469d-b710-1ecf6a46f794
+        ShadowMapRenderStages:
+            fc4d1e0de5c2b0bbc27bcf96e9a848fd: c0524e55-4061-464d-84dd-7c4c70f70e0e
+        PostEffects: !PostProcessingEffects 608bf04d-8640-469d-b710-1ecf6a46f794
     34ecb9b2633eacfc439ba8744fe05102: !PostProcessingEffects
         Id: 608bf04d-8640-469d-b710-1ecf6a46f794
         AmbientOcclusion:
