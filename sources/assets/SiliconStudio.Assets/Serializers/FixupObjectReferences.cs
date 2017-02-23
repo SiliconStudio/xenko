@@ -21,15 +21,16 @@ namespace SiliconStudio.Assets.Serializers
         /// </summary>
         /// <param name="root">The root object to fix up.</param>
         /// <param name="objectReferences">The path to each object reference and the <see cref="Guid"/> of the tar</param>
+        /// <param name="clearBrokenObjectReferences">If true, any object refernce that cannot be resolved will be reset to null.</param>
         /// <param name="throwOnDuplicateIds">If true, an exception will be thrown if two <see cref="IIdentifiable"/></param>
         /// <param name="logger">An optional logger.</param>
-        public static void RunFixupPass(object root, YamlAssetMetadata<Guid> objectReferences, bool throwOnDuplicateIds, [CanBeNull] ILogger logger = null)
+        public static void RunFixupPass(object root, YamlAssetMetadata<Guid> objectReferences, bool clearBrokenObjectReferences, bool throwOnDuplicateIds, [CanBeNull] ILogger logger = null)
         {
             // First collect IIdentifiable objects
             var referenceTargets = CollectReferenceableObjects(root, objectReferences, throwOnDuplicateIds, logger);
 
             // Then resolve and update object references
-            FixupReferences(root, objectReferences, referenceTargets, false, logger);
+            FixupReferences(root, objectReferences, referenceTargets, clearBrokenObjectReferences, logger);
         }
 
         public static Dictionary<Guid, IIdentifiable> CollectReferenceableObjects(object root, YamlAssetMetadata<Guid> objectReferences, bool throwOnDuplicateIds, [CanBeNull] ILogger logger = null)

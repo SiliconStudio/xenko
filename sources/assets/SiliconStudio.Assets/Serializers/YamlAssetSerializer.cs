@@ -24,7 +24,7 @@ namespace SiliconStudio.Assets.Serializers
             if (objectReferences != null)
             {
                 // This metadata is consumed here, no need to return it as attached metadata
-                FixupObjectReferences.RunFixupPass(deserializedObject, objectReferences, clearBrokenObjectReferences, log);
+                FixupObjectReferences.RunFixupPass(deserializedObject, objectReferences, clearBrokenObjectReferences, false, log);
             }
             return yamlMetadata;
         }
