@@ -240,8 +240,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 }
 
                 // Update the shadow camera
-                var viewMatrix = Matrix.LookAtLH(target + direction * cascadeMinBoundLS.Z, target, upDirection); // View;;
-                var projectionMatrix = Matrix.OrthoOffCenterLH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, 0.0f, cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z); // Projection
+                var viewMatrix = Matrix.LookAtRH(target + direction * cascadeMinBoundLS.Z, target, upDirection); // View;;
+                var projectionMatrix = Matrix.OrthoOffCenterRH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, 0.0f, cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z); // Projection
                 Matrix viewProjectionMatrix;
                 Matrix.Multiply(ref viewMatrix, ref projectionMatrix, out viewProjectionMatrix);
 
