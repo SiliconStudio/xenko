@@ -337,7 +337,7 @@ namespace SiliconStudio.Core.IO
                 return rightPath;
             }
 
-            var separator = string.IsNullOrEmpty(rightPath.FullPath) || string.IsNullOrEmpty(rightPath.FullPath) ? string.Empty : DirectorySeparatorString;
+            var separator = string.IsNullOrEmpty(leftPath.FullPath) || string.IsNullOrEmpty(rightPath.FullPath) ? string.Empty : DirectorySeparatorString;
             var path = $"{leftPath.FullPath}{separator}{rightPath.FullPath}";
             return rightPath is UFile ? (T)(object)new UFile(path) : (T)(object)new UDirectory(path);
         }
