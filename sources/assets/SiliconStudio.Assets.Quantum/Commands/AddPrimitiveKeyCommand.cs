@@ -45,7 +45,7 @@ namespace SiliconStudio.Assets.Quantum.Commands
 
         protected override void ExecuteSync(IGraphNode node, Index index, object parameter)
         {
-            var objectNode = (IObjectNode)node;
+            var objectNode = ((IMemberNode)node).Target;
             var value = node.Retrieve(index);
             var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
             var newKey = dictionaryDescriptor.KeyType != typeof(string) ? new Index(Activator.CreateInstance(dictionaryDescriptor.KeyType)) : GenerateStringKey(value, dictionaryDescriptor, parameter as string);
