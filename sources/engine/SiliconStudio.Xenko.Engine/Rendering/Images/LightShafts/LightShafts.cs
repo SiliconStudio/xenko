@@ -152,7 +152,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 if (lightShaft.LightComponent == null)
                     continue; // Skip entities without a light component
 
-                var shadowMapTexture = shadowMapRenderer.FindShadowMap(renderView, lightShaft.LightComponent);
+                var shadowMapTexture = shadowMapRenderer.FindShadowMap(renderView.LightingView ?? renderView, lightShaft.LightComponent);
                 if (shadowMapTexture == null)
                     continue; // Skip lights without shadow map
 

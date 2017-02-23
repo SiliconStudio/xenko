@@ -408,6 +408,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                 for (var viewIndex = 0; viewIndex < renderViewInfos.Length; viewIndex++)
                 {
+                    var renderView = renderViewInfos[viewIndex].RenderView;
+                    if ((renderView.Flags & RenderViewFlags.NotDrawn) != 0)
+                        continue;
+
                     ComputeViewParameter(viewIndex);
 
                     var renderViewInfo = renderViewInfos[viewIndex];
