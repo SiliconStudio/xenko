@@ -216,6 +216,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     ComputeCommonViewMatrices(context, viewMatrices, projectionMatrices);
                     var commonView = context.RenderView;
 
+                    // Notify lighting system this view only purpose is for shared lighting, it is not being drawn directly.
+                    commonView.Flags |= RenderViewFlags.NotDrawn;
+
                     // Collect now, and use result for both eyes
                     CollectView(context);
                     context.VisibilityGroup.TryCollect(commonView);

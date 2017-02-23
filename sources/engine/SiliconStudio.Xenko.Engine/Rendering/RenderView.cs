@@ -93,6 +93,8 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public CameraCullingMode CullingMode { get; set; } = CameraCullingMode.Frustum;
 
+        public RenderViewFlags Flags { get; set; }
+
         /// <summary>
         /// The view used for lighting (useful to share lighting results for two very close views such as VR)
         /// </summary>
