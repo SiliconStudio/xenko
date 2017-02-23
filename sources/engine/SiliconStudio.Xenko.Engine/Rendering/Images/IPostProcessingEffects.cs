@@ -31,9 +31,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
     public interface IRenderTarget
     {
-        Texture[] AllTargets { get; }
+        Texture[] RenderTargets { get; }
 
-        int NumberOfTargets { get; }
+        int RenderTargetCount { get; }
     }
 
     public interface IPostProcessingEffects : ISharedRenderer, IDisposable

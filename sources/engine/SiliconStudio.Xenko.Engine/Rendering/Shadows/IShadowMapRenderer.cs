@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         List<ILightShadowMapRenderer> Renderers { get; }
 
-        IReadOnlyDictionary<LightComponent, LightShadowMapTexture> ShadowMaps { get; }
+        LightShadowMapTexture FindShadowMap(RenderView renderView, LightComponent lightComponent);
 
         void Collect(RenderContext context, Dictionary<RenderView, ForwardLightingRenderFeature.RenderViewLightData> renderViewLightDatas);
 

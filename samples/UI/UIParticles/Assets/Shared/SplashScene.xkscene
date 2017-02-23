@@ -160,13 +160,13 @@ Hierarchy:
                 Name: Stars
                 Components:
                     41575a96e881094999ff78aee26e65a5: !TransformComponent
-                        Id: 965a5741-81e8-4909-99ff-78aee26e65a5
+                        Id: 912cc0f2-f617-491c-bf91-66cbf2536b0d
                         Position: {X: 2.0, Y: 1.0, Z: -4.41240627E-10}
                         Rotation: {X: 0.0, Y: 0.7254834, Z: 0.0, W: 0.6882397}
                         Scale: {X: 0.04051824, Y: 0.04051824, Z: 0.04051824}
                         Children: {}
                     2a2983a6c3e24742af8a6cc3b4c535a7: !ParticleSystemComponent
-                        Id: a683292a-e2c3-4247-af8a-6cc3b4c535a7
+                        Id: 3e16327a-b070-4dfc-a236-0c5081064f27
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -273,13 +273,13 @@ Hierarchy:
                 Name: Hit
                 Components:
                     41575a96e881094999ff78aee26e65a5: !TransformComponent
-                        Id: 965a5741-81e8-4909-99ff-78aee26e65a5
+                        Id: 8d67b0f5-f24d-44b9-a384-6d2a5397c36b
                         Position: {X: 2.0, Y: 0.0, Z: -4.41240627E-10}
                         Rotation: {X: 0.0, Y: 0.7254834, Z: 0.0, W: 0.6882397}
                         Scale: {X: 0.04051824, Y: 0.04051824, Z: 0.04051824}
                         Children: {}
                     2a2983a6c3e24742af8a6cc3b4c535a7: !ParticleSystemComponent
-                        Id: a683292a-e2c3-4247-af8a-6cc3b4c535a7
+                        Id: 8cd18aff-43b5-4895-b7d1-7e036c101e20
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -381,13 +381,13 @@ Hierarchy:
                 Name: ConfettiBig
                 Components:
                     41575a96e881094999ff78aee26e65a5: !TransformComponent
-                        Id: 965a5741-81e8-4909-99ff-78aee26e65a5
+                        Id: 3d842adf-18e7-4688-b6fd-6e9141fbe550
                         Position: {X: 2.0, Y: -0.5, Z: -2.50579157E-09}
                         Rotation: {X: 0.0, Y: 0.7254834, Z: 0.0, W: 0.6882397}
                         Scale: {X: 0.02, Y: 0.02, Z: 0.02}
                         Children: {}
                     2a2983a6c3e24742af8a6cc3b4c535a7: !ParticleSystemComponent
-                        Id: a683292a-e2c3-4247-af8a-6cc3b4c535a7
+                        Id: addf8a82-02c1-4d9d-9736-8358c78ef15e
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -522,13 +522,13 @@ Hierarchy:
                 Name: Fire
                 Components:
                     41575a96e881094999ff78aee26e65a5: !TransformComponent
-                        Id: 965a5741-81e8-4909-99ff-78aee26e65a5
+                        Id: 5b70ec95-ed57-4467-b7f5-11802e8e8e96
                         Position: {X: 2.0, Y: 0.5, Z: -4.41240627E-10}
                         Rotation: {X: 0.0, Y: 0.7254834, Z: 0.0, W: 0.6882397}
                         Scale: {X: 0.04051824, Y: 0.04051824, Z: 0.04051824}
                         Children: {}
                     2a2983a6c3e24742af8a6cc3b4c535a7: !ParticleSystemComponent
-                        Id: a683292a-e2c3-4247-af8a-6cc3b4c535a7
+                        Id: ac9bc155-dc2b-431e-af92-f7bf0fd99898
                         Control:
                             ResetSeconds: 5.0
                             Control: Play

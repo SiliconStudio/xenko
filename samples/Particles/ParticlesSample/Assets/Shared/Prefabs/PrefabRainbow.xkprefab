@@ -154,13 +154,13 @@ Hierarchy:
                 Name: Violet
                 Components:
                     6e0ccb3914376044b5f47d0b8f04ddf9: !TransformComponent
-                        Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
+                        Id: 58bcf112-5d32-4b37-9ca1-4776a7a063b8
                         Position: {X: 0.0, Y: 1.2, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     481bebaf1d9016499051bc1a2dbe057c: !ParticleSystemComponent
-                        Id: afeb1b48-901d-4916-9051-bc1a2dbe057c
+                        Id: 04fa077b-13d7-4e62-aeb9-b589994d639f
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -291,13 +291,13 @@ Hierarchy:
                 Name: Red
                 Components:
                     6e0ccb3914376044b5f47d0b8f04ddf9: !TransformComponent
-                        Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
+                        Id: 51312275-9e17-470b-b092-d54ae7ac90c1
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     481bebaf1d9016499051bc1a2dbe057c: !ParticleSystemComponent
-                        Id: afeb1b48-901d-4916-9051-bc1a2dbe057c
+                        Id: 8a46f3ca-9fbd-42ea-abe5-977cc7604563
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -428,13 +428,13 @@ Hierarchy:
                 Name: Green
                 Components:
                     6e0ccb3914376044b5f47d0b8f04ddf9: !TransformComponent
-                        Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
+                        Id: ba07e52b-e9a8-4dde-ab89-1b5a0b6ca9a2
                         Position: {X: 0.0, Y: 0.6, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     481bebaf1d9016499051bc1a2dbe057c: !ParticleSystemComponent
-                        Id: afeb1b48-901d-4916-9051-bc1a2dbe057c
+                        Id: 4875b2fb-87f0-47c7-9fdc-27d472e22885
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -565,13 +565,13 @@ Hierarchy:
                 Name: Orange
                 Components:
                     6e0ccb3914376044b5f47d0b8f04ddf9: !TransformComponent
-                        Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
+                        Id: f2995383-a5b3-41c7-a742-78c63061e922
                         Position: {X: 0.0, Y: 0.2, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     481bebaf1d9016499051bc1a2dbe057c: !ParticleSystemComponent
-                        Id: afeb1b48-901d-4916-9051-bc1a2dbe057c
+                        Id: 393d2f93-a3ae-423a-855d-bf8289f8d10f
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -702,13 +702,13 @@ Hierarchy:
                 Name: Yellow
                 Components:
                     6e0ccb3914376044b5f47d0b8f04ddf9: !TransformComponent
-                        Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
+                        Id: ee7e944e-85a7-4259-96b0-61e0d6bbdbe8
                         Position: {X: 0.0, Y: 0.4, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     481bebaf1d9016499051bc1a2dbe057c: !ParticleSystemComponent
-                        Id: afeb1b48-901d-4916-9051-bc1a2dbe057c
+                        Id: dee96aa5-2618-4287-b2d8-a34822c5c8bc
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -839,13 +839,13 @@ Hierarchy:
                 Name: Indigo
                 Components:
                     6e0ccb3914376044b5f47d0b8f04ddf9: !TransformComponent
-                        Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
+                        Id: 8a9b93da-d412-44f5-bad6-9ca98e47f824
                         Position: {X: 0.0, Y: 1.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     481bebaf1d9016499051bc1a2dbe057c: !ParticleSystemComponent
-                        Id: afeb1b48-901d-4916-9051-bc1a2dbe057c
+                        Id: 7f050a2a-7916-49af-ac48-2dfe38863d01
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
