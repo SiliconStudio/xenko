@@ -22,5 +22,9 @@ namespace SiliconStudio.Assets.Quantum
         /// Generates new identifiers for the <see cref="BasePart.InstanceId"/> of any part of the sub-hierarchy.
         /// </summary>
         GenerateNewBaseInstanceIds = 4,
+        /// <summary>
+        /// Do not apply overrides on the cloned sub-hierarchy.
+        /// </summary>
+        RemoveOverrides = 8,
     }
 }

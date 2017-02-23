@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Quantum.Visitors;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum
@@ -201,7 +203,9 @@ namespace SiliconStudio.Assets.Quantum
             preCloningAsset.Hierarchy = subTreeHierarchy;
             var preCloningAssetGraph = (AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>)AssetQuantumRegistry.ConstructPropertyGraph(Container, new AssetItem("", preCloningAsset), null);
             var externalReferences = ExternalReferenceCollector.GetExternalReferences(preCloningAssetGraph, preCloningAssetGraph.RootNode);
-            preCloningAssetGraph.Dispose();
+            YamlAssetMetadata<OverrideType> overrides = null;
+            if ((flags & SubHierarchyCloneFlags.RemoveOverrides) == 0)
+                overrides = GenerateOverridesForSerialization(preCloningAssetGraph.RootNode);
 
             // clone the parts of the sub-tree
             var clonerFlags = AssetClonerFlags.None;
@@ -212,6 +216,11 @@ namespace SiliconStudio.Assets.Quantum
                 clonerFlags |= AssetClonerFlags.ClearExternalReferences;
 
             var clonedHierarchy = AssetCloner.Clone(subTreeHierarchy, clonerFlags, externalReferences, out idRemapping);
+            preCloningAssetGraph.RootNode[nameof(AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>.Hierarchy)].Update(clonedHierarchy);
+            if ((flags & SubHierarchyCloneFlags.RemoveOverrides) == 0)
+                ApplyOverrides(preCloningAssetGraph.RootNode, overrides);
+
+            preCloningAssetGraph.Dispose();
 
             // Remap ids from the root id collection to the new ids generated during cloning
             if (idRemapping != null)
