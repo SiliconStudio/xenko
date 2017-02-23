@@ -89,7 +89,7 @@ namespace SiliconStudio.Assets.Tests
             return Parts.Any(t => t.Id == id);
         }
 
-        protected override object ResolvePartReference(object referencedObject)
+        public override object ResolvePartReference(object referencedObject)
         {
             throw new NotImplementedException();
         }
