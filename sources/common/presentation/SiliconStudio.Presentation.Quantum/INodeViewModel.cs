@@ -104,6 +104,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets the member info (if any).
         /// </summary>
         /// <remarks>Used mostly for sorting purpose.</remarks>
+        [CanBeNull]
         MemberInfo MemberInfo { get; }
 
         /// <summary>
