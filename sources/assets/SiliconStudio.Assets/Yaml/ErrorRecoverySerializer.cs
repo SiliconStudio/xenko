@@ -131,7 +131,7 @@ namespace SiliconStudio.Core.Yaml
                     }
 
                     var log = objectContext.SerializerContext.Logger;
-                    log?.Warning($"Could not deserialize object of type {tag}; replacing it with an object implementing {nameof(IUnloadable)}", ex);
+                    log?.Warning($"Could not deserialize object of type {tag}; replacing it with an object implementing {nameof(IUnloadable)}:\n{ex.Message}", ex);
 
                     return unloadableObject;
                 }

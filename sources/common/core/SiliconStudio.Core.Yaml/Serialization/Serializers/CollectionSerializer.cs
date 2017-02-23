@@ -165,7 +165,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                     if (objectContext.SerializerContext.AllowErrors)
                     {
                         var logger = objectContext.SerializerContext.Logger;
-                        logger?.Warning("Ignored dictionary item that could not be deserialized", ex);
+                        logger?.Warning($"Ignored collection item of type [{elementType}] that could not be deserialized:\n{ex.Message}", ex);
                         objectContext.Reader.Skip(currentDepth);
                     }
                     else throw;
