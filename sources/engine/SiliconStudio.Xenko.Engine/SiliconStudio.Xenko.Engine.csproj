@@ -188,6 +188,7 @@
     <Compile Include="Rendering\Compositing\ForceAspectRatioSceneRenderer.cs" />
     <Compile Include="Rendering\Compositing\ForwardRenderer.cs" />
     <Compile Include="Rendering\Compositing\ForwardRenderer.LightProbes.cs" />
+    <Compile Include="Rendering\Compositing\ForwardRenderer.VRUtils.cs" />
     <Compile Include="Rendering\Compositing\GraphicsCompositor.cs" />
     <Compile Include="Rendering\Compositing\RenderTextureSceneRenderer.cs" />
     <Compile Include="Rendering\Compositing\SceneCameraRenderer.cs" />
