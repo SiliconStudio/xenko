@@ -1,7 +1,8 @@
 !GraphicsCompositorAsset
-Id: 1775b517-3030-4fa7-addc-3d3cd72f100a
+Id: a4115d3c-2413-4865-9972-0b01a90266d1
 SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
+Archetype: 823a81bf-bac0-4552-9267-aeed499c40df:Compositing/DefaultGraphicsCompositorLevel10
 Cameras:
     de2e75c3b2b23e54162686363f3f138e:
         Name: Main

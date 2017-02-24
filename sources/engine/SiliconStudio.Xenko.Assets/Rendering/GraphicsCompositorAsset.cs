@@ -41,6 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     //       be a member attribute on RenderStages such as [ContainFullType(typeof(RenderStage))] and everywhere else is references
     [AssetPartReference(typeof(ISharedRenderer))]
     [AssetCompiler(typeof(GraphicsCompositorAssetCompiler))]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.10.0-beta01", typeof(FixPartReferenceUpgrader))]
     public class GraphicsCompositorAsset : AssetComposite
     {
         private const string CurrentVersion = "1.10.0-beta01";
