@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -95,6 +96,47 @@ namespace SiliconStudio.Assets.Quantum.Tests
         }
 
         [DataContract]
+        public class MyReferenceable : IIdentifiable
+        {
+            public MyReferenceable() { Id = Guid.NewGuid(); }
+            public string Value { get; set; }
+            [NonOverridable]
+            public Guid Id { get; set; }
+            public override string ToString() => $"[{Id}] {Value}";
+        }
+
+        [DataContract]
+        [AssetDescription(FileExtension)]
+        public class MyAssetWithRef : MyAssetBase
+        {
+            public MyReferenceable MyObject1 { get; set; }
+
+            public MyReferenceable MyObject2 { get; set; }
+
+            [DefaultValue(null)]
+            public MyReferenceable MyObject3 { get; set; }
+
+            public List<MyReferenceable> MyObjects { get; set; } = new List<MyReferenceable>();
+
+            [NonIdentifiableCollectionItems]
+            public List<MyReferenceable> MyNonIdObjects { get; set; } = new List<MyReferenceable>();
+        }
+
+        [DataContract]
+        [AssetDescription(FileExtension)]
+        public class MyAssetWithRef2 : MyAssetBase
+        {
+            public MyReferenceable NonReference { get; set; }
+
+            public MyReferenceable Reference { get; set; }
+
+            public List<MyReferenceable> References { get; set; } = new List<MyReferenceable>();
+
+            public static int MemberCount => 4 + 3; // 4 (number of members in Asset) + 3 (number of members in Types.MyAssetWithRef2)
+        }
+
+
+        [DataContract]
         public struct StructWithList
         {
             public List<string> MyStrings { get; set; }
@@ -123,21 +165,21 @@ namespace SiliconStudio.Assets.Quantum.Tests
     [AssetPropertyGraph(typeof(Types.MyAssetBase))]
     public class MyAssetBasePropertyGraph : AssetPropertyGraph
     {
-        private readonly Dictionary<IContentNode, IContentNode> customBases = new Dictionary<IContentNode, IContentNode>();
+        private readonly Dictionary<IGraphNode, IGraphNode> customBases = new Dictionary<IGraphNode, IGraphNode>();
 
         public MyAssetBasePropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
             : base(container, assetItem, logger)
         {
         }
 
-        public void RegisterCustomBaseLink(IContentNode node, IContentNode baseNode)
+        public void RegisterCustomBaseLink(IGraphNode node, IGraphNode baseNode)
         {
             customBases.Add(node, baseNode);
         }
 
-        public override IContentNode FindTarget(IContentNode sourceNode, IContentNode target)
+        public override IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
         {
-            IContentNode baseNode;
+            IGraphNode baseNode;
             return customBases.TryGetValue(sourceNode, out baseNode) ? baseNode : base.FindTarget(sourceNode, target);
         }
     }

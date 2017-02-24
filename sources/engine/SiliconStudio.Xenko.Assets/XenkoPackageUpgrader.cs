@@ -354,7 +354,7 @@ namespace SiliconStudio.Xenko.Assets
                         var graphicsCompositorAssetId = AssetId.New();
                         var graphicsCompositorAsset = new PackageLoadingAssetFile(dependentPackage, "GraphicsCompositor.xkgfxcomp", null)
                         {
-                            AssetContent = System.Text.Encoding.UTF8.GetBytes($"!GraphicsCompositorAsset\r\nId: {graphicsCompositorAssetId}\r\nArchetype: {defaultGraphicsCompositor.ToReference()}"),
+                            AssetContent = System.Text.Encoding.UTF8.GetBytes($"!GraphicsCompositorAsset\r\nId: {graphicsCompositorAssetId}\r\nSerializedVersion: {{Xenko: 1.10.0-beta01}}\r\nArchetype: {defaultGraphicsCompositor.ToReference()}"),
                         };
 
                         assetFiles.Add(graphicsCompositorAsset);

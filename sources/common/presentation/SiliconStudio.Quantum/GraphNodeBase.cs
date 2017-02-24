@@ -6,35 +6,30 @@ using System.Linq;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
-using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Contents
 {
     /// <summary>
-    /// A base abstract implementation of the <see cref="IContentNode"/> interface.
+    /// A base abstract implementation of the <see cref="IGraphNode"/> interface.
     /// </summary>
-    public abstract class ContentNode : IInitializingGraphNode
+    public abstract class GraphNodeBase : IInitializingGraphNode
     {
         private readonly List<INodeCommand> commands = new List<INodeCommand>();
+        protected readonly NodeContainer NodeContainer;
         protected bool isSealed;
 
-        protected ContentNode(Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+        protected GraphNodeBase(NodeContainer nodeContainer, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
         {
             if (guid == Guid.Empty) throw new ArgumentException(@"The guid must be different from Guid.Empty.", nameof(guid));
             if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
+            NodeContainer = nodeContainer;
             Guid = guid;
             Descriptor = descriptor;
             IsPrimitive = isPrimitive;
-            TargetReference = reference as ObjectReference;
-            ItemReferences = reference as ReferenceEnumerable;
         }
 
         /// <inheritdoc/>
         public Type Type => Descriptor.Type;
-
-        /// <inheritdoc/>
-        [Obsolete("Use method Retrieve()")] 
-        public abstract object Value { get; }
 
         /// <inheritdoc/>
         public bool IsPrimitive { get; }
@@ -43,20 +38,16 @@ namespace SiliconStudio.Quantum.Contents
         public ITypeDescriptor Descriptor { get; }
 
         /// <inheritdoc/>
-        public bool IsReference => TargetReference != null || ItemReferences != null;
-
-        public ObjectReference TargetReference { get; }
-
-        public ReferenceEnumerable ItemReferences { get; }
-
-        /// <inheritdoc/>
-        public IEnumerable<Index> Indices => GetIndices();
+        public abstract bool IsReference { get; }
 
         /// <inheritdoc/>
         public Guid Guid { get; }
 
         /// <inheritdoc/>
         public IReadOnlyCollection<INodeCommand> Commands => commands;
+
+        /// <inheritdoc/>
+        protected abstract object Value { get; }
 
         /// <inheritdoc/>
         public object Retrieve() => Retrieve(Index.Empty);
@@ -66,24 +57,6 @@ namespace SiliconStudio.Quantum.Contents
         {
             return Content.Retrieve(Value, index, Descriptor);
         }
-
-        /// <inheritdoc/>
-        public virtual void Update(object newValue)
-        {
-            Update(newValue, Index.Empty);
-        }
-
-        /// <inheritdoc/>
-        public abstract void Update(object newValue, Index index);
-
-        /// <inheritdoc/>
-        public abstract void Add(object newItem);
-
-        /// <inheritdoc/>
-        public abstract void Add(object newItem, Index itemIndex);
-
-        /// <inheritdoc/>
-        public abstract void Remove(object item, Index itemIndex);
 
         /// <summary>
         /// Updates this content from one of its member.
@@ -96,32 +69,15 @@ namespace SiliconStudio.Quantum.Contents
         /// </remarks>
         protected internal abstract void UpdateFromMember(object newValue, Index index);
 
-        private IEnumerable<Index> GetIndices()
-        {
-            var enumRef = ItemReferences;
-            if (enumRef != null)
-                return enumRef.Indices;
-
-            return GetIndices(this);
-        }
-
-        public static IEnumerable<Index> GetIndices([NotNull] IContentNode node)
+        public static IEnumerable<Index> GetIndices([NotNull] IGraphNode node)
         {
             var collectionDescriptor = node.Descriptor as CollectionDescriptor;
             if (collectionDescriptor != null)
             {
-                return Enumerable.Range(0, collectionDescriptor.GetCollectionCount(node.Value)).Select(x => new Index(x));
+                return Enumerable.Range(0, collectionDescriptor.GetCollectionCount(node.Retrieve())).Select(x => new Index(x));
             }
             var dictionaryDescriptor = node.Descriptor as DictionaryDescriptor;
-            return dictionaryDescriptor?.GetKeys(node.Value).Cast<object>().Select(x => new Index(x));
-        }
-
-        /// <inheritdoc/>
-        public IObjectNode IndexedTarget(Index index)
-        {
-            if (index == Index.Empty) throw new ArgumentException(@"index cannot be Index.Empty when invoking this method.", nameof(index));
-            if (ItemReferences == null) throw new InvalidOperationException(@"The node does not contain enumerable references.");
-            return ItemReferences[index].TargetNode;
+            return dictionaryDescriptor?.GetKeys(node.Retrieve()).Cast<object>().Select(x => new Index(x));
         }
 
         /// <summary>

@@ -13,7 +13,7 @@ namespace SiliconStudio.Quantum
     public class NodeContainer : INodeContainer
     {
         private readonly object lockObject = new object();
-        private readonly ThreadLocal<HashSet<IContentNode>> processedNodes = new ThreadLocal<HashSet<IContentNode>>();
+        private readonly ThreadLocal<HashSet<IGraphNode>> processedNodes = new ThreadLocal<HashSet<IGraphNode>>();
         private ConditionalWeakTable<object, IObjectNode> nodesByObject = new ConditionalWeakTable<object, IObjectNode>();
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace SiliconStudio.Quantum
             lock (lockObject)
             {
                 if (!processedNodes.IsValueCreated)
-                    processedNodes.Value = new HashSet<IContentNode>();
+                    processedNodes.Value = new HashSet<IGraphNode>();
 
                 var node = GetOrCreateNodeInternal(rootObject);
 
@@ -51,7 +51,7 @@ namespace SiliconStudio.Quantum
             lock (lockObject)
             {
                 if (!processedNodes.IsValueCreated)
-                    processedNodes.Value = new HashSet<IContentNode>();
+                    processedNodes.Value = new HashSet<IGraphNode>();
 
                 var node = GetNodeInternal(rootObject);
 
@@ -64,12 +64,12 @@ namespace SiliconStudio.Quantum
         /// Refresh all references contained in the given node, creating new nodes for newly referenced objects.
         /// </summary>
         /// <param name="node">The node to update</param>
-        internal void UpdateReferences(IContentNode node)
+        internal void UpdateReferences(IGraphNode node)
         {
             lock (lockObject)
             {
                 if (!processedNodes.IsValueCreated)
-                    processedNodes.Value = new HashSet<IContentNode>();
+                    processedNodes.Value = new HashSet<IGraphNode>();
 
                 UpdateReferencesInternal(node);
 
@@ -89,10 +89,10 @@ namespace SiliconStudio.Quantum
         }
 
         /// <summary>
-        /// Gets the <see cref="IContentNode"/> associated to a data object, if it exists. If the NodeContainer has been constructed without <see cref="IGuidContainer"/>, this method will throw an exception.
+        /// Gets the <see cref="IGraphNode"/> associated to a data object, if it exists. If the NodeContainer has been constructed without <see cref="IGuidContainer"/>, this method will throw an exception.
         /// </summary>
         /// <param name="rootObject">The data object.</param>
-        /// <returns>The <see cref="IContentNode"/> associated to the given object if available, or <c>null</c> otherwise.</returns>
+        /// <returns>The <see cref="IGraphNode"/> associated to the given object if available, or <c>null</c> otherwise.</returns>
         internal IObjectNode GetNodeInternal(object rootObject)
         {
             lock (lockObject)
@@ -110,7 +110,7 @@ namespace SiliconStudio.Quantum
         /// Gets the node associated to a data object, if it exists, otherwise creates a new node for the object and its member recursively.
         /// </summary>
         /// <param name="rootObject">The data object.</param>
-        /// <returns>The <see cref="IContentNode"/> associated to the given object.</returns>
+        /// <returns>The <see cref="IGraphNode"/> associated to the given object.</returns>
         internal IObjectNode GetOrCreateNodeInternal(object rootObject)
         {
             if (rootObject == null)
@@ -143,7 +143,7 @@ namespace SiliconStudio.Quantum
         /// Refresh all references contained in the given node, creating new nodes for newly referenced objects.
         /// </summary>
         /// <param name="node">The node to update</param>
-        private void UpdateReferencesInternal(IContentNode node)
+        private void UpdateReferencesInternal(IGraphNode node)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
 
@@ -157,8 +157,8 @@ namespace SiliconStudio.Quantum
                 // If the node was holding a reference, refresh the reference
                 if (node.IsReference)
                 {
-                    node.TargetReference?.Refresh(node, this);
-                    node.ItemReferences?.Refresh(node, this);
+                    (node as IMemberNode)?.TargetReference?.Refresh(node, this);
+                    (node as IObjectNode)?.ItemReferences?.Refresh(node, this);
                 }
                 else
                 {

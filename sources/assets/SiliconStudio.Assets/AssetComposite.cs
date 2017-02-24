@@ -3,9 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Assets
 {
@@ -58,6 +60,56 @@ namespace SiliconStudio.Assets
         /// a temporary object, or an old version of the actual object. Implementations of this methods are supposed to identify this given object
         /// and retrieve the actual one from the asset itself to return it.
         /// </remarks>
-        protected abstract object ResolvePartReference(object referencedObject);
+        // TODO: turn protected or remove
+        public abstract object ResolvePartReference(object referencedObject);
+
+        protected class FixPartReferenceUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                var rootNode = (YamlNode)asset.Node;
+
+                var allScalarNodes = rootNode.AllNodes.OfType<YamlScalarNode>().ToList();
+
+                var nextIsId = false;
+                var inPublicUIElements = false;
+                foreach (var node in allScalarNodes)
+                {
+                    var indexFirstSlash = node.Value.IndexOf('/');
+                    Guid targetGuid = Guid.Empty;
+                    if (indexFirstSlash == -1)
+                    {
+                        Guid.TryParseExact(node.Value, "D", out targetGuid);
+                    }
+                    else
+                    {
+                        Guid entityGuid;
+                        if (Guid.TryParseExact(node.Value.Substring(0, indexFirstSlash), "D", out entityGuid))
+                        {
+                            Guid.TryParseExact(node.Value.Substring(indexFirstSlash + 1), "D", out targetGuid);
+                        }
+                    }
+
+                    if (targetGuid != Guid.Empty && !nextIsId && !inPublicUIElements)
+                    {
+                        node.Value = "ref!! " + targetGuid;
+                    }
+                    else
+                    {
+                        if (nextIsId && targetGuid == Guid.Empty)
+                            nextIsId = false;
+
+                        if (inPublicUIElements && node.Value == "Hierarchy")
+                            inPublicUIElements = false;
+
+                        if (node.Value.Contains("Id"))
+                            nextIsId = true;
+
+                        if (node.Value == "PublicUIElements")
+                            inPublicUIElements = true;
+                    }
+                }
+            }
+        }
     }
 }

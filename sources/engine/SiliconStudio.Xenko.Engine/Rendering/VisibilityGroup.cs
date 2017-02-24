@@ -102,7 +102,9 @@ namespace SiliconStudio.Xenko.Rendering
 
             Matrix viewInverse = view.View;
             viewInverse.Invert();
-            var plane = new Plane(viewInverse.Forward, Vector3.Dot(viewInverse.TranslationVector, viewInverse.Forward)); // TODO: Point-normal-constructor seems wrong. Check.
+            var planeNormal = viewInverse.Forward;
+            var pointOnPlane = viewInverse.TranslationVector + viewInverse.Forward * view.NearClipPlane;
+            var plane = new Plane(planeNormal, Vector3.Dot(pointOnPlane, planeNormal)); // TODO: Point-normal-constructor seems wrong. Check.
 
             // TODO: This should be configured by the creator of the view. E.g. near clipping can be enabled for spot light shadows.
             var shadowView = view as ShadowMapRenderView;
@@ -216,6 +218,21 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             view.RenderObjects.Close();
+        }
+
+        public void Copy(RenderView source, RenderView target)
+        {
+            // Mark view as collected
+            target.LastFrameCollected = RenderSystem.FrameCounter;
+
+            // Copy min and max distances
+            target.MinimumDistance = source.MinimumDistance;
+            target.MaximumDistance = source.MaximumDistance;
+
+            // Copy collected objects
+            foreach (var renderObject in source.RenderObjects)
+                target.RenderObjects.Add(renderObject);
+            target.RenderObjects.Close();
         }
 
         public static bool FrustumContainsBox(ref BoundingFrustum frustum, ref BoundingBoxExt boundingBoxExt, bool ignoreDepthPlanes)

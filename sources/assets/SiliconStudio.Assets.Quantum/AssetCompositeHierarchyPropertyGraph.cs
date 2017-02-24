@@ -1,8 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Assets.Quantum.Visitors;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum
@@ -21,6 +28,21 @@ namespace SiliconStudio.Assets.Quantum
 
         protected IObjectNode HierarchyNode { get; }
 
+        public abstract bool IsChildPartReference(IGraphNode node, Index index);
+
+        /// <summary>
+        /// Clears all object reference targeting the given <see cref="IIdentifiable"/> object.
+        /// </summary>
+        /// <param name="obj">The target object for which to clear references.</param>
+        public override void ClearReferencesToObject(IIdentifiable obj)
+        {
+            if (obj == null)
+                return;
+
+            var visitor = new ClearObjectReferenceVisitor(this, obj.Id, (node, index) => !IsChildPartReference(node, index));
+            visitor.Visit(RootNode);
+        }
+
         /// <summary>
         /// Adds a part to this asset. This method updates the <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}.Parts"/> collection.
         /// If <paramref name="parent"/> is null, it also updates the <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}.RootPartIds"/> collection.
@@ -38,7 +60,7 @@ namespace SiliconStudio.Assets.Quantum
             InsertPartInPartsCollection(newPartCollection, child);
             if (parent == null)
             {
-                var rootEntitiesNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootPartIds)];
+                var rootEntitiesNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootPartIds)].Target;
                 rootEntitiesNode.Add(child.Part.Id, new Index(index));
             }
             else
@@ -63,17 +85,50 @@ namespace SiliconStudio.Assets.Quantum
             else
             {
                 var index = new Index(AssetHierarchy.Hierarchy.RootPartIds.IndexOf(partDesign.Part.Id));
-                var rootPartsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootPartIds)];
+                var rootPartsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootPartIds)].Target;
                 rootPartsNode.Remove(partDesign.Part.Id, index);
             }
             RemovePartFromPartsCollection(partDesign);
         }
 
-        public override IContentNode FindTarget(IContentNode sourceNode, IContentNode target)
+        /// <summary>
+        /// Deletes the given part and all its children, recursively, and clear all object references to it.
+        /// </summary>
+        /// <param name="part">The part to delete.</param>
+        public virtual void DeletePart(TAssetPart part)
+        {
+            var partsToDelete = new Stack<TAssetPart>();
+            partsToDelete.Push(part);
+            while (partsToDelete.Count > 0)
+            {
+                // We need to remove children first to keep consistency in our data
+                var partToDelete = partsToDelete.Peek();
+                var children = AssetHierarchy.EnumerateChildParts(partToDelete, false).ToList();
+                if (children.Count > 0)
+                {
+                    // Enqueue children if there is any, and re-process the stack
+                    children.ForEach(x => partsToDelete.Push(x));
+                    continue;
+                }
+                // No children to process, we can safely remove the current entity from the stack
+                partToDelete = partsToDelete.Pop();
+                // First remove all references to the entity (and its component!) we are deleting
+                // Note: we must do this first so instances of this prefabs will be able to properly make the connection with the base entity being cleared
+                var containedIdentifiable = IdentifiableObjectCollector.Collect(this, Container.NodeContainer.GetNode(partToDelete));
+                foreach (var identifiable in containedIdentifiable)
+                {
+                    ClearReferencesToObject(identifiable.Value);
+                }
+                // Then actually remove the entity from the hierarchy
+                RemovePartFromAsset(AssetHierarchy.Hierarchy.Parts[partToDelete.Id]);
+            }
+        }
+
+        public override IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
         {
             // TODO: try to generalize what the overrides of this implementation are doing.
             // Connect the parts to their base if any.
-            var part = sourceNode.Value as TAssetPart;
+            var part = sourceNode.Retrieve() as TAssetPart;
             if (part != null && sourceNode is IObjectNode)
             {
                 TAssetPartDesign partDesign;
@@ -95,24 +150,102 @@ namespace SiliconStudio.Assets.Quantum
             return base.FindTarget(sourceNode, target);
         }
 
-        protected internal override object CloneValueFromBase(object value, IAssetNode node)
+        /// <summary>
+        /// Clones a sub-hierarchy of this asset.
+        /// </summary>
+        /// <param name="sourceRootId">The id of the root of the sub-hierarchy to clone</param>
+        /// <param name="flags">The flags customizing the cloning operation.</param>
+        /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, SubHierarchyCloneFlags flags)
         {
-            var part = value as TAssetPart;
-            // Part reference
-            if (part != null)
+            Dictionary<Guid, Guid> idRemapping;
+            return CloneSubHierarchies(sourceRootId.Yield(), flags, out idRemapping);
+        }
+
+        /// <summary>
+        /// Clones a sub-hierarchy of this asset.
+        /// </summary>
+        /// <param name="sourceRootId">The id of the root of the sub-hierarchy to clone</param>
+        /// <param name="flags">The flags customizing the cloning operation.</param>
+        /// <param name="idRemapping">A dictionary containing the remapping of <see cref="IIdentifiable.Id"/> if <see cref="AssetClonerFlags.GenerateNewIdsForIdentifiableObjects"/> has been passed to the cloner.</param>
+        /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, SubHierarchyCloneFlags flags, out Dictionary<Guid, Guid> idRemapping)
+        {
+            return CloneSubHierarchies(sourceRootId.Yield(), flags, out idRemapping);
+        }
+
+        /// <summary>
+        /// Clones a sub-hierarchy of this asset.
+        /// </summary>
+        /// <param name="sourceRootIds">The ids that are the roots of the sub-hierarchies to clone.</param>
+        /// <param name="flags">The flags customizing the cloning operation.</param>
+        /// <param name="idRemapping">A dictionary containing the remapping of <see cref="IIdentifiable.Id"/> if <see cref="AssetClonerFlags.GenerateNewIdsForIdentifiableObjects"/> has been passed to the cloner.</param>
+        /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
+        /// <remarks>The parts passed to this methods must be independent in the hierarchy.</remarks>
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchies(IEnumerable<Guid> sourceRootIds, SubHierarchyCloneFlags flags, out Dictionary<Guid, Guid> idRemapping)
+        {
+            // Note: Instead of copying the whole asset (with its potentially big hierarchy),
+            // we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
+            var subTreeHierarchy = new AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>();
+            foreach (var rootId in sourceRootIds)
             {
-                // We need to find out for which entity we are cloning this (other) entity
-                var owner = (TAssetPartDesign)node?.GetContent(NodesToOwnerPartVisitor.OwnerPartContentName).Retrieve();
-                if (owner != null)
-                {
-                    // Then instead of creating a clone, we just return the corresponding part in this asset (in term of base and base instance)
-                    var partInDerived = AssetHierarchy.Hierarchy.Parts.FirstOrDefault(x => x.Base?.BasePartId == part.Id && x.Base?.InstanceId == owner.Base?.InstanceId);
-                    return partInDerived?.Part;
-                }
+                if (!AssetHierarchy.Hierarchy.Parts.ContainsKey(rootId))
+                    throw new ArgumentException(@"The source root parts must be parts of this asset.", nameof(sourceRootIds));
+
+                subTreeHierarchy.RootPartIds.Add(rootId);
+
+                subTreeHierarchy.Parts.Add(AssetHierarchy.Hierarchy.Parts[rootId]);
+                foreach (var subTreePart in AssetHierarchy.EnumerateChildParts(AssetHierarchy.Hierarchy.Parts[rootId].Part, true))
+                    subTreeHierarchy.Parts.Add(AssetHierarchy.Hierarchy.Parts[subTreePart.Id]);
             }
 
-            var result = base.CloneValueFromBase(value, node);
-            return result;
+            var preCloningAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)Activator.CreateInstance(AssetHierarchy.GetType());
+            preCloningAsset.Hierarchy = subTreeHierarchy;
+            var preCloningAssetGraph = (AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>)AssetQuantumRegistry.ConstructPropertyGraph(Container, new AssetItem("", preCloningAsset), null);
+            var externalReferences = ExternalReferenceCollector.GetExternalReferences(preCloningAssetGraph, preCloningAssetGraph.RootNode);
+            YamlAssetMetadata<OverrideType> overrides = null;
+            if ((flags & SubHierarchyCloneFlags.RemoveOverrides) == 0)
+                overrides = GenerateOverridesForSerialization(preCloningAssetGraph.RootNode);
+
+            // clone the parts of the sub-tree
+            var clonerFlags = AssetClonerFlags.None;
+
+            if ((flags & SubHierarchyCloneFlags.GenerateNewIdsForIdentifiableObjects) != 0)
+                clonerFlags |= AssetClonerFlags.GenerateNewIdsForIdentifiableObjects;
+            if ((flags & SubHierarchyCloneFlags.CleanExternalReferences) != 0)
+                clonerFlags |= AssetClonerFlags.ClearExternalReferences;
+
+            var clonedHierarchy = AssetCloner.Clone(subTreeHierarchy, clonerFlags, externalReferences, out idRemapping);
+            preCloningAssetGraph.RootNode[nameof(AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>.Hierarchy)].Update(clonedHierarchy);
+            if ((flags & SubHierarchyCloneFlags.RemoveOverrides) == 0)
+                ApplyOverrides(preCloningAssetGraph.RootNode, overrides);
+
+            preCloningAssetGraph.Dispose();
+
+            // Remap ids from the root id collection to the new ids generated during cloning
+            if (idRemapping != null)
+            {
+                AssetPartsAnalysis.RemapPartsId(clonedHierarchy, idRemapping);
+            }
+
+            foreach (var rootEntity in clonedHierarchy.RootPartIds)
+            {
+                PostClonePart(clonedHierarchy.Parts[rootEntity].Part);
+            }
+
+            if ((flags & SubHierarchyCloneFlags.GenerateNewBaseInstanceIds) != 0)
+                AssetPartsAnalysis.GenerateNewBaseInstanceIds(clonedHierarchy);
+
+            return clonedHierarchy;
+        }
+
+        /// <summary>
+        /// Called by <see cref="CloneSubHierarchies"/> after a part has been cloned.
+        /// </summary>
+        /// <param name="part">The cloned part.</param>
+        protected virtual void PostClonePart(TAssetPart part)
+        {
+            // default implementation does nothing
         }
 
         public override GraphVisitorBase CreateReconcilierVisitor()
@@ -120,7 +253,24 @@ namespace SiliconStudio.Assets.Quantum
             return new AssetCompositeHierarchyPartVisitor<TAssetPartDesign, TAssetPart>(this);
         }
 
-        public override bool IsReferencedPart(IMemberNode member, IContentNode targetNode)
+        public override bool IsObjectReference(IGraphNode targetNode, Index index)
+        {
+            if (targetNode is IObjectNode && index.IsEmpty)
+                return base.IsObjectReference(targetNode, index);
+
+            var value = targetNode.Retrieve(index);
+            if (value is TAssetPart)
+            {
+                // Check if we're the part referenced by a part design - other cases are references
+                var member = targetNode as IMemberNode;
+                return member == null || member.Parent.Type != typeof(TAssetPartDesign);
+            }
+
+            return base.IsObjectReference(targetNode, index);
+        }
+
+
+        public override bool IsReferencedPart(IMemberNode member, IGraphNode targetNode)
         {
             // If we're not accessing the target node through a member (eg. the target node is the root node of the visit)
             // or if we're visiting the member itself and not yet its target, then we're not a referenced part.
@@ -154,7 +304,7 @@ namespace SiliconStudio.Assets.Quantum
 
         private void InsertPartInPartsCollection(AssetPartCollection<TAssetPartDesign, TAssetPart> newPartCollection, TAssetPartDesign rootPart)
         {
-            var node = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.Parts)];
+            var node = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.Parts)].Target;
             node.Add(rootPart);
             foreach (var childPart in AssetHierarchy.EnumerateChildParts(rootPart.Part, false))
             {
@@ -170,7 +320,7 @@ namespace SiliconStudio.Assets.Quantum
                 var partDesign = AssetHierarchy.Hierarchy.Parts[childPart.Id];
                 RemovePartFromPartsCollection(partDesign);
             }
-            var node = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.Parts)];
+            var node = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.Parts)].Target;
             var index = new Index(AssetHierarchy.Hierarchy.Parts.IndexOf(rootPart));
             node.Remove(rootPart, index);
         }

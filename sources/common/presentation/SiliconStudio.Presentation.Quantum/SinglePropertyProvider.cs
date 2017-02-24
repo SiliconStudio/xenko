@@ -9,9 +9,9 @@ namespace SiliconStudio.Presentation.Quantum
     /// </summary>
     public class SinglePropertyProvider : IPropertiesProviderViewModel
     {
-        private readonly IContentNode rootNode;
+        private readonly IObjectNode rootNode;
 
-        public SinglePropertyProvider(IContentNode rootNode)
+        public SinglePropertyProvider(IObjectNode rootNode)
         {
             this.rootNode = rootNode;
         }
@@ -21,7 +21,7 @@ namespace SiliconStudio.Presentation.Quantum
         public bool CanProvidePropertiesViewModel => true;
 
         /// <inheritdoc/>
-        public IContentNode GetRootNode() => rootNode;
+        public IObjectNode GetRootNode() => rootNode;
 
 
         /// <inheritdoc/>

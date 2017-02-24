@@ -1,3 +1,5 @@
+using System;
+
 namespace SiliconStudio.Core.Reflection
 {
     /// <summary>
@@ -5,11 +7,13 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public static class CollectionItemIdHelper
     {
-        // TODO: rework the API of this class once the feature is complete.
-        public static readonly object DeletedKey = new object();
-
         // TODO: do we really need to pass an object to this constructor?
-        public static ShadowObjectPropertyKey CollectionItemIdKey = new ShadowObjectPropertyKey(new object(), false);
+        private static readonly ShadowObjectPropertyKey CollectionItemIdKey = new ShadowObjectPropertyKey(new object(), false);
+
+        public static bool HasCollectionItemIds(object instance)
+        {
+            return ShadowObject.Get(instance)?.ContainsKey(CollectionItemIdKey) ?? false;
+        }
 
         public static bool TryGetCollectionItemIds(object instance, out CollectionItemIdentifiers itemIds)
         {
@@ -27,6 +31,8 @@ namespace SiliconStudio.Core.Reflection
 
         public static CollectionItemIdentifiers GetCollectionItemIds(object instance)
         {
+            if (instance.GetType().IsValueType) throw new ArgumentException(@"The given instance is a value type and cannot have a item ids attached to it.", nameof(instance));
+
             var shadow = ShadowObject.GetOrCreate(instance);
             object result;
             if (shadow.TryGetValue(CollectionItemIdKey, out result))

@@ -1,17 +1,18 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum.Contents
 {
-    public class BoxedContent : ObjectContent
+    public class BoxedNode : ObjectNode
     {
-        private ContentNode boxedStructureOwner;
+        private GraphNodeBase boxedStructureOwner;
         private Index boxedStructureOwnerIndex;
 
-        public BoxedContent(object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
-            : base(value, guid, descriptor, isPrimitive, null)
+        public BoxedNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
+            : base(nodeBuilder, value, guid, descriptor, isPrimitive, null)
         {
         }
 
@@ -25,9 +26,9 @@ namespace SiliconStudio.Quantum.Contents
             Update(newValue, Index.Empty, false);
         }
 
-        internal void SetOwnerContent(IContentNode ownerContent, Index index)
+        internal void SetOwnerContent(IGraphNode ownerNode, Index index)
         {
-            boxedStructureOwner = (ContentNode)ownerContent;
+            boxedStructureOwner = (GraphNodeBase)ownerNode;
             boxedStructureOwnerIndex = index;
         }
 

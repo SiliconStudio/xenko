@@ -159,7 +159,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         }
 
         /// <inheritdoc/>
-        protected override object ResolvePartReference(object partReference)
+        public override object ResolvePartReference(object partReference)
         {
             var propertyReference = partReference as Property;
             if (propertyReference != null)

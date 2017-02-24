@@ -45,7 +45,6 @@ namespace SiliconStudio.Presentation.Quantum
             DependentProperties.Add(nameof(Path), new[] { nameof(DisplayPath) });
             Owner = ownerViewModel;
             Index = index;
-            Guid = Guid.NewGuid();
             IsVisible = true;
             IsReadOnly = false;
         }
@@ -114,11 +113,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets or sets the index of this node, relative to its parent node when its contains a collection. Can be null of this node is not in a collection.
         /// </summary>
         public Index Index { get; }
-
-        /// <summary>
-        /// Gets a unique identifier for this node view model.
-        /// </summary>
-        public Guid Guid { get; }
 
         /// <summary>
         /// Gets the list of children nodes.

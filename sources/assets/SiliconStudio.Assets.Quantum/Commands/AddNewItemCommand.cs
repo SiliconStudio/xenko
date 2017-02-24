@@ -43,9 +43,9 @@ namespace SiliconStudio.Assets.Quantum.Commands
             return collectionDescriptor.HasAdd && (CanConstruct(elementType) || elementType.IsAbstract || elementType.IsNullable() || IsReferenceType(elementType));
         }
 
-        protected override void ExecuteSync(IContentNode content, Index index, object parameter)
+        protected override void ExecuteSync(IGraphNode node, Index index, object parameter)
         {
-            var value = content.Retrieve(index);
+            var value = node.Retrieve(index);
             var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
 
             object itemToAdd;
@@ -60,24 +60,31 @@ namespace SiliconStudio.Assets.Quantum.Commands
             else
             {
                 var elementType = collectionDescriptor.ElementType;
-                itemToAdd = parameter ?? (IsReferenceType(elementType) ? null : ObjectFactoryRegistry.NewInstance(elementType));
+                itemToAdd = parameter;
+                if (itemToAdd == null)
+                {
+                    var propertyGraph = (node as IAssetNode)?.PropertyGraph;
+                    if (!IsReferenceType(elementType) && (propertyGraph == null || !propertyGraph.IsObjectReference(node, index)))
+                        itemToAdd = ObjectFactoryRegistry.NewInstance(elementType);
+                }
             }
 
+            var objectNode = node as IObjectNode ?? ((IMemberNode)node).Target;
             if (index.IsEmpty)
             {
-                content.Add(itemToAdd);
+                objectNode.Add(itemToAdd);
             }
             else
             {
                 // Handle collections in collections
                 // TODO: this is not working on the observable node side
-                var collectionNode = content.ItemReferences[index].TargetNode;
+                var collectionNode = objectNode.ItemReferences[index].TargetNode;
                 collectionNode.Add(itemToAdd);
             }
         }
 
         private static bool CanConstruct(Type elementType) => !elementType.IsClass || elementType.GetConstructor(Type.EmptyTypes) != null || elementType == typeof(string);
 
-        private static bool IsReferenceType(Type elementType) => AssetRegistry.IsAssetPartType(elementType) || AssetRegistry.IsContentType(elementType) || typeof(AssetReference).IsAssignableFrom(elementType);
+        private static bool IsReferenceType(Type elementType) => AssetRegistry.IsContentType(elementType) || typeof(AssetReference).IsAssignableFrom(elementType);
     }
 }

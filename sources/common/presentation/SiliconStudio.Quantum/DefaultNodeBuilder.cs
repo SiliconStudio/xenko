@@ -18,7 +18,7 @@ namespace SiliconStudio.Quantum
     internal class DefaultNodeBuilder : DataVisitorBase, INodeBuilder
     {
         private readonly Stack<IInitializingGraphNode> contextStack = new Stack<IInitializingGraphNode>();
-        private readonly HashSet<IContentNode> referenceContents = new HashSet<IContentNode>();
+        private readonly HashSet<IGraphNode> referenceContents = new HashSet<IGraphNode>();
         private static readonly Type[] InternalPrimitiveTypes = { typeof(decimal), typeof(string), typeof(Guid) };
         private IInitializingObjectNode rootNode;
         private Guid rootGuid;
@@ -167,7 +167,7 @@ namespace SiliconStudio.Quantum
             // If this member should contains a reference, create it now.
             var containerNode = (IInitializingObjectNode)GetContextNode();
             var guid = Guid.NewGuid();
-            var content = (MemberContent)ContentFactory.CreateMemberContent(this, guid, containerNode, member, IsPrimitiveType(member.Type), value);
+            var content = (MemberNode)ContentFactory.CreateMemberContent(this, guid, containerNode, member, IsPrimitiveType(member.Type), value);
             containerNode.AddMember(content);
 
             if (content.IsReference)
@@ -177,7 +177,7 @@ namespace SiliconStudio.Quantum
             if (content.TargetReference == null)
             {
                 // For enumerable references, we visit the member to allow VisitCollection or VisitDictionary to enrich correctly the node.
-                Visit(content.Value);
+                Visit(content.Retrieve());
             }
             PopContextNode();
 
@@ -186,22 +186,21 @@ namespace SiliconStudio.Quantum
             content.Seal();
         }
 
-        public IReference CreateReferenceForNode(Type type, object value)
+        public IReference CreateReferenceForNode(Type type, object value, bool isMember)
         {
-            // We don't create references for primitive types
-            if (IsPrimitiveType(type))
-                return null;
-
-            // At this point it is either a struct, a reference type or a collection
+            if (isMember)
+            {
+                return !IsPrimitiveType(type) ? Reference.CreateReference(value, type, Index.Empty, true) : null;
+            }
+            
             var descriptor = TypeDescriptorFactory.Find(value?.GetType());
-            var valueType = GetElementValueType(descriptor);
+            if (descriptor is CollectionDescriptor || descriptor is DictionaryDescriptor)
+            {
+                var valueType = GetElementValueType(descriptor);
+                return !IsPrimitiveType(valueType) ? Reference.CreateReference(value, type, Index.Empty, false) : null;
+            }
 
-            // We don't create references for collection of primitive types
-            if (IsPrimitiveType(valueType))
-                return null;
-
-            // In any other case, we create a reference
-            return Reference.CreateReference(value, type, Index.Empty);
+            return null;
         }
 
         private void PushContextNode(IInitializingGraphNode node)

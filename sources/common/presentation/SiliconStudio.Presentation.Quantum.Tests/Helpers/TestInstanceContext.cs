@@ -6,7 +6,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
     {
         private readonly TestContext context;
 
-        public TestInstanceContext(TestContext context, IContentNode rootNode)
+        public TestInstanceContext(TestContext context, IObjectNode rootNode)
         {
             this.context = context;
             RootNode = rootNode;
@@ -15,7 +15,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
 
         public IPropertiesProviderViewModel PropertiesProvider { get; }
 
-        public IContentNode RootNode { get; }
+        public IObjectNode RootNode { get; }
 
         public GraphViewModel CreateViewModel()
         {

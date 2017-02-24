@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Assets.Serializers;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
@@ -134,11 +136,10 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Gets the collection of overridden members in this asset. It is filled on Load, and must be synchronized before Save.
+        /// Gets the attached metadata for YAML serialization.
         /// </summary>
-        /// <remarks>Properties that are not in this dictionary are considered to have the <see cref="OverrideType.Base"/> type.</remarks>
         [DataMemberIgnore]
-        public IDictionary<YamlAssetPath, OverrideType> Overrides { get; set; }
+        public AttachedYamlAssetMetadata YamlMetadata { get; internal set; } = new AttachedYamlAssetMetadata();
 
         /// <summary>
         /// Converts this item to a reference.
@@ -184,8 +185,8 @@ namespace SiliconStudio.Assets
                 isDirty = isDirty,
                 SourceFolder = SourceFolder,
                 SourceProject = SourceProject,
-                Overrides = Overrides != null ? new Dictionary<YamlAssetPath, OverrideType>(Overrides) : null
             };
+            YamlMetadata.CopyInto(item.YamlMetadata);
             return item;
         }
 

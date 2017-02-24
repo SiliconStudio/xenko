@@ -14,7 +14,7 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public abstract class GraphNodeViewModel : SingleNodeViewModel
     {
-        public readonly IContentNode SourceNode;
+        public readonly IGraphNode SourceNode;
         private readonly bool isPrimitive;
         private bool isInitialized;
         private int? customOrder;
@@ -33,7 +33,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="sourceNode">The model node bound to the new <see cref="GraphNodeViewModel"/>.</param>
         /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given <see cref="sourceNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
-        protected GraphNodeViewModel(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IContentNode sourceNode, GraphNodePath graphNodePath, Index index)
+        protected GraphNodeViewModel(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode sourceNode, GraphNodePath graphNodePath, Index index)
             : base(ownerViewModel, baseName, index)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
@@ -73,7 +73,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="contentType">The type of content contained by the new <see cref="GraphNodeViewModel"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
         /// <returns>A new instance of <see cref="GraphNodeViewModel{T}"/> instanced with the given content type as generic argument.</returns>
-        internal static GraphNodeViewModel Create(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IContentNode sourceNode, GraphNodePath graphNodePath, Type contentType, Index index)
+        internal static GraphNodeViewModel Create(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode sourceNode, GraphNodePath graphNodePath, Type contentType, Index index)
         {
             var node = (GraphNodeViewModel)Activator.CreateInstance(typeof(GraphNodeViewModel<>).MakeGenericType(contentType), ownerViewModel, baseName, isPrimitive, sourceNode, graphNodePath, index);
             return node;
@@ -137,7 +137,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (CustomOrder != null)
                     return CustomOrder;
 
-                var memberContent = SourceNode as MemberContent;
+                var memberContent = SourceNode as IMemberNode;
                 if (memberContent == null || !Index.IsEmpty)
                     return null;
 
@@ -151,7 +151,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             get
             {
-                var memberContent = SourceNode as MemberContent;
+                var memberContent = SourceNode as IMemberNode;
                 var memberDescriptorBase = memberContent?.MemberDescriptor as MemberDescriptorBase;
                 return memberDescriptorBase?.MemberInfo;
             }
@@ -186,7 +186,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="node">The node to match.</param>
         /// <returns><c>true</c> if the node matches, <c>false</c> otherwise.</returns>
-        public bool MatchNode(IContentNode node)
+        public bool MatchNode(IGraphNode node)
         {
             return SourceNode == node;
         }
@@ -194,7 +194,7 @@ namespace SiliconStudio.Presentation.Quantum
         // TODO: If possible, make this private, it's not a good thing to expose
         public IMemberDescriptor GetMemberDescriptor()
         {
-            var memberContent = SourceNode as MemberContent;
+            var memberContent = SourceNode as IMemberNode;
             return memberContent?.MemberDescriptor;
         }
 
@@ -204,8 +204,8 @@ namespace SiliconStudio.Presentation.Quantum
             var targetNode = GetTargetNode(SourceNode, Index);
             if (SourceNode != targetNode)
             {
-                var objectReference = SourceNode.TargetReference;
-                var referenceEnumerable = SourceNode.ItemReferences;
+                var objectReference = (SourceNode as IMemberNode)?.TargetReference;
+                var referenceEnumerable = (SourceNode as IObjectNode)?.ItemReferences;
                 if (objectReference != null && targetNode != objectReference.TargetNode)
                 {
                     throw new GraphViewModelConsistencyException(this, "The target node does not match the target of the source node object reference.");
@@ -233,7 +233,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 if (targetNode.IsReference)
                 {
-                    var objectReference = targetNode.TargetReference;
+                    var objectReference = (targetNode as IMemberNode)?.TargetReference;
                     if (objectReference != null)
                     {
                         throw new GraphViewModelConsistencyException(this, "The target node does not match the target of the source node object reference.");
@@ -280,30 +280,44 @@ namespace SiliconStudio.Presentation.Quantum
         /// Sets the value of the model content associated to this <see cref="GraphNodeViewModel"/>. The value is actually modified only if the new value is different from the previous value.
         /// </summary>
         /// <returns><c>True</c> if the value has been modified, <c>false</c> otherwise.</returns>
-        protected virtual bool SetModelContentValue(IContentNode node, object newValue)
+        protected virtual bool SetModelContentValue(IGraphNode node, object newValue)
         {
-            var oldValue = node.Retrieve(Index);
-            if (!Equals(oldValue, newValue))
+            if (Index == Index.Empty)
             {
-                node.Update(newValue, Index);
-                return true;
+                var oldValue = node.Retrieve();
+                if (!Equals(oldValue, newValue))
+                {
+                    ((IMemberNode)node).Update(newValue);
+                    return true;
+                }
+            }
+            else
+            {
+                var oldValue = node.Retrieve(Index);
+                if (!Equals(oldValue, newValue))
+                {
+                    ((IObjectNode)node).Update(newValue, Index);
+                    return true;
+                }
             }
             return false;
         }
 
-        private void GenerateChildren(IContentNode targetNode, GraphNodePath targetNodePath, Index index)
+        private void GenerateChildren(IGraphNode targetNode, GraphNodePath targetNodePath, Index index)
         {
             // Set the default policy for expanding reference children.
             ExpandReferencePolicy = ExpandReferencePolicy.Full;
 
+            var memberSourceNode = SourceNode as IMemberNode;
+
             // Node representing a member with a reference to another object
             if (SourceNode != targetNode && SourceNode.IsReference)
             {
-                var objectReference = SourceNode.TargetReference ?? SourceNode.ItemReferences?[index];
+                var objectReference = memberSourceNode?.TargetReference ?? (targetNode as IObjectNode)?.ItemReferences?[index];
                 // Discard the children of the referenced object if requested by the property provider
                 if (objectReference != null)
                 {
-                    ExpandReferencePolicy = Owner.PropertiesProvider.ShouldExpandReference(SourceNode as MemberContent, objectReference);
+                    ExpandReferencePolicy = Owner.PropertiesProvider.ShouldExpandReference(SourceNode as IMemberNode, objectReference);
                     if (ExpandReferencePolicy == ExpandReferencePolicy.None)
                         return;
                 }
@@ -314,9 +328,9 @@ namespace SiliconStudio.Presentation.Quantum
             var initializedChildren = new List<NodeViewModel>();
 
             // Node containing a collection of references to other objects
-            if (SourceNode == targetNode && targetNode.IsReference)
+            if (SourceNode != targetNode && targetNode.IsReference)
             {
-                var referenceEnumerable = targetNode.ItemReferences;
+                var referenceEnumerable = ((IObjectNode)targetNode).ItemReferences;
                 if (referenceEnumerable != null)
                 {
                     // We create one node per item of the collection, we will check later if the reference should be expanded.
@@ -334,11 +348,11 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
             // Node containing a dictionary of primitive values
-            else if (dictionary != null && targetNode.Value != null)
+            else if (dictionary != null && targetNode.Retrieve() != null)
             {
                 // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
                 // We create one node per item of the collection.
-                foreach (var key in dictionary.GetKeys(targetNode.Value))
+                foreach (var key in dictionary.GetKeys(targetNode.Retrieve()))
                 {
                     var newIndex = new Index(key);
                     var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, newIndex);
@@ -348,11 +362,11 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
             // Node containing a list of primitive values
-            else if (list != null && targetNode.Value != null)
+            else if (list != null && targetNode.Retrieve() != null)
             {
                 // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
                 // We create one node per item of the collection.
-                for (int i = 0; i < list.GetCollectionCount(targetNode.Value); ++i)
+                for (int i = 0; i < list.GetCollectionCount(targetNode.Retrieve()); ++i)
                 {
                     var newIndex = new Index(i);
                     var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, newIndex);
@@ -432,17 +446,17 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="index">The index of the target node to retrieve, if the source node contains a sequence of references. <see cref="Index.Empty"/> otherwise.</param>
         /// <returns>The corresponding target node if available, or the source node itself if it does not contain any reference or if its content should not process references.</returns>
         /// <remarks>This method can return null if the target node is null.</remarks>
-        protected static IContentNode GetTargetNode(IContentNode sourceNode, Index index)
+        protected static IGraphNode GetTargetNode(IGraphNode sourceNode, Index index)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
 
-            var objectReference = sourceNode.TargetReference;
+            var objectReference = (sourceNode as IMemberNode)?.TargetReference;
             if (objectReference != null)
             {
                 return objectReference.TargetNode;
             }
 
-            var referenceEnumerable = sourceNode.ItemReferences;
+            var referenceEnumerable = (sourceNode as IObjectNode)?.ItemReferences;
             if (referenceEnumerable != null && !index.IsEmpty)
             {
                 return referenceEnumerable[index].TargetNode;
@@ -459,18 +473,18 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="sourceNodePath">The path to the given <paramref name="sourceNode"/>.</param>
         /// <returns>The path to the corresponding target node if available, or the path to source node itself if it does not contain any reference or if its content should not process references.</returns>
         /// <remarks>This method can return null if the target node is null.</remarks>
-        protected static GraphNodePath GetTargetNodePath(IContentNode sourceNode, Index index, GraphNodePath sourceNodePath)
+        protected static GraphNodePath GetTargetNodePath(IGraphNode sourceNode, Index index, GraphNodePath sourceNodePath)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
             if (sourceNodePath == null) throw new ArgumentNullException(nameof(sourceNodePath));
 
-            var objectReference = sourceNode.TargetReference;
+            var objectReference = (sourceNode as IMemberNode)?.TargetReference;
             if (objectReference != null)
             {
                 return sourceNodePath.PushTarget();
             }
 
-            var referenceEnumerable = sourceNode.ItemReferences;
+            var referenceEnumerable = (sourceNode as IObjectNode)?.ItemReferences;
             if (referenceEnumerable != null && !index.IsEmpty)
             {
                 return sourceNodePath.PushIndex(index);
@@ -491,7 +505,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="modelNode">The model node bound to the new <see cref="GraphNodeViewModel"/>.</param>
         /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given <see cref="modelNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection.<see cref="Index.Empty"/> must be passed otherwise</param>
-        public GraphNodeViewModel(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IContentNode modelNode, GraphNodePath graphNodePath, Index index)
+        public GraphNodeViewModel(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Index index)
             : base(ownerViewModel, baseName, isPrimitive, modelNode, graphNodePath, index)
         {
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
@@ -501,6 +515,18 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 memberNode.Changing += ContentChanging;
                 memberNode.Changed += ContentChanged;
+                var targetNode = GetTargetNode(memberNode, Index.Empty) as IObjectNode;
+                if (targetNode != null)
+                {
+                    targetNode.ItemChanging += ContentChanging;
+                    targetNode.ItemChanged += ContentChanged;
+                }
+            }
+            var objectNode = SourceNode as IObjectNode;
+            if (objectNode != null)
+            {
+                objectNode.ItemChanging += ContentChanging;
+                objectNode.ItemChanged += ContentChanged;
             }
         }
 
@@ -523,11 +549,23 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 memberNode.Changing -= ContentChanging;
                 memberNode.Changed -= ContentChanged;
+                var targetNode = GetTargetNode(memberNode, Index.Empty) as IObjectNode;
+                if (targetNode != null)
+                {
+                    targetNode.ItemChanging -= ContentChanging;
+                    targetNode.ItemChanged -= ContentChanged;
+                }
+            }
+            var objectNode = SourceNode as IObjectNode;
+            if (objectNode != null)
+            {
+                objectNode.ItemChanging -= ContentChanging;
+                objectNode.ItemChanged -= ContentChanged;
             }
             base.Destroy();
         }
 
-        private void ContentChanging(object sender, MemberNodeChangeEventArgs e)
+        private void ContentChanging(object sender, INodeChangeEventArgs e)
         {
             if (IsValidChange(e))
             {
@@ -536,7 +574,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
+        private void ContentChanged(object sender, INodeChangeEventArgs e)
         {
             if (IsValidChange(e))
             {
@@ -555,7 +593,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        private bool IsValidChange(MemberNodeChangeEventArgs e)
+        private bool IsValidChange(INodeChangeEventArgs e)
         {
             switch (e.ChangeType)
             {

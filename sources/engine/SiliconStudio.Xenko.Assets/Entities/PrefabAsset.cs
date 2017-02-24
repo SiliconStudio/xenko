@@ -27,10 +27,11 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta03", "1.9.0-beta04", typeof(MaterialFromModelComponentUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta04", "1.9.0-beta05", typeof(ParticleTrailEdgeUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta05", "1.10.0-beta01", typeof(MoveRenderGroupInsideComponentUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-beta01", "1.10.0-beta02", typeof(FixPartReferenceUpgrader))]
     [Display(1950, "Prefab")]
     public class PrefabAsset : EntityHierarchyAssetBase
     {
-        private const string CurrentVersion = "1.10.0-beta01";
+        private const string CurrentVersion = "1.10.0-beta02";
 
         /// <summary>
         /// The default file extension used by the <see cref="PrefabAsset"/>.

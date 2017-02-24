@@ -433,7 +433,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                         }
                     }
                 }
-
             }
         }
 

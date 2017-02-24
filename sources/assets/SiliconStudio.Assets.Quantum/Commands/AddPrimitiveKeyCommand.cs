@@ -5,7 +5,6 @@ using System;
 using System.Linq;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
 
@@ -44,15 +43,20 @@ namespace SiliconStudio.Assets.Quantum.Commands
             return CanConstruct(elementType) || elementType.IsAbstract || elementType.IsNullable() || IsReferenceType(elementType);
         }
 
-        protected override void ExecuteSync(IContentNode content, Index index, object parameter)
+        protected override void ExecuteSync(IGraphNode node, Index index, object parameter)
         {
-            var value = content.Retrieve(index);
+            var objectNode = ((IMemberNode)node).Target;
+            var value = node.Retrieve(index);
             var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
             var newKey = dictionaryDescriptor.KeyType != typeof(string) ? new Index(Activator.CreateInstance(dictionaryDescriptor.KeyType)) : GenerateStringKey(value, dictionaryDescriptor, parameter as string);
-            object newItem = null;
-            if (!IsReferenceType(dictionaryDescriptor.ValueType))
+            // default(T)
+            var newItem = dictionaryDescriptor.ValueType.IsValueType ? Activator.CreateInstance(dictionaryDescriptor.ValueType) : null;
+
+            var propertyGraph = (node as IAssetNode)?.PropertyGraph;
+            if (!IsReferenceType(dictionaryDescriptor.ValueType) && (propertyGraph == null || !propertyGraph.IsObjectReference(node, index)))
                 newItem = CreateInstance(dictionaryDescriptor.ValueType);
-            content.Add(newItem, newKey);
+
+            objectNode.Add(newItem, newKey);
         }
 
         /// <summary>
@@ -110,6 +114,6 @@ namespace SiliconStudio.Assets.Quantum.Commands
 
         private static bool CanConstruct(Type type) => !type.IsClass || type.GetConstructor(Type.EmptyTypes) != null || type == typeof(string);
 
-        private static bool IsReferenceType(Type type) => AssetRegistry.IsAssetPartType(type) || AssetRegistry.IsContentType(type) || typeof(AssetReference).IsAssignableFrom(type);
+        private static bool IsReferenceType(Type type) => AssetRegistry.IsContentType(type) || typeof(AssetReference).IsAssignableFrom(type);
     }
 }

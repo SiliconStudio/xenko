@@ -18,8 +18,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="PrefabAsset"/>)
     /// </summary>
     [DataContract]
-    [AssetPartReference(typeof(Entity), typeof(EntityComponent), ExistsTopLevel = true)]
-    [AssetPartReference(typeof(EntityComponent), ReferenceType = typeof(EntityComponentReference))]
+    //[AssetPartReference(typeof(Entity), typeof(EntityComponent), ExistsTopLevel = true)]
+    //[AssetPartReference(typeof(EntityComponent), ReferenceType = typeof(EntityComponentReference))]
     public abstract partial class EntityHierarchyAssetBase : AssetCompositeHierarchy<EntityDesign, Entity>
     {
         /// <summary>
@@ -79,14 +79,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         }
 
         /// <inheritdoc/>
-        protected override void PostClonePart([NotNull] Entity part)
-        {
-            // disconnect the cloned entity
-            part.Transform.Parent = null;
-        }
-
-        /// <inheritdoc/>
-        protected override object ResolvePartReference(object partReference)
+        public override object ResolvePartReference(object partReference)
         {
             var entityComponentReference = partReference as EntityComponent;
             if (entityComponentReference != null)

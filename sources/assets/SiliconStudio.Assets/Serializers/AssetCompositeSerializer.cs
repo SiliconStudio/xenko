@@ -6,8 +6,6 @@ using System.Linq;
 using System.Threading;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization;
-using SiliconStudio.Core.Yaml.Serialization.Serializers;
-using SerializerContext = SiliconStudio.Core.Yaml.Serialization.SerializerContext;
 
 namespace SiliconStudio.Assets.Serializers
 {
@@ -15,7 +13,7 @@ namespace SiliconStudio.Assets.Serializers
     /// A serializer for the <see cref="AssetComposite"/> type.
     /// </summary>
     [YamlSerializerFactory(YamlAssetProfile.Name)]
-    public class AssetCompositeSerializer : ObjectSerializer, IDataCustomVisitor
+    public class AssetCompositeSerializer : IDataCustomVisitor
     {
         // Exposed temporarily for the use of AssetCompositePartReferenceCollector
         // TODO: Unify IDataCustomVisitor and AssetVisitorBase?
@@ -23,98 +21,6 @@ namespace SiliconStudio.Assets.Serializers
         /// Context containing information about asset parts being serialized.
         /// </summary>
         internal static readonly ThreadLocal<AssetCompositeVisitorContext> LocalContext = new ThreadLocal<AssetCompositeVisitorContext>();
-
-        /// <inheritdoc/>
-        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
-        {
-            return CanVisit(typeDescriptor.Type) ? this : null;
-        }
-
-        /// <inheritdoc/>
-        public override void WriteYaml(ref ObjectContext objectContext)
-        {
-            var contextToken = PrepareLocalContext(objectContext.Descriptor.Type);
-            try
-            {
-                base.WriteYaml(ref objectContext);
-            }
-            finally
-            {
-                CleanLocalContext(contextToken);
-            }
-        }
-
-        /// <inheritdoc/>
-        public override object ReadYaml(ref ObjectContext objectContext)
-        {
-            var contextToken = PrepareLocalContext(objectContext.Descriptor.Type);
-            try
-            {
-                return base.ReadYaml(ref objectContext);
-            }
-            finally
-            {
-                CleanLocalContext(contextToken);
-            }
-        }
-
-        /// <inheritdoc/>
-        protected override void CreateOrTransformObject(ref ObjectContext objectContext)
-        {
-            if (LocalContext.Value.SerializeAsReference)
-            {
-                var attribute = LocalContext.Value.GetLastEnteredType();
-                var referenceType = attribute.ReferenceType;
-                var reference = (IAssetPartReference)Activator.CreateInstance(referenceType);
-
-                if (objectContext.SerializerContext.IsSerializing)
-                {
-                    // Serialization: properly fill the reference with information from the real object
-                    reference.FillFromPart(objectContext.Instance);
-                    if (!attribute.KeepTypeInfo)
-                        objectContext.Tag = null;
-                }
-                else
-                {
-                    // Deserialization: store the real type of the asset part (this information won't be accessible later when we need it)
-                    reference.InstanceType = objectContext.Descriptor.Type;
-                }
-
-                // Replace the real object with the reference.
-                objectContext.Instance = reference;
-            }
-
-            base.CreateOrTransformObject(ref objectContext);
-
-            // TODO: FIXME: Decouple the deserialization of the graph of objects and the patching of single objects (shouldn't be at the same place), and move this code in the Entity assembly (remove dynamic usage)
-            // When deserializing, we don't keep the TransformComponent created when the Entity is created
-            if (!objectContext.SerializerContext.IsSerializing && objectContext.Instance?.GetType().Name == "Entity")
-            {
-                dynamic entity = objectContext.Instance;
-                entity.Components.Clear();
-            }
-        }
-
-        /// <inheritdoc/>
-        protected override void TransformObjectAfterRead(ref ObjectContext objectContext)
-        {
-            if (LocalContext.Value.SerializeAsReference)
-            {
-                if (!objectContext.SerializerContext.IsSerializing)
-                {
-                    // Deserialization: generate a proxy asset part from the reference. The real asset part will be resolved at the end.
-                    var reference = objectContext.Instance as IAssetPartReference;
-                    if (reference != null)
-                    {
-                        var proxyPart = reference.GenerateProxyPart(reference.InstanceType);
-                        objectContext.Instance = proxyPart;
-                        return;
-                    }
-                }
-            }
-
-            base.TransformObjectAfterRead(ref objectContext);
-        }
 
         public bool CanVisit(Type type)
         {
@@ -146,34 +52,6 @@ namespace SiliconStudio.Assets.Serializers
             finally
             {
                 CleanLocalContext(contextToken);
-            }
-        }
-
-        protected override object ReadMemberValue(ref ObjectContext objectContext, IMemberDescriptor member, object memberValue, Type memberType)
-        {
-            // Note: no need to create context (nor restore it in finally), as it should have been done by the container type
-            var removeLastEnteredNode = LocalContext.Value?.EnterNode(member) ?? false;
-            try
-            {
-                return base.ReadMemberValue(ref objectContext, member, memberValue, memberType);
-            }
-            finally
-            {
-                LocalContext.Value?.LeaveNode(removeLastEnteredNode);
-            }
-        }
-
-        protected override void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor member, object memberValue, Type memberType)
-        {
-            // Note: no need to create context (nor restore it in finally), as it should have been done by the container type
-            var removeLastEnteredNode = LocalContext.Value?.EnterNode(member) ?? false;
-            try
-            {
-                base.WriteMemberValue(ref objectContext, member, memberValue, memberType);
-            }
-            finally
-            {
-                LocalContext.Value?.LeaveNode(removeLastEnteredNode);
             }
         }
 

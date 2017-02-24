@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             using (var stream = new MemoryStream())
             {
-                AssetFileSerializer.Save(stream, originAsset);
+                AssetFileSerializer.Save(stream, originAsset, null);
 
                 stream.Position = 0;
                 var serializedVersion = Encoding.UTF8.GetString(stream.ToArray());

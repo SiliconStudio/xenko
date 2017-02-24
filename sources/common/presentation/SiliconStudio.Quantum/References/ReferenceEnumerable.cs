@@ -62,9 +62,9 @@ namespace SiliconStudio.Quantum.References
             return items?.ContainsKey(index) ?? false;
         }
 
-        public void Refresh(IContentNode ownerNode, NodeContainer nodeContainer)
+        public void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer)
         {
-            var newObjectValue = ownerNode.Value;
+            var newObjectValue = ownerNode.Retrieve();
             if (!(newObjectValue is IEnumerable)) throw new ArgumentException(@"The object is not an IEnumerable", nameof(newObjectValue));
 
             ObjectValue = newObjectValue;
@@ -75,7 +75,7 @@ namespace SiliconStudio.Quantum.References
                 foreach (var item in (IEnumerable)ObjectValue)
                 {
                     var key = GetKey(item);
-                    var value = (ObjectReference)Reference.CreateReference(GetValue(item), ElementType, key);
+                    var value = (ObjectReference)Reference.CreateReference(GetValue(item), ElementType, key, true);
                     newReferences.Add(key, value);
                 }
             }
@@ -85,7 +85,7 @@ namespace SiliconStudio.Quantum.References
                 foreach (var item in (IEnumerable)ObjectValue)
                 {
                     var key = new Index(i);
-                    var value = (ObjectReference)Reference.CreateReference(item, ElementType, key);
+                    var value = (ObjectReference)Reference.CreateReference(item, ElementType, key, true);
                     newReferences.Add(key, value);
                     ++i;
                 }
@@ -99,10 +99,10 @@ namespace SiliconStudio.Quantum.References
                 var oldReferenceMapping = new List<KeyValuePair<object, ObjectReference>>();
                 if (items != null)
                 {
-                    var existingIndices = ContentNode.GetIndices(ownerNode).ToList();
+                    var existingIndices = GraphNodeBase.GetIndices(ownerNode).ToList();
                     foreach (var item in items)
                     {
-                        var boxedTarget = item.Value.TargetNode as BoxedContent;
+                        var boxedTarget = item.Value.TargetNode as BoxedNode;
                         // For collection of struct, we need to update the target nodes first so equity comparer will work. Careful tho, we need to skip removed items!
                         if (boxedTarget != null && existingIndices.Contains(item.Key))
                         {

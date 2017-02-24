@@ -1,7 +1,7 @@
 !UILibraryAsset
 Id: 79af0b55-a70f-4c7a-8f5b-967d55661736
 SerializedVersion:
-    Xenko: 1.9.0-beta01
+    Xenko: 1.10.0-beta01
 Tags: []
 Design:
     Resolution: {X: 128.0, Y: 72.0, Z: 100.0}
@@ -50,7 +50,7 @@ Hierarchy:
                 Margin: {}
                 Name: ToggleButton
                 Padding: {Left: 10.0, Top: 5.0, Right: 10.0, Bottom: 7.0}
-                Content: !TextBlock ac7f6048-d7d0-45ae-a8f3-e4bddafeec22
+                Content: !TextBlock ref!! ac7f6048-d7d0-45ae-a8f3-e4bddafeec22
                 CheckedImage: !SpriteFromSheet
                     Sheet: 1be3340c-b797-4557-bff7-d9be92dfdb42:XenkoUIDesigns
                     CurrentFrame: 11
@@ -186,7 +186,7 @@ Hierarchy:
                 Margin: {}
                 Name: Button
                 Padding: {Left: 10.0, Top: 5.0, Right: 10.0, Bottom: 7.0}
-                Content: !TextBlock 5b044962-d303-4961-8195-e27d497b9e2b
+                Content: !TextBlock ref!! 5b044962-d303-4961-8195-e27d497b9e2b
                 PressedImage: !SpriteFromSheet
                     Sheet: 1be3340c-b797-4557-bff7-d9be92dfdb42:XenkoUIDesigns
                     CurrentFrame: 2
