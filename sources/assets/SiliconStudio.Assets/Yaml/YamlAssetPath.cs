@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using SiliconStudio.Core.Annotations;
@@ -177,6 +178,59 @@ namespace SiliconStudio.Core.Yaml
             return memberPath;
         }
 
+        [NotNull]
+        public static YamlAssetPath FromMemberPath(MemberPath path, object root)
+        {
+            if (path == null) throw new ArgumentNullException(nameof(path));
+            var result = new YamlAssetPath();
+            var clone = new MemberPath();
+            foreach (var item in path.Decompose())
+            {
+                if (item.MemberDescriptor != null)
+                {
+                    clone.Push(item.MemberDescriptor);
+                    var member = item.MemberDescriptor.Name;
+                    result.PushMember(member);
+                }
+                else
+                {
+                    object index = null;
+                    var arrayItem = item as MemberPath.ArrayPathItem;
+                    if (arrayItem != null)
+                    {
+                        clone.Push(arrayItem.Descriptor, arrayItem.Index);
+                        index = arrayItem.Index;
+                    }
+                    var collectionItem = item as MemberPath.CollectionPathItem;
+                    if (collectionItem != null)
+                    {
+                        clone.Push(collectionItem.Descriptor, collectionItem.Index);
+                        index = collectionItem.Index;
+                    }
+                    var dictionaryItem = item as MemberPath.DictionaryPathItem;
+                    if (dictionaryItem != null)
+                    {
+                        clone.Push(dictionaryItem.Descriptor, dictionaryItem.Key);
+                        index = dictionaryItem.Key;
+                    }
+                    CollectionItemIdentifiers ids;
+                    if (!CollectionItemIdHelper.TryGetCollectionItemIds(clone.GetValue(root), out ids))
+                    {
+                        result.PushIndex(index);
+                    }
+                    else
+                    {
+                        var id = ids[index];
+                        // Create a new id if we don't have any so far
+                        if (id == ItemId.Empty)
+                            id = ItemId.New();
+                        result.PushItemId(id);
+                    }
+                }
+            }
+            return result;
+        }
+
         public bool Equals(YamlAssetPath other)
         {
             if (Items.Count != other?.Items.Count)
@@ -276,11 +330,15 @@ namespace SiliconStudio.Core.Yaml
             return IsCollectionWithIdType(type, key, out id, out actualKey);
         }
 
-        public YamlAssetPath Append(YamlAssetPath other)
+        [NotNull, Pure]
+        public YamlAssetPath Append([CanBeNull] YamlAssetPath other)
         {
             var result = new YamlAssetPath();
             result.items.AddRange(items);
-            result.items.AddRange(other.items);
+            if (other != null)
+            {
+                result.items.AddRange(other.items);
+            }
             return result;
         }
     }
