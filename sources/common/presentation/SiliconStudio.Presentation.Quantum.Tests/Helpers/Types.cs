@@ -20,9 +20,10 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
                 return rootNode;
             }
 
-            public ExpandReferencePolicy ShouldExpandReference(IMemberNode member, ObjectReference reference) => ExpandReferencePolicy.Full;
+            public ExpandReferencePolicy ShouldConstructChildren(IGraphNode graphNode, Index index) => ExpandReferencePolicy.Full;
 
-            public bool ShouldConstructMember(IMemberNode content, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
+            public bool ShouldConstructMember(IMemberNode member, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
+            public bool ShouldConstructItem(IObjectNode collection, Index index, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
         }
 
         public class SimpleObject
