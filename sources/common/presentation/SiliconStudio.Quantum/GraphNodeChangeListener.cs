@@ -90,8 +90,8 @@ namespace SiliconStudio.Quantum
                 var objectNode = node as IObjectNode;
                 if (objectNode != null)
                 {
-                    objectNode.ItemChanging += OnItemChanging;
-                    objectNode.ItemChanged += OnItemChanged;
+                    objectNode.ItemChanging -= OnItemChanging;
+                    objectNode.ItemChanged -= OnItemChanged;
                 }
                 return true;
             }
