@@ -187,15 +187,13 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         /// <summary>
-        /// Clears all object reference targeting the given <see cref="IIdentifiable"/> object.
+        /// Clears all object references targeting the <see cref="IIdentifiable"/> objects corresponding to the given identifiers.
         /// </summary>
-        /// <param name="obj">The target object for which to clear references.</param>
-        public virtual void ClearReferencesToObject([CanBeNull] IIdentifiable obj)
+        /// <param name="objectIds">The identifiers of the objects for which to clear targeting references.</param>
+        public virtual void ClearReferencesToObjects([NotNull] IEnumerable<Guid> objectIds)
         {
-            if (obj == null)
-                return;
-
-            var visitor = new ClearObjectReferenceVisitor(this, obj.Id);
+            if (objectIds == null) throw new ArgumentNullException(nameof(objectIds));
+            var visitor = new ClearObjectReferenceVisitor(this, objectIds);
             visitor.Visit(RootNode);
         }
 
