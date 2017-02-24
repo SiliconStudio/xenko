@@ -9,6 +9,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
     /// </summary>
     public class ClearObjectReferenceVisitor : IdentifiableObjectVisitorBase
     {
+        private readonly Guid targetId;
         private readonly Func<IGraphNode, Index, bool> shouldClearReference;
 
         /// <summary>
@@ -20,12 +21,16 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         public ClearObjectReferenceVisitor(AssetPropertyGraph propertyGraph, Guid targetId, Func<IGraphNode, Index, bool> shouldClearReference = null)
             : base(propertyGraph)
         {
+            this.targetId = targetId;
             this.shouldClearReference = shouldClearReference;
         }
 
         /// <inheritdoc/>
         protected override void ProcessIdentifiable(IIdentifiable identifiable, IGraphNode node, Index index)
         {
+            if (identifiable.Id != targetId)
+                return;
+
             if (PropertyGraph.IsObjectReference(node, index))
             {
                 if (shouldClearReference?.Invoke(node, index) ?? true)
