@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Assets.Quantum
@@ -20,7 +21,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public bool PropagateChangesFromBase { get; set; } = true;
 
-        public AssetPropertyGraph InitializeAsset(AssetItem assetItem, ILogger logger)
+        public AssetPropertyGraph InitializeAsset([NotNull] AssetItem assetItem, ILogger logger)
         {
             // SourceCodeAssets have no property
             if (assetItem.Asset is SourceCodeAsset)
@@ -31,6 +32,7 @@ namespace SiliconStudio.Assets.Quantum
             return graph;
         }
 
+        [CanBeNull]
         public AssetPropertyGraph GetGraph(AssetId assetId)
         {
             AssetPropertyGraph graph;
@@ -48,6 +50,7 @@ namespace SiliconStudio.Assets.Quantum
             return registeredGraphs.Remove(assetId);
         }
 
+        [CanBeNull]
         public AssetItem GetAssetById(AssetId assetId)
         {
             return session.FindAsset(assetId);
