@@ -1,7 +1,7 @@
 !GraphicsCompositorAsset
-Id: 4ad9f941-3367-48c3-8eb5-954dc535badd
-SerializedVersion: {Xenko: 1.10.0-beta01}
+Id: 991d85cd-5087-4f4c-8cdd-36f48a145bf6
 Tags: []
+Archetype: 9af53371-51ba-49fc-b420-ee7874892e75:Compositing/DefaultGraphicsCompositorLevel9
 Cameras:
     de2e75c3b2b23e54162686363f3f138e:
         Name: Main
@@ -91,6 +91,7 @@ SharedRenderers:
         TransparentRenderStage: ref!! 0fa30591-02ee-486d-9347-2b6aee83d035
         ShadowMapRenderStages:
             fc4d1e0de5c2b0bbc27bcf96e9a848fd: ref!! c0524e55-4061-464d-84dd-7c4c70f70e0e
+        PostEffects: null
 Game: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
     Camera: {Index: 0}
