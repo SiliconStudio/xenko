@@ -255,7 +255,7 @@ namespace SiliconStudio.Xenko.Audio
             }
             set
             {
-                volume = MathUtil.Clamp(value, 0, 1);
+                volume = value;
 
                 foreach (var instance in InstanceToListener)
                 {
