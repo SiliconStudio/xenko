@@ -356,6 +356,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 {
                     Child = singleView,
                 },
+                Editor = singleView,
                 SingleView = singleView,
             };
         }
