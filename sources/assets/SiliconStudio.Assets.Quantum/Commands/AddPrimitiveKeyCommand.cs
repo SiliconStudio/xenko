@@ -53,8 +53,9 @@ namespace SiliconStudio.Assets.Quantum.Commands
             var newItem = dictionaryDescriptor.ValueType.IsValueType ? Activator.CreateInstance(dictionaryDescriptor.ValueType) : null;
 
             var propertyGraph = (node as IAssetNode)?.PropertyGraph;
-            if (!IsReferenceType(dictionaryDescriptor.ValueType) && (propertyGraph == null || !propertyGraph.IsObjectReference(node, index)))
-                newItem = CreateInstance(dictionaryDescriptor.ValueType);
+            var instance = CreateInstance(dictionaryDescriptor.ValueType);
+            if (!IsReferenceType(dictionaryDescriptor.ValueType) && (propertyGraph == null || !propertyGraph.IsObjectReference(node, index, instance)))
+                newItem = instance;
 
             objectNode.Add(newItem, newKey);
         }

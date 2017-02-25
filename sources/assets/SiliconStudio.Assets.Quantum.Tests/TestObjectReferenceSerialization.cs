@@ -19,9 +19,9 @@ namespace SiliconStudio.Assets.Quantum.Tests
 
         public static Func<IGraphNode, Index, bool> IsObjectReferenceFunc { get; set; }
 
-        public override bool IsObjectReference(IGraphNode targetNode, Index index)
+        public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
         {
-            return IsObjectReferenceFunc?.Invoke(targetNode, index) ?? base.IsObjectReference(targetNode, index);
+            return IsObjectReferenceFunc?.Invoke(targetNode, index) ?? base.IsObjectReference(targetNode, index, value);
         }
     }
 

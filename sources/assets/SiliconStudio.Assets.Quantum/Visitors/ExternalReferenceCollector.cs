@@ -37,7 +37,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
 
         protected override void ProcessIdentifiable(IIdentifiable identifiable, IGraphNode node, Index index)
         {
-            if (propertyGraph.IsObjectReference(node, index))
+            if (propertyGraph.IsObjectReference(node, index, node.Retrieve(index)))
                 externalReferences.Add(identifiable);
             else
                 internalReferences.Add(identifiable);

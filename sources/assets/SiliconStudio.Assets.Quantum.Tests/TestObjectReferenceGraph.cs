@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         {
         }
 
-        public override bool IsObjectReference(IGraphNode targetNode, Index index)
+        public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
         {
             if ((targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef2.Reference))
                 return true;
