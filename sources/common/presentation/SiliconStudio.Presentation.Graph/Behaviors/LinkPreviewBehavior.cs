@@ -8,16 +8,9 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using GraphX;
 using SiliconStudio.Presentation.Behaviors;
 using SiliconStudio.Presentation.Extensions;
-using GraphX;
-using System.Diagnostics;
-using System.Windows.Interactivity;
-using GraphX.Controls;
-using System.Collections.Generic;
-using System.Collections;
-using GraphX.Models;
-using System.Windows.Shapes;
 
 namespace SiliconStudio.Presentation.Graph.Behaviors
 {

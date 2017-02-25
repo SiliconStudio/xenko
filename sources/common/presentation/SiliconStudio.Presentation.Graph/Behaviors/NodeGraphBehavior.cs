@@ -13,9 +13,9 @@ using System.Windows.Markup;
 
 using GraphX;
 using GraphX.Controls;
-using GraphX.GraphSharp.Algorithms.Layout.Simple.Tree;
-using GraphX.GraphSharp.Algorithms.OverlapRemoval;
-using GraphX.GraphSharp.Algorithms.Layout;
+using GraphX.PCL.Common.Enums;
+using GraphX.PCL.Logic.Algorithms.LayoutAlgorithms;
+using GraphX.PCL.Logic.Algorithms.OverlapRemoval;
 using QuickGraph;
 
 using SiliconStudio.Presentation.Graph.ViewModel;
@@ -140,26 +140,26 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
 
             // This property sets layout algorithm that will be used to calculate vertice positions
             // Different algorithms uses different values and some of them uses edge Weight property.
-            logicCore.DefaultLayoutAlgorithm = AutoLayout ? GraphX.LayoutAlgorithmTypeEnum.KK : GraphX.LayoutAlgorithmTypeEnum.Custom;
+            logicCore.DefaultLayoutAlgorithm = AutoLayout ? LayoutAlgorithmTypeEnum.Tree : LayoutAlgorithmTypeEnum.Custom;
 
             // Now we can set parameters for selected algorithm using AlgorithmFactory property. This property provides methods for
             // creating all available algorithms and algo parameters.
-            //logicCore.DefaultLayoutAlgorithmParams = logicCore.AlgorithmFactory.CreateLayoutParameters(GraphX.LayoutAlgorithmTypeEnum.Tree);
-            //((SimpleTreeLayoutParameters)logicCore.DefaultLayoutAlgorithmParams).Direction = LayoutDirection.LeftToRight;
-            //((SimpleTreeLayoutParameters)logicCore.DefaultLayoutAlgorithmParams).VertexGap = 50;
-            //((SimpleTreeLayoutParameters)logicCore.DefaultLayoutAlgorithmParams).LayerGap = 100;
+            logicCore.DefaultLayoutAlgorithmParams = logicCore.AlgorithmFactory.CreateLayoutParameters(LayoutAlgorithmTypeEnum.Tree);
+            ((SimpleTreeLayoutParameters)logicCore.DefaultLayoutAlgorithmParams).Direction = LayoutDirection.LeftToRight;
+            ((SimpleTreeLayoutParameters)logicCore.DefaultLayoutAlgorithmParams).VertexGap = 50;
+            ((SimpleTreeLayoutParameters)logicCore.DefaultLayoutAlgorithmParams).LayerGap = 100;
 
             // This property sets vertex overlap removal algorithm.
             // Such algorithms help to arrange vertices in the layout so no one overlaps each other.
-            logicCore.DefaultOverlapRemovalAlgorithm = AutoLayout ? GraphX.OverlapRemovalAlgorithmTypeEnum.FSA : GraphX.OverlapRemovalAlgorithmTypeEnum.None;
-            logicCore.DefaultOverlapRemovalAlgorithmParams = logicCore.AlgorithmFactory.CreateOverlapRemovalParameters(GraphX.OverlapRemovalAlgorithmTypeEnum.FSA);
+            logicCore.DefaultOverlapRemovalAlgorithm = AutoLayout ? OverlapRemovalAlgorithmTypeEnum.FSA : OverlapRemovalAlgorithmTypeEnum.None;
+            logicCore.DefaultOverlapRemovalAlgorithmParams = logicCore.AlgorithmFactory.CreateOverlapRemovalParameters(OverlapRemovalAlgorithmTypeEnum.FSA);
             ((OverlapRemovalParameters)logicCore.DefaultOverlapRemovalAlgorithmParams).HorizontalGap = 50;
             ((OverlapRemovalParameters)logicCore.DefaultOverlapRemovalAlgorithmParams).VerticalGap = 50;
 
             // This property sets edge routing algorithm that is used to build route paths according to algorithm logic.
             // For ex., SimpleER algorithm will try to set edge paths around vertices so no edge will intersect any vertex.
             // Bundling algorithm will try to tie different edges that follows same direction to a single channel making complex graphs more appealing.
-            logicCore.DefaultEdgeRoutingAlgorithm = GraphX.EdgeRoutingAlgorithmTypeEnum.SimpleER;
+            logicCore.DefaultEdgeRoutingAlgorithm = EdgeRoutingAlgorithmTypeEnum.SimpleER;
 
             // This property sets async algorithms computation so methods like: Area.RelayoutGraph() and Area.GenerateGraph()
             // will run async with the UI thread. Completion of the specified methods can be catched by corresponding events:
@@ -298,7 +298,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             // Create the vertex control
             var control = AssociatedObject.ControlFactory.CreateVertexControl(node);
             control.DataContext = node;
-            control.Visibility = Visibility.Hidden; // make them invisible (there is no layout positions yet calculated)
+            //control.Visibility = Visibility.Hidden; // make them invisible (there is no layout positions yet calculated)
             
             // Create data binding for input slots and output slots
             var binding = new Binding();
@@ -332,10 +332,10 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             if (graph.ContainsVertex(node))
             {
                 // TODO Need a better way to removing incoming edges
-                IEnumerable<EdgeControl> controls = AssociatedObject.GetAllEdgeControls().Where(x => (x.Edge as NodeEdge).Target == node);
+                IEnumerable<EdgeControl> controls = AssociatedObject.EdgesList.Values.Where(x => ((NodeEdge)x.Edge).Target == node);
                 foreach (var control in controls)
                 {
-                    NodeEdge edge = control.Edge as NodeEdge;
+                    var edge = (NodeEdge)control.Edge;
                     graph.RemoveEdge(edge);
                     AssociatedObject.RemoveEdge(edge);
                 }
@@ -366,7 +366,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             // Create the vertex control
             var control = AssociatedObject.ControlFactory.CreateEdgeControl(AssociatedObject.VertexList[edge.Source], AssociatedObject.VertexList[edge.Target], edge);
             control.DataContext = edge;
-            control.Visibility = Visibility.Hidden; // make them invisible (there is no layout positions yet calculated)
+            //control.Visibility = Visibility.Hidden; // make them invisible (there is no layout positions yet calculated)
 
             // Create data binding for input slots and output slots
             var binding = new Binding();

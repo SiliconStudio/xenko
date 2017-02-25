@@ -17,9 +17,11 @@ using System.Windows.Interactivity;
 using GraphX.Controls;
 using System.Collections.Generic;
 using System.Collections;
-using GraphX.Models;
 using System.Collections.Specialized;
 using System.Collections.ObjectModel;
+using GraphX.Controls.Models;
+using GraphX.PCL.Common.Models;
+using QuickGraph;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Graph.ViewModel;
 
@@ -28,7 +30,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
     /// <summary>
     /// 
     /// </summary>
-    public class GraphSelectionBehavior : DeferredBehaviorBase<GraphAreaBase> 
+    public class GraphSelectionBehavior : DeferredBehaviorBase<GraphArea<NodeVertex, NodeEdge, BidirectionalGraph<NodeVertex, NodeEdge>>> 
     {
         #region Dependency Properties
         public static readonly DependencyProperty SelectedVertexItemsProperty = DependencyProperty.Register("SelectedVertexItems", typeof(IList), typeof(GraphSelectionBehavior), new PropertyMetadata(null, OnSelectedVertexItemsChanged));
@@ -112,7 +114,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         #endregion        
 
         #region Members
-        protected GraphAreaBase graph_area_;
+        protected GraphArea<NodeVertex, NodeEdge, BidirectionalGraph<NodeVertex, NodeEdge>> graph_area_;
         protected ZoomControl zoom_control_;
 
         private ObservableCollection<VertexBase> selected_vertices_ = new ObservableCollection<VertexBase>();
@@ -374,7 +376,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             {
                 updating_edge_collection_ = true;
 
-                EdgeControl[] edgeControls = graph_area_.GetAllEdgeControls();
+                var edgeControls = graph_area_.EdgesList.Values.ToList();
 
                 // TODO Many different cases for this. Might to return to this in the future.
                 if (e.Action == NotifyCollectionChangedAction.Reset)
