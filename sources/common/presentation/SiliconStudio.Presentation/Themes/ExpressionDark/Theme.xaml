@@ -4608,7 +4608,7 @@
                                   VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
                                   SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
               </DockPanel>
-              <Rectangle x:Name="FocusVisualElement" Stroke="{StaticResource HoverShineBrush}" StrokeThickness="1" RadiusX="1" RadiusY="1" Opacity="0" IsHitTestVisible="False" Margin="1,1,1,1"/>
+              <Rectangle x:Name="FocusVisualElement" Stroke="#4CFFFFFF" StrokeThickness="1" RadiusX="1" RadiusY="1" Opacity="0" IsHitTestVisible="False" Margin="1,1,1,1"/>
             </Grid>
             <ItemsPresenter x:Name="itemsPresenter" Visibility="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Converter={cvt:VisibleOrCollapsed}, FallbackValue=Hidden}"/>
           </StackPanel>
