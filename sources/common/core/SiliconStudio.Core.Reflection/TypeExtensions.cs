@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -12,12 +12,13 @@ namespace SiliconStudio.Core.Reflection
     {
         private static readonly Dictionary<Type, bool> AnonymousTypes = new Dictionary<Type, bool>();
 
-        public static bool HasInterface(this Type type, Type lookInterfaceType)
+        public static bool HasInterface([NotNull] this Type type, [NotNull] Type lookInterfaceType)
         {
             return type.GetInterface(lookInterfaceType) != null;
         }
 
-        public static Type GetInterface(this Type type, Type lookInterfaceType)
+        [CanBeNull]
+        public static Type GetInterface([NotNull] this Type type, [NotNull] Type lookInterfaceType)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
@@ -33,7 +34,7 @@ namespace SiliconStudio.Core.Reflection
                             && interfaceType.GetGenericTypeDefinition() == lookInterfaceType)
                             return interfaceType;
 
-                for (Type t = type; t != null; t = t.GetTypeInfo().BaseType)
+                for (var t = type; t != null; t = t.GetTypeInfo().BaseType)
                     if (t.GetTypeInfo().IsGenericType && t.GetGenericTypeDefinition() == lookInterfaceType)
                         return t;
             }
@@ -51,11 +52,8 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns><c>true</c> if the specified type is anonymous; otherwise, <c>false</c>.</returns>
-        public static bool IsAnonymous(this Type type)
+        public static bool IsAnonymous([NotNull] this Type type)
         {
-            if (type == null)
-                return false;
-
             lock (AnonymousTypes)
             {
                 bool isAnonymous;
@@ -76,11 +74,11 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>True if object is a numeric value.</returns>
-        public static bool IsNumeric(this Type type)
+        public static bool IsNumeric([NotNull] this Type type)
         {
-            return type != null && (type == typeof(sbyte) || type == typeof(short) || type == typeof(int) || type == typeof(long) ||
-                                    type == typeof(byte) || type == typeof(ushort) || type == typeof(uint) || type == typeof(ulong) ||
-                                    type == typeof(float) || type == typeof(double) || type == typeof(decimal));
+            return type == typeof(sbyte) || type == typeof(short) || type == typeof(int) || type == typeof(long) ||
+                   type == typeof(byte) || type == typeof(ushort) || type == typeof(uint) || type == typeof(ulong) ||
+                   type == typeof(float) || type == typeof(double) || type == typeof(decimal);
         }
 
         /// <summary>
@@ -88,7 +86,7 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns><c>true</c> if the specified type is nullable; otherwise, <c>false</c>.</returns>
-        public static bool IsNullable(this Type type)
+        public static bool IsNullable([NotNull] this Type type)
         {
             return Nullable.GetUnderlyingType(type) != null;
         }
@@ -98,85 +96,56 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="type">The <see cref="Type.Type"/> to be analyzed.</param>
         /// <returns><c>True</c> if the specified <paramref name="type"/> is a non-primitive struct type; otehrwise <c>False</c>.</returns>
-        public static bool IsStruct(this Type type)
+        public static bool IsStruct([NotNull] this Type type)
         {
-            return type != null && type.GetTypeInfo().IsValueType && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;
+            return type.GetTypeInfo().IsValueType && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;
         }
 
-        /// <summary>
-        /// Casts boxed numeric value to double
-        /// </summary>
-        /// <param name="obj">boxed numeric value</param>
-        /// <returns>Numeric value in double. Double.Nan if obj is not a numeric value.</returns>
-        internal static double CastToDouble(object obj)
-        {
-            var result = Double.NaN;
-            var type = obj?.GetType();
-            if (type == typeof(sbyte))
-                result = (sbyte)obj;
-            if (type == typeof(byte))
-                result = (byte)obj;
-            if (type == typeof(short))
-                result = (short)obj;
-            if (type == typeof(ushort))
-                result = (ushort)obj;
-            if (type == typeof(int))
-                result = (int)obj;
-            if (type == typeof(uint))
-                result = (uint)obj;
-            if (type == typeof(long))
-                result = (long)obj;
-            if (type == typeof(ulong))
-                result = (ulong)obj;
-            if (type == typeof(float))
-                result = (float)obj;
-            if (type == typeof(double))
-                result = (double)obj;
-            if (type == typeof(decimal))
-                result = (double)(decimal)obj;
-            return result;
-        }
         /// <summary>
         /// Casts an object to a specified numeric type.
         /// </summary>
         /// <param name="obj">Any object</param>
         /// <param name="type">Numric type</param>
         /// <returns>Numeric value or null if the object is not a numeric value.</returns>
-        public static object CastToNumericType(this Type type, object obj)
+        [NotNull]
+        public static object CastToNumericType([NotNull] this Type type, object obj)
         {
-            var doubleValue = CastToDouble(obj);
-            if (Double.IsNaN(doubleValue))
-                return null;
+            if (!type.IsNumeric())
+                throw new InvalidOperationException($"{type} is not a valid numeric type");
 
             if (obj is decimal && type == typeof(decimal))
                 return obj; // do not convert into double
 
-            object result = null;
-            if (type == typeof(sbyte))
-                result = (sbyte)doubleValue;
-            if (type == typeof(byte))
-                result = (byte)doubleValue;
-            if (type == typeof(short))
-                result = (short)doubleValue;
-            if (type == typeof(ushort))
-                result = (ushort)doubleValue;
-            if (type == typeof(int))
-                result = (int)doubleValue;
-            if (type == typeof(uint))
-                result = (uint)doubleValue;
-            if (type == typeof(long))
-                result = (long)doubleValue;
-            if (type == typeof(ulong))
-                result = (ulong)doubleValue;
-            if (type == typeof(float))
-                result = (float)doubleValue;
-            if (type == typeof(double))
-                result = doubleValue;
-            if (type == typeof(decimal))
-                result = (decimal)doubleValue;
-            return result;
+            var doubleValue = Convert.ToDouble(obj);
+            unchecked
+            {
+                if (type == typeof(sbyte))
+                    return (sbyte)doubleValue;
+                if (type == typeof(byte))
+                    return (byte)doubleValue;
+                if (type == typeof(short))
+                    return (short)doubleValue;
+                if (type == typeof(ushort))
+                    return (ushort)doubleValue;
+                if (type == typeof(int))
+                    return (int)doubleValue;
+                if (type == typeof(uint))
+                    return (uint)doubleValue;
+                if (type == typeof(long))
+                    return (long)doubleValue;
+                if (type == typeof(ulong))
+                    return (ulong)doubleValue;
+                if (type == typeof(float))
+                    return (float)doubleValue;
+                if (type == typeof(double))
+                    return doubleValue;
+                if (type == typeof(decimal))
+                    return (decimal)doubleValue;
+            }
+            // Note: this should never happen
+            throw new NotSupportedException();
         }
-        
+
         /// <summary>
         /// Check if the type is a ValueType and does not contain any non ValueType members.
         /// </summary>
@@ -202,6 +171,30 @@ namespace SiliconStudio.Core.Reflection
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Convert a collection of objects or primitives, and convert (or unbox) each element to a double.
+        /// Incompatible elements are not added to the list, therefore the resulting collection Count might differ.
+        /// </summary>
+        /// <param name="collection">source enumerable, can be a system array of primitives, or a collection of boxed numeric types</param>
+        /// <returns>Converted collection</returns>
+        [NotNull]
+        public static List<double> ToListOfDoubles([NotNull] this IList collection)
+        {
+            var result = new List<double>(collection.Count);
+            foreach (var v in collection)
+            {
+                if (v.GetType().IsPrimitive)
+                    result.Add((double)v);
+                else
+                {
+                    var unboxed = (double)typeof(double).CastToNumericType(v);
+                    if (!double.IsNaN(unboxed))
+                        result.Add(unboxed);
+                }
+            }
+            return result;
         }
     }
 }

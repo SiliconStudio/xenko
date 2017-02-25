@@ -146,23 +146,5 @@ namespace SiliconStudio.Core.Extensions
                 node = node.Next;
             }
         }
-
-        /// <summary>
-        /// for non generic IEnumerable. ref thread http://stackoverflow.com/questions/5604168/calculating-count-for-ienumerable-non-generic
-        /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        public static int Count(this IEnumerable source)
-        {
-            var col = source as ICollection;
-            if (col != null)
-                return col.Count;
-
-            int res = 0;
-            foreach (var item in source)
-                res++;
-
-            return res;
-        }
     }
 }

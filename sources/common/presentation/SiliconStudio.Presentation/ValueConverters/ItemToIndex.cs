@@ -4,11 +4,11 @@
 using System;
 using System.Linq;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -26,13 +26,13 @@ namespace SiliconStudio.Presentation.ValueConverters
                 if (res != -1)
                     return res;
                 // if we're here, it failed. Attempt #2 by using a normalizing (to doubles) conversion:
-                var asDoubles = SiliconStudio.Core.Reflection.TypeExtensions.ToListOfDoubles(collection);
+                var asDoubles = collection.ToListOfDoubles();
                 if (asDoubles.IsNullOrEmpty())
                     return -1;   // there were no numeric types in this collection.
                 Debug.Assert(asDoubles.SequenceEqual(asDoubles.OrderBy(d => d)));
                 var search = asDoubles.BinarySearch((double)value);
                 if (search < 0) // API : it returns a 1-complement of the index if an exact match is not found.
-                    search = Math.Min(~search, collection.Count() - 1);
+                    search = Math.Min(~search, collection.Count - 1);
                 return search;
             }
             return -1;
