@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Quantum.Visitors;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 
@@ -222,21 +220,7 @@ namespace SiliconStudio.Assets.Quantum
                 preCloningAsset.RemapIdentifiableIds(idRemapping);
             }
 
-            foreach (var rootEntity in clonedHierarchy.RootPartIds)
-            {
-                PostClonePart(clonedHierarchy.Parts[rootEntity].Part);
-            }
-
             return clonedHierarchy;
-        }
-
-        /// <summary>
-        /// Called by <see cref="CloneSubHierarchies"/> after a part has been cloned.
-        /// </summary>
-        /// <param name="part">The cloned part.</param>
-        protected virtual void PostClonePart(TAssetPart part)
-        {
-            // default implementation does nothing
         }
 
         public override GraphVisitorBase CreateReconcilierVisitor()
