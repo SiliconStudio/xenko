@@ -245,21 +245,6 @@ namespace SiliconStudio.Assets.Quantum
         }
 
 
-        public override bool IsReferencedPart(IMemberNode member, IGraphNode targetNode)
-        {
-            // If we're not accessing the target node through a member (eg. the target node is the root node of the visit)
-            // or if we're visiting the member itself and not yet its target, then we're not a referenced part.
-            if (member == null || targetNode == null || member == targetNode)
-                return false;
-
-            if (typeof(TAssetPart).IsAssignableFrom(targetNode.Type))
-            {
-                // Check if we're the part referenced by a part design - other cases are references
-                return member.Parent.Type != typeof(TAssetPartDesign);
-            }
-            return base.IsReferencedPart(member, targetNode);
-        }
-
         /// <summary>
         /// Adds the given child part to the list of children of the given parent part.
         /// </summary>

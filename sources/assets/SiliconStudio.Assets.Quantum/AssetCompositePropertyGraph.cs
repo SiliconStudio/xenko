@@ -12,12 +12,6 @@ namespace SiliconStudio.Assets.Quantum
         {
         }
 
-        [Obsolete("This method will be removed soon")]
-        public virtual bool IsReferencedPart(IMemberNode member, IGraphNode targetNode)
-        {
-            return false;
-        }
-
         public override GraphVisitorBase CreateReconcilierVisitor()
         {
             return new AssetGraphVisitorBase(this);
