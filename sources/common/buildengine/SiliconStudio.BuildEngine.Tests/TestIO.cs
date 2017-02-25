@@ -10,7 +10,7 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.BuildEngine.Tests
 {
-    [TestFixture]
+    [TestFixture, Ignore("BuildEngine tests are deprecated")]
     class TestIO
     {
         private static void CommonSingleOutput(bool executeRemotely)
