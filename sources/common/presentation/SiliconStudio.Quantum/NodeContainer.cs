@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum
 {
@@ -131,7 +132,10 @@ namespace SiliconStudio.Quantum
                 if (result != null)
                 {
                     // Register reference objects
-                    nodesByObject.Add(rootObject, result);
+                    if (!(result is BoxedNode))
+                    {
+                        nodesByObject.Add(rootObject, result);
+                    }
                     // Create or update nodes of referenced objects
                     UpdateReferencesInternal(result);
                 }
