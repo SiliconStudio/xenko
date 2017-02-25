@@ -154,7 +154,7 @@ namespace SiliconStudio.Xenko.Engine
 
                 var children = current.Transform.Children;
 
-                for (int i = 0; i < children.Count; i++)
+                for (int i = children.Count - 1; i >= 0; i--)
                 {
                     stack.Push(children[i].Entity);
                 }
