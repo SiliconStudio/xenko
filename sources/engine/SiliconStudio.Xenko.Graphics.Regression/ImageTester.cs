@@ -85,7 +85,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             }
         }
 
-        public static bool RequestImageComparisonStatus(string testName)
+        public static bool RequestImageComparisonStatus(ref string testName)
         {
             if (!Connect())
                 throw new InvalidOperationException("Could not connect to image comparer server");

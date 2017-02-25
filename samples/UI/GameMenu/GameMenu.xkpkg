@@ -1,7 +1,6 @@
 !Package
 Id: d381be88-451f-4701-a0e5-64992d2bf627
 SerializedVersion: {Assets: 0.0.4}
-Tags: []
 Meta:
     Name: GameMenu
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.9.4-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:

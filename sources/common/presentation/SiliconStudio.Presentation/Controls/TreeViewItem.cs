@@ -104,8 +104,8 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        private bool IsExpandableOnInput => IsEnabled;
-        
+        private bool CanExpandOnInput => CanExpand && IsEnabled;
+
         // Synchronizes the value of the child's IsVirtualizing property with that of the parent's
         internal static void IsVirtualizingPropagationHelper([NotNull] DependencyObject parent, [NotNull] DependencyObject element)
         {
@@ -217,61 +217,91 @@ namespace SiliconStudio.Presentation.Controls
             if (e.Handled)
                 return;
 
-            var key = e.Key;
-            switch (key)
+            switch (e.Key)
             {
-                case Key.Left:
-                    if (IsExpanded)
+                case Key.Add:
+                    if (CanExpandOnInput && !IsExpanded)
                     {
-                        IsExpanded = false;
+                        SetCurrentValue(IsExpandedProperty, true);
+                        e.Handled = true;
                     }
+                    break;
 
-                    e.Handled = true;
+                case Key.Subtract:
+                    if (CanExpandOnInput && IsExpanded)
+                    {
+                        SetCurrentValue(IsExpandedProperty, false);
+                        e.Handled = true;
+                    }
                     break;
+
+                case Key.Left:
                 case Key.Right:
-                    IsExpanded = true;
+                    if (LogicalLeft(e.Key))
+                    {
+                        if (CanExpandOnInput && IsExpanded)
+                        {
+                            if (IsFocused)
+                            {
+                                SetCurrentValue(IsExpandedProperty, false);
+                            }
+                            else
+                            {
+                                Focus();
+                            }
+                        }
+                        else
+                        {
+                            ParentTreeView.SelectParentFromKey();
+                        }
+                    }
+                    else
+                    {
+                        if (CanExpandOnInput)
+                        {
+                            if (!IsExpanded)
+                            {
+                                SetCurrentValue(IsExpandedProperty, true);
+                            }
+                            else
+                            {
+                                ParentTreeView.SelectNextFromKey();
+                            }
+                        }
+                    }
                     e.Handled = true;
                     break;
-                case Key.Up:
-                    ParentTreeView.SelectPreviousFromKey();
-                    e.Handled = true;
-                    break;
+
                 case Key.Down:
                     ParentTreeView.SelectNextFromKey();
                     e.Handled = true;
                     break;
-                case Key.Add:
-                    if (IsExpandableOnInput && !IsExpanded)
-                    {
-                        IsExpanded = true;
-                    }
 
+                case Key.Up:
+                    ParentTreeView.SelectPreviousFromKey();
                     e.Handled = true;
                     break;
-                case Key.Subtract:
-                    if (IsExpandableOnInput && IsExpanded)
-                    {
-                        IsExpanded = false;
-                    }
 
-                    e.Handled = true;
-                    break;
                 case Key.F2:
                     e.Handled = StartEditing();
                     break;
+
                 case Key.Escape:
                 case Key.Return:
                     StopEditing();
                     e.Handled = true;
                     break;
+
                 case Key.Space:
                     ParentTreeView.SelectCurrentBySpace();
                     e.Handled = true;
                     break;
+
                 case Key.Home:
                     ParentTreeView.SelectFirst();
                     e.Handled = true;
                     break;
+
                 case Key.End:
                     ParentTreeView.SelectLast();
                     e.Handled = true;
@@ -331,15 +361,6 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
-        {
-            base.OnMouseDoubleClick(e);
-            if (IsKeyboardFocused)
-            {
-                IsExpanded = !IsExpanded;
-            }
-        }
-
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
             //if (e.Property.Name == "IsEditing")
@@ -363,6 +384,12 @@ namespace SiliconStudio.Presentation.Controls
             }
 
             base.OnPropertyChanged(e);
+        }
+
+        private bool LogicalLeft(Key key)
+        {
+            bool invert = (FlowDirection == FlowDirection.RightToLeft);
+            return (!invert && (key == Key.Left)) || (invert && (key == Key.Right));
         }
 
         private void StopEditing()

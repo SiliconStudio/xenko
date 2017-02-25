@@ -1,7 +1,6 @@
 !Package
 Id: c148408b-43bc-465c-825a-d74b122377ef
 SerializedVersion: {Assets: 0.0.4}
-Tags: []
 Meta:
     Name: SpriteFonts
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.9.4-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:

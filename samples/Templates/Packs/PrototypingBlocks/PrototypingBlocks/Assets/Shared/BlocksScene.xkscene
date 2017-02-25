@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 23bec781-4d51-45db-bdf4-8e93d693f53f
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.9.0-beta06}
 Tags: []
 SceneSettings:
     Id: de1a2e1e-f9a6-4855-aca9-cbdc6a709485
@@ -486,7 +486,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            cafed28ac2678c4e84c546d7570eabd3: 70d45250-c961-47c6-97a9-447839db5b89/8ad2feca-67c2-4e8c-84c5-46d7570eabd3
+                            cafed28ac2678c4e84c546d7570eabd3: 70d45250-c961-47c6-97a9-447839db5b89/53302914-47e4-483c-aaad-7b11dc07dd74
         -   Entity:
                 Id: 3191eaea-de10-4f59-b97e-c94d72e7eaf7
                 Name: Floor1x0x1
@@ -797,7 +797,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            1fd94bf6112e05418d8b81f8ee7c0a28: 6b97ead6-cee3-4c7d-9ad2-0385a99ff0b9/f64bd91f-2e11-4105-8d8b-81f8ee7c0a28
+                            1fd94bf6112e05418d8b81f8ee7c0a28: 6b97ead6-cee3-4c7d-9ad2-0385a99ff0b9/a2b71446-c6de-4859-89b5-6e663dd517ee
         -   Entity:
                 Id: 698c8aeb-9f1a-4192-9270-21f53ec19dd5
                 Name: Wall0x1x2
@@ -846,18 +846,18 @@ Hierarchy:
                 Name: Stairs1x1x2
                 Components:
                     1fd94bf6112e05418d8b81f8ee7c0a28: !TransformComponent
-                        Id: f64bd91f-2e11-4105-8d8b-81f8ee7c0a28
+                        Id: a2b71446-c6de-4859-89b5-6e663dd517ee
                         Position: {X: 0.5, Y: 0.5, Z: 0.9999991}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     289202be5050af41832ce05e2d398d2c: !ModelComponent
-                        Id: be029228-5050-41af-832c-e05e2d398d2c
+                        Id: f7d311a3-523a-423c-b3a2-68010438b730
                         Model: da028d29-e641-4020-8977-dafaaf656ad4:Models/Stairs1x1x2
                         Materials:
                             74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     01635891d64e2c4d98af82259f64e540: !StaticColliderComponent
-                        Id: 91586301-4ed6-4d2c-98af-82259f64e540
+                        Id: 9be1c5f1-c549-4f1a-9b31-988c94acef38
                         ProcessCollisions: false
                         CanSleep: true
                         Restitution: 0.0
@@ -985,18 +985,18 @@ Hierarchy:
                 Name: Box1x1x1
                 Components:
                     cafed28ac2678c4e84c546d7570eabd3: !TransformComponent
-                        Id: 8ad2feca-67c2-4e8c-84c5-46d7570eabd3
+                        Id: 53302914-47e4-483c-aaad-7b11dc07dd74
                         Position: {X: 0.5, Y: 0.5, Z: 0.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     7807e4f88759f5408bc713431dfc8978: !ModelComponent
-                        Id: f8e40778-5987-40f5-8bc7-13431dfc8978
+                        Id: c6e3bd60-b096-43b5-b7e1-f04bcf42b1aa
                         Model: b36be3fb-1496-44c7-97ea-2d523feff017:Models/Box1x1x1
                         Materials:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     793d2ad2924e3a48a2a869b11f5df718: !StaticColliderComponent
-                        Id: d22a3d79-4e92-483a-a2a8-69b11f5df718
+                        Id: 71aee751-a90d-44d7-a179-7e26423a298c
                         ProcessCollisions: false
                         CanSleep: true
                         Restitution: 0.0
@@ -1055,18 +1055,18 @@ Hierarchy:
                 Name: Wall0x4x10Window
                 Components:
                     c444819e77a60441a6144bd7bd8a4a23: !TransformComponent
-                        Id: 9e8144c4-a677-4104-a614-4bd7bd8a4a23
+                        Id: 84d708ec-895a-4412-84a4-ba4e86dde44d
                         Position: {X: 7.15255737E-07, Y: 2.0, Z: 5.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     929137effba4784bb4b45ab26c3db478: !ModelComponent
-                        Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
+                        Id: f33de5f8-e332-4900-a061-58923e7bb532
                         Model: 6160d544-c3ef-4486-974b-bc12362f6a4d:Models/Wall0x4x10Window
                         Materials:
                             90d9553b3c94da408c6e74641aca864b~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
-                        Id: 54296566-3557-4b24-a050-097255e092f8
+                        Id: b5cbb817-768b-401b-b771-b0d7db39b278
                         ProcessCollisions: false
                         CanSleep: true
                         Restitution: 0.0
@@ -1115,18 +1115,18 @@ Hierarchy:
                 Name: Box4x2x1
                 Components:
                     cafed28ac2678c4e84c546d7570eabd3: !TransformComponent
-                        Id: 8ad2feca-67c2-4e8c-84c5-46d7570eabd3
+                        Id: debdcdb1-904e-4a2b-8c30-51846577d654
                         Position: {X: 2.0, Y: 1.0, Z: 0.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     7807e4f88759f5408bc713431dfc8978: !ModelComponent
-                        Id: f8e40778-5987-40f5-8bc7-13431dfc8978
+                        Id: 41d94d74-bbbe-4304-b372-0c22efcc46d5
                         Model: 8716437c-7a19-4a59-840a-3f3e91214205:Models/Box4x2x1
                         Materials:
                             97cb539b4d6079458c5ef344e58d8e55~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     793d2ad2924e3a48a2a869b11f5df718: !StaticColliderComponent
-                        Id: d22a3d79-4e92-483a-a2a8-69b11f5df718
+                        Id: 98b8c84f-8235-45e9-9b76-7c143deeb4c0
                         ProcessCollisions: false
                         CanSleep: true
                         Restitution: 0.0
@@ -1196,18 +1196,18 @@ Hierarchy:
                 Name: Floor5x0x2
                 Components:
                     60662553bdfa37429f6fafb13c6d383f: !TransformComponent
-                        Id: 53256660-fabd-4237-9f6f-afb13c6d383f
+                        Id: 91607c85-1158-4d61-b2c9-b23a90ff726d
                         Position: {X: 2.5, Y: 0.0, Z: 1.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     2589c63c3644494c91c358778fd622b0: !ModelComponent
-                        Id: 3cc68925-4436-4c49-91c3-58778fd622b0
+                        Id: dc85e411-172a-43dd-9e5d-84f78919134b
                         Model: ac849bac-7dd5-4a3d-af3b-4f0b83d432ab:Models/Floor5x0x2
                         Materials:
                             97cb539b4d6079458c5ef344e58d8e55~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     8f2d709e00a8674d8f31b62fda1f5a47: !StaticColliderComponent
-                        Id: 9e702d8f-a800-4d67-8f31-b62fda1f5a47
+                        Id: 030d9db3-6d80-4b2d-9979-39a276b6ab87
                         ProcessCollisions: false
                         CanSleep: true
                         Restitution: 0.0
@@ -1461,7 +1461,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            c444819e77a60441a6144bd7bd8a4a23: 87c2375a-9323-4188-a39d-6e53a180317f/9e8144c4-a677-4104-a614-4bd7bd8a4a23
+                            c444819e77a60441a6144bd7bd8a4a23: 87c2375a-9323-4188-a39d-6e53a180317f/84d708ec-895a-4412-84a4-ba4e86dde44d
         -   Entity:
                 Id: c6412b9a-5187-4dde-9fe5-650f3adf1b38
                 Name: Floor3x0x1
@@ -1604,7 +1604,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            60662553bdfa37429f6fafb13c6d383f: 96784167-2595-4c49-a3ae-582ae69b712d/53256660-fabd-4237-9f6f-afb13c6d383f
+                            60662553bdfa37429f6fafb13c6d383f: 96784167-2595-4c49-a3ae-582ae69b712d/91607c85-1158-4d61-b2c9-b23a90ff726d
         -   Entity:
                 Id: eddc0db3-145b-4e17-8e34-aa466e5fa31e
                 Name: Stairs1x1x1_25
@@ -1737,4 +1737,4 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            cafed28ac2678c4e84c546d7570eabd3: 8b0f6a3e-37c2-44b1-b3b8-bddb0c8629cd/8ad2feca-67c2-4e8c-84c5-46d7570eabd3
+                            cafed28ac2678c4e84c546d7570eabd3: 8b0f6a3e-37c2-44b1-b3b8-bddb0c8629cd/debdcdb1-904e-4a2b-8c30-51846577d654
