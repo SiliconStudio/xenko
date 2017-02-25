@@ -7,13 +7,9 @@ using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Reflection;
-using SiliconStudio.Xenko.Assets.Scripts;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Compositing;
 
@@ -37,8 +33,9 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [AssetDescription(FileExtension)]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetCompiler(typeof(GraphicsCompositorAssetCompiler))]
-    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.10.0-beta01", typeof(FixPartReferenceUpgrader))]
-    public class GraphicsCompositorAsset : AssetComposite
+    // TODO: remove this upgrader (and turn it back protected) before releasing 1.10 or above (needed only for internal upgrades)
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.10.0-beta01", typeof(AssetComposite.FixPartReferenceUpgrader))]
+    public class GraphicsCompositorAsset : Asset
     {
         private const string CurrentVersion = "1.10.0-beta01";
 
@@ -94,50 +91,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// The entry point for a compositor used by the scene editor.
         /// </summary>
         public ISceneRenderer Editor { get; set; }
-
-        /// <inheritdoc/>
-        public override IEnumerable<AssetPart> CollectParts()
-        {
-            foreach (var renderStage in RenderStages)
-                yield return new AssetPart(renderStage.Id, null, newBase => {});
-            foreach (var sharedRenderer in SharedRenderers)
-                yield return new AssetPart(sharedRenderer.Id, null, newBase => { });
-        }
-
-        /// <inheritdoc/>
-        public override IIdentifiable FindPart(Guid partId)
-        {
-            foreach (var renderStage in RenderStages)
-            {
-                if (renderStage.Id == partId)
-                    return renderStage;
-            }
-
-            foreach (var sharedRenderer in SharedRenderers)
-            {
-                if (sharedRenderer.Id == partId)
-                    return sharedRenderer;
-            }
-
-            return null;
-        }
-
-        /// <inheritdoc/>
-        public override bool ContainsPart(Guid partId)
-        {
-            foreach (var renderStage in RenderStages)
-            {
-                if (renderStage.Id == partId)
-                    return true;
-            }
-            foreach (var sharedRenderer in SharedRenderers)
-            {
-                if (sharedRenderer.Id == partId)
-                    return true;
-            }
-
-            return false;
-        }
 
         public GraphicsCompositor Compile(bool copyRenderers)
         {
