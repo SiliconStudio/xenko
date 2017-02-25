@@ -3,10 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
 {
@@ -16,8 +16,9 @@ namespace SiliconStudio.Assets
     [DataContract(Inherited = true)]
     public abstract class Asset : IIdentifiable
     {
-        private Guid id;
+        private AssetId id;
 
+        // Note: Please keep this code in sync with Package class
         /// <summary>
         /// Locks the unique identifier for further changes.
         /// </summary>
@@ -28,10 +29,10 @@ namespace SiliconStudio.Assets
         /// </summary>
         protected Asset()
         {
-            Id = Guid.NewGuid();
+            Id = AssetId.New();
             Tags = new TagCollection();
 
-            // Initializse asset with default versions
+            // Initializse asset with default versions (same code as in Package..ctor())
             var defaultPackageVersion = AssetRegistry.GetCurrentFormatVersions(GetType());
             if (defaultPackageVersion != null)
             {
@@ -49,10 +50,12 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The identifier.</value>
         /// <exception cref="System.InvalidOperationException">Cannot change an Asset Object Id once it is locked</exception>
-        [DataMember(-2000)]
+        [DataMember(-10000)]
+        [NonOverridable]
         [Display(Browsable = false)]
-        public Guid Id
+        public AssetId Id
         {
+            // Note: Please keep this code in sync with Package class
             get
             {
                 return id;
@@ -66,52 +69,18 @@ namespace SiliconStudio.Assets
             }
         }
 
+        // Note: Please keep this code in sync with Package class
         /// <summary>
         /// Gets or sets the version number for this asset, used internally when migrating assets.
         /// </summary>
         /// <value>The version.</value>
-        [DataMember(-1000, DataMemberMode.Assign)]
+        [DataMember(-8000, DataMemberMode.Assign)]
         [DataStyle(DataStyle.Compact)]
         [Display(Browsable = false)]
         [DefaultValue(null)]
+        [NonOverridable]
+        [NonIdentifiableCollectionItems]
         public Dictionary<string, PackageVersion> SerializedVersion { get; set; }
-
-        /// <summary>
-        /// Gets or sets the base.
-        /// </summary>
-        /// <value>The base.</value>
-        [DataMember(int.MaxValue - 2000, BaseProperty), DefaultValue(null)]
-        [Display(Browsable = false)]
-        public AssetBase Base { get; set; }
-
-        /// <summary>
-        /// The YAML serialized name of the <see cref="Base"/> property.
-        /// </summary>
-        public const string BaseProperty = "~" + nameof(Base);
-
-        /// <summary>
-        /// Gets or sets the base for part assets.
-        /// </summary>
-        /// <value>The part assets.</value>
-        [DataMember(int.MaxValue - 1000, BasePartsProperty), DefaultValue(null)]
-        [Display(Browsable = false)]
-        [MemberCollection(NotNullItems = true)]
-        public List<AssetBase> BaseParts { get; set; }
-
-        /// <summary>
-        /// The YAML serialized name of the <see cref="BaseParts"/> property.
-        /// </summary>
-        public const string BasePartsProperty = "~" + nameof(BaseParts);
-
-        /// <summary>
-        /// Gets or sets the build order for this asset.
-        /// </summary>
-        /// <value>The build order.</value>
-        [DataMember(-980)]
-        [DefaultValue(0)]
-        [Display(Browsable = false)]
-        [Obsolete]
-        public int BuildOrder { get; set; }
 
         /// <summary>
         /// Gets the tags for this asset.
@@ -119,10 +88,18 @@ namespace SiliconStudio.Assets
         /// <value>
         /// The tags for this asset.
         /// </value>
-        [DataMember(-900)]
+        [DataMember(-1000)]
         [Display(Browsable = false)]
+        [NonIdentifiableCollectionItems]
+        [NonOverridable]
         [MemberCollection(NotNullItems = true)]
         public TagCollection Tags { get; private set; }
+
+        [DataMember(-500)]
+        [Display(Browsable = false)]
+        [NonOverridable]
+        [DefaultValue(null)]
+        public AssetReference Archetype { get; set; }
 
         /// <summary>
         /// Gets the main source file for this asset, used in the editor.
@@ -130,53 +107,59 @@ namespace SiliconStudio.Assets
         [DataMemberIgnore]
         public virtual UFile MainSource => null;
 
+        /// <inheritdoc/>
+        Guid IIdentifiable.Id { get { return (Guid)Id; } set { Id = (AssetId)value; } }
+
+        /// <summary>
+        /// Creates an asset that inherits from this asset.
+        /// </summary>
+        /// <param name="baseLocation">The location of this asset.</param>
+        /// <returns>An asset that inherits this asset instance</returns>
+        // TODO: turn internal protected and expose only AssetItem.CreateDerivedAsset()
+        public Asset CreateDerivedAsset(string baseLocation)
+        {
+            Dictionary<Guid, Guid> idRemapping;
+            return CreateDerivedAsset(baseLocation, out idRemapping);
+        }
+
         /// <summary>
         /// Creates an asset that inherits from this asset.
         /// </summary>
         /// <param name="baseLocation">The location of this asset.</param>
         /// <param name="idRemapping">A dictionary in which will be stored all the <see cref="Guid"/> remapping done for the child asset.</param>
         /// <returns>An asset that inherits this asset instance</returns>
-        public virtual Asset CreateChildAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
+        // TODO: turn internal protected and expose only AssetItem.CreateDerivedAsset()
+        public virtual Asset CreateDerivedAsset(string baseLocation, out Dictionary<Guid, Guid> idRemapping)
         {
             if (baseLocation == null) throw new ArgumentNullException(nameof(baseLocation));
 
-            // Clone this asset to make the base
-            var assetBase = (Asset)AssetCloner.Clone(this);
+            // Make sure we have identifiers for all items
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(this);
 
-            // Clone it again without the base and without overrides (as we want all parameters to inherit from base)
-            var newAsset = (Asset)AssetCloner.Clone(assetBase, AssetClonerFlags.RemoveOverrides);
+            // Clone this asset without overrides (as we want all parameters to inherit from base)
+            var newAsset = AssetCloner.Clone(this, AssetClonerFlags.GenerateNewIdsForIdentifiableObjects, out idRemapping);
 
             // Create a new identifier for this asset
-            var newId = Guid.NewGuid();
+            var newId = AssetId.New();
 
             // Register this new identifier in the remapping dictionary
-            idRemapping?.Add(newAsset.Id, newId);
+            idRemapping?.Add((Guid)newAsset.Id, (Guid)newId);
             
             // Write the new id into the new asset.
             newAsset.Id = newId;
 
             // Create the base of this asset
-            newAsset.Base = new AssetBase(baseLocation, assetBase);
+            newAsset.Archetype = new AssetReference(Id, baseLocation);
             return newAsset;
         }
 
         /// <summary>
-        /// Merge an asset with its base, and new base and parts into this instance.
+        /// Resolves the actual target of references to a part or base part of this asset. Depending on whether <paramref name="clearMissingReferences"/> is <c>true</c>,
+        /// missing references will be cleared, or left as-is.
         /// </summary>
-        /// <param name="baseAsset">A copy of the base asset. Can be null if no base asset for newAsset</param>
-        /// <param name="newBase">A copy of the next base asset. Can be null if no base asset for newAsset.</param>
-        /// <param name="newBaseParts">A copy of the new base parts</param>
-        /// <param name="debugLocation">The location of the asset being merged, used only for debug/log purpose</param>
-        /// <returns>The result of the merge</returns>
-        /// <remarks>The this instance is not used by this method.</remarks>
-        public virtual MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBase> newBaseParts, UFile debugLocation = null)
+        /// <param name="clearMissingReferences"><c>true</c> to clear missing references to parts or base parts; otherwise, <c>false</c>.</param>
+        public virtual void FixupPartReferences(bool clearMissingReferences = true)
         {
-            var diff = new AssetDiff(baseAsset, this, newBase)
-            {
-                UseOverrideMode = true
-            };
-
-            return AssetMerge.Merge(diff, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
         }
 
         public override string ToString()

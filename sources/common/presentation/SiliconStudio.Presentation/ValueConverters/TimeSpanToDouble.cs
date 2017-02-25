@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Globalization;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -11,6 +12,7 @@ namespace SiliconStudio.Presentation.ValueConverters
     public class TimeSpanToDouble : ValueConverterBase<TimeSpanToDouble>
     {
         /// <inheritdoc/>
+        [NotNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var timeSpan = (TimeSpan)value;
@@ -18,6 +20,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         }
 
         /// <inheritdoc/>
+        [NotNull]
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var seconds = ConverterHelper.ConvertToDouble(value, culture);

@@ -9,7 +9,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Threading;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -25,17 +27,17 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="IsEditable"/> dependency property.
         /// </summary>
         public static DependencyProperty IsEditableProperty =
-            DependencyProperty.Register(nameof(IsEditable), typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(true, null));
+            DependencyProperty.Register(nameof(IsEditable), typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(BooleanBoxes.TrueBox, null));
         /// <summary>
         /// Identifies the <see cref="IsEditing"/> dependency property.
         /// </summary>
         public static DependencyProperty IsEditingProperty =
-            DependencyProperty.Register(nameof(IsEditing), typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(false, OnIsEditingChanged));
+            DependencyProperty.Register(nameof(IsEditing), typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(BooleanBoxes.FalseBox, OnIsEditingChanged));
         /// <summary>
         /// Identifies the <see cref="IsSelected"/> dependency property.
         /// </summary>
         public static DependencyProperty IsSelectedProperty =
-            DependencyProperty.Register(nameof(IsSelected), typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(false, null));
+            DependencyProperty.Register(nameof(IsSelected), typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(BooleanBoxes.FalseBox, null));
         /// <summary>
         /// Identifies the <see cref="TemplateEdit"/> dependency property.
         /// </summary>
@@ -63,16 +65,16 @@ namespace SiliconStudio.Presentation.Controls
 
             KeyboardNavigation.DirectionalNavigationProperty.OverrideMetadata(typeof(TreeViewItem), new FrameworkPropertyMetadata(KeyboardNavigationMode.Continue));
             KeyboardNavigation.TabNavigationProperty.OverrideMetadata(typeof(TreeViewItem), new FrameworkPropertyMetadata(KeyboardNavigationMode.None));
-            IsTabStopProperty.OverrideMetadata(typeof(TreeViewItem), new FrameworkPropertyMetadata(false));
+            IsTabStopProperty.OverrideMetadata(typeof(TreeViewItem), new FrameworkPropertyMetadata(BooleanBoxes.FalseBox));
         }
 
-        public bool IsEditable { get { return (bool)GetValue(IsEditableProperty); } set { SetValue(IsEditableProperty, value); } }
+        public bool IsEditable { get { return (bool)GetValue(IsEditableProperty); } set { SetValue(IsEditableProperty, value.Box()); } }
 
-        public bool IsEditing { get { return (bool)GetValue(IsEditingProperty); } set { SetValue(IsEditingProperty, value); } }
+        public bool IsEditing { get { return (bool)GetValue(IsEditingProperty); } set { SetValue(IsEditingProperty, value.Box()); } }
 
         public double Indentation { get { return (double)GetValue(IndentationProperty); } set { SetValue(IndentationProperty, value); } }
 
-        public bool IsSelected { get { return (bool)GetValue(IsSelectedProperty); } set { SetValue(IsSelectedProperty, value); } }
+        public bool IsSelected { get { return (bool)GetValue(IsSelectedProperty); } set { SetValue(IsSelectedProperty, value.Box()); } }
 
         public DataTemplate TemplateEdit { get { return (DataTemplate)GetValue(TemplateEditProperty); } set { SetValue(TemplateEditProperty, value); } }
 
@@ -80,7 +82,7 @@ namespace SiliconStudio.Presentation.Controls
 
         [DependsOn("Indentation")]
         public double Offset => ParentTreeViewItem?.Offset + Indentation ?? 0;
-
+        
         public TreeViewItem ParentTreeViewItem => ItemsControlFromItemContainer(this) as TreeViewItem;
 
         public TreeView ParentTreeView { get; internal set; }
@@ -102,16 +104,16 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        private bool IsExpandableOnInput => IsEnabled;
-        
+        private bool CanExpandOnInput => CanExpand && IsEnabled;
+
         // Synchronizes the value of the child's IsVirtualizing property with that of the parent's
-        internal static void IsVirtualizingPropagationHelper(DependencyObject parent, DependencyObject element)
+        internal static void IsVirtualizingPropagationHelper([NotNull] DependencyObject parent, [NotNull] DependencyObject element)
         {
             SynchronizeValue(VirtualizingStackPanel.IsVirtualizingProperty, parent, element);
             SynchronizeValue(VirtualizingStackPanel.VirtualizationModeProperty, parent, element);
         }
 
-        private static void SynchronizeValue(DependencyProperty dp, DependencyObject parent, DependencyObject child)
+        private static void SynchronizeValue([NotNull] DependencyProperty dp, [NotNull] DependencyObject parent, [NotNull] DependencyObject child)
         {
             var value = parent.GetValue(dp);
             child.SetValue(dp, value);
@@ -215,61 +217,91 @@ namespace SiliconStudio.Presentation.Controls
             if (e.Handled)
                 return;
 
-            var key = e.Key;
-            switch (key)
+            switch (e.Key)
             {
-                case Key.Left:
-                    if (IsExpanded)
+                case Key.Add:
+                    if (CanExpandOnInput && !IsExpanded)
                     {
-                        IsExpanded = false;
+                        SetCurrentValue(IsExpandedProperty, true);
+                        e.Handled = true;
                     }
+                    break;
 
-                    e.Handled = true;
+                case Key.Subtract:
+                    if (CanExpandOnInput && IsExpanded)
+                    {
+                        SetCurrentValue(IsExpandedProperty, false);
+                        e.Handled = true;
+                    }
                     break;
+
+                case Key.Left:
                 case Key.Right:
-                    IsExpanded = true;
+                    if (LogicalLeft(e.Key))
+                    {
+                        if (CanExpandOnInput && IsExpanded)
+                        {
+                            if (IsFocused)
+                            {
+                                SetCurrentValue(IsExpandedProperty, false);
+                            }
+                            else
+                            {
+                                Focus();
+                            }
+                        }
+                        else
+                        {
+                            ParentTreeView.SelectParentFromKey();
+                        }
+                    }
+                    else
+                    {
+                        if (CanExpandOnInput)
+                        {
+                            if (!IsExpanded)
+                            {
+                                SetCurrentValue(IsExpandedProperty, true);
+                            }
+                            else
+                            {
+                                ParentTreeView.SelectNextFromKey();
+                            }
+                        }
+                    }
                     e.Handled = true;
                     break;
-                case Key.Up:
-                    ParentTreeView.SelectPreviousFromKey();
-                    e.Handled = true;
-                    break;
+
                 case Key.Down:
                     ParentTreeView.SelectNextFromKey();
                     e.Handled = true;
                     break;
-                case Key.Add:
-                    if (IsExpandableOnInput && !IsExpanded)
-                    {
-                        IsExpanded = true;
-                    }
 
+                case Key.Up:
+                    ParentTreeView.SelectPreviousFromKey();
                     e.Handled = true;
                     break;
-                case Key.Subtract:
-                    if (IsExpandableOnInput && IsExpanded)
-                    {
-                        IsExpanded = false;
-                    }
 
-                    e.Handled = true;
-                    break;
                 case Key.F2:
                     e.Handled = StartEditing();
                     break;
+
                 case Key.Escape:
                 case Key.Return:
                     StopEditing();
                     e.Handled = true;
                     break;
+
                 case Key.Space:
                     ParentTreeView.SelectCurrentBySpace();
                     e.Handled = true;
                     break;
+
                 case Key.Home:
                     ParentTreeView.SelectFirst();
                     e.Handled = true;
                     break;
+
                 case Key.End:
                     ParentTreeView.SelectLast();
                     e.Handled = true;
@@ -329,15 +361,6 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
-        {
-            base.OnMouseDoubleClick(e);
-            if (IsKeyboardFocused)
-            {
-                IsExpanded = !IsExpanded;
-            }
-        }
-
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
             //if (e.Property.Name == "IsEditing")
@@ -361,6 +384,12 @@ namespace SiliconStudio.Presentation.Controls
             }
 
             base.OnPropertyChanged(e);
+        }
+
+        private bool LogicalLeft(Key key)
+        {
+            bool invert = (FlowDirection == FlowDirection.RightToLeft);
+            return (!invert && (key == Key.Left)) || (invert && (key == Key.Right));
         }
 
         private void StopEditing()

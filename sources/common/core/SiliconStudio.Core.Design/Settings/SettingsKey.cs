@@ -261,7 +261,7 @@ namespace SiliconStudio.Core.Settings
             try
             {
                 var eventReader = new EventReader(new MemoryParser(parsingEvents));
-                return YamlSerializer.Deserialize(eventReader, Type);
+                return SettingsYamlSerializer.Default.Deserialize(eventReader, Type);
             }
             catch (Exception e)
             {

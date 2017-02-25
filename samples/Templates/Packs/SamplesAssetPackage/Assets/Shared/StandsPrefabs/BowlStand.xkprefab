@@ -1,9 +1,8 @@
 !PrefabAsset
 Id: 096eb3c7-390c-4135-871f-3dc0a5a554b7
-SerializedVersion: {Xenko: 1.9.0-beta01}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 Hierarchy:
-    ~Id: e8b31db9-3b82-4a58-b658-3565da4bdc0e
     RootPartIds:
         - c4ed5ffb-10c7-4afd-99a6-94297f77fe2c
     Parts:
@@ -11,14 +10,14 @@ Hierarchy:
                 Id: c4ed5ffb-10c7-4afd-99a6-94297f77fe2c
                 Name: BowlStand
                 Components:
-                    - !TransformComponent
-                        ~Id: e64cdcdd-ddb2-4c27-aff8-c03d63758cfc
-                        Children: []
+                    dddc4ce6b2dd274caff8c03d63758cfc: !TransformComponent
+                        Id: e64cdcdd-ddb2-4c27-aff8-c03d63758cfc
                         Position: {X: 0.0, Y: 0.0, Z: -0.712937236}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.5, Y: 1.5, Z: 1.5}
-                    - !ModelComponent
-                        ~Id: d97125a5-1c54-4689-bbb5-925290159529
-                        Model: 7fff850f-2055-41e9-8f3b-e8bf1c44c5c6/bf9b6939-78ab-44b1-aee5-ea23202deb4a:Models/standBowl
+                        Children: {}
+                    a52571d9541c8946bbb5925290159529: !ModelComponent
+                        Id: d97125a5-1c54-4689-bbb5-925290159529
+                        Model: bf9b6939-78ab-44b1-aee5-ea23202deb4a:Models/standBowl
                         Materials:
-                            - 8439e049-e0c6-409a-91d2-940d5f28ee3b/219e0c43-1fe7-42ce-9aa8-65aaa0023eb5:Materials/PolishedStone
+                            49e03984c6e09a4091d2940d5f28ee3b~0: 219e0c43-1fe7-42ce-9aa8-65aaa0023eb5:Materials/PolishedStone

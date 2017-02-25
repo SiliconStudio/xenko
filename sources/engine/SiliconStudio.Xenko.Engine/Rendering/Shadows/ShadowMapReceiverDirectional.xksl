@@ -48,19 +48,23 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 float nextSplit = CascadeDepthSplits[cascadeIndexBase + cascadeIndex];
                 float splitSize = cascadeIndex == 0 ? nextSplit : nextSplit - CascadeDepthSplits[cascadeIndexBase + cascadeIndex - 1];
                 float splitDist = (nextSplit - streams.DepthVS) / splitSize;
-                float lerpAmt = smoothstep(0.0f, 1.0f, splitDist);
 
-                if (cascadeIndex == TCascadeCount - 1)
+                if (splitDist < 0.2)
                 {
-                    if (!TDepthRangeAuto)
+                    float lerpAmt = smoothstep(0.0, 0.2, splitDist);
+
+                    if (cascadeIndex == TCascadeCount - 1)
                     {
-                        shadow = lerp(1.0f, shadow, lerpAmt);
+                        if (!TDepthRangeAuto)
+                        {
+                            shadow = lerp(1.0f, shadow, lerpAmt);
+                        }
                     }
-                }
-                else if (TBlendCascades)
-                {
-                    float nextShadow = ComputeShadowFromCascade(shadowPosition, cascadeIndex + 1, lightIndex);
-                    shadow = lerp(nextShadow, shadow, lerpAmt);
+                    else if (TBlendCascades)
+                    {
+                        float nextShadow = ComputeShadowFromCascade(shadowPosition, cascadeIndex + 1, lightIndex);
+                        shadow = lerp(nextShadow, shadow, lerpAmt);
+                    }
                 }
             }
 

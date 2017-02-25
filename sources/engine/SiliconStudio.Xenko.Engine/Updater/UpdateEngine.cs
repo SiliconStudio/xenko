@@ -90,12 +90,34 @@ namespace SiliconStudio.Xenko.Updater
         /// </summary>
         struct ComputeUpdateOperationState
         {
+            /// <summary>
+            /// Current list of update operations being built.
+            /// </summary>
             public List<UpdateOperation> UpdateOperations;
+
+            /// <summary>
+            /// Stack of the current path.
+            /// </summary>
             public List<AnimationBuilderStackEntry> StackPath;
+
             public int NewOffset;
             public int PreviousOffset;
+
+            /// <summary>
+            /// Current path start index in the string.
+            /// </summary>
             public int ParseElementStart;
+
+            /// <summary>
+            /// Current path end index in the string.
+            /// </summary>
             public int ParseElementEnd;
+
+            /// <summary>
+            /// Contains the last node that was just left.
+            /// Used to call <see cref="UpdatableMember.CreateEnterChecker"/>.
+            /// </summary>
+            public UpdatableMember LastChildMember;
         }
 
         /// <summary>
@@ -315,13 +337,24 @@ namespace SiliconStudio.Xenko.Updater
                     state.PreviousOffset = stackPathPart.LeaveOffset;
                 }
 
-                // Sets how many operations to skip in case the object we entered was null
                 if (stackPathPart.OperationIndex != -1)
                 {
                     var updateOperation = state.UpdateOperations[stackPathPart.OperationIndex];
+
+                    // Setup VerifyEnter using last child of current node
+                    var verifyEnter = state.LastChildMember?.CreateEnterChecker();
+                    if (verifyEnter != null)
+                    {
+                        updateOperation.EnterChecker = verifyEnter;
+                    }
+
+                    // Sets how many operations to skip in case the object we entered was null
                     updateOperation.SkipCountIfNull = state.UpdateOperations.Count - stackPathPart.OperationIndex - 1;
                     state.UpdateOperations[stackPathPart.OperationIndex] = updateOperation;
                 }
+
+                // Set last child member to the node we just left
+                state.LastChildMember = stackPathPart.Member;
             }
         }
 
@@ -329,6 +362,10 @@ namespace SiliconStudio.Xenko.Updater
         {
             int leaveOffset = 0;
             var leaveOperation = UpdateOperationType.Invalid;
+
+            // Note: only matters on leaf/leave nodes
+            // It will be processed during following PopObjects
+            state.LastChildMember = updatableMember;
 
             var updatableField = updatableMember as UpdatableField;
             if (updatableField != null)
@@ -465,7 +502,7 @@ namespace SiliconStudio.Xenko.Updater
                     case UpdateOperationType.EnterObjectProperty:
                     {
                         nextObject = ((UpdatableProperty)operation.Member).GetObject(currentPtr);
-                        if (nextObject == null && operation.SkipCountIfNull != -1)
+                        if ((nextObject == null || (!operation.EnterChecker?.CanEnter(nextObject) ?? false)) && operation.SkipCountIfNull != -1)
                         {
                             index += operation.SkipCountIfNull;
                             operation = Interop.AddPinned(operation, operation.SkipCountIfNull);
@@ -500,7 +537,7 @@ namespace SiliconStudio.Xenko.Updater
                     case UpdateOperationType.EnterObjectField:
                     {
                         nextObject = ((UpdatableField)operation.Member).GetObject(currentPtr);
-                        if (nextObject == null && operation.SkipCountIfNull != -1)
+                        if ((nextObject == null || (!operation.EnterChecker?.CanEnter(nextObject) ?? false)) && operation.SkipCountIfNull != -1)
                         {
                             index += operation.SkipCountIfNull;
                             operation = Interop.AddPinned(operation, operation.SkipCountIfNull);
@@ -521,7 +558,7 @@ namespace SiliconStudio.Xenko.Updater
                     case UpdateOperationType.EnterObjectCustom:
                     {
                         nextObject = ((UpdatableCustomAccessor)operation.Member).GetObject(currentPtr);
-                        if (nextObject == null && operation.SkipCountIfNull != -1)
+                        if ((nextObject == null || (!operation.EnterChecker?.CanEnter(nextObject) ?? false)) && operation.SkipCountIfNull != -1)
                         {
                             index += operation.SkipCountIfNull;
                             operation = Interop.AddPinned(operation, operation.SkipCountIfNull);

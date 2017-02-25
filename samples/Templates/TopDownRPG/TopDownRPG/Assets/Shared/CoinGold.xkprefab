@@ -1,9 +1,8 @@
 !PrefabAsset
 Id: e8a0251a-6555-494e-a875-08492e9988e8
-SerializedVersion: {Xenko: 1.9.0-beta01}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 Hierarchy:
-    ~Id: 283dec5a-6b87-4122-a407-5e20819a32e4
     RootPartIds:
         - 867ee466-6e19-4df6-b805-6b1a8f5dbee5
     Parts:
@@ -11,25 +10,24 @@ Hierarchy:
                 Id: 867ee466-6e19-4df6-b805-6b1a8f5dbee5
                 Name: CoinGold
                 Components:
-                    - !TransformComponent
-                        ~Id: 8907bc40-94c7-45df-8f3d-a83107baa90c
-                        Children:
-                            - debc636f-e0c5-4884-9aa6-be4b8287e96a/a000f6b9-e7fd-4907-a52b-71dd66ab24ac
+                    40bc0789c794df458f3da83107baa90c: !TransformComponent
+                        Id: 8907bc40-94c7-45df-8f3d-a83107baa90c
                         Position: {X: 0.0, Y: 1.0, Z: 0.0}
                         Rotation: {X: 0.707106769, Y: 0.0, Z: 0.0, W: 0.707106769}
                         Scale: {X: 10.0, Y: 10.0, Z: 10.0}
-                    - !ModelComponent
-                        ~Id: 48b3ee76-ae56-4880-8daf-19410ab51cf5
-                        Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:Models/CoinGold
-                        Materials:
-                            - null
-                    - !TopDownRPG.Gameplay.CoinScript,TopDownRPG.Game
-                        ~Id: 2bdfde2b-b536-47ac-a5dd-b46bc1d762f5
-                        CoinGetEffect: 45194082-f838-4aee-864c-60026cf4fa56/48c406d2-677a-4a3b-90a0-4c0094894935:VFXPrefabs/vfx-GetCoin
+                        Children:
+                            b9f600a0fde70749a52b71dd66ab24ac: debc636f-e0c5-4884-9aa6-be4b8287e96a/a000f6b9-e7fd-4907-a52b-71dd66ab24ac
+                    76eeb34856ae80488daf19410ab51cf5: !ModelComponent
+                        Id: 48b3ee76-ae56-4880-8daf-19410ab51cf5
+                        Model: 43497f30-bb62-46d4-8a9c-6dedead0cad8:Models/CoinGold
+                        Materials: {}
+                    2bdedf2b36b5ac47a5ddb46bc1d762f5: !TopDownRPG.Gameplay.CoinScript,TopDownRPG.Game
+                        Id: 2bdfde2b-b536-47ac-a5dd-b46bc1d762f5
+                        CoinGetEffect: 48c406d2-677a-4a3b-90a0-4c0094894935:VFXPrefabs/vfx-GetCoin
                         Trigger: 867ee466-6e19-4df6-b805-6b1a8f5dbee5/0f987c5d-9f63-4567-9b68-a76d9fcdd82c
-                        SoundEffect: 9e41821f-72e6-4751-a6b1-f29707a0bd51/8f8f4038-b521-4a36-b606-7d33e68f9ddb:Audio/coin_get
-                    - !StaticColliderComponent
-                        ~Id: 6bccf8e3-b08c-43c4-82b6-dea99da7b6b1
+                        SoundEffect: 8f8f4038-b521-4a36-b606-7d33e68f9ddb:Audio/coin_get
+                    e3f8cc6b8cb0c44382b6dea99da7b6b1: !StaticColliderComponent
+                        Id: 6bccf8e3-b08c-43c4-82b6-dea99da7b6b1
                         CollisionGroup: SensorTrigger
                         CanCollideWith: CharacterFilter
                         CanSleep: false
@@ -40,35 +38,30 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: true
                         ColliderShapes:
-                            - !SphereColliderShapeDesc
-                                ~Id: 288120ea-447f-4a3a-a83e-be876cba60d2
+                            ea2081287f443a4aa83ebe876cba60d2: !SphereColliderShapeDesc
                                 Is2D: false
                                 Radius: 0.025
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
-                    - !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game
-                        ~Id: 0f987c5d-9f63-4567-9b68-a76d9fcdd82c
+                    5d7c980f639f67459b68a76d9fcdd82c: !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game
+                        Id: 0f987c5d-9f63-4567-9b68-a76d9fcdd82c
                         TriggerCondition: StartOnly
         -   Entity:
                 Id: debc636f-e0c5-4884-9aa6-be4b8287e96a
                 Name: Point light
                 Components:
-                    - !TransformComponent
-                        ~Id: a000f6b9-e7fd-4907-a52b-71dd66ab24ac
-                        Children: []
+                    b9f600a0fde70749a52b71dd66ab24ac: !TransformComponent
+                        Id: a000f6b9-e7fd-4907-a52b-71dd66ab24ac
                         Position: {X: 0.0, Y: 3.464735E-09, Z: -0.0581285954}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !LightComponent
-                        ~Id: 591b7035-f3a6-4ad1-89bd-891c23bc95fb
+                        Children: {}
+                    35701b59a6f3d14a89bd891c23bc95fb: !LightComponent
+                        Id: 591b7035-f3a6-4ad1-89bd-891c23bc95fb
                         Type: !LightPoint
-                            ~Id: 55ae6786-b2e1-4672-b4b8-ce2cc57e8a7e
                             Color: !ColorRgbProvider
-                                ~Id: 1c19258c-67cd-4c1f-811b-21e3396b3526
                                 Value: {R: 1.0, G: 0.960625, B: 0.60625}
                             Radius: 3.0
                             Shadow:
-                                ~Id: 9b4769dd-7529-48e5-94b3-5daf1084a2d7
                                 Size: Small
-                                BiasParameters:
-                                    ~Id: d7616372-8a24-4bdf-b330-61a0227702cb
+                                BiasParameters: {}
                         Intensity: 10.0

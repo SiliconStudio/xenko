@@ -2,5 +2,4 @@
 Id: 656cbce8-be27-4f52-9a99-e224fc062772
 Tags: []
 Model: !SkyboxCubeMapModel
-    ~Id: 391b070f-5568-4298-9334-b2d136b3f3a9
-    CubeMap: 36476e05-fd7e-4e83-8976-e7a64945ee71/07f970d2-3e30-47e4-87f6-4c265052a733:Skybox Texture
+    CubeMap: 07f970d2-3e30-47e4-87f6-4c265052a733:Skybox Texture

@@ -1,7 +1,6 @@
 !Package
 Id: c47b99cd-4798-4d85-b9b7-e720d9a229b7
-SerializedVersion: {Assets: 0.0.3}
-Tags: []
+SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: NativeLinking
     Version: 1.0.0.0
@@ -10,7 +9,7 @@ Meta:
     RootNamespace: NativeLinking
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.9.4-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -21,7 +20,6 @@ Profiles:
             -   Path: Assets/Shared
             -   Path: NativeLinking.Game/Effects
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: a26a7df9-b469-4996-b5a5-324285394bb9
                 Location: NativeLinking.Game/NativeLinking.Game.csproj
@@ -35,7 +33,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Windows
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 21f1b9b5-98dd-4b98-b8d9-eedba2009d28
                 Location: NativeLinking.Windows/NativeLinking.Windows.csproj

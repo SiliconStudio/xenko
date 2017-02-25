@@ -80,13 +80,13 @@ namespace SiliconStudio.Core.Yaml.Events
         /// <value></value>
         public override bool IsCanonical { get { return !isImplicit; } }
 
-        private readonly YamlStyle style;
+        private readonly DataStyle style;
 
         /// <summary>
         /// Gets the style.
         /// </summary>
         /// <value>The style.</value>
-        public YamlStyle Style { get { return style; } }
+        public DataStyle Style { get { return style; } }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SequenceStart"/> class.
@@ -104,7 +104,7 @@ namespace SiliconStudio.Core.Yaml.Events
         /// <param name="style">The style.</param>
         /// <param name="start">The start position of the event.</param>
         /// <param name="end">The end position of the event.</param>
-        public SequenceStart(string anchor, string tag, bool isImplicit, YamlStyle style, Mark start, Mark end)
+        public SequenceStart(string anchor, string tag, bool isImplicit, DataStyle style, Mark start, Mark end)
             : base(anchor, tag, start, end)
         {
             this.isImplicit = isImplicit;
@@ -114,7 +114,7 @@ namespace SiliconStudio.Core.Yaml.Events
         /// <summary>
         /// Initializes a new instance of the <see cref="SequenceStart"/> class.
         /// </summary>
-        public SequenceStart(string anchor, string tag, bool isImplicit, YamlStyle style)
+        public SequenceStart(string anchor, string tag, bool isImplicit, DataStyle style)
             : this(anchor, tag, isImplicit, style, Mark.Empty, Mark.Empty)
         {
         }

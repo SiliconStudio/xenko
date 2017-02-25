@@ -5,11 +5,10 @@ Tags: []
 Source: ../../Resources/Models/box.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    -   ~Id: d914111c-4109-42f1-0941-f1420941f142
+    1c1114d90941f1420941f1420941f142:
         Name: gold
         MaterialInstance:
-            ~Id: 23cb3c22-5051-475d-8603-df73be2592e2
-            Material: 8f2f2781-bb96-47ec-bfa2-eebbfa1cd77f/cd35da9f-c354-4748-a5ab-106e9ec000f8:Materials/marble/marble
+            Material: cd35da9f-c354-4748-a5ab-106e9ec000f8:Materials/marble/marble
 Skeleton: null
 ~SourceHashes:
-    ../../Resources/Models/box.fbx: 63047528a4b8c7fc888656181dd4dc07
+    d9acbf549cec5fd525e4af77ceca9b3c~../../Resources/Models/box.fbx: 63047528a4b8c7fc888656181dd4dc07

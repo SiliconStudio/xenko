@@ -177,13 +177,16 @@
     <Compile Include="..\..\assets\SiliconStudio.Assets\NugetStore.cs">
       <Link>Commands\NugetStore.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Reflection\OverrideType.cs">
+    <Compile Include="..\..\assets\SiliconStudio.Assets\Reflection\OverridePostfixes.cs">
+      <Link>Core\OverridePostfixes.cs</Link>
+    </Compile>
+    <Compile Include="..\..\assets\SiliconStudio.Assets\Reflection\OverrideType.cs">
       <Link>Core\OverrideType.cs</Link>
     </Compile>
     <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Windows\FileLock.cs">
       <Link>Core\Design\Windows\FileLock.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\IDynamicYamlNode.cs">
+    <Compile Include="..\..\assets\SiliconStudio.Assets\DynamicYaml\IDynamicYamlNode.cs">
       <Link>Core\Design\Yaml\IDynamicYamlNode.cs</Link>
     </Compile>
     <Compile Include="..\..\common\core\SiliconStudio.Core.Serialization\IO\NativeLockFile.cs">
@@ -192,19 +195,19 @@
     <Compile Include="..\..\common\core\SiliconStudio.Core\Diagnostics\CallerInfo.cs">
       <Link>CallerInfo.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\DynamicYamlEmpty.cs">
+    <Compile Include="..\..\assets\SiliconStudio.Assets\DynamicYaml\DynamicYamlEmpty.cs">
       <Link>Core\Design\Yaml\DynamicYamlEmpty.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\DynamicYamlObject.cs">
+    <Compile Include="..\..\assets\SiliconStudio.Assets\DynamicYaml\DynamicYamlObject.cs">
       <Link>Core\Design\Yaml\DynamicYamlObject.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\DynamicYamlScalar.cs">
+    <Compile Include="..\..\assets\SiliconStudio.Assets\DynamicYaml\DynamicYamlScalar.cs">
       <Link>Core\Design\Yaml\DynamicYamlScalar.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\DynamicYamlMapping.cs">
+    <Compile Include="..\..\assets\SiliconStudio.Assets\DynamicYaml\DynamicYamlMapping.cs">
       <Link>Core\Design\Yaml\DynamicYamlMapping.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\DynamicYamlArray.cs">
+    <Compile Include="..\..\assets\SiliconStudio.Assets\DynamicYaml\DynamicYamlArray.cs">
       <Link>Core\Design\Yaml\DynamicYamlArray.cs</Link>
     </Compile>
     <Compile Include="..\..\common\core\SiliconStudio.Core.Design\VisualStudio\*.cs">
@@ -337,6 +340,10 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
       <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
       <Name>SiliconStudio.Core.Yaml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

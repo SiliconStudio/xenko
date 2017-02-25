@@ -16,12 +16,13 @@ namespace SiliconStudio.Xenko.Graphics
         private const string LibraryName = "renderdoc.dll";
 
         private bool isCaptureStarted;
+        private unsafe IntPtr* apiPointers;
 
         // Matching https://github.com/baldurk/renderdoc/blob/master/renderdoc/api/app/renderdoc_app.h
 
-        public RenderDocManager(string logFilePath = null)
+        public unsafe RenderDocManager(string logFilePath = null)
         {
-            var finalLogFilePath = FindAvailablePath((logFilePath ?? Assembly.GetEntryAssembly().Location));
+            var finalLogFilePath = FindAvailablePath((logFilePath ?? "RenderDoc" + Assembly.GetEntryAssembly().Location));
 
             var reg = Registry.ClassesRoot.OpenSubKey("CLSID\\" + RenderdocClsid + "\\InprocServer32");
             if (reg == null)
@@ -34,71 +35,65 @@ namespace SiliconStudio.Xenko.Graphics
                 return;
             }
 
-            // Preload the library before using the DLLImport
+            // Preload the library before using the UnmanagedFunctionPointerAttribute
             var ptr = LoadLibrary(path);
             if (ptr == IntPtr.Zero)
             {
                 return;
             }
 
-            // Make sure that the code is compatible with the current installed version.
-            if (RENDERDOC_API_VERSION != RENDERDOC_GetAPIVersion())
-            {
+            var getAPIAddress = GetProcAddress(ptr, nameof(RENDERDOC_GetAPI));
+            if (getAPIAddress == IntPtr.Zero)
                 return;
-            }
 
-            RENDERDOC_SetLogFile(finalLogFilePath);
+            // Get main entry point to get other function pointers
+            var getAPI = Marshal.GetDelegateForFunctionPointer<RENDERDOC_GetAPI>(getAPIAddress);
 
-            var focusToggleKey = KeyButton.eKey_F11;
-            RENDERDOC_SetFocusToggleKeys(ref focusToggleKey, 1);
-            var captureKey = KeyButton.eKey_F12;
-            RENDERDOC_SetCaptureKeys(ref captureKey, 1);
+            // API version 10101 has 23 function pointers
+            if (!getAPI(RENDERDOC_API_VERSION, ref apiPointers))
+                return;
 
-            var options = new CaptureOptions();
-            RENDERDOC_SetCaptureOptions(ref options);
+            GetMethod<RENDERDOC_SetLogFilePathTemplate>(RenderDocAPIFunction.SetLogFilePathTemplate)(finalLogFilePath);
 
-            int socketPort = 0;
-            RENDERDOC_InitRemoteAccess(ref socketPort);
-            //RENDERDOC_MaskOverlayBits()
+            var focusToggleKey = KeyButton.eRENDERDOC_Key_F11;
+            GetMethod<RENDERDOC_SetFocusToggleKeys>(RenderDocAPIFunction.SetFocusToggleKeys)(ref focusToggleKey, 1);
+            var captureKey = KeyButton.eRENDERDOC_Key_F12;
+            GetMethod<RENDERDOC_SetCaptureKeys>(RenderDocAPIFunction.SetCaptureKeys)(ref captureKey, 1);
         }
 
         public void Shutdown()
         {
-            RENDERDOC_Shutdown();
+            GetMethod<RENDERDOC_Shutdown>(RenderDocAPIFunction.Shutdown)();
         }
 
-        public void StartCapture(IntPtr hwndPtr)
+        public void StartCapture(GraphicsDevice graphicsDevice, IntPtr hwndPtr)
         {
-            if (hwndPtr == IntPtr.Zero)
-            {
-                throw new ArgumentNullException("hwndPtr");
-            }
-
-            RENDERDOC_StartFrameCapture(hwndPtr);
+            GetMethod<RENDERDOC_StartFrameCapture>(RenderDocAPIFunction.StartFrameCapture)(GetDevicePointer(graphicsDevice), hwndPtr);
             isCaptureStarted = true;
         }
 
-        public void EndFrameCapture(IntPtr hwndPtr)
+        public void EndFrameCapture(GraphicsDevice graphicsDevice, IntPtr hwndPtr)
         {
-            if (hwndPtr == IntPtr.Zero)
-            {
-                throw new ArgumentNullException("hwndPtr");
-            }
-
             if (!isCaptureStarted)
                 return;
-            if (RENDERDOC_EndFrameCapture(hwndPtr))
-            {
-                isCaptureStarted = false;
-                return;
-            }
 
-            ;
-            // The capture has failed, calling m_RenderDocEndFrameCapture several time to make sure it won't keep capturing forever.
-            while (!RENDERDOC_EndFrameCapture(hwndPtr))
-            {
-            }
+            GetMethod<RENDERDOC_EndFrameCapture>(RenderDocAPIFunction.EndFrameCapture)(GetDevicePointer(graphicsDevice), hwndPtr);
             isCaptureStarted = false;
+        }
+
+        private static IntPtr GetDevicePointer(GraphicsDevice graphicsDevice)
+        {
+            var devicePointer = IntPtr.Zero;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11 || SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
+            if (graphicsDevice != null)
+                devicePointer = ((SharpDX.CppObject)SharpDXInterop.GetNativeDevice(graphicsDevice)).NativePointer;
+#endif
+            return devicePointer;
+        }
+
+        private unsafe TDelegate GetMethod<TDelegate>(RenderDocAPIFunction function)
+        {
+            return Marshal.GetDelegateForFunctionPointer<TDelegate>(apiPointers[(int)function]);
         }
 
         private static string FindAvailablePath(string logFilePath)
@@ -121,145 +116,86 @@ namespace SiliconStudio.Xenko.Graphics
             return filePath + ".rdc";
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        public class CaptureOptions
-        {
-            /// <summary>
-            /// Defaults this instance.
-            /// </summary>
-            /// <returns>CaptureOptions.</returns>
-            public CaptureOptions()
-            {
-                AllowVSync = true;
-                AllowFullscreen = true;
-            }
-
-            /// <summary>
-            /// Whether or not to allow the application to enable vsync
-            ///
-            /// Enabled - allows the application to enable or disable vsync at will
-            /// Disabled - vsync is force disabled
-            /// </summary>
-            [MarshalAs(UnmanagedType.Bool)]
-            public bool AllowVSync;
-
-            /// <summary>
-            /// Whether or not to allow the application to enable fullscreen
-            /// Enabled - allows the application to enable or disable fullscreen at will
-            /// Disabled - fullscreen is force disabled
-            /// </summary>
-            [MarshalAs(UnmanagedType.Bool)]
-            public bool AllowFullscreen;
-
-            /// <summary>
-            /// Enables in-built API debugging features and records the results into the
-            /// capture logfile, which is matched up with events on replay
-            /// </summary>
-            [MarshalAs(UnmanagedType.Bool)]
-            public bool DebugDeviceMode;
-
-            /// <summary>
-            /// Captures callstacks for every API event during capture
-            /// </summary>
-            [MarshalAs(UnmanagedType.Bool)]
-            public bool CaptureCallstacks;
-
-            /// <summary>
-            /// Only captures callstacks for drawcall type API events.
-            /// Ignored if CaptureCallstacks is disabled
-            /// </summary>
-            [MarshalAs(UnmanagedType.Bool)]
-            public bool CaptureCallstacksOnlyDraws;
-
-            /// <summary>
-            /// Specify a delay in seconds to wait for a debugger to attach after
-            /// creating or injecting into a process, before continuing to allow it to run.
-            /// </summary>
-            public int DelayForDebugger;
-
-            /// <summary>
-            /// Verify any writes to mapped buffers, to check that they don't overwrite the
-            /// bounds of the pointer returned.
-            /// </summary>
-            [MarshalAs(UnmanagedType.Bool)]
-            public bool VerifyMapWrites;
-
-            /// <summary>
-            /// Hooks any system API events that create child processes, and injects
-            /// renderdoc into them recursively with the same options.
-            /// </summary>
-            [MarshalAs(UnmanagedType.Bool)]
-            public bool HookIntoChildren;
-
-            /// <summary>
-            /// By default renderdoc only includes resources in the final logfile necessary
-            /// for that frame, this allows you to override that behaviour
-            ///
-            /// Enabled - all live resources at the time of capture are included in the log
-            /// and available for inspection
-            /// Disabled - only the resources referenced by the captured frame are included
-            /// </summary>
-            [MarshalAs(UnmanagedType.Bool)]
-            public bool RefAllResources;
-
-            /// <summary>
-            /// By default renderdoc skips saving initial states for
-            /// </summary>
-            [MarshalAs(UnmanagedType.Bool)]
-            public bool SaveAllInitials;
-
-            /// <summary>
-            /// In APIs that allow for the recording of command lists to be replayed later,
-            /// renderdoc may choose to not capture command lists before a frame capture is
-            /// triggered, to reduce overheads. This means any command lists recorded once
-            /// and replayed many times will not be available and may cause a failure to
-            /// capture.
-            ///
-            /// Enabled - All command lists are captured from the start of the application
-            /// Disabled - Command lists are only captured if their recording begins during
-            /// the period when a frame capture is in progress.
-            /// </summary>
-            [MarshalAs(UnmanagedType.Bool)]
-            public bool CaptureAllCmdLists;
-        }
-
         private enum KeyButton : uint
         {
-            eKey_0 = 0x30, // '0'
-            // ...
-            eKey_9 = 0x39, // '9'
-            eKey_A = 0x41, // 'A'
-            // ...
-            eKey_Z = 0x5A, // 'Z'
-            eKey_Divide,
-            eKey_Multiply,
-            eKey_Subtract,
-            eKey_Plus,
-            eKey_F1,
-            eKey_F2,
-            eKey_F3,
-            eKey_F4,
-            eKey_F5,
-            eKey_F6,
-            eKey_F7,
-            eKey_F8,
-            eKey_F9,
-            eKey_F10,
-            eKey_F11,
-            eKey_F12,
-            eKey_Home,
-            eKey_End,
-            eKey_Insert,
-            eKey_Delete,
-            eKey_PageUp,
-            eKey_PageDn,
-            eKey_Backspace,
-            eKey_Tab,
-            eKey_PrtScrn,
-            eKey_Pause,
-            eKey_Max,
+            // '0' - '9' matches ASCII values
+            eRENDERDOC_Key_0 = 0x30,
+            eRENDERDOC_Key_1 = 0x31,
+            eRENDERDOC_Key_2 = 0x32,
+            eRENDERDOC_Key_3 = 0x33,
+            eRENDERDOC_Key_4 = 0x34,
+            eRENDERDOC_Key_5 = 0x35,
+            eRENDERDOC_Key_6 = 0x36,
+            eRENDERDOC_Key_7 = 0x37,
+            eRENDERDOC_Key_8 = 0x38,
+            eRENDERDOC_Key_9 = 0x39,
+
+            // 'A' - 'Z' matches ASCII values
+            eRENDERDOC_Key_A = 0x41,
+            eRENDERDOC_Key_B = 0x42,
+            eRENDERDOC_Key_C = 0x43,
+            eRENDERDOC_Key_D = 0x44,
+            eRENDERDOC_Key_E = 0x45,
+            eRENDERDOC_Key_F = 0x46,
+            eRENDERDOC_Key_G = 0x47,
+            eRENDERDOC_Key_H = 0x48,
+            eRENDERDOC_Key_I = 0x49,
+            eRENDERDOC_Key_J = 0x4A,
+            eRENDERDOC_Key_K = 0x4B,
+            eRENDERDOC_Key_L = 0x4C,
+            eRENDERDOC_Key_M = 0x4D,
+            eRENDERDOC_Key_N = 0x4E,
+            eRENDERDOC_Key_O = 0x4F,
+            eRENDERDOC_Key_P = 0x50,
+            eRENDERDOC_Key_Q = 0x51,
+            eRENDERDOC_Key_R = 0x52,
+            eRENDERDOC_Key_S = 0x53,
+            eRENDERDOC_Key_T = 0x54,
+            eRENDERDOC_Key_U = 0x55,
+            eRENDERDOC_Key_V = 0x56,
+            eRENDERDOC_Key_W = 0x57,
+            eRENDERDOC_Key_X = 0x58,
+            eRENDERDOC_Key_Y = 0x59,
+            eRENDERDOC_Key_Z = 0x5A,
+
+            // leave the rest of the ASCII range free
+            // in case we want to use it later
+            eRENDERDOC_Key_NonPrintable = 0x100,
+
+            eRENDERDOC_Key_Divide,
+            eRENDERDOC_Key_Multiply,
+            eRENDERDOC_Key_Subtract,
+            eRENDERDOC_Key_Plus,
+
+            eRENDERDOC_Key_F1,
+            eRENDERDOC_Key_F2,
+            eRENDERDOC_Key_F3,
+            eRENDERDOC_Key_F4,
+            eRENDERDOC_Key_F5,
+            eRENDERDOC_Key_F6,
+            eRENDERDOC_Key_F7,
+            eRENDERDOC_Key_F8,
+            eRENDERDOC_Key_F9,
+            eRENDERDOC_Key_F10,
+            eRENDERDOC_Key_F11,
+            eRENDERDOC_Key_F12,
+
+            eRENDERDOC_Key_Home,
+            eRENDERDOC_Key_End,
+            eRENDERDOC_Key_Insert,
+            eRENDERDOC_Key_Delete,
+            eRENDERDOC_Key_PageUp,
+            eRENDERDOC_Key_PageDn,
+
+            eRENDERDOC_Key_Backspace,
+            eRENDERDOC_Key_Tab,
+            eRENDERDOC_Key_PrtScrn,
+            eRENDERDOC_Key_Pause,
+
+            eRENDERDOC_Key_Max,
         };
 
+        [Flags]
         private enum InAppOverlay : uint
         {
             eOverlay_Enabled = 0x1,
@@ -274,60 +210,96 @@ namespace SiliconStudio.Xenko.Graphics
 
         // API breaking change history:
         // Version 1 -> 2 - strings changed from wchar_t* to char* (UTF-8)
-        private const int RENDERDOC_API_VERSION = 2;
+        private const int RENDERDOC_API_VERSION = 10101;
+
+        private enum RenderDocAPIFunction
+        {
+            GetAPIVersion,
+
+            SetCaptureOptionU32,
+            SetCaptureOptionF32,
+
+            GetCaptureOptionU32,
+            GetCaptureOptionF32,
+
+            SetFocusToggleKeys,
+            SetCaptureKeys,
+
+            GetOverlayBits,
+            MaskOverlayBits,
+
+            Shutdown,
+            UnloadCrashHandler,
+
+            SetLogFilePathTemplate,
+            GetLogFilePathTemplate,
+
+            GetNumCaptures,
+            GetCapture,
+
+            TriggerCapture,
+
+            IsTargetControlConnected,
+            LaunchReplayUI,
+
+            SetActiveWindow,
+
+            StartFrameCapture,
+            IsFrameCapturing,
+            EndFrameCapture,
+
+            TriggerMultiFrameCapture,
+        }
 
         //////////////////////////////////////////////////////////////////////////
         // In-program functions
         //////////////////////////////////////////////////////////////////////////
-        [DllImport(LibraryName, EntryPoint = "RENDERDOC_GetAPIVersion", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int RENDERDOC_GetAPIVersion();
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private unsafe delegate bool RENDERDOC_GetAPI(int version, ref IntPtr* apiPointers);
 
-        [DllImport(LibraryName, EntryPoint = "RENDERDOC_Shutdown", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void RENDERDOC_Shutdown();
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private delegate void RENDERDOC_Shutdown();
 
-        [DllImport(LibraryName, EntryPoint = "RENDERDOC_SetLogFile", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void RENDERDOC_SetLogFile([MarshalAs(UnmanagedType.LPStr)] string logfile);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private delegate void RENDERDOC_SetLogFilePathTemplate([MarshalAs(UnmanagedType.LPStr)] string logfile);
 
-        [DllImport(LibraryName, EntryPoint = "RENDERDOC_GetLogFile", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern string RENDERDOC_GetLogFile();
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private delegate string RENDERDOC_GetLogFilePathTemplate();
 
-        [DllImport(LibraryName, EntryPoint = "RENDERDOC_GetCapture", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool RENDERDOC_GetCapture(int idx, [MarshalAs(UnmanagedType.LPStr)] string logfile, out int pathlength, out long timestamp);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private delegate bool RENDERDOC_GetCapture(int idx, [MarshalAs(UnmanagedType.LPStr)] string logfile, out int pathlength, out long timestamp);
 
-        [DllImport(LibraryName, EntryPoint = "RENDERDOC_SetCaptureOptions", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void RENDERDOC_SetCaptureOptions(ref CaptureOptions opts);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private delegate void RENDERDOC_SetActiveWindow(IntPtr devicePointer, IntPtr wndHandle);
 
-        [DllImport(LibraryName, EntryPoint = "RENDERDOC_SetActiveWindow", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void RENDERDOC_SetActiveWindow(IntPtr wndHandle);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private delegate void RENDERDOC_TriggerCapture();
 
-        [DllImport(LibraryName, EntryPoint = "RENDERDOC_TriggerCapture", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void RENDERDOC_TriggerCapture();
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private delegate void RENDERDOC_StartFrameCapture(IntPtr devicePointer, IntPtr wndHandle);
 
-        [DllImport(LibraryName, EntryPoint = "RENDERDOC_StartFrameCapture", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void RENDERDOC_StartFrameCapture(IntPtr wndHandle);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private delegate bool RENDERDOC_EndFrameCapture(IntPtr devicePointer, IntPtr wndHandle);
 
-        [DllImport(LibraryName, EntryPoint = "RENDERDOC_EndFrameCapture", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool RENDERDOC_EndFrameCapture(IntPtr wndHandle);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private delegate InAppOverlay RENDERDOC_GetOverlayBits();
 
-        [DllImport(LibraryName, EntryPoint = "RENDERDOC_GetOverlayBits", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern InAppOverlay RENDERDOC_GetOverlayBits();
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private delegate void RENDERDOC_MaskOverlayBits(InAppOverlay And, InAppOverlay Or);
 
-        [DllImport(LibraryName, EntryPoint = "RENDERDOC_MaskOverlayBits", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void RENDERDOC_MaskOverlayBits(InAppOverlay And, InAppOverlay Or);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private delegate void RENDERDOC_SetFocusToggleKeys(ref KeyButton keys, int num);
 
-        [DllImport(LibraryName, EntryPoint = "RENDERDOC_SetFocusToggleKeys", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void RENDERDOC_SetFocusToggleKeys(ref KeyButton keys, int num);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private delegate void RENDERDOC_SetCaptureKeys(ref KeyButton keys, int num);
 
-        [DllImport(LibraryName, EntryPoint = "RENDERDOC_SetCaptureKeys", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void RENDERDOC_SetCaptureKeys(ref KeyButton keys, int num);
-
-        [DllImport(LibraryName, EntryPoint = "RENDERDOC_InitRemoteAccess", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void RENDERDOC_InitRemoteAccess(ref int ident);
-
-        [DllImport(LibraryName, EntryPoint = "RENDERDOC_UnloadCrashHandler", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void RENDERDOC_UnloadCrashHandler();
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private delegate void RENDERDOC_UnloadCrashHandler();
 
         [DllImport("kernel32", EntryPoint = "LoadLibrary", SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern IntPtr LoadLibrary(string lpFileName);
+
+        [DllImport("kernel32", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
+        private static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
     }
 }

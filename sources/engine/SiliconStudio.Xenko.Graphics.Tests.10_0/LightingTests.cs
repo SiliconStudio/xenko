@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public LightingTests()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 10;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
         }
 

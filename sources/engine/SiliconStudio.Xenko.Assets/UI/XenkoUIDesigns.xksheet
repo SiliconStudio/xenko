@@ -1,104 +1,104 @@
 !SpriteSheet
 Id: 1be3340c-b797-4557-bff7-d9be92dfdb42
-SerializedVersion: {Xenko: 1.5.0-alpha01}
+SerializedVersion:
+    Xenko: 1.5.0-alpha01
 Tags: []
 Type: UI
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Packing:
-    ~Id: 5b87fe03-414c-485d-afd0-4a7c9f62d947
+Packing: {}
 Sprites:
-    -   ~Id: 9207d340-ac6c-4496-9963-217b72006df5
+    40d307926cac96449963217b72006df5:
         Source: Resources/UIDesigns.dds
         Name: Button.MouseOver
         TextureRegion: {X: 37, Y: 3, Width: 32, Height: 32}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 8.0, Y: 8.0, Z: 8.0, W: 8.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   ~Id: ec63882b-ae57-43ff-8496-6313d399cefa
+    2b8863ec57aeff4384966313d399cefa:
         Source: Resources/UIDesigns.dds
         Name: Button.NotPressed
         TextureRegion: {X: 3, Y: 3, Width: 32, Height: 32}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 8.0, Y: 8.0, Z: 8.0, W: 8.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   ~Id: 71abc112-ad28-44f1-b7eb-b066e0cfd7ed
+    12c1ab7128adf144b7ebb066e0cfd7ed:
         Source: Resources/UIDesigns.dds
         Name: Button.Pressed
         TextureRegion: {X: 71, Y: 3, Width: 32, Height: 32}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 8.0, Y: 8.0, Z: 8.0, W: 8.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   ~Id: 47c82d73-c53f-40ea-a889-76b80add0ac8
+    732dc8473fc5ea40a88976b80add0ac8:
         Source: Resources/UIDesigns.dds
         Name: EditText.Active
         TextureRegion: {X: 105, Y: 3, Width: 32, Height: 32}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 12.0, Y: 12.0, Z: 12.0, W: 12.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   ~Id: e16dad1f-b8a5-4ee9-9380-a1e9b2cc2002
+    1fad6de1a5b8e94e9380a1e9b2cc2002:
         Source: Resources/UIDesigns.dds
         Name: EditText.Inactive
         TextureRegion: {X: 139, Y: 3, Width: 32, Height: 32}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 12.0, Y: 12.0, Z: 12.0, W: 12.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   ~Id: 9998da6c-d4d5-46e8-b4aa-0e289753a4ec
+    6cda9899d5d4e846b4aa0e289753a4ec:
         Source: Resources/UIDesigns.dds
         Name: EditText.MouseOver
         TextureRegion: {X: 173, Y: 3, Width: 32, Height: 32}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 12.0, Y: 12.0, Z: 12.0, W: 12.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   ~Id: 4801347c-3e15-4da5-97e7-748033239d32
+    7c340148153ea54d97e7748033239d32:
         Source: Resources/UIDesigns.dds
         Name: Slider.MouseOverThumb
         TextureRegion: {X: 71, Y: 37, Width: 16, Height: 32}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 4.0, Y: 4.0, Z: 4.0, W: 4.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   ~Id: 310ddcfa-e101-492a-a6ac-e49d3b6cd782
+    fadc0d3101e12a49a6ace49d3b6cd782:
         Source: Resources/UIDesigns.dds
         Name: Slider.Thumb
         TextureRegion: {X: 37, Y: 37, Width: 16, Height: 32}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 4.0, Y: 4.0, Z: 4.0, W: 4.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   ~Id: 442574e6-a035-4f6e-9af5-ab28e3132445
+    e674254435a06e4f9af5ab28e3132445:
         Source: Resources/UIDesigns.dds
         Name: Slider.Tick
         TextureRegion: {X: 245, Y: 3, Width: 3, Height: 6}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   ~Id: 4298258c-ea66-490f-a8d7-64e2c2b350cc
+    8c25984266ea0f49a8d764e2c2b350cc:
         Source: Resources/UIDesigns.dds
         Name: Slider.TrackBackground
         TextureRegion: {X: 207, Y: 3, Width: 32, Height: 32}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 14.0, Y: 14.0, Z: 14.0, W: 14.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   ~Id: 554dd060-4282-4e6f-88be-7edeeaee0d46
+    60d04d5582426f4e88be7edeeaee0d46:
         Source: Resources/UIDesigns.dds
         Name: Slider.TrackForeground
         TextureRegion: {X: 3, Y: 37, Width: 32, Height: 32}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   ~Id: 7fcb01b8-5e08-4535-9b0a-c699c6eb4615
+    b801cb7f085e35459b0ac699c6eb4615:
         Source: Resources/UIDesigns.dds
         Name: ToggleButton.Checked
         TextureRegion: {X: 71, Y: 3, Width: 32, Height: 32}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 8.0, Y: 8.0, Z: 8.0, W: 8.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   ~Id: 33a304db-5b39-473e-8056-eec9bac42591
+    db04a333395b3e478056eec9bac42591:
         Source: Resources/UIDesigns.dds
         Name: ToggleButton.Indeterminate
         TextureRegion: {X: 37, Y: 3, Width: 32, Height: 32}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 8.0, Y: 8.0, Z: 8.0, W: 8.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   ~Id: 13b4c520-51b6-4171-a9b1-ce2330a1ae35
+    20c5b413b6517141a9b1ce2330a1ae35:
         Source: Resources/UIDesigns.dds
         Name: ToggleButton.Unchecked
         TextureRegion: {X: 3, Y: 3, Width: 32, Height: 32}

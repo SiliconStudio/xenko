@@ -73,7 +73,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 shadowType |= LightShadowType.DepthRangeAuto;
             }
-            else if (shadowMap.DepthRange.IsBlendingCascades)
+
+            if (shadowMap.DepthRange.IsBlendingCascades)
             {
                 shadowType |= LightShadowType.BlendCascade;
             }
@@ -141,28 +142,38 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shaderData.OffsetScale = shadow.BiasParameters.NormalOffsetScale;
 
             float splitMaxRatio = (minMaxDistance.X - shadowRenderView.NearClipPlane) / (shadowRenderView.FarClipPlane - shadowRenderView.NearClipPlane);
+            float splitMinRatio = 0;
+            float oldSplitMinRatio = 0;
             for (int cascadeLevel = 0; cascadeLevel < cascadeCount; ++cascadeLevel)
             {
+                oldSplitMinRatio = splitMinRatio;
                 // Calculate frustum corners for this cascade
-                var splitMinRatio = splitMaxRatio;
+                splitMinRatio = splitMaxRatio;
                 splitMaxRatio = cascadeSplitRatios[cascadeLevel];
+                var prevSplitMaxRatio = cascadeSplitRatios[cascadeLevel];
                 for (int j = 0; j < 4; j++)
                 {
                     // Calculate frustum in WS and VS
-                    var frustumRange = frustumCornersWS[j + 4] - frustumCornersWS[j];
-                    cascadeFrustumCornersWS[j] = frustumCornersWS[j] + frustumRange * splitMinRatio;
-                    cascadeFrustumCornersWS[j + 4] = frustumCornersWS[j] + frustumRange * splitMaxRatio;
+                    float overlap = 0;
+                    if (cascadeLevel > 0 && shadow.DepthRange.IsBlendingCascades)
+                        overlap = 0.2f * (splitMinRatio - oldSplitMinRatio);
 
-                    frustumRange = frustumCornersVS[j + 4] - frustumCornersVS[j];
-                    cascadeFrustumCornersVS[j] = frustumCornersVS[j] + frustumRange * splitMinRatio;
-                    cascadeFrustumCornersVS[j + 4] = frustumCornersVS[j] + frustumRange * splitMaxRatio;
+                    var frustumRangeWS = frustumCornersWS[j + 4] - frustumCornersWS[j];
+                    var frustumRangeVS = frustumCornersVS[j + 4] - frustumCornersVS[j];
+
+                    cascadeFrustumCornersWS[j] = frustumCornersWS[j] + frustumRangeWS * (splitMinRatio - overlap);
+                    cascadeFrustumCornersWS[j + 4] = frustumCornersWS[j] + frustumRangeWS * splitMaxRatio;
+
+
+                    cascadeFrustumCornersVS[j] = frustumCornersVS[j] + frustumRangeVS * (splitMinRatio - overlap);
+                    cascadeFrustumCornersVS[j + 4] = frustumCornersVS[j] + frustumRangeVS * splitMaxRatio;
                 }
 
                 Vector3 cascadeMinBoundLS;
                 Vector3 cascadeMaxBoundLS;
                 Vector3 target;
 
-                if (!shadow.DepthRange.IsAutomatic && (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping || shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping))
+                if (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping || shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping)
                 {
                     // Make sure we are using the same direction when stabilizing
                     var boundingVS = BoundingSphere.FromPoints(cascadeFrustumCornersVS);
@@ -216,15 +227,15 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 }
 
                 // Update the shadow camera
-                var viewMatrix = Matrix.LookAtLH(target + direction * cascadeMinBoundLS.Z, target, upDirection); // View;;
-                var projectionMatrix = Matrix.OrthoOffCenterLH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, 0.0f, cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z); // Projection
+                var viewMatrix = Matrix.LookAtRH(target + direction * cascadeMinBoundLS.Z, target, upDirection); // View;;
+                var projectionMatrix = Matrix.OrthoOffCenterRH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, 0.0f, cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z); // Projection
                 Matrix viewProjectionMatrix;
                 Matrix.Multiply(ref viewMatrix, ref projectionMatrix, out viewProjectionMatrix);
 
                 // Stabilize the Shadow matrix on the projection
                 if (shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping)
                 {
-                    var shadowPixelPosition = viewProjectionMatrix.TranslationVector * lightShadowMap.Size * 0.5f;
+                    var shadowPixelPosition = viewProjectionMatrix.TranslationVector * lightShadowMap.Size * 0.5f;  // shouln't it be scale and not translation ?
                     shadowPixelPosition.Z = 0;
                     var shadowPixelPositionRounded = new Vector3((float)Math.Round(shadowPixelPosition.X), (float)Math.Round(shadowPixelPosition.Y), 0.0f);
 
@@ -298,6 +309,22 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return projectionMatrix.M43 / denominator;
         }
 
+        private static float LogFloor(float value)
+        {
+            var log = (float)Math.Log(value, 1.5);
+            log = (float)Math.Floor(log);
+            log = (float)Math.Pow(1.5, log);
+            return log;
+        }
+
+        private static float LogCeiling(float value)
+        {
+            var log = (float)Math.Log(value, 1.5);
+            log = (float)Math.Ceiling(log);
+            log = (float)Math.Pow(1.5, log);
+            return log;
+        }
+
         private Vector2 ComputeCascadeSplits(RenderContext context, ShadowMapRenderer shadowContext, ref LightShadowMapTexture lightShadowMap)
         {
             var shadow = (LightDirectionalShadowMap)lightShadowMap.Shadow;
@@ -329,10 +356,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                 // Reserve 1/3 of the guard distance for the min distance
                 minDistance = Math.Max(cameraNear, shadowContext.CurrentView.MinimumDistance - shadow.DepthRange.GuardDistance / 3);
+                //minDistance = LogFloor(minDistance);
 
                 // Reserve 2/3 of the guard distance for the max distance
                 var guardMaxDistance = minDistance + shadow.DepthRange.GuardDistance * 2 / 3;
                 maxDistance = Math.Max(shadowContext.CurrentView.MaximumDistance, guardMaxDistance);
+                // snap to a 'closest floor' of sorts, to improve stability:
+                //maxDistance = LogCeiling(maxDistance);
             }
             else
             {
@@ -533,7 +563,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 shadowShader = new ShaderMixinSource();
                 var isDepthRangeAuto = (this.shadowType & LightShadowType.DepthRangeAuto) != 0;
-                shadowShader.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCurrentCount, (this.shadowType & LightShadowType.BlendCascade) != 0 && !isDepthRangeAuto, isDepthRangeAuto, (this.shadowType & LightShadowType.Debug) != 0));
+                shadowShader.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCurrentCount, (this.shadowType & LightShadowType.BlendCascade) != 0, isDepthRangeAuto, (this.shadowType & LightShadowType.Debug) != 0));
                 // TODO: Temporary passing filter here
 
                 switch (shadowType & LightShadowType.FilterMask)

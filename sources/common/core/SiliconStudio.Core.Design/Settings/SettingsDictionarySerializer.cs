@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -10,7 +11,7 @@ using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Settings
 {
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(SettingsProfileSerializer.YamlProfile)]
     internal class SettingsDictionarySerializer : DictionarySerializer
     {
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
@@ -19,10 +20,10 @@ namespace SiliconStudio.Core.Settings
             return type == typeof(SettingsDictionary) ? this : null;
         }
 
-        protected override void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types)
+        protected override void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> keyValueTypes)
         {
             var propertyKey = (UFile)keyValue.Key;
-            objectContext.SerializerContext.WriteYaml(propertyKey, types.Key);
+            objectContext.SerializerContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, propertyKey, keyValueTypes.Key);
 
             // Deduce expected value type from PropertyKey
             var parsingEvents = (List<ParsingEvent>)keyValue.Value;
@@ -33,10 +34,10 @@ namespace SiliconStudio.Core.Settings
             }
         }
 
-        protected override KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType)
+        protected override KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueTypes)
         {
             // Read PropertyKey
-            var keyResult = (UFile)objectContext.SerializerContext.ReadYaml(null, keyValueType.Key);
+            var keyResult = (UFile)objectContext.SerializerContext.ObjectSerializerBackend.ReadDictionaryKey(ref objectContext, keyValueTypes.Key);
 
             // Save the Yaml stream, in case loading fails we can keep this representation
             var parsingEvents = new List<ParsingEvent>();

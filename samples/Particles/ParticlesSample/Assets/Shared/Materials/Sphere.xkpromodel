@@ -7,5 +7,4 @@ Type: !SphereProceduralModel
     UvScale: {X: 1.0, Y: 1.0}
     LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
     MaterialInstance:
-        ~Id: b69d8e04-3946-4d5b-9076-21fdfa5e1f73
-        Material: c931413d-9df5-4d21-a6a9-ae171da38b70/7b0ed85e-1a33-4c20-972b-bbb1bdc26f7f:Materials/Sphere Material
+        Material: 7b0ed85e-1a33-4c20-972b-bbb1bdc26f7f:Materials/Sphere Material

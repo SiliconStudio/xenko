@@ -46,8 +46,8 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Schemas;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Yaml.Serialization
@@ -58,7 +58,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
     public sealed class SerializerSettings
     {
         internal readonly Dictionary<Type, IYamlSerializable> serializers = new Dictionary<Type, IYamlSerializable>();
-        internal readonly AssemblyRegistry AssemblyRegistry;
+        internal readonly YamlAssemblyRegistry AssemblyRegistry;
         private IAttributeRegistry attributeRegistry;
         private readonly IYamlSchema schema;
         private IObjectFactory objectFactory;
@@ -88,19 +88,29 @@ namespace SiliconStudio.Core.Yaml.Serialization
             EmitCapacityForList = false;
             SpecialCollectionMember = "~Items";
             LimitPrimitiveFlowSequence = 0;
-            DefaultStyle = YamlStyle.Block;
+            DefaultStyle = DataStyle.Normal;
             this.schema = schema ?? new CoreSchema();
-            AssemblyRegistry = new AssemblyRegistry(Schema);
+            AssemblyRegistry = new YamlAssemblyRegistry(Schema);
             attributeRegistry = new AttributeRegistry();
             ObjectFactory = new DefaultObjectFactory();
             ObjectSerializerBackend = new DefaultObjectSerializerBackend();
-            ComparerForKeySorting = new DefaultKeyComparer();
+            ComparerForKeySorting = new DefaultMemberComparer();
             NamingConvention = new DefaultNamingConvention();
-
+            SerializerFactorySelector = new ProfileSerializerFactorySelector(YamlSerializerFactoryAttribute.Default);
             // Register default mapping for map and seq
             AssemblyRegistry.RegisterTagMapping("!!map", typeof(IDictionary<object, object>), false);
             AssemblyRegistry.RegisterTagMapping("!!seq", typeof(IList<object>), false);
         }
+
+        /// <summary>
+        /// Gets or sets a serializer that is executed just before the <see cref="RoutingSerializer"/>.
+        /// </summary>
+        public ChainedSerializer PreSerializer { get; set; }
+
+        /// <summary>
+        /// Gets or sets a serializer that is executed after all other serializers, including <see cref="TagTypeSerializer"/>.
+        /// </summary>
+        public ChainedSerializer PostSerializer { get; set; }
 
         /// <summary>
         /// Gets or sets the preferred indentation. Default is 2.
@@ -174,7 +184,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         /// <summary>
         /// Gets or sets the default key comparer used to sort members (<see cref="IMemberDescriptor"/>) or
-        /// dictionary keys, when serializing objects as YAML mappings. Default is <see cref="DefaultKeyComparer"/>. 
+        /// dictionary keys, when serializing objects as YAML mappings. Default is <see cref="DefaultMemberComparer"/>. 
         /// To disable the default comparer, this value can be set to null.
         /// </summary>
         /// <value>The key comparer.</value>
@@ -214,10 +224,10 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public ITagTypeRegistry TagTypeRegistry { get { return AssemblyRegistry; } }
 
         /// <summary>
-        /// Gets or sets the default <see cref="YamlStyle"/>. Default is <see cref="YamlStyle.Block"/>. See <see cref="DynamicStyleFormat"/> to understand the resolution of styles.
+        /// Gets or sets the default <see cref="DataStyle"/>. Default is <see cref="DataStyle.Normal"/>. See <see cref="DynamicStyleFormat"/> to understand the resolution of styles.
         /// </summary>
         /// <value>The default style.</value>
-        public YamlStyle DefaultStyle { get; set; }
+        public DataStyle DefaultStyle { get; set; }
 
         /// <summary>
         /// Gets or sets the prefix used to serialize items for a non pure <see cref="System.Collections.IDictionary" /> or
@@ -305,6 +315,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <exception cref="System.ArgumentNullException">value</exception>
         public IYamlSchema Schema { get { return schema; } }
 
+        public ISerializerFactorySelector SerializerFactorySelector { get; set; }
+
         /// <summary>
         /// Register a mapping between a tag and a type.
         /// </summary>
@@ -323,37 +335,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public void RegisterTagMapping(string tagName, Type tagType, bool isAlias = false)
         {
             AssemblyRegistry.RegisterTagMapping(tagName, tagType, isAlias);
-        }
-
-        /// <summary>
-        /// Adds a custom serializer for the specified type.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="serializer">The serializer.</param>
-        /// <exception cref="System.ArgumentNullException">
-        /// type
-        /// or
-        /// serializer
-        /// </exception>
-        public void RegisterSerializer(Type type, IYamlSerializable serializer)
-        {
-            if (type == null)
-                throw new ArgumentNullException("type");
-            if (serializer == null)
-                throw new ArgumentNullException("serializer");
-            serializers[type] = serializer;
-        }
-
-        /// <summary>
-        /// Adds a serializer factory.
-        /// </summary>
-        /// <param name="factory">The factory.</param>
-        /// <exception cref="System.ArgumentNullException">factory</exception>
-        public void RegisterSerializerFactory(IYamlSerializableFactory factory)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory");
-            AssemblyRegistry.SerializableFactories.Add(factory);
         }
     }
 }

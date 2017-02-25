@@ -2,9 +2,8 @@
 Id: a7bd711e-aca6-4035-a9e1-dbc34fd90cce
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
-Source: ../../../Resources/Textures/xenko_box_mask_mark.tga
+Source: ../../../Resources/Textures/xenko_box_mask_mark.png
 ColorKeyEnabled: true
 ColorKeyColor: {R: 0, G: 0, B: 0, A: 255}
-Format: Color16Bits
 Alpha: Mask
 GenerateMipmaps: false

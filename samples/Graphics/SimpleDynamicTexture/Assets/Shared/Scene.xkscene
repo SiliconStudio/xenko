@@ -1,45 +1,36 @@
 !SceneAsset
 Id: c90e49d7-b3d8-4b19-b771-71cf4460a83b
-SerializedVersion: {Xenko: 1.9.0-beta02}
+SerializedVersion: {Xenko: 1.9.0-beta06}
 Tags: []
 SceneSettings:
     Id: c4f80303-7169-4991-89ed-ca66c5f8333d
     GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: 3e89e7e9-c286-4f5e-9543-3231420ab048
         Cameras:
-            -   ~Id: 3358da3a-2dd0-4bbc-b9e2-38846751132a
+            3ada5833d02dbc4bb9e238846751132a:
                 Name: null
                 Camera: null
-        Layers: []
+        Layers: {}
         Master:
-            ~Id: a63716a6-a8bf-4535-b6a1-47f3ea6ef7d7
             Name: SceneGraphicsLayer
             Output: !MasterRenderFrameProvider {}
             Renderers:
-                - !ClearRenderFrameRenderer
-                    ~Id: 9670a7fe-4bea-4d0a-b150-99d11e3e6335
+                fea77096ea4b0a4db15099d11e3e6335: !ClearRenderFrameRenderer
                     Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
                     Output: !CurrentRenderFrameProvider {}
-                - !SceneCameraRenderer
-                    ~Id: e4af77b4-955c-4222-933c-3c795abc9425
-                    Mode: !CameraRendererModeForward
-                        ~Id: 026b1bbc-3f37-45a1-979e-0367f5521b39
+                b477afe45c952242933c3c795abc9425: !SceneCameraRenderer
+                    Mode: !CameraRendererModeForward {}
                     Camera:
-                        ~Id: 4d8e2190-6031-4f3a-8af3-0f57f07249e3
                         Index: 0
                     CullingMask: Group0
                     Output: !CurrentRenderFrameProvider {}
                     Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
                     ForceAspectRatio: false
     EditorSettings:
-        ~Id: f05efc76-b803-4255-ae19-f108f1ad328a
         GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
         SceneUnit: 1.0
         Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: 4f494da5-69a8-4ff4-9c24-b203a8c89545
             BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
 Hierarchy:
-    ~Id: 442725a6-920d-4154-8afe-6fc25b5294d4
     RootPartIds:
         - 3723d251-4a6e-4edb-9858-591bd4312d77
         - 12878618-e212-49c0-a653-ee686cb3f863
@@ -50,17 +41,17 @@ Hierarchy:
                 Name: UI
                 Group: Group1
                 Components:
-                    - !TransformComponent
-                        ~Id: 60733af3-e0c3-4c24-9b5c-3bc81d9d57d4
-                        Children: []
+                    f33a7360c3e0244c9b5c3bc81d9d57d4: !TransformComponent
+                        Id: 60733af3-e0c3-4c24-9b5c-3bc81d9d57d4
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !SimpleDynamicTexture.UIScript,SimpleDynamicTexture.Game
-                        ~Id: 1d983363-de80-406c-8058-fa5c0bed6ce0
-                        Font: 9eb69756-ea58-414c-8249-9ee8e983cb8c/742bb234-8f43-4702-b9bb-396b663b4a2c:Font
-                    - !UIComponent
-                        ~Id: d039ac15-8363-43e7-9f34-d891cb850857
+                        Children: {}
+                    6333981d80de6c408058fa5c0bed6ce0: !SimpleDynamicTexture.UIScript,SimpleDynamicTexture.Game
+                        Id: 1d983363-de80-406c-8058-fa5c0bed6ce0
+                        Font: 742bb234-8f43-4702-b9bb-396b663b4a2c:Font
+                    15ac39d06383e7439f34d891cb850857: !UIComponent
+                        Id: d039ac15-8363-43e7-9f34-d891cb850857
                         Page: null
                         Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
@@ -69,24 +60,24 @@ Hierarchy:
                 Id: 3723d251-4a6e-4edb-9858-591bd4312d77
                 Name: MainScript
                 Components:
-                    - !TransformComponent
-                        ~Id: 6c3519de-0e76-4291-aa17-740b3b065d42
-                        Children: []
+                    de19356c760e9142aa17740b3b065d42: !TransformComponent
+                        Id: 6c3519de-0e76-4291-aa17-740b3b065d42
                         Position: {X: -1.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !SimpleDynamicTexture.TextureUpdateScript,SimpleDynamicTexture.Game
-                        ~Id: 50e271e0-83f5-4d14-a10a-d7a603ad9fca
+                        Children: {}
+                    e071e250f583144da10ad7a603ad9fca: !SimpleDynamicTexture.TextureUpdateScript,SimpleDynamicTexture.Game
+                        Id: 50e271e0-83f5-4d14-a10a-d7a603ad9fca
         -   Entity:
                 Id: f9ccd718-d696-48f5-bbb9-846f8a531db5
                 Name: Background
                 Components:
-                    - !TransformComponent
-                        ~Id: e8e937c3-def0-410e-adf5-4710d5e89d21
-                        Children: []
+                    c337e9e8f0de0e41adf54710d5e89d21: !TransformComponent
+                        Id: e8e937c3-def0-410e-adf5-4710d5e89d21
                         Position: {X: 1.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !BackgroundComponent
-                        ~Id: c10c24b7-e307-4742-afc3-9cd25fba85dc
-                        Texture: 98e71beb-d78f-4a3c-a870-8ecbc0191bb5/d83b8b93-533b-4ed9-b064-9308965a6745:XenkoBackground
+                        Children: {}
+                    b7240cc107e34247afc39cd25fba85dc: !BackgroundComponent
+                        Id: c10c24b7-e307-4742-afc3-9cd25fba85dc
+                        Texture: d83b8b93-533b-4ed9-b064-9308965a6745:XenkoBackground

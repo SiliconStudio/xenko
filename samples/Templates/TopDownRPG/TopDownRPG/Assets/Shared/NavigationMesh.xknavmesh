@@ -1,7 +1,7 @@
 !NavigationMeshAsset
 Id: e50d6079-dc5b-43a9-a1aa-75cf370f1fc3
 Tags: []
-Scene: bcb58e7f-54e6-4ed2-8826-452e0be77dd7/961e35a8-ba9a-47b4-82c6-2a2450282c00:MainScene
+Scene: 961e35a8-ba9a-47b4-82c6-2a2450282c00:MainScene
 BoundingBox:
     Minimum: {X: -10.0, Y: -10.0, Z: -10.0}
     Maximum: {X: 10.0, Y: 10.0, Z: 10.0}
@@ -18,7 +18,8 @@ BuildSettings:
     DetailSamplingDistance: 2.0
     MaxDetailSamplingError: 2.0
 NavigationMeshAgentSettings:
-    -   Height: 1.2
+    3f7b038e8ad7994f154fe924a1a33e55:
+        Height: 1.2
         Radius: 0.5
         MaxClimb: 0.3
         MaxSlope: {Radians: 0.7853982}

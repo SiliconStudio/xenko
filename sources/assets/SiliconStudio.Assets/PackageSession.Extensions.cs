@@ -14,39 +14,6 @@ namespace SiliconStudio.Assets
     public static class PackageSessionExtensions
     {
         /// <summary>
-        /// Finds an asset from all the packages by its location.
-        /// </summary>
-        /// <param name="session">The session.</param>
-        /// <param name="location">The location of the asset.</param>
-        /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
-        public static AssetItem FindAsset(this PackageSession session, UFile location)
-        {
-            var packages = session.Packages;
-            return packages.Select(packageItem => packageItem.Assets.Find(location)).FirstOrDefault(asset => asset != null);
-        }
-
-        /// <summary>
-        /// Finds an asset from all the packages by its id.
-        /// </summary>
-        /// <param name="session">The session.</param>
-        /// <param name="assetId">The assetId of the asset.</param>
-        /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
-        public static AssetItem FindAsset(this PackageSession session, Guid assetId)
-        {
-            var packages = session.Packages;
-            return packages.Select(packageItem => packageItem.Assets.Find(assetId)).FirstOrDefault(asset => asset != null);
-        }
-
-        public static AssetItem FindAssetFromAttachedReference(this PackageSession session, object obj)
-        {
-            if (obj == null)
-                return null;
-
-            var reference = AttachedReferenceManager.GetAttachedReference(obj);
-            return reference != null ? (FindAsset(session, reference.Id) ?? FindAsset(session, reference.Url)) : null;
-        }
-
-        /// <summary>
         /// Create a <see cref="Package"/> that can be used to compile an <see cref="AssetItem"/> by analyzing and resolving its dependencies.
         /// </summary>
         /// <returns>The package packageSession that can be used to compile the asset item.</returns>
@@ -74,7 +41,10 @@ namespace SiliconStudio.Assets
 
             // Calculate dependencies
             // Search only for references
-            var dependencies = session.DependencyManager.ComputeDependencies(assetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
+            var dependencies = session.DependencyManager.ComputeDependencies(assetItem.Id, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
+            if (dependencies == null)
+                throw new InvalidOperationException("The asset doesn't exist in the dependency manager anymore");
+
             var assetItemRootCloned = dependencies.Item.Clone();
 
             // Store the fullpath to the sourcefolder, this avoid us to clone hierarchy of packages

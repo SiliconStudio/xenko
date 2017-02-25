@@ -24,7 +24,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
         public void Test()
         {
             var logger = new LoggerResult();
-            var context = new AssetMigrationContext(null, logger);
 
             var files = Directory.EnumerateFiles(@"..\..\samples", "*.xkscene", SearchOption.AllDirectories);
 
@@ -36,6 +35,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
                 var file = new PackageLoadingAssetFile(sceneFile, null);
 
+                var context = new AssetMigrationContext(null, file.ToReference(), file.FilePath.ToWindowsPath(), logger);
                 var needMigration = AssetMigration.MigrateAssetIfNeeded(context, file, "Xenko");
 
                 foreach (var message in logger.Messages)

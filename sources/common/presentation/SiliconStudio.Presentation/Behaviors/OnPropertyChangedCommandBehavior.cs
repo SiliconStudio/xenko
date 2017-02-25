@@ -9,6 +9,8 @@ using SiliconStudio.Presentation.Extensions;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Data;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -62,12 +64,12 @@ namespace SiliconStudio.Presentation.Behaviors
         /// Gets or set whether the command should be executed only when the source of the binding associated to the dependency property is updated.
         /// </summary>
         /// <remarks>If set to <c>true</c>, this property requires that a binding exists on the dependency property and that it has <see cref="Binding.NotifyOnSourceUpdated"/> set to <c>true</c>.</remarks>
-        public bool ExecuteOnlyOnSourceUpdate { get { return (bool)GetValue(ExecuteOnlyOnSourceUpdateProperty); } set { SetValue(ExecuteOnlyOnSourceUpdateProperty, value); } }
+        public bool ExecuteOnlyOnSourceUpdate { get { return (bool)GetValue(ExecuteOnlyOnSourceUpdateProperty); } set { SetValue(ExecuteOnlyOnSourceUpdateProperty, value.Box()); } }
         
         /// <summary>
         /// Gets or sets whether the value of the property should be used as the parameter of the command to execute when the property is modified.
         /// </summary>
-        public bool PassValueAsParameter { get { return (bool)GetValue(PassValueAsParameterProperty); } set { SetValue(PassValueAsParameterProperty, value); } }
+        public bool PassValueAsParameter { get { return (bool)GetValue(PassValueAsParameterProperty); } set { SetValue(PassValueAsParameterProperty, value.Box()); } }
 
         protected override void OnAttached()
         {
@@ -90,7 +92,7 @@ namespace SiliconStudio.Presentation.Behaviors
             base.OnDetaching();
         }
 
-        private void OnSourceUpdated(object sender, DataTransferEventArgs e)
+        private void OnSourceUpdated(object sender, [NotNull] DataTransferEventArgs e)
         {
             if (ExecuteOnlyOnSourceUpdate && e.Property == dependencyProperty)
             {

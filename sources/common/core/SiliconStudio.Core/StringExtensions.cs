@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using System.Text;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -18,7 +19,7 @@ namespace SiliconStudio.Core
         /// <returns>The string trimmed.May be null if string was null</returns>
         public static string SafeTrim(this string value)
         {
-            return value == null ? null : value.Trim();
+            return value?.Trim();
         }
 
         /// <summary>
@@ -29,11 +30,11 @@ namespace SiliconStudio.Core
         /// <param name="testChar">The test character.</param>
         /// <returns>A position to the character found, or -1 if not found.</returns>
         /// <exception cref="System.ArgumentNullException">builder</exception>
-        public static int IndexOf(this StringBuilder builder, char testChar)
+        public static int IndexOf([NotNull] this StringBuilder builder, char testChar)
         {
-            if (builder == null) throw new ArgumentNullException("builder");
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
 
-            for (int i = 0; i < builder.Length; i++)
+            for (var i = 0; i < builder.Length; i++)
             {
                 if (builder[i] == testChar)
                 {
@@ -52,12 +53,12 @@ namespace SiliconStudio.Core
         /// <param name="startIndex">The start index.</param>
         /// <returns>A position to the character found, or -1 if not found.</returns>
         /// <exception cref="System.ArgumentNullException">builder</exception>
-        public static int LastIndexOf(this StringBuilder builder, char testChar, int startIndex = 0)
+        public static int LastIndexOf([NotNull] this StringBuilder builder, char testChar, int startIndex = 0)
         {
-            if (builder == null) throw new ArgumentNullException("builder");
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
 
             startIndex = startIndex < 0 ? 0 : startIndex;
-            for (int i = builder.Length - 1; i >= startIndex; i--)
+            for (var i = builder.Length - 1; i >= startIndex; i--)
             {
                 if (builder[i] == testChar)
                 {
@@ -67,12 +68,14 @@ namespace SiliconStudio.Core
             return -1;
         }
 
-        public static string Substring(this StringBuilder builder, int startIndex)
+        [NotNull]
+        public static string Substring([NotNull] this StringBuilder builder, int startIndex)
         {
             return builder.ToString(startIndex, builder.Length - startIndex);
         }
 
-        public static string Substring(this StringBuilder builder, int startIndex, int length)
+        [NotNull]
+        public static string Substring([NotNull] this StringBuilder builder, int startIndex, int length)
         {
             return builder.ToString(startIndex, length);
         }
@@ -83,9 +86,9 @@ namespace SiliconStudio.Core
         /// <param name="stringToTest">The string automatic test.</param>
         /// <param name="endChar">The end character.</param>
         /// <returns><c>true</c> if the end of this string ends by the specified character, <c>false</c> otherwise.</returns>
-        public static bool EndsWith(this string stringToTest, char endChar)
+        public static bool EndsWith([NotNull] this string stringToTest, char endChar)
         {
-            if (stringToTest == null) throw new ArgumentNullException("stringToTest");
+            if (stringToTest == null) throw new ArgumentNullException(nameof(stringToTest));
             return stringToTest.Length > 0 && endChar == stringToTest[stringToTest.Length - 1];
         }
 
@@ -95,10 +98,10 @@ namespace SiliconStudio.Core
         /// <param name="stringToTest">The string automatic test.</param>
         /// <param name="endChars">The end characters.</param>
         /// <returns><c>true</c> if the end of this string ends by the specified character, <c>false</c> otherwise.</returns>
-        public static bool EndsWith(this string stringToTest, params char[] endChars)
+        public static bool EndsWith([NotNull] this string stringToTest, [NotNull] params char[] endChars)
         {
-            if (stringToTest == null) throw new ArgumentNullException("stringToTest");
-            if (endChars == null) throw new ArgumentNullException("endChars");
+            if (stringToTest == null) throw new ArgumentNullException(nameof(stringToTest));
+            if (endChars == null) throw new ArgumentNullException(nameof(endChars));
             return stringToTest.Length > 0 && endChars.Contains(stringToTest[stringToTest.Length - 1]);
         }
 
@@ -108,7 +111,8 @@ namespace SiliconStudio.Core
         /// <param name="stringToFormat">The string automatic format.</param>
         /// <param name="argumentsToFormat">The arguments automatic format.</param>
         /// <returns>A formatted string. See <see cref="string.Format(string,object)"/> </returns>
-        public static string ToFormat(this string stringToFormat, params object[] argumentsToFormat)
+        [NotNull]
+        public static string ToFormat([NotNull] this string stringToFormat, [NotNull] params object[] argumentsToFormat)
         {
             return string.Format(stringToFormat, argumentsToFormat);
         }
@@ -123,12 +127,12 @@ namespace SiliconStudio.Core
         /// <returns>The character position of the value parameter for the specified character if it is found, or -1 if it is not found.</returns>
         /// <exception cref="System.ArgumentNullException">text</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">matchCount;matchCount must be >= 1</exception>
-        public static int IndexOfReverse(this string text, char charToFind, int matchCount = 1)
+        public static int IndexOfReverse([NotNull] this string text, char charToFind, int matchCount = 1)
         {
-            if (text == null) throw new ArgumentNullException("text");
-            if (matchCount < 1) throw new ArgumentOutOfRangeException("matchCount", "matchCount must be >= 1");
+            if (text == null) throw new ArgumentNullException(nameof(text));
+            if (matchCount < 1) throw new ArgumentOutOfRangeException(nameof(matchCount), "matchCount must be >= 1");
 
-            for (int i = text.Length - 1; i >= 0; i--)
+            for (var i = text.Length - 1; i >= 0; i--)
             {
                 if (text[i] == charToFind && (--matchCount) == 0)
                 {
@@ -158,20 +162,20 @@ namespace SiliconStudio.Core
         /// or
         /// count;Count must be in the range of the string length minus the startIndexFromEnd
         /// </exception>
-        public static int IndexOfReverse(this string text, char charToFind, int startIndexFromEnd, int count, int matchCount = 1)
+        public static int IndexOfReverse([NotNull] this string text, char charToFind, int startIndexFromEnd, int count, int matchCount = 1)
         {
-            if (text == null) throw new ArgumentNullException("text");
+            if (text == null) throw new ArgumentNullException(nameof(text));
             if (text.Length == 0 || count == 0) return -1;
-            if (count < 0) throw new ArgumentOutOfRangeException("count", "Count must be a positive value");
-            if (startIndexFromEnd < 0) throw new ArgumentOutOfRangeException("startIndexFromEnd", "StartIndexFromEnd must be a positive value");
-            if (startIndexFromEnd > text.Length - 1) throw new ArgumentOutOfRangeException("startIndexFromEnd", "StartIndexFromEnd must be within the range of the string length");
-            if (count > (text.Length - startIndexFromEnd)) throw new ArgumentOutOfRangeException("count", "Count must be in the range of the string length minus the startIndexFromEnd");
-            if (matchCount < 1) throw new ArgumentOutOfRangeException("matchCount", "matchCount must be >= 1");
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count), "Count must be a positive value");
+            if (startIndexFromEnd < 0) throw new ArgumentOutOfRangeException(nameof(startIndexFromEnd), "StartIndexFromEnd must be a positive value");
+            if (startIndexFromEnd > text.Length - 1) throw new ArgumentOutOfRangeException(nameof(startIndexFromEnd), "StartIndexFromEnd must be within the range of the string length");
+            if (count > (text.Length - startIndexFromEnd)) throw new ArgumentOutOfRangeException(nameof(count), "Count must be in the range of the string length minus the startIndexFromEnd");
+            if (matchCount < 1) throw new ArgumentOutOfRangeException(nameof(matchCount), "matchCount must be >= 1");
 
             var startIndex = text.Length - startIndexFromEnd - 1;
             var endIndex = startIndex - count + 1;
 
-            for (int i = startIndex; i >= endIndex; i--)
+            for (var i = startIndex; i >= endIndex; i--)
             {
                 if (text[i] == charToFind && (--matchCount) == 0)
                 {
@@ -187,7 +191,7 @@ namespace SiliconStudio.Core
         /// <param name="text">The text</param>
         /// <param name="value">The character to look for.</param>
         /// <returns>A boolean indicating if at least one instance of <paramref name="value"/> is present in <paramref name="text"/></returns>
-        public static bool Contains(this string text, char value)
+        public static bool Contains([NotNull] this string text, char value)
         {
             return text.Contains(new string(value, 1));
         }

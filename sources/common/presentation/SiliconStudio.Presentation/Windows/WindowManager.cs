@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Presentation.Extensions;
 using SiliconStudio.Presentation.Interop;
@@ -41,7 +42,7 @@ namespace SiliconStudio.Presentation.Windows
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowManager"/> class.
         /// </summary>
-        public WindowManager(Dispatcher dispatcher)
+        public WindowManager([NotNull] Dispatcher dispatcher)
         {
             if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
             if (initialized) throw new InvalidOperationException("An instance of WindowManager is already existing.");
@@ -98,7 +99,7 @@ namespace SiliconStudio.Presentation.Windows
             Logger.Info($"{nameof(WindowManager)} disposed");
         }
 
-        public static void ShowMainWindow(Window window)
+        public static void ShowMainWindow([NotNull] Window window)
         {
             if (window == null)
                 throw new ArgumentNullException(nameof(window));
@@ -119,7 +120,7 @@ namespace SiliconStudio.Presentation.Windows
             window.Show();
         }
 
-        public static Task ShowModal(Window window, WindowOwner windowOwner = WindowOwner.LastModal, WindowInitialPosition position = WindowInitialPosition.CenterOwner)
+        public static Task ShowModal([NotNull] Window window, WindowOwner windowOwner = WindowOwner.LastModal, WindowInitialPosition position = WindowInitialPosition.CenterOwner)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             CheckDispatcher();
@@ -162,7 +163,7 @@ namespace SiliconStudio.Presentation.Windows
             return windowInfo.WindowClosed.Task;
         }
 
-        public static void ShowNonModal(Window window, WindowOwner windowOwner = WindowOwner.MainWindow, WindowInitialPosition position = WindowInitialPosition.CenterOwner)
+        public static void ShowNonModal([NotNull] Window window, WindowOwner windowOwner = WindowOwner.MainWindow, WindowInitialPosition position = WindowInitialPosition.CenterOwner)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             CheckDispatcher();
@@ -179,7 +180,7 @@ namespace SiliconStudio.Presentation.Windows
             window.Show();
         }
 
-        private static void SetStartupLocation(Window window, WindowInfo owner, WindowInitialPosition position)
+        private static void SetStartupLocation([NotNull] Window window, WindowInfo owner, WindowInitialPosition position)
         {
             switch (position)
             {
@@ -201,15 +202,19 @@ namespace SiliconStudio.Presentation.Windows
         private static void PositionWindowToMouseCursor(object sender, RoutedEventArgs e)
         {
             var window = (Window)sender;
-            var area = window.GetWorkArea();
-            if (area != Rect.Empty)
+            // dispatch with one frame delay to make sure WPF layout passes are completed (if not, actual width and height might be incorrect)
+            window.Dispatcher.InvokeAsync(() =>
             {
-                var mousePosition = window.GetCursorScreenPosition();
-                var expandRight = area.Right > mousePosition.X + window.ActualWidth;
-                var expandBottom = area.Bottom > mousePosition.Y + window.ActualHeight;
-                window.Left = expandRight ? mousePosition.X : mousePosition.X - window.ActualWidth;
-                window.Top = expandBottom ? mousePosition.Y : mousePosition.Y - window.ActualHeight;
-            }
+                var area = window.GetWorkArea();
+                if (area != Rect.Empty)
+                {
+                    var mousePosition = window.GetCursorScreenPosition();
+                    var expandRight = area.Right > mousePosition.X + window.ActualWidth;
+                    var expandBottom = area.Bottom > mousePosition.Y + window.ActualHeight;
+                    window.Left = expandRight ? mousePosition.X : mousePosition.X - window.ActualWidth;
+                    window.Top = expandBottom ? mousePosition.Y : mousePosition.Y - window.ActualHeight;
+                }
+            });
 
             window.Loaded -= PositionWindowToMouseCursor;
         }
@@ -386,6 +391,7 @@ namespace SiliconStudio.Presentation.Windows
             }
         }
 
+        [CanBeNull]
         internal static WindowInfo Find(IntPtr hwnd)
         {
             if (hwnd == IntPtr.Zero)

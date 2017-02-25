@@ -78,6 +78,7 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         [DataMember(-10), Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; }
 
         [DataMember(0)] // Name is serialized
@@ -194,6 +195,15 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
+        /// Removes the specified component.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Remove(EntityComponent component)
+        {
+            Components.Remove(component);
+        }
+
+        /// <summary>
         /// Removes all components of the specified type or derived type.
         /// </summary>
         /// <typeparam name="T">Type of the component</typeparam>
@@ -258,17 +268,11 @@ namespace SiliconStudio.Xenko.Engine
 
             public string Name => entity.Name;
 
-            public Entity[] Children
-            {
-                get
-                {
-                    var transformationComponent = entity.Transform;
-                    if (transformationComponent == null)
-                        return null;
+            public Guid Id => entity.Id;
 
-                    return transformationComponent.Children.Select(x => x.Entity).ToArray();
-                }
-            }
+            public Entity Parent => entity.Transform?.Parent?.Entity;
+
+            public Entity[] Children => entity.Transform?.Children.Select(x => x.Entity).ToArray();
 
             public EntityComponent[] Components => entity.Components.ToArray();
         }
@@ -290,7 +294,7 @@ namespace SiliconStudio.Xenko.Engine
                 guidSerializer = MemberSerializer<Guid>.Create(serializerSelector);
                 stringSerializer = MemberSerializer<string>.Create(serializerSelector);
                 entityGroupSerializer = MemberSerializer<EntityGroup>.Create(serializerSelector);
-                componentCollectionSerializer = serializerSelector.GetSerializer<EntityComponentCollection>();
+                componentCollectionSerializer = MemberSerializer<EntityComponentCollection>.Create(serializerSelector);
             }
 
             public override void PreSerialize(ref Entity obj, ArchiveMode mode, SerializationStream stream)

@@ -11,15 +11,16 @@ using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets.Tracking
 {
+    // TODO: Inherit from AssetTracker
     public sealed class AssetSourceTracker : IDisposable
     {
         private readonly PackageSession session;
         internal readonly object ThisLock = new object();
         internal readonly HashSet<Package> Packages;
-        private readonly Dictionary<Guid, TrackedAsset> trackedAssets = new Dictionary<Guid, TrackedAsset>();
+        private readonly Dictionary<AssetId, TrackedAsset> trackedAssets = new Dictionary<AssetId, TrackedAsset>();
         // Objects used to track directories
         internal DirectoryWatcher DirectoryWatcher;
-        private readonly Dictionary<string, HashSet<Guid>> mapSourceFilesToAssets = new Dictionary<string, HashSet<Guid>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, HashSet<AssetId>> mapSourceFilesToAssets = new Dictionary<string, HashSet<AssetId>>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, ObjectId> currentHashes = new Dictionary<string, ObjectId>(StringComparer.OrdinalIgnoreCase);
         private readonly List<FileEvent> fileEvents = new List<FileEvent>();
         private readonly ManualResetEvent threadWatcherEvent;
@@ -46,11 +47,6 @@ namespace SiliconStudio.Assets.Tracking
             TrackingSleepTime = 100;
             tokenSourceForImportHash = new CancellationTokenSource();
             threadWatcherEvent = new ManualResetEvent(false);
-
-            foreach (var package in session.Packages)
-            {
-                TrackPackage(package);
-            }
         }
 
         /// <summary>
@@ -97,6 +93,11 @@ namespace SiliconStudio.Assets.Tracking
                         {
                             ActivateTracking();
                         }
+
+                        foreach (var package in session.Packages)
+                        {
+                            TrackPackage(package);
+                        }
                     }
                     else
                     {
@@ -111,6 +112,11 @@ namespace SiliconStudio.Assets.Tracking
                             threadWatcherEvent.Set();
                             fileEventThreadHandler.Join();
                             fileEventThreadHandler = null;
+                        }
+
+                        foreach (var package in session.Packages)
+                        {
+                            UnTrackPackage(package);
                         }
                     }
                 }
@@ -244,7 +250,7 @@ namespace SiliconStudio.Assets.Tracking
         /// This method is called when an asset needs to be tracked
         /// </summary>
         /// <returns>AssetDependencies.</returns>
-        private void TrackAsset(Guid assetId)
+        private void TrackAsset(AssetId assetId)
         {
             lock (ThisLock)
             {
@@ -263,7 +269,7 @@ namespace SiliconStudio.Assets.Tracking
                 // TODO: This is not handling shadow registry
 
                 // No need to clone assets from readonly package 
-                var clonedAsset = assetItem.Package.IsSystem ? assetItem.Asset : (Asset)AssetCloner.Clone(assetItem.Asset, AssetClonerFlags.KeepBases);
+                var clonedAsset = assetItem.Package.IsSystem ? assetItem.Asset : AssetCloner.Clone(assetItem.Asset);
                 var trackedAsset = new TrackedAsset(this, assetItem.Asset, clonedAsset);
 
                 // Adds to global list
@@ -271,7 +277,7 @@ namespace SiliconStudio.Assets.Tracking
             }
         }
 
-        private void UnTrackAsset(Guid assetId)
+        private void UnTrackAsset(AssetId assetId)
         {
             lock (ThisLock)
             {
@@ -286,14 +292,14 @@ namespace SiliconStudio.Assets.Tracking
             }
         }
 
-        internal void TrackAssetImportInput(Guid assetId, string inputPath)
+        internal void TrackAssetImportInput(AssetId assetId, string inputPath)
         {
             lock (ThisLock)
             {
-                HashSet<Guid> assetsTrackedByPath;
+                HashSet<AssetId> assetsTrackedByPath;
                 if (!mapSourceFilesToAssets.TryGetValue(inputPath, out assetsTrackedByPath))
                 {
-                    assetsTrackedByPath = new HashSet<Guid>();
+                    assetsTrackedByPath = new HashSet<AssetId>();
                     mapSourceFilesToAssets.Add(inputPath, assetsTrackedByPath);
                     DirectoryWatcher?.Track(inputPath);
                 }
@@ -304,11 +310,11 @@ namespace SiliconStudio.Assets.Tracking
             FileVersionManager.Instance.ComputeFileHashAsync(inputPath, SourceImportFileHashCallback, tokenSourceForImportHash.Token);
         }
 
-        internal void UnTrackAssetImportInput(Guid assetId, string inputPath)
+        internal void UnTrackAssetImportInput(AssetId assetId, string inputPath)
         {
             lock (ThisLock)
             {
-                HashSet<Guid> assetsTrackedByPath;
+                HashSet<AssetId> assetsTrackedByPath;
                 if (mapSourceFilesToAssets.TryGetValue(inputPath, out assetsTrackedByPath))
                 {
                     assetsTrackedByPath.Remove(assetId);
@@ -353,47 +359,82 @@ namespace SiliconStudio.Assets.Tracking
 
         private void Packages_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            switch (e.Action)
+            lock (ThisLock)
             {
-                case NotifyCollectionChangedAction.Add:
-                    TrackPackage((Package)e.NewItems[0]);
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    UnTrackPackage((Package)e.OldItems[0]);
-                    break;
-
-                case NotifyCollectionChangedAction.Replace:
-                    foreach (var oldPackage in e.OldItems.OfType<Package>())
+                if (EnableTracking)
+                {
+                    switch (e.Action)
                     {
-                        UnTrackPackage(oldPackage);
-                    }
+                        case NotifyCollectionChangedAction.Add:
+                            TrackPackage((Package)e.NewItems[0]);
+                            break;
+                        case NotifyCollectionChangedAction.Remove:
+                            UnTrackPackage((Package)e.OldItems[0]);
+                            break;
 
-                    foreach (var package in session.Packages)
-                    {
-                        TrackPackage(package);
+                        case NotifyCollectionChangedAction.Replace:
+                            foreach (var oldPackage in e.OldItems.OfType<Package>())
+                            {
+                                UnTrackPackage(oldPackage);
+                            }
+
+                            foreach (var package in session.Packages)
+                            {
+                                TrackPackage(package);
+                            }
+                            break;
                     }
-                    break;
+                }
             }
         }
 
         private void Assets_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            switch (e.Action)
+            lock (ThisLock)
             {
-                case NotifyCollectionChangedAction.Add:
-                    foreach (AssetItem assetItem in e.NewItems)
+                if (EnableTracking)
+                {
+                    switch (e.Action)
                     {
-                        TrackAsset(assetItem.Id);
+                        case NotifyCollectionChangedAction.Add:
+                            foreach (AssetItem assetItem in e.NewItems)
+                            {
+                                TrackAsset(assetItem.Id);
+                            }
+                            break;
+                        case NotifyCollectionChangedAction.Remove:
+                            foreach (AssetItem assetItem in e.OldItems)
+                            {
+                                UnTrackAsset(assetItem.Id);
+                            }
+                            break;
+                        case NotifyCollectionChangedAction.Reset:
+                            {
+                                //var assets = (PackageAssetCollection)sender;
+                                var allAssetIds = new HashSet<AssetId>(session.Packages.SelectMany(x => x.Assets).Select(x => x.Id));
+                                var assetsToUntrack = new List<AssetId>();
+                                foreach (var asset in trackedAssets)
+                                {
+                                    // Untrack assets that are currently tracked, but absent from the package session.
+                                    if (!allAssetIds.Contains(asset.Key))
+                                        assetsToUntrack.Add(asset.Key);
+                                }
+                                foreach (var asset in assetsToUntrack)
+                                {
+                                    UnTrackAsset(asset);
+                                }
+                                // Track assets that are present in the package session, but not currently in the list of tracked assets.
+                                allAssetIds.ExceptWith(trackedAssets.Keys);
+                                foreach (var asset in allAssetIds)
+                                {
+                                    TrackAsset(asset);
+                                }
+                            }
+                            break;
+                        default:
+                            throw new NotSupportedException("This operation is not supported by the source tracker.");
                     }
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    foreach (AssetItem assetItem in e.OldItems)
-                    {
-                        UnTrackAsset(assetItem.Id);
-                    }
-                    break;
-                default:
-                    throw new NotSupportedException("Reset is not supported by the source tracker.");
+                }
             }
         }
 
@@ -457,7 +498,7 @@ namespace SiliconStudio.Assets.Tracking
         {
             lock (ThisLock)
             {
-                HashSet<Guid> items;
+                HashSet<AssetId> items;
                 if (!mapSourceFilesToAssets.TryGetValue(sourceFile, out items))
                     return;
 

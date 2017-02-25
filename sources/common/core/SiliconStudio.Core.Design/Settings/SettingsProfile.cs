@@ -15,7 +15,6 @@ namespace SiliconStudio.Core.Settings
     /// are not currently registered, if they exist in the file from which the profile was loaded.
     /// </summary>
     [DataSerializer(typeof(Serializer))]
-    [NonIdentifiable]
     public class SettingsProfile : IDisposable
     {
         internal ITransactionStack TransactionStack = TransactionStackFactory.Create(int.MaxValue);
@@ -286,7 +285,7 @@ namespace SiliconStudio.Core.Settings
             }
             if (MonitorFileModification && FilePath != null && File.Exists(FilePath))
             {
-                fileWatcher = new FileSystemWatcher(Path.Combine(Environment.CurrentDirectory, FilePath.GetFullDirectory()), FilePath.GetFileNameWithExtension());
+                fileWatcher = new FileSystemWatcher(Path.Combine(Environment.CurrentDirectory, FilePath.GetFullDirectory()), FilePath.GetFileName());
                 fileWatcher.Changed += SettingsFileChanged;
                 fileWatcher.EnableRaisingEvents = true;
             }

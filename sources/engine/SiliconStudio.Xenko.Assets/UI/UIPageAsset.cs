@@ -4,6 +4,7 @@
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
@@ -12,12 +13,14 @@ namespace SiliconStudio.Xenko.Assets.UI
     /// </summary>
     [DataContract("UIPageAsset")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
+    [AssetContentType(typeof(UIPage))]
     [AssetCompiler(typeof(UIPageAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [Display("UI Page")]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.9.0-beta01", typeof(BasePartsRemovalComponentUpgrader))]
     public sealed class UIPageAsset : UIAssetBase
     {
-        private const string CurrentVersion = "0.0.0";
+        private const string CurrentVersion = "1.9.0-beta01";
 
         /// <summary>
         /// The default file extension used by the <see cref="UIPageAsset"/>.

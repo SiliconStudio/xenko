@@ -1,9 +1,8 @@
 !PrefabAsset
 Id: 7568f365-1334-469b-b87f-26bab68414bc
-SerializedVersion: {Xenko: 1.9.0-beta01}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 Hierarchy:
-    ~Id: 942fb4ae-fe24-4abd-9ec3-de4626e9404e
     RootPartIds:
         - 55691071-2afa-4446-a26b-67474badc01c
     Parts:
@@ -11,20 +10,21 @@ Hierarchy:
                 Id: 55691071-2afa-4446-a26b-67474badc01c
                 Name: Stairs1x1x1_25
                 Components:
-                    - !TransformComponent
-                        ~Id: deb79242-fd85-4748-9bb9-156dc6413501
-                        Children: []
+                    4292b7de85fd48479bb9156dc6413501: !TransformComponent
+                        Id: deb79242-fd85-4748-9bb9-156dc6413501
                         Position: {X: 0.499999046, Y: 0.5, Z: 0.625}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 981c98d7-15da-40b5-be8f-d89a04a982f0
-                        Model: 44bade37-3d10-4b03-8a62-41ffa0f024d0/4c293323-c1b7-4b6f-8cdd-a240f179e5f5:Models/Stairs1x1x1_25
+                        Children: {}
+                    d7981c98da15b540be8fd89a04a982f0: !ModelComponent
+                        Id: 981c98d7-15da-40b5-be8f-d89a04a982f0
+                        Model: 4c293323-c1b7-4b6f-8cdd-a240f179e5f5:Models/Stairs1x1x1_25
                         Materials:
-                            - 7c3edc74-636e-463f-a380-1edd86a197dd/08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
-                    - !StaticColliderComponent
-                        ~Id: df56193f-9c04-4e7a-a6bb-02ca241d9c1e
-                        CanSleep: false
+                            74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
+                    3f1956df049c7a4ea6bb02ca241d9c1e: !StaticColliderComponent
+                        Id: df56193f-9c04-4e7a-a6bb-02ca241d9c1e
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -32,6 +32,5 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         ColliderShapes:
-                            - !ColliderShapeAssetDesc
-                                ~Id: 31884eac-b8ea-457b-ac8f-9d9e46be95dd
-                                Shape: 710e7cf2-2950-4ef9-9f24-671e781099bf/99e92203-3bfa-4947-a970-cf3c3b94fb84:CollisionMeshes/Stairs1x1x1_25
+                            ac4e8831eab87b45ac8f9d9e46be95dd: !ColliderShapeAssetDesc
+                                Shape: 99e92203-3bfa-4947-a970-cf3c3b94fb84:CollisionMeshes/Stairs1x1x1_25

@@ -134,6 +134,7 @@
     <Compile Include="Engine\Events\EventTaskScheduler.cs" />
     <Compile Include="Engine\GameSystem.cs" />
     <Compile Include="Engine\IEntityComponentNotify.cs" />
+    <Compile Include="Engine\IndexingDictionary.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
@@ -376,7 +377,6 @@
     <Compile Include="Rendering\Lights\LightSimpleAmbientKeys.cs" />
     <Compile Include="Rendering\LogicalGroup.cs" />
     <Compile Include="Rendering\LogicalGroupReference.cs" />
-    <Compile Include="Rendering\MaterialNull.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />
@@ -2602,7 +2602,6 @@
     <Compile Include="Engine\EntityManager.cs" />
     <Compile Include="Engine\Entity.cs" />
     <Compile Include="Engine\EntityProcessor.cs" />
-    <Compile Include="Extensions\EntityExtensions.cs" />
     <Compile Include="Extensions\IndexExtensions.cs" />
     <Compile Include="Extensions\TNBExtensions.cs" />
     <Compile Include="Extensions\VertexExtensions.cs" />
@@ -2627,7 +2626,10 @@
     <Compile Include="Updater\BlittableHelper.cs" />
     <Compile Include="Updater\CompiledUpdate.cs" />
     <Compile Include="Updater\DataMemberUpdatableAttribute.cs" />
+    <Compile Include="Updater\EnterChecker.cs" />
+    <Compile Include="Updater\ListEnterChecker.cs" />
     <Compile Include="Updater\ListUpdateResolver.cs" />
+    <Compile Include="Updater\UpdatableArrayAccessor.cs" />
     <Compile Include="Updater\UpdatableCustomAccessor.cs" />
     <Compile Include="Updater\UpdatableField.cs" />
     <Compile Include="Updater\UpdatableFieldT.cs" />
@@ -3601,6 +3603,7 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>PickingShader.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\XenkoDefaultFont.xkfnt" />
     <None Include="Rendering\XenkoWireframeShadingEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>XenkoWireframeShadingEffect.cs</LastGenOutput>
@@ -3893,6 +3896,7 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
       <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
       <Name>SiliconStudio.Xenko.Native</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
       <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>

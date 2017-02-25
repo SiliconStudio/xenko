@@ -85,7 +85,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             }
         }
 
-        public static bool RequestImageComparisonStatus(string testName)
+        public static bool RequestImageComparisonStatus(ref string testName)
         {
             if (!Connect())
                 throw new InvalidOperationException("Could not connect to image comparer server");
@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 testResultImage.Write(binaryWriter);
 
                 sw.Stop();
-                GameTestBase.TestGameLogger.Info("Total calculation time: {0}", sw.Elapsed);
+                GameTestBase.TestGameLogger.Info($"Total calculation time: {sw.Elapsed}");
 
                 return binaryReader.ReadBoolean();
             }

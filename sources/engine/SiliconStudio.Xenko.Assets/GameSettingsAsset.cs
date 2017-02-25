@@ -16,7 +16,6 @@ using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Settings;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
-using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Data;
 using SiliconStudio.Xenko.Engine;
@@ -34,6 +33,7 @@ namespace SiliconStudio.Xenko.Assets
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetCompiler(typeof(GameSettingsAssetCompiler))]
     [Display(10000, "Game Settings")]
+    [NonIdentifiableCollectionItems]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.6.0-beta", typeof(UpgraderPlatformsConfiguration))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.6.0-beta", "1.6.1-alpha01", typeof(UpgradeNewGameSettings))]
@@ -142,80 +142,6 @@ namespace SiliconStudio.Xenko.Assets
             }
 
             return Get<T>();
-        }
-
-        internal class UpgraderVersion130
-        {
-            public static SettingsKey<DisplayOrientation> DisplayOrientation = new SettingsKey<DisplayOrientation>("Xenko.DisplayOrientation", PackageProfile.SettingsContainer);
-
-            public static SettingsKey<GraphicsPlatform> GraphicsPlatform = new SettingsKey<GraphicsPlatform>("Xenko.GraphicsPlatform", PackageProfile.SettingsContainer);
-
-            public static SettingsKey<TextureQuality> TextureQuality = new SettingsKey<TextureQuality>("Xenko.TextureQuality", PackageProfile.SettingsContainer);
-
-            public static readonly SettingsKey<AssetReference<SceneAsset>> DefaultScene = new SettingsKey<AssetReference<SceneAsset>>("GameSettingsAsset.DefaultScene", PackageProfile.SettingsContainer);
-
-            public static readonly SettingsKey<int> BackBufferWidth = new SettingsKey<int>("GameSettingsAsset.BackBufferWidth", PackageProfile.SettingsContainer, 1280);
-
-            public static readonly SettingsKey<int> BackBufferHeight = new SettingsKey<int>("GameSettingsAsset.BackBufferHeight", PackageProfile.SettingsContainer, 720);
-
-            public static readonly SettingsKey<GraphicsProfile> DefaultGraphicsProfile = new SettingsKey<GraphicsProfile>("GameSettingsAsset.DefaultGraphicsProfile", PackageProfile.SettingsContainer, GraphicsProfile.Level_10_0);
-
-            public static T Get<T>(SettingsProfile profile, SettingsKey<T> key)
-            {
-                return key.GetValue(profile, true);
-            }
-
-            public static bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
-            {
-                var packageSharedProfile = dependentPackage.Profiles.FindSharedProfile();
-
-                // Only do something if there is a default scene defined
-                if (packageSharedProfile != null && packageSharedProfile.Properties.ContainsKey(DefaultScene))
-                {
-                    var defaultScene = Get(packageSharedProfile.Properties, DefaultScene);
-
-                    var defaultGraphicsProfile = Get(packageSharedProfile.Properties, DefaultGraphicsProfile);
-
-                    // If available, use graphics profile from Windows platform
-                    foreach (var profile in dependentPackage.Profiles)
-                    {
-                        if (profile.Platform == PlatformType.Windows && profile.Properties.ContainsKey(DefaultGraphicsProfile))
-                        {
-                            defaultGraphicsProfile = Get(profile.Properties, DefaultGraphicsProfile);
-                        }
-                    }
-
-                    // Create asset
-                    var gameSettingsAsset = GameSettingsFactory.Create();
-                    gameSettingsAsset.DefaultScene = AttachedReferenceManager.CreateProxyObject<Scene>(defaultScene.Id, defaultScene.Location);
-
-                    var renderingSettings = gameSettingsAsset.Get<RenderingSettings>();
-                    renderingSettings.DisplayOrientation = (RequiredDisplayOrientation) Get(packageSharedProfile.Properties, DisplayOrientation);
-                    renderingSettings.ColorSpace = ColorSpace.Linear;
-                    renderingSettings.DefaultBackBufferWidth = Get(packageSharedProfile.Properties, BackBufferWidth);
-                    renderingSettings.DefaultBackBufferHeight = Get(packageSharedProfile.Properties, BackBufferHeight);
-                    renderingSettings.DefaultGraphicsProfile = defaultGraphicsProfile;
-
-                    // Add asset
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        AssetSerializer.Save(memoryStream, gameSettingsAsset, log);
-                        assetFiles.Add(new PackageLoadingAssetFile(dependentPackage, GameSettingsLocation + FileExtension, null) { AssetContent = memoryStream.ToArray() });
-                    }
-
-                    // Clean properties
-                    foreach (var profile in dependentPackage.Profiles)
-                    {
-                        profile.Properties.Remove(DefaultScene.Name);
-                        profile.Properties.Remove(BackBufferWidth.Name);
-                        profile.Properties.Remove(BackBufferHeight.Name);
-                        profile.Properties.Remove(DefaultGraphicsProfile.Name);
-                        profile.Properties.Remove(DisplayOrientation.Name);
-                    }
-                }
-
-                return true;
-            }
         }
 
         internal class UpgraderPlatformsConfiguration : AssetUpgraderBase

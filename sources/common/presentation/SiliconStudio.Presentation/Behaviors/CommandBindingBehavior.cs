@@ -3,8 +3,9 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Commands;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -22,18 +23,20 @@ namespace SiliconStudio.Presentation.Behaviors
         public static readonly DependencyProperty CommandProperty =
             DependencyProperty.Register(nameof(Command), typeof(ICommandBase), typeof(CommandBindingBehavior), new PropertyMetadata(null, CommandChanged));
         /// <summary>
+        /// Identifies the <see cref="ContinueRouting"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ContinueRoutingProperty =
+            DependencyProperty.Register(nameof(ContinueRouting), typeof(bool), typeof(CommandBindingBehavior), new PropertyMetadata(BooleanBoxes.TrueBox));
+        /// <summary>
         /// Identifies the <see cref="IsEnabled"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IsEnabledProperty =
-            DependencyProperty.Register(nameof(IsEnabled), typeof(bool), typeof(CommandBindingBehavior), new PropertyMetadata(true));
-        // Using a DependencyProperty as the backing store for RoutedCommand.  This enables animation, styling, binding, etc...
+            DependencyProperty.Register(nameof(IsEnabled), typeof(bool), typeof(CommandBindingBehavior), new PropertyMetadata(BooleanBoxes.TrueBox));
+        /// <summary>
+        /// Identifies the <see cref="RoutedCommand"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty RoutedCommandProperty =
             DependencyProperty.Register(nameof(RoutedCommand), typeof(RoutedCommand), typeof(CommandBindingBehavior));
-
-        /// <summary>
-        /// Gets or sets the <see cref="RoutedCommand"/> to bind.
-        /// </summary>
-        public RoutedCommand RoutedCommand { get { return (RoutedCommand)GetValue(RoutedCommandProperty); } set { SetValue(RoutedCommandProperty, value); } }
 
         /// <summary>
         /// Gets or sets the <see cref="ICommandBase"/> to bind.
@@ -41,9 +44,20 @@ namespace SiliconStudio.Presentation.Behaviors
         public ICommandBase Command { get { return (ICommandBase)GetValue(CommandProperty); } set { SetValue(CommandProperty, value); } }
 
         /// <summary>
+        /// Gets or sets whether the input routed event that invoked the command should continue to route through the element tree.
+        /// </summary>
+        /// <seealso cref="CanExecuteRoutedEventArgs.ContinueRouting"/>
+        public bool ContinueRouting { get { return (bool)GetValue(ContinueRoutingProperty); } set { SetValue(ContinueRoutingProperty, value.Box()); } }
+
+        /// <summary>
         /// Gets or sets whether this command binding is enabled. When disabled, the <see cref="Command"/> won't be executed.
         /// </summary>
-        public bool IsEnabled { get { return (bool)GetValue(IsEnabledProperty); } set { SetValue(IsEnabledProperty, value); } }
+        public bool IsEnabled { get { return (bool)GetValue(IsEnabledProperty); } set { SetValue(IsEnabledProperty, value.Box()); } }
+
+        /// <summary>
+        /// Gets or sets the <see cref="RoutedCommand"/> to bind.
+        /// </summary>
+        public RoutedCommand RoutedCommand { get { return (RoutedCommand)GetValue(RoutedCommandProperty); } set { SetValue(RoutedCommandProperty, value); } }
 
         /// <inheritdoc/>
         protected override void OnAttached()
@@ -63,7 +77,7 @@ namespace SiliconStudio.Presentation.Behaviors
             CommandManager.InvalidateRequerySuggested();
         }
 
-        private void OnCanExecute(CanExecuteRoutedEventArgs canExecuteRoutedEventArgs)
+        private void OnCanExecute([NotNull] CanExecuteRoutedEventArgs canExecuteRoutedEventArgs)
         {
             if (Command != null)
             {
@@ -74,7 +88,7 @@ namespace SiliconStudio.Presentation.Behaviors
                 canExecuteRoutedEventArgs.CanExecute = false;
             }
 
-            if (canExecuteRoutedEventArgs.CanExecute)
+            if (canExecuteRoutedEventArgs.CanExecute || !ContinueRouting)
             {
                 canExecuteRoutedEventArgs.Handled = true;
             }
@@ -84,7 +98,7 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
-        private void OnExecuted(ExecutedRoutedEventArgs executedRoutedEventArgs)
+        private void OnExecuted([NotNull] ExecutedRoutedEventArgs executedRoutedEventArgs)
         {
             if (Command != null && IsEnabled)
             {

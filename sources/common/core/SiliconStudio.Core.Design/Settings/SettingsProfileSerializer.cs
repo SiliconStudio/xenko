@@ -1,11 +1,14 @@
-﻿using SiliconStudio.Core.Yaml;
+﻿using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Settings
 {
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlProfile)]
     internal class SettingsProfileSerializer : SettingsDictionarySerializer
     {
+        public const string YamlProfile = "Settings";
+
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             var type = typeDescriptor.Type;

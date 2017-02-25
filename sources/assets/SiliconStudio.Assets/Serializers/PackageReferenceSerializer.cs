@@ -12,7 +12,7 @@ namespace SiliconStudio.Assets.Serializers
     /// <summary>
     /// A Yaml serializer for <see cref="PackageReference"/>
     /// </summary>
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
     internal class PackageReferenceSerializer : AssetScalarSerializerBase
     {
         public override bool CanVisit(Type type)

@@ -131,7 +131,7 @@ namespace SiliconStudio.Core.Settings
 
             if (!File.Exists(filePath))
             {
-                Logger.Error("Settings file [{0}] was not found", filePath);
+                Logger.Error($"Settings file [{filePath}] was not found");
                 return null;
             }
 
@@ -141,12 +141,11 @@ namespace SiliconStudio.Core.Settings
                 var settingsFile = new SettingsFile(profile);
                 using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    YamlSerializer.Deserialize(stream, settingsFile);
+                    SettingsYamlSerializer.Default.Deserialize(stream, settingsFile);
                 }
             }
             catch (Exception e)
             {
-                Logger.Error("Error while loading settings file [{0}]: {1}", e, filePath, e.FormatFull());
                 return null;
             }
 
@@ -177,7 +176,7 @@ namespace SiliconStudio.Core.Settings
             if (filePath == null) throw new ArgumentException("profile");
             if (!File.Exists(filePath))
             {
-                Logger.Error("Settings file [{0}] was not found", filePath);
+                Logger.Error($"Settings file [{filePath}] was not found");
                 throw new ArgumentException("profile");
             }
 
@@ -186,12 +185,12 @@ namespace SiliconStudio.Core.Settings
                 var settingsFile = new SettingsFile(profile);
                 using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    YamlSerializer.Deserialize(stream, settingsFile);
+                    SettingsYamlSerializer.Default.Deserialize(stream, settingsFile);
                 }
             }
             catch (Exception e)
             {
-                Logger.Error("Error while loading settings file [{0}]: {1}", e, filePath, e.FormatFull());
+                Logger.Error($"Error while loading settings file [{filePath}].", e);
             }
 
             var handler = SettingsFileLoaded;
@@ -231,7 +230,7 @@ namespace SiliconStudio.Core.Settings
                 var settingsFile = new SettingsFile(profile);
                 using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Write))
                 {
-                    YamlSerializer.Serialize(stream, settingsFile);
+                    SettingsYamlSerializer.Default.Serialize(stream, settingsFile);
                 }
 
                 if (filePath != profile.FilePath)
@@ -246,7 +245,7 @@ namespace SiliconStudio.Core.Settings
             }
             catch (Exception e)
             {
-                Logger.Error("Error while saving settings file [{0}]: {1}", e, filePath, e.FormatFull());
+                Logger.Error($"Error while saving settings file [{filePath}]", e);
                 return false;
             }
             finally

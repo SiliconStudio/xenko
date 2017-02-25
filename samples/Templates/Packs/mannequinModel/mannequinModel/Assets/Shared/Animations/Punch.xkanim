@@ -5,6 +5,6 @@ Tags: []
 Source: ../../../Resources/Animation/Punch.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 RepeatMode: LoopInfinite
-Skeleton: 67a4d1e5-71e5-43f5-8f9a-d07a50363761/a0d324bd-326a-4fd8-88a9-fc5e4dcc62e5:Models/mannequinModel Skeleton
+Skeleton: a0d324bd-326a-4fd8-88a9-fc5e4dcc62e5:Models/mannequinModel Skeleton
 RootMotion: false
-PreviewModel: dc909e89-b1f1-4b51-8fc2-07d1e6a1a714/f68ea240-695a-4de5-9884-60d77544fcd6:Models/mannequinModel
+PreviewModel: f68ea240-695a-4de5-9884-60d77544fcd6:Models/mannequinModel

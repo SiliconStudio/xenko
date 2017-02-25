@@ -44,23 +44,17 @@
     <Compile Include="Events\SequenceStart.cs" />
     <Compile Include="MemoryParser.cs" />
     <Compile Include="Serialization\AnchorEventEmitter.cs" />
-    <Compile Include="Serialization\DefaultNamingConvention.cs" />
-    <Compile Include="Serialization\DescriptorCategory.cs" />
-    <Compile Include="Serialization\Descriptors\DefaultKeyComparer.cs" />
     <Compile Include="Serialization\DynamicMemberDescriptorBase.cs" />
     <Compile Include="Serialization\FlatNamingConvention.cs" />
-    <Compile Include="Serialization\IMemberNamingConvention.cs" />
     <Compile Include="Serialization\IOrderedDictionary.cs" />
+    <Compile Include="Serialization\ISerializerFactorySelector.cs" />
     <Compile Include="Serialization\ITagTypeResolver.cs" />
-    <Compile Include="Serialization\Logging\ILogger.cs" />
-    <Compile Include="Serialization\Logging\LogLevel.cs" />
     <Compile Include="Serialization\ObjectContext.cs" />
     <Compile Include="Serialization\OrderedDictionary.cs" />
     <Compile Include="Serialization\SerializerContextSettings.cs" />
+    <Compile Include="Serialization\SerializerFactorySelector.cs" />
     <Compile Include="Serialization\Serializers\DefaultObjectSerializerBackend.cs" />
     <Compile Include="Serialization\IObjectSerializerBackend.cs" />
-    <Compile Include="Serialization\YamlRemapAttribute.cs" />
-    <Compile Include="YamlStyle.cs" />
     <Compile Include="Events\StreamEnd.cs" />
     <Compile Include="Events\StreamStart.cs" />
     <Compile Include="FakeList.cs" />
@@ -83,25 +77,11 @@
     <Compile Include="Serialization\AnchorNotFoundException.cs" />
     <Compile Include="Serialization\ChainedObjectFactory.cs" />
     <Compile Include="Serialization\DefaultObjectFactory.cs" />
-    <Compile Include="Serialization\Descriptors\ArrayDescriptor.cs" />
-    <Compile Include="Serialization\Descriptors\CollectionDescriptor.cs" />
-    <Compile Include="Serialization\Descriptors\DictionaryDescriptor.cs" />
-    <Compile Include="Serialization\Descriptors\FieldDescriptor.cs" />
-    <Compile Include="Serialization\Descriptors\MemberDescriptorBase.cs" />
-    <Compile Include="Serialization\Descriptors\NullableDescriptor.cs" />
-    <Compile Include="Serialization\Descriptors\ObjectDescriptor.cs" />
-    <Compile Include="Serialization\Descriptors\PrimitiveDescriptor.cs" />
-    <Compile Include="Serialization\Descriptors\PropertyDescriptor.cs" />
-    <Compile Include="Serialization\Descriptors\TypeDescriptorFactory.cs" />
     <Compile Include="Serialization\DocumentLoadingState.cs" />
     <Compile Include="Serialization\DuplicateAnchorException.cs" />
     <Compile Include="Serialization\EmitterState.cs" />
-    <Compile Include="Serialization\IAttributeRegistry.cs" />
-    <Compile Include="Serialization\IMemberDescriptor.cs" />
     <Compile Include="Serialization\IObjectFactory.cs" />
     <Compile Include="Serialization\ITagTypeRegistry.cs" />
-    <Compile Include="Serialization\ITypeDescriptor.cs" />
-    <Compile Include="Serialization\ITypeDescriptorFactory.cs" />
     <Compile Include="Serialization\IYamlVisitor.cs" />
     <Compile Include="Serialization\LambdaObjectFactory.cs" />
     <Compile Include="Serialization\Serializers\AnchorSerializer.cs" />
@@ -131,29 +111,25 @@
     <Compile Include="Serialization\Serializers\PrimitiveSerializer.cs" />
     <Compile Include="Serialization\Serializers\RoutingSerializer.cs" />
     <Compile Include="Serialization\SerializerContext.cs" />
-    <Compile Include="Serialization\AttributeRegistry.cs" />
-    <Compile Include="Serialization\AssemblyRegistry.cs" />
+    <Compile Include="Serialization\YamlAssemblyRegistry.cs" />
     <Compile Include="Serialization\WriterEventEmitter.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Serialization\YamlAliasNode.cs" />
     <Compile Include="Serialization\YamlDocument.cs" />
-    <Compile Include="Serialization\YamlIgnoreAttribute.cs" />
     <Compile Include="Serialization\YamlMappingNode.cs" />
-    <Compile Include="Serialization\YamlMemberAttribute.cs" />
     <Compile Include="Serialization\YamlNode.cs" />
     <Compile Include="Serialization\YamlNodeIdentityEqualityComparer.cs" />
     <Compile Include="Serialization\YamlScalarNode.cs" />
     <Compile Include="Serialization\YamlSequenceNode.cs" />
-    <Compile Include="Serialization\YamlSerializableMethod.cs" />
     <Compile Include="Serialization\Serializer.cs" />
     <Compile Include="Serialization\SerializerSettings.cs" />
+    <Compile Include="Serialization\YamlSerializerFactoryAttribute.cs" />
+    <Compile Include="Serialization\ProfileSerializerFactorySelector.cs" />
     <Compile Include="Serialization\YamlStream.cs" />
-    <Compile Include="Serialization\YamlTagAttribute.cs" />
     <Compile Include="Serialization\YamlVisitor.cs" />
     <Compile Include="SimpleKey.cs" />
     <Compile Include="SortedDictionary.cs" />
-    <Compile Include="StringExtensions.cs" />
     <Compile Include="StringLookAheadBuffer.cs" />
     <Compile Include="SyntaxErrorException.cs" />
     <Compile Include="TagDirectiveCollection.cs" />
@@ -172,7 +148,6 @@
     <Compile Include="Tokens\FlowSequenceStart.cs" />
     <Compile Include="Tokens\Key.cs" />
     <Compile Include="Tokens\Scalar.cs" />
-    <Compile Include="ScalarStyle.cs" />
     <Compile Include="Tokens\StreamEnd.cs" />
     <Compile Include="Tokens\StreamStart.cs" />
     <Compile Include="Tokens\Tag.cs" />
@@ -183,7 +158,18 @@
     <Compile Include="TypeExtensions.cs" />
     <Compile Include="Version.cs" />
     <Compile Include="YamlException.cs" />
-    <Compile Include="Serialization\YamlStyleAttribute.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
+      <Project>{0be7189b-f04e-4c0c-bbe9-f347c0a59fee}</Project>
+      <Name>SiliconStudio.Core.Reflection</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

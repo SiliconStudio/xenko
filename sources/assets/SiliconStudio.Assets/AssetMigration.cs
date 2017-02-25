@@ -30,8 +30,8 @@ namespace SiliconStudio.Assets
 
             assetFileExtension = assetFileExtension.ToLowerInvariant();
 
-            var serializer = AssetSerializer.FindSerializer(assetFileExtension);
-            if (!(serializer is AssetYamlSerializer))
+            var serializer = AssetFileSerializer.FindSerializer(assetFileExtension);
+            if (!(serializer is YamlAssetSerializer))
                 return false;
 
             // We've got a Yaml asset, let's get expected and serialized versions
@@ -51,8 +51,7 @@ namespace SiliconStudio.Assets
                 yamlEventReader.Expect<DocumentStart>();
                 var mappingStart = yamlEventReader.Expect<MappingStart>();
 
-                var yamlSerializerSettings = YamlSerializer.GetSerializerSettings();
-                var tagTypeRegistry = yamlSerializerSettings.TagTypeRegistry;
+                var tagTypeRegistry = AssetYamlSerializer.Default.GetSerializerSettings().TagTypeRegistry;
                 bool typeAliased;
                 assetType = tagTypeRegistry.TypeFromTag(mappingStart.Tag, out typeAliased);
 
@@ -81,7 +80,7 @@ namespace SiliconStudio.Assets
                                 yamlAsset.DynamicRootNode.RemoveChild(nameof(Asset.SerializedVersion));
                                 AssetUpgraderBase.SetSerializableVersion(yamlAsset.DynamicRootNode, dependencyName, serializedVersion);
 
-                                var baseBranch = yamlAsset.DynamicRootNode[Asset.BaseProperty];
+                                var baseBranch = yamlAsset.DynamicRootNode["~Base"];
                                 if (baseBranch != null)
                                 {
                                     var baseAsset = baseBranch["Asset"];
@@ -131,7 +130,7 @@ namespace SiliconStudio.Assets
             if (serializedVersion < expectedVersion)
             {
                 // Perform asset upgrade
-                context.Log.Verbose("{0} needs update, from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
+                context.Log.Verbose($"{Path.GetFullPath(assetFullPath)} needs update, from version {serializedVersion} to version {expectedVersion}");
 
                 using (var yamlAsset = loadAsset.AsYamlAsset())
                 {
@@ -174,7 +173,7 @@ namespace SiliconStudio.Assets
                         throw new InvalidOperationException($"Asset of type {assetType} was migrated, but still its new version {newSerializedVersion} doesn't match expected version {expectedVersion}.");
                     }
 
-                    context.Log.Info("{0} updated from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
+                    context.Log.Verbose($"{Path.GetFullPath(assetFullPath)} updated from version {serializedVersion} to version {expectedVersion}");
                 }
 
                 return true;

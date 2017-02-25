@@ -53,6 +53,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
@@ -154,7 +155,7 @@ namespace SiliconStudio.Core.Yaml.Tests.Serialization
             var settings = new SerializerSettings();
             settings.RegisterAssembly(typeof(SerializationTests).Assembly);
 
-            var serializer = new Serializer();
+            var serializer = new Serializer(settings);
             object result = serializer.Deserialize(YamlFile("explicitType.yaml"), typeof(object));
 
             Assert.True(typeof(Z).IsAssignableFrom(result.GetType()));
@@ -177,7 +178,10 @@ namespace SiliconStudio.Core.Yaml.Tests.Serialization
         [Test]
         public void DeserializeExplicitDictionary()
         {
-            var serializer = new Serializer();
+            var settings = new SerializerSettings();
+            settings.RegisterAssembly(typeof(SerializationTests).Assembly);
+
+            var serializer = new Serializer(settings);
             object result = serializer.Deserialize(YamlFile("dictionaryExplicit.yaml"));
 
             Assert.True(typeof(IDictionary<string, int>).IsAssignableFrom(result.GetType()), "The deserialized object has the wrong type.");
@@ -336,7 +340,8 @@ namespace SiliconStudio.Core.Yaml.Tests.Serialization
             var buffer = new StringWriter();
             var x = new SomeCustomType("Yo");
             var settings = new SerializerSettings();
-            settings.RegisterSerializerFactory(new CustomTypeConverter());
+            settings.RegisterAssembly(typeof(SerializationTests).Assembly);
+            settings.SerializerFactorySelector.TryAddFactory(new CustomTypeConverter());
             var serializer = new Serializer(settings);
             serializer.Serialize(buffer, x);
 
@@ -514,7 +519,7 @@ namespace SiliconStudio.Core.Yaml.Tests.Serialization
 
         class ContainsIgnore
         {
-            [YamlIgnore]
+            [DataMemberIgnore]
             public String IgnoreMe { get { throw new NotImplementedException("Accessing a [YamlIgnore] property"); } set { throw new NotImplementedException("Accessing a [YamlIgnore] property"); } }
         }
 
@@ -582,10 +587,10 @@ namespace SiliconStudio.Core.Yaml.Tests.Serialization
             [DefaultValue(null)]
             public string ThirdTest { get; set; }
 
-            [YamlMember("fourthTest")]
+            [DataMember("fourthTest")]
             public string AliasTest { get; set; }
 
-            [YamlIgnore]
+            [DataMemberIgnore]
             public string fourthTest { get; set; }
         }
 
@@ -931,6 +936,28 @@ Mother:
                 );
         }
 
+        [Test]
+        public void DeserializeNullList()
+        {
+            var settings = new SerializerSettings();
+            settings.RegisterAssembly(typeof(Z).Assembly);
+            var sut = new Serializer(settings);
+            const string yaml = @"!SiliconStudio.Core.Yaml.Tests.Serialization.SerializationTests+W
+    MyList:
+        - aaa
+        - bbb
+        - ccc
+";
+            var result = (W)sut.Deserialize(yaml, typeof(W));
+
+            Assert.NotNull(result);
+            Assert.NotNull(result.MyList);
+            Assert.AreEqual(3, result.MyList.Count);
+            Assert.AreEqual("aaa", result.MyList[0]);
+            Assert.AreEqual("bbb", result.MyList[1]);
+            Assert.AreEqual("ccc", result.MyList[2]);
+        }
+
         private class X
         {
             [DefaultValue(false)]
@@ -968,6 +995,11 @@ Mother:
                 MyPoint = new Point(100, 200);
                 MyNullableWithValue = 8;
             }
+        }
+
+        public class W
+        {
+            public List<string> MyList { get; set; }
         }
     }
 }

@@ -5,46 +5,45 @@ Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: f24cf4a1-4396-4d10-9681-669722981800/e91cd0bc-43d9-424b-b265-c41ef1954771:Materials/iron_rust_blend/iron_rust_nml
+            Texture: e91cd0bc-43d9-424b-b265-c41ef1954771:Materials/iron_rust_blend/iron_rust_nml
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+        IsXYNormal: true
+        InvertY: false
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeTextureScalar
-            Texture: 6f09e82d-15bd-4466-a34c-31c5679f8c69/f93c452e-909a-4162-a27d-81358cdde51b:Materials/iron_rust_blend/iron_rust_gls
+            Texture: f93c452e-909a-4162-a27d-81358cdde51b:Materials/iron_rust_blend/iron_rust_gls
             FallbackValue:
                 Value: 1.0
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: 35b9ac1b-cc6f-4510-97fe-3bbad4308075/10951778-b6d2-4b56-9f4e-20497796d7fc:Materials/iron_rust_blend/iron_rust_dif
+            Texture: 10951778-b6d2-4b56-9f4e-20497796d7fc:Materials/iron_rust_blend/iron_rust_dif
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialMetalnessMapFeature
         MetalnessMap: !ComputeTextureScalar
-            Texture: 9d886f65-84d1-4f5d-b5c6-9e8a91b52939/7afe22a8-e2fe-44c1-8d80-1e8aed3fd661:Materials/iron_rust_blend/iton_rust_mtl
+            Texture: 7afe22a8-e2fe-44c1-8d80-1e8aed3fd661:Materials/iron_rust_blend/iton_rust_mtl
             FallbackValue:
                 Value: 1.0
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: 9d42fc43-3772-4f26-aa24-bacc8df93296
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: 2877ed37-a9ea-4b9f-be8f-5b51ef3d7c85
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: aa4a7cd5-2288-420b-a007-2fd0e102bfe3
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
 Layers:
-    -   ~Id: 677db306-4707-4598-9068-5a3d145f94a5
+    06b37d670747984590685a3d145f94a5:
         BlendMap: !ComputeTextureScalar
             FallbackValue:
                 Value: 1.0

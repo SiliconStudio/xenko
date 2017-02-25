@@ -151,7 +151,7 @@ namespace SiliconStudio.Xenko.Animations
             }
         }
 
-        public static unsafe void Blend(AnimationBlendOperation blendOperation, float blendFactor, AnimationClipResult sourceLeft, AnimationClipResult sourceRight, AnimationClipResult result)
+        public static unsafe void Blend(CoreAnimationOperation blendOperation, float blendFactor, AnimationClipResult sourceLeft, AnimationClipResult sourceRight, AnimationClipResult result)
         {
             fixed (byte* sourceLeftDataStart = sourceLeft.Data)
             fixed (byte* sourceRightDataStart = sourceRight.Data)
@@ -195,7 +195,7 @@ namespace SiliconStudio.Xenko.Animations
 
                     switch (blendOperation)
                     {
-                        case AnimationBlendOperation.LinearBlend:
+                        case CoreAnimationOperation.Blend:
                             // Perform linear blending
                             // It will blend between left (0.0) and right (1.0)
                             switch (channel.BlendType)
@@ -216,7 +216,7 @@ namespace SiliconStudio.Xenko.Animations
                                     throw new ArgumentOutOfRangeException();
                             }
                             break;
-                        case AnimationBlendOperation.Add:
+                        case CoreAnimationOperation.Add:
                             // Perform additive blending
                             // It will blend between left (0.0) and left + right (1.0).
                             switch (channel.BlendType)
@@ -244,7 +244,7 @@ namespace SiliconStudio.Xenko.Animations
                                     throw new ArgumentOutOfRangeException();
                             }
                             break;
-                        case AnimationBlendOperation.Subtract:
+                        case CoreAnimationOperation.Subtract:
                             // Perform subtractive blending
                             // It will blend between left (0.0) and left - right (1.0).
                             switch (channel.BlendType)
@@ -348,7 +348,7 @@ namespace SiliconStudio.Xenko.Animations
                         // Blend stack[last - 1] and stack[last] into stack[last - 1], then pop stack[last]
                         var op2 = animationStack.Pop();
                         var op1 = animationStack.Peek();
-                        Blend(animationOperation.BlendOperation, animationOperation.BlendFactor, op1, op2, op1);
+                        Blend(animationOperation.CoreBlendOperation, animationOperation.BlendFactor, op1, op2, op1);
                         FreeIntermediateResult(op2);
                     }
                     break;

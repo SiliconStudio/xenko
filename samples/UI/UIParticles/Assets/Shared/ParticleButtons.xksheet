@@ -6,17 +6,16 @@ Type: UI
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Format: AsIs
 Packing:
-    ~Id: 4be46585-662f-4695-a5f4-2da800ba2037
     AllowRotations: false
 Sprites:
-    -   ~Id: 9b447984-90be-4a2e-b266-b9b8cbae431b
+    8479449bbe902e4ab266b9b8cbae431b:
         Source: ../../Resources/buttons.png
         Name: rope_big
         TextureRegion: {X: 7, Y: 425, Width: 480, Height: 16}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   ~Id: 9b447984-90be-4a2e-b266-b9b8cbae431b
+    8db620399275345caa3577bd0d446b5b:
         Source: ../../Resources/buttons.png
         Name: rope_small
         TextureRegion: {X: 7, Y: 456, Width: 477, Height: 10}

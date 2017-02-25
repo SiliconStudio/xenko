@@ -2,10 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Serializers
 {
@@ -13,11 +17,11 @@ namespace SiliconStudio.Assets.Serializers
     {
         public static readonly SourceCodeAssetSerializer Default = new SourceCodeAssetSerializer();
 
-        public object Load(Stream stream, string filePath, ILogger log, out bool aliasOccurred)
+        public object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out Dictionary<YamlAssetPath, OverrideType> overrides)
         {
             aliasOccurred = false;
 
-            var assetFileExtension = Path.GetExtension(filePath).ToLowerInvariant();
+            var assetFileExtension = filePath.GetFileExtension().ToLowerInvariant();
             var type = AssetRegistry.GetAssetTypeFromFileExtension(assetFileExtension);
             var asset = (SourceCodeAsset)Activator.CreateInstance(type);
 
@@ -36,10 +40,13 @@ namespace SiliconStudio.Assets.Serializers
                 }
             }
 
+            // No override in source code assets
+            overrides = new Dictionary<YamlAssetPath, OverrideType>();
+
             return asset;
         }
 
-        public void Save(Stream stream, object asset, ILogger log = null)
+        public void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null)
         {
             ((SourceCodeAsset)asset).Save(stream);
         }

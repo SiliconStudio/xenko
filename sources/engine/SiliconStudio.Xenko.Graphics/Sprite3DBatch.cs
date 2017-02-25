@@ -84,7 +84,8 @@ namespace SiliconStudio.Xenko.Graphics
                     Width = sourceRectangle.Width / texture.ViewWidth,
                     Height = sourceRectangle.Height / texture.ViewHeight
                 },
-                Color = color,
+                ColorScale = color,
+                ColorAdd = new Color4(0, 0, 0, 0),
                 Swizzle = swizzle,
             };
 
@@ -151,7 +152,9 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     for (int c = 0; c < 2; c++)
                     {
-                        vertex->Color = drawInfo->Color;
+                        vertex->ColorScale = drawInfo->ColorScale;
+                        vertex->ColorAdd = drawInfo->ColorAdd;
+
                         vertex->Swizzle = (int)drawInfo->Swizzle;
                         vertex->TextureCoordinate.X = textureCoordX[c];
                         vertex->TextureCoordinate.Y = textureCoordY[r];
@@ -181,7 +184,8 @@ namespace SiliconStudio.Xenko.Graphics
             public Vector4 UnitXWorld;
             public Vector4 UnitYWorld;
             public RectangleF Source;
-            public Color4 Color;
+            public Color4 ColorScale;
+            public Color4 ColorAdd;
             public SwizzleMode Swizzle;
         }
     }

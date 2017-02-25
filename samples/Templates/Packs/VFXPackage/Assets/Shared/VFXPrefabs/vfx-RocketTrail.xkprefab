@@ -1,9 +1,8 @@
 !PrefabAsset
 Id: f949da4a-6b7a-4ef3-ab12-da762421b99d
-SerializedVersion: {Xenko: 1.9.0-beta01}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 Hierarchy:
-    ~Id: b4826ac0-bbed-4ecb-9b83-85ffa57d2fc5
     RootPartIds:
         - 4bcfd42e-48b7-40c8-a5a1-2f0173287445
     Parts:
@@ -11,63 +10,54 @@ Hierarchy:
                 Id: 4bcfd42e-48b7-40c8-a5a1-2f0173287445
                 Name: RoketTailRoot
                 Components:
-                    - !TransformComponent
-                        ~Id: 0e49d00c-9a04-4fa0-9d6e-fe35417ad5f9
-                        Children:
-                            - acecae33-691d-4406-8f2b-56b327255d02/0e49d00c-9a04-4fa0-9d6e-fe35417ad5f9
+                    0cd0490e049aa04f9d6efe35417ad5f9: !TransformComponent
+                        Id: 0e49d00c-9a04-4fa0-9d6e-fe35417ad5f9
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ParticleSystemComponent
-                        ~Id: aaf0b43f-4460-4200-9d9f-c1ed9313363a
+                        Children:
+                            0cd0490e049aa04f9d6efe35417ad5f9: acecae33-691d-4406-8f2b-56b327255d02/be6cfcf7-9aad-4d6e-9c62-ec10424bc1fc
+                    3fb4f0aa604400429d9fc1ed9313363a: !ParticleSystemComponent
+                        Id: aaf0b43f-4460-4200-9d9f-c1ed9313363a
                         Control:
-                            ~Id: 5c558602-6693-49dc-8ccd-7d3be48b01db
                             ResetSeconds: 0.0
                             Control: Play
                         Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                         Speed: 1.0
                         ParticleSystem:
-                            ~Id: 6f186433-164e-4099-9dcf-bcdfe089ea8b
-                            Settings:
-                                ~Id: 01e93134-6e73-418b-a4b6-2dfa049f9e2d
+                            Settings: {}
                             BoundingShape: null
                             Emitters:
-                                -   ~Id: fc55b48a-e83d-4db7-9d0a-dc70c93342ce
+                                8ab455fc3de8b74d9d0adc70c93342ce:
                                     MaxParticlesOverride: 100
                                     ParticleLifetime: {X: 1.0, Y: 2.0}
                                     DrawPriority: 5
                                     SortingPolicy: ByDepth
                                     ShapeBuilder: !ShapeBuilderBillboard
-                                        ~Id: cbfb2e69-ced0-42f1-9f12-1a3d700fe1ee
                                         SamplerPosition: null
                                         SamplerSize: !ComputeCurveSamplerFloat
-                                            ~Id: 206babd4-ea17-45d2-a05d-5871bba100e9
                                             Curve: !ComputeAnimationCurveFloat
-                                                ~Id: aef2b176-caf6-4030-9df5-78626f85a8e3
                                                 KeyFrames:
-                                                    -   ~Id: b6dd26af-9d99-421b-b781-ccf683ff84bc
+                                                    af26ddb6999d1b42b781ccf683ff84bc:
                                                         Key: 0.0
                                                         Value: 0.5
                                                         TangentType: Linear
-                                                    -   ~Id: c88cc2b6-c87f-45bf-9aa9-c5a97ac5f49b
+                                                    b6c28cc87fc8bf459aa9c5a97ac5f49b:
                                                         Key: 1.0
                                                         Value: 3.0
                                                         TangentType: Linear
                                         SamplerRotation: !ComputeCurveSamplerFloat
-                                            ~Id: b017e39f-7901-4454-9e84-0d2cb84dc015
                                             Curve: !ComputeAnimationCurveFloat
-                                                ~Id: ec07f633-8224-4ca4-a615-0d076988d2f3
                                                 KeyFrames:
-                                                    -   ~Id: 2e0baf22-fe68-4fd2-9a82-44fb3ef29761
+                                                    22af0b2e68fed24f9a8244fb3ef29761:
                                                         Key: 0.0
                                                         Value: 0.0
                                                         TangentType: Linear
-                                                    -   ~Id: 6e0549d0-eac2-4ce6-8292-0881bede75f8
+                                                    d049056ec2eae64c82920881bede75f8:
                                                         Key: 1.0
                                                         Value: -100.0
                                                         TangentType: Linear
                                     Material: !ParticleMaterialComputeColor
-                                        ~Id: 55429e38-2b41-4475-9f5f-907cd477fd97
                                         AlphaAdditive: 0.5
                                         ComputeColor: !ComputeBinaryColor
                                             Operator: Multiply
@@ -76,36 +66,33 @@ Hierarchy:
                                             RightChild: !ComputeBinaryColor
                                                 Operator: Multiply
                                                 LeftChild: !ComputeTextureColor
-                                                    Swizzle: null
-                                                    Texture: c2082925-c710-43fc-be6e-d887e73950f1/8ab2edfe-0ead-489f-a899-97a8112807f7:Textures/Smoke02
+                                                    Texture: 8ab2edfe-0ead-489f-a899-97a8112807f7:Textures/Smoke02
                                                     FallbackValue:
                                                         Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                     Scale: {X: 1.0, Y: 1.0}
                                                     Offset: {X: 0.0, Y: 0.0}
+                                                    Swizzle: null
                                                 RightChild: !ComputeBinaryColor
                                                     Operator: Multiply
                                                     LeftChild: !ComputeTextureColor
-                                                        Swizzle: null
-                                                        Texture: 6e68fafc-ecfb-4db3-a192-a377ec9bd7c4/8dbe2382-769c-45fe-9604-98c5ae5c434c:Textures/SMO001_3
+                                                        Texture: 8dbe2382-769c-45fe-9604-98c5ae5c434c:Textures/SMO001_3
                                                         FallbackValue:
                                                             Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                         Scale: {X: 1.0, Y: 1.0}
                                                         Offset: {X: 0.0, Y: 0.0}
+                                                        Swizzle: null
                                                     RightChild: !ComputeVertexStreamColor
-                                                        Stream: !ColorVertexStreamDefinition
-                                                            ~Id: 9d3c4d2b-fa27-4668-870a-d671a9d84fe0
+                                                        Stream: !ColorVertexStreamDefinition {}
                                         UVBuilder: null
                                         ForceTexCoords: false
                                     Spawners:
-                                        - !SpawnerPerSecond
-                                            ~Id: d887b6fe-ca99-49fb-adc3-ca52630ea144
+                                        feb687d899cafb49adc3ca52630ea144: !SpawnerPerSecond
                                             LoopCondition: Looping
                                             Delay: {X: 0.0, Y: 0.0}
                                             Duration: {X: 1.0, Y: 1.0}
                                             SpawnCount: 50.0
                                     Initializers:
-                                        - !InitialSizeSeed
-                                            ~Id: f642430e-c0a1-4e86-b286-635dd256b6c3
+                                        0e4342f6a1c0864eb286635dd256b6c3: !InitialSizeSeed
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
@@ -119,8 +106,7 @@ Hierarchy:
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
                                             RandomSize: {X: 0.35, Y: 0.55}
-                                        - !InitialVelocitySeed
-                                            ~Id: 753765cf-8bdc-4a0b-a81e-4db1e66212ec
+                                        cf653775dc8b0b4aa81e4db1e66212ec: !InitialVelocitySeed
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
@@ -135,8 +121,7 @@ Hierarchy:
                                             DisplayParticleScaleUniform: true
                                             VelocityMin: {X: -0.1, Y: -0.1, Z: -0.1}
                                             VelocityMax: {X: 0.1, Y: 0.1, Z: 0.1}
-                                        - !InitialRotationSeed
-                                            ~Id: 68960312-8e75-46b9-a3c9-89ff8d3946c6
+                                        12039668758eb946a3c989ff8d3946c6: !InitialRotationSeed
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
@@ -150,15 +135,14 @@ Hierarchy:
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
                                             AngularRotation: {X: -360.0, Y: 360.0}
-                                        - !InitialPositionSeed
-                                            ~Id: 0647158e-6605-465a-acac-42bbba4807f0
+                                        8e15470605665a46acac42bbba4807f0: !InitialPositionSeed
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
@@ -168,8 +152,7 @@ Hierarchy:
                                             PositionMax: {X: 0.15, Y: 0.15, Z: 0.15}
                                             Interpolate: false
                                     Updaters:
-                                        - !UpdaterColorOverTime
-                                            ~Id: fc4b407b-82bc-4858-a1ea-61cdfaee9e66
+                                        7b404bfcbc825848a1ea61cdfaee9e66: !UpdaterColorOverTime
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
@@ -182,19 +165,17 @@ Hierarchy:
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
                                             SamplerMain: !ComputeCurveSamplerColor4
-                                                ~Id: 3ab8dc61-ea28-4632-a3ba-7b2850192468
                                                 Curve: !ComputeAnimationCurveColor4
-                                                    ~Id: c97c834e-9ba9-4049-84a4-b69fbc8a00fa
                                                     KeyFrames:
-                                                        -   ~Id: 10d32e52-48b5-4485-8391-d53346c3dbee
+                                                        522ed310b54885448391d53346c3dbee:
                                                             Key: 0.0
                                                             Value: {R: 1.0, G: 1.0, B: 1.0, A: 0.3}
                                                             TangentType: Linear
-                                                        -   ~Id: e2e79e4a-cea6-4a1a-ad6a-3f60c282bc8e
+                                                        4a9ee7e2a6ce1a4aad6a3f60c282bc8e:
                                                             Key: 0.5
                                                             Value: {R: 1.0, G: 1.0, B: 1.0, A: 0.6}
                                                             TangentType: Linear
-                                                        -   ~Id: dc12a8cb-7aea-475e-9749-eb539fc08675
+                                                        cba812dcea7a5e479749eb539fc08675:
                                                             Key: 1.0
                                                             Value: {R: 1.0, G: 1.0, B: 1.0, A: 0.0}
                                                             TangentType: Linear
@@ -204,61 +185,52 @@ Hierarchy:
                 Id: acecae33-691d-4406-8f2b-56b327255d02
                 Name: RoketTail
                 Components:
-                    - !TransformComponent
-                        ~Id: 0e49d00c-9a04-4fa0-9d6e-fe35417ad5f9
-                        Children: []
+                    0cd0490e049aa04f9d6efe35417ad5f9: !TransformComponent
+                        Id: be6cfcf7-9aad-4d6e-9c62-ec10424bc1fc
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ParticleSystemComponent
-                        ~Id: aaf0b43f-4460-4200-9d9f-c1ed9313363a
+                        Children: {}
+                    3fb4f0aa604400429d9fc1ed9313363a: !ParticleSystemComponent
+                        Id: c691b9e7-77e2-40ea-9a0b-4e7bd1f7dbb2
                         Control:
-                            ~Id: 5c558602-6693-49dc-8ccd-7d3be48b01db
                             ResetSeconds: 0.0
                             Control: Play
                         Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                         Speed: 1.0
                         ParticleSystem:
-                            ~Id: 6f186433-164e-4099-9dcf-bcdfe089ea8b
-                            Settings:
-                                ~Id: 01e93134-6e73-418b-a4b6-2dfa049f9e2d
+                            Settings: {}
                             BoundingShape: null
                             Emitters:
-                                -   ~Id: fc55b48a-e83d-4db7-9d0a-dc70c93342ce
+                                8ab455fc3de8b74d9d0adc70c93342ce:
                                     MaxParticlesOverride: 500
                                     ParticleLifetime: {X: 1.0, Y: 1.5}
                                     SortingPolicy: ByDepth
                                     ShapeBuilder: !ShapeBuilderBillboard
-                                        ~Id: cbfb2e69-ced0-42f1-9f12-1a3d700fe1ee
                                         SamplerPosition: null
                                         SamplerSize: !ComputeCurveSamplerFloat
-                                            ~Id: 206babd4-ea17-45d2-a05d-5871bba100e9
                                             Curve: !ComputeAnimationCurveFloat
-                                                ~Id: aef2b176-caf6-4030-9df5-78626f85a8e3
                                                 KeyFrames:
-                                                    -   ~Id: b6dd26af-9d99-421b-b781-ccf683ff84bc
+                                                    af26ddb6999d1b42b781ccf683ff84bc:
                                                         Key: 0.0
                                                         Value: 1.5
                                                         TangentType: Linear
-                                                    -   ~Id: c88cc2b6-c87f-45bf-9aa9-c5a97ac5f49b
+                                                    b6c28cc87fc8bf459aa9c5a97ac5f49b:
                                                         Key: 1.0
                                                         Value: 2.5
                                                         TangentType: Linear
                                         SamplerRotation: !ComputeCurveSamplerFloat
-                                            ~Id: b017e39f-7901-4454-9e84-0d2cb84dc015
                                             Curve: !ComputeAnimationCurveFloat
-                                                ~Id: ec07f633-8224-4ca4-a615-0d076988d2f3
                                                 KeyFrames:
-                                                    -   ~Id: 2e0baf22-fe68-4fd2-9a82-44fb3ef29761
+                                                    22af0b2e68fed24f9a8244fb3ef29761:
                                                         Key: 0.0
                                                         Value: 0.0
                                                         TangentType: Linear
-                                                    -   ~Id: 6e0549d0-eac2-4ce6-8292-0881bede75f8
+                                                    d049056ec2eae64c82920881bede75f8:
                                                         Key: 1.0
                                                         Value: 30.0
                                                         TangentType: Linear
                                     Material: !ParticleMaterialComputeColor
-                                        ~Id: 55429e38-2b41-4475-9f5f-907cd477fd97
                                         ComputeColor: !ComputeBinaryColor
                                             Operator: Multiply
                                             LeftChild: !ComputeFloat4
@@ -266,32 +238,28 @@ Hierarchy:
                                             RightChild: !ComputeBinaryColor
                                                 Operator: Multiply
                                                 LeftChild: !ComputeTextureColor
-                                                    Swizzle: null
-                                                    Texture: 5a668548-1c4f-4d47-953b-e8e92d7f8127/fa1018e4-c74d-4495-9535-134f5a06e4cd:Textures/SMO001
+                                                    Texture: fa1018e4-c74d-4495-9535-134f5a06e4cd:Textures/SMO001
                                                     FallbackValue:
                                                         Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                     Scale: {X: 1.0, Y: 1.0}
                                                     Offset: {X: 0.0, Y: 0.0}
+                                                    Swizzle: null
                                                 RightChild: !ComputeVertexStreamColor
-                                                    Stream: !ColorVertexStreamDefinition
-                                                        ~Id: 3132afbd-20fa-4bb7-95cd-b7a186958c39
+                                                    Stream: !ColorVertexStreamDefinition {}
                                         UVBuilder: !UVBuilderFlipbook
-                                            ~Id: 0cdd8405-440c-43a5-bf06-7c06ca4dbc2b
                                             XDivisions: 8
                                             YDivisions: 8
                                             StartingFrame: 12
                                             AnimationSpeed: 48
                                         ForceTexCoords: false
                                     Spawners:
-                                        - !SpawnerFromDistance
-                                            ~Id: a7a4866a-02ba-4832-b4a7-c5a1ff3c9c6d
+                                        6a86a4a7ba023248b4a7c5a1ff3c9c6d: !SpawnerFromDistance
                                             LoopCondition: Looping
                                             Delay: {X: 0.0, Y: 0.0}
                                             Duration: {X: 1.0, Y: 1.0}
                                             SpawnCount: 100.0
                                     Initializers:
-                                        - !InitialSizeSeed
-                                            ~Id: f642430e-c0a1-4e86-b286-635dd256b6c3
+                                        0e4342f6a1c0864eb286635dd256b6c3: !InitialSizeSeed
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
@@ -305,8 +273,7 @@ Hierarchy:
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
                                             RandomSize: {X: 0.35, Y: 0.55}
-                                        - !InitialVelocitySeed
-                                            ~Id: 753765cf-8bdc-4a0b-a81e-4db1e66212ec
+                                        cf653775dc8b0b4aa81e4db1e66212ec: !InitialVelocitySeed
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
@@ -321,8 +288,7 @@ Hierarchy:
                                             DisplayParticleScaleUniform: true
                                             VelocityMin: {X: -0.1, Y: -0.1, Z: -0.1}
                                             VelocityMax: {X: 0.1, Y: 0.1, Z: 0.1}
-                                        - !InitialRotationSeed
-                                            ~Id: 68960312-8e75-46b9-a3c9-89ff8d3946c6
+                                        12039668758eb946a3c989ff8d3946c6: !InitialRotationSeed
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
@@ -337,8 +303,7 @@ Hierarchy:
                                             DisplayParticleScaleUniform: false
                                             AngularRotation: {X: -360.0, Y: 360.0}
                                     Updaters:
-                                        - !UpdaterColorOverTime
-                                            ~Id: e2ff213c-5b31-4042-857c-7f3e948371a8
+                                        3c21ffe2315b4240857c7f3e948371a8: !UpdaterColorOverTime
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
@@ -351,19 +316,17 @@ Hierarchy:
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
                                             SamplerMain: !ComputeCurveSamplerColor4
-                                                ~Id: 9d1c0642-4cba-48a2-b244-b37eeca00939
                                                 Curve: !ComputeAnimationCurveColor4
-                                                    ~Id: d44a76d6-947f-40e7-8f80-29e7fba7010b
                                                     KeyFrames:
-                                                        -   ~Id: 70ca1035-9528-48e1-be75-fe5ad972f06c
+                                                        3510ca702895e148be75fe5ad972f06c:
                                                             Key: 0.0
                                                             Value: {R: 1.0, G: 1.0, B: 1.0, A: 0.5}
                                                             TangentType: Linear
-                                                        -   ~Id: 88254d11-b8d1-4394-83a3-c8ae7878906f
+                                                        114d2588d1b8944383a3c8ae7878906f:
                                                             Key: 0.5
                                                             Value: {R: 1.0, G: 1.0, B: 1.0, A: 0.7}
                                                             TangentType: Linear
-                                                        -   ~Id: 43bceb4e-0fac-4300-ad36-552b8126040f
+                                                        4eebbc43ac0f0043ad36552b8126040f:
                                                             Key: 1.0
                                                             Value: {R: 1.0, G: 1.0, B: 1.0, A: 0.0}
                                                             TangentType: Linear

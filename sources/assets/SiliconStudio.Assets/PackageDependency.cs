@@ -24,7 +24,6 @@ namespace SiliconStudio.Assets
     /// (to a package distributed on the store).
     /// </summary>
     [DataContract("PackageDependency")]
-    [NonIdentifiable]
     public sealed class PackageDependency : PackageReferenceBase, IEquatable<PackageDependency>
     {
         /// <summary>

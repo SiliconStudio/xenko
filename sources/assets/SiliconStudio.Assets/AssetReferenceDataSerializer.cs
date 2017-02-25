@@ -6,13 +6,13 @@ using SiliconStudio.Core.Serialization;
 namespace SiliconStudio.Assets
 {
     /// <summary>
-    /// Serializer for <see cref="AssetReference{T}"/>.
+    /// Serializer for <see cref="AssetReference"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public sealed class AssetReferenceDataSerializer<T> : DataSerializer<AssetReference<T>> where T : Asset
+    public sealed class AssetReferenceDataSerializer : DataSerializer<AssetReference>
     {
         /// <inheritdoc/>
-        public override void Serialize(ref AssetReference<T> assetReference, ArchiveMode mode, SerializationStream stream)
+        public override void Serialize(ref AssetReference assetReference, ArchiveMode mode, SerializationStream stream)
         {
             if (mode == ArchiveMode.Serialize)
             {
@@ -21,10 +21,10 @@ namespace SiliconStudio.Assets
             }
             else
             {
-                var id = stream.Read<Guid>();
+                var id = stream.Read<AssetId>();
                 var location = stream.ReadString();
 
-                assetReference = new AssetReference<T>(id, location);
+                assetReference = new AssetReference(id, location);
             }
         }
     }

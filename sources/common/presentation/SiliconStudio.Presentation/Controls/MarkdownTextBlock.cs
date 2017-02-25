@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -17,10 +18,10 @@ namespace SiliconStudio.Presentation.Controls
         private const string MessageContainerPartName = "PART_MessageContainer";
 
         /// <summary>
-        /// Identifies the <see cref="ImageBaseUrl"/> dependency property.
+        /// Identifies the <see cref="BaseUrl"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ImageBaseUrlProperty =
-            DependencyProperty.Register(nameof(ImageBaseUrl), typeof(string), typeof(MarkdownTextBlock), new PropertyMetadata(ImageBaseUrlChanged));
+        public static readonly DependencyProperty BaseUrlProperty =
+            DependencyProperty.Register(nameof(BaseUrl), typeof(string), typeof(MarkdownTextBlock), new PropertyMetadata(BaseUrlChanged));
         /// <summary>
         /// Identifies the <see cref="HyperlinkCommand"/> dependency property.
         /// </summary>
@@ -37,10 +38,10 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register(nameof(Text), typeof(string), typeof(MarkdownTextBlock), new PropertyMetadata(TextChanged));
 
-        public string ImageBaseUrl
+        public string BaseUrl
         {
-            get { return (string)GetValue(ImageBaseUrlProperty); }
-            set { SetValue(ImageBaseUrlProperty, value); }
+            get { return (string)GetValue(BaseUrlProperty); }
+            set { SetValue(BaseUrlProperty, value); }
         }
 
         public ICommand HyperlinkCommand
@@ -93,19 +94,19 @@ namespace SiliconStudio.Presentation.Controls
             ResetMessage();
         }
 
-        private static void ImageBaseUrlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void BaseUrlChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = d as MarkdownTextBlock;
             if (control == null) throw new ArgumentNullException(nameof(control));
 
             if (e.NewValue != null)
             {
-                control.GetMarkdown().ImageBaseUrl = (string)e.NewValue;
+                control.GetMarkdown().BaseUrl = (string)e.NewValue;
             }
             control.ResetMessage();
         }
 
-        private static void HyperlinkCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void HyperlinkCommandChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = d as MarkdownTextBlock;
             if (control == null) throw new ArgumentNullException(nameof(control));
@@ -117,20 +118,20 @@ namespace SiliconStudio.Presentation.Controls
             control.ResetMessage();
         }
 
-        private static void MarkdownChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void MarkdownChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = d as MarkdownTextBlock;
             if (control == null) throw new ArgumentNullException(nameof(control));
 
             if (e.NewValue != null)
             {
-                ((XamlMarkdown)e.NewValue).ImageBaseUrl = control.ImageBaseUrl;
+                ((XamlMarkdown)e.NewValue).BaseUrl = control.BaseUrl;
                 ((XamlMarkdown)e.NewValue).HyperlinkCommand = control.HyperlinkCommand;
             }
             control.ResetMessage();
         }
 
-        private static void TextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void TextChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = d as MarkdownTextBlock;
             if (control == null) throw new ArgumentNullException(nameof(control));
@@ -138,6 +139,7 @@ namespace SiliconStudio.Presentation.Controls
             control.ResetMessage();
         }
 
+        [NotNull]
         private XamlMarkdown GetMarkdown()
         {
             return Markdown ?? defaultMarkdown.Value;
@@ -151,6 +153,7 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
+        [CanBeNull]
         private FlowDocument ProcessText()
         {
             try

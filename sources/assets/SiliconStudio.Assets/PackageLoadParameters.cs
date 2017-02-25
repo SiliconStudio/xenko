@@ -54,6 +54,15 @@ namespace SiliconStudio.Assets
         public bool AutoCompileProjects { get; set; }
 
         /// <summary>
+        /// Specifies if Nuget Restore should be forced even if timestamps are OK.
+        /// Only valid when <see cref="AutoCompileProjects"/> is true.
+        /// </summary>
+        /// <remarks>
+        /// This is sometimes necessary when opening a project coming from another computer, since the lock file stores absolute paths.
+        /// </remarks>
+        public bool ForceNugetRestore { get; set; }
+
+        /// <summary>
         /// Gets or sets the build configuration used to <see cref="AutoCompileProjects"/>.
         /// </summary>
         /// <value>The build configuration.</value>
@@ -106,6 +115,11 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The generate new asset ids.</value>
         public bool GenerateNewAssetIds { get; set; }
+
+        /// <summary>
+        /// If <c>true</c>, unloadable objects will be removed, similar to <see cref="AssetClonerFlags.RemoveUnloadableObjects"/>.
+        /// </summary>
+        public bool RemoveUnloadableObjects { get; set; }
 
         /// <summary>
         /// Occurs when one or more package upgrades are required for a single package. Returning false will cancel upgrades on this package.

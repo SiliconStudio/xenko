@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 var fontTypeSDF = asset.FontType as SignedDistanceFieldSpriteFontType;
 
                 // copy the asset and transform the source and character set file path to absolute paths
-                var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
+                var assetClone = AssetCloner.Clone(asset);
                 var assetDirectory = assetAbsolutePath.GetParent();
                 assetClone.FontSource = asset.FontSource;
                 fontTypeSDF.CharacterSet = !string.IsNullOrEmpty(fontTypeSDF.CharacterSet) ? UPath.Combine(assetDirectory, fontTypeSDF.CharacterSet) : null;
@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     UFile fontPathOnDisk = asset.FontSource.GetFontPath(result);
                     if (fontPathOnDisk == null)
                     {
-                        result.Error("Runtime rasterized font compilation failed. Font {0} was not found on this machine.", asset.FontSource.GetFontName());
+                        result.Error($"Runtime rasterized font compilation failed. Font {asset.FontSource.GetFontName()} was not found on this machine.");
                         result.BuildSteps = new AssetBuildStep(assetItem) { new FailedFontCommand() };
                         return;
                     }
@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                         throw new ArgumentException("Tried to compile a non-offline rasterized sprite font with the compiler for offline resterized fonts!");
 
                     // copy the asset and transform the source and character set file path to absolute paths
-                    var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
+                    var assetClone = AssetCloner.Clone(asset);
                     var assetDirectory = assetAbsolutePath.GetParent();
                     assetClone.FontSource = asset.FontSource;
                     fontTypeStatic.CharacterSet = !string.IsNullOrEmpty(fontTypeStatic.CharacterSet) ? UPath.Combine(assetDirectory, fontTypeStatic.CharacterSet): null;
@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 }
                 catch (FontNotFoundException ex) 
                 {
-                    commandContext.Logger.Error("Font [{0}] was not found on this machine.", ex.FontName);
+                    commandContext.Logger.Error($"Font [{ex.FontName}] was not found on this machine.", ex);
                     return Task.FromResult(ResultStatus.Failed);
                 }
 
@@ -168,7 +168,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 }
                 catch (FontNotFoundException ex)
                 {
-                    commandContext.Logger.Error("Font [{0}] was not found on this machine.", ex.FontName);
+                    commandContext.Logger.Error($"Font [{ex.FontName}] was not found on this machine.", ex);
                     return Task.FromResult(ResultStatus.Failed);
                 }
 

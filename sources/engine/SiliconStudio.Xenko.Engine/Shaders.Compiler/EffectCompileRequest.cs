@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Rendering;
 
@@ -13,6 +14,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
     /// </summary>
     [DataContract("EffectCompileRequest")]
     [DataSerializerGlobal(null, typeof(KeyValuePair<EffectCompileRequest, bool>))]
+    [NonIdentifiableCollectionItems]
     public class EffectCompileRequest : IEquatable<EffectCompileRequest>
     {
         public string EffectName;

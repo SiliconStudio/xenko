@@ -3,22 +3,20 @@ Id: 55733c87-8e99-4d26-8eac-32a172399d18
 SerializedVersion: {Xenko: 1.5.0-alpha02}
 Tags: []
 Source: ../../../Resources/Knight/knight.fbx
+PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    -   ~Id: 9453272f-bd50-2981-beae-0561879e6a60
+    2f27539450bd8129beae0561879e6a60:
         Name: c100_chr_ch00_Knight_KINGHT_iron
         MaterialInstance:
-            ~Id: 6d62ef72-cb4e-421b-aef0-add81e10a604
-            Material: 3fe536f2-7df0-4c4c-8c90-52406ed6e2c8/9c681259-9b2f-4fc2-871a-6df8e8a72f80:Knight/c100_chr_ch00_Knight_KINGHT_iron
-    -   ~Id: 77fc3481-01c6-ddb9-84c8-97beb37701d5
+            Material: 9c681259-9b2f-4fc2-871a-6df8e8a72f80:Knight/c100_chr_ch00_Knight_KINGHT_iron
+    8134fc77c601b9dd84c897beb37701d5:
         Name: c100_chr_ch00_Knight_KINGHT
         MaterialInstance:
-            ~Id: ce1e9294-a3ab-49e0-ac1b-74375e0d537a
-            Material: ffd848fd-0b2a-4a07-b2c0-57b0f878b6ee/b9fd39ac-f6d0-43f1-8370-058f865c1ca0:Knight/c100_chr_ch00_Knight_KINGHT
-    -   ~Id: 97abf200-4c15-8d6c-be6f-d21598e97bfa
+            Material: b9fd39ac-f6d0-43f1-8370-058f865c1ca0:Knight/c100_chr_ch00_Knight_KINGHT
+    00f2ab97154c6c8dbe6fd21598e97bfa:
         Name: c100_chr_ch00_Knight_SWORD1
         MaterialInstance:
-            ~Id: 571abe3b-2704-4ea0-8070-5af97554c07e
-            Material: cb48138c-0c73-4353-84d8-0a1e0bf3f07d/4c6893f8-cae6-4b40-8907-d4887d44c497:Knight/c100_chr_ch00_Knight_SWORD1
-Skeleton: 2600ee5d-f6d8-4d84-a2f0-ce3a3ace183f/1e2af2c8-b557-4f60-88b5-bbe764539fd4:Knight/knight Skeleton
+            Material: 4c6893f8-cae6-4b40-8907-d4887d44c497:Knight/c100_chr_ch00_Knight_SWORD1
+Skeleton: 1e2af2c8-b557-4f60-88b5-bbe764539fd4:Knight/knight Skeleton
 ~SourceHashes:
-    ../../../Resources/Knight/knight.fbx: af4ac6da9a62b02bd84f4a8147dd38a7
+    40cb180dccbf2f34f3a004cbe6ffdfac~../../../Resources/Knight/knight.fbx: af4ac6da9a62b02bd84f4a8147dd38a7

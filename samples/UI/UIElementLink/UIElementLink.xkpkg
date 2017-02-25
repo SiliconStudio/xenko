@@ -1,7 +1,6 @@
 !Package
 Id: 6244d6f9-f6ac-4b64-b8f6-c895036b53c0
-SerializedVersion: {Assets: 0.0.3}
-Tags: []
+SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: UIElementLink
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.9.4-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -20,7 +19,6 @@ Profiles:
             -   Path: Assets/Shared
             -   Path: UIElementLink.Game/Effects
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 88396fd1-9dda-4338-b6e3-eeca9eccbe43
                 Location: UIElementLink.Game/UIElementLink.Game.csproj
@@ -31,8 +29,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Windows
         OutputGroupDirectories: {}
-        Properties:
-            Xenko.GraphicsPlatform: Direct3D11
         ProjectReferences:
             -   Id: 31828b12-b551-4253-b797-5a8cfba0e977
                 Location: UIElementLink.Windows/UIElementLink.Windows.csproj

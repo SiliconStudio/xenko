@@ -1,37 +1,29 @@
 !SceneAsset
 Id: 9294c606-6173-4215-a8dc-0d5043d68333
-SerializedVersion: {Xenko: 1.9.0-beta02}
+SerializedVersion: {Xenko: 1.9.0-beta06}
 Tags: []
 SceneSettings:
     Id: 1d1dff26-e925-415a-9895-add9f612b42d
     GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: 89ae28bf-7fdf-4392-a13a-56aa42d48fbb
-        Cameras: []
-        Layers: []
+        Cameras: {}
+        Layers: {}
         Master:
-            ~Id: 134142f8-9c84-4f1d-bb09-5c23071ec08a
             Name: SceneGraphicsLayer
             Output: !MasterRenderFrameProvider {}
             Renderers:
-                - !SceneCameraRenderer
-                    ~Id: 11883a17-de05-4495-94d8-ee8e4b481849
-                    Mode: !CameraRendererModeForward
-                        ~Id: 0697aaf6-d562-4430-b7ea-514b495fdd65
+                173a881105de954494d8ee8e4b481849: !SceneCameraRenderer
+                    Mode: !CameraRendererModeForward {}
                     Camera:
-                        ~Id: 1a217523-0f9f-4b24-88a0-9b8e601f9860
                         Index: 0
                     Output: !CurrentRenderFrameProvider {}
                     Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
                     ForceAspectRatio: false
     EditorSettings:
-        ~Id: 666935e7-3a58-435f-85de-2d9ff3a575ef
         GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
         SceneUnit: 1.0
         Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: 13c83252-be07-452d-ab67-557f1fecf7da
             BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
 Hierarchy:
-    ~Id: e397c235-ffba-44db-b2c5-f251b3c80139
     RootPartIds:
         - 50f9b452-2012-451b-95cd-57ff4f313e4b
     Parts:
@@ -39,19 +31,19 @@ Hierarchy:
                 Id: 50f9b452-2012-451b-95cd-57ff4f313e4b
                 Name: UI
                 Components:
-                    - !TransformComponent
-                        ~Id: 9acf979c-68b7-4e07-959c-e282a2740efb
-                        Children: []
+                    9c97cf9ab768074e959ce282a2740efb: !TransformComponent
+                        Id: 9acf979c-68b7-4e07-959c-e282a2740efb
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !GameMenu.MainScript,GameMenu.Game
-                        ~Id: 22b8232d-2333-4478-8565-0a003fa813fe
-                        MainSceneImages: 6c5b350e-abe9-47dd-9f0b-b2cf064e5384/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
-                        UILibrary: 33029349-ef1e-4a63-a23f-4302a2687521/44a9ed4d-847f-4577-8cb1-eabf455799a7:MainLibrary
-                    - !UIComponent
-                        ~Id: 55e6243c-8b03-4f7a-8aba-c6fc8959c49a
-                        Page: 2d79b970-5e5a-410d-86af-e7c2ee6e0f09/709b49cf-aa5f-4647-a3fe-3456c7560736:Main
+                        Children: {}
+                    2d23b8223323784485650a003fa813fe: !GameMenu.MainScript,GameMenu.Game
+                        Id: 22b8232d-2333-4478-8565-0a003fa813fe
+                        MainSceneImages: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                        UILibrary: 44a9ed4d-847f-4577-8cb1-eabf455799a7:MainLibrary
+                    3c24e655038b7a4f8abac6fc8959c49a: !UIComponent
+                        Id: 55e6243c-8b03-4f7a-8aba-c6fc8959c49a
+                        Page: 709b49cf-aa5f-4647-a3fe-3456c7560736:Main
                         Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
                         ResolutionStretch: FixedWidthFixedHeight

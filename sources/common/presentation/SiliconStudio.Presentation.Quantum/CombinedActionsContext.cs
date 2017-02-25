@@ -6,11 +6,11 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class CombinedActionsContext : IDisposable
     {
-        private readonly string observableNodePath;
-        private readonly ObservableViewModel owner;
+        private readonly string nodePath;
+        private readonly GraphViewModel owner;
         private readonly ITransaction transaction;
 
-        public CombinedActionsContext(ObservableViewModel owner, string actionName, string observableNodePath)
+        public CombinedActionsContext(GraphViewModel owner, string actionName, string nodePath)
         {
             if (owner == null) throw new ArgumentNullException(nameof(owner));
             var service = owner.ServiceProvider.TryGet<IUndoRedoService>();
@@ -20,12 +20,12 @@ namespace SiliconStudio.Presentation.Quantum
                 service.SetName(transaction, actionName);
             }
             this.owner = owner;
-            this.observableNodePath = observableNodePath;
+            this.nodePath = nodePath;
         }
 
         public void Dispose()
         {
-            owner.EndCombinedAction(observableNodePath);
+            owner.EndCombinedAction(nodePath);
             transaction?.Complete();
         }
     }

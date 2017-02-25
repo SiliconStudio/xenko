@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
             {
                 var textureAsset = new TextureAsset
                 {
-                    Id = Guid.Empty, // CAUTION: It is important to use an empty GUID here, as we don't want the command to be rebuilt (by default, a new asset is creating a new guid)
+                    Id = AssetId.Empty, // CAUTION: It is important to use an empty GUID here, as we don't want the command to be rebuilt (by default, a new asset is creating a new guid)
                     Alpha = AlphaFormat.Auto,
                     Format = TextureFormat.Color32Bits,
                     GenerateMipmaps = true,
@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 
                 foreach (var cell in cells)
                 {
-                    var sprite = new Sprite(cell.Name, AttachedReferenceManager.CreateProxyObject<Texture>(Guid.Empty, Parameters.BuildTextures[cell.TextureIndex]))
+                    var sprite = new Sprite(cell.Name, AttachedReferenceManager.CreateProxyObject<Texture>(AssetId.Empty, Parameters.BuildTextures[cell.TextureIndex]))
                     {
                         Region = cell.Rectangle,
                         Center = cell.Pivot,

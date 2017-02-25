@@ -100,7 +100,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>The list of materials to use with the model. This list overrides the default materials of the model.</userdoc>
         [DataMember(20)]
         [Category]
-        public List<Material> Materials { get; } = new List<Material>();
+        public IndexingDictionary<Material> Materials { get; } = new IndexingDictionary<Material>();
 
         [DataMemberIgnore, DataMemberUpdatable]
         [DataMember]
@@ -169,14 +169,15 @@ namespace SiliconStudio.Xenko.Engine
         /// <returns>The material at the specified index or null if not found</returns>
         public Material GetMaterial(int index)
         {
-            if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "index cannot be < 0");
+            if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), @"index cannot be < 0");
 
-            Material material = null;
-            if (index < Materials.Count)
+            Material material;
+            if (Materials.TryGetValue(index, out material))
             {
-                material = Materials[index];
+                return material;
             }
-            if (material == null && Model != null && index < Model.Materials.Count)
+            // TODO: if Model is null, shouldn't we always return null?
+            if (Model != null && index < Model.Materials.Count)
             {
                 material = Model.Materials[index].Material;
             }

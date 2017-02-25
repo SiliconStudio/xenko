@@ -14,12 +14,9 @@ Attributes:
         MetalnessMap: !ComputeFloat
             Value: 1.0
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: b5032726-06e5-4f9e-a213-c218aa37f7f3
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: e22b76de-b351-4903-9661-03f581b90612
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: 30fa10f6-b63e-4083-a675-90a6ed358572
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

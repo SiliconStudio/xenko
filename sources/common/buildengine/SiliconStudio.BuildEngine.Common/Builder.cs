@@ -215,9 +215,9 @@ namespace SiliconStudio.BuildEngine
             private readonly BuildTransaction buildTransaction;
             private readonly Builder builder;
 
-            public ExecuteContext(Builder builder, BuilderContext builderContext, BuildStep buildStep)
+            public ExecuteContext(Builder builder, BuilderContext builderContext, BuildStep buildStep, Logger logger)
             {
-                Logger = new BuildStepLogger(buildStep, builder.Logger, builder.startTime);
+                Logger = logger;
                 this.builderContext = builderContext;
                 this.builder = builder;
                 this.buildStep = buildStep;
@@ -320,7 +320,15 @@ namespace SiliconStudio.BuildEngine
                 // Compute content dependencies before scheduling the build
                 GenerateDependencies(buildStep);
 
-                var executeContext = new ExecuteContext(this, builderContext, buildStep) { Variables = new Dictionary<string, string>(variables) };
+                // TODO: Big review of the log infrastructure of CompilerApp & BuildEngine!
+                // Create a logger that redirects to various places (BuildStep.Logger, timestampped log, global log, etc...)
+                var buildStepLogger = new BuildStepLogger(buildStep, Logger, startTime);
+                var logger = (Logger)buildStepLogger;
+                // Apply user-registered callbacks to the logger
+                buildStep.TransformExecuteContextLogger?.Invoke(ref logger);
+
+                // Create execute context
+                var executeContext = new ExecuteContext(this, builderContext, buildStep, logger) { Variables = new Dictionary<string, string>(variables) };
                 //buildStep.ExpandStrings(executeContext);
 
                 if (runMode == Mode.Build)
@@ -344,7 +352,7 @@ namespace SiliconStudio.BuildEngine
 
                     foreach (var threadMonitor in threadMonitors)
                     {
-                        threadMonitor.RegisterBuildStep(buildStep, ((BuildStepLogger)executeContext.Logger).StepLogger);
+                        threadMonitor.RegisterBuildStep(buildStep, buildStepLogger.StepLogger);
                     }
 
                     microThread.Name = buildStep.ToString();
@@ -438,8 +446,8 @@ namespace SiliconStudio.BuildEngine
                         }
                         if (logText != null)
                         {
-                            var logMessage = new LogMessage(buildStep.Module, logType, logText);
-                            Logger.Log(logMessage);
+                            var logMessage = new LogMessage(null, logType, logText);
+                            executeContext.Logger.Log(logMessage);
                         }
 
                         buildStep.RegisterResult(executeContext, status);
@@ -605,19 +613,13 @@ namespace SiliconStudio.BuildEngine
                 }
                 else if (stepCounter.Get(ResultStatus.Failed) > 0 || stepCounter.Get(ResultStatus.NotTriggeredPrerequisiteFailed) > 0)
                 {
-                    Logger.Error("Build finished in {0} steps. Command results: {1} succeeded, {2} up-to-date, {3} failed, {4} not triggered due to previous failure.",
-                       stepCounter.Total, stepCounter.Get(ResultStatus.Successful), stepCounter.Get(ResultStatus.NotTriggeredWasSuccessful),
-                       stepCounter.Get(ResultStatus.Failed), stepCounter.Get(ResultStatus.NotTriggeredPrerequisiteFailed));
-
+                    Logger.Error($"Build finished in {stepCounter.Total} steps. Command results: {stepCounter.Get(ResultStatus.Successful)} succeeded, {stepCounter.Get(ResultStatus.NotTriggeredWasSuccessful)} up-to-date, {stepCounter.Get(ResultStatus.Failed)} failed, {stepCounter.Get(ResultStatus.NotTriggeredPrerequisiteFailed)} not triggered due to previous failure.");
                     Logger.Error("Build failed.");
                     result = BuildResultCode.BuildError;
                 }
                 else
                 {
-                    Logger.Info("Build finished in {0} steps. Command results: {1} succeeded, {2} up-to-date, {3} failed, {4} not triggered due to previous failure.",
-                        stepCounter.Total, stepCounter.Get(ResultStatus.Successful), stepCounter.Get(ResultStatus.NotTriggeredWasSuccessful),
-                        stepCounter.Get(ResultStatus.Failed), stepCounter.Get(ResultStatus.NotTriggeredPrerequisiteFailed));
-
+                    Logger.Info($"Build finished in {stepCounter.Total} steps. Command results: {stepCounter.Get(ResultStatus.Successful)} succeeded, {stepCounter.Get(ResultStatus.NotTriggeredWasSuccessful)} up-to-date, {stepCounter.Get(ResultStatus.Failed)} failed, {stepCounter.Get(ResultStatus.NotTriggeredPrerequisiteFailed)} not triggered due to previous failure.");
                     Logger.Info("Build is successful.");
                     result = BuildResultCode.Successful;
                 }
@@ -692,7 +694,7 @@ namespace SiliconStudio.BuildEngine
 
                 if (looseObjects.Length > 0)
                 {
-                    Logger.Info("Database version number has been updated from {0} to {1}, erasing all objects...", currentVersion, ExpectedVersion);
+                    Logger.Info($"Database version number has been updated from {currentVersion} to {ExpectedVersion}, erasing all objects...");
 
                     // Database version has been updated, let's clean it
                     foreach (var objectId in looseObjects)

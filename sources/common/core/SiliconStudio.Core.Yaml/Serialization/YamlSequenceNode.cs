@@ -69,7 +69,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Gets or sets the style of the node.
         /// </summary>
         /// <value>The style.</value>
-        public YamlStyle Style { get; set; }
+        public DataStyle Style { get; set; }
 
 
         /// <summary>

@@ -45,24 +45,20 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
-using SiliconStudio.Core.Yaml.Serialization.Logging;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
     /// <summary>
     /// Class for serializing a <see cref="System.Collections.Generic.ICollection{T}"/> or <see cref="System.Collections.ICollection"/>
     /// </summary>
+    [YamlSerializerFactory(YamlSerializerFactoryAttribute.Default)]
     public class CollectionSerializer : ObjectSerializer
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CollectionSerializer"/> class.
-        /// </summary>
-        public CollectionSerializer()
-        {
-        }
-
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             return typeDescriptor is CollectionDescriptor ? this : null;
@@ -145,11 +141,11 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 
             if (!collectionDescriptor.HasAdd)
             {
-                throw new InvalidOperationException("Cannot deserialize list to type [{0}]. No Add method found".DoFormat(thisObject.GetType()));
+                throw new InvalidOperationException($"Cannot deserialize list to type [{thisObject.GetType()}]. No Add method found");
             }
             if (collectionDescriptor.IsReadOnly(thisObject))
             {
-                throw new InvalidOperationException("Cannot deserialize list to readonly collection type [{0}].".DoFormat(thisObject.GetType()));
+                throw new InvalidOperationException($"Cannot deserialize list to readonly collection type [{thisObject.GetType()}].");
             }
 
             var reader = objectContext.Reader;
@@ -158,25 +154,21 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             var index = 0;
             while (!reader.Accept<SequenceEnd>())
             {
-                if (objectContext.SerializerContext.AllowErrors)
-                {
-                    var currentDepth = objectContext.Reader.CurrentDepth;
+                var currentDepth = objectContext.Reader.CurrentDepth;
 
-                    try
-                    {
-                        ReadAddCollectionItem(ref objectContext, elementType, collectionDescriptor, thisObject, index);
-                    }
-                    catch (YamlException ex)
-                    {
-                        var logger = objectContext.SerializerContext.ContextSettings.Logger;
-                        if (logger != null)
-                            logger.Log(LogLevel.Warning, ex, "Ignored collection item that could not be deserialized");
-                        objectContext.Reader.Skip(currentDepth);
-                    }
-                }
-                else
+                try
                 {
                     ReadAddCollectionItem(ref objectContext, elementType, collectionDescriptor, thisObject, index);
+                }
+                catch (YamlException ex)
+                {
+                    if (objectContext.SerializerContext.AllowErrors)
+                    {
+                        var logger = objectContext.SerializerContext.Logger;
+                        logger?.Warning("Ignored dictionary item that could not be deserialized", ex);
+                        objectContext.Reader.Skip(currentDepth);
+                    }
+                    else throw;
                 }
                 index++;
             }
@@ -193,7 +185,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         protected virtual void ReadAddCollectionItem(ref ObjectContext objectContext, Type elementType, CollectionDescriptor collectionDescriptor, object thisObject, int index)
         {
             var value = ReadCollectionItem(ref objectContext, null, elementType, index);
-            collectionDescriptor.CollectionAdd(thisObject, value);
+            collectionDescriptor.Add(thisObject, value);
         }
 
         /// <summary>

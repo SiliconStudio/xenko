@@ -1,7 +1,6 @@
 !Package
 Id: 2ca471d1-0216-4bc8-a03a-3ccec16b7f85
-SerializedVersion: {Assets: 0.0.3}
-Tags: []
+SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: FirstPersonShooter
     Version: 1.0.0.0
@@ -10,7 +9,7 @@ Meta:
     RootNamespace: FirstPersonShooter
     Dependencies:
         -   Name: Xenko
-            Version: 1.8.4-beta
+            Version: 1.9.4-beta
             RootAssets: []
 LocalDependencies:
     - 575b8dc7-3fad-497d-acf7-fbdfabcece80:../../Packs/VFXPackage/VFXPackage.xkpkg
@@ -25,7 +24,6 @@ Profiles:
             -   Path: Assets/Shared
             -   Path: FirstPersonShooter.Game/Effects
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: a2f50f1f-af89-4264-8327-20be994592d7
                 Location: FirstPersonShooter.Game/FirstPersonShooter.Game.csproj
@@ -36,7 +34,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Windows
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 152d59a3-17bf-4a67-abff-b2f6fb2b7dfa
                 Location: FirstPersonShooter.Windows/FirstPersonShooter.Windows.csproj

@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Runtime.InteropServices;
-
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Serialization.Serializers
@@ -11,10 +10,10 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// Data serializer for string.
     /// </summary>
     [DataSerializerGlobal(typeof(UriSerializer))]
-    public class UriSerializer : DataSerializer<System.Uri>
+    public class UriSerializer : DataSerializer<Uri>
     {
         /// <inheritdoc/>
-        public override void Serialize(ref System.Uri obj, ArchiveMode mode, SerializationStream stream)
+        public override void Serialize(ref Uri obj, ArchiveMode mode, SerializationStream stream)
         {
             if (mode == ArchiveMode.Serialize)
             {
@@ -63,7 +62,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
     public class SingleSerializer : DataSerializer<float>
     {
         /// <inheritdoc/>
-        public override bool IsBlittable { get { return true; } }
+        public override bool IsBlittable => true;
 
         /// <inheritdoc/>
         public override void Serialize(ref float obj, ArchiveMode mode, SerializationStream stream)
@@ -79,7 +78,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
     public class DoubleSerializer : DataSerializer<double>
     {
         /// <inheritdoc/>
-        public override bool IsBlittable { get { return true; } }
+        public override bool IsBlittable => true;
 
         /// <inheritdoc/>
         public override void Serialize(ref double obj, ArchiveMode mode, SerializationStream stream)
@@ -108,7 +107,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
     public class ByteSerializer : DataSerializer<byte>
     {
         /// <inheritdoc/>
-        public override bool IsBlittable { get { return true; } }
+        public override bool IsBlittable => true;
 
         /// <inheritdoc/>
         public override void Serialize(ref byte obj, ArchiveMode mode, SerializationStream stream)
@@ -124,7 +123,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
     public class SByteSerializer : DataSerializer<sbyte>
     {
         /// <inheritdoc/>
-        public override bool IsBlittable { get { return true; } }
+        public override bool IsBlittable => true;
 
         /// <inheritdoc/>
         public override void Serialize(ref sbyte obj, ArchiveMode mode, SerializationStream stream)
@@ -140,7 +139,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
     public class Int16Serializer : DataSerializer<short>
     {
         /// <inheritdoc/>
-        public override bool IsBlittable { get { return true; } }
+        public override bool IsBlittable => true;
 
         /// <inheritdoc/>
         public override void Serialize(ref short obj, ArchiveMode mode, SerializationStream stream)
@@ -156,7 +155,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
     public class UInt16Serializer : DataSerializer<ushort>
     {
         /// <inheritdoc/>
-        public override bool IsBlittable { get { return true; } }
+        public override bool IsBlittable => true;
 
         /// <inheritdoc/>
         public override void Serialize(ref ushort obj, ArchiveMode mode, SerializationStream stream)
@@ -172,7 +171,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
     public class Int32Serializer : DataSerializer<int>
     {
         /// <inheritdoc/>
-        public override bool IsBlittable { get { return true; } }
+        public override bool IsBlittable => true;
 
         /// <inheritdoc/>
         public override void Serialize(ref int obj, ArchiveMode mode, SerializationStream stream)
@@ -188,7 +187,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
     public class UInt32Serializer : DataSerializer<uint>
     {
         /// <inheritdoc/>
-        public override bool IsBlittable { get { return true; } }
+        public override bool IsBlittable => true;
 
         /// <inheritdoc/>
         public override void Serialize(ref uint obj, ArchiveMode mode, SerializationStream stream)
@@ -204,7 +203,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
     public class Int64Serializer : DataSerializer<long>
     {
         /// <inheritdoc/>
-        public override bool IsBlittable { get { return true; } }
+        public override bool IsBlittable => true;
 
         /// <inheritdoc/>
         public override void Serialize(ref long obj, ArchiveMode mode, SerializationStream stream)
@@ -220,7 +219,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
     public class UInt64Serializer : DataSerializer<ulong>
     {
         /// <inheritdoc/>
-        public override bool IsBlittable { get { return true; } }
+        public override bool IsBlittable => true;
 
         /// <inheritdoc/>
         public override void Serialize(ref ulong obj, ArchiveMode mode, SerializationStream stream)
@@ -257,12 +256,12 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// </summary>
     public unsafe class EnumSerializer<T> : DataSerializer<T> where T : struct
     {
-        private int EnumSize;
+        private int enumSize;
 
         public override void Initialize(SerializerSelector serializerSelector)
         {
             // Use Marshal SizeOf to avoid AOT issues on iOS
-            EnumSize = Marshal.SizeOf(Enum.GetUnderlyingType(typeof(T)));
+            enumSize = Marshal.SizeOf(Enum.GetUnderlyingType(typeof(T)));
         }
 
         /// <inheritdoc/>
@@ -272,7 +271,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             // Future, 2 choices if we decide to drop it and have more compact formats for small enum:
             // - Dump as-is from/to memory (not so resistant to structure size changes)
             // - Use 7bit encoded integer
-            switch (EnumSize)
+            switch (enumSize)
             {
                 case 1:
                 {
@@ -315,7 +314,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
     public class GuidSerializer : DataSerializer<Guid>
     {
         /// <inheritdoc/>
-        public override bool IsBlittable { get { return true; } }
+        public override bool IsBlittable => true;
 
         /// <inheritdoc/>
         public override void Serialize(ref Guid obj, ArchiveMode mode, SerializationStream stream)

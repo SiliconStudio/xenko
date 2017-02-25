@@ -3,9 +3,7 @@ Id: 6a45aa77-17aa-4fde-9acd-9452744e14ca
 SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
 FontSource: !SystemFontProvider
-    ~Id: d9407c80-3cea-4e1b-b46c-616089b22ba6
     FontName: Segoe UI
     Style: Regular
 FontType: !RuntimeRasterizedSpriteFontType
-    ~Id: 9a082c56-02aa-4585-9def-843bf3666f54
     Size: 24.0

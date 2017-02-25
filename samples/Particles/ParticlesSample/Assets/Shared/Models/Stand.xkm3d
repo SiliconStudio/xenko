@@ -5,16 +5,14 @@ Tags: []
 Source: ../../../Resources/Stand/Pd_ground.FBX
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    -   ~Id: dc594944-7ed0-c7f6-e59c-8d0ee59c8d0e
+    444959dcd07ef6c7e59c8d0ee59c8d0e:
         Name: ground_0
         MaterialInstance:
-            ~Id: 38bb0945-dce6-4640-a51c-7449171d450c
-            Material: 8efd747b-ba4c-4a4a-906e-a4c97faa979b/642b4cea-dc0f-449f-8bfa-88f535a6aba2:Materials/DullSilver
-    -   ~Id: c4a70071-e791-89cc-8821-031e8821031e
+            Material: 642b4cea-dc0f-449f-8bfa-88f535a6aba2:Materials/DullSilver
+    7100a7c491e7cc898821031e8821031e:
         Name: ground_1
         MaterialInstance:
-            ~Id: 08894349-288b-48b0-9ad3-8d7599ce65ea
-            Material: 9884fe90-803e-49a3-af1c-4f1e9a89814e/8b1ed8cc-665d-4740-a903-95b2badeac14:Materials/RedCoating
+            Material: 8b1ed8cc-665d-4740-a903-95b2badeac14:Materials/RedCoating
 Skeleton: null
 ~SourceHashes:
-    ../../../Resources/Stand/Pd_ground.FBX: c170a2977ef51a92b83f375a71be5f26
+    15b28b3ae89397f80d956d69c2d818e0~../../../Resources/Stand/Pd_ground.FBX: c170a2977ef51a92b83f375a71be5f26

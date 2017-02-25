@@ -7,6 +7,7 @@ using System.IO;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Compiler
 {
@@ -68,8 +69,7 @@ namespace SiliconStudio.Assets.Compiler
             }
             catch (Exception ex)
             {
-                compilationResult.Error("Cannot find a compiler for asset [{0}] from path [{1}]", ex, assetItem.Id,
-                    assetItem.Location);
+                compilationResult.Error($"Cannot find a compiler for asset [{assetItem.Id}] from path [{assetItem.Location}]", ex);
                 return null;
             }
 
@@ -87,12 +87,10 @@ namespace SiliconStudio.Assets.Compiler
                 AssetCompiled?.Invoke(this, new AssetCompiledArgs(assetItem, resultPerAssetType));
 
                 // TODO: See if this can be unified with PackageBuilder.BuildStepProcessed
+                var assetFullPath = assetItem.FullPath.ToWindowsPath();
                 foreach (var message in resultPerAssetType.Messages)
                 {
-                    var assetMessage = new AssetLogMessage(null, assetItem.ToReference(), message.Type, AssetMessageCode.CompilationMessage, assetItem.Location, message.Text)
-                    {
-                        Exception = message is LogMessage ? ((LogMessage)message).Exception : null
-                    };
+                    var assetMessage = AssetLogMessage.From(null, assetItem.ToReference(), message, assetFullPath);
                     // Forward log messages to compilationResult
                     compilationResult.Log(assetMessage);
 
@@ -104,13 +102,9 @@ namespace SiliconStudio.Assets.Compiler
                 if (resultPerAssetType.BuildSteps is AssetBuildStep && resultPerAssetType.BuildSteps.Logger.HasErrors)
                     resultPerAssetType.BuildSteps.Add(new CommandBuildStep(new FailedCommand(assetItem.Location)));
 
-                // Build the module string
-                var assetAbsolutePath = assetItem.FullPath;
-                assetAbsolutePath = Path.GetFullPath(assetAbsolutePath);
-                var module = string.Format("{0}(1,1)", assetAbsolutePath);
-
+                // TODO: Big review of the log infrastructure of CompilerApp & BuildEngine!
                 // Assign module string to all command build steps
-                SetModule(resultPerAssetType.BuildSteps, module);
+                SetAssetLogger(resultPerAssetType.BuildSteps, assetItem.Package, assetItem.ToReference(), assetItem.FullPath.ToWindowsPath());
 
                 // Add a wait command to the build steps if required by the item build
                 if (resultPerAssetType.ShouldWaitForPreviousBuilds)
@@ -126,8 +120,7 @@ namespace SiliconStudio.Assets.Compiler
             }
             catch (Exception ex)
             {
-                compilationResult.Error("Unexpected exception while compiling asset [{0}] from path [{1}]", ex, assetItem.Id,
-                    assetItem.Location);
+                compilationResult.Error($"Unexpected exception while compiling asset [{assetItem.Id}] from path [{assetItem.Location}]", ex);
                 return null;
             }
         }
@@ -137,17 +130,17 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         /// <param name="buildStep">The build step.</param>
         /// <param name="module">The module.</param>
-        private void SetModule(BuildStep buildStep, string module)
+        private void SetAssetLogger(BuildStep buildStep, Package package, IReference assetReference, string assetFullPath)
         {
-            if (buildStep.Module == null)
-                buildStep.Module = module;
+            if (buildStep.TransformExecuteContextLogger == null)
+                buildStep.TransformExecuteContextLogger = (ref Logger logger) => logger = new AssetLogger(package, assetReference, assetFullPath, logger);
 
             var enumerableBuildStep = buildStep as EnumerableBuildStep;
             if (enumerableBuildStep != null && enumerableBuildStep.Steps != null)
             {
                 foreach (var child in enumerableBuildStep.Steps)
                 {
-                    SetModule(child, module);
+                    SetAssetLogger(child, package, assetReference, assetFullPath);
                 }
             }
         }

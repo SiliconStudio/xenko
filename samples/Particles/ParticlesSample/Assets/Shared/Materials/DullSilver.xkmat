@@ -5,7 +5,7 @@ Tags: []
 Attributes:
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeTextureScalar
-            Texture: 2f7b072b-c2fb-4475-9a3b-a9e8dea07480/ae2c56b7-71ab-4461-9bd6-56ac21a04e3d:Textures/gum01_gls
+            Texture: ae2c56b7-71ab-4461-9bd6-56ac21a04e3d:Textures/gum01_gls
             FallbackValue:
                 Value: 1.0
             AddressModeU: Mirror
@@ -20,12 +20,9 @@ Attributes:
         MetalnessMap: !ComputeFloat
             Value: 1.0
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: edec04c8-e551-4fb6-9c8b-d7fb9686387e
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: cde550d7-13f5-4009-b552-b4f2edd85c6b
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: 877b3082-da79-42ee-954c-b6bfc827cac9
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

@@ -8,5 +8,4 @@ Type: !GeoSphereProceduralModel
     UvScale: {X: 1.0, Y: 1.0}
     LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
     MaterialInstance:
-        ~Id: 8ffb45cd-b5f9-4aba-9abc-dd9c5152a357
-        Material: 161e6aca-715f-4e74-bc91-71630d29db1e/852eb1d0-def9-4296-a57d-810589cf4ec9:Materials/Material
+        Material: 852eb1d0-def9-4296-a57d-810589cf4ec9:Materials/Material

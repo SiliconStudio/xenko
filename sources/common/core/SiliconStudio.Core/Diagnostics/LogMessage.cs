@@ -91,7 +91,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return $"[{Module}]: {Type}: {Text}{(Exception == null ? string.Empty : $". {Exception}")}";
+            return $"{(Module != null ? $"[{Module}]: " : string.Empty)}{Type}: {Text}{(Exception != null ? $". {Exception}" : string.Empty)}";
         }
     }
 }

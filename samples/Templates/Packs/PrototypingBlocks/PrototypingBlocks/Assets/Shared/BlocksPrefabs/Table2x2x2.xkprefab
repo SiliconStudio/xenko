@@ -1,9 +1,8 @@
 !PrefabAsset
 Id: 225fba76-f4cb-489d-8bb6-0f7e13a54931
-SerializedVersion: {Xenko: 1.9.0-beta01}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 Hierarchy:
-    ~Id: 857ba326-bf7c-41e5-aebe-cb6736a0c989
     RootPartIds:
         - c6aca1a5-dba9-46d2-a6f5-c4fc1ab74824
     Parts:
@@ -11,21 +10,22 @@ Hierarchy:
                 Id: c6aca1a5-dba9-46d2-a6f5-c4fc1ab74824
                 Name: Table2x2x2
                 Components:
-                    - !TransformComponent
-                        ~Id: 91d8b3fd-81ad-457d-bc9c-9a293736f0e1
-                        Children: []
+                    fdb3d891ad817d45bc9c9a293736f0e1: !TransformComponent
+                        Id: 91d8b3fd-81ad-457d-bc9c-9a293736f0e1
                         Position: {X: 1.0, Y: 1.0, Z: 1.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 90609b00-a68c-4fb4-bfac-9f90cb43af2e
-                        Model: 9b3d6eba-8865-4aed-9222-0c11c1c928f0/a597a15e-9dec-4895-84be-99240208b6d2:Models/Table2x2x2
+                        Children: {}
+                    009b60908ca6b44fbfac9f90cb43af2e: !ModelComponent
+                        Id: 90609b00-a68c-4fb4-bfac-9f90cb43af2e
+                        Model: a597a15e-9dec-4895-84be-99240208b6d2:Models/Table2x2x2
                         Materials:
-                            - 1cb8d1ec-e986-4d11-86fc-df436455648f/c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
-                    - !StaticColliderComponent
-                        ~Id: 81d1d6e8-1daa-4fab-a735-3dbc6a807bd7
+                            ecd1b81c86e9114d86fcdf436455648f~0: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
+                    e8d6d181aa1dab4fa7353dbc6a807bd7: !StaticColliderComponent
+                        Id: 81d1d6e8-1daa-4fab-a735-3dbc6a807bd7
                         CollisionGroup: StaticFilter
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -33,32 +33,28 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         ColliderShapes:
-                            - !BoxColliderShapeDesc
-                                ~Id: d1b88d50-3c81-4ec8-b816-d5cb50e30987
+                            508db8d1813cc84eb816d5cb50e30987: !BoxColliderShapeDesc
                                 Is2D: false
                                 Size: {X: 0.1, Y: 2.0, Z: 0.1}
                                 LocalOffset: {X: 0.95, Y: 0.0, Z: 0.95}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                            - !BoxColliderShapeDesc
-                                ~Id: 2465f431-085a-4d01-9a4c-2eebb5cf119e
+                            31f465245a08014d9a4c2eebb5cf119e: !BoxColliderShapeDesc
                                 Is2D: false
                                 Size: {X: 0.1, Y: 2.0, Z: 0.1}
                                 LocalOffset: {X: -0.95, Y: 0.0, Z: -0.95}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                            - !BoxColliderShapeDesc
-                                ~Id: 5908bc60-df85-4ae6-a36c-640be12ec365
+                            60bc085985dfe64aa36c640be12ec365: !BoxColliderShapeDesc
                                 Is2D: false
                                 Size: {X: 0.1, Y: 2.0, Z: 0.1}
                                 LocalOffset: {X: -0.95, Y: 0.0, Z: 0.95}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                            - !BoxColliderShapeDesc
-                                ~Id: 230480e8-aebb-4764-85a2-1a15764c3f52
+                            e8800423bbae644785a21a15764c3f52: !BoxColliderShapeDesc
                                 Is2D: false
                                 Size: {X: 0.1, Y: 2.0, Z: 0.1}
                                 LocalOffset: {X: 0.95, Y: 0.0, Z: -0.95}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                    - !StaticColliderComponent
-                        ~Id: 852764e4-ecd1-48ae-9aa4-1d32c993b74d
+                    e4642785d1ecae489aa41d32c993b74d: !StaticColliderComponent
+                        Id: 852764e4-ecd1-48ae-9aa4-1d32c993b74d
                         CanSleep: false
                         Restitution: 0.0
                         Friction: 0.5
@@ -67,8 +63,7 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         ColliderShapes:
-                            - !BoxColliderShapeDesc
-                                ~Id: 3142c5af-c46d-4c01-b5fa-b15314fb77c1
+                            afc542316dc4014cb5fab15314fb77c1: !BoxColliderShapeDesc
                                 Is2D: false
                                 Size: {X: 2.0, Y: 0.2, Z: 2.0}
                                 LocalOffset: {X: 0.0, Y: 0.975, Z: 0.0}

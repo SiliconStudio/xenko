@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -14,7 +15,7 @@ namespace SiliconStudio.Presentation.Controls
         {
         }
 
-        public virtual int Compare(object x, object y)
+        public virtual int Compare([NotNull] object x, [NotNull] object y)
         {
             var a = x.ToString();
             var b = y.ToString();

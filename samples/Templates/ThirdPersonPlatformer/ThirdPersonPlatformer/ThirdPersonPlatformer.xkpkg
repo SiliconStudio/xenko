@@ -1,7 +1,6 @@
 !Package
-Id: AFAE975A-E8BC-4B00-82B3-7D9C67DD6A41
-SerializedVersion: {Assets: 0.0.3}
-Tags: []
+Id: afae975a-e8bc-4b00-82b3-7d9c67dd6a41
+SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: ThirdPersonPlatformer
     Version: 1.0.0.0
@@ -10,7 +9,7 @@ Meta:
     RootNamespace: ThirdPersonPlatformer
     Dependencies:
         -   Name: Xenko
-            Version: 1.8.4-beta
+            Version: 1.9.4-beta
             RootAssets: []
 LocalDependencies:
     - ec64fd24-824f-4da4-b077-3661cf988027:../../Packs/mannequinModel/mannequinModel/mannequinModel.xkpkg
@@ -23,7 +22,6 @@ Profiles:
             -   Path: Assets/Shared
             -   Path: ThirdPersonPlatformer.Game/Effects
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 92b5077f-3d0d-4043-a3b4-25a32c9d64aa
                 Location: ThirdPersonPlatformer.Game/ThirdPersonPlatformer.Game.csproj
@@ -34,7 +32,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Windows
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 436e0287-cc11-4e08-bd1b-c7ab4b20b0dd
                 Location: ThirdPersonPlatformer.Windows/ThirdPersonPlatformer.Windows.csproj

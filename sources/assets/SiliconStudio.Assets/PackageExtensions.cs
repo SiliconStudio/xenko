@@ -17,30 +17,6 @@ namespace SiliconStudio.Assets
     public static class PackageExtensions
     {
         /// <summary>
-        /// Finds an asset from all the packages by its location.
-        /// </summary>
-        /// <param name="package">The package.</param>
-        /// <param name="location">The location of the asset.</param>
-        /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
-        public static AssetItem FindAsset(this Package package, UFile location)
-        {
-            var packages = package.GetPackagesWithDependencies();
-            return packages.Select(packageItem => packageItem.Assets.Find(location)).FirstOrDefault(asset => asset != null);
-        }
-
-        /// <summary>
-        /// Finds an asset from all the packages by its id.
-        /// </summary>
-        /// <param name="package">The package.</param>
-        /// <param name="assetId">The assetId of the asset.</param>
-        /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
-        public static AssetItem FindAsset(this Package package, Guid assetId)
-        {
-            var packages = package.GetPackagesWithDependencies();
-            return packages.Select(packageItem => packageItem.Assets.Find(assetId)).FirstOrDefault(asset => asset != null);
-        }
-
-        /// <summary>
         /// Finds an asset from all the packages by its asset reference.
         /// It will first try by id, then location.
         /// </summary>
@@ -52,20 +28,7 @@ namespace SiliconStudio.Assets
             return package.FindAsset(reference.Id) ?? package.FindAsset(reference.Location);
         }
 
-        /// <summary>
-        /// Finds an asset from its attached reference.
-        /// It will first try by id, then location.
-        /// </summary>
-        /// <param name="package">The package.</param>
-        /// <param name="obj">The object containing the attached reference.</param>
-        /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
-        public static AssetItem FindAssetFromAttachedReference(this Package package, object obj)
-        {
-            var attachedReference = AttachedReferenceManager.GetAttachedReference(obj);
-            return attachedReference != null ? package.FindAsset(attachedReference) : null;
-        }
-
-        private static IEnumerable<Package> GetPackagesWithDependencies(this Package currentPackage)
+        internal static IEnumerable<Package> GetPackagesWithDependencies(this Package currentPackage)
         {
             // Let's do a depth first search
             if (currentPackage == null)
@@ -167,11 +130,11 @@ namespace SiliconStudio.Assets
         /// Determines whether the specified packages contains an asset by its guid.
         /// </summary>
         /// <param name="packages">The packages.</param>
-        /// <param name="assetGuid">The asset unique identifier.</param>
+        /// <param name="assetId">The asset unique identifier.</param>
         /// <returns><c>true</c> if the specified packages contains asset; otherwise, <c>false</c>.</returns>
-        public static bool ContainsAsset(this IEnumerable<Package> packages, Guid assetGuid)
+        public static bool ContainsAsset(this IEnumerable<Package> packages, AssetId assetId)
         {
-            return packages.Any(package => package.Assets.ContainsById(assetGuid));
+            return packages.Any(package => package.Assets.ContainsById(assetId));
         }
 
         /// <summary>

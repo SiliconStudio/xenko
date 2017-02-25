@@ -5,9 +5,10 @@ Tags: []
 Source: ../../../Resources/Stand/plateB.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    -   ~Id: f96d977f-1232-6707-1389-e3331389e333
+    7f976df9321207671389e3331389e333:
         Name: blinn2
         MaterialInstance:
-            ~Id: f360c297-4f79-4158-8d9a-8189bbb46c47
-            Material: 8439e049-e0c6-409a-91d2-940d5f28ee3b/219e0c43-1fe7-42ce-9aa8-65aaa0023eb5:Materials/PolishedStone
+            Material: 219e0c43-1fe7-42ce-9aa8-65aaa0023eb5:Materials/PolishedStone
 Skeleton: null
+~SourceHashes:
+    dce1eaca605c4edfd23fb6a24f041d41~../../../Resources/Stand/plateB.fbx: 884234ac026b41e915a059d7de8e9e6b

@@ -8,30 +8,27 @@ Attributes:
             Value: 0.93
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: c5af3c5e-6409-4bbb-8924-6af75350ba3f/b11813f8-5a15-47d5-90eb-c6f5a973d41a:Materials/marble/marble_dif
+            Texture: b11813f8-5a15-47d5-90eb-c6f5a973d41a:Materials/marble/marble_dif
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialSpecularMapFeature
         SpecularMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: ea1685f5-fe40-4c40-9c0c-747f9e9c6ef9/e98db77e-49c2-4baf-b9c5-708d7311ac5e:Materials/marble/marble_gls
+            Texture: e98db77e-49c2-4baf-b9c5-708d7311ac5e:Materials/marble/marble_gls
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
         Intensity: !ComputeFloat
             Value: 0.08
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: 324ba0fc-a872-4d94-b941-749109ca953e
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: e10b4866-daca-4d34-88fb-ee1d884bdd8f
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: a51a87a0-3fb0-423c-89c6-523c47aefde0
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

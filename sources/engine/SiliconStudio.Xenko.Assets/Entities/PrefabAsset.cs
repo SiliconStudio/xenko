@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -11,6 +13,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     [DataContract("PrefabAsset")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
+    [AssetContentType(typeof(Prefab))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetCompiler(typeof(PrefabAssetCompiler))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.7.0-beta01", typeof(SpriteComponentUpgrader))]
@@ -18,10 +21,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta02", "1.7.0-beta03", typeof(ParticleColorAnimationUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta03", "1.7.0-beta04", typeof(EntityDesignUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta04", "1.9.0-beta01", typeof(CharacterSlopeUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta01", "1.9.0-beta02", typeof(IdentifiableComponentUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta02", "1.9.0-beta03", typeof(BasePartsRemovalComponentUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta03", "1.9.0-beta04", typeof(MaterialFromModelComponentUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta04", "1.9.0-beta05", typeof(ParticleTrailEdgeUpgrader))]
     [Display(1950, "Prefab")]
     public class PrefabAsset : EntityHierarchyAssetBase
     {
-        private const string CurrentVersion = "1.9.0-beta01";
+        private const string CurrentVersion = "1.9.0-beta05";
 
         /// <summary>
         /// The default file extension used by the <see cref="PrefabAsset"/>.
@@ -51,14 +58,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <remarks>This method will update the <see cref="Asset.BaseParts"/> property of the <see paramref="targetContainer"/>.</remarks>
         public AssetCompositeHierarchyData<EntityDesign, Entity> CreatePrefabInstance(EntityHierarchyAssetBase targetContainer, string targetLocation, out Guid instanceId)
         {
-            var instance = (PrefabAsset)CreateChildAsset(targetLocation);
-
-            targetContainer.AddBasePart(instance.Base);
-            instanceId = Guid.NewGuid();
-            foreach (var entityEntry in instance.Hierarchy.Parts)
-            {
-                entityEntry.BasePartInstanceId = instanceId;
-            }
+            Dictionary<Guid, Guid> idRemapping;
+            var instance = (PrefabAsset)CreateDerivedAsset(targetLocation, out idRemapping);
+            instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base.InstanceId ?? Guid.NewGuid();
             return instance.Hierarchy;
         }
     }

@@ -18,7 +18,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             if (value == null)
                 return null;
             var ufile = (UFile)value;
-            return ufile.GetFileNameWithExtension();
+            return ufile.GetFileName();
         }
     }
 }

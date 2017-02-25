@@ -23,7 +23,6 @@ namespace SiliconStudio.Assets
         {
             PlatformsPart = new SolutionPlatformPartCollection();
             DefineConstants = new List<string>();
-            Properties = PackageProfile.SettingsContainer.CreateSettingsProfile(false);
         }
 
         /// <summary>
@@ -53,13 +52,6 @@ namespace SiliconStudio.Assets
         /// <value><c>true</c> if available; otherwise, <c>false</c>.</value>
         [DataMember(50)]
         public bool IsAvailable { get; set; }
-
-        /// <summary>
-        /// Gets the dynamic settings associated with this platform.
-        /// </summary>
-        /// <value>The properties.</value>
-        [DataMember(60)]
-        public SettingsProfile Properties { get; private set; }
 
         /// <summary>
         /// Gets the all <see cref="SolutionPlatformPart"/>.

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Threading
 {
@@ -16,7 +17,7 @@ namespace SiliconStudio.Core.Threading
             this.capacity = capacity;
         }
 
-        public void Add(ConcurrentCollector<T> collection, T item)
+        public void Add([NotNull] ConcurrentCollector<T> collection, T item)
         {
             if (collection == null) throw new ArgumentNullException(nameof(collection));
 
@@ -46,7 +47,7 @@ namespace SiliconStudio.Core.Threading
 
     public static class ConcurrentCollectorExtensions
     {
-        public static void Add<T>(this ConcurrentCollector<T> collection, T item, ConcurrentCollectorCache<T> cache)
+        public static void Add<T>([NotNull] this ConcurrentCollector<T> collection, T item, [NotNull] ConcurrentCollectorCache<T> cache)
         {
             cache.Add(collection, item);
         }
@@ -147,7 +148,7 @@ namespace SiliconStudio.Core.Threading
             return index;
         }
 
-        public void AddRange(IReadOnlyList<T> collection)
+        public void AddRange([NotNull] IReadOnlyList<T> collection)
         {
             var newCount = Interlocked.Add(ref count, collection.Count);
 
@@ -180,7 +181,7 @@ namespace SiliconStudio.Core.Threading
                 segment = segment.Previous;
 
             var destinationIndex = newCount - segment.Offset - 1;
-            for (int sourceIndex = collection.Count - 1; sourceIndex >= 0; sourceIndex--)
+            for (var sourceIndex = collection.Count - 1; sourceIndex >= 0; sourceIndex--)
             {
                 if (destinationIndex < 0)
                 {
@@ -251,7 +252,7 @@ namespace SiliconStudio.Core.Threading
 
             public bool MoveNext()
             {
-                ConcurrentCollector<T> list = this.list;
+                var list = this.list;
                 if (index < list.count)
                 {
                     current = list.Items[index];

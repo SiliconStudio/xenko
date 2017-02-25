@@ -57,7 +57,7 @@ namespace SiliconStudio.Core.IO
                     dataCurrent = dataEnd + offset;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("origin");
+                    throw new ArgumentOutOfRangeException(nameof(origin));
             }
             return dataCurrent - dataStart;
         }

@@ -198,7 +198,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 {
                     // ensure the same number of materials than original model.
                     for (int j = 0; j < modelComponent.Model.Materials.Count; j++)
-                        modelComponent.Materials.Add(currentMaterial);
+                        modelComponent.Materials[j] = currentMaterial;
                 }
             }
         }

@@ -43,6 +43,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using SiliconStudio.Core.Reflection;
+
 namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>

@@ -10,7 +10,7 @@ namespace SiliconStudio.Core.Yaml
     /// <summary>
     /// A Yaml serializer for <see cref="UFile"/>.
     /// </summary>
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlSerializerFactoryAttribute.Default)]
     internal class UFileSerializer : AssetScalarSerializerBase
     {
         public override bool CanVisit(Type type)

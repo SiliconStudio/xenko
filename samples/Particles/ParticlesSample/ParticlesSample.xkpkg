@@ -1,7 +1,6 @@
 !Package
 Id: 2b920979-d010-44fa-a415-e52d97e51df3
-SerializedVersion: {Assets: 0.0.3}
-Tags: []
+SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: ParticlesSample
     Version: 1.0.0.0
@@ -10,7 +9,7 @@ Meta:
     RootNamespace: ParticlesSample
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.10.0-alpha01
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -21,7 +20,6 @@ Profiles:
             -   Path: Assets/Shared
             -   Path: ParticlesSample.Game/Effects
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: c821e6b2-04b2-4983-8348-7ac37b23c5e1
                 Location: ParticlesSample.Game/ParticlesSample.Game.csproj
@@ -32,7 +30,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Windows
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: bddd6c01-7873-4066-bc52-3e5847fe9f39
                 Location: ParticlesSample.Windows/ParticlesSample.Windows.csproj

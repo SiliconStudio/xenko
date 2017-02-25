@@ -222,7 +222,8 @@ namespace SiliconStudio.Xenko.Graphics
             var drawInfo = new UIImageDrawInfo
             {
                 DepthBias = depthBias,
-                Color = color,
+                ColorScale = color,
+                ColorAdd = new Color(0, 0, 0, 0),
                 Primitive = PrimitiveType.Rectangle
             };
 
@@ -283,7 +284,8 @@ namespace SiliconStudio.Xenko.Graphics
             var drawInfo = new UIImageDrawInfo
             {
                 DepthBias = depthBias,
-                Color = color,
+                ColorScale = color,
+                ColorAdd = new Color(0, 0, 0, 0),
                 Primitive = isReverse? PrimitiveType.ReverseCube: PrimitiveType.Cube
             };
 
@@ -343,7 +345,8 @@ namespace SiliconStudio.Xenko.Graphics
                     Height = sourceRectangle.Height / texture.ViewHeight
                 },
                 DepthBias = depthBias,
-                Color = color,
+                ColorScale = color,
+                ColorAdd = new Color(0, 0, 0, 0),
                 Swizzle = swizzle,
                 SnapImage = snapImage,
                 Primitive = borderSize == Vector4.Zero? PrimitiveType.Rectangle : PrimitiveType.BorderRectangle,
@@ -408,7 +411,8 @@ namespace SiliconStudio.Xenko.Graphics
                     Height = sourceRectangle.Height / texture.ViewHeight
                 },
                 DepthBias = depthBias,
-                Color = color,
+                ColorScale = color,
+                ColorAdd = new Color(0, 0, 0, 0),
                 Swizzle = swizzle,
                 Primitive = PrimitiveType.Rectangle,
                 VertexShift = Vector4.Zero,
@@ -513,7 +517,9 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     for (var c = 0; c < 2; c++)
                     {
-                        vertex->Color = drawInfo->Color;
+                        vertex->ColorScale = drawInfo->ColorScale;
+                        vertex->ColorAdd = drawInfo->ColorAdd;
+
                         vertex->Swizzle = (int)drawInfo->Swizzle;
                         vertex->TextureCoordinate.X = 0; // cubes are used only for color
                         vertex->TextureCoordinate.Y = 0; // cubes are used only for color
@@ -581,7 +587,8 @@ namespace SiliconStudio.Xenko.Graphics
                     vertex->Position.Z = currentPosition.Z - currentPosition.W * drawInfo->DepthBias * DepthBiasShiftOneUnit;
                     vertex->Position.W = currentPosition.W;
 
-                    vertex->Color = drawInfo->Color;
+                    vertex->ColorScale = drawInfo->ColorScale;
+                    vertex->ColorAdd = drawInfo->ColorAdd;
 
                     vertex->TextureCoordinate.X = uvX[c];
                     vertex->TextureCoordinate.Y = uvY[r];
@@ -620,7 +627,8 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 for (var c = 0; c < 2; c++)
                 {
-                    vertex->Color = drawInfo->Color;
+                    vertex->ColorScale = drawInfo->ColorScale;
+                    vertex->ColorAdd = drawInfo->ColorAdd;
                     vertex->Swizzle = (int)drawInfo->Swizzle;
                     vertex->TextureCoordinate.X = textureCoordX[c];
                     vertex->TextureCoordinate.Y = textureCoordY[r];
@@ -686,7 +694,8 @@ namespace SiliconStudio.Xenko.Graphics
             public RectangleF Source;
             public Vector4 BorderSize;
             public Vector4 VertexShift;
-            public Color Color;
+            public Color ColorScale;
+            public Color ColorAdd;
             public int DepthBias;
             public SwizzleMode Swizzle;
             public bool SnapImage;

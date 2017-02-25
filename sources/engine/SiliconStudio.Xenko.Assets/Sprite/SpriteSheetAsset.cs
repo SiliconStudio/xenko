@@ -12,6 +12,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Assets.Textures;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.Sprite
 {
@@ -27,6 +28,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(RemoveMaxSizeUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.5.0-alpha01", typeof(BorderSizeOrderUpgrader))]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(SpriteSheet))]
     [AssetCompiler(typeof(SpriteSheetAssetCompiler))]
     [Display(1600, "Sprite Sheet")]
     public class SpriteSheetAsset : Asset

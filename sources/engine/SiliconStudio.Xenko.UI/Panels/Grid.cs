@@ -686,7 +686,7 @@ namespace SiliconStudio.Xenko.UI.Panels
                 {
                     // TODO: We should reassign everything outside to last row or 0?
                     if (stripDefinitions[dim].Count < childLastStripPlusOne[dim])
-                        logger.Warning("Element 'Name={0}' is outside of the grid 'Name={1}' definition for [{2}].", child, Name, dim == 0 ? "Column" : dim == 1 ? "Row" : "Layer");
+                        logger.Warning($"Element 'Name={child}' is outside of the grid 'Name={Name}' definition for [{(dim == 0 ? "Column" : dim == 1 ? "Row" : "Layer")}].");
                 }
             }
         }

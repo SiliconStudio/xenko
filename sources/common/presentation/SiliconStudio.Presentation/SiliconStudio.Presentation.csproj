@@ -34,6 +34,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviors\NumericTextBoxDragBehavior.cs" />
     <Compile Include="Behaviors\ToggleButtonPopupBehavior.cs" />
     <Compile Include="Controls\PopupModalWindow.cs" />
     <Compile Include="Core\NaturalStringComparer.cs" />
@@ -44,7 +45,11 @@
     <Compile Include="Dirtiables\EmptyDirtyingOperation.cs" />
     <Compile Include="Dirtiables\IDirtiable.cs" />
     <Compile Include="Dirtiables\IDirtyingOperation.cs" />
+    <Compile Include="Internal\KnownBoxes.cs" />
+    <Compile Include="Interop\SafeClipboard.cs" />
+    <Compile Include="Interop\ClipboardMonitor.cs" />
     <Compile Include="MarkupExtensions\GuidExtension.cs" />
+    <Compile Include="MarkupExtensions\VisibilityExtension.cs" />
     <Compile Include="Resources\KeyGestures.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -135,10 +140,7 @@
     <Compile Include="Behaviors\OnPropertyChangedCommandBehavior.cs" />
     <Compile Include="Behaviors\OnEventCommandBehavior.cs" />
     <Compile Include="Behaviors\OnFocusBindingInterruptionBehavior.cs" />
-    <Compile Include="Behaviors\RegisterKeyBindingBehavior.cs" />
     <Compile Include="Behaviors\SetFocusOnLoadBehavior.cs" />
-    <Compile Include="Behaviors\TextBoxValidationBehavior.cs" />
-    <Compile Include="Behaviors\TextTrimmingBehavior.cs" />
     <Compile Include="Behaviors\TilePanelNavigationBehavior.cs" />
     <Compile Include="Core\AutoUnsubscribeHandler.cs" />
     <Compile Include="Core\BindingProxy.cs" />
@@ -240,7 +242,6 @@
     <Compile Include="Behaviors\DeferredBehaviorBase.cs" />
     <Compile Include="Interactivity\Interaction.cs" />
     <Compile Include="Extensions\ColorExtensions.cs" />
-    <Compile Include="Extensions\FrameworkElementExtensions.cs" />
     <Compile Include="Interop\NativeHelper.cs" />
     <Compile Include="Extensions\VisualExtensions.cs" />
     <Compile Include="Core\CancelRoutedEvent.cs" />
@@ -256,7 +257,6 @@
     <Compile Include="ValueConverters\AndMultiConverter.cs" />
     <Compile Include="ValueConverters\BoolToParam.cs" />
     <Compile Include="ValueConverters\Chained.cs" />
-    <Compile Include="MarkupExtensions\ReferenceMarkupExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\ValidationRoutedEvent.cs" />
     <Compile Include="ValueConverters\CamelCaseTextConverter.cs" />
@@ -341,6 +341,11 @@
     <ProjectReference Include="..\..\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
       <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
       <Name>SiliconStudio.Core.Design</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
+      <Project>{0be7189b-f04e-4c0c-bbe9-f347c0a59fee}</Project>
+      <Name>SiliconStudio.Core.Reflection</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\core\SiliconStudio.Core\SiliconStudio.Core.csproj">

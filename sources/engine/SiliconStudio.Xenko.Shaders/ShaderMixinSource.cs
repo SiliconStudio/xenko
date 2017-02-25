@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.Shaders
 {
@@ -14,6 +15,7 @@ namespace SiliconStudio.Xenko.Shaders
     /// A mixin performing a combination of <see cref="ShaderClassSource"/> and other mixins.
     /// </summary>
     [DataContract("ShaderMixinSource")]
+    [NonIdentifiableCollectionItems]
     public sealed class ShaderMixinSource : ShaderSource, IEquatable<ShaderMixinSource>
     {
         /// <summary>

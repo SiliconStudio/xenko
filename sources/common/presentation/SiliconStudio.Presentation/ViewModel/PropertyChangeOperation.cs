@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Transactions;
 using SiliconStudio.Presentation.Dirtiables;
 
@@ -12,7 +13,7 @@ namespace SiliconStudio.Presentation.ViewModel
         private object container;
         private object previousValue;
 
-        public PropertyChangeOperation(string propertyName, object container, object previousValue, IEnumerable<IDirtiable> dirtiables, bool nonPublic = false)
+        public PropertyChangeOperation([NotNull] string propertyName, [NotNull] object container, object previousValue, [NotNull] IEnumerable<IDirtiable> dirtiables, bool nonPublic = false)
             : base(dirtiables)
         {
             if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
@@ -27,11 +28,13 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Gets the type of the property's container.
         /// </summary>
+        [NotNull]
         public Type ContainerType { get; }
 
         /// <summary>
         /// Gets the name of the property affected by the change.
         /// </summary>
+        [NotNull]
         public string PropertyName { get; }
 
         /// <inheritdoc/>
@@ -54,6 +57,12 @@ namespace SiliconStudio.Presentation.ViewModel
         public virtual void Merge(Operation otherOperation)
         {
             // Nothing to do: we keep our current previousValue and we do not store the newValue.
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{{{nameof(PropertyChangeOperation)}: {ContainerType.Name}.{PropertyName}}}";
         }
 
         /// <inheritdoc/>

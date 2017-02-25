@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 {
     [DataContract("NavigationMeshAsset")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(NavigationMesh))]
     [Display("Navigation Mesh")]
     [AssetCompiler(typeof(NavigationMeshAssetCompiler))]
     public class NavigationMeshAsset : Asset, IAssetCompileTimeDependencies
@@ -85,7 +86,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 var reference = AttachedReferenceManager.GetAttachedReference(Scene);
                 var sceneAsset = (SceneAsset)session.FindAsset(reference.Url)?.Asset;
 
-                HashSet<Guid> referencedColliderShapes = new HashSet<Guid>();
+                var referencedColliderShapes = new HashSet<AssetId>();
 
                 // Find collider assets to reference
                 if (sceneAsset != null)
@@ -110,7 +111,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                 if (referencedColliderShapes.Contains(reference.Id))
                                     continue;
 
-                                yield return new AssetReference<ColliderShapeAsset>(reference.Id, reference.Url);
+                                yield return new AssetReference(reference.Id, reference.Url);
                                 referencedColliderShapes.Add(reference.Id);
                             }
                         }

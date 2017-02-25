@@ -65,10 +65,10 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="location">The location.</param>
         /// <returns>Guid.</returns>
-        public static Guid GenerateGuidFromLocation(string location)
+        public static AssetId GenerateIdFromLocation(string location)
         {
             if (location == null) throw new ArgumentNullException(nameof(location));
-            return ObjectId.FromBytes(Encoding.UTF8.GetBytes(location)).ToGuid();
+            return (AssetId)ObjectId.FromBytes(Encoding.UTF8.GetBytes(location)).ToGuid();
         }
 
         public interface ISerializableTextAccessor

@@ -1,7 +1,6 @@
 !Package
 Id: 80373992-22a3-45ed-b0c4-ed5bbfc1bd12
-SerializedVersion: {Assets: 0.0.3}
-Tags: []
+SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: AnimatedModel
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.10.0-alpha01
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -20,7 +19,6 @@ Profiles:
             -   Path: Assets/Shared
             -   Path: AnimatedModel.Game/Effects
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: a07e6e07-5068-4e26-b8a5-051bec0d8f81
                 Location: AnimatedModel.Game/AnimatedModel.Game.csproj
@@ -31,8 +29,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Windows
         OutputGroupDirectories: {}
-        Properties:
-            Xenko.GraphicsPlatform: Direct3D11
         ProjectReferences:
             -   Id: bdbc48a7-1fe7-48ca-b634-b05e7c0e8db6
                 Location: AnimatedModel.Windows/AnimatedModel.Windows.csproj

@@ -78,7 +78,7 @@
   to do nothing if this is not a Windows platform -->
   <Import Condition="'$(SiliconStudioCompilerTargetsEnable)' != 'false'" Project="$(SiliconStudioCompilerTargets)" />
 
-  <UsingTask TaskName="AssemblyProcessorTask" AssemblyFile="$(SiliconStudioAssemblyProcessorPath)"/>
+  <UsingTask TaskName="AssemblyProcessorTask" AssemblyFile="$(SiliconStudioAssemblyProcessorPath)" Condition=" '$(SiliconStudioAssemblyProcessorPath)' != '' "/>
   
   <Target Name="RunSiliconStudioAssemblyProcessor" AfterTargets="CoreCompile" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true' and '$(SiliconStudioAssemblyProcessorPath)' != '' and '$(SiliconStudioAssemblyProcessorGlobal)' == 'true' and '$(SiliconStudioAssemblyProcessorOptions)' != '' ">
     <PropertyGroup Condition="'$(XenkoUserBuild)' != 'true'">

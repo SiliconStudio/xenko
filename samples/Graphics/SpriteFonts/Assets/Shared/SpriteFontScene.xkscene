@@ -1,44 +1,35 @@
 !SceneAsset
 Id: df7aa22c-6efc-4706-8c07-03a643513525
-SerializedVersion: {Xenko: 1.9.0-beta02}
+SerializedVersion: {Xenko: 1.9.0-beta06}
 Tags: []
 SceneSettings:
     Id: 6f3f6cee-4381-4c17-be7f-12c56a2a2b55
     GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: 5d785e75-3c23-4fae-821c-57b45ebfac3c
         Cameras:
-            -   ~Id: a9deddc2-5091-4ba0-bb9e-ff150de07285
+            c2dddea99150a04bbb9eff150de07285:
                 Name: null
                 Camera: null
-        Layers: []
+        Layers: {}
         Master:
-            ~Id: b9cb8b3e-1e5d-49f8-a709-43af6dc12abc
             Name: SceneGraphicsLayer
             Output: !MasterRenderFrameProvider {}
             Renderers:
-                - !ClearRenderFrameRenderer
-                    ~Id: 533f0f97-7c8b-48af-b05f-9d57c091ee1b
+                970f3f538b7caf48b05f9d57c091ee1b: !ClearRenderFrameRenderer
                     Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
                     Output: !CurrentRenderFrameProvider {}
-                - !SceneCameraRenderer
-                    ~Id: 7eb8eff7-4dac-44f9-824d-9728547aea72
-                    Mode: !CameraRendererModeForward
-                        ~Id: 0629d0f4-9eeb-4763-ba3e-42106b9508fb
+                f7efb87eac4df944824d9728547aea72: !SceneCameraRenderer
+                    Mode: !CameraRendererModeForward {}
                     Camera:
-                        ~Id: 1a0de759-e652-4067-b9b4-abb1614006e8
                         Index: 0
                     Output: !CurrentRenderFrameProvider {}
                     Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
                     ForceAspectRatio: false
     EditorSettings:
-        ~Id: 368c55fc-a8c1-4d7f-a6d8-ac937a2a8340
         GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
         SceneUnit: 1.0
         Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: f4409982-6f58-4f08-b713-ab207a0e719e
             BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
 Hierarchy:
-    ~Id: 3bc38f17-36ec-4f1c-9dce-6989bae259f5
     RootPartIds:
         - 6920534e-0a89-47c5-aeb1-a8e5f6ea9d46
         - a9fa980a-595d-4e48-9e6c-8373330be0a8
@@ -47,34 +38,34 @@ Hierarchy:
                 Id: 6920534e-0a89-47c5-aeb1-a8e5f6ea9d46
                 Name: Background
                 Components:
-                    - !TransformComponent
-                        ~Id: 4c03914e-c0f7-4be6-bcb1-ccd00c2d08fa
-                        Children: []
+                    4e91034cf7c0e64bbcb1ccd00c2d08fa: !TransformComponent
+                        Id: 4c03914e-c0f7-4be6-bcb1-ccd00c2d08fa
                         Position: {X: 0.0, Y: 0.0, Z: -2.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !BackgroundComponent
-                        ~Id: 3ec2f6e4-6cca-4379-9271-fd1567483dff
-                        Texture: f5e15fb6-85ff-402c-8043-0f5473ae4b08/0d3b74fb-92c4-4c11-bfc5-6a841c4e6df4:XenkoBackground
+                        Children: {}
+                    e4f6c23eca6c79439271fd1567483dff: !BackgroundComponent
+                        Id: 3ec2f6e4-6cca-4379-9271-fd1567483dff
+                        Texture: 0d3b74fb-92c4-4c11-bfc5-6a841c4e6df4:XenkoBackground
         -   Entity:
                 Id: a9fa980a-595d-4e48-9e6c-8373330be0a8
                 Name: FontScript
                 Components:
-                    - !TransformComponent
-                        ~Id: f2056e0b-783a-48f9-80b7-b5d1aebaf3ec
-                        Children: []
+                    0b6e05f23a78f94880b7b5d1aebaf3ec: !TransformComponent
+                        Id: f2056e0b-783a-48f9-80b7-b5d1aebaf3ec
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !SpriteFonts.FontScript,SpriteFonts.Game
-                        ~Id: 58f1d4b0-1c55-47b7-bb03-3d811d53d14c
-                        StaticFont: 0117dc79-0360-41f9-96ca-6fa0fe1352c2/b6582bd2-276e-4b0e-a0f1-8682e271ab59:StaticFont
-                        DynamicFont: 08a6b08a-a65f-4311-a45e-3dbe7197bf24/cbbbd736-43d0-490e-b3e4-28207140d6cc:DynamicFont
-                        BoldFont: 39963d83-5d78-4b93-8aef-b699cb4e173a/4f741cf1-f3b2-4eda-837b-e29f8597c47d:BoldFont
-                        ItalicFont: 175d2995-2f1a-481f-8c9f-901eb861ca42/5fad01ad-2649-4de9-8a81-b117e320a2ef:ItalicFont
-                        AliasedFont: 4b982827-b7e8-4331-9604-699f20c3e1e7/5376e512-4179-43b6-9d7c-75b0a1ea6f9c:AliasedFont
-                        AntialiasedFont: 21c40da2-3f5b-406a-82fd-755077d8fcd1/5b5f75d3-4f7f-4325-b957-fd50161e104c:AntialiasedFont
-                        ClearTypeFont: bc1c6f12-79d6-4b8e-97f4-56081af50027/bdc10dde-cc94-45e6-88ee-bd5fe156f982:ClearTypeFont
-                        JapaneseFont: 88f291d9-c8ec-41fe-87cb-c16956d6ee82/76871742-df92-4a25-804d-e0f4f9301c19:JapaneseFont
-                        TimesNewRoman: c88d428f-2d5e-435c-9632-9e605bf980b0/022190f7-e5e1-4709-97c2-c02470ebb312:TimesNewRoman
-                        HeaderFont: feb31ccf-e5cc-44d5-adfb-10d57abe1e3a/8a069364-f63d-4a4b-a26e-a95998344ba2:HeaderFont
+                        Children: {}
+                    b0d4f158551cb747bb033d811d53d14c: !SpriteFonts.FontScript,SpriteFonts.Game
+                        Id: 58f1d4b0-1c55-47b7-bb03-3d811d53d14c
+                        StaticFont: b6582bd2-276e-4b0e-a0f1-8682e271ab59:StaticFont
+                        DynamicFont: cbbbd736-43d0-490e-b3e4-28207140d6cc:DynamicFont
+                        BoldFont: 4f741cf1-f3b2-4eda-837b-e29f8597c47d:BoldFont
+                        ItalicFont: 5fad01ad-2649-4de9-8a81-b117e320a2ef:ItalicFont
+                        AliasedFont: 5376e512-4179-43b6-9d7c-75b0a1ea6f9c:AliasedFont
+                        AntialiasedFont: 5b5f75d3-4f7f-4325-b957-fd50161e104c:AntialiasedFont
+                        ClearTypeFont: bdc10dde-cc94-45e6-88ee-bd5fe156f982:ClearTypeFont
+                        JapaneseFont: 76871742-df92-4a25-804d-e0f4f9301c19:JapaneseFont
+                        TimesNewRoman: 022190f7-e5e1-4709-97c2-c02470ebb312:TimesNewRoman
+                        HeaderFont: 8a069364-f63d-4a4b-a26e-a95998344ba2:HeaderFont

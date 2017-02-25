@@ -3,11 +3,10 @@ Id: cfd030c9-44df-401e-a192-32278a642f8b
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
 ColliderShapes:
-    - !ConvexHullColliderShapeDesc
-        ~Id: c28e5274-6e5c-4772-be2b-b1132ba4fd1e
+    74528ec25c6e7247be2bb1132ba4fd1e: !ConvexHullColliderShapeDesc
         ConvexHulls: null
         ConvexHullsIndices: null
-        Model: 0e60eb4d-1ef6-4042-ba63-443e4c98615c/e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
+        Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
         LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
         LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
         SimpleWrap: true

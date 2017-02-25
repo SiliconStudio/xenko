@@ -8,7 +8,7 @@ Attributes:
             Value: 0.5
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Texture: 3f332a0e-ba6d-4c1a-b74b-3a23b3fa7372/02f115c6-5845-4127-8e1a-4eafc492a573:Textures/CheckerGrid10x10
+            Texture: 02f115c6-5845-4127-8e1a-4eafc492a573:Textures/CheckerGrid10x10
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
@@ -19,12 +19,9 @@ Attributes:
         MetalnessMap: !ComputeFloat
             Value: 0.5
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: bfd68ded-d816-4424-9b87-f924bf0e6b93
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: b66bffcf-079c-4085-a01f-0fc4253e1a7a
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: 18119e22-bdd8-484f-a9dc-95b1725da145
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

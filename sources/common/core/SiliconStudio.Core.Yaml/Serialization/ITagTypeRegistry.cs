@@ -45,6 +45,7 @@
 
 using System;
 using System.Reflection;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization
 {
@@ -55,11 +56,11 @@ namespace SiliconStudio.Core.Yaml.Serialization
     {
         /// <summary>
         /// Registers an assembly when trying to resolve types. All types
-        /// having <see cref="YamlTagAttribute" /> will be registered
+        /// having <see cref="DataMemberAttribute" /> will be registered
         /// automatically.
         /// </summary>
         /// <param name="assembly">The assembly.</param>
-        /// <param name="attributeRegistry">The attribute registry to use when quering for <see cref="YamlTagAttribute"/>.</param>
+        /// <param name="attributeRegistry">The attribute registry to use when quering for <see cref="DataMemberAttribute"/>.</param>
         void RegisterAssembly(Assembly assembly, IAttributeRegistry attributeRegistry);
 
         /// <summary>

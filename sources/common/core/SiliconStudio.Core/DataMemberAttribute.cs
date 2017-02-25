@@ -7,15 +7,11 @@ namespace SiliconStudio.Core
     /// <summary>
     /// Specify the way to store a property or field of some class or structure.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
-    public sealed class DataMemberAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    public class DataMemberAttribute : Attribute
     {
-        // Ideally should point to YamlMemberAttribute.DefaultMask, but it is not referenced in this assembly
         public const uint DefaultMask = 1;
         public const uint IgnoreMask = 0xF0000000;
-
-        private readonly DataMemberMode mode;
-        private readonly string name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataMemberAttribute"/> class.
@@ -39,7 +35,7 @@ namespace SiliconStudio.Core
         /// <param name="name">The name.</param>
         public DataMemberAttribute(string name)
         {
-            this.name = name;
+            Name = name;
         }
 
         /// <summary>
@@ -49,8 +45,8 @@ namespace SiliconStudio.Core
         /// <param name="mode">The serialize method.</param>
         public DataMemberAttribute(string name, DataMemberMode mode)
         {
-            this.name = name;
-            this.mode = mode;
+            Name = name;
+            Mode = mode;
         }
 
         /// <summary>
@@ -59,7 +55,7 @@ namespace SiliconStudio.Core
         /// <param name="mode">The serialize method.</param>
         public DataMemberAttribute(DataMemberMode mode)
         {
-            this.mode = mode;
+            Mode = mode;
         }
 
         /// <summary>
@@ -70,7 +66,7 @@ namespace SiliconStudio.Core
         public DataMemberAttribute(int order, DataMemberMode mode)
         {
             Order = order;
-            this.mode = mode;
+            Mode = mode;
         }
 
         /// <summary>
@@ -81,7 +77,7 @@ namespace SiliconStudio.Core
         public DataMemberAttribute(int order, string name)
         {
             Order = order;
-            this.name = name;
+            Name = name;
         }
 
         /// <summary>
@@ -93,28 +89,21 @@ namespace SiliconStudio.Core
         public DataMemberAttribute(int order, string name, DataMemberMode mode)
         {
             Order = order;
-            this.name = name;
-            this.mode = mode;
+            Name = name;
+            Mode = mode;
         }
 
         /// <summary>
         /// Gets the name.
         /// </summary>
         /// <value>The name.</value>
-        public string Name
-        {
-            get { return name; }
-        }
+        public string Name { get; }
 
         /// <summary>
         /// Gets the serialize method1.
         /// </summary>
         /// <value>The serialize method1.</value>
-        public DataMemberMode Mode
-        {
-            get { return mode; }
-        }
-
+        public DataMemberMode Mode { get; }
 
         /// <summary>
         /// Gets or sets the order. Default is -1 (default to alphabetical)

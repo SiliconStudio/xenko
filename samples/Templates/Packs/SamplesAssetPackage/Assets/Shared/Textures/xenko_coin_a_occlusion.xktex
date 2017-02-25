@@ -2,6 +2,5 @@
 Id: 052260a6-1e31-4010-92bb-c627b85427df
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
-Source: ../../../Resources/Textures/xenko_coin_a_occlusion.tga
+Source: ../../../Resources/Textures/xenko_coin_a_occlusion.png
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: Color16Bits

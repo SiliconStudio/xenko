@@ -126,5 +126,12 @@ namespace SiliconStudio.Xenko.Updater
 #endif
             throw new NotImplementedException();
         }
+
+        /// <inheritdoc/>
+        public override EnterChecker CreateEnterChecker()
+        {
+            // Expect a list at least index + 1 items
+            return new ListEnterChecker<T>(Index + 1);
+        }
     }
 }

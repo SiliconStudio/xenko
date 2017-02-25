@@ -19,7 +19,7 @@ namespace SiliconStudio.Core.Design.Tests
         /// </summary>
         public class PrimitiveGrabber : DataVisitorBase
         {
-            public List<object> Collected { get; private set; }
+            public List<object> Collected { get; }
 
             public PrimitiveGrabber()
             {
@@ -57,7 +57,6 @@ namespace SiliconStudio.Core.Design.Tests
                 FourthValue = fourthValue;
                 Collection = new List<object>();
                 Dictionary = new Dictionary<object, object>();
-                ReadOnlyValue = 1234;
             }
 
             [DataMember(0)]
@@ -84,9 +83,6 @@ namespace SiliconStudio.Core.Design.Tests
             [DataMember(6)]
             public Dictionary<object, object> Dictionary { get; set; }
 
-            [DataMember(7, DataMemberMode.ReadOnly)]
-            public int ReadOnlyValue { get; private set; }
-
             public SimpleObject SubObject { get; set; }
         }
 
@@ -103,13 +99,11 @@ namespace SiliconStudio.Core.Design.Tests
                     3, 
                     4, 
                     "Test", 
-                    1234, // SimpleObject.ReadOnlyValue
                     5, // simpleObject.SubObject
                     6, 
                     7, 
                     8,
                     null, // simpleObject.SubObject.Name
-                    1234, // SimpleObject.ReadOnlyValue
                     null // simpleObject.SubObject.SubObject
                 }, primitiveGrabber.Collected);
 
@@ -130,13 +124,11 @@ namespace SiliconStudio.Core.Design.Tests
                     "Test", 
                     "Item1", "Item2", // simpleObject.Collection
                     "Key1", "Value1", "Key2", "Value2", // simpleObject.Dictionary
-                    1234, // SimpleObject.ReadOnlyValue
                     5, // simpleObject.SubObject
                     6, 
                     7, 
                     8, 
                     null, // simpleObject.SubObject.Name
-                    1234, // SimpleObject.ReadOnlyValue
                     null // simpleObject.SubObject.SubObject
                 }, primitiveGrabber.Collected);
         }
@@ -199,10 +191,10 @@ namespace SiliconStudio.Core.Design.Tests
         [Test]
         public void TestArray()
         {
-            var customArray = new int[] {1, 2, 3, 4};
+            var customArray = new[] {1, 2, 3, 4};
             var primitiveGrabber = new PrimitiveGrabber();
             primitiveGrabber.Visit(customArray);
-            Assert.AreEqual(new List<object>()
+            Assert.AreEqual(new List<object>
                 {
                     1,2,3,4
                 }, primitiveGrabber.Collected);
@@ -219,7 +211,7 @@ namespace SiliconStudio.Core.Design.Tests
         public void TestSelfReferencingType()
         {
             var typeDescriptor = TypeDescriptorFactory.Default.Find(typeof(SelfRef));
-            Assert.AreEqual(typeDescriptor, typeDescriptor["Self"].TypeDescriptor);
+            Assert.AreEqual(typeDescriptor, typeDescriptor[nameof(SelfRef.Self)].TypeDescriptor);
         }
     }
 }

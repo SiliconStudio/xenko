@@ -3,11 +3,12 @@ Id: 934024bf-9a3a-4e33-8fb0-fa4e14832f2b
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
 ColliderShapes:
-    - !ConvexHullColliderShapeDesc
-        ~Id: 60931bdd-804c-4fc2-a677-66d259000d5f
+    dd1b93604c80c24fa67766d259000d5f: !ConvexHullColliderShapeDesc
         ConvexHulls: null
         ConvexHullsIndices: null
-        Model: 41d02eb7-298a-4c9a-8438-a572b83295c4/da028d29-e641-4020-8977-dafaaf656ad4:Models/Stairs1x1x2
+        Model: da028d29-e641-4020-8977-dafaaf656ad4:Models/Stairs1x1x2
+        LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+        LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
         SimpleWrap: true
         Scaling: {X: 1.0, Y: 1.0, Z: 1.0}
         Depth: 10

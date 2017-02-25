@@ -73,6 +73,11 @@ internal:
 		return elem1.second > elem2.second;
 	}
 
+	bool IsGroupMappingModeByEdge(FbxLayerElement* layerElement)
+	{
+		return layerElement->GetMappingMode() == FbxLayerElement::eByEdge;
+	}
+
 	template <class T>
 	int GetGroupIndexForLayerElementTemplate(FbxLayerElementTemplate<T>* layerElement, int controlPointIndex, int vertexIndex, int edgeIndex, int polygonIndex, String^ meshName, bool& firstTimeError)
 	{
@@ -114,11 +119,11 @@ internal:
 			if (mappingMode > (int)FbxLayerElement::eAllSame)
 				mappingMode = (int)FbxLayerElement::eAllSame;
 			const char* layerName = layerElement->GetName();
-			logger->Warning("'{0}' mapping mode for layer '{1}' in mesh '{2}' is not supported by the FBX importer.{3}",
+			logger->Warning(String::Format("'{0}' mapping mode for layer '{1}' in mesh '{2}' is not supported by the FBX importer.{3}",
 				gcnew String(MappingModeName[mappingMode]),
 				strlen(layerName) > 0 ? gcnew String(layerName) : gcnew String("Unknown"),
 				meshName,
-				gcnew String(MappingModeSuggestion[mappingMode]));
+				gcnew String(MappingModeSuggestion[mappingMode])), (CallerInfo^)nullptr);
 		}
 
 		return groupIndex;
@@ -161,6 +166,7 @@ public:
 	{
 		// Checks normals availability.
 		bool has_normals = pMesh->GetElementNormalCount() > 0 && pMesh->GetElementNormal(0)->GetMappingMode() != FbxLayerElement::eNone;
+		bool needEdgeIndexing = false;
 
 		// Regenerate normals if necessary
 		if (!has_normals)
@@ -178,7 +184,9 @@ public:
 
 		for (int i = 0; i < pMesh->GetElementUVCount(); ++i)
 		{
-			uvElements.push_back(pMesh->GetElementUV(i));
+			auto uvElement = pMesh->GetElementUV(i);
+			uvElements.push_back(uvElement);
+			needEdgeIndexing |= IsGroupMappingModeByEdge(uvElement);
 		}
 
 		auto meshName = gcnew String(meshNames[pMesh].c_str());
@@ -302,6 +310,8 @@ public:
 		{
 			vertexElements->Add(VertexElement::Normal<Vector3>(0, vertexStride));
 			vertexStride += 12;
+
+			needEdgeIndexing |= IsGroupMappingModeByEdge(normalElement);
 		}
 
 		// TEXCOORD
@@ -357,11 +367,15 @@ public:
 
 		// COLOR
 		auto elementVertexColorCount = pMesh->GetElementVertexColorCount();
+		std::vector<FbxGeometryElementVertexColor*> vertexColorElements;
 		int colorOffset = vertexStride;
 		for (int i = 0; i < elementVertexColorCount; i++)
 		{
+			auto vertexColorElement = pMesh->GetElementVertexColor(i);
+			vertexColorElements.push_back(vertexColorElement);
 			vertexElements->Add(VertexElement::Color<Color>(i, vertexStride));
 			vertexStride += sizeof(Color);
+			needEdgeIndexing |= IsGroupMappingModeByEdge(vertexColorElement);
 		}
 
 		// USERDATA
@@ -385,6 +399,8 @@ public:
 		{
 			vertexElements->Add(VertexElement("SMOOTHINGGROUP", 0, PixelFormat::R32_UInt, vertexStride));
 			vertexStride += sizeof(int);
+
+			needEdgeIndexing |= IsGroupMappingModeByEdge(smoothingElement);
 		}
 
 		int polygonCount = pMesh->GetPolygonCount();
@@ -434,7 +450,8 @@ public:
 
 		bool layerIndexFirstTimeError = true;
 
-		pMesh->BeginGetMeshEdgeIndexForPolygon();
+		if (needEdgeIndexing)
+			pMesh->BeginGetMeshEdgeIndexForPolygon();
 
 		// Build polygons
 		int polygonVertexStartIndex = 0;
@@ -457,6 +474,36 @@ public:
 				buildMesh->bufferOffset += vertexStride * 3;
 
 				int vertexInPolygon[3] = { 0, polygonFanIndex, polygonFanIndex - 1};
+				int edgesInPolygon[3];
+
+				if (needEdgeIndexing)
+				{
+					// Default case for polygon of size 3
+					// Since our polygon order is 0,2,1, edge order is 2 (edge from 0 to 2),1 (edge from 2 to 1),0 (edge from 1 to 0)
+					// Note: all that code computing edge should change if vertexInPolygon changes
+					edgesInPolygon[0] = polygonFanIndex;
+					edgesInPolygon[1] = polygonFanIndex - 1;
+					edgesInPolygon[2] = 0;
+
+					if (polygonSize > 3)
+					{
+						// Since we create non-existing edges inside the fan, we might have to use another edge in those cases
+						// If edge doesn't exist, we have to use edge from (polygonFanIndex-1) to polygonFanIndex (only one that always exists)
+
+						// Let's say polygon is 0,4,3,2,1
+
+						// First polygons (except last): 0,2,1 (edge doesn't exist, use the one from 2 to 1 so edge 1)
+						// Last polygon                : 0,4,3 (edge exists:4, from 0 to 4)
+						if (polygonFanIndex != polygonSize - 1)
+							edgesInPolygon[0] = polygonFanIndex - 1;
+
+						// First polygon: 0,2,1 (edge exists:0, from 1 to 0)
+						// Last polygons: 0,4,3 (edge doesn't exist, use the one from 4 to 3 so edge 3)
+						if (polygonFanIndex != 2)
+							edgesInPolygon[2] = polygonFanIndex - 1;
+					}
+				}
+
 				//if (polygonSwap)
 				//{
 				//	int temp = vertexInPolygon[1];
@@ -472,8 +519,7 @@ public:
 					int jNext = vertexInPolygon[(polygonFanVertex + 1) % 3];
 					int vertexIndexNext = polygonVertexStartIndex + jNext;
 					int controlPointIndex = controlPointIndices[polygonFanVertex];
-					bool reverseEdge = false;
-					int edgeIndex = pMesh->GetMeshEdgeIndex(vertexIndex, vertexIndexNext, reverseEdge);
+					int edgeIndex = needEdgeIndexing ? pMesh->GetMeshEdgeIndexForPolygon(i, edgesInPolygon[polygonFanVertex]) : 0;
 
 					// POSITION
 					auto controlPoint = sceneMapping->ConvertPointFromFbx(controlPoints[controlPointIndex]);
@@ -526,7 +572,7 @@ public:
 					// COLOR
 					for (int elementColorIndex = 0; elementColorIndex < elementVertexColorCount; elementColorIndex++)
 					{
-						auto vertexColorElement = pMesh->GetElementVertexColor(elementColorIndex);
+						auto vertexColorElement = vertexColorElements[elementColorIndex];
 						auto groupIndex = GetGroupIndexForLayerElementTemplate(vertexColorElement, controlPointIndex, vertexIndex, edgeIndex, i, meshName, layerIndexFirstTimeError);
 						auto color = vertexColorElement->GetDirectArray().GetAt(groupIndex);
 						((Color*)(vbPointer + colorOffset))[elementColorIndex] = Color((float)color.mRed, (float)color.mGreen, (float)color.mBlue, (float)color.mAlpha);
@@ -550,7 +596,8 @@ public:
 			polygonVertexStartIndex += polygonSize;
 		}
 
-		pMesh->EndGetMeshEdgeIndexForPolygon();
+		if (needEdgeIndexing)
+			pMesh->EndGetMeshEdgeIndexForPolygon();
 
 		// Create submeshes
 		for (int i = 0; i < buildMeshes->Count; ++i)
@@ -1108,7 +1155,7 @@ public:
 		case FbxLayeredTexture::eOverlay:
 			return BinaryOperator::Overlay;
 		default:
-			logger->Error("Material blending mode '{0}' is not supported yet. Multiplying blending mode will be used instead.", gcnew Int32(blendMode));
+			logger->Error(String::Format("Material blending mode '{0}' is not supported yet. Multiplying blending mode will be used instead.", gcnew Int32(blendMode)), (CallerInfo^)nullptr);
 			return BinaryOperator::Multiply;
 		}
 	}
@@ -1134,7 +1181,7 @@ public:
 		auto fileNameToUse = Path::Combine(inputPath, relFileName);
 		if(fileNameToUse->StartsWith("\\\\"))
 		{
-			logger->Warning("Importer detected a network address in referenced assets. This may temporary block the build if the file does not exist. [Address='{0}']", fileNameToUse);
+			logger->Warning(String::Format("Importer detected a network address in referenced assets. This may temporary block the build if the file does not exist. [Address='{0}']", fileNameToUse), (CallerInfo^)nullptr);
 		}
 		if (!File::Exists(fileNameToUse) && !String::IsNullOrEmpty(absFileName))
 		{
@@ -1760,7 +1807,7 @@ private:
 				}
 				else
 				{
-					logger->Warning("Mesh {0} do not have a material. It might not be displayed.", meshParams->MeshName);
+					logger->Warning(String::Format("Mesh {0} do not have a material. It might not be displayed.", meshParams->MeshName), (CallerInfo^)nullptr);
 				}
 
 				models->Add(meshParams);
@@ -1837,9 +1884,9 @@ private:
 			if (!String::IsNullOrEmpty(texturePath))
 			{
 				if (texturePath->Contains(".fbm\\"))
-					logger->Info("Importer detected an embedded texture. It has been extracted at address '{0}'.", texturePath);
+					logger->Info(String::Format("Importer detected an embedded texture. It has been extracted at address '{0}'.", texturePath), (CallerInfo^)nullptr);
 				if (!File::Exists(texturePath))
-					logger->Warning("Importer detected a texture not available on disk at address '{0}'", texturePath);
+					logger->Warning(String::Format("Importer detected a texture not available on disk at address '{0}'", texturePath), (CallerInfo^)nullptr);
 
 				textureNames->Add(texturePath);
 			}
@@ -1922,6 +1969,25 @@ public:
 		return nullptr;
 	}
 
+	double GetAnimationDuration(String^ inputFileName)
+	{
+		try
+		{
+			Initialize(inputFileName, nullptr, ImportConfiguration::ImportEntityConfig());
+
+			auto animationConverter = gcnew AnimationConverter(logger, sceneMapping);
+			auto animationData = animationConverter->ProcessAnimation(inputFilename, "");
+
+			return animationData->Duration.TotalSeconds;
+		}
+		finally
+		{
+			Destroy();
+		}
+
+		return 0;
+	}
+
 	Model^ Convert(String^ inputFilename, String^ vfsOutputFilename, Dictionary<System::String^, int>^ materialIndices)
 	{
 		try
@@ -1959,7 +2025,7 @@ public:
 				}
 				else
 				{
-					logger->Warning("Model references material '{0}', but it was not defined in the ModelAsset.", materialName);
+					logger->Warning(String::Format("Model references material '{0}', but it was not defined in the ModelAsset.", materialName), (CallerInfo^)nullptr);
 				}
 			}
 

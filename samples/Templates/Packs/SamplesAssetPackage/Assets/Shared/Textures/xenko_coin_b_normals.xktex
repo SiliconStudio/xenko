@@ -2,7 +2,7 @@
 Id: baee6925-a7cd-4d2d-8281-b4900eb6ab89
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
-Source: ../../../Resources/Textures/xenko_coin_b_normals.tga
+Source: ../../../Resources/Textures/xenko_coin_b_normals.png
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: Color16Bits
 Hint: NormalMap
+Alpha: None

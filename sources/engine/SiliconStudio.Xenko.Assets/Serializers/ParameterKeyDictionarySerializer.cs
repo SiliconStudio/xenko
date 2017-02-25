@@ -2,19 +2,19 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 using SiliconStudio.Xenko.Rendering;
 
-using ITypeDescriptor = SiliconStudio.Core.Yaml.Serialization.ITypeDescriptor;
-
 namespace SiliconStudio.Xenko.Assets.Serializers
 {
-    [YamlSerializerFactory]
-    internal class ParameterKeyDictionarySerializer : DictionarySerializer, IDataCustomVisitor
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
+    internal class ParameterKeyDictionarySerializer : DictionaryWithIdsSerializer, IDataCustomVisitor
     {
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
@@ -22,33 +22,45 @@ namespace SiliconStudio.Xenko.Assets.Serializers
             return CanVisit(type) ? this : null;
         }
 
-        protected override void WriteDictionaryItems(ref ObjectContext objectContext)
+        protected override void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> keyValueTypes)
         {
-            // Don't sort dictionary keys
-            var savedSettings = objectContext.Settings.SortKeyForMapping;
-            objectContext.Settings.SortKeyForMapping = false;
-            base.WriteDictionaryItems(ref objectContext);
-            objectContext.Settings.SortKeyForMapping = savedSettings;
+            if (AreCollectionItemsIdentifiable(ref objectContext))
+            {
+                objectContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, keyValue.Key, keyValueTypes.Key);
+                // Deduce expected value type from PropertyKey
+                var propertyKey = (PropertyKey)((IKeyWithId)keyValue.Key).Key;
+                objectContext.SerializerContext.ObjectSerializerBackend.WriteDictionaryValue(ref objectContext, keyValue.Key, keyValue.Value, propertyKey.PropertyType);
+            }
+            else
+            {
+                objectContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, keyValue.Key, keyValueTypes.Key);
+                // Deduce expected value type from PropertyKey
+                var propertyKey = (PropertyKey)keyValue.Key;
+                objectContext.SerializerContext.ObjectSerializerBackend.WriteDictionaryValue(ref objectContext, keyValue.Key, keyValue.Value, propertyKey.PropertyType);
+            }
         }
 
-        protected override void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types)
+        protected override KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueTypes)
         {
-            var propertyKey = (PropertyKey)keyValue.Key;
-            objectContext.SerializerContext.WriteYaml(propertyKey, types.Key);
-
-            // Deduce expected value type from PropertyKey
-            objectContext.SerializerContext.WriteYaml(keyValue.Value, propertyKey.PropertyType);
-        }
-
-        protected override KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType)
-        {
-            // Read PropertyKey
-            var keyResult = (PropertyKey)objectContext.SerializerContext.ReadYaml(null, keyValueType.Key);
-
-            // Deduce expected value type from PropertyKey
-            var valueResult = objectContext.SerializerContext.ReadYaml(null, keyResult.PropertyType);
-
-            return new KeyValuePair<object, object>(keyResult, valueResult);
+            if (AreCollectionItemsIdentifiable(ref objectContext))
+            {
+                var keyResult = objectContext.ObjectSerializerBackend.ReadDictionaryKey(ref objectContext, keyValueTypes.Key);
+                var peek = objectContext.SerializerContext.Reader.Peek<Scalar>();
+                if (Equals(peek?.Value, YamlDeletedKey))
+                {
+                    return ReadDeletedDictionaryItem(ref objectContext, keyResult);
+                }
+                var propertyKey = (PropertyKey)((IKeyWithId)keyResult).Key;
+                var valueResult = objectContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, propertyKey.PropertyType, keyResult);
+                return new KeyValuePair<object, object>(keyResult, valueResult);
+            }
+            else
+            {
+                var keyResult = objectContext.ObjectSerializerBackend.ReadDictionaryKey(ref objectContext, keyValueTypes.Key);
+                var propertyKey = (PropertyKey)keyResult;
+                var valueResult = objectContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, propertyKey.PropertyType, keyResult);
+                return new KeyValuePair<object, object>(keyResult, valueResult);
+            }
         }
 
         public bool CanVisit(Type type)

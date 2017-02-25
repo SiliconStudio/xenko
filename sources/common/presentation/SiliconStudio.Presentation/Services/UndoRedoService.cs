@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Transactions;
 using SiliconStudio.Presentation.Dirtiables;
 
@@ -31,9 +32,9 @@ namespace SiliconStudio.Presentation.Services
 
         public bool UndoRedoInProgress { get; private set; }
 
-        public Task UndoRedoCompletion => undoRedoCompletion?.Task ?? Task.FromResult(0);
+        public Task UndoRedoCompletion => undoRedoCompletion?.Task ?? Task.CompletedTask;
 
-        public Task TransactionCompletion => transactionCompletion?.Task ?? Task.FromResult(0);
+        public Task TransactionCompletion => transactionCompletion?.Task ?? Task.CompletedTask;
 
         public event EventHandler<TransactionEventArgs> Done { add { stack.TransactionCompleted += value; } remove { stack.TransactionCompleted -= value; } }
 
@@ -51,11 +52,9 @@ namespace SiliconStudio.Presentation.Services
             {
                 return new DummyTransaction();
             }
-            else
-            {
-                transactionCompletion = new TaskCompletionSource<int>();
-                return stack.CreateTransaction();
-            }
+
+            transactionCompletion = new TaskCompletionSource<int>();
+            return stack.CreateTransaction();
         }
 
         public IEnumerable<IReadOnlyTransaction> RetrieveAllTransactions() => stack.RetrieveAllTransactions();
@@ -119,18 +118,21 @@ namespace SiliconStudio.Presentation.Services
             SetName(transaction.Id, name);
         }
 
+        [NotNull]
         public string GetName(Operation operation)
         {
             if (operation == null) throw new ArgumentNullException(nameof(operation));
             return GetName(operation.Id) ?? operation.ToString();
         }
 
+        [NotNull]
         public string GetName(ITransaction transaction)
         {
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
             return GetName(transaction.Id) ?? transaction.ToString();
         }
 
+        [NotNull]
         public string GetName(IReadOnlyTransaction transaction)
         {
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
@@ -145,6 +147,7 @@ namespace SiliconStudio.Presentation.Services
                 operationNames.Remove(id);
         }
 
+        [CanBeNull]
         private string GetName(Guid id)
         {
             string name;

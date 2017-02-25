@@ -1,37 +1,29 @@
 !SceneAsset
 Id: 49fe9241-18f3-478f-8f71-e87f87346da2
-SerializedVersion: {Xenko: 1.9.0-beta02}
+SerializedVersion: {Xenko: 1.9.0-beta06}
 Tags: []
 SceneSettings:
     Id: 8dfe4154-403a-48cb-9020-dbc029d08503
     GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: 750f0b40-c963-4032-ab5a-75ad76b6e446
-        Cameras: []
-        Layers: []
+        Cameras: {}
+        Layers: {}
         Master:
-            ~Id: d7f24a45-9ba3-4362-8b93-fea4cdcd55f3
             Name: SceneGraphicsLayer
             Output: !MasterRenderFrameProvider {}
             Renderers:
-                - !SceneCameraRenderer
-                    ~Id: 999ce43f-3f24-4244-929b-42d8cb1ba979
-                    Mode: !CameraRendererModeForward
-                        ~Id: c65d7e51-84ec-45b1-b915-f63bdc5ce0e2
+                3fe49c99243f4442929b42d8cb1ba979: !SceneCameraRenderer
+                    Mode: !CameraRendererModeForward {}
                     Camera:
-                        ~Id: bf010517-ef14-45b3-9a02-492a13d4667a
                         Index: 0
                     Output: !CurrentRenderFrameProvider {}
                     Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
                     ForceAspectRatio: false
     EditorSettings:
-        ~Id: df9ebb5c-51f9-4edb-b4bb-eb8af7533d02
         GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
         SceneUnit: 1.0
         Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: 23067b86-4714-400d-8328-0b2f6ca4113a
             BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
 Hierarchy:
-    ~Id: f6179207-c6a1-4692-a2df-cffa00f09103
     RootPartIds:
         - 820d34a8-2971-4381-abfa-2965d94ec672
     Parts:
@@ -39,17 +31,17 @@ Hierarchy:
                 Id: 820d34a8-2971-4381-abfa-2965d94ec672
                 Name: Splash
                 Components:
-                    - !TransformComponent
-                        ~Id: 6bdc33bf-ffb7-4ec2-9a05-e50a0f025227
-                        Children: []
+                    bf33dc6bb7ffc24e9a05e50a0f025227: !TransformComponent
+                        Id: 6bdc33bf-ffb7-4ec2-9a05-e50a0f025227
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !GameMenu.SplashScript,GameMenu.Game
-                        ~Id: e77d2bac-3b55-4bbc-a5bb-d9c3ba319cc1
-                    - !UIComponent
-                        ~Id: a8b1b6f6-8ad4-4580-bd94-0370455f3450
-                        Page: a540b88f-cd39-4f3c-adf0-9175144229b1/62c493c2-13ea-4fac-bbaf-578afafac104:SplashUI
+                        Children: {}
+                    ac2b7de7553bbc4ba5bbd9c3ba319cc1: !GameMenu.SplashScript,GameMenu.Game
+                        Id: e77d2bac-3b55-4bbc-a5bb-d9c3ba319cc1
+                    f6b6b1a8d48a8045bd940370455f3450: !UIComponent
+                        Id: a8b1b6f6-8ad4-4580-bd94-0370455f3450
+                        Page: 62c493c2-13ea-4fac-bbaf-578afafac104:SplashUI
                         Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
                         ResolutionStretch: FixedWidthFixedHeight

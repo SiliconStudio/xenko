@@ -1,45 +1,36 @@
 !SceneAsset
 Id: 7207a5b4-cbf4-4edc-a7fb-0dfa83e2414e
-SerializedVersion: {Xenko: 1.9.0-beta02}
+SerializedVersion: {Xenko: 1.9.0-beta06}
 Tags: []
 SceneSettings:
     Id: 35bdf1bb-0eaa-4c45-8b95-7e55108786aa
     GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: 5e0fcdcd-1298-452c-972e-3d6b1035167a
-        ModelEffect: SpaceEscapeEffectMain
         Cameras:
-            -   ~Id: 9bffa69f-ddcb-4198-a717-9dd73430f2d7
+            9fa6ff9bcbdd9841a7179dd73430f2d7:
                 Name: null
                 Camera: f0bb69db-f15c-4a39-b3cd-d2941fdb99ce/021212a7-5b24-41de-8e59-9e1e066ac0ed
-        Layers: []
+        ModelEffect: SpaceEscapeEffectMain
+        Layers: {}
         Master:
-            ~Id: fa88774d-9008-4a78-b853-2fd93c24a8ea
             Name: SceneGraphicsLayer
             Output: !MasterRenderFrameProvider {}
             Renderers:
-                - !ClearRenderFrameRenderer
-                    ~Id: 93e21ebc-f456-41e0-8901-609c65dc66e1
+                bc1ee29356f4e0418901609c65dc66e1: !ClearRenderFrameRenderer
                     Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
                     Output: !CurrentRenderFrameProvider {}
-                - !SceneCameraRenderer
-                    ~Id: b17a9ba3-e4f4-4199-a6ed-d1c6ccebc200
-                    Mode: !CameraRendererModeForward
-                        ~Id: 7b9b951d-3ee3-48ab-95dc-047e2888bde7
+                a39b7ab1f4e49941a6edd1c6ccebc200: !SceneCameraRenderer
+                    Mode: !CameraRendererModeForward {}
                     Camera:
-                        ~Id: f083058d-82be-4e24-9d7b-d6d9003259e8
                         Index: 0
                     Output: !CurrentRenderFrameProvider {}
                     Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
                     ForceAspectRatio: false
     EditorSettings:
-        ~Id: da7112d3-064f-464c-a5f4-fc2f33ea75ab
         GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
         SceneUnit: 1.0
         Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: 0f1ef646-e9ce-45db-8d64-4af870a65adf
             BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
 Hierarchy:
-    ~Id: ae49a161-82af-45da-a9db-2e589a7ff239
     RootPartIds:
         - f0bb69db-f15c-4a39-b3cd-d2941fdb99ce
         - 2ff8aac2-706b-4d4e-b6c9-22e2f8f2c31f
@@ -53,82 +44,77 @@ Hierarchy:
                 Id: 23d023ae-08a0-4a2b-883b-c3a784e25e78
                 Name: Character
                 Components:
-                    - !TransformComponent
-                        ~Id: 0cbb7a6d-9bc4-40cc-bb47-fb4c3e7e6097
-                        Children:
-                            - 8e708cb6-dd94-4ca1-89f5-17d15dfda2ab/6d3d8210-82a7-4831-8506-771952cf3d01
+                    6d7abb0cc49bcc40bb47fb4c3e7e6097: !TransformComponent
+                        Id: 0cbb7a6d-9bc4-40cc-bb47-fb4c3e7e6097
                         Position: {X: 0.0, Y: 1.5, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !AnimationComponent
-                        ~Id: d08a4541-3476-47a6-a7b8-0f9eb9ad1b22
+                        Children:
+                            10823d6da78231488506771952cf3d01: 8e708cb6-dd94-4ca1-89f5-17d15dfda2ab/6d3d8210-82a7-4831-8506-771952cf3d01
+                    41458ad07634a647a7b80f9eb9ad1b22: !AnimationComponent
+                        Id: d08a4541-3476-47a6-a7b8-0f9eb9ad1b22
                         Animations:
-                            Active: 0f261f17-8e77-4ba0-b722-def563003c1a/ebbd2b1f-cbb4-4016-bcc8-2a7cc09c48c9:ma00_1
-                            Crash: 37fb9894-bdc5-428c-97e3-848ff30d3fcf/31a903e0-ede6-429d-920f-6e4e1c4b662a:ma04
-                            DodgeLeft: 5d9b22b0-2aa7-4e21-9efb-8cc658dcc84e/be1d7fd2-aee5-401f-b89d-833c53174a72:ma01
-                            DodgeRight: 94cdadfc-2bfb-4aca-9b42-a86d938f171c/baf0bcc6-2468-46e9-81cc-ff976395d938:ma02
-                            Slide: 9da2abae-86d1-47c4-aae5-cc653cec9096/6784fa36-34e7-4990-baf6-7a854e5caaa9:ma03
-                        PlayingAnimations: []
-                    - !SpaceEscape.CharacterScript,SpaceEscape.Game
-                        ~Id: d16da46d-e886-4870-a8a2-7ac30c0034ea
+                            171f260f778ea04bb722def563003c1a~Active: ebbd2b1f-cbb4-4016-bcc8-2a7cc09c48c9:ma00_1
+                            9498fb37c5bd8c4297e3848ff30d3fcf~Crash: 31a903e0-ede6-429d-920f-6e4e1c4b662a:ma04
+                            b0229b5da72a214e9efb8cc658dcc84e~DodgeLeft: be1d7fd2-aee5-401f-b89d-833c53174a72:ma01
+                            fcadcd94fb2bca4a9b42a86d938f171c~DodgeRight: baf0bcc6-2468-46e9-81cc-ff976395d938:ma02
+                            aeaba29dd186c447aae5cc653cec9096~Slide: 6784fa36-34e7-4990-baf6-7a854e5caaa9:ma03
+                        PlayingAnimations: {}
+                    6da46dd186e87048a8a27ac30c0034ea: !SpaceEscape.CharacterScript,SpaceEscape.Game
+                        Id: d16da46d-e886-4870-a8a2-7ac30c0034ea
                         CharacterShadow: 8e708cb6-dd94-4ca1-89f5-17d15dfda2ab/dd821d2d-0ed7-4ac2-8e23-6fe88911056b
-                    - !ModelComponent
-                        ~Id: 8182a6b5-3db5-4bfc-8735-831133e03931
-                        Model: 73ff1d53-eb9e-45fa-bf83-9455306d12b0/920f4445-c00d-474f-b8c0-33b385d58b8f:character_00
-                        Materials:
-                            - null
-                            - null
-                            - null
+                    b5a68281b53dfc4b8735831133e03931: !ModelComponent
+                        Id: 8182a6b5-3db5-4bfc-8735-831133e03931
+                        Model: 920f4445-c00d-474f-b8c0-33b385d58b8f:character_00
+                        Materials: {}
         -   Entity:
                 Id: 2ff8aac2-706b-4d4e-b6c9-22e2f8f2c31f
                 Name: Ambient light
                 Components:
-                    - !TransformComponent
-                        ~Id: 4dfc37a1-5263-4bef-b26c-6a830f3561b8
-                        Children: []
+                    a137fc4d6352ef4bb26c6a830f3561b8: !TransformComponent
+                        Id: 4dfc37a1-5263-4bef-b26c-6a830f3561b8
                         Position: {X: 0.0, Y: 0.0, Z: -5.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !LightComponent
-                        ~Id: 3460bb6b-7b18-4134-8e75-3d08dcc1f098
+                        Children: {}
+                    6bbb6034187b34418e753d08dcc1f098: !LightComponent
+                        Id: 3460bb6b-7b18-4134-8e75-3d08dcc1f098
                         Type: !LightAmbient
-                            ~Id: 7acd76ef-1d32-41d8-be3d-bd909a807fb0
                             Color: !ColorRgbProvider
-                                ~Id: 45025605-87ee-430d-a44a-c97a293c22ff
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
                         Intensity: 0.75
         -   Entity:
                 Id: 3d1a3eb9-d296-4fd6-8f90-9f3f3efb058a
                 Name: GameScript
                 Components:
-                    - !TransformComponent
-                        ~Id: 7d5f2e82-88ab-458c-8bfd-3d49c0489c40
-                        Children: []
+                    822e5f7dab888c458bfd3d49c0489c40: !TransformComponent
+                        Id: 7d5f2e82-88ab-458c-8bfd-3d49c0489c40
                         Position: {X: 0.0, Y: 0.0, Z: 1.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !SpaceEscape.GameScript,SpaceEscape.Game
-                        ~Id: ac2e228b-4d39-4e91-a172-de967e133b12
+                        Children: {}
+                    8b222eac394d914ea172de967e133b12: !SpaceEscape.GameScript,SpaceEscape.Game
+                        Id: ac2e228b-4d39-4e91-a172-de967e133b12
+                        Priority: 10
                         CharacterScript: 23d023ae-08a0-4a2b-883b-c3a784e25e78/d16da46d-e886-4870-a8a2-7ac30c0034ea
                         BackgroundScript: 9a768522-351d-40ab-ad6b-9ecc90f3c111/96a90126-5b00-48ef-b725-ff6116d66cf5
                         UIScript: 68cbade9-8efc-4123-8c6c-81bf6c38059b/df4146ae-23ba-40f7-8258-46b1fe1ae97d
-                        Priority: 10
         -   Entity:
                 Id: 68cbade9-8efc-4123-8c6c-81bf6c38059b
                 Name: UI
                 Components:
-                    - !TransformComponent
-                        ~Id: 01e6d689-2d2a-4821-895d-ff85d8a55070
-                        Children: []
+                    89d6e6012a2d2148895dff85d8a55070: !TransformComponent
+                        Id: 01e6d689-2d2a-4821-895d-ff85d8a55070
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !SpaceEscape.UIScript,SpaceEscape.Game
-                        ~Id: df4146ae-23ba-40f7-8258-46b1fe1ae97d
-                        Font: 15229364-98ce-4dc3-a6e9-8a1eb07e7ae8/aa317d9b-bbd3-4240-9ad6-11efad9c4d4d:Font
-                        UIImages: f8d50c0f-a882-4f0c-87e0-d70ec1d211c8/2bb544ec-3316-404c-a73f-ec9302f7aa1c:UIImages
-                    - !UIComponent
-                        ~Id: d1ebf474-a344-4bf6-9390-5666794a3db1
+                        Children: {}
+                    ae4641dfba23f740825846b1fe1ae97d: !SpaceEscape.UIScript,SpaceEscape.Game
+                        Id: df4146ae-23ba-40f7-8258-46b1fe1ae97d
+                        Font: aa317d9b-bbd3-4240-9ad6-11efad9c4d4d:Font
+                        UIImages: 2bb544ec-3316-404c-a73f-ec9302f7aa1c:UIImages
+                    74f4ebd144a3f64b93905666794a3db1: !UIComponent
+                        Id: d1ebf474-a344-4bf6-9390-5666794a3db1
                         Page: null
                         Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
@@ -137,17 +123,16 @@ Hierarchy:
                 Id: 8e708cb6-dd94-4ca1-89f5-17d15dfda2ab
                 Name: Sprite
                 Components:
-                    - !TransformComponent
-                        ~Id: 6d3d8210-82a7-4831-8506-771952cf3d01
-                        Children: []
+                    10823d6da78231488506771952cf3d01: !TransformComponent
+                        Id: 6d3d8210-82a7-4831-8506-771952cf3d01
                         Position: {X: 0.0, Y: -1.2, Z: 0.0}
                         Rotation: {X: 0.707106769, Y: 0.0, Z: 0.0, W: 0.707106769}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !SpriteComponent
-                        ~Id: dd821d2d-0ed7-4ac2-8e23-6fe88911056b
+                        Children: {}
+                    2d1d82ddd70ec24a8e236fe88911056b: !SpriteComponent
+                        Id: dd821d2d-0ed7-4ac2-8e23-6fe88911056b
                         SpriteProvider: !SpriteFromTexture
-                            ~Id: d2058018-9a36-4bba-a2ba-e59c7eaa47ea
-                            Texture: c2c7b31e-a816-493e-9ba0-0d017f21a8e1/a05dc255-f378-4167-b474-1562b18dfc90:shadow_00
+                            Texture: a05dc255-f378-4167-b474-1562b18dfc90:shadow_00
                             PixelsPerUnit: 33.0
                             Center: {X: 0.0, Y: 0.0}
                         Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
@@ -155,55 +140,49 @@ Hierarchy:
                 Id: 9a768522-351d-40ab-ad6b-9ecc90f3c111
                 Name: Background
                 Components:
-                    - !TransformComponent
-                        ~Id: 51847f85-1760-4118-9f2a-3730e6385b35
-                        Children: []
+                    857f8451601718419f2a3730e6385b35: !TransformComponent
+                        Id: 51847f85-1760-4118-9f2a-3730e6385b35
                         Position: {X: 0.0, Y: 0.0, Z: -1.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !SpaceEscape.Background.BackgroundScript,SpaceEscape.Game
-                        ~Id: 96a90126-5b00-48ef-b725-ff6116d66cf5
-                        LevelBlocks: 4d09da87-242f-41af-96e5-f6154e2a167d/d5969c6e-1456-4aac-a656-598bf1e16c2d:LevelBlocks
-                        SkyplaneModel: 4ded26de-d07c-4d27-8c50-e1d1e245cbcc/f16bfc07-e816-475d-a400-304b8042d6c7:bg_00
+                        Children: {}
+                    2601a996005bef48b725ff6116d66cf5: !SpaceEscape.Background.BackgroundScript,SpaceEscape.Game
+                        Id: 96a90126-5b00-48ef-b725-ff6116d66cf5
+                        LevelBlocks: d5969c6e-1456-4aac-a656-598bf1e16c2d:LevelBlocks
+                        SkyplaneModel: f16bfc07-e816-475d-a400-304b8042d6c7:bg_00
         -   Entity:
                 Id: 9f899343-be76-409e-a38f-7aa8744b8179
                 Name: Directional light
                 Components:
-                    - !TransformComponent
-                        ~Id: 9ea895be-e2e7-44c9-b3d1-25a51b19d3f7
-                        Children: []
+                    be95a89ee7e2c944b3d125a51b19d3f7: !TransformComponent
+                        Id: 9ea895be-e2e7-44c9-b3d1-25a51b19d3f7
                         Position: {X: 0.0, Y: 5.0, Z: 0.0}
                         Rotation: {X: -0.429669142, Y: 0.37299636, Z: -0.214686662, W: 0.79383105}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !LightComponent
-                        ~Id: d891c74f-0456-4576-bdf3-9554de7d475a
+                        Children: {}
+                    4fc791d856047645bdf39554de7d475a: !LightComponent
+                        Id: d891c74f-0456-4576-bdf3-9554de7d475a
                         Type: !LightDirectional
-                            ~Id: 40048456-4368-4ca8-b358-45e54226d5b2
                             Color: !ColorRgbProvider
-                                ~Id: 7c894faa-671f-4a61-aa41-c19a153dcb7c
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
                             Shadow:
-                                ~Id: 77ecac95-edda-433e-89d9-057fba233d83
                                 Size: Large
-                                DepthRange:
-                                    ~Id: 1dd36ab7-c85b-48b8-82a2-06b00c1a38d8
-                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic
-                                    ~Id: 96ff0c51-4fd2-407c-85d3-bedbffa70fcd
-                                BiasParameters:
-                                    ~Id: 41a6fa52-c33c-4e2a-85c5-cde813273c76
+                                DepthRange: {}
+                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic {}
+                                BiasParameters: {}
                         Intensity: 0.4
         -   Entity:
                 Id: f0bb69db-f15c-4a39-b3cd-d2941fdb99ce
                 Name: Camera
                 Components:
-                    - !TransformComponent
-                        ~Id: f5b846dc-01a6-4664-b5b9-ce729fe74ecc
-                        Children: []
+                    dc46b8f5a6016446b5b9ce729fe74ecc: !TransformComponent
+                        Id: f5b846dc-01a6-4664-b5b9-ce729fe74ecc
                         Position: {X: 0.0, Y: 12.0, Z: -12.0}
                         Rotation: {X: 7.875609E-08, Y: 0.9612617, Z: 0.2756374, W: -7.52105933E-10}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !CameraComponent
-                        ~Id: 021212a7-5b24-41de-8e59-9e1e066ac0ed
+                        Children: {}
+                    a7121202245bde418e599e1e066ac0ed: !CameraComponent
+                        Id: 021212a7-5b24-41de-8e59-9e1e066ac0ed
                         Projection: Perspective
                         VerticalFieldOfView: 72.0
                         NearClipPlane: 1.0

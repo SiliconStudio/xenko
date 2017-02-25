@@ -21,7 +21,7 @@ namespace SiliconStudio.Assets.Tests
             
             // Create a project with an asset reference a raw file
             var project = new Package { FullPath = projectDir };
-            var assetItem = new AssetItem("test", new AssetObjectTest() { Reference =  new AssetReference<AssetObjectTest>(Guid.Empty, "good/location")});
+            var assetItem = new AssetItem("test", new AssetObjectTest() { Reference =  new AssetReference(AssetId.Empty, "good/location")});
             project.Assets.Add(assetItem);
             var goodAsset = new AssetObjectTest();
             project.Assets.Add(new AssetItem("good/location", goodAsset));

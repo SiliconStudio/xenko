@@ -10,5 +10,4 @@ Type: !CylinderProceduralModel
     UvScale: {X: 1.0, Y: 1.0}
     LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
     MaterialInstance:
-        ~Id: f8f81233-e800-49e7-bb67-845eafa5b0db
-        Material: 97d07c93-f035-4161-a029-817912c1860d/8cfd86fb-8c2d-4c8f-b86e-7a5a58552f0f:z_ground
+        Material: 8cfd86fb-8c2d-4c8f-b86e-7a5a58552f0f:z_ground

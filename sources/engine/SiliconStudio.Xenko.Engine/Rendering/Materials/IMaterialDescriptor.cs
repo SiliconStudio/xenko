@@ -3,7 +3,7 @@
 
 using System;
 using System.ComponentModel;
-
+using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 
@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </summary>
         /// <value>The material identifier.</value>
         [DataMemberIgnore]
-        Guid MaterialId { get; }
+        AssetId MaterialId { get; }
 
         /// <summary>
         /// Gets or sets the material attributes.

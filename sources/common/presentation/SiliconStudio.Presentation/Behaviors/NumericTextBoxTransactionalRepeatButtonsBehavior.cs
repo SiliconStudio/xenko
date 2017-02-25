@@ -16,9 +16,9 @@ namespace SiliconStudio.Presentation.Behaviors
     {
         private ITransaction transaction;
 
-        public static DependencyProperty ActionServiceProperty = DependencyProperty.Register(nameof(ActionService), typeof(IUndoRedoService), typeof(NumericTextBoxTransactionalRepeatButtonsBehavior));
+        public static DependencyProperty UndoRedoServiceProperty = DependencyProperty.Register(nameof(UndoRedoService), typeof(IUndoRedoService), typeof(NumericTextBoxTransactionalRepeatButtonsBehavior));
 
-        public IUndoRedoService ActionService { get { return (IUndoRedoService)GetValue(ActionServiceProperty); } set { SetValue(ActionServiceProperty, value); } }
+        public IUndoRedoService UndoRedoService { get { return (IUndoRedoService)GetValue(UndoRedoServiceProperty); } set { SetValue(UndoRedoServiceProperty, value); } }
 
         protected override void OnAttached()
         {
@@ -34,7 +34,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void RepeatButtonPressed(object sender, RepeatButtonPressedRoutedEventArgs e)
         {
-            transaction = ActionService?.CreateTransaction();
+            transaction = UndoRedoService?.CreateTransaction();
         }
 
         private void RepeatButtonReleased(object sender, RepeatButtonPressedRoutedEventArgs e)

@@ -5,9 +5,10 @@ Tags: []
 Source: ../../../Resources/Stand/standBowl.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    -   ~Id: dca774e2-ed94-89c1-6586-423665864236
+    e274a7dc94edc1896586423665864236:
         Name: blinn1
         MaterialInstance:
-            ~Id: 2acf4b85-8092-4de1-9260-c0fa1521ce0b
-            Material: 8439e049-e0c6-409a-91d2-940d5f28ee3b/219e0c43-1fe7-42ce-9aa8-65aaa0023eb5:Materials/PolishedStone
+            Material: 219e0c43-1fe7-42ce-9aa8-65aaa0023eb5:Materials/PolishedStone
 Skeleton: null
+~SourceHashes:
+    efa29fde2832fb2f2497a862210e3d38~../../../Resources/Stand/standBowl.fbx: 3a9256a73afacbf5bc0852d6ae92a196

@@ -1,7 +1,6 @@
 !Package
 Id: c148408b-43bc-465c-825a-d74b122377ef
-SerializedVersion: {Assets: 0.0.3}
-Tags: []
+SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: SpriteFonts
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.9.4-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -20,7 +19,6 @@ Profiles:
             -   Path: Assets/Shared
             -   Path: SpriteFonts.Game/Effects
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: a38806f0-3b25-4aaf-9ec3-476bbcdcaf52
                 Location: SpriteFonts.Game/SpriteFonts.Game.csproj
@@ -31,8 +29,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Windows
         OutputGroupDirectories: {}
-        Properties:
-            Xenko.GraphicsPlatform: Direct3D11
         ProjectReferences:
             -   Id: 4534cf31-201d-4b3b-9cd1-c0fdfb5fb61b
                 Location: SpriteFonts.Windows/SpriteFonts.Windows.csproj

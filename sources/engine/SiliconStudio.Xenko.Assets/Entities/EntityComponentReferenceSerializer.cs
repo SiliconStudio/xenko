@@ -7,7 +7,7 @@ using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
     public sealed class EntityComponentReferenceSerializer : ScalarOrObjectSerializer
     {
         public override bool CanVisit(Type type)

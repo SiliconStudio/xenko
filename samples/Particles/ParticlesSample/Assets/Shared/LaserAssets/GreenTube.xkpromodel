@@ -8,5 +8,4 @@ Type: !CylinderProceduralModel
     UvScale: {X: 1.0, Y: 1.0}
     LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
     MaterialInstance:
-        ~Id: 99d8297f-6700-451f-9a8e-f1270579c097
-        Material: 8581bc23-c0aa-4bc3-b1a2-6f1e8e7478f5/41702246-6d6e-4add-b943-dc04d1802581:LaserAssets/GreenLaserMaterial
+        Material: 41702246-6d6e-4add-b943-dc04d1802581:LaserAssets/GreenLaserMaterial

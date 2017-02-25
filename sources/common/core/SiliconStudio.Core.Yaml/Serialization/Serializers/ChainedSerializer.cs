@@ -47,22 +47,48 @@ using System;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
-    public class ChainedSerializer : IYamlSerializable
+    /// <summary>
+    /// An implementation of <see cref="IYamlSerializable"/> that will call the <see cref="ReadYaml"/> and <see cref="WriteYaml"/> methods
+    /// of another serializer when invoked.
+    /// </summary>
+    public abstract class ChainedSerializer : IYamlSerializable
     {
-        private readonly IYamlSerializable next;
+        /// <summary>
+        /// The chained serializer.
+        /// </summary>
+        private IYamlSerializable next;
 
-        public ChainedSerializer(IYamlSerializable next)
+        /// <summary>
+        /// Sets the serializer to chain with this instance.
+        /// </summary>
+        /// <param name="other">The serializer to chain with this instance.</param>
+        public void PrependTo(IYamlSerializable other)
         {
-            if (next == null)
-                throw new ArgumentNullException("next");
-            this.next = next;
+            if (next != null)
+                throw new InvalidOperationException("This serializer already have a succeeding serializer");
+
+            next = other;
         }
 
+        /// <summary>
+        /// Sets the serializer to chain with an instance of <see cref="ChainedSerializer"/>.
+        /// </summary>
+        /// <param name="chained">The chained serializer.</param>
+        /// <param name="serializer">The serializer to chain.</param>
+        /// <returns>The chained argument passed in the <paramref name="chained"/> parameter.</returns>
+        public static ChainedSerializer Prepend(ChainedSerializer chained, IYamlSerializable serializer)
+        {
+            chained.PrependTo(serializer);
+            return chained;
+        }
+
+        /// <inheritdoc/>
         public virtual object ReadYaml(ref ObjectContext objectContext)
         {
             return next.ReadYaml(ref objectContext);
         }
 
+        /// <inheritdoc/>
         public virtual void WriteYaml(ref ObjectContext objectContext)
         {
             next.WriteYaml(ref objectContext);

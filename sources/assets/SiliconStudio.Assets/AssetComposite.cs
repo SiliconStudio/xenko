@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets
@@ -14,36 +15,17 @@ namespace SiliconStudio.Assets
     /// </summary>
     public abstract class AssetComposite : Asset, IAssetComposite
     {
-        /// <summary>
-        /// Adds the given <see cref="AssetBase"/> to the <see cref="Asset.BaseParts"/> collection of this asset.
-        /// </summary>
-        /// <remarks>If the <see cref="Asset.BaseParts"/> collection already contains the argument. this method does nothing.</remarks>
-        /// <param name="newBasePart">The base to add to the <see cref="Asset.BaseParts"/> collection.</param>
-        [Obsolete("This method will be removed soon")]
-        public void AddBasePart(AssetBase newBasePart)
-        {
-            if (newBasePart == null) throw new ArgumentNullException(nameof(newBasePart));
-
-            if (BaseParts == null)
-            {
-                BaseParts = new List<AssetBase>();
-            }
-
-            if (BaseParts.All(x => x.Id != newBasePart.Id))
-            {
-                BaseParts.Add(newBasePart);
-            }
-        }
-
         public abstract IEnumerable<AssetPart> CollectParts();
 
-        [Obsolete("This method will be removed soon")]
-        public abstract void SetPart(Guid id, Guid baseId, Guid basePartInstanceId);
+        public abstract IIdentifiable FindPart(Guid partId);
 
         public abstract bool ContainsPart(Guid id);
 
-        public void FixupPartReferences()
+        /// <inheritdoc />
+        public override void FixupPartReferences(bool clearMissingReferences = true)
         {
+            base.FixupPartReferences(clearMissingReferences);
+
             var visitor = new AssetCompositePartReferenceCollector();
             visitor.VisitAsset(this);
             var references = visitor.Result;
@@ -58,7 +40,10 @@ namespace SiliconStudio.Assets
                 var realPart = ResolvePartReference(reference.AssetPart);
                 if (realPart != reference.AssetPart)
                 {
-                    reference.Path.Apply(this, MemberPathAction.ValueSet, realPart);
+                    if (realPart != null || clearMissingReferences)
+                    {
+                        reference.Path.Apply(this, MemberPathAction.ValueSet, realPart);
+                    }
                 }
             }
         }
@@ -68,6 +53,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="referencedObject">The object currently referenced by the part.</param>
         /// <returns></returns>
+        /// <seealso cref="FixupPartReferences"/>
         /// <remarks>
         /// The <paramref name="referencedObject"/> can already be the actual target of the reference, but it can also be a proxy object,
         /// a temporary object, or an old version of the actual object. Implementations of this methods are supposed to identify this given object

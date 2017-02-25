@@ -35,12 +35,6 @@ namespace SiliconStudio.Core
         Binary,
 
         /// <summary>
-        /// Only valid for a property that will be used only as a "read only"
-        /// property.
-        /// </summary>
-        ReadOnly,
-
-        /// <summary>
         /// The property / field will not be stored.
         /// </summary>
         Never,

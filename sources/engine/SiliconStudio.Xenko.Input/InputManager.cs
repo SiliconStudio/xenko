@@ -1029,6 +1029,12 @@ namespace SiliconStudio.Xenko.Input
 
             if (LostFocus)
             {
+                // Release keys/buttons when control focus is lost (this prevents some keys getting stuck when a focus loss happens)
+                foreach (var key in downKeysList)
+                {
+                    releasedKeysSet.Add(key);
+                    KeyEvents.Add(new KeyEvent(key, KeyEventType.Released));
+                }
                 activeKeys.Clear();
                 downKeysList.Clear();
             }

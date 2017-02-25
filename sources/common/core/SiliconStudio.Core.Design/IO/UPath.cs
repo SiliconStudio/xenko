@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -157,7 +158,8 @@ namespace SiliconStudio.Core.IO
                 {
                     return FullPath.Substring(DirectorySpan.Start, DirectorySpan.Length - 1);
                 }
-            } else if (DriveSpan.IsValid & (NameSpan.IsValid || ExtensionSpan.IsValid))
+            }
+            else if (DriveSpan.IsValid & (NameSpan.IsValid || ExtensionSpan.IsValid))
             {
                 return "/";
             }
@@ -211,7 +213,7 @@ namespace SiliconStudio.Core.IO
             }
 
             var file = this as UFile;
-            var fileName = file?.GetFileNameWithExtension();
+            var fileName = file?.GetFileName();
             if (fileName != null)
             {
                 list.Add(fileName);
@@ -237,9 +239,9 @@ namespace SiliconStudio.Core.IO
                 // This path contains only 'c:/somefile', we should return 'c:/'
                 if (DriveSpan.IsValid && (DriveSpan.Next == NameSpan.Start - 1))
                     return new UDirectory(FullPath.Substring(0, NameSpan.Start), DriveSpan, DirectorySpan);
-                
-               // Return the path until the name, excluding the last '/'
-               return new UDirectory(FullPath.Substring(0, NameSpan.Start - 1), DriveSpan, DirectorySpan);
+
+                // Return the path until the name, excluding the last '/'
+                return new UDirectory(FullPath.Substring(0, NameSpan.Start - 1), DriveSpan, DirectorySpan);
             }
             // Either a directory or a null path
             return this is UDirectory ? (UDirectory)this : new UDirectory(null);
@@ -419,7 +421,7 @@ namespace SiliconStudio.Core.IO
                     relativePath.Append(DirectorySeparatorChar);
 
                 // Add filename
-                relativePath.Append(((UFile)absoluteFile).GetFileNameWithExtension());
+                relativePath.Append(((UFile)absoluteFile).GetFileName());
             }
             var newPath = relativePath.ToString();
             return !IsFile ? (UPath)new UDirectory(newPath) : new UFile(newPath);

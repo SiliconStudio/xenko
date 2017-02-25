@@ -19,8 +19,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
@@ -29,7 +28,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     /// </summary>
     public class DefaultObjectSerializerBackend : IObjectSerializerBackend
     {
-        public virtual YamlStyle GetStyle(ref ObjectContext objectContext)
+        public virtual DataStyle GetStyle(ref ObjectContext objectContext)
         {
             var context = objectContext.SerializerContext;
 
@@ -38,7 +37,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             var style = objectContext.Style;
 
             // If no style yet defined
-            if (style != YamlStyle.Any)
+            if (style != DataStyle.Any)
             {
                 return style;
             }
@@ -48,7 +47,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 
             // In case of any style, allow to emit a flow sequence depending on Settings LimitPrimitiveFlowSequence.
             // Apply this only for primitives
-            if (style == YamlStyle.Any)
+            if (style == DataStyle.Any)
             {
                 bool isPrimitiveElementType = false;
                 var collectionDescriptor = objectContext.Descriptor as CollectionDescriptor;
@@ -64,55 +63,67 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                     if (arrayDescriptor != null)
                     {
                         isPrimitiveElementType = PrimitiveDescriptor.IsPrimitive(arrayDescriptor.ElementType);
-                        count = objectContext.Instance != null ? ((Array) objectContext.Instance).Length : -1;
+                        count = ((Array)objectContext.Instance)?.Length ?? -1;
                     }
                 }
 
                 style = objectContext.Instance == null || count >= objectContext.SerializerContext.Settings.LimitPrimitiveFlowSequence || !isPrimitiveElementType
-                    ? YamlStyle.Block
-                    : YamlStyle.Flow;
+                    ? DataStyle.Normal
+                    : DataStyle.Compact;
             }
 
             // If not defined, get the default style
-            if (style == YamlStyle.Any)
+            if (style == DataStyle.Any)
             {
                 style = context.Settings.DefaultStyle;
 
                 // If default style is set to Any, set it to Block by default.
-                if (style == YamlStyle.Any)
+                if (style == DataStyle.Any)
                 {
-                    style = YamlStyle.Block;
+                    style = DataStyle.Normal;
                 }
             }
 
             return style;
         }
 
+        /// <inheritdoc/>
         public virtual string ReadMemberName(ref ObjectContext objectContext, string memberName, out bool skipMember)
         {
             skipMember = false;
             return memberName;
         }
 
+        /// <inheritdoc/>
         public virtual object ReadMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue,
             Type memberType)
         {
-            return objectContext.SerializerContext.ReadYaml(memberValue, memberType);
+            var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType));
+            return ReadYaml(ref memberObjectContext);
         }
 
+        /// <inheritdoc/>
         public virtual object ReadCollectionItem(ref ObjectContext objectContext, object value, Type itemType, int index)
         {
-            return objectContext.SerializerContext.ReadYaml(value, itemType);
+            var itemObjectContext = new ObjectContext(objectContext.SerializerContext, value, objectContext.SerializerContext.FindTypeDescriptor(itemType));
+            return ReadYaml(ref itemObjectContext);
         }
 
-        public virtual KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType)
+        /// <inheritdoc/>
+        public virtual object ReadDictionaryKey(ref ObjectContext objectContext, Type keyType)
         {
-            var keyResult = objectContext.SerializerContext.ReadYaml(null, keyValueType.Key);
-            var valueResult = objectContext.SerializerContext.ReadYaml(null, keyValueType.Value);
-
-            return new KeyValuePair<object, object>(keyResult, valueResult);
+            var keyObjectContext = new ObjectContext(objectContext.SerializerContext, null, objectContext.SerializerContext.FindTypeDescriptor(keyType));
+            return ReadYaml(ref keyObjectContext);
         }
 
+        /// <inheritdoc/>
+        public virtual object ReadDictionaryValue(ref ObjectContext objectContext, Type valueType, object key)
+        {
+            var valueObjectContext = new ObjectContext(objectContext.SerializerContext, null, objectContext.SerializerContext.FindTypeDescriptor(valueType));
+            return ReadYaml(ref valueObjectContext);
+        }
+
+        /// <inheritdoc/>
         public virtual void WriteMemberName(ref ObjectContext objectContext, IMemberDescriptor member, string name)
         {
             // Emit the key name
@@ -124,22 +135,62 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             });
         }
 
-        public virtual void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor member, object memberValue,
-            Type memberType)
+        /// <inheritdoc/>
+        public virtual void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue, Type memberType)
         {
             // Push the style of the current member
-            objectContext.SerializerContext.WriteYaml(memberValue, memberType, member.Style);
+            var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType))
+            {
+                Style = memberDescriptor.Style,
+                ScalarStyle = memberDescriptor.ScalarStyle,
+            };
+            WriteYaml(ref memberObjectContext);
         }
 
+        /// <inheritdoc/>
         public virtual void WriteCollectionItem(ref ObjectContext objectContext, object item, Type itemType, int index)
         {
-            objectContext.SerializerContext.WriteYaml(item, itemType);
+            var itemObjectcontext = new ObjectContext(objectContext.SerializerContext, item, objectContext.SerializerContext.FindTypeDescriptor(itemType));
+            WriteYaml(ref itemObjectcontext);
         }
 
-        public virtual void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types)
+        /// <inheritdoc/>
+        public virtual void WriteDictionaryKey(ref ObjectContext objectContext, object key, Type keyType)
         {
-            objectContext.SerializerContext.WriteYaml(keyValue.Key, types.Key);
-            objectContext.SerializerContext.WriteYaml(keyValue.Value, types.Value);
+            var itemObjectcontext = new ObjectContext(objectContext.SerializerContext, key, objectContext.SerializerContext.FindTypeDescriptor(keyType));
+            WriteYaml(ref itemObjectcontext);
+        }
+
+        /// <inheritdoc/>
+        public virtual void WriteDictionaryValue(ref ObjectContext objectContext, object key, object value, Type valueType)
+        {
+            var itemObjectcontext = new ObjectContext(objectContext.SerializerContext, value, objectContext.SerializerContext.FindTypeDescriptor(valueType));
+            WriteYaml(ref itemObjectcontext);
+        }
+
+        /// <inheritdoc/>
+        public virtual bool ShouldSerialize(IMemberDescriptor member, ref ObjectContext objectContext) => member.ShouldSerialize(objectContext.Instance);
+
+        protected object ReadYaml(ref ObjectContext objectContext)
+        {
+            var node = objectContext.SerializerContext.Reader.Parser.Current;
+            try
+            {
+                return objectContext.SerializerContext.Serializer.ObjectSerializer.ReadYaml(ref objectContext);
+            }
+            catch (YamlException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new YamlException(node.Start, node.End, $"Error while deserializing node [{node}]", ex);
+            }
+        }
+
+        protected void WriteYaml(ref ObjectContext objectContext)
+        {
+            objectContext.SerializerContext.Serializer.ObjectSerializer.WriteYaml(ref objectContext);
         }
     }
 }

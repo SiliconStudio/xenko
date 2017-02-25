@@ -3,45 +3,60 @@
 using System;
 
 using System.Reflection;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Contents
 {
     /// <summary>
-    /// An implementation of <see cref="IContent"/> that gives access to a member of an object.
+    /// An implementation of <see cref="IContentNode"/> that gives access to a member of an object.
     /// </summary>
-    public class MemberContent : ContentBase
+    public class MemberContent : ContentNode, IMemberNodeInternal
     {
         private readonly NodeContainer nodeContainer;
 
-        public MemberContent(INodeBuilder nodeBuilder, ContentBase container, IMemberDescriptor member, bool isPrimitive, IReference reference)
-            : base(nodeBuilder.TypeDescriptorFactory.Find(member.Type), isPrimitive, reference)
+        public MemberContent([NotNull] INodeBuilder nodeBuilder, Guid guid, [NotNull] IObjectNode parent, [NotNull] IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
+            : base(guid, nodeBuilder.TypeDescriptorFactory.Find(memberDescriptor.Type), isPrimitive, reference)
         {
-            if (container == null) throw new ArgumentNullException(nameof(container));
-            Member = member;
-            Container = container;
+            if (nodeBuilder == null) throw new ArgumentNullException(nameof(nodeBuilder));
+            if (parent == null) throw new ArgumentNullException(nameof(parent));
+            if (memberDescriptor == null) throw new ArgumentNullException(nameof(memberDescriptor));
+            Parent = parent;
+            MemberDescriptor = memberDescriptor;
+            Name = memberDescriptor.Name;
             nodeContainer = nodeBuilder.NodeContainer;
         }
+
+        /// <inheritdoc/>
+        public string Name { get; }
+
+        /// <inheritdoc/>
+        public IObjectNode Parent { get; }
 
         /// <summary>
         /// The <see cref="IMemberDescriptor"/> used to access the member of the container represented by this content.
         /// </summary>
-        public IMemberDescriptor Member { get; protected set; }
-
-        /// <summary>
-        /// Gets the name of the node holding this content.
-        /// </summary>
-        public string Name => OwnerNode?.Name;
-
-        /// <summary>
-        /// Gets the container content of this member content.
-        /// </summary>
-        public ContentBase Container { get; }
+        public IMemberDescriptor MemberDescriptor { get; protected set; }
 
         /// <inheritdoc/>
-        public sealed override object Value { get { if (Container.Value == null) throw new InvalidOperationException("Container's value is null"); return Member.Get(Container.Value); } }
+        [Obsolete("Use method Retrieve()")]
+        public sealed override object Value { get { if (Parent.Value == null) throw new InvalidOperationException("Container's value is null"); return MemberDescriptor.Get(Parent.Value); } }
+
+        /// <inheritdoc/>
+        public IObjectNode Target { get { if (TargetReference == null) throw new InvalidOperationException("This node does not contain an ObjectReference"); return TargetReference.TargetNode; } }
+
+        /// <inheritdoc/>
+        public event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
+
+        /// <inheritdoc/>
+        public event EventHandler<MemberNodeChangeEventArgs> FinalizeChange;
+
+        /// <inheritdoc/>
+        public event EventHandler<MemberNodeChangeEventArgs> Changing;
+
+        /// <inheritdoc/>
+        public event EventHandler<MemberNodeChangeEventArgs> Changed;
 
         /// <inheritdoc/>
         public override void Update(object newValue, Index index)
@@ -59,13 +74,13 @@ namespace SiliconStudio.Quantum.Contents
                 // Better send a null index in this case than sending a wrong value.
                 var value = Value;
                 var index = collectionDescriptor.IsList ? new Index(collectionDescriptor.GetCollectionCount(value)) : Index.Empty;
-                var args = new ContentChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
+                var args = new MemberNodeChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
                 NotifyContentChanging(args);
                 collectionDescriptor.Add(value, newItem);
                 if (value.GetType().GetTypeInfo().IsValueType)
                 {
-                    var containerValue = Container.Value;
-                    Member.Set(containerValue, value);
+                    var containerValue = Parent.Value;
+                    MemberDescriptor.Set(containerValue, value);
                 }
                 UpdateReferences();
                 NotifyContentChanged(args);
@@ -83,7 +98,7 @@ namespace SiliconStudio.Quantum.Contents
             {
                 var index = collectionDescriptor.IsList ? itemIndex : Index.Empty;
                 var value = Value;
-                var args = new ContentChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
+                var args = new MemberNodeChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
                 NotifyContentChanging(args);
                 if (collectionDescriptor.GetCollectionCount(value) == itemIndex.Int || !collectionDescriptor.HasInsert)
                 {
@@ -95,22 +110,22 @@ namespace SiliconStudio.Quantum.Contents
                 }
                 if (value.GetType().GetTypeInfo().IsValueType)
                 {
-                    var containerValue = Container.Value;
-                    Member.Set(containerValue, value);
+                    var containerValue = Parent.Value;
+                    MemberDescriptor.Set(containerValue, value);
                 }
                 UpdateReferences();
                 NotifyContentChanged(args);
             }
             else if (dictionaryDescriptor != null)
             {
-                var args = new ContentChangeEventArgs(this, itemIndex, ContentChangeType.CollectionAdd, null, newItem);
+                var args = new MemberNodeChangeEventArgs(this, itemIndex, ContentChangeType.CollectionAdd, null, newItem);
                 NotifyContentChanging(args);
                 var value = Value;
-                dictionaryDescriptor.SetValue(value, itemIndex.Value, newItem);
+                dictionaryDescriptor.AddToDictionary(value, itemIndex.Value, newItem);
                 if (value.GetType().GetTypeInfo().IsValueType)
                 {
-                    var containerValue = Container.Value;
-                    Member.Set(containerValue, value);
+                    var containerValue = Parent.Value;
+                    MemberDescriptor.Set(containerValue, value);
                 }
                 UpdateReferences();
                 NotifyContentChanged(args);
@@ -124,7 +139,7 @@ namespace SiliconStudio.Quantum.Contents
         public override void Remove(object item, Index itemIndex)
         {
             if (itemIndex.IsEmpty) throw new ArgumentException(@"The given index should not be empty.", nameof(itemIndex));
-            var args = new ContentChangeEventArgs(this, itemIndex, ContentChangeType.CollectionRemove, item, null);
+            var args = new MemberNodeChangeEventArgs(this, itemIndex, ContentChangeType.CollectionRemove, item, null);
             NotifyContentChanging(args);
             var collectionDescriptor = Descriptor as CollectionDescriptor;
             var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
@@ -138,7 +153,7 @@ namespace SiliconStudio.Quantum.Contents
                 else
                 {
                     collectionDescriptor.Remove(value, item);
-                }               
+                }
             }
             else if (dictionaryDescriptor != null)
             {
@@ -149,11 +164,31 @@ namespace SiliconStudio.Quantum.Contents
 
             if (value.GetType().GetTypeInfo().IsValueType)
             {
-                var containerValue = Container.Value;
-                Member.Set(containerValue, value);
+                var containerValue = Parent.Value;
+                MemberDescriptor.Set(containerValue, value);
             }
             UpdateReferences();
             NotifyContentChanged(args);
+        }
+
+        /// <summary>
+        /// Raises the <see cref="Changing"/> event with the given parameters.
+        /// </summary>
+        /// <param name="args">The arguments of the event.</param>
+        protected void NotifyContentChanging(MemberNodeChangeEventArgs args)
+        {
+            PrepareChange?.Invoke(this, args);
+            Changing?.Invoke(this, args);
+        }
+
+        /// <summary>
+        /// Raises the <see cref="Changed"/> event with the given arguments.
+        /// </summary>
+        /// <param name="args">The arguments of the event.</param>
+        protected void NotifyContentChanged(MemberNodeChangeEventArgs args)
+        {
+            Changed?.Invoke(this, args);
+            FinalizeChange?.Invoke(this, args);
         }
 
         protected internal override void UpdateFromMember(object newValue, Index index)
@@ -164,10 +199,14 @@ namespace SiliconStudio.Quantum.Contents
         private void Update(object newValue, Index index, bool sendNotification)
         {
             var oldValue = Retrieve(index);
-            ContentChangeEventArgs args = null;
+            MemberNodeChangeEventArgs args = null;
             if (sendNotification)
             {
-                args = new ContentChangeEventArgs(this, index, ContentChangeType.ValueChange, oldValue, newValue);
+                if (index == Index.Empty)
+                    args = new MemberNodeChangeEventArgs(this, index, ContentChangeType.ValueChange, oldValue, newValue);
+                else
+                    args = new MemberNodeChangeEventArgs(this, index, ContentChangeType.CollectionUpdate, oldValue, newValue);
+
                 NotifyContentChanging(args);
             }
 
@@ -188,12 +227,12 @@ namespace SiliconStudio.Quantum.Contents
             }
             else
             {
-                if (Container.Value == null) throw new InvalidOperationException("Container's value is null");
-                var containerValue = Container.Value;
-                Member.Set(containerValue, newValue);
+                if (Parent.Value == null) throw new InvalidOperationException("Container's value is null");
+                var containerValue = Parent.Value;
+                MemberDescriptor.Set(containerValue, newValue);
 
-                if (Container.Value.GetType().GetTypeInfo().IsValueType)
-                    Container.UpdateFromMember(containerValue, Index.Empty);
+                if (Parent.Value.GetType().GetTypeInfo().IsValueType)
+                    ((ContentNode)Parent).UpdateFromMember(containerValue, Index.Empty);
             }
             UpdateReferences();
             if (sendNotification)
@@ -204,11 +243,12 @@ namespace SiliconStudio.Quantum.Contents
 
         private void UpdateReferences()
         {
-            var graphNode = OwnerNode as IGraphNode;
-            if (graphNode != null)
-            {
-                nodeContainer?.UpdateReferences(graphNode);
-            }
+            nodeContainer?.UpdateReferences(this);
+        }
+
+        public override string ToString()
+        {
+            return $"{{Node: Member {Name} = [{Value}]}}";
         }
     }
 }

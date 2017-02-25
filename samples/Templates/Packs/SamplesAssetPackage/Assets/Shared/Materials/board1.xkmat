@@ -7,12 +7,12 @@ Attributes:
         NormalMap: !ComputeBinaryColor
             Operator: Multiply
             LeftChild: !ComputeTextureColor
-                Swizzle: null
-                Texture: 0b7a4ae8-2862-4867-beea-5d1834db2bfd/19f0e1e8-ae1b-43df-8811-00cd7dec23a5:Textures/wood_table_tex_Nml_2
+                Texture: 19f0e1e8-ae1b-43df-8811-00cd7dec23a5:Textures/wood_table_tex_Nml_2
                 FallbackValue:
                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                 Scale: {X: 1.0, Y: 1.0}
                 Offset: {X: 0.0, Y: 0.0}
+                Swizzle: null
             RightChild: !ComputeFloat4
                 Value: {X: 0.015, Y: 0.015, Z: 1.0, W: 1.0}
         ScaleAndBias: false
@@ -21,7 +21,7 @@ Attributes:
         GlossinessMap: !ComputeBinaryScalar
             Operator: Multiply
             LeftChild: !ComputeTextureScalar
-                Texture: 148096c3-b2ac-49d4-960b-4bab9a61da32/e9e282e5-aaa7-4745-87a1-8145c6bf2cc6:Textures/wood_table_tex_Spe_2
+                Texture: e9e282e5-aaa7-4745-87a1-8145c6bf2cc6:Textures/wood_table_tex_Spe_2
                 FallbackValue:
                     Value: 1.0
                 Scale: {X: 1.0, Y: 1.0}
@@ -31,30 +31,27 @@ Attributes:
         Invert: true
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: fbe1e023-8d0a-4eb9-a527-56d39170e4d1/7c18fbc9-27ef-4e6d-8a72-bee483a484ce:Textures/wood_table_tex_Col
+            Texture: 7c18fbc9-27ef-4e6d-8a72-bee483a484ce:Textures/wood_table_tex_Col
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialSpecularMapFeature
         SpecularMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: c9143012-a86b-4f1b-81d5-1e849e10a306/e9e282e5-aaa7-4745-87a1-8145c6bf2cc6:Textures/wood_table_tex_Spe_2
+            Texture: e9e282e5-aaa7-4745-87a1-8145c6bf2cc6:Textures/wood_table_tex_Spe_2
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
         Intensity: !ComputeFloat
             Value: 0.3
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: 29131972-f3a6-455f-8d11-34b152fd0c2c
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: 65e044d5-d5a2-4778-abec-80bb9243f02c
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: c99c4969-26af-4b30-a84b-4086010b962f
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

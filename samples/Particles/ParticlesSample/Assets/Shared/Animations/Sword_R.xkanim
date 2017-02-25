@@ -1,10 +1,19 @@
 !Animation
 Id: b5583c0c-d476-4f03-b8df-fb0f7fc27405
-SerializedVersion: {Xenko: 1.5.0-alpha02}
+SerializedVersion: {Xenko: 1.10.0-alpha01}
 Tags: []
 Source: ../../../Resources/Animation/Sword_R.fbx
+ClipDuration:
+    Enabled: false
+    StartAnimationTime: 0:00:00:00.0000000
+    EndAnimationTime: 0:00:30:00.0000000
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 RepeatMode: LoopInfinite
-Skeleton: a6a5d799-e23c-49e4-907b-3d52c4854d71/4807ba4e-c278-4af3-859b-ca76cc0652a4:Models/ModelSkeleton
+Type: !StandardAnimationAssetType {}
+Skeleton: 4807ba4e-c278-4af3-859b-ca76cc0652a4:Models/ModelSkeleton
 RootMotion: false
-PreviewModel: ad66bdc2-d1d6-4178-99c4-f5cccbbf7fcc/f576f6eb-4550-4684-ad23-2b93f72f17d7:Models/Character
+PreviewModel: f576f6eb-4550-4684-ad23-2b93f72f17d7:Models/Character
+AnimationTimeMinimum: 0:00:00:00.0000000
+AnimationTimeMaximum: 0:00:00:00.8330000
+~SourceHashes:
+    f7d0b6d487e4e59cc610f1209e962b9d~../../../Resources/Animation/Sword_R.fbx: 140c2370216a7c9bac337b9b2e47e5d8

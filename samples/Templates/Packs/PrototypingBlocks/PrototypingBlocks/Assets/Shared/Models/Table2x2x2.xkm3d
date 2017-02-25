@@ -5,9 +5,10 @@ Tags: []
 Source: ../../../Resources/Models/Table2x2x2.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    -   ~Id: 50624c2a-842d-2c61-d0bc-56d6d0bc56d6
+    2a4c62502d84612cd0bc56d6d0bc56d6:
         Name: GridMT
         MaterialInstance:
-            ~Id: 17f47f23-bbec-4ca6-936c-49ee1db081c5
-            Material: 491b1df6-6acf-4f04-9dab-f6e0324d90b1/12a5c5a3-ac04-48dc-9b6a-b15a44b0ef7f:Materials/GridMT
+            Material: 12a5c5a3-ac04-48dc-9b6a-b15a44b0ef7f:Materials/GridMT
 Skeleton: null
+~SourceHashes:
+    0a5c5c66d09810c4ece6f4071b1a5f0f~../../../Resources/Models/Table2x2x2.fbx: b9d62bc68b40d14465219e0d60db89be

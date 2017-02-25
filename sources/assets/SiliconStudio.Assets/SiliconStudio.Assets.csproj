@@ -50,7 +50,6 @@
     <Compile Include="Analysis\AssetCompositePartReferenceCollector.cs" />
     <Compile Include="Analysis\AssetLink.cs" />
     <Compile Include="Analysis\AssetDependencyManager.cs" />
-    <Compile Include="Analysis\AssetDependencyManagerExtensions.cs" />
     <Compile Include="Analysis\AssetDependencies.cs" />
     <Compile Include="Analysis\AssetDependencySearchOptions.cs" />
     <Compile Include="Analysis\AssetFileChangedEvent.cs" />
@@ -60,14 +59,41 @@
     <Compile Include="Analysis\AssetReferenceAnalysis.cs" />
     <Compile Include="Analysis\AssetReferenceLink.cs" />
     <Compile Include="Analysis\AssetPartsAnalysis.cs" />
+    <Compile Include="Analysis\CollectionItemIdsAnalysis.cs" />
+    <Compile Include="Analysis\IAssetDependencyManager.cs" />
+    <Compile Include="Analysis\IdentifiableObjectAnalysis.cs" />
+    <Compile Include="AssetCollectionItemIdHelper.cs" />
     <Compile Include="AssetCompositeHierarchy.cs" />
     <Compile Include="AssetCompositeHierarchyData.cs" />
+    <Compile Include="AssetContentTypeAttribute.cs" />
     <Compile Include="AssetItemExtensions.cs" />
+    <Compile Include="AssetLogger.cs" />
     <Compile Include="AssetPartCollection.cs" />
+    <Compile Include="AssetTracker.cs" />
+    <Compile Include="BasePart.cs" />
+    <Compile Include="CollectionIdGenerator.cs" />
+    <Compile Include="DynamicYaml\DynamicYaml.cs" />
+    <Compile Include="DynamicYaml\DynamicYamlArray.cs" />
+    <Compile Include="DynamicYaml\DynamicYamlEmpty.cs" />
+    <Compile Include="DynamicYaml\DynamicYamlExtensions.cs" />
+    <Compile Include="DynamicYaml\DynamicYamlMapping.cs" />
+    <Compile Include="DynamicYaml\DynamicYamlObject.cs" />
+    <Compile Include="DynamicYaml\DynamicYamlScalar.cs" />
+    <Compile Include="DynamicYaml\IDynamicYamlNode.cs" />
+    <Compile Include="IAssetFinder.cs" />
     <Compile Include="IAssetPartDesign.cs" />
     <Compile Include="IProjectAsset.cs" />
     <Compile Include="IProjectFileGeneratorAsset.cs" />
+    <Compile Include="Reflection\CollectionItemIdentifiers.cs" />
+    <Compile Include="Reflection\CollectionItemIdHelper.cs" />
+    <Compile Include="Reflection\IdentifiableHelper.cs" />
+    <Compile Include="Reflection\ItemId.cs" />
+    <Compile Include="Reflection\OverridePostfixes.cs" />
+    <Compile Include="Reflection\OverrideTarget.cs" />
+    <Compile Include="Reflection\OverrideType.cs" />
+    <Compile Include="Reflection\ShadowId.cs" />
     <Compile Include="Serializers\AssetCompositeVisitorContext.cs" />
+    <Compile Include="Serializers\AssetPartContainedAttribute.cs" />
     <Compile Include="Serializers\AssetPartReferenceAttribute.cs" />
     <Compile Include="Serializers\AssetCompositeSerializer.cs" />
     <Compile Include="Serializers\IAssetPartReference.cs" />
@@ -80,7 +106,6 @@
     <Compile Include="Analysis\ContentLinkType.cs" />
     <Compile Include="Analysis\PackageAnalysis.cs" />
     <Compile Include="Analysis\PackageAnalysisParameters.cs" />
-    <Compile Include="Analysis\PackageAssetTemplatingAnalysis.cs" />
     <Compile Include="Analysis\PackageSessionAnalysisBase.cs" />
     <Compile Include="Tracking\SourceFileChangeType.cs" />
     <Compile Include="Tracking\SourceFilesCollector.cs" />
@@ -95,11 +120,9 @@
     <Compile Include="AssetHash.cs" />
     <Compile Include="AssetWithSource.cs" />
     <Compile Include="AssetImporterParameters.cs" />
-    <Compile Include="AssetItemCollection.cs" />
     <Compile Include="AssetMember.cs" />
     <Compile Include="AssetMigrationContext.cs" />
     <Compile Include="AssetPart.cs" />
-    <Compile Include="AssetPropertyKeyNameResolver.cs" />
     <Compile Include="AssetReferenceDataSerializer.cs" />
     <Compile Include="AssetSelector.cs" />
     <Compile Include="AssetFormatVersionAttribute.cs" />
@@ -117,14 +140,6 @@
     <Compile Include="Compiler\PackageAssetEnumerator.cs" />
     <Compile Include="Compiler\RootPackageAssetEnumerator.cs" />
     <Compile Include="DefaultAssetFactory.cs" />
-    <Compile Include="Diff\AssetMergePolicies.cs" />
-    <Compile Include="Diff\Diff3NodeType.cs" />
-    <Compile Include="Diff\DiffAttributeBase.cs" />
-    <Compile Include="Diff\DiffCompareKeyAttribute.cs" />
-    <Compile Include="Diff\DiffNodeBuilderAttribute.cs" />
-    <Compile Include="Diff\DiffMemberAttribute.cs" />
-    <Compile Include="Diff\IDiffKey.cs" />
-    <Compile Include="Diff\IDiffProxy.cs" />
     <Compile Include="DirectoryHelper.cs" />
     <Compile Include="DirtyFlagChangedDelegate.cs" />
     <Compile Include="EmptyAssetUpgrader.cs" />
@@ -136,10 +151,7 @@
     <Compile Include="Compiler\AssetCompilerContext.cs" />
     <Compile Include="Compiler\AssetCompilerRegistry.cs" />
     <Compile Include="Compiler\AttributeBasedRegistry.cs" />
-    <Compile Include="Diff\AssetMerge.cs" />
-    <Compile Include="Diff\Diff3ChangeType.cs" />
     <Compile Include="Compiler\FailedCommand.cs" />
-    <Compile Include="Diff\MergeResult.cs" />
     <Compile Include="IAssetCompileTimeDependencies.cs" />
     <Compile Include="IAssetComposite.cs" />
     <Compile Include="IAssetFactory.cs" />
@@ -181,8 +193,6 @@
     <Compile Include="Compiler\ImportStreamCommand.cs" />
     <Compile Include="Compiler\ItemListCompiler.cs" />
     <Compile Include="Compiler\PackageCompiler.cs" />
-    <Compile Include="AssetBaseChangedEvent.cs" />
-    <Compile Include="AssetBase.cs" />
     <Compile Include="PackageSessionProfilingKeys.cs" />
     <Compile Include="PackageSessionResult.cs" />
     <Compile Include="ProjectFileGeneratorAsset.cs" />
@@ -191,9 +201,8 @@
     <Compile Include="PackageSaveParameters.cs" />
     <Compile Include="RootAssetCollection.cs" />
     <Compile Include="Serializers\AssetItemSerializer.cs" />
-    <Compile Include="Serializers\AssetYamlSerializer.cs" />
+    <Compile Include="Serializers\YamlAssetSerializer.cs" />
     <Compile Include="Serializers\InvariantObjectCloneSerializer.cs" />
-    <Compile Include="Serializers\YamlForwardLogger.cs" />
     <Compile Include="SolutionPlatformCollection.cs" />
     <Compile Include="SourceFileMemberAttribute.cs" />
     <Compile Include="TemplateFolder.cs" />
@@ -207,6 +216,7 @@
     <Compile Include="RawAssetCompiler.cs" />
     <Compile Include="RawAssetImporter.cs" />
     <Compile Include="UPathAttribute.cs" />
+    <Compile Include="Visitors\AssetMemberVisitorBase.cs" />
     <Compile Include="VSProjectHelper.cs" />
     <Compile Include="RawImport.cs" />
     <Compile Include="ProjectReference.cs" />
@@ -238,7 +248,7 @@
     <Compile Include="AssetDescriptionAttribute.cs" />
     <Compile Include="Asset.cs" />
     <Compile Include="PackageAssetCollection.cs" />
-    <Compile Include="AssetSerializer.cs" />
+    <Compile Include="AssetFileSerializer.cs" />
     <Compile Include="Diagnostics\AssetLoggerExtensions.cs" />
     <Compile Include="Diagnostics\AssetLogMessage.cs" />
     <Compile Include="Diagnostics\AssetMessageCode.cs" />
@@ -249,19 +259,7 @@
     </Compile>
     <Compile Include="AssetReference.cs" />
     <Compile Include="AssetAliasAttribute.cs" />
-    <Compile Include="Diff\AssetDiff.cs" />
-    <Compile Include="Visitors\DataVisitArrayItem.cs" />
-    <Compile Include="Diff\Diff3Node.cs" />
-    <Compile Include="Visitors\DataVisitNodeExtensions.cs" />
-    <Compile Include="Visitors\DataVisitNodeBuilder.cs" />
-    <Compile Include="Visitors\DataVisitDictionaryItem.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="Visitors\DataVisitNode.cs" />
-    <Compile Include="Visitors\DataVisitListItem.cs" />
-    <Compile Include="Visitors\DataVisitMember.cs" />
-    <Compile Include="Visitors\DataVisitObject.cs" />
-    <Compile Include="Visitors\IDataVisitNode.cs" />
-    <Compile Include="Serializers\AssetBaseSerializer.cs" />
     <Compile Include="Serializers\AssetReferenceSerializer.cs" />
     <Compile Include="AssetRegistry.cs" />
     <Compile Include="AssetItem.cs" />
@@ -271,6 +269,27 @@
     <Compile Include="PropertyCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\SearchDirection.cs" />
+    <Compile Include="Serializers\YamlAssetProfile.cs" />
+    <Compile Include="UnloadableObjectRemover.cs" />
+    <Compile Include="Yaml\AssetYamlSerializer.cs" />
+    <Compile Include="Yaml\CollectionWithIdsSerializer.cs" />
+    <Compile Include="Yaml\CollectionWithIdsSerializerBase.cs" />
+    <Compile Include="Yaml\CollectionWithItemIds.cs" />
+    <Compile Include="Yaml\ContextAttributeSerializer.cs" />
+    <Compile Include="Yaml\AssetObjectSerializerBackend.cs" />
+    <Compile Include="Yaml\DeletedKeyWithId.cs" />
+    <Compile Include="Yaml\DictionaryWithIdsSerializer.cs" />
+    <Compile Include="Yaml\DictionaryWithItemIds.cs" />
+    <Compile Include="Yaml\ErrorRecoverySerializer.cs" />
+    <Compile Include="Yaml\IKeyWithId.cs" />
+    <Compile Include="Yaml\ItemIdSerializer.cs" />
+    <Compile Include="Yaml\ItemIdSerializerBase.cs" />
+    <Compile Include="Yaml\IUnloadable.cs" />
+    <Compile Include="Yaml\KeyValuePairSerializer.cs" />
+    <Compile Include="Yaml\KeyWithId.cs" />
+    <Compile Include="Yaml\KeyWithIdSerializer.cs" />
+    <Compile Include="Yaml\UnloadableObjectInstantiator.cs" />
+    <Compile Include="Yaml\YamlAssetPath.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">
@@ -288,9 +307,15 @@
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
+      <Project>{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}</Project>
+      <Name>SiliconStudio.Core.Reflection</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
       <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
       <Name>SiliconStudio.Core.Yaml</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
@@ -341,6 +366,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\..\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Interop;
 
 namespace SiliconStudio.Presentation.Extensions
@@ -22,7 +23,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// </remarks>
         /// <seealso cref="NativeHelper.GetCursorPos"/>
         /// <seealso cref="Visual.PointFromScreen"/>
-        public static Point GetCursorRelativePosition(this Visual visual)
+        public static Point GetCursorRelativePosition([NotNull] this Visual visual)
         {
             if (visual == null) throw new ArgumentNullException(nameof(visual));
 
@@ -38,20 +39,22 @@ namespace SiliconStudio.Presentation.Extensions
         /// <returns></returns>
         /// <seealso cref="WindowHelper.GetCursorScreenPosition"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Point GetCursorScreenPosition(this Visual visual)
+        public static Point GetCursorScreenPosition([NotNull] this Visual visual)
         {
             if (visual == null) throw new ArgumentNullException(nameof(visual));
 
             return Window.GetWindow(visual).GetCursorScreenPosition();
         }
 
+        [CanBeNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Visual FindAdornable(this Visual source)
+        public static Visual FindAdornable([NotNull] this Visual source)
         {
             return FindAdornableOfType<Visual>(source);
         }
 
-        public static T FindAdornableOfType<T>(this Visual source) where T : Visual
+        [CanBeNull]
+        public static T FindAdornableOfType<T>([NotNull] this Visual source) where T : Visual
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
 
@@ -70,7 +73,8 @@ namespace SiliconStudio.Presentation.Extensions
             return null;
         }
 
-        public static AdornerLayer FindAdornerLayer(this Visual source)
+        [CanBeNull]
+        public static AdornerLayer FindAdornerLayer([NotNull] this Visual source)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
 
@@ -97,7 +101,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="rect">The <see cref="Rect"/> value in screen coordinates.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Rect RectFromScreen(this Visual visual, Rect rect)
+        public static Rect RectFromScreen([NotNull] this Visual visual, Rect rect)
         {
             return RectFromScreen(visual, ref rect);
         }
@@ -108,7 +112,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="visual"></param>
         /// <param name="rect">The <see cref="Rect"/> value in screen coordinates.</param>
         /// <returns></returns>
-        public static Rect RectFromScreen(this Visual visual, ref Rect rect)
+        public static Rect RectFromScreen([NotNull] this Visual visual, ref Rect rect)
         {
             if (visual == null) throw new ArgumentNullException(nameof(visual));
 
@@ -124,7 +128,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="rect">The <see cref="Rect"/> value that represents the current coordinate system of the <see cref="Visual"/>.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Rect RectToScreen(this Visual visual, Rect rect)
+        public static Rect RectToScreen([NotNull] this Visual visual, Rect rect)
         {
             return RectToScreen(visual, ref rect);
         }
@@ -135,7 +139,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="visual"></param>
         /// <param name="rect">The <see cref="Rect"/> value that represents the current coordinate system of the <see cref="Visual"/>.</param>
         /// <returns></returns>
-        public static Rect RectToScreen(this Visual visual, ref Rect rect)
+        public static Rect RectToScreen([NotNull] this Visual visual, ref Rect rect)
         {
             if (visual == null) throw new ArgumentNullException(nameof(visual));
 

@@ -1,41 +1,32 @@
 !SceneAsset
 Id: 365136b9-adbe-4c9a-8eeb-563894b4bd08
-SerializedVersion: {Xenko: 1.9.0-beta02}
+SerializedVersion: {Xenko: 1.9.0-beta06}
 Tags: []
 SceneSettings:
     Id: 40dab724-ad13-437e-8790-a5e98fa9c58a
     GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: 2fc8776a-9287-49ae-aaaa-9d68242dc00d
-        Cameras: []
-        Layers: []
+        Cameras: {}
+        Layers: {}
         Master:
-            ~Id: fb544d2d-ff82-4cef-8c0a-95cc900b6ea0
             Name: SceneGraphicsLayer
             Output: !MasterRenderFrameProvider {}
             Renderers:
-                - !ClearRenderFrameRenderer
-                    ~Id: 9589c6db-66e2-4944-960f-fdb127986656
+                dbc68995e2664449960ffdb127986656: !ClearRenderFrameRenderer
                     Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
                     Output: !CurrentRenderFrameProvider {}
-                - !SceneCameraRenderer
-                    ~Id: bc6985df-56cd-4456-b699-5f77850ad23b
-                    Mode: !CameraRendererModeForward
-                        ~Id: 7ed391fb-733b-4b46-9e72-8b4395bb721f
+                df8569bccd565644b6995f77850ad23b: !SceneCameraRenderer
+                    Mode: !CameraRendererModeForward {}
                     Camera:
-                        ~Id: f7e2a060-eb9b-4ff4-aaee-9874332a0e3e
                         Index: 0
                     Output: !CurrentRenderFrameProvider {}
                     Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
                     ForceAspectRatio: false
     EditorSettings:
-        ~Id: 38545b01-4e8a-46ac-a81f-b8af15d168ff
         GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
         SceneUnit: 1.0
         Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: 104fe299-ff2e-4baa-838e-fdb2eee7e312
             BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
 Hierarchy:
-    ~Id: 2e4de7c3-5c42-4d8a-a6e3-77cac52dd05c
     RootPartIds:
         - 6a89de77-e3d6-40c4-9504-f75c5983d911
         - 39779b9e-9eaa-4aa2-8cd9-3f3d3a0afd7a
@@ -44,25 +35,25 @@ Hierarchy:
                 Id: 39779b9e-9eaa-4aa2-8cd9-3f3d3a0afd7a
                 Name: Background
                 Components:
-                    - !TransformComponent
-                        ~Id: dabd31bc-d65e-4adf-a0fb-4595f9099d2d
-                        Children: []
+                    bc31bdda5ed6df4aa0fb4595f9099d2d: !TransformComponent
+                        Id: dabd31bc-d65e-4adf-a0fb-4595f9099d2d
                         Position: {X: 0.0, Y: 0.0, Z: -1.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !BackgroundComponent
-                        ~Id: 3977262e-8b68-48c6-b58d-8886778b12b4
-                        Texture: e472fb82-9b2c-43fb-809f-96a6226725a7/464f4cc7-2978-4c47-ae31-6001c905c896:XenkoBackground
+                        Children: {}
+                    2e267739688bc648b58d8886778b12b4: !BackgroundComponent
+                        Id: 3977262e-8b68-48c6-b58d-8886778b12b4
+                        Texture: 464f4cc7-2978-4c47-ae31-6001c905c896:XenkoBackground
         -   Entity:
                 Id: 6a89de77-e3d6-40c4-9504-f75c5983d911
                 Name: Effect
                 Components:
-                    - !TransformComponent
-                        ~Id: f218808e-5386-453e-b287-1b343cc03ead
-                        Children: []
+                    8e8018f286533e45b2871b343cc03ead: !TransformComponent
+                        Id: f218808e-5386-453e-b287-1b343cc03ead
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !CustomEffect.EffectScript,CustomEffect.Game
-                        ~Id: 274a57bf-8017-4ffb-8b3d-04b2ba7cd9bb
-                        Logo: 5ea5ecb7-97e0-4efe-8500-9dd530dc055d/cbf696d1-ec12-4cb6-9518-b4a9b51dfaf6:LogoXenko
+                        Children: {}
+                    bf574a271780fb4f8b3d04b2ba7cd9bb: !CustomEffect.EffectScript,CustomEffect.Game
+                        Id: 274a57bf-8017-4ffb-8b3d-04b2ba7cd9bb
+                        Logo: cbf696d1-ec12-4cb6-9518-b4a9b51dfaf6:LogoXenko

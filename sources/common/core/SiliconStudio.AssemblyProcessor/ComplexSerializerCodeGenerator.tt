@@ -73,6 +73,7 @@ namespace SiliconStudio.DataSerializers
 <# } #>
 
 			DataSerializerFactory.RegisterSerializationAssembly(assemblySerializers);
+            AssemblyRegistry.Register(typeof(<#=assemblySerializerFactoryClassName#>).GetTypeInfo().Assembly, AssemblyCommonCategories.Engine);
         }
 	}
 }

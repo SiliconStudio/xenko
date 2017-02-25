@@ -14,7 +14,6 @@ using SiliconStudio.Xenko.Rendering.Data;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    [CommandDependsOn(typeof(Xenko.Importer.AssimpNET.MeshConverter))]
     [Description("Import Assimp")]
     public class ImportAssimpCommand : ImportModelCommand
     {
@@ -56,6 +55,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         {
             var meshConverter = this.CreateMeshConverter(commandContext);
             var sceneData = meshConverter.ConvertAnimation(SourcePath, Location);
+
             duration = sceneData.Duration;
             return sceneData.AnimationClips;
         }

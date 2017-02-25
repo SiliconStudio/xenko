@@ -3,9 +3,7 @@ Id: 5fad01ad-2649-4de9-8a81-b117e320a2ef
 SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
 FontSource: !SystemFontProvider
-    ~Id: 288099f1-bfd4-4882-86af-cdf680c96479
     FontName: Arial
     Style: Italic
 FontType: !RuntimeRasterizedSpriteFontType
-    ~Id: e096d06d-20ce-40bf-971c-6de893e115e1
     Size: 21.33333

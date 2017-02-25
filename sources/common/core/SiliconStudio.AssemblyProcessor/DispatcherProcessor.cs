@@ -311,7 +311,7 @@ namespace SiliconStudio.AssemblyProcessor
             // Create pool field
             var poolField = new FieldDefinition("<pool>", FieldAttributes.Public | FieldAttributes.Static, poolType.MakeGenericType(closureGenericType));
             closureType.Fields.Add(poolField);
-            var localFieldReference = poolField.MakeGeneric(genericParameters);
+            var poolFieldReference = poolField.MakeGeneric(genericParameters);
 
             // Initialize pool
             var cctor = GetOrCreateClassConstructor(closureType);
@@ -321,20 +321,21 @@ namespace SiliconStudio.AssemblyProcessor
             ilProcessor2.InsertBefore(retInstruction, ilProcessor2.Create(OpCodes.Ldftn, factoryMethod.MakeGeneric(genericParameters)));
             ilProcessor2.InsertBefore(retInstruction, ilProcessor2.Create(OpCodes.Newobj, funcConstructor.MakeGeneric(closureGenericType)));
             ilProcessor2.InsertBefore(retInstruction, ilProcessor2.Create(OpCodes.Newobj, poolConstructor.MakeGeneric(closureGenericType)));
-            ilProcessor2.InsertBefore(retInstruction, ilProcessor2.Create(OpCodes.Stsfld, localFieldReference));
+            ilProcessor2.InsertBefore(retInstruction, ilProcessor2.Create(OpCodes.Stsfld, poolFieldReference));
 
             // Implement IPooledClosure
             closureType.Interfaces.Add(pooledClosureType);
 
             // Create reference count field
-            var referenceCountField = new FieldDefinition("<referenceCount>", FieldAttributes.Public, context.Assembly.MainModule.TypeSystem.Int32);
-            closureType.Fields.Add(referenceCountField);
+            var countField = new FieldDefinition("<referenceCount>", FieldAttributes.Public, context.Assembly.MainModule.TypeSystem.Int32);
+            closureType.Fields.Add(countField);
+            var oountFieldReference = countField.MakeGeneric(genericParameters);
 
             // Create AddReference method
             var addReferenceMethod = new MethodDefinition("AddReference", MethodAttributes.HideBySig | MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.Virtual | MethodAttributes.NewSlot, context.Assembly.MainModule.TypeSystem.Void);
             var ilProcessor4 = addReferenceMethod.Body.GetILProcessor();
             ilProcessor4.Emit(OpCodes.Ldarg_0);
-            ilProcessor4.Emit(OpCodes.Ldflda, referenceCountField);
+            ilProcessor4.Emit(OpCodes.Ldflda, oountFieldReference);
             ilProcessor4.Emit(OpCodes.Call, interlockedIncrementMethod);
             ilProcessor4.Emit(OpCodes.Pop);
             ilProcessor4.Emit(OpCodes.Ret);
@@ -346,13 +347,31 @@ namespace SiliconStudio.AssemblyProcessor
             retInstruction = ilProcessor4.Create(OpCodes.Ret);
             // Check decremented reference count
             ilProcessor4.Emit(OpCodes.Ldarg_0);
-            ilProcessor4.Emit(OpCodes.Ldflda, referenceCountField);
+            ilProcessor4.Emit(OpCodes.Ldflda, oountFieldReference);
             ilProcessor4.Emit(OpCodes.Call, interlockedDecrementMethod);
             ilProcessor4.Emit(OpCodes.Ldc_I4_0);
             ilProcessor4.Emit(OpCodes.Ceq);
             ilProcessor4.Emit(OpCodes.Brfalse_S, retInstruction);
+            // Clear fields
+            foreach (var field in closureType.Fields)
+            {
+                if (field.IsStatic || field.FieldType.IsPrimitive || field == countField)
+                    continue;
+
+                ilProcessor4.Emit(OpCodes.Ldarg_0);
+                if (field.FieldType.IsValueType)
+                {
+                    ilProcessor4.Emit(OpCodes.Ldflda, field.MakeGeneric(genericParameters));
+                    ilProcessor4.Emit(OpCodes.Initobj, field.FieldType);
+                }
+                else
+                {
+                    ilProcessor4.Emit(OpCodes.Ldnull);
+                    ilProcessor4.Emit(OpCodes.Stfld, field.MakeGeneric(genericParameters));
+                }
+            }
             // Release this to pool
-            ilProcessor4.Emit(OpCodes.Ldsfld, localFieldReference);
+            ilProcessor4.Emit(OpCodes.Ldsfld, poolFieldReference);
             ilProcessor4.Emit(OpCodes.Ldarg_0);
             ilProcessor4.Emit(OpCodes.Callvirt, poolReleaseMethod.MakeGeneric(closureGenericType));
             ilProcessor4.Append(retInstruction);

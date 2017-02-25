@@ -5,16 +5,14 @@ Tags: []
 Source: ../../../Resources/Models/XenkoCrate.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    -   ~Id: 1a5b0be6-04ec-addf-5b13-7e381df5f2e1
+    e60b5b1aec04dfad5b137e381df5f2e1:
         Name: XenkoLogo
         MaterialInstance:
-            ~Id: 15f0a928-5dcb-4a99-9f09-a752d5a54d28
-            Material: b15c8531-fbbd-4e43-9d6e-cd5a601ae41e/7566aa25-00e0-49c4-8d34-5f2b36a74567:Materials/LogoB
-    -   ~Id: 17d1462c-ad75-c923-75ad-23c975ad23c9
+            Material: 7566aa25-00e0-49c4-8d34-5f2b36a74567:Materials/LogoB
+    2c46d11775ad23c975ad23c975ad23c9:
         Name: Fame
         MaterialInstance:
-            ~Id: 44711f37-f0f3-4982-ae0e-976f01e83367
-            Material: 5d59bbd3-0887-4ec6-8cb0-f3f05af22639/bf5ac41a-d259-437b-b4df-c658e7d0d880:Materials/FrameB
+            Material: bf5ac41a-d259-437b-b4df-c658e7d0d880:Materials/FrameB
 Skeleton: null
 ~SourceHashes:
-    ../../../Resources/Models/XenkoCrate.fbx: 6e3a5526c1cdb7001c9b7ea51ac583a0
+    d62e02bb1fd74960b61663e68b69ac5e~../../../Resources/Models/XenkoCrate.fbx: 6e3a5526c1cdb7001c9b7ea51ac583a0

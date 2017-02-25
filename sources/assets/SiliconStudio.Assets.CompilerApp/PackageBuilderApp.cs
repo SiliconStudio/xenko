@@ -12,7 +12,7 @@ using System.ServiceModel;
 using System.Text;
 
 using Mono.Options;
-
+using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -24,6 +24,7 @@ using SiliconStudio.Xenko.Particles;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 using SiliconStudio.Xenko.SpriteStudio.Offline;
+using SiliconStudio.Xenko.VisualStudio.Debugging;
 
 namespace SiliconStudio.Assets.CompilerApp
 {
@@ -149,6 +150,22 @@ namespace SiliconStudio.Assets.CompilerApp
                     }
                 }
                 },
+                {
+                    "reattach-debugger=", "Reattach to a Visual Studio debugger", v =>
+                    {
+                        int debuggerProcessId;
+                        if (!string.IsNullOrEmpty(v) && int.TryParse(v, out debuggerProcessId))
+                        {
+                            if (!Debugger.IsAttached)
+                            {
+                                using (var debugger = VisualStudioDebugger.GetByProcess(debuggerProcessId))
+                                {
+                                    debugger?.Attach();
+                                }
+                            }
+                        }
+                    }
+                },
             };
 
             TextWriterLogListener fileLogListener = null;
@@ -249,12 +266,12 @@ namespace SiliconStudio.Assets.CompilerApp
             }
             catch (OptionException e)
             {
-                options.Logger.Error("Command option '{0}': {1}", e.OptionName, e.Message);
+                options.Logger.Error($"Command option '{e.OptionName}': {e.Message}");
                 exitCode = BuildResultCode.CommandLineError;
             }
             catch (Exception e)
             {
-                options.Logger.Error("Unhandled exception: {0}", e, e.Message);
+                options.Logger.Error($"Unhandled exception", e);
                 exitCode = BuildResultCode.BuildError;
             }
             finally
@@ -286,7 +303,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 VSProjectHelper.Reset();
 
                 // Reset cache hold by YamlSerializer
-                YamlSerializer.ResetCache();
+                YamlSerializer.Default.ResetCache();
             }
             return (int)exitCode;
         }
@@ -301,11 +318,15 @@ namespace SiliconStudio.Assets.CompilerApp
             //$filename($row,$column): $error_type $error_code: $error_message
             //C:\Code\Xenko\sources\assets\SiliconStudio.Assets.CompilerApp\PackageBuilder.cs(89,13,89,70): warning CS1717: Assignment made to same variable; did you mean to assign something else?
             var builder = new StringBuilder();
-            builder.Append(message.Module ?? "AssetCompiler");
-            builder.Append(": ");
+            var assetLogMessage = message as AssetLogMessage;
+            // Location
+            if (assetLogMessage != null)
+                builder.Append($"{assetLogMessage.File}({assetLogMessage.Line + 1},{assetLogMessage.Character + 1}): ");
+            // Message type
             builder.Append(message.Type.ToString().ToLowerInvariant()).Append(" ");
             builder.Append((clock.ElapsedMilliseconds * 0.001).ToString("0.000"));
             builder.Append("s: ");
+            builder.Append($"[{message.Module ?? "AssetCompiler"}] ");
             builder.Append(message.Text);
             var exceptionInfo = message.ExceptionInfo;
             if (exceptionInfo != null)

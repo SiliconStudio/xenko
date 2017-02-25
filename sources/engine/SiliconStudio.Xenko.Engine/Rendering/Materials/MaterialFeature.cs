@@ -8,7 +8,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// A material feature
     /// </summary>
     [DataContract(Inherited = true)]
-    [NonIdentifiable]
     public abstract class MaterialFeature : IMaterialFeature
     {
         [DataMember(-20)]

@@ -3,14 +3,12 @@ Id: 5b5f75d3-4f7f-4325-b957-fd50161e104c
 SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
 FontSource: !SystemFontProvider
-    ~Id: 2df69661-2d5a-4b8d-90e7-d35dd4bd3f0d
     FontName: Arial
     Style: Regular
 FontType: !OfflineRasterizedSpriteFontType
-    ~Id: ebe11065-a0c1-4d36-986d-c1a38d987f82
     Size: 37.33333
     CharacterSet: null
     CharacterRegions:
-        -   ~Id: b972c23a-3a23-414c-9283-55e7fcf2111a
+        3ac272b9233a4c41928355e7fcf2111a:
             Start: ' '
             End: "\x7F"

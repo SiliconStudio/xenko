@@ -14,6 +14,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// </summary>
     [DataContract("SceneAsset")]
     [AssetDescription(FileSceneExtension, AllowArchetype = false)]
+    [AssetContentType(typeof(Scene))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetCompiler(typeof(SceneAssetCompiler))]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RemoveSourceUpgrader))]
@@ -46,11 +47,15 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta03", "1.7.0-beta04", typeof(EntityHierarchyAssetBase.EntityDesignUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta04", "1.9.0-beta01", typeof(CharacterSlopeUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta01", "1.9.0-beta02", typeof(SceneSettingsIdentifiableUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta02", "1.9.0-beta03", typeof(IdentifiableComponentUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta03", "1.9.0-beta04", typeof(BasePartsRemovalComponentUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta04", "1.9.0-beta05", typeof(MaterialFromModelComponentUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta05", "1.9.0-beta06", typeof(ParticleTrailEdgeUpgrader))]
     [Display(2000, "Scene")]
     [AssetPartReference(typeof(SceneSettings))]
     public partial class SceneAsset : EntityHierarchyAssetBase
     {
-        private const string CurrentVersion = "1.9.0-beta02";
+        private const string CurrentVersion = "1.9.0-beta06";
 
         public const string FileSceneExtension = ".xkscene;.pdxscene";
 
@@ -63,6 +68,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// Gets the scene settings for this instance.
         /// </summary>
         [DataMember(10)]
+        [AssetPartContained(typeof(SceneSettings))]
         public SceneSettings SceneSettings { get; private set; }
     }
 }

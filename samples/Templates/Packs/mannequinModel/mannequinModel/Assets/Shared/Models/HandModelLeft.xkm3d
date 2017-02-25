@@ -5,24 +5,22 @@ Tags: []
 Source: ../../../Resources/Models/HandModelLeft.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    -   ~Id: 87d8706a-ca29-326a-a5bb-95c95bade139
+    6a70d88729ca6a32a5bb95c95bade139:
         Name: SemiglossMT
         MaterialInstance:
-            ~Id: 2ae75080-2741-434a-b8a9-f009d0fe54e6
-            Material: d8a59122-7b6a-4f1d-93d3-0158492d787e/9d50f321-04f3-48ab-b49c-c414ef358343:Materials/BodyGray
-    -   ~Id: a3800032-3b13-e885-4f5c-5af64f5c5af6
+            Material: 9d50f321-04f3-48ab-b49c-c414ef358343:Materials/BodyGray
+    320080a3133b85e84f5c5af64f5c5af6:
         Name: GlossMT
         MaterialInstance:
-            ~Id: c310a6b2-b379-4bb0-b0fe-d63cfb8e15a8
-            Material: 8f261a70-9aeb-4c52-84dc-f0e2eee4e584/1b322c92-9a75-4b10-bd65-8104175c5f00:Materials/BodyWhite
-    -   ~Id: f8a3a4fa-5e30-7cd2-c904-838a9cc19a82
+            Material: 1b322c92-9a75-4b10-bd65-8104175c5f00:Materials/BodyWhite
+    faa4a3f8305ed27cc904838a9cc19a82:
         Name: upperMatteMT
         MaterialInstance:
-            ~Id: 47724893-f776-4f5b-b089-11d136c2957a
-            Material: bb6de00a-12ed-449e-8576-0d2a029ad9a6/b4152531-11a9-4174-8ec9-c1d0a3561714:Materials/MattBlackUpper
-    -   ~Id: 98fabee3-23ad-cfd3-a847-08dda84708dd
+            Material: b4152531-11a9-4174-8ec9-c1d0a3561714:Materials/MattBlackUpper
+    e3befa98ad23d3cfa84708dda84708dd:
         Name: lambert1
         MaterialInstance:
-            ~Id: 0b46ecac-0625-41ca-9324-2e46d54b3be9
-            Material: bb6de00a-12ed-449e-8576-0d2a029ad9a6/b4152531-11a9-4174-8ec9-c1d0a3561714:Materials/MattBlackUpper
-Skeleton: 30ac4310-c11e-435d-a383-1b49316fbdbf/b906bf22-0ae2-4b1d-943e-8377d7d34303:Models/HandModelLeft Skeleton
+            Material: b4152531-11a9-4174-8ec9-c1d0a3561714:Materials/MattBlackUpper
+Skeleton: b906bf22-0ae2-4b1d-943e-8377d7d34303:Models/HandModelLeft Skeleton
+~SourceHashes:
+    e2f82676e6d0728a055a986634539af4~../../../Resources/Models/HandModelLeft.fbx: 335e0e2de46ea68c9918da4ae7680215

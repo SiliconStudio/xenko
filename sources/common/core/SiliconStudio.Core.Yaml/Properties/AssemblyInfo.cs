@@ -44,6 +44,8 @@
 // SOFTWARE.
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("SiliconStudio.Core.Yaml")]
 [assembly: AssemblyDescription("The core SharpYaml library, which contains the implementation of the parser and the emitter.")]
+[assembly: InternalsVisibleTo("SiliconStudio.Core.Yaml.Tests")]

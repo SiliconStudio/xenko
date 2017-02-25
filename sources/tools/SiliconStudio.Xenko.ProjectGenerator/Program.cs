@@ -20,7 +20,9 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.VisualStudio;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.ProjectTemplating;
@@ -223,9 +225,6 @@ namespace SiliconStudio.Xenko.ProjectGenerator
 
                 platformProfile.ProjectReferences.Add(projectPlatformRef);
 
-                // Add build configuration per platform
-                platform.Properties.CopyTo(platformProfile.Properties, true);
-
                 package.Profiles.Add(platformProfile);
             }
 
@@ -257,10 +256,11 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
                     bool b;
-                    var asset = AssetSerializer.Default.Load(stream, filePath, null, out b) as Asset;
+                    Dictionary<YamlAssetPath, OverrideType> o;
+                    var asset = AssetFileSerializer.Default.Load(stream, filePath, null, out b, out o) as Asset;
                     if (asset != null)
                     {
-                        guid = asset.Id;
+                        guid = (Guid)asset.Id;
                     }
                 }
             }

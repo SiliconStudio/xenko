@@ -1,7 +1,6 @@
 !Package
 Id: 48195305-1f56-44a9-be69-7fa0597a50dc
-SerializedVersion: {Assets: 0.0.3}
-Tags: []
+SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: SpriteStudioDemo
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.9.4-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -20,7 +19,6 @@ Profiles:
             -   Path: Assets/Shared
             -   Path: SpriteStudioDemo.Game/Effects
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: c2cde5bc-7bd2-4e74-ab9e-9cf56aae0e79
                 Location: SpriteStudioDemo.Game/SpriteStudioDemo.Game.csproj
@@ -31,8 +29,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Windows
         OutputGroupDirectories: {}
-        Properties:
-            Xenko.GraphicsPlatform: Direct3D11
         ProjectReferences:
             -   Id: bde88c50-cf68-46ae-93f8-39509ad90176
                 Location: SpriteStudioDemo.Windows/SpriteStudioDemo.Windows.csproj

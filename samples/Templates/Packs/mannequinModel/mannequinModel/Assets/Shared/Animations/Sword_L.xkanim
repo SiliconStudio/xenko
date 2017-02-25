@@ -5,6 +5,6 @@ Tags: []
 Source: ../../../Resources/Animation/Sword_L.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 RepeatMode: LoopInfinite
-Skeleton: a6a5d799-e23c-49e4-907b-3d52c4854d71/a0d324bd-326a-4fd8-88a9-fc5e4dcc62e5:Models/mannequinModel Skeleton
+Skeleton: a0d324bd-326a-4fd8-88a9-fc5e4dcc62e5:Models/mannequinModel Skeleton
 RootMotion: false
-PreviewModel: ad66bdc2-d1d6-4178-99c4-f5cccbbf7fcc/f68ea240-695a-4de5-9884-60d77544fcd6:Models/mannequinModel
+PreviewModel: f68ea240-695a-4de5-9884-60d77544fcd6:Models/mannequinModel

@@ -43,6 +43,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -50,14 +51,13 @@ using System.Linq;
 
 namespace SiliconStudio.Core.Yaml.Serialization
 {
-    class OrderedDictionary<TKey, TValue> : IOrderedDictionary<TKey, TValue>, IList<KeyValuePair<TKey, TValue>>
+    public class OrderedDictionary<TKey, TValue> : IOrderedDictionary<TKey, TValue>, IList<KeyValuePair<TKey, TValue>>, IDictionary
     {
         private readonly KeyedCollection items = new KeyedCollection();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        public int Count => items.Count;
+
+        public bool IsReadOnly => false;
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
@@ -88,10 +88,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
         {
             return items.Remove(item);
         }
-
-        public int Count { get { return items.Count; } }
-
-        public bool IsReadOnly { get { return false; } }
 
         public void Add(TKey key, TValue value)
         {
@@ -167,6 +163,47 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public ICollection<TKey> Keys { get { return items.Select(x => x.Key).ToList(); } }
 
         public ICollection<TValue> Values { get { return items.Select(x => x.Value).ToList(); } }
+
+        object ICollection.SyncRoot => ((ICollection)items).SyncRoot;
+
+        bool ICollection.IsSynchronized => ((ICollection)items).IsSynchronized;
+
+        object IDictionary.this[object key] { get { return this[(TKey)key]; } set { this[(TKey)key] = (TValue)value; } }
+
+        ICollection IDictionary.Keys => (ICollection)Keys;
+
+        ICollection IDictionary.Values => (ICollection)Values;
+
+        bool IDictionary.IsFixedSize => false;
+
+        bool IDictionary.Contains(object key) => ContainsKey((TKey)key);
+
+        void IDictionary.Add(object key, object value) => Add((TKey)key, (TValue)value);
+
+        void IDictionary.Remove(object key) => Remove((TKey)key);
+
+        void ICollection.CopyTo(Array array, int index) => ((ICollection)items).CopyTo(array, index);
+
+        IDictionaryEnumerator IDictionary.GetEnumerator() => new Enumerator(this);
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        private class Enumerator : IDictionaryEnumerator
+        {
+            private readonly IEnumerator<KeyValuePair<TKey, TValue>> enumerator;
+
+            public Enumerator(OrderedDictionary<TKey, TValue> dictionary)
+            {
+                enumerator = dictionary.GetEnumerator();
+            }
+
+            public bool MoveNext() => enumerator.MoveNext();
+            public void Reset() => enumerator.Reset();
+            public object Current => enumerator.Current;
+            public object Key => enumerator.Current.Key;
+            public object Value => enumerator.Current.Value;
+            public DictionaryEntry Entry => new DictionaryEntry(Key, Value);
+        }
 
         class KeyedCollection : KeyedCollection<TKey, KeyValuePair<TKey, TValue>>
         {

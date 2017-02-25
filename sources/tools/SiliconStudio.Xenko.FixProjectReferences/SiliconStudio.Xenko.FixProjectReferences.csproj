@@ -34,13 +34,18 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="FixProjectReference.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
       <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
       <Name>SiliconStudio.Core.Design</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
+      <Name>SiliconStudio.Core</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

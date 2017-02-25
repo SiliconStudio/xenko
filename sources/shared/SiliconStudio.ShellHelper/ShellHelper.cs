@@ -36,7 +36,7 @@ namespace SiliconStudio
             var tcs = new TaskCompletionSource<int>();
 
             process.EnableRaisingEvents = true;
-            process.OutputDataReceived += (_, args) => { if (!string.IsNullOrEmpty(args.Data)) { logger.Info(args.Data); } };
+            process.OutputDataReceived += (_, args) => { if (!string.IsNullOrEmpty(args.Data)) { logger.Verbose(args.Data); } };
             process.ErrorDataReceived += (_, args) => { if (!string.IsNullOrEmpty(args.Data)) { logger.Error(args.Data); } };
 
             process.Exited += (_, args) =>

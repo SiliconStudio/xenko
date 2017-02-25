@@ -45,8 +45,8 @@
 
 using System;
 using System.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Yaml.Serialization
@@ -56,10 +56,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
     /// </summary>
     public sealed class Serializer
     {
-        private readonly SerializerSettings settings;
-
         internal readonly IYamlSerializable ObjectSerializer;
-        internal readonly IYamlSerializable RoutingSerializer;
+        internal readonly RoutingSerializer RoutingSerializer;
         internal readonly ITypeDescriptorFactory TypeDescriptorFactory;
 
         private static readonly IYamlSerializableFactory[] DefaultFactories = new IYamlSerializableFactory[]
@@ -84,9 +82,10 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <param name="settings">The settings.</param>
         public Serializer(SerializerSettings settings)
         {
-            this.settings = settings ?? new SerializerSettings();
+            Settings = settings ?? new SerializerSettings();
             TypeDescriptorFactory = CreateTypeDescriptorFactory();
             RoutingSerializer routingSerializer;
+            RegisterSerializerFactories();
             ObjectSerializer = CreateProcessor(out routingSerializer);
             RoutingSerializer = routingSerializer;
         }
@@ -95,7 +94,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Gets the settings.
         /// </summary>
         /// <value>The settings.</value>
-        public SerializerSettings Settings { get { return settings; } }
+        public SerializerSettings Settings { get; }
 
         /// <summary>
         /// Serializes the specified object to a string.
@@ -199,15 +198,9 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <param name="contextSettings">The context settings.</param>
         public void Serialize(IEmitter emitter, object graph, Type type, SerializerContextSettings contextSettings = null)
         {
-            if (emitter == null)
-            {
-                throw new ArgumentNullException("emitter");
-            }
+            if (emitter == null) throw new ArgumentNullException(nameof(emitter));
 
-            if (graph == null && type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
+            if (graph == null && type == null) throw new ArgumentNullException(nameof(type));
 
             // Configure the emitter
             // TODO the current emitter is not enough configurable to format its output
@@ -215,15 +208,16 @@ namespace SiliconStudio.Core.Yaml.Serialization
             var defaultEmitter = emitter as Emitter;
             if (defaultEmitter != null)
             {
-                defaultEmitter.ForceIndentLess = settings.IndentLess;
+                defaultEmitter.ForceIndentLess = Settings.IndentLess;
             }
 
-            var context = new SerializerContext(this, contextSettings) {Emitter = emitter, Writer = CreateEmitter(emitter)};
+            var context = new SerializerContext(this, contextSettings) { Emitter = emitter, Writer = CreateEmitter(emitter) };
 
             // Serialize the document
             context.Writer.StreamStart();
             context.Writer.DocumentStart();
-            context.WriteYaml(graph, type);
+            var objectContext = new ObjectContext(context, graph, context.FindTypeDescriptor(type)) { Style = DataStyle.Any };
+            context.Serializer.ObjectSerializer.WriteYaml(ref objectContext);
             context.Writer.DocumentEnd();
             context.Writer.StreamEnd();
         }
@@ -245,7 +239,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <returns>A deserialized object.</returns>
         public object Deserialize(TextReader reader)
         {
-            return Deserialize((TextReader) reader, null);
+            return Deserialize(reader, null);
         }
 
         /// <summary>
@@ -258,8 +252,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <exception cref="System.ArgumentNullException">stream</exception>
         public object Deserialize(Stream stream, Type expectedType, SerializerContextSettings contextSettings = null)
         {
-            if (stream == null)
-                throw new ArgumentNullException("stream");
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
 
             return Deserialize(new StreamReader(stream), expectedType, null, contextSettings);
         }
@@ -275,8 +268,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <exception cref="System.ArgumentNullException">stream</exception>
         public object Deserialize(Stream stream, Type expectedType, SerializerContextSettings contextSettings, out SerializerContext context)
         {
-            if (stream == null)
-                throw new ArgumentNullException("stream");
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
 
             return Deserialize(new StreamReader(stream), expectedType, null, contextSettings, out context);
         }
@@ -304,8 +296,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <exception cref="System.ArgumentNullException">reader</exception>
         public object Deserialize(TextReader reader, Type expectedType, object existingObject = null, SerializerContextSettings contextSettings = null)
         {
-            if (reader == null)
-                throw new ArgumentNullException("reader");
+            if (reader == null) throw new ArgumentNullException(nameof(reader));
             return Deserialize(new EventReader(new Parser(reader)), expectedType, existingObject, contextSettings);
         }
 
@@ -321,8 +312,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <exception cref="System.ArgumentNullException">reader</exception>
         public object Deserialize(TextReader reader, Type expectedType, object existingObject, SerializerContextSettings contextSettings, out SerializerContext context)
         {
-            if (reader == null)
-                throw new ArgumentNullException("reader");
+            if (reader == null) throw new ArgumentNullException(nameof(reader));
             return Deserialize(new EventReader(new Parser(reader)), expectedType, existingObject, contextSettings, out context);
         }
 
@@ -360,8 +350,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <exception cref="System.ArgumentNullException">stream</exception>
         public object Deserialize(string fromText, Type expectedType, object existingObject = null)
         {
-            if (fromText == null)
-                throw new ArgumentNullException("fromText");
+            if (fromText == null) throw new ArgumentNullException(nameof(fromText));
             return Deserialize(new StringReader(fromText), expectedType, existingObject);
         }
 
@@ -376,8 +365,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <exception cref="System.ArgumentNullException">stream</exception>
         public object Deserialize(string fromText, Type expectedType, object existingObject, out SerializerContext context)
         {
-            if (fromText == null)
-                throw new ArgumentNullException("fromText");
+            if (fromText == null) throw new ArgumentNullException(nameof(fromText));
             return Deserialize(new StringReader(fromText), expectedType, existingObject, null, out context);
         }
 
@@ -516,7 +504,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public object Deserialize(EventReader reader, Type expectedType, object existingObject, SerializerContextSettings contextSettings, out SerializerContext context)
         {
             if (reader == null)
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
 
             var hasStreamStart = reader.Allow<StreamStart>() != null;
             var hasDocumentStart = reader.Allow<DocumentStart>() != null;
@@ -526,7 +514,20 @@ namespace SiliconStudio.Core.Yaml.Serialization
             if (!reader.Accept<DocumentEnd>() && !reader.Accept<StreamEnd>())
             {
                 context = new SerializerContext(this, contextSettings) {Reader = reader};
-                result = context.ReadYaml(existingObject, expectedType);
+                var node = context.Reader.Parser.Current;
+                try
+                {
+                    var objectContext = new ObjectContext(context, existingObject, context.FindTypeDescriptor(expectedType));
+                    result = context.Serializer.ObjectSerializer.ReadYaml(ref objectContext);
+                }
+                catch (YamlException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new YamlException(node.Start, node.End, $"Error while deserializing node [{node}]", ex);
+                }
             }
 
             if (hasDocumentStart)
@@ -542,43 +543,58 @@ namespace SiliconStudio.Core.Yaml.Serialization
             return result;
         }
 
-
-        private IYamlSerializable CreateProcessor(out RoutingSerializer routingSerializer)
+        public IYamlSerializable GetSerializer(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
-            routingSerializer = new RoutingSerializer();
+            return Settings.SerializerFactorySelector.GetSerializer(context, typeDescriptor);
+        }
 
-            // Add registered serializer
-            foreach (var typeAndSerializer in settings.serializers)
-            {
-                routingSerializer.AddSerializer(typeAndSerializer.Key, typeAndSerializer.Value);
-            }
-
+        private void RegisterSerializerFactories()
+        {
             // Add registered factories
-            foreach (var factory in settings.AssemblyRegistry.SerializableFactories)
+            foreach (var factory in Settings.AssemblyRegistry.SerializableFactories)
             {
-                routingSerializer.AddSerializerFactory(factory);
+                Settings.SerializerFactorySelector.TryAddFactory(factory);
             }
 
             // Add default factories
             foreach (var defaultFactory in DefaultFactories)
             {
-                routingSerializer.AddSerializerFactory(defaultFactory);
+                Settings.SerializerFactorySelector.TryAddFactory(defaultFactory);
             }
+            Settings.SerializerFactorySelector.Seal();
+        }
 
-            var typingSerializer = new TagTypeSerializer(routingSerializer);
-            return settings.EmitAlias ? (IYamlSerializable) new AnchorSerializer(typingSerializer) : typingSerializer;
+        private IYamlSerializable CreateProcessor(out RoutingSerializer routingSerializer)
+        {
+            routingSerializer = new RoutingSerializer(Settings.SerializerFactorySelector);
+
+            IYamlSerializable serializer = routingSerializer;
+            if (Settings.PreSerializer != null)
+            {
+                serializer = ChainedSerializer.Prepend(Settings.PreSerializer, routingSerializer);
+            }
+            serializer = ChainedSerializer.Prepend(new TagTypeSerializer(), serializer);
+            if (Settings.EmitAlias)
+            {
+                serializer = ChainedSerializer.Prepend(new AnchorSerializer(), serializer);
+            }
+            if (Settings.PostSerializer != null)
+            {
+                serializer = ChainedSerializer.Prepend(Settings.PostSerializer, serializer);
+            }
+            return serializer;
         }
 
         private ITypeDescriptorFactory CreateTypeDescriptorFactory()
         {
-            return new TypeDescriptorFactory(Settings.Attributes, Settings.EmitDefaultValues, Settings.NamingConvention);
+            return new TypeDescriptorFactory(Settings.Attributes, Settings.EmitDefaultValues, Settings.NamingConvention, Settings.ComparerForKeySorting);
         }
 
         private IEventEmitter CreateEmitter(IEmitter emitter)
         {
             var writer = (IEventEmitter) new WriterEventEmitter(emitter);
 
-            if (settings.EmitJsonComptible)
+            if (Settings.EmitJsonComptible)
             {
                 writer = new JsonEventEmitter(writer);
             }

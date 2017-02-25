@@ -4,32 +4,29 @@ SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
-        NormalMap: !ComputeBinaryColor
-            Operator: Multiply
-            LeftChild: !ComputeTextureColor
-                Swizzle: null
-                Texture: 8b04ce2f-8d93-46eb-8706-a1a6b6c4ee24/a69bd2ab-8ebc-4c80-9ddb-605a1ba476c4:Materials/rooftile/rooftile_nml
-                FallbackValue:
-                    Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
-                Scale: {X: 1.0, Y: 1.0}
-                Offset: {X: 0.0, Y: 0.0}
-            RightChild: !ComputeFloat4
-                Value: {X: 2.0, Y: 2.0, Z: 1.0, W: 0.0}
+        NormalMap: !ComputeTextureColor
+            Texture: a69bd2ab-8ebc-4c80-9ddb-605a1ba476c4:Materials/rooftile/rooftile_nml
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+        IsXYNormal: true
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeTextureScalar
-            Texture: 4c06eda2-ac52-496c-8055-b29fb69a9c10/b13af10a-4caa-4ac9-8c45-b1ad557d6cea:Materials/rooftile/rooftile_gls
+            Texture: b13af10a-4caa-4ac9-8c45-b1ad557d6cea:Materials/rooftile/rooftile_gls
             FallbackValue:
                 Value: 1.0
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: f9034ce1-b152-4c84-9a0a-4bd926c67409/ae9561b5-ed11-4a90-83a1-4e8d8071c46c:Materials/rooftile/rooftile_dif
+            Texture: ae9561b5-ed11-4a90-83a1-4e8d8071c46c:Materials/rooftile/rooftile_dif
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialMetalnessMapFeature
         MetalnessMap: !ComputeTextureScalar
@@ -38,15 +35,12 @@ Attributes:
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: c8a4b8ce-0dde-4844-9ff6-a6ff93bbacbe
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: 9b2ed6c5-ca50-4898-b54d-b854ea1d800e
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: fa0d2de6-0ac2-4e2d-880c-cf5a83b0433e
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Occlusion: !MaterialOcclusionMapFeature
         AmbientOcclusionMap: !ComputeTextureScalar
-            Texture: 1ec7aff7-c81f-44eb-a3a4-6020e4278368/ef8fd535-9e51-428a-b859-55beb8775871:Materials/rooftile/rooftile_AO
+            Texture: ef8fd535-9e51-428a-b859-55beb8775871:Materials/rooftile/rooftile_AO
             FallbackValue:
                 Value: 1.0
             Scale: {X: 1.0, Y: 1.0}
@@ -64,4 +58,4 @@ Attributes:
             Value: 1.0
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

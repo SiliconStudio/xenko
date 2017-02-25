@@ -70,7 +70,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
                 DesiredAlpha = asset.Alpha;
                 TextureHint = asset.Hint;
                 GenerateMipmaps = asset.GenerateMipmaps;
-                PremultiplyAlpha = asset.PremultiplyAlpha;
+                if (asset.Alpha != AlphaFormat.None)
+                    PremultiplyAlpha = asset.PremultiplyAlpha;
                 ColorKeyColor  = asset.ColorKeyColor;
                 ColorKeyEnabled = asset.ColorKeyEnabled;
                 TextureQuality = textureParameters.TextureQuality;
@@ -181,8 +182,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
             if (textureSize.Width > maxTextureSize || textureSize.Height > maxTextureSize)
             {
-                logger?.Error("Graphic profile {0} do not support texture with resolution {2} x {3} because it is larger than {1}. " +
-                             "Please reduce texture size or upgrade your graphic profile.", parameters.GraphicsProfile, maxTextureSize, textureSize.Width, textureSize.Height);
+                logger?.Error($"Graphic profile {parameters.GraphicsProfile} do not support texture with resolution {textureSize.Width} x {textureSize.Height} because it is larger than {maxTextureSize}. Please reduce texture size or upgrade your graphic profile.");
                 return new Size2(Math.Min(textureSize.Width, maxTextureSize), Math.Min(textureSize.Height, maxTextureSize));
             }
 
@@ -317,7 +317,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                                     {
                                         if (parameters.GraphicsPlatform != GraphicsPlatform.OpenGL && hint == TextureHint.NormalMap)
                                         {
-                                            outputFormat = PixelFormat.BC5_SNorm;
+                                            outputFormat = PixelFormat.BC5_UNorm;
                                         }
                                         else if (parameters.GraphicsPlatform != GraphicsPlatform.OpenGL && hint == TextureHint.Grayscale)
                                         {
@@ -498,7 +498,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
                 assetManager.Save(parameters.OutputUrl, outputImage.ToSerializableVersion());
 
-                logger.Verbose("Compression successful [{3}] to ({0}x{1},{2})", outputImage.Description.Width, outputImage.Description.Height, outputImage.Description.Format, parameters.OutputUrl);
+                logger.Verbose($"Compression successful [{parameters.OutputUrl}] to ({outputImage.Description.Width}x{outputImage.Description.Height},{outputImage.Description.Format})");
             }
 
             return ResultStatus.Successful;

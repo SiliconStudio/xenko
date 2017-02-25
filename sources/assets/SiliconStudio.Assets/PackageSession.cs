@@ -14,6 +14,7 @@ using SiliconStudio.Core.Reflection;
 using ILogger = SiliconStudio.Core.Diagnostics.ILogger;
 using Microsoft.Build.Evaluation;
 using SiliconStudio.Assets.Tracking;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Assets
@@ -21,7 +22,7 @@ namespace SiliconStudio.Assets
     /// <summary>
     /// A session for editing a package.
     /// </summary>
-    public sealed class PackageSession : IDisposable
+    public sealed class PackageSession : IDisposable, IAssetFinder
     {
         private readonly DefaultConstraintProvider constraintProvider = new DefaultConstraintProvider();
         private readonly PackageCollection packagesCopy;
@@ -249,9 +250,6 @@ namespace SiliconStudio.Assets
                 // Load all missing references/dependencies
                 LoadMissingReferences(logger, loadParameters);
 
-                // Load assets
-                TryLoadAssets(this, logger, package, loadParameters);
-
                 // Run analysis after
                 foreach (var packageToAdd in packagesLoaded)
                 {
@@ -291,6 +289,28 @@ namespace SiliconStudio.Assets
 
         }
 
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst all the packages of this session.</remarks>
+        public AssetItem FindAsset(AssetId assetId)
+        {
+            return Packages.Select(p => p.Assets.Find(assetId)).NotNull().FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst all the packages of this session.</remarks>
+        public AssetItem FindAsset(UFile location)
+        {
+            return Packages.Select(p => p.Assets.Find(location)).NotNull().FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst all the packages of this session.</remarks>
+        public AssetItem FindAssetFromProxyObject(object proxyObject)
+        {
+            var reference = AttachedReferenceManager.GetAttachedReference(proxyObject);
+            return reference != null ? (FindAsset(reference.Id) ?? FindAsset(reference.Url)) : null;
+        }
+
         /// <summary>
         /// Loads a package from specified file path.
         /// </summary>
@@ -311,7 +331,7 @@ namespace SiliconStudio.Assets
             // Make sure to use a full path.
             filePath = FileUtility.GetAbsolutePath(filePath);
 
-            if (!File.Exists(filePath)) throw new ArgumentException($"File [{filePath}] must exist", nameof(filePath));
+            if (!File.Exists(filePath)) throw new ArgumentException($@"File [{filePath}] must exist", nameof(filePath));
 
             try
             {
@@ -338,7 +358,7 @@ namespace SiliconStudio.Assets
                     }
                     else
                     {
-                        sessionResult.Error("Unsupported file extension (only .sln or {0} are supported)", Package.PackageFileExtension);
+                        sessionResult.Error($"Unsupported file extension (only .sln or {Package.PackageFileExtension} are supported)");
                         return;
                     }
 
@@ -659,14 +679,14 @@ namespace SiliconStudio.Assets
         private Dictionary<UFile, object> BuildAssetsOrPackagesToRemove()
         {
             // Grab all previous assets
-            var previousAssets = new Dictionary<Guid, AssetItem>();
+            var previousAssets = new Dictionary<AssetId, AssetItem>();
             foreach (var assetItem in packagesCopy.SelectMany(package => package.Assets))
             {
                 previousAssets[assetItem.Id] = assetItem;
             }
 
             // Grab all new assets
-            var newAssets = new Dictionary<Guid, AssetItem>();
+            var newAssets = new Dictionary<AssetId, AssetItem>();
             foreach (var assetItem in LocalPackages.SelectMany(package => package.Assets))
             {
                 newAssets[assetItem.Id] = assetItem;
@@ -846,7 +866,7 @@ namespace SiliconStudio.Assets
                 // If the package doesn't have a meta name, fix it here (This is supposed to be done in the above disabled analysis - but we still need to do it!)
                 if (string.IsNullOrWhiteSpace(package.Meta.Name) && package.FullPath != null)
                 {
-                    package.Meta.Name = package.FullPath.GetFileName();
+                    package.Meta.Name = package.FullPath.GetFileNameWithoutExtension();
                     package.IsDirty = true;
                 }
 
@@ -870,7 +890,7 @@ namespace SiliconStudio.Assets
             }
             catch (Exception ex)
             {
-                log.Error("Error while pre-loading package [{0}]", ex, filePath);
+                log.Error($"Error while pre-loading package [{filePath}]", ex);
             }
 
             return null;
@@ -954,7 +974,7 @@ namespace SiliconStudio.Assets
 
                     if (!upgradeAllowed)
                     {
-                        log.Error("Necessary package migration for [{0}] has not been allowed", package.Meta.Name);
+                        log.Error($"Necessary package migration for [{package.Meta.Name}] has not been allowed");
                         return false;
                     }
 
@@ -965,7 +985,7 @@ namespace SiliconStudio.Assets
                         var dependencyPackage = pendingPackageUpgrade.DependencyPackage;
                         if (!packageUpgrader.UpgradeBeforeAssembliesLoaded(session, log, package, pendingPackageUpgrade.Dependency, dependencyPackage))
                         {
-                            log.Error("Error while upgrading package [{0}] for [{1}] from version [{2}] to [{3}]", package.Meta.Name, dependencyPackage.Meta.Name, pendingPackageUpgrade.Dependency.Version, dependencyPackage.Meta.Version);
+                            log.Error($"Error while upgrading package [{package.Meta.Name}] for [{dependencyPackage.Meta.Name}] from version [{pendingPackageUpgrade.Dependency.Version}] to [{dependencyPackage.Meta.Version}]");
                             return false;
                         }
                     }
@@ -990,7 +1010,7 @@ namespace SiliconStudio.Assets
                         var dependencyPackage = pendingPackageUpgrade.DependencyPackage;
                         if (!packageUpgrader.Upgrade(session, log, package, pendingPackageUpgrade.Dependency, dependencyPackage, newLoadParameters.AssetFiles))
                         {
-                            log.Error("Error while upgrading package [{0}] for [{1}] from version [{2}] to [{3}]", package.Meta.Name, dependencyPackage.Meta.Name, pendingPackageUpgrade.Dependency.Version, dependencyPackage.Meta.Version);
+                            log.Error($"Error while upgrading package [{package.Meta.Name}] for [{dependencyPackage.Meta.Name}] from version [{pendingPackageUpgrade.Dependency.Version}] to [{dependencyPackage.Meta.Version}]");
                             return false;
                         }
 
@@ -1006,7 +1026,7 @@ namespace SiliconStudio.Assets
                 package.LoadAssets(log, newLoadParameters);
 
                 // Validate assets from package
-                package.ValidateAssets(newLoadParameters.GenerateNewAssetIds);
+                package.ValidateAssets(newLoadParameters.GenerateNewAssetIds, newLoadParameters.RemoveUnloadableObjects, log);
 
                 if (pendingPackageUpgrades.Count > 0)
                 {
@@ -1017,7 +1037,7 @@ namespace SiliconStudio.Assets
                         var dependencyPackage = pendingPackageUpgrade.DependencyPackage;
                         if (!packageUpgrader.UpgradeAfterAssetsLoaded(session, log, package, pendingPackageUpgrade.Dependency, dependencyPackage, pendingPackageUpgrade.DependencyVersionBeforeUpgrade))
                         {
-                            log.Error("Error while upgrading package [{0}] for [{1}] from version [{2}] to [{3}]", package.Meta.Name, dependencyPackage.Meta.Name, pendingPackageUpgrade.Dependency.Version, dependencyPackage.Meta.Version);
+                            log.Error($"Error while upgrading package [{package.Meta.Name}] for [{dependencyPackage.Meta.Name}] from version [{pendingPackageUpgrade.Dependency.Version}] to [{dependencyPackage.Meta.Version}]");
                             return false;
                         }
                     }
@@ -1036,7 +1056,7 @@ namespace SiliconStudio.Assets
             }
             catch (Exception ex)
             {
-                log.Error("Error while loading package [{0}]", ex, package);
+                log.Error($"Error while pre-loading package [{package}]", ex);
                 return false;
             }
         }
@@ -1070,7 +1090,7 @@ namespace SiliconStudio.Assets
                         throw new InvalidOperationException($"Upgrading package [{dependentPackage.Meta.Name}] to use [{dependencyPackage.Meta.Name}] from version [{dependentPackagePreviousMinimumVersion}] to [{dependencyPackage.Meta.Version}] is not supported");
                     }
 
-                    log.Info("Upgrading package [{0}] to use [{1}] from version [{2}] to [{3}] will be required", dependentPackage.Meta.Name, dependencyPackage.Meta.Name, dependentPackagePreviousMinimumVersion, dependencyPackage.Meta.Version);
+                    log.Info($"Upgrading package [{dependentPackage.Meta.Name}] to use [{dependencyPackage.Meta.Name}] from version [{dependentPackagePreviousMinimumVersion}] to [{dependencyPackage.Meta.Version}] will be required");
                     return packageUpgrader;
                 }
             }
@@ -1103,7 +1123,7 @@ namespace SiliconStudio.Assets
                     {
                         // TODO: We need to support automatic download of packages. This is not supported yet when only Xenko
                         // package is supposed to be installed, but It will be required for full store
-                        log.Error("Unable to find package {0} not installed", packageDependency);
+                        log.Error($"The package {package.FullPath?.GetFileNameWithoutExtension() ?? "[Untitled]"} depends on package {packageDependency} which is not installed");
                         packageDependencyErrors = true;
                         continue;
                     }
@@ -1126,7 +1146,7 @@ namespace SiliconStudio.Assets
                 }
 
                 // Expand the string of the location
-                var newLocation = (UFile)AssetRegistry.ExpandString(session, packageReference.Location);
+                var newLocation = packageReference.Location;
 
                 var subPackageFilePath = package.RootDirectory != null ? UPath.Combine(package.RootDirectory, newLocation) : newLocation;
 
@@ -1167,7 +1187,6 @@ namespace SiliconStudio.Assets
                 IsPackageCheckDependencies = true,
                 IsProcessingAssetReferences = true,
                 IsLoggingAssetNotFoundAsError = true,
-                AssetTemplatingMergeModifiedAssets = true
             };
         }
     }

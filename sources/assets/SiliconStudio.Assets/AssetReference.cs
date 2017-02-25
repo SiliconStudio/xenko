@@ -3,7 +3,6 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
@@ -12,22 +11,22 @@ namespace SiliconStudio.Assets
     /// <summary>
     /// An asset reference.
     /// </summary>
-    [DataContract]
+    [DataContract("aref")]
     [DataStyle(DataStyle.Compact)]
-    public abstract class AssetReference : ITypedReference, IEquatable<AssetReference>
+    [DataSerializer(typeof(AssetReferenceDataSerializer))]
+    public class AssetReference : IReference, IEquatable<AssetReference>
     {
         private readonly UFile location;
-        private readonly Guid id;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetReference"/> class.
         /// </summary>
         /// <param name="id">The unique identifier of the asset.</param>
         /// <param name="location">The location.</param>
-        internal AssetReference(Guid id, UFile location)
+        public AssetReference(AssetId id, UFile location)
         {
             this.location = location;
-            this.id = id;
+            Id = id;
         }
 
         /// <summary>
@@ -35,46 +34,35 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The unique identifier of the reference asset..</value>
         [DataMember(10)]
-        public Guid Id
-        {
-            get
-            {
-                return id;
-            }
-        }
+        public AssetId Id { get; }
 
         /// <summary>
         /// Gets or sets the location of the asset.
         /// </summary>
         /// <value>The location.</value>
         [DataMember(20)]
-        public string Location
-        {
-            get
-            {
-                return location;
-            }
-        }
+        public string Location => location;
 
         public bool Equals(AssetReference other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(location, other.location) && id.Equals(other.id);
+            return Equals(location, other.location) && Id.Equals(other.Id);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj is AssetReference && Equals((AssetReference)obj);
+            var assetReference = obj as AssetReference;
+            return assetReference != null && Equals(assetReference);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((location != null ? location.GetHashCode() : 0)*397) ^ id.GetHashCode();
+                return ((location != null ? location.GetHashCode() : 0)*397) ^ Id.GetHashCode();
             }
         }
 
@@ -104,42 +92,50 @@ namespace SiliconStudio.Assets
         public override string ToString()
         {
             // WARNING: This should not be modified as it is used for serializing
-            return string.Format("{0}:{1}", id, location);
+            return $"{Id}:{location}";
         }
-
-        [DataMemberIgnore]
-        public abstract Type Type { get; }
 
         /// <summary>
         /// Tries to parse an asset reference in the format "GUID:Location".
         /// </summary>
-        /// <param name="referenceType">The referenceType.</param>
         /// <param name="id">The identifier.</param>
         /// <param name="location">The location.</param>
         /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
-        public static AssetReference New(Type referenceType, Guid id, UFile location)
+        public static AssetReference New(AssetId id, UFile location)
         {
-            if (referenceType == null) throw new ArgumentNullException("referenceType");
-            if (!typeof(AssetReference).IsAssignableFrom(referenceType)) throw new ArgumentException("Reference must inherit from AssetReference", "referenceType");
-
-            return (AssetReference)Activator.CreateInstance(referenceType, id, location);            
+            return new AssetReference(id, location);            
         }
 
         /// <summary>
         /// Tries to parse an asset reference in the format "[GUID/]GUID:Location". The first GUID is optional and is used to store the ID of the reference.
         /// </summary>
         /// <param name="assetReferenceText">The asset reference.</param>
-        /// <param name="referenceId">The unique identifier of this reference (may be null</param>
-        /// <param name="guid">The unique identifier of object pointed by this reference.</param>
+        /// <param name="id">The unique identifier of asset pointed by this reference.</param>
         /// <param name="location">The location.</param>
         /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">assetReferenceText</exception>
-        public static bool TryParse(string assetReferenceText, out Guid referenceId, out Guid guid, out UFile location)
+        public static bool TryParse(string assetReferenceText, out AssetId id, out UFile location)
         {
-            if (assetReferenceText == null) throw new ArgumentNullException("assetReferenceText");
+            Guid referenceId;
+            return TryParse(assetReferenceText, out id, out location, out referenceId);
+        }
 
+        /// <summary>
+        /// Tries to parse an asset reference in the format "[GUID/]GUID:Location". The first GUID is optional and is used to store the ID of the reference.
+        /// </summary>
+        /// <param name="assetReferenceText">The asset reference.</param>
+        /// <param name="id">The unique identifier of object pointed by this reference.</param>
+        /// <param name="location">The location.</param>
+        /// <param name="referenceId">The unique identifier of this reference (may be null)</param>
+        /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
+        /// <exception cref="System.ArgumentNullException">assetReferenceText</exception>
+        /// <remarks>The referenceId is obsolete since Xenko 1.9.</remarks>
+        public static bool TryParse(string assetReferenceText, out AssetId id, out UFile location, out Guid referenceId)
+        {
+            if (assetReferenceText == null) throw new ArgumentNullException(nameof(assetReferenceText));
+
+            id = AssetId.Empty;
             referenceId = Guid.Empty;
-            guid = Guid.Empty;
             location = null;
             int indexFirstSlash = assetReferenceText.IndexOf('/');
             int indexBeforelocation = assetReferenceText.IndexOf(':');
@@ -157,7 +153,7 @@ namespace SiliconStudio.Assets
                 startNextGuid = indexFirstSlash + 1;
             }
 
-            if (!Guid.TryParse(assetReferenceText.Substring(startNextGuid, indexBeforelocation - startNextGuid), out guid))
+            if (!AssetId.TryParse(assetReferenceText.Substring(startNextGuid, indexBeforelocation - startNextGuid), out id))
             {
                 return false;
             }
@@ -170,28 +166,21 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Tries to parse an asset reference in the format "GUID:Location".
         /// </summary>
-        /// <param name="referenceType"></param>
         /// <param name="assetReferenceText">The asset reference.</param>
         /// <param name="assetReference">The reference.</param>
         /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
-        public static bool TryParse(Type referenceType, string assetReferenceText, out AssetReference assetReference)
+        public static bool TryParse(string assetReferenceText, out AssetReference assetReference, out Guid referenceId)
         {
-            if (referenceType == null) throw new ArgumentNullException("referenceType");
-            if (assetReferenceText == null) throw new ArgumentNullException("assetReferenceText");
+            if (assetReferenceText == null) throw new ArgumentNullException(nameof(assetReferenceText));
 
             assetReference = null;
-            Guid guid;
+            AssetId assetId;
             UFile location;
-            Guid referenceId;
-            if (!TryParse(assetReferenceText, out referenceId, out guid, out location))
+            if (!TryParse(assetReferenceText, out assetId, out location, out referenceId))
             {
                 return false;
             }
-            assetReference = New(referenceType, guid, location);
-            if (referenceId != Guid.Empty)
-            {
-                IdentifiableHelper.SetId(assetReference, referenceId);
-            }
+            assetReference = New(assetId, location);
             return true;
         }
     }
@@ -209,34 +198,6 @@ namespace SiliconStudio.Assets
         public static bool HasLocation(this AssetReference assetReference)
         {
             return assetReference != null && assetReference.Location != null;
-        }
-    }
-
-    /// <summary>
-    /// A typed content reference
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    [DataContract("aref")]
-    [DataStyle(DataStyle.Compact)]
-    [DataSerializer(typeof(AssetReferenceDataSerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
-    public sealed class AssetReference<T> : AssetReference where T : Asset
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AssetReference" /> class.
-        /// </summary>
-        /// <param name="id">The unique identifier of the asset.</param>
-        /// <param name="location">The location.</param>
-        public AssetReference(Guid id, UFile location) : base(id, location)
-        {
-        }
-
-        [DataMemberIgnore]
-        public override Type Type
-        {
-            get
-            {
-                return typeof(T);
-            }
         }
     }
 }

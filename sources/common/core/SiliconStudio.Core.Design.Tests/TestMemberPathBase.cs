@@ -60,13 +60,13 @@ namespace SiliconStudio.Core.Design.Tests
             ListClassDesc = (CollectionDescriptor)TypeFactory.Find(typeof(List<MyClass>));
             MapClassDesc = (DictionaryDescriptor)TypeFactory.Find(typeof(Dictionary<string, MyClass>));
 
-            MemberValue = myClassDesc.Members.FirstOrDefault(member => member.Name == "Value");
-            MemberSub = myClassDesc.Members.FirstOrDefault(member => member.Name == "Sub");
-            MemberStruct = myClassDesc.Members.FirstOrDefault(member => member.Name == "Struct");
-            MemberSubs = myClassDesc.Members.FirstOrDefault(member => member.Name == "Subs");
-            MemberMaps = myClassDesc.Members.FirstOrDefault(member => member.Name == "Maps");
-            MemberX = myStructDesc.Members.FirstOrDefault(member => member.Name == "X");
-            MemberClass = myStructDesc.Members.FirstOrDefault(member => member.Name == "Class");
+            MemberValue = (IMemberDescriptor)myClassDesc.Members.FirstOrDefault(member => member.Name == "Value");
+            MemberSub = (IMemberDescriptor)myClassDesc.Members.FirstOrDefault(member => member.Name == "Sub");
+            MemberStruct = (IMemberDescriptor)myClassDesc.Members.FirstOrDefault(member => member.Name == "Struct");
+            MemberSubs = (IMemberDescriptor)myClassDesc.Members.FirstOrDefault(member => member.Name == "Subs");
+            MemberMaps = (IMemberDescriptor)myClassDesc.Members.FirstOrDefault(member => member.Name == "Maps");
+            MemberX = (IMemberDescriptor)myStructDesc.Members.FirstOrDefault(member => member.Name == "X");
+            MemberClass = (IMemberDescriptor)myStructDesc.Members.FirstOrDefault(member => member.Name == "Class");
         }
          
     }

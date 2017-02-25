@@ -11,7 +11,6 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
-using SiliconStudio.Xenko.Assets.Debugging;
 using SiliconStudio.Xenko.Debugger.Target;
 using SiliconStudio.Xenko.Engine;
 
@@ -30,14 +29,8 @@ namespace SiliconStudio.Xenko.Debugger
 
             var loadedAssembliesSet = new HashSet<Assembly>(assembliesToUnregister);
             var reloadedComponents = new List<ReloadedComponentEntryLive>();
-            var componentsToReload = AssemblyReloader.CollectComponentsToReload(entities, loadedAssembliesSet);
-            foreach (var componentToReload in componentsToReload)
-            {
-                var parsingEvents = SerializeComponent(componentToReload.Component);
-                // TODO: Serialize Scene script too (async?) -- doesn't seem necessary even for complex cases
-                // (i.e. referencing assets, entities and/or scripts) but still a ref counting check might be good
-                reloadedComponents.Add(new ReloadedComponentEntryLive(componentToReload, parsingEvents));
-            }
+
+            throw new NotImplementedException("Need to reimplement this to use IUnloadable");
 
             foreach (var assembly in assembliesToUnregister)
             {
@@ -71,7 +64,7 @@ namespace SiliconStudio.Xenko.Debugger
                     // Get type info
                     var objectStartTag = objectStart.Tag;
                     bool alias;
-                    var componentType = YamlSerializer.GetSerializerSettings().TagTypeRegistry.TypeFromTag(objectStartTag, out alias);
+                    var componentType = AssetYamlSerializer.Default.GetSerializerSettings().TagTypeRegistry.TypeFromTag(objectStartTag, out alias);
                     if (componentType != null)
                     {
                         reloadedScript.NewComponent = (EntityComponent)Activator.CreateInstance(componentType);
@@ -111,7 +104,8 @@ namespace SiliconStudio.Xenko.Debugger
                 components.Add(newComponent);
 
             // Try to create component first
-            YamlSerializer.Deserialize(eventReader, components, typeof(EntityComponentCollection));
+            PropertyContainer properties;
+            AssetYamlSerializer.Default.Deserialize(eventReader, components, typeof(EntityComponentCollection), out properties);
             var component = components.Count == 1 ? components[0] : null;
             return component;
         }
@@ -125,7 +119,7 @@ namespace SiliconStudio.Xenko.Debugger
             var parsingEvents = new List<ParsingEvent>();
             // We also want to serialize live component variables
             var serializerContextSettings = new SerializerContextSettings { MemberMask = DataMemberAttribute.DefaultMask | ScriptComponent.LiveScriptingMask };
-            YamlSerializer.Serialize(new ParsingEventListEmitter(parsingEvents), components, typeof(EntityComponentCollection), serializerContextSettings);
+            AssetYamlSerializer.Default.Serialize(new ParsingEventListEmitter(parsingEvents), components, typeof(EntityComponentCollection), serializerContextSettings);
             return parsingEvents;
         }
 
@@ -153,21 +147,13 @@ namespace SiliconStudio.Xenko.Debugger
 
         private class ReloadedComponentEntryLive
         {
-            private readonly ComponentToReload componentToReload;
+            public Entity Entity { get { throw new NotImplementedException(); } }
 
-            public ReloadedComponentEntryLive(ComponentToReload componentToReload, List<ParsingEvent> parsingEvents)
-            {
-                this.componentToReload = componentToReload;
-                YamlEvents = parsingEvents;
-            }
-
-            public Entity Entity => componentToReload.Entity;
-
-            public int ComponentIndex => componentToReload.Index;
+            public int ComponentIndex { get { throw new NotImplementedException(); } }
 
             public readonly List<ParsingEvent> YamlEvents;
 
-            public EntityComponent OriginalComponent => componentToReload.Component;
+            public EntityComponent OriginalComponent { get { throw new NotImplementedException(); } }
 
             public EntityComponent NewComponent { get; set; }
         }

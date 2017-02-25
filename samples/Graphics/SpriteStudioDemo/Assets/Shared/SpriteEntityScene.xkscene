@@ -1,44 +1,35 @@
 !SceneAsset
 Id: d23da80d-8ef3-4400-9f16-190a9c6bd3b3
-SerializedVersion: {Xenko: 1.9.0-beta02}
+SerializedVersion: {Xenko: 1.9.0-beta06}
 Tags: []
 SceneSettings:
     Id: f3526002-9bc4-4ab4-819f-af3429bca2b6
     GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: 72d58eb3-79c3-4dd0-9035-5abc3979366f
         Cameras:
-            -   ~Id: cac01c54-fb79-4378-9083-b407b8bfd861
+            541cc0ca79fb78439083b407b8bfd861:
                 Name: null
                 Camera: 0b04edaf-f330-4ae1-9d93-517d967fbe95/9be240a7-a303-4cc1-9aa1-0eb9365669ec
-        Layers: []
+        Layers: {}
         Master:
-            ~Id: ab3c2b60-408a-423c-be52-b3fc6d9f2ef3
             Name: SceneGraphicsLayer
             Output: !MasterRenderFrameProvider {}
             Renderers:
-                - !ClearRenderFrameRenderer
-                    ~Id: 6b70a535-4a7a-44a3-8105-9405817c7391
+                35a5706b7a4aa34481059405817c7391: !ClearRenderFrameRenderer
                     Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
                     Output: !CurrentRenderFrameProvider {}
-                - !SceneCameraRenderer
-                    ~Id: 45d6da5f-6f04-422d-90b2-d898b5aa7d06
-                    Mode: !CameraRendererModeForward
-                        ~Id: 0604e99b-284e-4f86-a8f0-9d8faf78d345
+                5fdad645046f2d4290b2d898b5aa7d06: !SceneCameraRenderer
+                    Mode: !CameraRendererModeForward {}
                     Camera:
-                        ~Id: c177c08b-ea1c-4e37-a359-54de19ad7525
                         Index: 0
                     Output: !CurrentRenderFrameProvider {}
                     Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
                     ForceAspectRatio: false
     EditorSettings:
-        ~Id: 9be983f9-ace1-453a-8b8c-e46494e423e2
         GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
         SceneUnit: 1.0
         Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: d744b44b-641d-4e5d-9c06-57a30880b7a9
             BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
 Hierarchy:
-    ~Id: 75c8a95e-8fbd-43ce-b53f-81e2c64d261e
     RootPartIds:
         - 0b04edaf-f330-4ae1-9d93-517d967fbe95
         - 76d096d5-6b97-4d29-bb4c-0d3a35317d5d
@@ -53,51 +44,51 @@ Hierarchy:
                 Id: 0b04edaf-f330-4ae1-9d93-517d967fbe95
                 Name: Camera
                 Components:
-                    - !TransformComponent
-                        ~Id: c07d4880-733b-4686-b54d-816aef3d3357
-                        Children: []
+                    80487dc03b738646b54d816aef3d3357: !TransformComponent
+                        Id: c07d4880-733b-4686-b54d-816aef3d3357
                         Position: {X: 0.0, Y: 2.0, Z: 2.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !CameraComponent
-                        ~Id: 9be240a7-a303-4cc1-9aa1-0eb9365669ec
+                        Children: {}
+                    a740e29b03a3c14c9aa10eb9365669ec: !CameraComponent
+                        Id: 9be240a7-a303-4cc1-9aa1-0eb9365669ec
                         Projection: Orthographic
                         NearClipPlane: 1.0
         -   Entity:
                 Id: 2a05c636-e91f-42e6-93ed-69415d19fe2f
                 Name: Background
                 Components:
-                    - !TransformComponent
-                        ~Id: 6df53acd-0ad5-4f01-bc45-dd38893fa828
-                        Children: []
+                    cd3af56dd50a014fbc45dd38893fa828: !TransformComponent
+                        Id: 6df53acd-0ad5-4f01-bc45-dd38893fa828
                         Position: {X: 1.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !BackgroundComponent
-                        ~Id: 4eaeffe8-d225-4327-89df-6813f39119d2
-                        Texture: 7d966d17-e360-4285-a791-8ea6b9d7f93e/4b0f48d8-839e-4c71-8ca5-fc72e88cb68a:Bkg
+                        Children: {}
+                    e8ffae4e25d2274389df6813f39119d2: !BackgroundComponent
+                        Id: 4eaeffe8-d225-4327-89df-6813f39119d2
+                        Texture: 4b0f48d8-839e-4c71-8ca5-fc72e88cb68a:Bkg
         -   Entity:
                 Id: 590ac468-5d53-43d9-81a6-2d43c1c06bc5
                 Name: Enemy02
                 Components:
-                    - !TransformComponent
-                        ~Id: 52f49cbb-cc19-4629-b093-9b766a5cd10b
-                        Children: []
+                    bb9cf45219cc2946b0939b766a5cd10b: !TransformComponent
+                        Id: 52f49cbb-cc19-4629-b093-9b766a5cd10b
                         Position: {X: 8.0, Y: 8.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 0.5, Y: 0.5, Z: 0.5}
-                    - !AnimationComponent
-                        ~Id: 61d7e562-b1e2-4f07-b6cf-f5ef728d282a
+                        Children: {}
+                    62e5d761e2b1074fb6cff5ef728d282a: !AnimationComponent
+                        Id: 61d7e562-b1e2-4f07-b6cf-f5ef728d282a
                         Animations:
-                            Dead: acd1a42c-78c4-4b8c-a964-649692ef2cf0/071d843d-2efa-4b49-83ef-f6ee79e8dbb5:character_template_2head_dead
-                            Wait: e035d28c-f392-4e9e-82a1-77c45c6ba4a2/23bad94a-8864-48ca-88e7-cc3c7121f156:character_template_2head_wait
-                        PlayingAnimations: []
-                    - !SpriteStudioDemo.EnemyScript,SpriteStudioDemo.Game
-                        ~Id: 9a7ae650-cecf-4c0f-bd0d-9c840e9dffe2
-                    - !SpriteStudioDemo.EnemyCollisionScript,SpriteStudioDemo.Game
-                        ~Id: 0d506cac-e36c-4530-a0d9-46e43e55d505
-                    - !RigidbodyComponent
-                        ~Id: 84294d6f-a035-4bf9-be38-dcd7035a5810
+                            2ca4d1acc4788c4ba964649692ef2cf0~Dead: 071d843d-2efa-4b49-83ef-f6ee79e8dbb5:character_template_2head_dead
+                            8cd235e092f39e4e82a177c45c6ba4a2~Wait: 23bad94a-8864-48ca-88e7-cc3c7121f156:character_template_2head_wait
+                        PlayingAnimations: {}
+                    50e67a9acfce0f4cbd0d9c840e9dffe2: !SpriteStudioDemo.EnemyScript,SpriteStudioDemo.Game
+                        Id: 9a7ae650-cecf-4c0f-bd0d-9c840e9dffe2
+                    ac6c500d6ce33045a0d946e43e55d505: !SpriteStudioDemo.EnemyCollisionScript,SpriteStudioDemo.Game
+                        Id: 0d506cac-e36c-4530-a0d9-46e43e55d505
+                    6f4d298435a0f94bbe38dcd7035a5810: !RigidbodyComponent
+                        Id: 84294d6f-a035-4bf9-be38-dcd7035a5810
                         CollisionGroup: CustomFilter1
                         CanCollideWith: DefaultFilter
                         CanSleep: true
@@ -115,24 +106,23 @@ Hierarchy:
                         Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
                         NodeName: null
                         ColliderShapes:
-                            - !ColliderShapeAssetDesc
-                                ~Id: 2ee384a5-482a-4d81-9aac-c83de353e0c2
-                                Shape: 173aea09-cfd6-4b83-815f-c8af7c8ed0c1/77a32831-fdf3-41b4-9443-751500fcbc10:enemy_collider
-                    - !SpriteStudioComponent
-                        ~Id: eb83b7ab-0e47-4a53-93b4-543cb811b527
-                        Sheet: 21548422-d50e-40c8-b01c-59a3c79ae29f/7595b1d1-3f94-4cc5-bbfc-ec51687b96d6:character_template_2head
+                            a584e32e2a48814d9aacc83de353e0c2: !ColliderShapeAssetDesc
+                                Shape: 77a32831-fdf3-41b4-9443-751500fcbc10:enemy_collider
+                    abb783eb470e534a93b4543cb811b527: !SpriteStudioComponent
+                        Id: eb83b7ab-0e47-4a53-93b4-543cb811b527
+                        Sheet: 7595b1d1-3f94-4cc5-bbfc-ec51687b96d6:character_template_2head
         -   Entity:
                 Id: 629bf924-6828-46d6-a813-63d56a0f95b9
                 Name: Ground
                 Components:
-                    - !TransformComponent
-                        ~Id: 3234e418-6f30-4776-b7f2-af6f9e73d225
-                        Children: []
+                    18e43432306f7647b7f2af6f9e73d225: !TransformComponent
+                        Id: 3234e418-6f30-4776-b7f2-af6f9e73d225
                         Position: {X: -1.25711727, Y: -1.0, Z: 7.02876854}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !StaticColliderComponent
-                        ~Id: 4a1368df-990a-4d63-ab49-3a444fd68fab
+                        Children: {}
+                    df68134a0a99634dab493a444fd68fab: !StaticColliderComponent
+                        Id: 4a1368df-990a-4d63-ab49-3a444fd68fab
                         CanCollideWith: CustomFilter1
                         CanSleep: true
                         Restitution: 0.0
@@ -142,49 +132,48 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         ColliderShapes:
-                            - !StaticPlaneColliderShapeDesc
-                                ~Id: 3ef3775f-e489-4937-badb-27f5ad3ef379
+                            5f77f33e89e43749badb27f5ad3ef379: !StaticPlaneColliderShapeDesc
                                 Normal: {X: 0.0, Y: 1.0, Z: 0.0}
                                 Offset: 0.0
         -   Entity:
                 Id: 76d096d5-6b97-4d29-bb4c-0d3a35317d5d
                 Name: Player
                 Components:
-                    - !TransformComponent
-                        ~Id: 04f74371-5ad6-41d0-be8a-984db178ce5e
-                        Children: []
+                    7143f704d65ad041be8a984db178ce5e: !TransformComponent
+                        Id: 04f74371-5ad6-41d0-be8a-984db178ce5e
                         Position: {X: -6.616724, Y: -1.06623185, Z: 0.0}
                         Rotation: {X: 0.0, Y: -1.0, Z: 0.0, W: -4.371139E-08}
                         Scale: {X: 0.450682253, Y: 0.450682253, Z: 0.450682253}
-                    - !AnimationComponent
-                        ~Id: e5054314-d214-40c7-9a08-890d5ba014f9
+                        Children: {}
+                    144305e514d2c7409a08890d5ba014f9: !AnimationComponent
+                        Id: e5054314-d214-40c7-9a08-890d5ba014f9
                         Animations:
-                            Attack: 8ffdb873-4af9-48ec-8c57-68963f127d50/230575a8-df6b-4de2-ae9f-93bfcb02d538:character_template_3head_attack3
-                            Run: 8784df56-94c4-4f8b-ba41-d3d2374d46fa/0450fe8b-c834-4ab2-856b-19704944755c:character_template_3head_run
-                            Stance: a46cf6d2-7122-4c88-be51-3d3fbeeb5bad/ee0096d9-18f6-410a-ab68-d88a7c7ce9fc:character_template_3head_wait
-                        PlayingAnimations: []
-                    - !SpriteStudioDemo.PlayerScript,SpriteStudioDemo.Game
-                        ~Id: 018ca6a8-c34d-4b93-9901-3c685336a2f0
-                        BulletSheet: 705369d1-1890-4cd1-8f86-228796e5c877/fba79776-e90e-42eb-ac60-a137b2e7378d:SpriteSheet
-                        BulletColliderShape: 352445bc-b50a-48f2-948f-9908a706f87a/7946c040-eeda-424d-a2f5-3ede14470c1a:Bullet_CS
-                    - !SpriteStudioComponent
-                        ~Id: a7c40e4a-4f39-4723-bd72-990ea2aadc40
-                        Sheet: 65afdb23-b9b8-48e5-907b-aba90a148d42/ed4d6771-9481-4867-b85a-9d04280baba5:character_template_3head
+                            73b8fd8ff94aec488c5768963f127d50~Attack: 230575a8-df6b-4de2-ae9f-93bfcb02d538:character_template_3head_attack3
+                            56df8487c4948b4fba41d3d2374d46fa~Run: 0450fe8b-c834-4ab2-856b-19704944755c:character_template_3head_run
+                            d2f66ca42271884cbe513d3fbeeb5bad~Stance: ee0096d9-18f6-410a-ab68-d88a7c7ce9fc:character_template_3head_wait
+                        PlayingAnimations: {}
+                    a8a68c014dc3934b99013c685336a2f0: !SpriteStudioDemo.PlayerScript,SpriteStudioDemo.Game
+                        Id: 018ca6a8-c34d-4b93-9901-3c685336a2f0
+                        BulletSheet: fba79776-e90e-42eb-ac60-a137b2e7378d:SpriteSheet
+                        BulletColliderShape: 7946c040-eeda-424d-a2f5-3ede14470c1a:Bullet_CS
+                    4a0ec4a7394f2347bd72990ea2aadc40: !SpriteStudioComponent
+                        Id: a7c40e4a-4f39-4723-bd72-990ea2aadc40
+                        Sheet: ed4d6771-9481-4867-b85a-9d04280baba5:character_template_3head
         -   Entity:
                 Id: cf253c4b-ccf0-4a8a-85e6-0019307e4cac
                 Name: GUI
                 Components:
-                    - !TransformComponent
-                        ~Id: db13a295-f1f7-4bbf-a0b0-c17fa73967b3
-                        Children: []
+                    95a213dbf7f1bf4ba0b0c17fa73967b3: !TransformComponent
+                        Id: db13a295-f1f7-4bbf-a0b0-c17fa73967b3
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !SpriteStudioDemo.GuiScript,SpriteStudioDemo.Game
-                        ~Id: c21d3a58-43c4-4b22-99a1-d932a8b9c338
-                        Font: 276142dd-3e99-47b1-a49f-fec092e33483/58cd9ec1-ff48-4b50-aa88-43e0351fcb95:Font
-                    - !UIComponent
-                        ~Id: c0d2276e-0d39-43f9-9df8-cee475719561
+                        Children: {}
+                    583a1dc2c443224b99a1d932a8b9c338: !SpriteStudioDemo.GuiScript,SpriteStudioDemo.Game
+                        Id: c21d3a58-43c4-4b22-99a1-d932a8b9c338
+                        Font: 58cd9ec1-ff48-4b50-aa88-43e0351fcb95:Font
+                    6e27d2c0390df9439df8cee475719561: !UIComponent
+                        Id: c0d2276e-0d39-43f9-9df8-cee475719561
                         Page: null
                         Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
@@ -192,24 +181,24 @@ Hierarchy:
                 Id: d295a972-b9cf-48e5-a4ff-767eb25cddef
                 Name: Enemy00
                 Components:
-                    - !TransformComponent
-                        ~Id: f7cc8118-5dd3-4c25-9dc3-288826278f52
-                        Children: []
+                    1881ccf7d35d254c9dc3288826278f52: !TransformComponent
+                        Id: f7cc8118-5dd3-4c25-9dc3-288826278f52
                         Position: {X: -8.0, Y: 8.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 0.5, Y: 0.5, Z: 0.5}
-                    - !AnimationComponent
-                        ~Id: ac8bfd48-9918-40f2-b3c6-124cc93870df
+                        Children: {}
+                    48fd8bac1899f240b3c6124cc93870df: !AnimationComponent
+                        Id: ac8bfd48-9918-40f2-b3c6-124cc93870df
                         Animations:
-                            Dead: f9e3cfd9-b7b9-4d67-abb4-492da802d4bc/071d843d-2efa-4b49-83ef-f6ee79e8dbb5:character_template_2head_dead
-                            Wait: 28ddd987-a6e1-4d3e-8ac3-a60b765c7fcd/23bad94a-8864-48ca-88e7-cc3c7121f156:character_template_2head_wait
-                        PlayingAnimations: []
-                    - !SpriteStudioDemo.EnemyScript,SpriteStudioDemo.Game
-                        ~Id: 9f65e4cf-6b91-4031-b923-bcaf2c20a868
-                    - !SpriteStudioDemo.EnemyCollisionScript,SpriteStudioDemo.Game
-                        ~Id: 21c959ad-c789-44b4-948b-1d4021f6aa50
-                    - !RigidbodyComponent
-                        ~Id: ad6c2a2c-6b7f-4883-9119-24943a9348e5
+                            d9cfe3f9b9b7674dabb4492da802d4bc~Dead: 071d843d-2efa-4b49-83ef-f6ee79e8dbb5:character_template_2head_dead
+                            87d9dd28e1a63e4d8ac3a60b765c7fcd~Wait: 23bad94a-8864-48ca-88e7-cc3c7121f156:character_template_2head_wait
+                        PlayingAnimations: {}
+                    cfe4659f916b3140b923bcaf2c20a868: !SpriteStudioDemo.EnemyScript,SpriteStudioDemo.Game
+                        Id: 9f65e4cf-6b91-4031-b923-bcaf2c20a868
+                    ad59c92189c7b444948b1d4021f6aa50: !SpriteStudioDemo.EnemyCollisionScript,SpriteStudioDemo.Game
+                        Id: 21c959ad-c789-44b4-948b-1d4021f6aa50
+                    2c2a6cad7f6b8348911924943a9348e5: !RigidbodyComponent
+                        Id: ad6c2a2c-6b7f-4883-9119-24943a9348e5
                         CollisionGroup: CustomFilter1
                         CanCollideWith: DefaultFilter
                         CanSleep: true
@@ -227,34 +216,33 @@ Hierarchy:
                         Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
                         NodeName: null
                         ColliderShapes:
-                            - !ColliderShapeAssetDesc
-                                ~Id: 9b855dde-5612-4476-894c-1e13eddd2fd6
-                                Shape: dda85f49-29f0-49bf-b3b5-c2c2abcd1d09/77a32831-fdf3-41b4-9443-751500fcbc10:enemy_collider
-                    - !SpriteStudioComponent
-                        ~Id: ffb3726f-f3ca-4106-b754-902470aa29bb
-                        Sheet: 7fc83fa8-9529-48b8-a6e2-5cf1e09383ff/7595b1d1-3f94-4cc5-bbfc-ec51687b96d6:character_template_2head
+                            de5d859b12567644894c1e13eddd2fd6: !ColliderShapeAssetDesc
+                                Shape: 77a32831-fdf3-41b4-9443-751500fcbc10:enemy_collider
+                    6f72b3ffcaf30641b754902470aa29bb: !SpriteStudioComponent
+                        Id: ffb3726f-f3ca-4106-b754-902470aa29bb
+                        Sheet: 7595b1d1-3f94-4cc5-bbfc-ec51687b96d6:character_template_2head
         -   Entity:
                 Id: d4867e32-71f8-4d81-a742-2d99ef6e5060
                 Name: Enemy01
                 Components:
-                    - !TransformComponent
-                        ~Id: 40b67b78-7528-4b2d-ba67-632d439aaad6
-                        Children: []
+                    787bb64028752d4bba67632d439aaad6: !TransformComponent
+                        Id: 40b67b78-7528-4b2d-ba67-632d439aaad6
                         Position: {X: 0.0, Y: 8.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 0.5, Y: 0.5, Z: 0.5}
-                    - !AnimationComponent
-                        ~Id: 4a9121b4-7fe4-4a1c-80dc-c5bd05c02c7b
+                        Children: {}
+                    b421914ae47f1c4a80dcc5bd05c02c7b: !AnimationComponent
+                        Id: 4a9121b4-7fe4-4a1c-80dc-c5bd05c02c7b
                         Animations:
-                            Dead: 288e5653-3d8f-4626-8bb9-f8e1f4696165/071d843d-2efa-4b49-83ef-f6ee79e8dbb5:character_template_2head_dead
-                            Wait: 20bb5d67-5210-4d68-82bc-629f72be8e13/23bad94a-8864-48ca-88e7-cc3c7121f156:character_template_2head_wait
-                        PlayingAnimations: []
-                    - !SpriteStudioDemo.EnemyScript,SpriteStudioDemo.Game
-                        ~Id: a0969d82-476f-4aaa-82f2-7eff15b86395
-                    - !SpriteStudioDemo.EnemyCollisionScript,SpriteStudioDemo.Game
-                        ~Id: 707b3fd5-c622-44c5-9141-511dd24417e1
-                    - !RigidbodyComponent
-                        ~Id: 209be0ce-9316-46d2-8605-97e95c780d44
+                            53568e288f3d26468bb9f8e1f4696165~Dead: 071d843d-2efa-4b49-83ef-f6ee79e8dbb5:character_template_2head_dead
+                            675dbb201052684d82bc629f72be8e13~Wait: 23bad94a-8864-48ca-88e7-cc3c7121f156:character_template_2head_wait
+                        PlayingAnimations: {}
+                    829d96a06f47aa4a82f27eff15b86395: !SpriteStudioDemo.EnemyScript,SpriteStudioDemo.Game
+                        Id: a0969d82-476f-4aaa-82f2-7eff15b86395
+                    d53f7b7022c6c5449141511dd24417e1: !SpriteStudioDemo.EnemyCollisionScript,SpriteStudioDemo.Game
+                        Id: 707b3fd5-c622-44c5-9141-511dd24417e1
+                    cee09b201693d246860597e95c780d44: !RigidbodyComponent
+                        Id: 209be0ce-9316-46d2-8605-97e95c780d44
                         CollisionGroup: CustomFilter1
                         CanCollideWith: DefaultFilter
                         CanSleep: true
@@ -272,9 +260,8 @@ Hierarchy:
                         Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
                         NodeName: null
                         ColliderShapes:
-                            - !ColliderShapeAssetDesc
-                                ~Id: b4ac5cf5-d2ed-4391-88df-83e8a79e0c84
-                                Shape: 30220c02-c1b1-4cf3-9b3d-eb6652e4cf54/77a32831-fdf3-41b4-9443-751500fcbc10:enemy_collider
-                    - !SpriteStudioComponent
-                        ~Id: 6c1ae6d5-980c-4d1b-bbd6-a21986cd4b61
-                        Sheet: 2bfc3f46-5f1d-4676-8ed4-200ecc05b914/7595b1d1-3f94-4cc5-bbfc-ec51687b96d6:character_template_2head
+                            f55cacb4edd2914388df83e8a79e0c84: !ColliderShapeAssetDesc
+                                Shape: 77a32831-fdf3-41b4-9443-751500fcbc10:enemy_collider
+                    d5e61a6c0c981b4dbbd6a21986cd4b61: !SpriteStudioComponent
+                        Id: 6c1ae6d5-980c-4d1b-bbd6-a21986cd4b61
+                        Sheet: 7595b1d1-3f94-4cc5-bbfc-ec51687b96d6:character_template_2head

@@ -1,142 +1,103 @@
 !SceneAsset
 Id: c2262423-9422-4dd1-9fcb-ead76f9a93ba
-SerializedVersion: {Xenko: 1.9.0-beta02}
+SerializedVersion: {Xenko: 1.9.0-beta06}
 Tags: []
 SceneSettings:
     Id: d31d1016-50fc-4ff8-9b2f-121a0d00cdbe
     GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: a69daaab-6514-4794-bf92-1bad51dc72e5
         Cameras:
-            -   ~Id: c525ebb8-4004-487e-8bdc-9d3af9cd7903
+            b8eb25c504407e488bdc9d3af9cd7903:
                 Name: null
                 Camera: 7a3e8a5f-da8a-4727-a2df-4e5e4d1c670e/65ed2634-031b-4918-b563-5cc7b0659770
         Layers:
-            -   ~Id: 2978b6b3-7757-48f5-a2cd-7c912a2e7cca
+            b3b678295777f548a2cd7c912a2e7cca:
                 Name: SceneGraphicsLayer
                 Output: !LocalRenderFrameProvider
                     Descriptor:
                         Format: HDR
                 Renderers:
-                    - !ClearRenderFrameRenderer
-                        ~Id: a683905e-70d5-4d7a-bddd-8794a3eddcb3
+                    5e9083a6d5707a4dbddd8794a3eddcb3: !ClearRenderFrameRenderer
                         Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
                         Output: !CurrentRenderFrameProvider {}
-                    - !SceneCameraRenderer
-                        ~Id: 1028a995-e71a-43a8-bc58-8db190ce9f34
-                        Mode: !CameraRendererModeForward
-                            ~Id: c4868f99-9ef0-463f-babc-00ad61c3a1f4
+                    95a928101ae7a843bc588db190ce9f34: !SceneCameraRenderer
+                        Mode: !CameraRendererModeForward {}
                         Camera:
-                            ~Id: 68d1f817-b917-41af-b76a-7e2e8c054583
                             Index: 0
                         Output: !CurrentRenderFrameProvider {}
                         Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
                         ForceAspectRatio: false
         Master:
-            ~Id: 66708f54-01aa-46eb-bca6-327b8718c1ca
             Name: SceneGraphicsLayer
             Output: !MasterRenderFrameProvider {}
             Renderers:
-                - !SceneEffectRenderer
-                    ~Id: b6b3b946-cc21-46ce-b434-838adf827553
+                46b9b3b621ccce46b434838adf827553: !SceneEffectRenderer
                     Input: !ImageEffectRendererInput.LayerInput {}
                     Effect: !PostProcessingEffects
-                        ~Id: c362b2fb-e48b-4e2c-bcfd-353abba90e06
                         Camera:
-                            ~Id: ac91b42d-6949-49a7-9616-52c0a2ab7bed
                             Index: 0
-                        AmbientOcclusion:
-                            ~Id: 8d93d098-7324-431b-a0a6-38e8850b261c
+                        AmbientOcclusion: {}
                         DepthOfField:
-                            ~Id: 0e785956-91e4-4d0e-8c77-a915f45b77b7
                             Enabled: false
                             DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
                         BrightFilter:
-                            ~Id: 608d48bc-3bac-4bc1-b1f9-ab81dd41226c
                             Color: {R: 1.0, G: 1.0, B: 1.0}
                         Bloom:
-                            ~Id: 35195599-cb20-4e72-b150-de194be7d7e8
                             SigmaRatio: 4.0
                             Distortion: {X: 1.0, Y: 1.0}
                             Afterimage:
-                                ~Id: d4a5b0b4-c394-464b-a584-014236fc57b4
                                 Enabled: false
                         LightStreak:
-                            ~Id: 3ac718ed-636e-424d-a5c2-d4eee46f768a
                             Enabled: false
                             Attenuation: 0.7
-                        LensFlare:
-                            ~Id: 0ae48e96-70cb-46c4-90a2-24514bd59d07
+                        LensFlare: {}
                         ColorTransforms:
-                            ~Id: 8c64cb30-b9e3-4b14-a388-93aa866e8e2f
                             Transforms:
-                                - !ToneMap
-                                    ~Id: ceaadb01-d85e-45ea-bf02-30de440dc192
-                                    Operator: !ToneMapU2FilmicOperator
-                                        ~Id: 7942920c-23f9-46fd-b906-b0defa7df65a
-                                - !FilmGrain
-                                    ~Id: 71f28cd7-a888-457a-9ae2-36a1f53e0f37
+                                01dbaace5ed8ea45bf0230de440dc192: !ToneMap
+                                    Operator: !ToneMapU2FilmicOperator {}
+                                d78cf27188a87a459ae236a1f53e0f37: !FilmGrain
                                     Amount: 0.1
                                     GrainSize: 2.0
-                        Antialiasing: !FXAAEffect
-                            ~Id: e942e700-157e-44eb-9c9e-d7e9caabe6e8
+                        Antialiasing: !FXAAEffect {}
                     Output: !CurrentRenderFrameProvider {}
     EditorSettings:
-        ~Id: cb8d48e7-f18d-40bf-ae28-99c2fe804835
         GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
         SceneUnit: 1.0
         Mode: !SceneEditorGraphicsModeHDRSettings
-            ~Id: f307cc54-e58a-4c00-8262-e44022b391ea
             BackgroundColor: {R: 0.470588237, G: 0.470588237, B: 0.470588237}
             PostProcessingEffects:
-                ~Id: 2794b6ad-09da-4f87-a93c-27c4b3b86856
                 Camera:
-                    ~Id: ea03c339-68e3-4220-8b91-e42bed1b7e73
                     Index: 0
-                AmbientOcclusion:
-                    ~Id: 8aab95e3-cd7e-4357-9b87-18f212a853c4
+                AmbientOcclusion: {}
                 DepthOfField:
-                    ~Id: 7f832281-9776-45db-a877-361e50db1996
                     Enabled: false
                     DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
                 BrightFilter:
-                    ~Id: 19014290-0631-461d-a7da-257d282d4879
                     Enabled: false
                     Color: {R: 1.0, G: 1.0, B: 1.0}
                 Bloom:
-                    ~Id: 1e052e91-3f87-47f3-b501-2ec857931cec
                     SigmaRatio: 4.0
                     Distortion: {X: 1.0, Y: 1.0}
                     Afterimage:
-                        ~Id: 3b4226bc-2adb-426e-9f9b-6dbbc4292e58
                         Enabled: false
                 LightStreak:
-                    ~Id: dc619e02-4542-4e66-a724-31880bf01681
                     Enabled: false
                     StreakCount: 6
                     Attenuation: 0.64
                     Phase: 63.7
                 LensFlare:
-                    ~Id: 38a72940-3089-4737-a0fe-363e5d281667
                     Enabled: false
                 ColorTransforms:
-                    ~Id: 042d7e22-ec82-439b-9221-b1f5bf5815d5
                     Transforms:
-                        - !ToneMap
-                            ~Id: 396116c4-2365-4f5e-a7ac-5ce339fa446a
-                            Operator: !ToneMapU2FilmicOperator
-                                ~Id: 7c7cb54d-d43c-41f6-a48d-a950521ee727
-                        - !FilmGrain
-                            ~Id: 853b5cc8-0727-47bd-9b4c-fd786e643ec0
+                        c416613965235e4fa7ac5ce339fa446a: !ToneMap
+                            Operator: !ToneMapU2FilmicOperator {}
+                        c85c3b852707bd479b4cfd786e643ec0: !FilmGrain
                             Amount: 0.101613
                             GrainSize: 2.087096
-                        - !Vignetting
-                            ~Id: bb698e97-27c7-4ae8-bb87-7408bcbf4b6e
+                        978e69bbc727e84abb877408bcbf4b6e: !Vignetting
                             Enabled: false
                             Color: {R: 0.0, G: 0.0, B: 0.0}
-                Antialiasing: !FXAAEffect
-                    ~Id: aac82bbf-9080-4b53-bb25-10f68be3cafb
+                Antialiasing: !FXAAEffect {}
 Hierarchy:
-    ~Id: bad0d8a1-15a6-4d40-af0c-8cef471c06ce
     RootPartIds:
         - c481ec15-4e0b-4529-b351-7bbe42285fd9
         - 96b72222-d5d1-4cb0-ad41-dcd66f9d2c79
@@ -175,1272 +136,1256 @@ Hierarchy:
                 Id: 0a60c97d-bb16-4dcf-a147-f986f1d043ed
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 2db4c726-641d-48cc-8ca6-a21909a9739a
-                        Children: []
+                    26c7b42d1d64cc488ca6a21909a9739a: !TransformComponent
+                        Id: 2db4c726-641d-48cc-8ca6-a21909a9739a
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 7b7059ad-0b0f-459f-abd0-2f990fa1365d
-                        Model: 70acd10a-3769-429a-9020-307c71f804f1/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    ad59707b0f0b9f45abd02f990fa1365d: !ModelComponent
+                        Id: 7b7059ad-0b0f-459f-abd0-2f990fa1365d
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 42193b99-2d8f-4940-9588-09fdb9660e50/25786aa8-e384-4d84-a4d6-b31907995cf4:m_c_0
+                            993b19428f2d4049958809fdb9660e50~0: 25786aa8-e384-4d84-a4d6-b31907995cf4:m_c_0
         -   Entity:
                 Id: 0b25e0dc-5e21-40ec-9f9d-1102b4613c4a
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 05562ff2-daa3-4313-8f39-614303279cb0
-                        Children: []
+                    f22f5605a3da13438f39614303279cb0: !TransformComponent
+                        Id: 05562ff2-daa3-4313-8f39-614303279cb0
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 14b54624-259a-4922-809e-a34cb5584879
-                        Model: 882ed6e7-faca-4d4f-b559-9a5dafbca522/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    2446b5149a252249809ea34cb5584879: !ModelComponent
+                        Id: 14b54624-259a-4922-809e-a34cb5584879
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - f6da0b4c-ec6b-45a5-99bd-fb77dd6a4b0a/b9692315-792e-4703-bdce-bbb62778486a:layer_0_3
+                            4c0bdaf66beca54599bdfb77dd6a4b0a~0: b9692315-792e-4703-bdce-bbb62778486a:layer_0_3
         -   Entity:
                 Id: 0c90be28-e0fd-40a5-83e3-f8ea75a40a3b
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 3037de6c-37c9-45da-82b7-005d3f367ff8
-                        Children: []
+                    6cde3730c937da4582b7005d3f367ff8: !TransformComponent
+                        Id: 3037de6c-37c9-45da-82b7-005d3f367ff8
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 81fad0c1-440a-4ae2-97dc-a3dbbae6d539
-                        Model: 8825fd99-3369-4b57-b945-ff7dc346cfa2/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    c1d0fa810a44e24a97dca3dbbae6d539: !ModelComponent
+                        Id: 81fad0c1-440a-4ae2-97dc-a3dbbae6d539
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - aff1941d-1987-41c7-855b-54be4a8986ea/a7c6542d-9b18-4c14-a927-7f9a502d06c0:m_c_1
+                            1d94f1af8719c741855b54be4a8986ea~0: a7c6542d-9b18-4c14-a927-7f9a502d06c0:m_c_1
         -   Entity:
                 Id: 10e90041-bf77-47fe-836b-42813cb9400f
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 11ec845e-2714-4c1d-abed-be8ac01521a4
-                        Children: []
+                    5e84ec1114271d4cabedbe8ac01521a4: !TransformComponent
+                        Id: 11ec845e-2714-4c1d-abed-be8ac01521a4
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 39c4637c-cae4-42a3-87b1-33feff19454f
-                        Model: 8bf80f9f-d622-4b78-b285-56ab4acf915f/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    7c63c439e4caa34287b133feff19454f: !ModelComponent
+                        Id: 39c4637c-cae4-42a3-87b1-33feff19454f
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - baa07081-24e0-42ce-a470-ef6763da0003/e76e0341-24e3-456c-b09a-04fddd41f0b0:common_wood_1
+                            8170a0bae024ce42a470ef6763da0003~0: e76e0341-24e3-456c-b09a-04fddd41f0b0:common_wood_1
         -   Entity:
                 Id: 147c3547-06ad-41a1-b0fb-ccf983b3c97a
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: e4aa28e9-9946-4ac7-b156-d8793964ab27
-                        Children: []
+                    e928aae44699c74ab156d8793964ab27: !TransformComponent
+                        Id: e4aa28e9-9946-4ac7-b156-d8793964ab27
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 84551f0e-678a-43c3-8390-1568d496ea61
-                        Model: ada523b9-23bc-46ea-b0c6-ba82741900ca/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    0e1f55848a67c34383901568d496ea61: !ModelComponent
+                        Id: 84551f0e-678a-43c3-8390-1568d496ea61
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 6a07586a-25a3-4833-a231-143c704d2682/1dd5ee91-31f2-48b3-827a-36b4c00d1f8b:layer_0_2
+                            6a58076aa3253348a231143c704d2682~0: 1dd5ee91-31f2-48b3-827a-36b4c00d1f8b:layer_0_2
         -   Folder: Various
             Entity:
                 Id: 190d9bbc-c577-4741-90ca-059043c3e5ec
                 Name: Emissive Sample
                 Components:
-                    - !TransformComponent
-                        ~Id: e6be490f-2569-46b3-8bfd-b16586572a77
-                        Children:
-                            - c4272145-3143-4cd6-a973-297257db7f15/e4eedf64-3727-470b-9e76-f86405c2c1b5
-                            - ece16954-9211-4fa2-a645-f644bbc6e829/6cd099c8-8826-4fa5-850e-50a448379a99
+                    0f49bee66925b3468bfdb16586572a77: !TransformComponent
+                        Id: e6be490f-2569-46b3-8bfd-b16586572a77
                         Position: {X: 3.0, Y: 0.0, Z: -0.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            64dfeee427370b479e76f86405c2c1b5: c4272145-3143-4cd6-a973-297257db7f15/e4eedf64-3727-470b-9e76-f86405c2c1b5
+                            c899d06c2688a54f850e50a448379a99: ece16954-9211-4fa2-a645-f644bbc6e829/6cd099c8-8826-4fa5-850e-50a448379a99
         -   Entity:
                 Id: 1bdeb0b9-7fef-4f96-ad85-dc7a51cf11c6
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: fc1c20c3-1990-405c-810b-28accb1160cf
-                        Children: []
+                    c3201cfc90195c40810b28accb1160cf: !TransformComponent
+                        Id: fc1c20c3-1990-405c-810b-28accb1160cf
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 730b4183-2312-43bc-bfd8-7ab238790354
-                        Model: 88321971-7e21-4b22-a349-fd41d16a8eac/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    83410b731223bc43bfd87ab238790354: !ModelComponent
+                        Id: 730b4183-2312-43bc-bfd8-7ab238790354
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 764ee9e4-0488-4a13-98dd-1ec461207bec/f1a7ee91-1ec5-4eb9-879e-e3229587970d:m_b_0
+                            e4e94e768804134a98dd1ec461207bec~0: f1a7ee91-1ec5-4eb9-879e-e3229587970d:m_b_0
         -   Folder: Golds
             Entity:
                 Id: 1cac84ce-0c9d-4508-bf75-22888a3d07c7
                 Name: Gold_Metalness1.0 Glossness0.7
                 Components:
-                    - !TransformComponent
-                        ~Id: 94e63114-b4aa-4bc6-8a95-814c33b84e88
-                        Children:
-                            - cb87f048-923c-430b-9f62-e8f27cc75b7e/cc942d27-3be6-45d5-bd7d-65c5781a75f1
-                            - 3c0146f0-961e-4c12-bf52-9d507ac32770/64bf53af-df9a-42fe-962a-972e78f56389
+                    1431e694aab4c64b8a95814c33b84e88: !TransformComponent
+                        Id: 94e63114-b4aa-4bc6-8a95-814c33b84e88
                         Position: {X: -5.5, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            272d94cce63bd545bd7d65c5781a75f1: cb87f048-923c-430b-9f62-e8f27cc75b7e/cc942d27-3be6-45d5-bd7d-65c5781a75f1
+                            af53bf649adffe42962a972e78f56389: 3c0146f0-961e-4c12-bf52-9d507ac32770/64bf53af-df9a-42fe-962a-972e78f56389
         -   Folder: Various
             Entity:
                 Id: 1f3c7de6-a1d2-499f-994c-e46c09358737
                 Name: Stone Sample
                 Components:
-                    - !TransformComponent
-                        ~Id: 14cafd06-037d-4cca-a585-8384bf7d6f41
-                        Children:
-                            - 32c93004-9343-4fa8-8aed-ffe5a1310172/44180f0e-3f27-4496-bda5-736e0bf32b8d
-                            - 27bb72d3-a76a-407e-8cae-75241f0d3ffc/0a258d22-b1f6-410d-94f8-16f67a8afc43
+                    06fdca147d03ca4ca5858384bf7d6f41: !TransformComponent
+                        Id: 14cafd06-037d-4cca-a585-8384bf7d6f41
                         Position: {X: 1.5, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            0e0f1844273f9644bda5736e0bf32b8d: 32c93004-9343-4fa8-8aed-ffe5a1310172/44180f0e-3f27-4496-bda5-736e0bf32b8d
+                            228d250af6b10d4194f816f67a8afc43: 27bb72d3-a76a-407e-8cae-75241f0d3ffc/0a258d22-b1f6-410d-94f8-16f67a8afc43
         -   Entity:
                 Id: 22766b13-2f3e-4308-aff1-8c5542eef33f
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: e8bf5690-1395-4106-8d5d-084d53cf961e
-                        Children: []
+                    9056bfe8951306418d5d084d53cf961e: !TransformComponent
+                        Id: e8bf5690-1395-4106-8d5d-084d53cf961e
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: a62a0dad-3c39-47d1-ae23-9be51592f220
-                        Model: 744833e2-b991-4681-985b-5b9a18ae5603/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    ad0d2aa6393cd147ae239be51592f220: !ModelComponent
+                        Id: a62a0dad-3c39-47d1-ae23-9be51592f220
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 98cdebec-8dac-45ff-b6f5-1ef59ad73c9e/79d2ee65-44f0-4c12-aae0-d8a2040d02ea:m_a_1
+                            ecebcd98ac8dff45b6f51ef59ad73c9e~0: 79d2ee65-44f0-4c12-aae0-d8a2040d02ea:m_a_1
         -   Entity:
                 Id: 27bb72d3-a76a-407e-8cae-75241f0d3ffc
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 0a258d22-b1f6-410d-94f8-16f67a8afc43
-                        Children: []
+                    228d250af6b10d4194f816f67a8afc43: !TransformComponent
+                        Id: 0a258d22-b1f6-410d-94f8-16f67a8afc43
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: a828637f-721d-40bf-9a38-68497f33d323
-                        Model: 976e02e7-ecd2-406d-a597-79fa152404ed/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    7f6328a81d72bf409a3868497f33d323: !ModelComponent
+                        Id: a828637f-721d-40bf-9a38-68497f33d323
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - c5e685b3-fc06-44aa-8402-dbaa461bf827/4ca73c8f-71aa-45c4-8487-ebbf965a7e02:common_stone_3
+                            b385e6c506fcaa448402dbaa461bf827~0: 4ca73c8f-71aa-45c4-8487-ebbf965a7e02:common_stone_3
         -   Entity:
                 Id: 2a5d7361-7ad5-4142-8b2b-8a72bbcc66fc
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 348b9492-b14e-463a-b13c-54e085ed54ce
-                        Children: []
+                    92948b344eb13a46b13c54e085ed54ce: !TransformComponent
+                        Id: 348b9492-b14e-463a-b13c-54e085ed54ce
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: ed21cb11-cfa0-442c-90b9-ba92aaa513a6
-                        Model: 47486825-9cb1-4ac0-a8b8-2bf05d37d8d3/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    11cb21eda0cf2c4490b9ba92aaa513a6: !ModelComponent
+                        Id: ed21cb11-cfa0-442c-90b9-ba92aaa513a6
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 82941db5-06b8-41a4-bda3-be92a6aa595e/14e3eacd-153a-45ee-8a6e-84fa182d7659:t_a_0
+                            b51d9482b806a441bda3be92a6aa595e~0: 14e3eacd-153a-45ee-8a6e-84fa182d7659:t_a_0
         -   Entity:
                 Id: 2d582ddd-6559-4212-8632-3988f1afe02d
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 0d448c0a-d590-4b96-b58f-c22ce6e0a38e
-                        Children: []
+                    0a8c440d90d5964bb58fc22ce6e0a38e: !TransformComponent
+                        Id: 0d448c0a-d590-4b96-b58f-c22ce6e0a38e
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 665e2dd6-40fa-4fb8-a55e-84eb05541f68
-                        Model: e6c8d17a-5c8b-407a-a070-cbf13286f743/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    d62d5e66fa40b84fa55e84eb05541f68: !ModelComponent
+                        Id: 665e2dd6-40fa-4fb8-a55e-84eb05541f68
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 3485a790-ee7e-43ec-a84d-8b6aed3daabc/ff6c9ae4-9c05-4380-b11b-77df9f28ed5c:common_metal_0
+                            90a785347eeeec43a84d8b6aed3daabc~0: ff6c9ae4-9c05-4380-b11b-77df9f28ed5c:common_metal_0
         -   Entity:
                 Id: 2df1dd40-c381-4340-a996-071817dfc53e
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: bf01c56f-1078-4c4d-b960-542a7a16036d
-                        Children: []
+                    6fc501bf78104d4cb960542a7a16036d: !TransformComponent
+                        Id: bf01c56f-1078-4c4d-b960-542a7a16036d
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: f609aae5-e9c1-4102-a98a-305f856d4697
-                        Model: ad5ce595-7438-4c11-8ab1-2f399e96400b/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    e5aa09f6c1e90241a98a305f856d4697: !ModelComponent
+                        Id: f609aae5-e9c1-4102-a98a-305f856d4697
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - c832a560-c911-4257-bd9f-8eb950e0bb15/b9692315-792e-4703-bdce-bbb62778486a:layer_0_3
+                            60a532c811c95742bd9f8eb950e0bb15~0: b9692315-792e-4703-bdce-bbb62778486a:layer_0_3
         -   Entity:
                 Id: 2f8235e3-c991-4682-876b-dcb547009f43
                 Name: Directional light
                 Components:
-                    - !TransformComponent
-                        ~Id: e1b0644f-e058-4fd2-b83c-c4226c32eb4a
-                        Children: []
+                    4f64b0e158e0d24fb83cc4226c32eb4a: !TransformComponent
+                        Id: e1b0644f-e058-4fd2-b83c-c4226c32eb4a
                         Position: {X: 0.0, Y: 1.5, Z: 0.0}
                         Rotation: {X: -0.148005635, Y: 0.8162018, Z: 0.239418119, W: 0.5045669}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !LightComponent
-                        ~Id: c554f0af-6262-45a2-9fc0-f578a15fe5eb
+                        Children: {}
+                    aff054c56262a2459fc0f578a15fe5eb: !LightComponent
+                        Id: c554f0af-6262-45a2-9fc0-f578a15fe5eb
                         Type: !LightDirectional
-                            ~Id: 87a65943-f44e-4cc1-a344-b5dd4a8a4e58
                             Color: !ColorRgbProvider
-                                ~Id: 0fae5d38-a83b-4606-a9e2-10ec1b08bb33
                                 Value: {R: 0.7375, G: 0.735111535, B: 0.6499219}
                             Shadow:
-                                ~Id: bca9c6aa-398a-4f6b-b108-415e50d6a04b
                                 Enabled: true
-                                Filter: !LightShadowMapFilterTypePcf
-                                    ~Id: d45b8868-e4d1-4cb8-9257-c57812708933
+                                Filter: !LightShadowMapFilterTypePcf {}
                                 Size: Large
                                 CascadeCount: TwoCascades
-                                DepthRange:
-                                    ~Id: d037e04b-bc66-4166-a81b-4c487e231c6f
-                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic
-                                    ~Id: 2a484892-8837-41c5-b29a-01f46a652573
-                                BiasParameters:
-                                    ~Id: e74b3b2c-936b-46ab-a2a7-ad212f3cbea8
+                                DepthRange: {}
+                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic {}
+                                BiasParameters: {}
         -   Folder: Silvers
             Entity:
                 Id: 3224d228-673d-46c9-a809-99a888f492fe
                 Name: Silver_Metalness1.0 Glossness0.6
                 Components:
-                    - !TransformComponent
-                        ~Id: d8b0c997-6645-484d-bde4-beab404c4d5b
-                        Children:
-                            - 8f89b6a1-18ef-4121-abbd-fb9e2823d9da/19fccef0-0a6c-4c28-81eb-f64aa5ebb6f9
-                            - 69e6db7d-2e3f-46b2-a10d-409360ad4065/37f72658-4e54-4aed-8f2e-2a072a378172
+                    97c9b0d845664d48bde4beab404c4d5b: !TransformComponent
+                        Id: d8b0c997-6645-484d-bde4-beab404c4d5b
                         Position: {X: -4.0, Y: 0.0, Z: -0.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            f0cefc196c0a284c81ebf64aa5ebb6f9: 8f89b6a1-18ef-4121-abbd-fb9e2823d9da/19fccef0-0a6c-4c28-81eb-f64aa5ebb6f9
+                            5826f737544eed4a8f2e2a072a378172: 69e6db7d-2e3f-46b2-a10d-409360ad4065/37f72658-4e54-4aed-8f2e-2a072a378172
         -   Entity:
                 Id: 32353827-e0b0-482e-a2e6-4d44cdb015b1
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: b997f09a-eaa1-48c1-afe9-26eedda082f6
-                        Children: []
+                    9af097b9a1eac148afe926eedda082f6: !TransformComponent
+                        Id: b997f09a-eaa1-48c1-afe9-26eedda082f6
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: a7f7c1d6-33bc-4a22-9274-e681e4a11efb
-                        Model: 25d9f6c3-21e9-4114-94e8-a995510fd4aa/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    d6c1f7a7bc33224a9274e681e4a11efb: !ModelComponent
+                        Id: a7f7c1d6-33bc-4a22-9274-e681e4a11efb
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 18010283-d450-4818-a647-8a0341098c63/5cc3db23-f6e4-403a-91dc-5b7ffb5e18ce:common_wood_0
+                            8302011850d41848a6478a0341098c63~0: 5cc3db23-f6e4-403a-91dc-5b7ffb5e18ce:common_wood_0
         -   Entity:
                 Id: 32c93004-9343-4fa8-8aed-ffe5a1310172
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 44180f0e-3f27-4496-bda5-736e0bf32b8d
-                        Children: []
+                    0e0f1844273f9644bda5736e0bf32b8d: !TransformComponent
+                        Id: 44180f0e-3f27-4496-bda5-736e0bf32b8d
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 846fa4b3-f5c1-4ff3-8ca8-b620a4b6c36c
-                        Model: 3a8e7e45-7712-4d33-a8a5-58491d733386/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    b3a46f84c1f5f34f8ca8b620a4b6c36c: !ModelComponent
+                        Id: 846fa4b3-f5c1-4ff3-8ca8-b620a4b6c36c
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 24825042-6e0f-4612-8d04-6cca3cc44621/4ca73c8f-71aa-45c4-8487-ebbf965a7e02:common_stone_3
+                            425082240f6e12468d046cca3cc44621~0: 4ca73c8f-71aa-45c4-8487-ebbf965a7e02:common_stone_3
         -   Folder: Silvers
             Entity:
                 Id: 3b7c2fc3-8605-4aad-b8b4-bd920b9bb946
                 Name: Silver_Metalness1.0 Glossness1.0
                 Components:
-                    - !TransformComponent
-                        ~Id: 36989b1a-f004-4128-8aa0-1bfb4c9484dd
-                        Children:
-                            - 1bdeb0b9-7fef-4f96-ad85-dc7a51cf11c6/fc1c20c3-1990-405c-810b-28accb1160cf
-                            - 432ce6f1-45eb-4518-8067-090f0354d337/8db8870c-625c-4a0f-8888-462e0a9fec3f
+                    1a9b983604f028418aa01bfb4c9484dd: !TransformComponent
+                        Id: 36989b1a-f004-4128-8aa0-1bfb4c9484dd
                         Position: {X: -8.5, Y: 0.0, Z: -0.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            c3201cfc90195c40810b28accb1160cf: 1bdeb0b9-7fef-4f96-ad85-dc7a51cf11c6/fc1c20c3-1990-405c-810b-28accb1160cf
+                            0c87b88d5c620f4a8888462e0a9fec3f: 432ce6f1-45eb-4518-8067-090f0354d337/8db8870c-625c-4a0f-8888-462e0a9fec3f
         -   Entity:
                 Id: 3c0146f0-961e-4c12-bf52-9d507ac32770
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 64bf53af-df9a-42fe-962a-972e78f56389
-                        Children: []
+                    af53bf649adffe42962a972e78f56389: !TransformComponent
+                        Id: 64bf53af-df9a-42fe-962a-972e78f56389
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 73a8b6f1-1ca8-45e4-ab5f-b97d137f7ffe
-                        Model: a30369b2-3531-4fb3-b34f-4f9d6346ac94/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    f1b6a873a81ce445ab5fb97d137f7ffe: !ModelComponent
+                        Id: 73a8b6f1-1ca8-45e4-ab5f-b97d137f7ffe
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 43c64f51-503f-483e-9a85-ec74269aed09/ac2f11d5-9490-48f5-922c-60129b457116:m_a_2
+                            514fc6433f503e489a85ec74269aed09~0: ac2f11d5-9490-48f5-922c-60129b457116:m_a_2
         -   Entity:
                 Id: 3c4bfa2d-562f-40cc-9a84-320743baa72e
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 97df343c-74bd-49c8-9ca4-19999f0e21d8
-                        Children: []
+                    3c34df97bd74c8499ca419999f0e21d8: !TransformComponent
+                        Id: 97df343c-74bd-49c8-9ca4-19999f0e21d8
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 3b81d66a-286b-44d4-8cce-e9e088e4fb73
-                        Model: 960209ef-8886-45dc-b7cd-94a96a2f1a96/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    6ad6813b6b28d4448ccee9e088e4fb73: !ModelComponent
+                        Id: 3b81d66a-286b-44d4-8cce-e9e088e4fb73
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 232a9bd9-41ed-4c2f-a39d-0c5eab24bfb4/22d7b091-df1c-4262-bea5-a6ce847ac38d:m_a_0
+                            d99b2a23ed412f4ca39d0c5eab24bfb4~0: 22d7b091-df1c-4262-bea5-a6ce847ac38d:m_a_0
         -   Entity:
                 Id: 4163da3c-46cc-41d3-839f-ef0ea4e373c4
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 3c165373-d66d-41d0-9c61-df486e3f53e1
-                        Children: []
+                    7353163c6dd6d0419c61df486e3f53e1: !TransformComponent
+                        Id: 3c165373-d66d-41d0-9c61-df486e3f53e1
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 0e8138a9-9aef-4efb-9ebe-d588207ded75
-                        Model: 2146c151-d557-415f-bc92-8cc1bbd09f08/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    a938810eef9afb4e9ebed588207ded75: !ModelComponent
+                        Id: 0e8138a9-9aef-4efb-9ebe-d588207ded75
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - aed3f41f-a21e-4f6a-9f90-111e55b96867/5d192e33-2209-4ec5-9c52-19128423d1b3:common_stone_1
+                            1ff4d3ae1ea26a4f9f90111e55b96867~0: 5d192e33-2209-4ec5-9c52-19128423d1b3:common_stone_1
         -   Entity:
                 Id: 432ce6f1-45eb-4518-8067-090f0354d337
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 8db8870c-625c-4a0f-8888-462e0a9fec3f
-                        Children: []
+                    0c87b88d5c620f4a8888462e0a9fec3f: !TransformComponent
+                        Id: 8db8870c-625c-4a0f-8888-462e0a9fec3f
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 39e24e48-b2eb-4428-a22a-71a843940d33
-                        Model: 6a13ff2e-6e88-4de2-8d3c-ce8ff58cc088/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    484ee239ebb22844a22a71a843940d33: !ModelComponent
+                        Id: 39e24e48-b2eb-4428-a22a-71a843940d33
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 7d5d5f87-642c-42c0-97aa-0c907a8c093a/f1a7ee91-1ec5-4eb9-879e-e3229587970d:m_b_0
+                            875f5d7d2c64c04297aa0c907a8c093a~0: f1a7ee91-1ec5-4eb9-879e-e3229587970d:m_b_0
         -   Folder: Silvers
             Entity:
                 Id: 47b03fbf-99ff-40da-8877-3a07100afa7f
                 Name: Silver_Metalness1.0 Glossness0.85
                 Components:
-                    - !TransformComponent
-                        ~Id: c86b1140-2f1f-4a34-bdb0-e35b99cc8e10
-                        Children:
-                            - 764439a0-5d45-4015-ba5d-c7bff33dad73/e978ca13-9db5-4e01-b91d-3c1c15ec3114
-                            - 8131c62a-4adb-4622-ac57-10a818a7c8ee/ce5c8a8d-7f92-4006-a146-2771507fd15c
+                    40116bc81f2f344abdb0e35b99cc8e10: !TransformComponent
+                        Id: c86b1140-2f1f-4a34-bdb0-e35b99cc8e10
                         Position: {X: -7.0, Y: 0.0, Z: -0.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            13ca78e9b59d014eb91d3c1c15ec3114: 764439a0-5d45-4015-ba5d-c7bff33dad73/e978ca13-9db5-4e01-b91d-3c1c15ec3114
+                            8d8a5cce927f0640a1462771507fd15c: 8131c62a-4adb-4622-ac57-10a818a7c8ee/ce5c8a8d-7f92-4006-a146-2771507fd15c
         -   Entity:
                 Id: 49aa15f6-c60b-44cb-8fa8-994e3911fe40
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 4cbda35c-4f65-4d13-9cc4-8af7e37eb92a
-                        Children: []
+                    5ca3bd4c654f134d9cc48af7e37eb92a: !TransformComponent
+                        Id: 4cbda35c-4f65-4d13-9cc4-8af7e37eb92a
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 70d28ca7-3a34-4ab3-a844-9c1b25218622
-                        Model: c40eb818-4eb1-4573-b775-bf3e08ef5044/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    a78cd270343ab34aa8449c1b25218622: !ModelComponent
+                        Id: 70d28ca7-3a34-4ab3-a844-9c1b25218622
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - a66f990b-6aa1-4c47-8718-d854b92e0094/25786aa8-e384-4d84-a4d6-b31907995cf4:m_c_0
+                            0b996fa6a16a474c8718d854b92e0094~0: 25786aa8-e384-4d84-a4d6-b31907995cf4:m_c_0
         -   Folder: Plastics
             Entity:
                 Id: 523ece28-8059-420e-88ec-aadf1f4de965
                 Name: Plastic_Metalness0.0 Glossness1.0
                 Components:
-                    - !TransformComponent
-                        ~Id: b4ca8a8d-21b9-4d60-9ad1-0f6e71320a88
-                        Children:
-                            - 0a60c97d-bb16-4dcf-a147-f986f1d043ed/2db4c726-641d-48cc-8ca6-a21909a9739a
-                            - 49aa15f6-c60b-44cb-8fa8-994e3911fe40/4cbda35c-4f65-4d13-9cc4-8af7e37eb92a
+                    8d8acab4b921604d9ad10f6e71320a88: !TransformComponent
+                        Id: b4ca8a8d-21b9-4d60-9ad1-0f6e71320a88
                         Position: {X: -8.5, Y: 0.0, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            26c7b42d1d64cc488ca6a21909a9739a: 0a60c97d-bb16-4dcf-a147-f986f1d043ed/2db4c726-641d-48cc-8ca6-a21909a9739a
+                            5ca3bd4c654f134d9cc48af7e37eb92a: 49aa15f6-c60b-44cb-8fa8-994e3911fe40/4cbda35c-4f65-4d13-9cc4-8af7e37eb92a
         -   Entity:
                 Id: 59400c0f-d441-4f8c-84d3-7230e692b1e3
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 44b0a5e3-c25d-4571-95d0-9eb920556abe
-                        Children: []
+                    e3a5b0445dc2714595d09eb920556abe: !TransformComponent
+                        Id: 44b0a5e3-c25d-4571-95d0-9eb920556abe
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 1ccbc6ac-15a8-4aa5-96ea-f09c346af066
-                        Model: 16abcc2e-f4a8-49eb-97ad-ed2f065bb7ae/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    acc6cb1ca815a54a96eaf09c346af066: !ModelComponent
+                        Id: 1ccbc6ac-15a8-4aa5-96ea-f09c346af066
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 81d644d1-18cf-4e83-a6a2-8a9acf9f4514/10066c60-169a-4322-80b6-9e7a97027077:m_b_2
+                            d144d681cf18834ea6a28a9acf9f4514~0: 10066c60-169a-4322-80b6-9e7a97027077:m_b_2
         -   Entity:
                 Id: 5f383352-ab4a-40c0-85b6-16d769643320
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 703685a2-f910-45d8-bba3-8dd090d02ed0
-                        Children: []
+                    a285367010f9d845bba38dd090d02ed0: !TransformComponent
+                        Id: 703685a2-f910-45d8-bba3-8dd090d02ed0
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 55f07af3-0529-44d8-a6d4-236fc862560a
-                        Model: f33bb5ac-afa9-4be9-b577-c2e6336dd235/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    f37af0552905d844a6d4236fc862560a: !ModelComponent
+                        Id: 55f07af3-0529-44d8-a6d4-236fc862560a
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 10ec673d-8282-4baa-aca8-9faa17f0fa32/850cba1a-24b3-408a-9071-fa9fb5ad23ee:layer_0
+                            3d67ec108282aa4baca89faa17f0fa32~0: 850cba1a-24b3-408a-9071-fa9fb5ad23ee:layer_0
         -   Folder: Golds
             Entity:
                 Id: 60cd8919-2eba-4f17-b2bb-19424bc75ca8
                 Name: Gold_Metalness1.0 Glossness1.0
                 Components:
-                    - !TransformComponent
-                        ~Id: af989d0b-9665-4b83-926b-3a0c482a8af7
-                        Children:
-                            - 3c4bfa2d-562f-40cc-9a84-320743baa72e/97df343c-74bd-49c8-9ca4-19999f0e21d8
-                            - feb1d6cc-15dc-44ff-b4a6-8409cd1e17e8/3d93083e-c6ee-413c-b45d-26beb31885b3
+                    0b9d98af6596834b926b3a0c482a8af7: !TransformComponent
+                        Id: af989d0b-9665-4b83-926b-3a0c482a8af7
                         Position: {X: -8.5, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            3c34df97bd74c8499ca419999f0e21d8: 3c4bfa2d-562f-40cc-9a84-320743baa72e/97df343c-74bd-49c8-9ca4-19999f0e21d8
+                            3e08933deec63c41b45d26beb31885b3: feb1d6cc-15dc-44ff-b4a6-8409cd1e17e8/3d93083e-c6ee-413c-b45d-26beb31885b3
         -   Entity:
                 Id: 631ff957-92d6-4b0d-9b48-f0d5e0b1c060
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: f348069f-e1fc-4425-8b78-50249b3e4489
-                        Children: []
+                    9f0648f3fce125448b7850249b3e4489: !TransformComponent
+                        Id: f348069f-e1fc-4425-8b78-50249b3e4489
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 51d1bbae-c455-4cd6-837f-0d8c1986bd05
-                        Model: 7fb1b46c-b76e-4964-ad6b-98cfa32663dd/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    aebbd15155c4d64c837f0d8c1986bd05: !ModelComponent
+                        Id: 51d1bbae-c455-4cd6-837f-0d8c1986bd05
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 7d7c4740-499a-401c-a9dd-e29d06d7091a/d9e839cc-ae37-4198-b5a6-9ff9baae6fdb:m_c_2
+                            40477c7d9a491c40a9dde29d06d7091a~0: d9e839cc-ae37-4198-b5a6-9ff9baae6fdb:m_c_2
         -   Entity:
                 Id: 66adb3f4-e80f-493f-a029-5e734cc4846c
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 8a769679-8cca-4a9d-914f-a0493cbde5b5
-                        Children: []
+                    7996768aca8c9d4a914fa0493cbde5b5: !TransformComponent
+                        Id: 8a769679-8cca-4a9d-914f-a0493cbde5b5
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: d8228cf0-8f94-49e7-9e7b-e0fd75dfafc5
-                        Model: f777eb3c-16b1-4bea-bcca-d4b99ce11e1f/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    f08c22d8948fe7499e7be0fd75dfafc5: !ModelComponent
+                        Id: d8228cf0-8f94-49e7-9e7b-e0fd75dfafc5
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 2fc9054e-c4f7-443c-a3c5-8615472f8b54/9c2c0285-4edb-4f28-8610-583f3b25463b:common_wood_2
+                            4e05c92ff7c43c44a3c58615472f8b54~0: 9c2c0285-4edb-4f28-8610-583f3b25463b:common_wood_2
         -   Entity:
                 Id: 69e6db7d-2e3f-46b2-a10d-409360ad4065
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 37f72658-4e54-4aed-8f2e-2a072a378172
-                        Children: []
+                    5826f737544eed4a8f2e2a072a378172: !TransformComponent
+                        Id: 37f72658-4e54-4aed-8f2e-2a072a378172
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 1a29f9d4-dc53-4fed-bd87-7ba040a9346e
-                        Model: 977bf95a-8104-4066-8982-411b1fea81ff/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    d4f9291a53dced4fbd877ba040a9346e: !ModelComponent
+                        Id: 1a29f9d4-dc53-4fed-bd87-7ba040a9346e
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 788515db-4780-4e0a-9c0a-cb42f2fc7c34/8b374ade-e5f6-4597-b7b5-294cc84d58d7:m_b_3
+                            db15857880470a4e9c0acb42f2fc7c34~0: 8b374ade-e5f6-4597-b7b5-294cc84d58d7:m_b_3
         -   Entity:
                 Id: 71051f26-b313-461e-b7e4-478581c83b45
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 7f5ff1ec-4abb-473d-b7dd-1011b2534e8e
-                        Children: []
+                    ecf15f7fbb4a3d47b7dd1011b2534e8e: !TransformComponent
+                        Id: 7f5ff1ec-4abb-473d-b7dd-1011b2534e8e
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 6ca1b773-85de-4a23-bfae-e84d113109ef
-                        Model: 4605f96b-ad37-4099-b590-32c21a12cf6a/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    73b7a16cde85234abfaee84d113109ef: !ModelComponent
+                        Id: 6ca1b773-85de-4a23-bfae-e84d113109ef
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 98c46dc4-343c-4698-b06b-d6206ba29f7e/9e16dca9-dc72-42a7-ae49-e5fce6e41c13:layer_0_3_1
+                            c46dc4983c349846b06bd6206ba29f7e~0: 9e16dca9-dc72-42a7-ae49-e5fce6e41c13:layer_0_3_1
         -   Folder: Various
             Entity:
                 Id: 718bca7c-ec07-4dc3-a14b-4227f6437589
                 Name: Fine Wood Sample
                 Components:
-                    - !TransformComponent
-                        ~Id: 58e6defb-5a80-42b0-b256-7da022995394
-                        Children:
-                            - 10e90041-bf77-47fe-836b-42813cb9400f/11ec845e-2714-4c1d-abed-be8ac01521a4
-                            - 9df9367f-cbc3-4ced-8ebe-3bc420ebae0b/b692f61b-3d28-4775-a332-79946b89c854
+                    fbdee658805ab042b2567da022995394: !TransformComponent
+                        Id: 58e6defb-5a80-42b0-b256-7da022995394
                         Position: {X: 0.0, Y: 0.0, Z: -0.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            5e84ec1114271d4cabedbe8ac01521a4: 10e90041-bf77-47fe-836b-42813cb9400f/11ec845e-2714-4c1d-abed-be8ac01521a4
+                            1bf692b6283d7547a33279946b89c854: 9df9367f-cbc3-4ced-8ebe-3bc420ebae0b/b692f61b-3d28-4775-a332-79946b89c854
         -   Entity:
                 Id: 742eec73-3b46-4ccb-94c0-ece98501534d
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 8ac5584d-8804-42ef-aa17-8721efa5b965
-                        Children: []
+                    4d58c58a0488ef42aa178721efa5b965: !TransformComponent
+                        Id: 8ac5584d-8804-42ef-aa17-8721efa5b965
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: a3531fdb-7b50-4c6e-9684-993b7027698f
-                        Model: 82d628a3-fa21-4e52-9aba-3a53f6cb2c0f/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    db1f53a3507b6e4c9684993b7027698f: !ModelComponent
+                        Id: a3531fdb-7b50-4c6e-9684-993b7027698f
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 142874da-5fd3-4fd6-8194-4bba24cc2446/5d192e33-2209-4ec5-9c52-19128423d1b3:common_stone_1
+                            da742814d35fd64f81944bba24cc2446~0: 5d192e33-2209-4ec5-9c52-19128423d1b3:common_stone_1
         -   Folder: Layered
             Entity:
                 Id: 74c9a343-17d3-404c-a550-13d8ac79ce20
                 Name: Layerd 0.25
                 Components:
-                    - !TransformComponent
-                        ~Id: 1a8f9ad1-cbaf-4d08-8445-2cda9eeda427
-                        Children:
-                            - 7970cd55-5c5b-47ef-b952-51ed30239c0a/21296b78-f3c6-4670-95ab-bfb52896df84
-                            - b223dcf9-2cda-4105-bc36-632940805fc7/702a3aaf-f993-4d88-9fb2-baee83db3088
+                    d19a8f1aafcb084d84452cda9eeda427: !TransformComponent
+                        Id: 1a8f9ad1-cbaf-4d08-8445-2cda9eeda427
                         Position: {X: 0.0, Y: 0.0, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            786b2921c6f3704695abbfb52896df84: 7970cd55-5c5b-47ef-b952-51ed30239c0a/21296b78-f3c6-4670-95ab-bfb52896df84
+                            af3a2a7093f9884d9fb2baee83db3088: b223dcf9-2cda-4105-bc36-632940805fc7/702a3aaf-f993-4d88-9fb2-baee83db3088
         -   Folder: Layered
             Entity:
                 Id: 75c30555-1ac5-4aef-9c57-4e82f4620cbd
                 Name: Layerd 1.0
                 Components:
-                    - !TransformComponent
-                        ~Id: 1b012628-0589-4c0d-83ab-9b46aab968db
-                        Children:
-                            - 71051f26-b313-461e-b7e4-478581c83b45/7f5ff1ec-4abb-473d-b7dd-1011b2534e8e
-                            - f3d37e1f-9b76-4bd1-9be3-0ef5f9b9eaae/6edae3f3-81bd-4796-ab1e-a79647afb633
+                    2826011b89050d4c83ab9b46aab968db: !TransformComponent
+                        Id: 1b012628-0589-4c0d-83ab-9b46aab968db
                         Position: {X: 4.5, Y: 0.0, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            ecf15f7fbb4a3d47b7dd1011b2534e8e: 71051f26-b313-461e-b7e4-478581c83b45/7f5ff1ec-4abb-473d-b7dd-1011b2534e8e
+                            f3e3da6ebd819647ab1ea79647afb633: f3d37e1f-9b76-4bd1-9be3-0ef5f9b9eaae/6edae3f3-81bd-4796-ab1e-a79647afb633
         -   Entity:
                 Id: 764439a0-5d45-4015-ba5d-c7bff33dad73
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: e978ca13-9db5-4e01-b91d-3c1c15ec3114
-                        Children: []
+                    13ca78e9b59d014eb91d3c1c15ec3114: !TransformComponent
+                        Id: e978ca13-9db5-4e01-b91d-3c1c15ec3114
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 2c0d16ad-742d-453a-b560-ab5ae9b5cfc1
-                        Model: 8a7815b9-c881-46d0-b94d-c7b00c031756/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    ad160d2c2d743a45b560ab5ae9b5cfc1: !ModelComponent
+                        Id: 2c0d16ad-742d-453a-b560-ab5ae9b5cfc1
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 1ff3aaa1-7e06-4a74-9606-4489e732cbea/53c56a2a-42dc-4c0a-ad12-36060dc9aa76:m_b_1
+                            a1aaf31f067e744a96064489e732cbea~0: 53c56a2a-42dc-4c0a-ad12-36060dc9aa76:m_b_1
         -   Entity:
                 Id: 7970cd55-5c5b-47ef-b952-51ed30239c0a
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 21296b78-f3c6-4670-95ab-bfb52896df84
-                        Children: []
+                    786b2921c6f3704695abbfb52896df84: !TransformComponent
+                        Id: 21296b78-f3c6-4670-95ab-bfb52896df84
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: c2974e09-cb07-4b6e-b758-11b5bf43cad1
-                        Model: f6c569d5-f2b7-4f02-9ec4-b3b70a388e40/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    094e97c207cb6e4bb75811b5bf43cad1: !ModelComponent
+                        Id: c2974e09-cb07-4b6e-b758-11b5bf43cad1
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 8bcf8b87-9ac7-4067-bf38-f1c083b19d41/964cd572-c985-4201-9bf3-856dc4f1cf9b:layer_0_1
+                            878bcf8bc79a6740bf38f1c083b19d41~0: 964cd572-c985-4201-9bf3-856dc4f1cf9b:layer_0_1
         -   Entity:
                 Id: 7a3e8a5f-da8a-4727-a2df-4e5e4d1c670e
                 Name: Camera
                 Components:
-                    - !TransformComponent
-                        ~Id: 4cb20cf2-9443-409e-baf4-00fd7296ba90
-                        Children: []
+                    f20cb24c43949e40baf400fd7296ba90: !TransformComponent
+                        Id: 4cb20cf2-9443-409e-baf4-00fd7296ba90
                         Position: {X: -0.6924338, Y: 1.373112, Z: 6.50999832}
                         Rotation: {X: -0.155251831, Y: 0.0, Z: 0.0, W: 0.9878749}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !MaterialSample.CameraScript,MaterialSample.Game
-                        ~Id: a75c8e7a-25b2-4141-b207-0296e62f9b02
-                    - !CameraComponent
-                        ~Id: 65ed2634-031b-4918-b563-5cc7b0659770
+                        Children: {}
+                    7a8e5ca7b2254141b2070296e62f9b02: !MaterialSample.CameraScript,MaterialSample.Game
+                        Id: a75c8e7a-25b2-4141-b207-0296e62f9b02
+                    3426ed651b031849b5635cc7b0659770: !CameraComponent
+                        Id: 65ed2634-031b-4918-b563-5cc7b0659770
                         Projection: Perspective
         -   Entity:
                 Id: 8131c62a-4adb-4622-ac57-10a818a7c8ee
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: ce5c8a8d-7f92-4006-a146-2771507fd15c
-                        Children: []
+                    8d8a5cce927f0640a1462771507fd15c: !TransformComponent
+                        Id: ce5c8a8d-7f92-4006-a146-2771507fd15c
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: db6699e5-7326-454f-add6-fdcdba2f3bfd
-                        Model: 9a7a0e53-5c84-4bfb-9b6f-0ca4dffc5650/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    e59966db26734f45add6fdcdba2f3bfd: !ModelComponent
+                        Id: db6699e5-7326-454f-add6-fdcdba2f3bfd
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 041f3698-d49c-4015-8070-e5220f31b332/53c56a2a-42dc-4c0a-ad12-36060dc9aa76:m_b_1
+                            98361f049cd415408070e5220f31b332~0: 53c56a2a-42dc-4c0a-ad12-36060dc9aa76:m_b_1
         -   Folder: Plastics
             Entity:
                 Id: 8303aa1e-eac3-4eb5-b72e-296dae64ae48
                 Name: Plastic_Metalness0.0 Glossness0.7
                 Components:
-                    - !TransformComponent
-                        ~Id: 54cd4c52-3bf0-4492-8c52-a04203e574d5
-                        Children:
-                            - 0c90be28-e0fd-40a5-83e3-f8ea75a40a3b/3037de6c-37c9-45da-82b7-005d3f367ff8
-                            - 8d390636-fce4-4337-99ed-c5635fd0d711/69e5f271-b11c-402b-9f81-96ad17bfd1c3
+                    524ccd54f03b92448c52a04203e574d5: !TransformComponent
+                        Id: 54cd4c52-3bf0-4492-8c52-a04203e574d5
                         Position: {X: -7.0, Y: 0.0, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            6cde3730c937da4582b7005d3f367ff8: 0c90be28-e0fd-40a5-83e3-f8ea75a40a3b/3037de6c-37c9-45da-82b7-005d3f367ff8
+                            71f2e5691cb12b409f8196ad17bfd1c3: 8d390636-fce4-4337-99ed-c5635fd0d711/69e5f271-b11c-402b-9f81-96ad17bfd1c3
         -   Folder: Golds
             Entity:
                 Id: 84c62dff-0315-4a40-b3e1-74fb41362c4b
                 Name: Gold_Metalness1.0 Glossness0.6
                 Components:
-                    - !TransformComponent
-                        ~Id: af4c8fcd-1aae-4d7d-81f0-eaf5fcd20a37
-                        Children:
-                            - b7a27c61-02d1-4809-8ed1-ba3b5d5517f8/3589726b-2e30-4157-a55c-a99cfcc3bd26
-                            - e9673629-befe-4565-8f50-bd1c25b3e72a/bf0591a6-6f04-4b31-a82a-5fef22be2e1b
+                    cd8f4cafae1a7d4d81f0eaf5fcd20a37: !TransformComponent
+                        Id: af4c8fcd-1aae-4d7d-81f0-eaf5fcd20a37
                         Position: {X: -4.0, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            6b728935302e5741a55ca99cfcc3bd26: b7a27c61-02d1-4809-8ed1-ba3b5d5517f8/3589726b-2e30-4157-a55c-a99cfcc3bd26
+                            a69105bf046f314ba82a5fef22be2e1b: e9673629-befe-4565-8f50-bd1c25b3e72a/bf0591a6-6f04-4b31-a82a-5fef22be2e1b
         -   Entity:
                 Id: 89be6108-3616-4679-a9a1-18012f9dbd9c
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: dbe7faba-95d0-49ec-bacb-0a7d5c1c10e6
-                        Children: []
+                    bafae7dbd095ec49bacb0a7d5c1c10e6: !TransformComponent
+                        Id: dbe7faba-95d0-49ec-bacb-0a7d5c1c10e6
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 7851bf01-1726-480b-bc88-74ecbb5f7a3d
-                        Model: ab36a9e3-645a-41bc-92f4-4b364162d0c3/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    01bf517826170b48bc8874ecbb5f7a3d: !ModelComponent
+                        Id: 7851bf01-1726-480b-bc88-74ecbb5f7a3d
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - c4e31e43-a553-4b14-8050-45ed97a34ff9/79d2ee65-44f0-4c12-aae0-d8a2040d02ea:m_a_1
+                            431ee3c453a5144b805045ed97a34ff9~0: 79d2ee65-44f0-4c12-aae0-d8a2040d02ea:m_a_1
         -   Entity:
                 Id: 8d390636-fce4-4337-99ed-c5635fd0d711
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 69e5f271-b11c-402b-9f81-96ad17bfd1c3
-                        Children: []
+                    71f2e5691cb12b409f8196ad17bfd1c3: !TransformComponent
+                        Id: 69e5f271-b11c-402b-9f81-96ad17bfd1c3
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: a3c876de-8d1d-430a-a518-d54e70549e4f
-                        Model: f0d6bdf8-594d-4b89-b212-39a69a4cf378/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    de76c8a31d8d0a43a518d54e70549e4f: !ModelComponent
+                        Id: a3c876de-8d1d-430a-a518-d54e70549e4f
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 4d295080-173c-4572-a6ac-9b8b5b6dcff3/a7c6542d-9b18-4c14-a927-7f9a502d06c0:m_c_1
+                            8050294d3c177245a6ac9b8b5b6dcff3~0: a7c6542d-9b18-4c14-a927-7f9a502d06c0:m_c_1
         -   Entity:
                 Id: 8f89b6a1-18ef-4121-abbd-fb9e2823d9da
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 19fccef0-0a6c-4c28-81eb-f64aa5ebb6f9
-                        Children: []
+                    f0cefc196c0a284c81ebf64aa5ebb6f9: !TransformComponent
+                        Id: 19fccef0-0a6c-4c28-81eb-f64aa5ebb6f9
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 70dbc365-0bf0-4a2e-9e5f-27fa23389fab
-                        Model: 079ba13e-a813-4a02-b0f2-f01fa97ced3b/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    65c3db70f00b2e4a9e5f27fa23389fab: !ModelComponent
+                        Id: 70dbc365-0bf0-4a2e-9e5f-27fa23389fab
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 6b7270b7-c333-4a0a-93ae-6eeaa7a5b420/8b374ade-e5f6-4597-b7b5-294cc84d58d7:m_b_3
+                            b770726b33c30a4a93ae6eeaa7a5b420~0: 8b374ade-e5f6-4597-b7b5-294cc84d58d7:m_b_3
         -   Folder: Plastics
             Entity:
                 Id: 8fa64e28-8ee6-45f4-9546-9f0374069848
                 Name: Plastic_Metalness0.0 Glossness0.6
                 Components:
-                    - !TransformComponent
-                        ~Id: 5b822e4d-ff39-45d7-a921-08d4bf67e3e9
-                        Children:
-                            - cb43ee92-1080-4502-ac04-c722b14bdc81/268ce803-2700-4bb8-9a0a-7b681139ef37
-                            - 631ff957-92d6-4b0d-9b48-f0d5e0b1c060/f348069f-e1fc-4425-8b78-50249b3e4489
+                    4d2e825b39ffd745a92108d4bf67e3e9: !TransformComponent
+                        Id: 5b822e4d-ff39-45d7-a921-08d4bf67e3e9
                         Position: {X: -5.5, Y: 0.0, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            03e88c260027b84b9a0a7b681139ef37: cb43ee92-1080-4502-ac04-c722b14bdc81/268ce803-2700-4bb8-9a0a-7b681139ef37
+                            9f0648f3fce125448b7850249b3e4489: 631ff957-92d6-4b0d-9b48-f0d5e0b1c060/f348069f-e1fc-4425-8b78-50249b3e4489
         -   Folder: Various
             Entity:
                 Id: 96b72222-d5d1-4cb0-ad41-dcd66f9d2c79
                 Name: Brick Sample
                 Components:
-                    - !TransformComponent
-                        ~Id: 620d5a6e-d30a-43e6-b233-452edc3ae44f
-                        Children:
-                            - 4163da3c-46cc-41d3-839f-ef0ea4e373c4/3c165373-d66d-41d0-9c61-df486e3f53e1
-                            - 742eec73-3b46-4ccb-94c0-ece98501534d/8ac5584d-8804-42ef-aa17-8721efa5b965
+                    6e5a0d620ad3e643b233452edc3ae44f: !TransformComponent
+                        Id: 620d5a6e-d30a-43e6-b233-452edc3ae44f
                         Position: {X: 0.0, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            7353163c6dd6d0419c61df486e3f53e1: 4163da3c-46cc-41d3-839f-ef0ea4e373c4/3c165373-d66d-41d0-9c61-df486e3f53e1
+                            4d58c58a0488ef42aa178721efa5b965: 742eec73-3b46-4ccb-94c0-ece98501534d/8ac5584d-8804-42ef-aa17-8721efa5b965
         -   Entity:
                 Id: 9df9367f-cbc3-4ced-8ebe-3bc420ebae0b
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: b692f61b-3d28-4775-a332-79946b89c854
-                        Children: []
+                    1bf692b6283d7547a33279946b89c854: !TransformComponent
+                        Id: b692f61b-3d28-4775-a332-79946b89c854
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 2ca1f55a-71d4-47db-8d30-69c57cd4fe44
-                        Model: 5a987be8-a35f-4262-8828-4e26febbb5c7/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    5af5a12cd471db478d3069c57cd4fe44: !ModelComponent
+                        Id: 2ca1f55a-71d4-47db-8d30-69c57cd4fe44
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - ba4120d1-5b38-410a-9e26-a2dbc146b17c/e76e0341-24e3-456c-b09a-04fddd41f0b0:common_wood_1
+                            d12041ba385b0a419e26a2dbc146b17c~0: e76e0341-24e3-456c-b09a-04fddd41f0b0:common_wood_1
         -   Entity:
                 Id: ab17a4f1-2a07-4fcd-a3aa-ac8687dceb80
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 4b573f70-852f-4a93-afc9-508ec1fe1e9a
-                        Children: []
+                    703f574b2f85934aafc9508ec1fe1e9a: !TransformComponent
+                        Id: 4b573f70-852f-4a93-afc9-508ec1fe1e9a
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 4d7b2627-49f9-4269-972d-21691c3c41d6
-                        Model: a6d288d6-866e-4f43-a001-c43665310034/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    27267b4df9496942972d21691c3c41d6: !ModelComponent
+                        Id: 4d7b2627-49f9-4269-972d-21691c3c41d6
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 14dfd1e1-b3a7-40ba-9e9a-1bfca11ec855/ff6c9ae4-9c05-4380-b11b-77df9f28ed5c:common_metal_0
+                            e1d1df14a7b3ba409e9a1bfca11ec855~0: ff6c9ae4-9c05-4380-b11b-77df9f28ed5c:common_metal_0
         -   Folder: Various
             Entity:
                 Id: ae343e4f-12b6-48ec-a125-f1aee5ce8521
                 Name: Transparency Sample
                 Components:
-                    - !TransformComponent
-                        ~Id: a6b76862-c803-4a64-bb4b-6324176c7c72
-                        Children:
-                            - 2a5d7361-7ad5-4142-8b2b-8a72bbcc66fc/348b9492-b14e-463a-b13c-54e085ed54ce
-                            - e4d8617d-b619-4f0b-89b3-494eff286b8c/9477f653-9002-4a71-ae69-2925cfea64f9
+                    6268b7a603c8644abb4b6324176c7c72: !TransformComponent
+                        Id: a6b76862-c803-4a64-bb4b-6324176c7c72
                         Position: {X: 4.5, Y: 0.0, Z: -0.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            92948b344eb13a46b13c54e085ed54ce: 2a5d7361-7ad5-4142-8b2b-8a72bbcc66fc/348b9492-b14e-463a-b13c-54e085ed54ce
+                            53f677940290714aae692925cfea64f9: e4d8617d-b619-4f0b-89b3-494eff286b8c/9477f653-9002-4a71-ae69-2925cfea64f9
         -   Folder: Golds
             Entity:
                 Id: af420c47-3435-4242-9dc7-bb16d1407053
                 Name: Gold_Metalness1.0 Glossness0.85
                 Components:
-                    - !TransformComponent
-                        ~Id: 4922f36f-d88b-4de8-bb78-f6b217a8c67f
-                        Children:
-                            - 22766b13-2f3e-4308-aff1-8c5542eef33f/e8bf5690-1395-4106-8d5d-084d53cf961e
-                            - 89be6108-3616-4679-a9a1-18012f9dbd9c/dbe7faba-95d0-49ec-bacb-0a7d5c1c10e6
+                    6ff322498bd8e84dbb78f6b217a8c67f: !TransformComponent
+                        Id: 4922f36f-d88b-4de8-bb78-f6b217a8c67f
                         Position: {X: -7.0, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            9056bfe8951306418d5d084d53cf961e: 22766b13-2f3e-4308-aff1-8c5542eef33f/e8bf5690-1395-4106-8d5d-084d53cf961e
+                            bafae7dbd095ec49bacb0a7d5c1c10e6: 89be6108-3616-4679-a9a1-18012f9dbd9c/dbe7faba-95d0-49ec-bacb-0a7d5c1c10e6
         -   Entity:
                 Id: b1da1c7c-de86-47a8-a856-3b553510cdf8
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 6e609713-6df6-4f1d-a94f-c9049bc0f960
-                        Children: []
+                    1397606ef66d1d4fa94fc9049bc0f960: !TransformComponent
+                        Id: 6e609713-6df6-4f1d-a94f-c9049bc0f960
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 17cbeda6-3623-450e-b124-5ae5053bc758
-                        Model: b1af2c28-3103-4fb0-a402-10e818b40567/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    a6edcb1723360e45b1245ae5053bc758: !ModelComponent
+                        Id: 17cbeda6-3623-450e-b124-5ae5053bc758
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 5e771843-8c52-4844-82c2-d68cfba8fa6c/1dd5ee91-31f2-48b3-827a-36b4c00d1f8b:layer_0_2
+                            4318775e528c444882c2d68cfba8fa6c~0: 1dd5ee91-31f2-48b3-827a-36b4c00d1f8b:layer_0_2
         -   Entity:
                 Id: b223dcf9-2cda-4105-bc36-632940805fc7
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 702a3aaf-f993-4d88-9fb2-baee83db3088
-                        Children: []
+                    af3a2a7093f9884d9fb2baee83db3088: !TransformComponent
+                        Id: 702a3aaf-f993-4d88-9fb2-baee83db3088
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 4d85514c-fecb-4f94-9f17-7209148ed61a
-                        Model: 9a7f6a42-8abf-446d-a88a-efa0eef5b1eb/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    4c51854dcbfe944f9f177209148ed61a: !ModelComponent
+                        Id: 4d85514c-fecb-4f94-9f17-7209148ed61a
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 3bc249b7-eb56-4953-8527-a1fd7afb223e/964cd572-c985-4201-9bf3-856dc4f1cf9b:layer_0_1
+                            b749c23b56eb53498527a1fd7afb223e~0: 964cd572-c985-4201-9bf3-856dc4f1cf9b:layer_0_1
         -   Entity:
                 Id: b51ad02e-9a7a-4f39-bd8d-a4f5b7cffd71
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 1cb25edd-a53e-4552-ad81-77daeef23fb3
-                        Children: []
+                    dd5eb21c3ea55245ad8177daeef23fb3: !TransformComponent
+                        Id: 1cb25edd-a53e-4552-ad81-77daeef23fb3
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 3d3a65b5-0ba2-4b37-ba3a-225d8811d239
-                        Model: a4cb0ce9-a2d6-4811-8333-24a2d14307bd/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    b5653a3da20b374bba3a225d8811d239: !ModelComponent
+                        Id: 3d3a65b5-0ba2-4b37-ba3a-225d8811d239
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 96463bbc-6a4f-480b-bc9a-315a506b9722/5e5fa97d-8db3-4f07-9814-e5020ea61b9f:m_c_3
+                            bc3b46964f6a0b48bc9a315a506b9722~0: 5e5fa97d-8db3-4f07-9814-e5020ea61b9f:m_c_3
         -   Folder: Various
             Entity:
                 Id: b7212b22-f0fa-433e-b2d4-4b5a4bd9732b
                 Name: Wood Sample
                 Components:
-                    - !TransformComponent
-                        ~Id: e1a41958-ee9b-43ec-8da5-840af655ae2e
-                        Children:
-                            - 66adb3f4-e80f-493f-a029-5e734cc4846c/8a769679-8cca-4a9d-914f-a0493cbde5b5
-                            - df3be1c2-a0ec-4ade-b1c6-449b1e1e06e2/3ee31ac5-5e39-4c2a-a5cd-84b25ea80421
+                    5819a4e19beeec438da5840af655ae2e: !TransformComponent
+                        Id: e1a41958-ee9b-43ec-8da5-840af655ae2e
                         Position: {X: 1.5, Y: 0.0, Z: -0.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            7996768aca8c9d4a914fa0493cbde5b5: 66adb3f4-e80f-493f-a029-5e734cc4846c/8a769679-8cca-4a9d-914f-a0493cbde5b5
+                            c51ae33e395e2a4ca5cd84b25ea80421: df3be1c2-a0ec-4ade-b1c6-449b1e1e06e2/3ee31ac5-5e39-4c2a-a5cd-84b25ea80421
         -   Entity:
                 Id: b7a27c61-02d1-4809-8ed1-ba3b5d5517f8
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 3589726b-2e30-4157-a55c-a99cfcc3bd26
-                        Children: []
+                    6b728935302e5741a55ca99cfcc3bd26: !TransformComponent
+                        Id: 3589726b-2e30-4157-a55c-a99cfcc3bd26
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 669501f9-276d-447b-86bd-d1ebcb9f217d
-                        Model: 9a40a35c-3142-4ed1-be8d-e6302608e0d5/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    f90195666d277b4486bdd1ebcb9f217d: !ModelComponent
+                        Id: 669501f9-276d-447b-86bd-d1ebcb9f217d
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 02b01ac6-38dc-4b77-b579-bfa4ab9ff39e/46f6db70-e43c-4cd2-852e-e2d65d5c4cb4:m_a_3
+                            c61ab002dc38774bb579bfa4ab9ff39e~0: 46f6db70-e43c-4cd2-852e-e2d65d5c4cb4:m_a_3
         -   Entity:
                 Id: bceafa8f-dfb7-4567-b524-1e06d5f7c36c
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: bd160140-ca2c-46fb-97e1-81caeb138828
-                        Children: []
+                    400116bd2ccafb4697e181caeb138828: !TransformComponent
+                        Id: bd160140-ca2c-46fb-97e1-81caeb138828
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 052c4ec5-e7f7-416a-8c2a-6922ca0b21a1
-                        Model: d0edf053-7bc3-44f7-986d-3dd1dc9e9e85/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    c54e2c05f7e76a418c2a6922ca0b21a1: !ModelComponent
+                        Id: 052c4ec5-e7f7-416a-8c2a-6922ca0b21a1
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - be3ea8f3-ea44-47df-b5af-eb2d8b300301/acc52134-b4c5-4ffd-89ca-41918c4d8236:common_stone_0
+                            f3a83ebe44eadf47b5afeb2d8b300301~0: acc52134-b4c5-4ffd-89ca-41918c4d8236:common_stone_0
         -   Entity:
                 Id: c2966b22-9241-4d35-b053-de1ae3f41dc5
                 Name: skybox
                 Components:
-                    - !TransformComponent
-                        ~Id: 44d266a1-25e7-457f-81cb-86c4281f404b
-                        Children: []
+                    a166d244e7257f4581cb86c4281f404b: !TransformComponent
+                        Id: 44d266a1-25e7-457f-81cb-86c4281f404b
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !BackgroundComponent
-                        ~Id: 85a6b1f7-f8c7-4321-ad3e-7cd2885b0a51
-                        Texture: 2bd553e4-dc81-4f51-a3de-8aae4982d37a/355b7e54-fa45-44fc-818d-9fc46b8c0fbb:XenkoBackground
-                    - !SkyboxComponent
-                        ~Id: bd1c6dc8-dabe-46ff-84c0-b24243c10875
-                        Skybox: 01a11ffd-ac22-42fd-bc83-9f160d14f9db/d6ac5a30-abd7-4043-b09b-098c178504b1:Skybox
-                    - !LightComponent
-                        ~Id: c08137ec-eee5-4287-878b-2c7301147796
-                        Type: !LightSkybox
-                            ~Id: c19b0a68-9c76-4836-9743-8550e38c7c11
+                        Children: {}
+                    f7b1a685c7f82143ad3e7cd2885b0a51: !BackgroundComponent
+                        Id: 85a6b1f7-f8c7-4321-ad3e-7cd2885b0a51
+                        Texture: 355b7e54-fa45-44fc-818d-9fc46b8c0fbb:XenkoBackground
+                    c86d1cbdbedaff4684c0b24243c10875: !SkyboxComponent
+                        Id: bd1c6dc8-dabe-46ff-84c0-b24243c10875
+                        Skybox: d6ac5a30-abd7-4043-b09b-098c178504b1:Skybox
+                    ec3781c0e5ee8742878b2c7301147796: !LightComponent
+                        Id: c08137ec-eee5-4287-878b-2c7301147796
+                        Type: !LightSkybox {}
                         Intensity: 16.0
         -   Entity:
                 Id: c4272145-3143-4cd6-a973-297257db7f15
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: e4eedf64-3727-470b-9e76-f86405c2c1b5
-                        Children: []
+                    64dfeee427370b479e76f86405c2c1b5: !TransformComponent
+                        Id: e4eedf64-3727-470b-9e76-f86405c2c1b5
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: c0030f30-bf84-4051-9b3b-7d47becb86f0
-                        Model: f8973426-dc51-4ba3-8a37-f870c5478048/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    300f03c084bf51409b3b7d47becb86f0: !ModelComponent
+                        Id: c0030f30-bf84-4051-9b3b-7d47becb86f0
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 306c6e6f-3077-44f6-bc54-2b000cc6a97b/71056bbf-4c45-47c4-a1b5-3237ab71ab21:e_a_0
+                            6f6e6c307730f644bc542b000cc6a97b~0: 71056bbf-4c45-47c4-a1b5-3237ab71ab21:e_a_0
         -   Folder: Various
             Entity:
                 Id: c481ec15-4e0b-4529-b351-7bbe42285fd9
                 Name: Block Sample
                 Components:
-                    - !TransformComponent
-                        ~Id: d73f2243-517a-41ba-a5ba-98635f3d48f8
-                        Children:
-                            - caf5da96-9710-41b4-9826-b44c4072bf75/1f7e87f9-495f-4ded-a565-1bd9a92ce237
-                            - bceafa8f-dfb7-4567-b524-1e06d5f7c36c/bd160140-ca2c-46fb-97e1-81caeb138828
+                    43223fd77a51ba41a5ba98635f3d48f8: !TransformComponent
+                        Id: d73f2243-517a-41ba-a5ba-98635f3d48f8
                         Position: {X: -1.5, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            f9877e1f5f49ed4da5651bd9a92ce237: caf5da96-9710-41b4-9826-b44c4072bf75/1f7e87f9-495f-4ded-a565-1bd9a92ce237
+                            400116bd2ccafb4697e181caeb138828: bceafa8f-dfb7-4567-b524-1e06d5f7c36c/bd160140-ca2c-46fb-97e1-81caeb138828
         -   Entity:
                 Id: c7176a61-cf0e-4a9c-96c2-e26504acedc5
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: c4cbf328-346a-4baf-b041-911f5e86000f
-                        Children: []
+                    28f3cbc46a34af4bb041911f5e86000f: !TransformComponent
+                        Id: c4cbf328-346a-4baf-b041-911f5e86000f
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 6c527113-dc48-4746-8b5c-a5e837bbe212
-                        Model: b0423baa-8908-4f43-acdd-ed8e66e4f788/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    1371526c48dc46478b5ca5e837bbe212: !ModelComponent
+                        Id: 6c527113-dc48-4746-8b5c-a5e837bbe212
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - c5ff29e3-36e1-4247-a063-f36e92977741/5cc3db23-f6e4-403a-91dc-5b7ffb5e18ce:common_wood_0
+                            e329ffc5e1364742a063f36e92977741~0: 5cc3db23-f6e4-403a-91dc-5b7ffb5e18ce:common_wood_0
         -   Folder: Layered
             Entity:
                 Id: c8ecbcd1-6bdd-418b-8371-0eab3c4399ae
                 Name: Layerd 0.75
                 Components:
-                    - !TransformComponent
-                        ~Id: 638ae3b0-b25c-464d-b1a2-3063da81dcbf
-                        Children:
-                            - 2df1dd40-c381-4340-a996-071817dfc53e/bf01c56f-1078-4c4d-b960-542a7a16036d
-                            - 0b25e0dc-5e21-40ec-9f9d-1102b4613c4a/05562ff2-daa3-4313-8f39-614303279cb0
+                    b0e38a635cb24d46b1a23063da81dcbf: !TransformComponent
+                        Id: 638ae3b0-b25c-464d-b1a2-3063da81dcbf
                         Position: {X: 3.0, Y: 0.0, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            6fc501bf78104d4cb960542a7a16036d: 2df1dd40-c381-4340-a996-071817dfc53e/bf01c56f-1078-4c4d-b960-542a7a16036d
+                            f22f5605a3da13438f39614303279cb0: 0b25e0dc-5e21-40ec-9f9d-1102b4613c4a/05562ff2-daa3-4313-8f39-614303279cb0
         -   Entity:
                 Id: caf5da96-9710-41b4-9826-b44c4072bf75
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 1f7e87f9-495f-4ded-a565-1bd9a92ce237
-                        Children: []
+                    f9877e1f5f49ed4da5651bd9a92ce237: !TransformComponent
+                        Id: 1f7e87f9-495f-4ded-a565-1bd9a92ce237
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: ac1876bb-c09c-47a1-b00d-6c3d892f7b90
-                        Model: 31682058-13ea-4af9-a15c-3ed8fd9629d7/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    bb7618ac9cc0a147b00d6c3d892f7b90: !ModelComponent
+                        Id: ac1876bb-c09c-47a1-b00d-6c3d892f7b90
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - ef91b404-17e4-4d9e-97fd-e67d3fc28cc7/acc52134-b4c5-4ffd-89ca-41918c4d8236:common_stone_0
+                            04b491efe4179e4d97fde67d3fc28cc7~0: acc52134-b4c5-4ffd-89ca-41918c4d8236:common_stone_0
         -   Entity:
                 Id: cb43ee92-1080-4502-ac04-c722b14bdc81
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: 268ce803-2700-4bb8-9a0a-7b681139ef37
-                        Children: []
+                    03e88c260027b84b9a0a7b681139ef37: !TransformComponent
+                        Id: 268ce803-2700-4bb8-9a0a-7b681139ef37
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 25eafe68-13bb-4215-b85e-e93aa8b07c79
-                        Model: 9aa63005-814e-4d77-82b6-e0cc9b4f0594/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    68feea25bb131542b85ee93aa8b07c79: !ModelComponent
+                        Id: 25eafe68-13bb-4215-b85e-e93aa8b07c79
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - eabed480-1f15-4f7a-9ab7-0fc6c3471283/d9e839cc-ae37-4198-b5a6-9ff9baae6fdb:m_c_2
+                            80d4beea151f7a4f9ab70fc6c3471283~0: d9e839cc-ae37-4198-b5a6-9ff9baae6fdb:m_c_2
         -   Entity:
                 Id: cb87f048-923c-430b-9f62-e8f27cc75b7e
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: cc942d27-3be6-45d5-bd7d-65c5781a75f1
-                        Children: []
+                    272d94cce63bd545bd7d65c5781a75f1: !TransformComponent
+                        Id: cc942d27-3be6-45d5-bd7d-65c5781a75f1
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 29533aee-7a07-4958-b298-2c84ec842951
-                        Model: 0659aa3a-7bb5-4440-b38c-c855c1b90ef5/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    ee3a5329077a5849b2982c84ec842951: !ModelComponent
+                        Id: 29533aee-7a07-4958-b298-2c84ec842951
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 28e9ebd2-a34c-413c-9f9f-48e1f3d5c76b/ac2f11d5-9490-48f5-922c-60129b457116:m_a_2
+                            d2ebe9284ca33c419f9f48e1f3d5c76b~0: ac2f11d5-9490-48f5-922c-60129b457116:m_a_2
         -   Entity:
                 Id: cba5515e-e9ff-4ec9-be5e-a86e76f9737c
                 Name: Directional light
                 Components:
-                    - !TransformComponent
-                        ~Id: 14098e6e-0bf2-4f57-b165-261c92cddbf1
-                        Children: []
+                    6e8e0914f20b574fb165261c92cddbf1: !TransformComponent
+                        Id: 14098e6e-0bf2-4f57-b165-261c92cddbf1
                         Position: {X: 0.0, Y: 1.5, Z: 0.0}
                         Rotation: {X: -0.259767056, Y: -0.369503438, Z: -0.108387187, W: 0.8855735}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !LightComponent
-                        ~Id: 34856d9e-b1b8-4f28-90dd-d641c960bc6c
+                        Children: {}
+                    9e6d8534b8b1284f90ddd641c960bc6c: !LightComponent
+                        Id: 34856d9e-b1b8-4f28-90dd-d641c960bc6c
                         Type: !LightDirectional
-                            ~Id: 9bab4477-0cd5-428f-8e99-4e9935631138
                             Color: !ColorRgbProvider
-                                ~Id: f2f76ec9-0fda-419a-8760-151376259de4
                                 Value: {R: 0.9, G: 0.9, B: 0.9}
                             Shadow:
-                                ~Id: 13aac5a0-31ce-4c75-b90b-25fd6d74d9e4
                                 Enabled: true
-                                Filter: !LightShadowMapFilterTypePcf
-                                    ~Id: 2ece0726-42ff-4137-b921-02749d84ff2c
+                                Filter: !LightShadowMapFilterTypePcf {}
                                 Size: Large
                                 CascadeCount: TwoCascades
-                                DepthRange:
-                                    ~Id: fb0b6dfc-f76d-4429-8ad2-3a64fb805ed6
-                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic
-                                    ~Id: a7eff2ed-5429-4acd-b8a1-ee57d418d288
-                                BiasParameters:
-                                    ~Id: d24a478d-8da3-4c0c-9fb2-855d552cdd92
+                                DepthRange: {}
+                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic {}
+                                BiasParameters: {}
                         Intensity: 3.0
         -   Folder: Plastics
             Entity:
                 Id: d42af138-6f94-4d15-90b1-927d47d0b065
                 Name: Plastic_Metalness0.0 Glossness0.5
                 Components:
-                    - !TransformComponent
-                        ~Id: fdfeb613-8ae4-4668-8113-dfc2c67053e9
-                        Children:
-                            - d4957deb-4bd4-497a-86c3-b6a15615182a/f6ab2085-a380-4c58-b75c-3fde380ceb00
-                            - b51ad02e-9a7a-4f39-bd8d-a4f5b7cffd71/1cb25edd-a53e-4552-ad81-77daeef23fb3
+                    13b6fefde48a68468113dfc2c67053e9: !TransformComponent
+                        Id: fdfeb613-8ae4-4668-8113-dfc2c67053e9
                         Position: {X: -4.0, Y: 0.0, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            8520abf680a3584cb75c3fde380ceb00: d4957deb-4bd4-497a-86c3-b6a15615182a/f6ab2085-a380-4c58-b75c-3fde380ceb00
+                            dd5eb21c3ea55245ad8177daeef23fb3: b51ad02e-9a7a-4f39-bd8d-a4f5b7cffd71/1cb25edd-a53e-4552-ad81-77daeef23fb3
         -   Entity:
                 Id: d4957deb-4bd4-497a-86c3-b6a15615182a
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: f6ab2085-a380-4c58-b75c-3fde380ceb00
-                        Children: []
+                    8520abf680a3584cb75c3fde380ceb00: !TransformComponent
+                        Id: f6ab2085-a380-4c58-b75c-3fde380ceb00
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: af086037-375a-4f5f-abbb-245cda544d65
-                        Model: db551736-3ccc-42a0-8c19-3dd07a751774/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    376008af5a375f4fabbb245cda544d65: !ModelComponent
+                        Id: af086037-375a-4f5f-abbb-245cda544d65
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - c42e207f-1702-4596-8f51-e1651697fed7/5e5fa97d-8db3-4f07-9814-e5020ea61b9f:m_c_3
+                            7f202ec4021796458f51e1651697fed7~0: 5e5fa97d-8db3-4f07-9814-e5020ea61b9f:m_c_3
         -   Folder: Various
             Entity:
                 Id: d56d2a8a-5d85-4c83-bcf5-e3876cc23c92
                 Name: Rusty Metal Sample
                 Components:
-                    - !TransformComponent
-                        ~Id: c5907db2-0b8f-4db1-a88a-f471c0dfc640
-                        Children:
-                            - ab17a4f1-2a07-4fcd-a3aa-ac8687dceb80/4b573f70-852f-4a93-afc9-508ec1fe1e9a
-                            - 2d582ddd-6559-4212-8632-3988f1afe02d/0d448c0a-d590-4b96-b58f-c22ce6e0a38e
+                    b27d90c58f0bb14da88af471c0dfc640: !TransformComponent
+                        Id: c5907db2-0b8f-4db1-a88a-f471c0dfc640
                         Position: {X: 4.5, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            703f574b2f85934aafc9508ec1fe1e9a: ab17a4f1-2a07-4fcd-a3aa-ac8687dceb80/4b573f70-852f-4a93-afc9-508ec1fe1e9a
+                            0a8c440d90d5964bb58fc22ce6e0a38e: 2d582ddd-6559-4212-8632-3988f1afe02d/0d448c0a-d590-4b96-b58f-c22ce6e0a38e
         -   Entity:
                 Id: df3be1c2-a0ec-4ade-b1c6-449b1e1e06e2
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 3ee31ac5-5e39-4c2a-a5cd-84b25ea80421
-                        Children: []
+                    c51ae33e395e2a4ca5cd84b25ea80421: !TransformComponent
+                        Id: 3ee31ac5-5e39-4c2a-a5cd-84b25ea80421
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 0106a9ea-e868-4a1f-b407-9bd20e637169
-                        Model: e2e85b0f-3ac1-44a1-94e7-8752b42bbe5c/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    eaa9060168e81f4ab4079bd20e637169: !ModelComponent
+                        Id: 0106a9ea-e868-4a1f-b407-9bd20e637169
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 4ad6ec79-c6da-421f-a985-63dc8b845274/9c2c0285-4edb-4f28-8610-583f3b25463b:common_wood_2
+                            79ecd64adac61f42a98563dc8b845274~0: 9c2c0285-4edb-4f28-8610-583f3b25463b:common_wood_2
         -   Entity:
                 Id: dfa3de16-8fc4-44a2-9aa2-a1883ee33365
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: d668e9ba-48af-48ea-886a-8d5ca7ca18e3
-                        Children: []
+                    bae968d6af48ea48886a8d5ca7ca18e3: !TransformComponent
+                        Id: d668e9ba-48af-48ea-886a-8d5ca7ca18e3
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 011117b3-51b4-4d91-a020-f0ef4cfc3dd7
-                        Model: d100fb15-4a04-494c-b1fc-3c2a0b58f41a/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    b3171101b451914da020f0ef4cfc3dd7: !ModelComponent
+                        Id: 011117b3-51b4-4d91-a020-f0ef4cfc3dd7
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - ee765d97-8e2c-41d7-b6b0-48fad2c1b9a8/850cba1a-24b3-408a-9071-fa9fb5ad23ee:layer_0
+                            975d76ee2c8ed741b6b048fad2c1b9a8~0: 850cba1a-24b3-408a-9071-fa9fb5ad23ee:layer_0
         -   Folder: Silvers
             Entity:
                 Id: e1ee3746-530f-4704-8692-c05d2762acfb
                 Name: Silver_Metalness1.0 Glossness0.7
                 Components:
-                    - !TransformComponent
-                        ~Id: 72bd2e81-76dc-426f-b2e5-abed7a3eba90
-                        Children:
-                            - efb6f02f-819d-4667-a2c1-a3d7ccb31190/e43907ab-722c-4231-bcb6-5dcdb444b830
-                            - 59400c0f-d441-4f8c-84d3-7230e692b1e3/44b0a5e3-c25d-4571-95d0-9eb920556abe
+                    812ebd72dc766f42b2e5abed7a3eba90: !TransformComponent
+                        Id: 72bd2e81-76dc-426f-b2e5-abed7a3eba90
                         Position: {X: -5.5, Y: 0.0, Z: -0.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            ab0739e42c723142bcb65dcdb444b830: efb6f02f-819d-4667-a2c1-a3d7ccb31190/e43907ab-722c-4231-bcb6-5dcdb444b830
+                            e3a5b0445dc2714595d09eb920556abe: 59400c0f-d441-4f8c-84d3-7230e692b1e3/44b0a5e3-c25d-4571-95d0-9eb920556abe
         -   Folder: Various
             Entity:
                 Id: e4069496-855e-4ead-8d99-f7b0b9581990
                 Name: Marble Sample
                 Components:
-                    - !TransformComponent
-                        ~Id: dd238fb1-9a88-4fac-9698-d225d01a7ab5
-                        Children:
-                            - f5738400-85e6-4d43-b9e7-4c80282b37ae/ab838e01-c59d-4449-a41c-7e07f58f1a44
-                            - fd57b289-b694-47e8-99a1-5e08ce2b1521/3225857b-2b36-4f82-b55e-bf7e481a0b66
+                    b18f23dd889aac4f9698d225d01a7ab5: !TransformComponent
+                        Id: dd238fb1-9a88-4fac-9698-d225d01a7ab5
                         Position: {X: 3.0, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            018e83ab9dc54944a41c7e07f58f1a44: f5738400-85e6-4d43-b9e7-4c80282b37ae/ab838e01-c59d-4449-a41c-7e07f58f1a44
+                            7b852532362b824fb55ebf7e481a0b66: fd57b289-b694-47e8-99a1-5e08ce2b1521/3225857b-2b36-4f82-b55e-bf7e481a0b66
         -   Entity:
                 Id: e41fff2c-665d-4c9a-b641-9b99e02a79b0
                 Name: ground
                 Components:
-                    - !TransformComponent
-                        ~Id: 71de773d-7bbc-4500-9f94-4ebe591ba18c
-                        Children: []
+                    3d77de71bc7b00459f944ebe591ba18c: !TransformComponent
+                        Id: 71de773d-7bbc-4500-9f94-4ebe591ba18c
                         Position: {X: -1.5, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: ccec203d-3e50-42d7-ad4c-c6a662d785f3
-                        Model: 011afc18-22c7-4f61-a6c8-3a49ec448081/20192b41-7766-4193-9f6b-c3b7d418d138:SampleGround
-                        Materials:
-                            - null
+                        Children: {}
+                    3d20eccc503ed742ad4cc6a662d785f3: !ModelComponent
+                        Id: ccec203d-3e50-42d7-ad4c-c6a662d785f3
+                        Model: 20192b41-7766-4193-9f6b-c3b7d418d138:SampleGround
+                        Materials: {}
         -   Entity:
                 Id: e4d8617d-b619-4f0b-89b3-494eff286b8c
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 9477f653-9002-4a71-ae69-2925cfea64f9
-                        Children: []
+                    53f677940290714aae692925cfea64f9: !TransformComponent
+                        Id: 9477f653-9002-4a71-ae69-2925cfea64f9
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: dad8e031-2862-4160-8043-c8f40b295901
-                        Model: 2eadfb20-d021-4b51-b934-1f3b88f6a9c2/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    31e0d8da622860418043c8f40b295901: !ModelComponent
+                        Id: dad8e031-2862-4160-8043-c8f40b295901
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 7a731729-70ef-479a-85e4-1d7a03ed5181/14e3eacd-153a-45ee-8a6e-84fa182d7659:t_a_0
+                            2917737aef709a4785e41d7a03ed5181~0: 14e3eacd-153a-45ee-8a6e-84fa182d7659:t_a_0
         -   Entity:
                 Id: e9673629-befe-4565-8f50-bd1c25b3e72a
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: bf0591a6-6f04-4b31-a82a-5fef22be2e1b
-                        Children: []
+                    a69105bf046f314ba82a5fef22be2e1b: !TransformComponent
+                        Id: bf0591a6-6f04-4b31-a82a-5fef22be2e1b
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 78f32c4b-f374-479a-8184-99c7fcc88ef3
-                        Model: 096371de-6021-475f-b0e0-42953772db56/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    4b2cf37874f39a47818499c7fcc88ef3: !ModelComponent
+                        Id: 78f32c4b-f374-479a-8184-99c7fcc88ef3
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 0c58697e-43e3-4d7d-8d13-95d5e03a259c/46f6db70-e43c-4cd2-852e-e2d65d5c4cb4:m_a_3
+                            7e69580ce3437d4d8d1395d5e03a259c~0: 46f6db70-e43c-4cd2-852e-e2d65d5c4cb4:m_a_3
         -   Entity:
                 Id: ece16954-9211-4fa2-a645-f644bbc6e829
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 6cd099c8-8826-4fa5-850e-50a448379a99
-                        Children: []
+                    c899d06c2688a54f850e50a448379a99: !TransformComponent
+                        Id: 6cd099c8-8826-4fa5-850e-50a448379a99
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: b91c151d-578b-4e93-be02-a75bbe7c96c3
-                        Model: 99420d89-b736-4d53-ba47-d6ceb553b09b/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    1d151cb98b57934ebe02a75bbe7c96c3: !ModelComponent
+                        Id: b91c151d-578b-4e93-be02-a75bbe7c96c3
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - dfc8ccfe-e7e8-4fad-88c2-6d4fc9a1073e/71056bbf-4c45-47c4-a1b5-3237ab71ab21:e_a_0
+                            feccc8dfe8e7ad4f88c26d4fc9a1073e~0: 71056bbf-4c45-47c4-a1b5-3237ab71ab21:e_a_0
         -   Entity:
                 Id: efb6f02f-819d-4667-a2c1-a3d7ccb31190
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: e43907ab-722c-4231-bcb6-5dcdb444b830
-                        Children: []
+                    ab0739e42c723142bcb65dcdb444b830: !TransformComponent
+                        Id: e43907ab-722c-4231-bcb6-5dcdb444b830
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: dc5a7ab0-7bf8-46d8-88ed-deb3d271292b
-                        Model: 19d08617-91a2-49b4-9a8f-8c54830162aa/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    b07a5adcf87bd84688eddeb3d271292b: !ModelComponent
+                        Id: dc5a7ab0-7bf8-46d8-88ed-deb3d271292b
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - ee3a1d05-8c89-4cab-bc68-eafa51bcb9e7/10066c60-169a-4322-80b6-9e7a97027077:m_b_2
+                            051d3aee898cab4cbc68eafa51bcb9e7~0: 10066c60-169a-4322-80b6-9e7a97027077:m_b_2
         -   Folder: Various
             Entity:
                 Id: f0c16e2d-71a3-403e-91d6-d12c1fd88f62
                 Name: Old Wood Sample
                 Components:
-                    - !TransformComponent
-                        ~Id: dd51a260-23fe-44e3-bef9-f1d93c406e10
-                        Children:
-                            - 32353827-e0b0-482e-a2e6-4d44cdb015b1/b997f09a-eaa1-48c1-afe9-26eedda082f6
-                            - c7176a61-cf0e-4a9c-96c2-e26504acedc5/c4cbf328-346a-4baf-b041-911f5e86000f
+                    60a251ddfe23e344bef9f1d93c406e10: !TransformComponent
+                        Id: dd51a260-23fe-44e3-bef9-f1d93c406e10
                         Position: {X: -1.5, Y: 0.0, Z: -0.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            9af097b9a1eac148afe926eedda082f6: 32353827-e0b0-482e-a2e6-4d44cdb015b1/b997f09a-eaa1-48c1-afe9-26eedda082f6
+                            28f3cbc46a34af4bb041911f5e86000f: c7176a61-cf0e-4a9c-96c2-e26504acedc5/c4cbf328-346a-4baf-b041-911f5e86000f
         -   Entity:
                 Id: f3d37e1f-9b76-4bd1-9be3-0ef5f9b9eaae
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 6edae3f3-81bd-4796-ab1e-a79647afb633
-                        Children: []
+                    f3e3da6ebd819647ab1ea79647afb633: !TransformComponent
+                        Id: 6edae3f3-81bd-4796-ab1e-a79647afb633
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: a0be35b4-9fcf-4552-9cb6-8ab0abf2dff2
-                        Model: c340a0cd-429d-47d7-9d3c-9460cf6fee29/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    b435bea0cf9f52459cb68ab0abf2dff2: !ModelComponent
+                        Id: a0be35b4-9fcf-4552-9cb6-8ab0abf2dff2
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - ed0ebbff-9920-40a2-9570-462ef95edde4/9e16dca9-dc72-42a7-ae49-e5fce6e41c13:layer_0_3_1
+                            ffbb0eed2099a2409570462ef95edde4~0: 9e16dca9-dc72-42a7-ae49-e5fce6e41c13:layer_0_3_1
         -   Entity:
                 Id: f5738400-85e6-4d43-b9e7-4c80282b37ae
                 Name: SampleBox Model
                 Components:
-                    - !TransformComponent
-                        ~Id: ab838e01-c59d-4449-a41c-7e07f58f1a44
-                        Children: []
+                    018e83ab9dc54944a41c7e07f58f1a44: !TransformComponent
+                        Id: ab838e01-c59d-4449-a41c-7e07f58f1a44
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 8abff520-9fb1-4e67-afe3-05fafe90c6fb
-                        Model: 6584cc69-baec-4bca-a344-e52f1fdce63a/a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
+                        Children: {}
+                    20f5bf8ab19f674eafe305fafe90c6fb: !ModelComponent
+                        Id: 8abff520-9fb1-4e67-afe3-05fafe90c6fb
+                        Model: a7e0bdca-e552-44ce-a072-880ed908bfee:SampleBox Model
                         Materials:
-                            - 2aa62a96-3c19-49d3-a34d-8d59e28493eb/a56e544f-ee16-4e4e-91df-4909d380a646:common_stone_4
+                            962aa62a193cd349a34d8d59e28493eb~0: a56e544f-ee16-4e4e-91df-4909d380a646:common_stone_4
         -   Folder: Layered
             Entity:
                 Id: fa7f9c6f-9209-4837-aa08-b9add4173248
                 Name: Layerd 0.0
                 Components:
-                    - !TransformComponent
-                        ~Id: 473cd515-c57c-4b20-b8d4-5735dce5a176
-                        Children:
-                            - 5f383352-ab4a-40c0-85b6-16d769643320/703685a2-f910-45d8-bba3-8dd090d02ed0
-                            - dfa3de16-8fc4-44a2-9aa2-a1883ee33365/d668e9ba-48af-48ea-886a-8d5ca7ca18e3
+                    15d53c477cc5204bb8d45735dce5a176: !TransformComponent
+                        Id: 473cd515-c57c-4b20-b8d4-5735dce5a176
                         Position: {X: -1.5, Y: 0.0, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            a285367010f9d845bba38dd090d02ed0: 5f383352-ab4a-40c0-85b6-16d769643320/703685a2-f910-45d8-bba3-8dd090d02ed0
+                            bae968d6af48ea48886a8d5ca7ca18e3: dfa3de16-8fc4-44a2-9aa2-a1883ee33365/d668e9ba-48af-48ea-886a-8d5ca7ca18e3
         -   Folder: Layered
             Entity:
                 Id: fac41a16-2d33-491b-9b7e-9f1f27f8c9db
                 Name: Layerd 0.5
                 Components:
-                    - !TransformComponent
-                        ~Id: 622aff68-7f87-4f32-8c35-5cf37d184232
-                        Children:
-                            - b1da1c7c-de86-47a8-a856-3b553510cdf8/6e609713-6df6-4f1d-a94f-c9049bc0f960
-                            - 147c3547-06ad-41a1-b0fb-ccf983b3c97a/e4aa28e9-9946-4ac7-b156-d8793964ab27
+                    68ff2a62877f324f8c355cf37d184232: !TransformComponent
+                        Id: 622aff68-7f87-4f32-8c35-5cf37d184232
                         Position: {X: 1.5, Y: 0.0, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            1397606ef66d1d4fa94fc9049bc0f960: b1da1c7c-de86-47a8-a856-3b553510cdf8/6e609713-6df6-4f1d-a94f-c9049bc0f960
+                            e928aae44699c74ab156d8793964ab27: 147c3547-06ad-41a1-b0fb-ccf983b3c97a/e4aa28e9-9946-4ac7-b156-d8793964ab27
         -   Entity:
                 Id: fd57b289-b694-47e8-99a1-5e08ce2b1521
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 3225857b-2b36-4f82-b55e-bf7e481a0b66
-                        Children: []
+                    7b852532362b824fb55ebf7e481a0b66: !TransformComponent
+                        Id: 3225857b-2b36-4f82-b55e-bf7e481a0b66
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 88f00e38-dca7-4c5b-859d-41fcc68cffb1
-                        Model: 1d2808de-9a7f-48fc-9f83-bad17aa61d05/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    380ef088a7dc5b4c859d41fcc68cffb1: !ModelComponent
+                        Id: 88f00e38-dca7-4c5b-859d-41fcc68cffb1
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 68404adb-70d9-47d2-ae18-0d333a2f50dd/a56e544f-ee16-4e4e-91df-4909d380a646:common_stone_4
+                            db4a4068d970d247ae180d333a2f50dd~0: a56e544f-ee16-4e4e-91df-4909d380a646:common_stone_4
         -   Entity:
                 Id: feb1d6cc-15dc-44ff-b4a6-8409cd1e17e8
                 Name: ProceduralModel
                 Components:
-                    - !TransformComponent
-                        ~Id: 3d93083e-c6ee-413c-b45d-26beb31885b3
-                        Children: []
+                    3e08933deec63c41b45d26beb31885b3: !TransformComponent
+                        Id: 3d93083e-c6ee-413c-b45d-26beb31885b3
                         Position: {X: 0.0, Y: 0.5, Z: 1.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: ddb138b4-e0c7-4024-8171-794d196ce0d0
-                        Model: 2f445765-fcd9-462a-89a3-553b5098cb68/f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
+                        Children: {}
+                    b438b1ddc7e024408171794d196ce0d0: !ModelComponent
+                        Id: ddb138b4-e0c7-4024-8171-794d196ce0d0
+                        Model: f97daf3b-009a-4948-aba0-d655a7663e89:SampleSphere
                         Materials:
-                            - 6e60b4a5-9889-4a29-a1cf-fe8579b40f19/22d7b091-df1c-4262-bea5-a6ce847ac38d:m_a_0
+                            a5b4606e8998294aa1cffe8579b40f19~0: 22d7b091-df1c-4262-bea5-a6ce847ac38d:m_a_0

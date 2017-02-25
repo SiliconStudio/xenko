@@ -44,16 +44,18 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation
 {
     public sealed class XamlMarkdown : DependencyObject
     {
         /// <summary>
-        /// Identifies the <see cref="ImageBaseUrl"/> dependency property.
+        /// Identifies the <see cref="BaseUrl"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ImageBaseUrlProperty =
-            DependencyProperty.Register(nameof(ImageBaseUrl), typeof(string), typeof(XamlMarkdown), new PropertyMetadata(null));
+        public static readonly DependencyProperty BaseUrlProperty =
+            DependencyProperty.Register(nameof(BaseUrl), typeof(string), typeof(XamlMarkdown), new PropertyMetadata(null));
         /// <summary>
         /// Identifies the <see cref="HyperlinkCommand"/> dependency property.
         /// </summary>
@@ -63,7 +65,7 @@ namespace SiliconStudio.Presentation
         /// Identifies the <see cref="StrictBoldItalic"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty StrictBoldItalicProperty =
-            DependencyProperty.Register(nameof(StrictBoldItalic), typeof(bool), typeof(XamlMarkdown), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(StrictBoldItalic), typeof(bool), typeof(XamlMarkdown), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
         /// maximum nested depth of [] and () supported by the transform; implementation detail
@@ -101,7 +103,7 @@ namespace SiliconStudio.Presentation
         /// Creates an instance of <see cref="XamlMarkdown"/> with <paramref name="resourcesProvider"/> for styles look-up.
         /// </summary>
         /// <param name="resourcesProvider">The framework element used for styles look-up.</param>
-        public XamlMarkdown(FrameworkElement resourcesProvider)
+        public XamlMarkdown([NotNull] FrameworkElement resourcesProvider)
             : this()
         {
             if (resourcesProvider == null) throw new ArgumentNullException(nameof(resourcesProvider));
@@ -144,7 +146,7 @@ namespace SiliconStudio.Presentation
         /// </summary>
         public static ComponentResourceKey ImageStyleKey { get; } = new ComponentResourceKey(typeof(XamlMarkdown), nameof(ImageStyleKey));
 
-        public string ImageBaseUrl { get { return (string)GetValue(ImageBaseUrlProperty); } set { SetValue(ImageBaseUrlProperty, value); } }
+        public string BaseUrl { get { return (string)GetValue(BaseUrlProperty); } set { SetValue(BaseUrlProperty, value); } }
 
         /// <summary>
         /// Gets or sets the command used to open hyperlinks.
@@ -157,28 +159,37 @@ namespace SiliconStudio.Presentation
         /// WARNING: this is a significant deviation from the markdown spec
         /// </summary>
         /// 
-        public bool StrictBoldItalic { get { return (bool)GetValue(StrictBoldItalicProperty); } set { SetValue(StrictBoldItalicProperty, value); } }
+        public bool StrictBoldItalic { get { return (bool)GetValue(StrictBoldItalicProperty); } set { SetValue(StrictBoldItalicProperty, value.Box()); } }
 
+        [CanBeNull]
         private Style CodeStyle => codeStyle ?? (codeStyle = TryFindStyle(CodeStyleKey));
 
+        [CanBeNull]
         private Style DocumentStyle => documentStyle ?? (documentStyle = TryFindStyle(DocumentStyleKey));
 
+        [CanBeNull]
         private Style Heading1Style => heading1Style ?? (heading1Style = TryFindStyle(Heading1StyleKey));
 
+        [CanBeNull]
         private Style Heading2Style => heading2Style ?? (heading2Style = TryFindStyle(Heading2StyleKey));
 
+        [CanBeNull]
         private Style Heading3Style => heading3Style ?? (heading3Style = TryFindStyle(Heading3StyleKey));
 
+        [CanBeNull]
         private Style Heading4Style => heading4Style ?? (heading4Style = TryFindStyle(Heading4StyleKey));
 
+        [CanBeNull]
         private Style ImageStyle => imageStyle ?? (imageStyle = TryFindStyle(ImageStyleKey));
 
+        [CanBeNull]
         private Style TryFindStyle(object resourceKey)
         {
             return resourcesProvider?.TryFindResource(resourceKey) as Style;
         }
 
-        public FlowDocument Transform(string text)
+        [NotNull]
+        public FlowDocument Transform([NotNull] string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -200,7 +211,7 @@ namespace SiliconStudio.Presentation
         /// <summary>
         /// Perform transformations that form block-level tags like paragraphs, headers, and list items.
         /// </summary>
-        private IEnumerable<Block> RunBlockGamut(string text)
+        private IEnumerable<Block> RunBlockGamut([NotNull] string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -208,25 +219,12 @@ namespace SiliconStudio.Presentation
                 s1 => DoHorizontalRules(s1,
                     s2 => DoLists(s2,
                         FormParagraphs)));
-
-            //text = DoCodeBlocks(text);
-            //text = DoBlockQuotes(text);
-
-            //// We already ran HashHTMLBlocks() before, in Markdown(), but that
-            //// was to escape raw HTML in the original Markdown source. This time,
-            //// we're escaping the markup we've just created, so that we don't wrap
-            //// <p> tags around block-level tags.
-            //text = HashHTMLBlocks(text);
-
-            //text = FormParagraphs(text);
-
-            //return text;
         }
 
         /// <summary>
         /// Perform transformations that occur *within* block-level tags like paragraphs, headers, and list items.
         /// </summary>
-        private IEnumerable<Inline> RunSpanGamut(string text)
+        private IEnumerable<Inline> RunSpanGamut([NotNull] string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -235,23 +233,6 @@ namespace SiliconStudio.Presentation
                     s1 => DoAnchors(s1,
                         s2 => DoItalicsAndBold(s2,
                             DoText))));
-
-            //text = EscapeSpecialCharsWithinTagAttributes(text);
-            //text = EscapeBackslashes(text);
-
-            //// Images must come first, because ![foo][f] looks like an anchor.
-            //text = DoImages(text);
-            //text = DoAnchors(text);
-
-            //// Must come after DoAnchors(), because you can use < and >
-            //// delimiters in inline links like [this](<url>).
-            //text = DoAutoLinks(text);
-
-            //text = EncodeAmpsAndAngles(text);
-            //text = DoItalicsAndBold(text);
-            //text = DoHardBreaks(text);
-
-            //return text;
         }
 
         private static readonly Regex NewlinesLeadingTrailing = new Regex(@"^\n+|\n+\z", RegexOptions.Compiled);
@@ -261,7 +242,8 @@ namespace SiliconStudio.Presentation
         /// <summary>
         /// splits on two or more newlines, to form "paragraphs";    
         /// </summary>
-        private IEnumerable<Block> FormParagraphs(string text)
+        [ItemNotNull]
+        private IEnumerable<Block> FormParagraphs([NotNull] string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -318,6 +300,9 @@ namespace SiliconStudio.Presentation
                     , NestDepth));
         }
 
+
+        #region Anchors
+
         // ReSharper disable once UseStringInterpolation
         private static readonly Regex AnchorInline = new Regex(string.Format(@"
                 (                           # wrap whole match in $1
@@ -344,7 +329,7 @@ namespace SiliconStudio.Presentation
         /// <remarks>
         /// [link text](url "title") 
         /// </remarks>
-        private IEnumerable<Inline> DoAnchors(string text, Func<string, IEnumerable<Inline>> defaultHandler)
+        private IEnumerable<Inline> DoAnchors([NotNull] string text, Func<string, IEnumerable<Inline>> defaultHandler)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -352,7 +337,8 @@ namespace SiliconStudio.Presentation
             return Evaluate(text, AnchorInline, AnchorInlineEvaluator, defaultHandler);
         }
 
-        private Inline AnchorInlineEvaluator(Match match)
+        [NotNull]
+        private Inline AnchorInlineEvaluator([NotNull] Match match)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
 
@@ -360,11 +346,22 @@ namespace SiliconStudio.Presentation
             var url = match.Groups[3].Value;
             var title = match.Groups[6].Value;
 
+            if (!Uri.IsWellFormedUriString(url, UriKind.Absolute) && (!System.IO.Path.IsPathRooted(url) || !url.StartsWith("/") || !url.StartsWith("\\")))
+            {
+                // Make relative URL absolute
+                url = (BaseUrl ?? string.Empty) + url;
+            }
+
             var result = Create<Hyperlink, Inline>(RunSpanGamut(linkText));
             result.CommandParameter = url;
             result.Command = HyperlinkCommand;
             return result;
         }
+
+        #endregion // Anchors
+
+
+        #region Images
 
         private static readonly Regex HtmlImageInline = new Regex(@"
               (                     # wrap whole match in $1
@@ -410,7 +407,7 @@ namespace SiliconStudio.Presentation
         /// ![alt text][id]
         /// ![alt text](url "optional title")
         /// </remarks>
-        private IEnumerable<Inline> DoImages(string text, Func<string, IEnumerable<Inline>> defaultHandler)
+        private IEnumerable<Inline> DoImages([NotNull] string text, Func<string, IEnumerable<Inline>> defaultHandler)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
             
@@ -420,7 +417,8 @@ namespace SiliconStudio.Presentation
                 s => Evaluate(s, ImageInline, ImageInlineEvaluator, defaultHandler));
         }
 
-        private Inline HtmlImageInlineEvaluator(Match match)
+        [NotNull]
+        private Inline HtmlImageInlineEvaluator([NotNull] Match match)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
             
@@ -432,7 +430,8 @@ namespace SiliconStudio.Presentation
             return ImageTag(url, null, null);
         }
 
-        private Inline ImageInlineEvaluator(Match match)
+        [NotNull]
+        private Inline ImageInlineEvaluator([NotNull] Match match)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
 
@@ -446,6 +445,7 @@ namespace SiliconStudio.Presentation
             return ImageTag(url, altText, title);
         }
 
+        [NotNull]
         private Inline ImageTag(string url, string altText, string title)
         {
             var image = new Image();
@@ -454,7 +454,7 @@ namespace SiliconStudio.Presentation
                 if (!Uri.IsWellFormedUriString(url, UriKind.Absolute) && (!System.IO.Path.IsPathRooted(url) || !url.StartsWith("/") || !url.StartsWith("\\")))
                 {
                     // Make relative URL absolute
-                    url = (ImageBaseUrl ?? string.Empty) + url;
+                    url = (BaseUrl ?? string.Empty) + url;
                 }
                 // Attempt to set the source of the image.
                 // Note: initialization of image downloading can fail in some cases (see System.Windows.Media.Imaging.BitmapDownload.BeginDownload).
@@ -485,6 +485,11 @@ namespace SiliconStudio.Presentation
             return new InlineUIContainer(image);
         }
 
+        #endregion // Images
+
+
+        #region Header
+
         private static readonly Regex HeaderSetext = new Regex(@"
                 ^(.+?)
                 [ ]*
@@ -492,7 +497,7 @@ namespace SiliconStudio.Presentation
                 (=+|-+)     # $1 = string of ='s or -'s
                 [ ]*
                 \n+",
-    RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+            RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
 
         private static readonly Regex HeaderAtx = new Regex(@"
                 ^(\#{1,6})  # $1 = string of #'s
@@ -519,7 +524,7 @@ namespace SiliconStudio.Presentation
         /// ...  
         /// ###### Header 6  
         /// </remarks>
-        private IEnumerable<Block> DoHeaders(string text, Func<string, IEnumerable<Block>> defaultHandler)
+        private IEnumerable<Block> DoHeaders([NotNull] string text, Func<string, IEnumerable<Block>> defaultHandler)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -527,7 +532,8 @@ namespace SiliconStudio.Presentation
                 s => Evaluate(s, HeaderAtx, AtxHeaderEvaluator, defaultHandler));
         }
 
-        private Block SetextHeaderEvaluator(Match match)
+        [NotNull]
+        private Block SetextHeaderEvaluator([NotNull] Match match)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
 
@@ -537,7 +543,8 @@ namespace SiliconStudio.Presentation
             return CreateHeader(level, RunSpanGamut(header.Trim()));
         }
 
-        private Block AtxHeaderEvaluator(Match match)
+        [NotNull]
+        private Block AtxHeaderEvaluator([NotNull] Match match)
         {
             if (match == null)
                 throw new ArgumentNullException(nameof(match));
@@ -547,7 +554,8 @@ namespace SiliconStudio.Presentation
             return CreateHeader(level, RunSpanGamut(header));
         }
 
-        public Block CreateHeader(int level, IEnumerable<Inline> content)
+        [NotNull]
+        public Block CreateHeader(int level, [NotNull] IEnumerable<Inline> content)
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
 
@@ -592,6 +600,11 @@ namespace SiliconStudio.Presentation
             return block;
         }
 
+        #endregion // Header
+
+
+        #region Rules
+
         private static readonly Regex HorizontalRules = new Regex(@"
             ^[ ]{0,3}         # Leading space
                 ([-*_])       # $1: First marker
@@ -612,14 +625,15 @@ namespace SiliconStudio.Presentation
         /// ---
         /// - - -
         /// </remarks>
-        private IEnumerable<Block> DoHorizontalRules(string text, Func<string, IEnumerable<Block>> defaultHandler)
+        private IEnumerable<Block> DoHorizontalRules([NotNull] string text, Func<string, IEnumerable<Block>> defaultHandler)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
             return Evaluate(text, HorizontalRules, RuleEvaluator, defaultHandler);
         }
 
-        private Block RuleEvaluator(Match match)
+        [NotNull]
+        private Block RuleEvaluator([NotNull] Match match)
         {
             if (match == null)
                 throw new ArgumentNullException(nameof(match));
@@ -628,6 +642,11 @@ namespace SiliconStudio.Presentation
             var container = new BlockUIContainer(line);
             return container;
         }
+
+        #endregion // Rules
+
+
+        #region Lists
 
         private static readonly string WholeList = string.Format(@"
             (                               # $1 = whole list
@@ -658,17 +677,17 @@ namespace SiliconStudio.Presentation
         /// <summary>
         /// Turn Markdown lists into HTML ul and ol and li tags
         /// </summary>
-        private IEnumerable<Block> DoLists(string text, Func<string, IEnumerable<Block>> defaultHandler)
+        private IEnumerable<Block> DoLists([NotNull] string text, Func<string, IEnumerable<Block>> defaultHandler)
         {
-            if (text == null)
-                throw new ArgumentNullException(nameof(text));
+            if (text == null) throw new ArgumentNullException(nameof(text));
 
             // We use a different prefix before nested lists than top-level lists.
             // See extended comment in _ProcessListItems().
             return Evaluate(text, listLevel > 0 ? ListNested : ListTopLevel, ListEvaluator, defaultHandler);
         }
 
-        private Block ListEvaluator(Match match)
+        [NotNull]
+        private Block ListEvaluator([NotNull] Match match)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
 
@@ -690,7 +709,8 @@ namespace SiliconStudio.Presentation
         /// Process the contents of a single ordered or unordered list, splitting it
         /// into individual list items.
         /// </summary>
-        private IEnumerable<ListItem> ProcessListItems(string list, string marker)
+        [ItemNotNull]
+        private IEnumerable<ListItem> ProcessListItems([NotNull] string list, string marker)
         {
             // The listLevel global keeps track of when we're inside a list.
             // Each time we enter a list, we increment it; when we leave a list,
@@ -740,22 +760,25 @@ namespace SiliconStudio.Presentation
             }
         }
 
-        private ListItem ListItemEvaluator(Match match)
+        [NotNull]
+        private ListItem ListItemEvaluator([NotNull] Match match)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
 
             var item = match.Groups[4].Value;
             var leadingLine = match.Groups[1].Value;
 
-            if (!String.IsNullOrEmpty(leadingLine) || Regex.IsMatch(item, @"\n{2,}"))
+            if (!string.IsNullOrEmpty(leadingLine) || Regex.IsMatch(item, @"\n{2,}"))
                 // we could correct any bad indentation here..
                 return Create<ListItem, Block>(RunBlockGamut(item));
-            else
-            {
-                // recursion for sub-lists
-                return Create<ListItem, Block>(RunBlockGamut(item));
-            }
+            // recursion for sub-lists
+            return Create<ListItem, Block>(RunBlockGamut(item));
         }
+
+        #endregion // Lists
+
+
+        #region CodeSpans
 
         private static readonly Regex CodeSpan = new Regex(@"
                     (?<!\\)   # Character before opening ` can't be a backslash
@@ -768,7 +791,7 @@ namespace SiliconStudio.Presentation
         /// <summary>
         /// Turn Markdown `code spans` into HTML code tags
         /// </summary>
-        private IEnumerable<Inline> DoCodeSpans(string text, Func<string, IEnumerable<Inline>> defaultHandler)
+        private IEnumerable<Inline> DoCodeSpans([NotNull] string text, Func<string, IEnumerable<Inline>> defaultHandler)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -797,7 +820,8 @@ namespace SiliconStudio.Presentation
             return Evaluate(text, CodeSpan, CodeSpanEvaluator, defaultHandler);
         }
 
-        private Inline CodeSpanEvaluator(Match match)
+        [NotNull]
+        private Inline CodeSpanEvaluator([NotNull] Match match)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
 
@@ -819,6 +843,11 @@ namespace SiliconStudio.Presentation
             return result;
         }
 
+        #endregion // CodeSpans
+
+
+        #region Bold and Italic
+
         private static readonly Regex Bold = new Regex(@"(\*\*|__) (?=\S) (.+?[*_]*) (?<=\S) \1",
             RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline | RegexOptions.Compiled);
         private static readonly Regex StrictBold = new Regex(@"([\W_]|^) (\*\*|__) (?=\S) ([^\r]*?\S[\*_]*) \2 ([\W_]|$)",
@@ -832,7 +861,7 @@ namespace SiliconStudio.Presentation
         /// <summary>
         /// Turn Markdown *italics* and **bold** into HTML strong and em tags
         /// </summary>
-        private IEnumerable<Inline> DoItalicsAndBold(string text, Func<string, IEnumerable<Inline>> defaultHandler)
+        private IEnumerable<Inline> DoItalicsAndBold([NotNull] string text, Func<string, IEnumerable<Inline>> defaultHandler)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -843,15 +872,13 @@ namespace SiliconStudio.Presentation
                     s1 => Evaluate(s1, StrictItalic, m => ItalicEvaluator(m, 3),
                     defaultHandler));
             }
-            else
-            {
-                return Evaluate(text, Bold, m => BoldEvaluator(m, 2),
-                   s1 => Evaluate(s1, Italic, m => ItalicEvaluator(m, 2),
-                   defaultHandler));
-            }
+            return Evaluate(text, Bold, m => BoldEvaluator(m, 2),
+                s1 => Evaluate(s1, Italic, m => ItalicEvaluator(m, 2),
+                    defaultHandler));
         }
 
-        private Inline ItalicEvaluator(Match match, int contentGroup)
+        [NotNull]
+        private Inline ItalicEvaluator([NotNull] Match match, int contentGroup)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
 
@@ -859,7 +886,8 @@ namespace SiliconStudio.Presentation
             return Create<Italic, Inline>(RunSpanGamut(content));
         }
 
-        private Inline BoldEvaluator(Match match, int contentGroup)
+        [NotNull]
+        private Inline BoldEvaluator([NotNull] Match match, int contentGroup)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
 
@@ -867,15 +895,7 @@ namespace SiliconStudio.Presentation
             return Create<Bold, Inline>(RunSpanGamut(content));
         }
 
-        private static readonly Regex OutDent = new Regex(@"^[ ]{1," + TabWidth + @"}", RegexOptions.Multiline | RegexOptions.Compiled);
-
-        /// <summary>
-        /// Remove one level of line-leading spaces
-        /// </summary>
-        private string Outdent(string block)
-        {
-            return OutDent.Replace(block, "");
-        }
+        #endregion // Bold and Italic
 
         /// <summary>
         /// convert all tabs to _tabWidth spaces; 
@@ -883,7 +903,8 @@ namespace SiliconStudio.Presentation
         /// makes sure text ends with a couple of newlines; 
         /// removes any blank lines (only spaces) in the text
         /// </summary>
-        private string Normalize(string text)
+        [NotNull]
+        private string Normalize([NotNull] string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -938,7 +959,8 @@ namespace SiliconStudio.Presentation
         /// <summary>
         /// this is to emulate what's available in PHP
         /// </summary>
-        private static string RepeatString(string text, int count)
+        [NotNull]
+        private static string RepeatString([NotNull] string text, int count)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -948,7 +970,8 @@ namespace SiliconStudio.Presentation
             return sb.ToString();
         }
 
-        private TResult Create<TResult, TContent>(IEnumerable<TContent> content)
+        [NotNull]
+        private static TResult Create<TResult, TContent>([NotNull] IEnumerable<TContent> content)
             where TResult : IAddChild, new()
         {
             var result = new TResult();
@@ -960,7 +983,7 @@ namespace SiliconStudio.Presentation
             return result;
         }
 
-        private IEnumerable<T> Evaluate<T>(string text, Regex expression, Func<Match, T> build, Func<string, IEnumerable<T>> rest)
+        private IEnumerable<T> Evaluate<T>([NotNull] string text, [NotNull] Regex expression, Func<Match, T> build, Func<string, IEnumerable<T>> rest)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -994,7 +1017,8 @@ namespace SiliconStudio.Presentation
 
         private static readonly Regex Eoln = new Regex(@"\s+");
 
-        public IEnumerable<Inline> DoText(string text)
+        [ItemNotNull]
+        private IEnumerable<Inline> DoText([NotNull] string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 

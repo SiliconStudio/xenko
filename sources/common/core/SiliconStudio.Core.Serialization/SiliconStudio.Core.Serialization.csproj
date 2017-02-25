@@ -30,6 +30,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Assets\AssetId.cs" />
     <Compile Include="IO\IDatabaseStream.cs" />
     <Compile Include="IO\NativeLockFile.cs" />
     <Compile Include="LZ4\ILZ4Service.cs" />
@@ -37,9 +38,6 @@
     <Compile Include="LZ4\LZ4Stream.cs" />
     <Compile Include="LZ4\Services\NativeLz4Service.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reflection\IdentifiableHelper.cs" />
-    <Compile Include="Reflection\ShadowObject.cs" />
-    <Compile Include="Reflection\ShadowObjectPropertyKey.cs" />
     <Compile Include="Serialization\Contents\ContentManager.ReferenceCounting.cs" />
     <Compile Include="Serialization\Contents\ContentManagerException.cs" />
     <Compile Include="Serialization\Contents\ContentManagerLoaderSettings.cs" />
@@ -96,10 +94,12 @@
     <ProjectReference Include="..\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
       <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
       <Name>SiliconStudio.Core.MicroThreading</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
       <Project>{fcf36d39-bffe-4719-b245-05640ee34c5f}</Project>
       <Name>SiliconStudio.Core.Native</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
@@ -111,6 +111,9 @@
       <Name>SiliconStudio.Core.IO</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Reflection\" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

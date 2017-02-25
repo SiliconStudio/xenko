@@ -1,9 +1,8 @@
 !PrefabAsset
 Id: 74316bd3-3393-4654-850c-00837f64bac9
-SerializedVersion: {Xenko: 1.9.0-beta01}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 Hierarchy:
-    ~Id: 1eff4c0d-9553-4a59-995f-3dadf4c60eb5
     RootPartIds:
         - 03cfa9c2-5d24-4b93-b97f-e4fa3313762d
     Parts:
@@ -11,57 +10,54 @@ Hierarchy:
                 Id: 03cfa9c2-5d24-4b93-b97f-e4fa3313762d
                 Name: CylindricalLaser
                 Components:
-                    - !TransformComponent
-                        ~Id: dcd3c7b4-90a1-4c7f-abf7-2f4479f19ffe
-                        Children:
-                            - a3ccc846-034e-409a-ac44-0626a1898680/6564f851-55a6-4960-8c98-b0e9d29427d8
-                            - 1fa0ec17-12a1-4c34-ae03-423318c62744/49281aee-efd1-4116-ba45-0cd50d2e2f44
-                            - c9ad1043-e5d2-440c-8df2-f7d5a7913c6a/77f08bad-d80a-4b9f-8279-5209039a7bf0
+                    b4c7d3dca1907f4cabf72f4479f19ffe: !TransformComponent
+                        Id: dcd3c7b4-90a1-4c7f-abf7-2f4479f19ffe
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            51f86465a65560498c98b0e9d29427d8: a3ccc846-034e-409a-ac44-0626a1898680/6564f851-55a6-4960-8c98-b0e9d29427d8
+                            ee1a2849d1ef1641ba450cd50d2e2f44: 1fa0ec17-12a1-4c34-ae03-423318c62744/49281aee-efd1-4116-ba45-0cd50d2e2f44
+                            ad8bf0770ad89f4b82795209039a7bf0: c9ad1043-e5d2-440c-8df2-f7d5a7913c6a/77f08bad-d80a-4b9f-8279-5209039a7bf0
         -   Entity:
                 Id: 1fa0ec17-12a1-4c34-ae03-423318c62744
                 Name: BlueTube
                 Components:
-                    - !TransformComponent
-                        ~Id: 49281aee-efd1-4116-ba45-0cd50d2e2f44
-                        Children: []
+                    ee1a2849d1ef1641ba450cd50d2e2f44: !TransformComponent
+                        Id: 49281aee-efd1-4116-ba45-0cd50d2e2f44
                         Position: {X: 0.0, Y: 0.5, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 270bf07a-8c6f-4955-a07a-63ca77db6023
-                        Model: fb1191db-ee0d-432e-a7a2-24b750258fc9/e6716a5e-47ef-4eca-a079-45655587b48f:LaserAssets/BlueTube
-                        Materials:
-                            - null
+                        Children: {}
+                    7af00b276f8c5549a07a63ca77db6023: !ModelComponent
+                        Id: 270bf07a-8c6f-4955-a07a-63ca77db6023
+                        Model: e6716a5e-47ef-4eca-a079-45655587b48f:LaserAssets/BlueTube
+                        Materials: {}
         -   Entity:
                 Id: a3ccc846-034e-409a-ac44-0626a1898680
                 Name: RedTube
                 Components:
-                    - !TransformComponent
-                        ~Id: 6564f851-55a6-4960-8c98-b0e9d29427d8
-                        Children: []
+                    51f86465a65560498c98b0e9d29427d8: !TransformComponent
+                        Id: 6564f851-55a6-4960-8c98-b0e9d29427d8
                         Position: {X: 0.0, Y: 0.5, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 060c74f7-f272-4ffe-8c06-82955d99d22e
-                        Model: c08ba2eb-f1d2-4ac2-b88b-051dbb6310ba/3a57fc61-9428-47be-b916-1d1a3bd4495d:LaserAssets/RedTube
-                        Materials:
-                            - null
+                        Children: {}
+                    f7740c0672f2fe4f8c0682955d99d22e: !ModelComponent
+                        Id: 060c74f7-f272-4ffe-8c06-82955d99d22e
+                        Model: 3a57fc61-9428-47be-b916-1d1a3bd4495d:LaserAssets/RedTube
+                        Materials: {}
         -   Entity:
                 Id: c9ad1043-e5d2-440c-8df2-f7d5a7913c6a
                 Name: GreenTube
                 Components:
-                    - !TransformComponent
-                        ~Id: 77f08bad-d80a-4b9f-8279-5209039a7bf0
-                        Children: []
+                    ad8bf0770ad89f4b82795209039a7bf0: !TransformComponent
+                        Id: 77f08bad-d80a-4b9f-8279-5209039a7bf0
                         Position: {X: 0.0, Y: 0.5, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: e5244b3e-1771-4fc7-9b55-23c9086fe363
-                        Model: 78810043-4184-4704-9330-eef2df9f7591/0628b61c-a92c-4836-bd45-988da11c6aac:LaserAssets/GreenTube
-                        Materials:
-                            - null
+                        Children: {}
+                    3e4b24e57117c74f9b5523c9086fe363: !ModelComponent
+                        Id: e5244b3e-1771-4fc7-9b55-23c9086fe363
+                        Model: 0628b61c-a92c-4836-bd45-988da11c6aac:LaserAssets/GreenTube
+                        Materials: {}

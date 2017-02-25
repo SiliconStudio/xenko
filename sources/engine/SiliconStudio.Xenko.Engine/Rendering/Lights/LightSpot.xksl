@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             attenuation *= GetAngleAttenuation(lightVectorNorm, lightDirection, lightAngleAndOffset.x, lightAngleAndOffset.y);
 
             streams.lightColor = light.Color * attenuation;
-            streams.lightDirectionWS = lightDirection;
+            streams.lightDirectionWS = lightVectorNorm;
         }
     };
 }

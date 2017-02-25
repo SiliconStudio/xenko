@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Presentation.ValueConverters
@@ -14,6 +15,7 @@ namespace SiliconStudio.Presentation.ValueConverters
     public class ItemToIndex : ValueConverterBase<ItemToIndex>
     {
         /// <inheritdoc/>
+        [NotNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var collection = parameter as IList;

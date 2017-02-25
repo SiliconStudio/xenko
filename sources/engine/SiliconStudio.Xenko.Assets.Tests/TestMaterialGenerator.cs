@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
@@ -63,7 +64,7 @@ Mixins:
     -   ClassName: MaterialSurfaceArray
 Compositions:
     layers: !ShaderArraySource
-        Values:"  
+        Values:"
 // This is part coming from MaterialDiffuseMapFeature 
 + @"
             - !ShaderMixinSource
@@ -874,7 +875,7 @@ Compositions:
         private void AssertShaderSourceEqual(string expected, ShaderSource shaderSource)
         {
             expected = expected.Replace("\r\n", "\n").Trim();
-            var textResult = YamlSerializer.Serialize(shaderSource, false).Replace("\r\n", "\n").Trim();
+            var textResult = SerializeAsString(shaderSource).Replace("\r\n", "\n").Trim();
             Console.WriteLine("************************************");
             Console.WriteLine("Result");
             Console.WriteLine("====================================");
@@ -885,6 +886,17 @@ Compositions:
             Console.WriteLine(expected);
             Console.Out.Flush();
             Assert.AreEqual(expected, textResult);
+        }
+
+        private static string SerializeAsString(object instance)
+        {
+            using (var stream = new MemoryStream())
+            {
+                AssetYamlSerializer.Default.Serialize(stream, instance);
+                stream.Flush();
+                stream.Position = 0;
+                return new StreamReader(stream).ReadToEnd();
+            }
         }
     }
 }

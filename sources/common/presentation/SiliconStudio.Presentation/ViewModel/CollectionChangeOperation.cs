@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Dirtiables;
 
 namespace SiliconStudio.Presentation.ViewModel
@@ -13,7 +14,7 @@ namespace SiliconStudio.Presentation.ViewModel
         private IList list;
         private IReadOnlyCollection<object> items;
 
-        private CollectionChangeOperation(IList list, NotifyCollectionChangedAction actionToUndo, IEnumerable<IDirtiable> dirtiables)
+        private CollectionChangeOperation([NotNull] IList list, NotifyCollectionChangedAction actionToUndo, [NotNull] IEnumerable<IDirtiable> dirtiables)
             : base(dirtiables)
         {
             if (list == null) throw new ArgumentNullException(nameof(list));
@@ -22,7 +23,7 @@ namespace SiliconStudio.Presentation.ViewModel
             this.list = list;
         }
 
-        public CollectionChangeOperation(IList list, NotifyCollectionChangedAction actionToUndo, IReadOnlyCollection<object> items, int index, IEnumerable<IDirtiable> dirtiables)
+        public CollectionChangeOperation([NotNull] IList list, NotifyCollectionChangedAction actionToUndo, [NotNull] IReadOnlyCollection<object> items, int index, [NotNull] IEnumerable<IDirtiable> dirtiables)
             : this(list, actionToUndo, dirtiables)
         {
             if (items == null) throw new ArgumentNullException(nameof(items));
@@ -30,7 +31,7 @@ namespace SiliconStudio.Presentation.ViewModel
             this.index = index;
         }
 
-        public CollectionChangeOperation(IList list, NotifyCollectionChangedEventArgs args, IEnumerable<IDirtiable> dirtiables)
+        public CollectionChangeOperation([NotNull] IList list, [NotNull] NotifyCollectionChangedEventArgs args, [NotNull] IEnumerable<IDirtiable> dirtiables)
             : this(list, args.Action, dirtiables)
         {
             switch (args.Action)
@@ -62,6 +63,12 @@ namespace SiliconStudio.Presentation.ViewModel
         public NotifyCollectionChangedAction ActionToUndo { get; private set; }
 
         public int ItemCount => items?.Count ?? 0;
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{{{nameof(CollectionChangeOperation)}: {ActionToUndo}}}";
+        }
 
         /// <inheritdoc/>
         protected override void FreezeContent()

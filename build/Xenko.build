@@ -48,7 +48,7 @@ Example of use:
 
     <Delete Files="@(FilesToDeleteLauncher)"/>
 
-    <MSBuild Targets="40-Editor\SiliconStudio_LauncherApp" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    <MSBuild Targets="60-Editor\SiliconStudio_LauncherApp" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
     <!-- IL Repack is not used anymore -->
     <!--<Exec Command='"$(ILRepackPath)" SiliconStudio.LauncherApp.exe Nuget.Core.dll /out:Xenko.exe' WorkingDirectory="$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"/>-->
     <!-- Generate the nuget package for the launcher application -->
@@ -113,7 +113,8 @@ Example of use:
   -->
   <Target Name="Publish">
     <Error Condition="'$(SiliconStudioStoreApiKey)' == ''" Text="Missing env variable SiliconStudioStoreApiKey"/>
-    <Exec Command='"$(NuGetPath)" push Xenko*.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) "'/>
+    <!-- Waiting 30min in case NuGet.Gallery/Server takes time to process -->
+    <Exec Command='"$(NuGetPath)" push Xenko*.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) -Timeout 1800 '/>
   </Target>
 
   <!--

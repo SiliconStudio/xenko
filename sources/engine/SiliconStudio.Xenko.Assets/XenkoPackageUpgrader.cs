@@ -16,110 +16,22 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.MSBuild;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Assets.Effect;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.8.4-beta")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.10.0-alpha01")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
         {
-            // Paradox 1.1 projects didn't have their dependency properly updated (they might have been marked as 1.0).
-            // We know they are 1.1 only because there is a .props file.
-            // This check shouldn't be necessary from 1.2.
-            var packagePath = dependentPackage.FullPath;
-            var propsFilePath = UPath.Combine(packagePath.GetParent(), (UFile)(packagePath.GetFileName() + ".props"));
-            if (!File.Exists(propsFilePath) && dependency.Version.MinVersion < new PackageVersion("1.1.0-beta"))
-            {
-                log.Error("Can't upgrade old projects from {0} 1.0 to 1.1", dependency.Name);
-                return false;
-            }
-
-            // Nothing to do for now, most of the work is already done by individual asset upgraders
-            // We can later add logic here for package-wide upgrades (i.e. GameSettingsAsset)
-            if (dependency.Version.MinVersion < new PackageVersion("1.2.0-beta"))
-            {
-                // UIImageGroups and SpriteGroups asset have been merged into a single SpriteSheet => rename the assets and modify the tag
-                var uiImageGroups = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".pdxuiimage");
-                var spritesGroups = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".pdxsprite");
-                RenameAndChangeTag(assetFiles, uiImageGroups, "!UIImageGroup");
-                RenameAndChangeTag(assetFiles, spritesGroups, "!SpriteGroup");
-            }
-
-            if (dependency.Version.MinVersion < new PackageVersion("1.3.0-alpha01"))
-            {
-                // Create GameSettingsAsset
-                GameSettingsAsset.UpgraderVersion130.Upgrade(session, log, dependentPackage, dependency, dependencyPackage, assetFiles);
-            }
-
-            if (dependency.Version.MinVersion < new PackageVersion("1.3.0-alpha02"))
-            {
-                // Delete EffectLogAsset
-                foreach (var assetFile in assetFiles)
-                {
-                    if (assetFile.FilePath.GetFileName() == EffectLogAsset.DefaultFile)
-                    {
-                        assetFile.Deleted = true;
-                    }
-                }
-            }
-
-            if (dependency.Version.MinVersion < new PackageVersion("1.4.0-beta"))
-            {
-                // Update file extensions with Xenko prefix
-                var legacyAssets = from assetFile in assetFiles
-                                   where !assetFile.Deleted
-                                   let extension = assetFile.FilePath.GetFileExtension()
-                                   where extension.StartsWith(".pdx")
-                                   select new { AssetFile = assetFile, NewExtension = ".xk" + extension.Substring(4) };
-
-                foreach (var legacyAsset in legacyAssets.ToArray())
-                {
-                    var assetFile = legacyAsset.AssetFile;
-                    var filePath = assetFile.FilePath;
-
-                    // Load asset data, so the renamed file will have it's AssetContent set
-                    if (assetFile.AssetContent == null)
-                        assetFile.AssetContent = File.ReadAllBytes(filePath);
-
-                    // Change legacy namespaces and default effect names in all shader source files
-                    // TODO: Use syntax analysis? What about shaders referenced in other assets?
-                    if (legacyAsset.NewExtension == ".xksl" || legacyAsset.NewExtension == ".xkfx" || legacyAsset.NewExtension == ".xkeffectlog")
-                    {
-                        var sourceText = System.Text.Encoding.UTF8.GetString(assetFile.AssetContent);
-                        var newSourceText = sourceText.Replace("Paradox", "Xenko");
-                        var newAssetContent = System.Text.Encoding.UTF8.GetBytes(newSourceText);
-
-                        if (newSourceText != sourceText)
-                        {
-                            assetFile.AssetContent = newAssetContent;
-                        }
-
-                        // Write SourceCodeAssets to new file, as they are serialized differently
-                        // TODO: Handle SourceCodeAssets properly (should probably force saving)
-                        var newFileName = new UFile(filePath.FullPath.Replace(filePath.GetFileExtension(), legacyAsset.NewExtension));
-                        File.WriteAllBytes(newFileName, newAssetContent);
-                    }
-
-                    // Create asset copy with new extension
-                    ChangeFileExtension(assetFiles, assetFile, legacyAsset.NewExtension);
-                }
-
-                // Force loading of user settings with old extension
-                var userSettings = dependentPackage.UserSettings;
-
-                // Change package extension
-                dependentPackage.FullPath = new UFile(dependentPackage.FullPath.GetFullPathWithoutExtension() + Package.PackageFileExtension);
-
-                // Make sure all assets are upgraded
-                RunAssetUpgradersUntilVersion(log, dependentPackage, XenkoConfig.PackageName, assetFiles, PackageVersion.Parse("1.4.0-beta"));
-            }
-
             if (dependency.Version.MinVersion < new PackageVersion("1.5.0-alpha01"))
             {
                 RunAssetUpgradersUntilVersion(log, dependentPackage, XenkoConfig.PackageName, assetFiles, PackageVersion.Parse("1.5.0-alpha01"));
@@ -150,13 +62,13 @@ namespace SiliconStudio.Xenko.Assets
                         var model = components["ModelComponent.Key"]?.Model;
                         if (animationComponent != null && model != null)
                         {
-                            var modelReference = DynamicYamlExtensions.ConvertTo<AssetReference<Asset>>(model);
-                            var modelAsset = modelAssetsWithSekeleton.FirstOrDefault(x => x.Asset.AssetPath == modelReference.Location);
+                            var modelReference = DynamicYamlExtensions.ConvertTo<AssetReference>(model);
+                            var modelAsset = modelAssetsWithSekeleton.FirstOrDefault(x => x.Asset.AssetLocation == modelReference.Location);
 
                             foreach (var animation in animationComponent.Animations)
                             {
-                                var animationReference = DynamicYamlExtensions.ConvertTo<AssetReference<Asset>>(animation.Value);
-                                var animationAsset = animAssets.FirstOrDefault(x => x.Asset.AssetPath == animationReference.Location);
+                                var animationReference = DynamicYamlExtensions.ConvertTo<AssetReference>(animation.Value);
+                                var animationAsset = animAssets.FirstOrDefault(x => x.Asset.AssetLocation == animationReference.Location);
 
                                 if (modelAsset != null && animationAsset != null)
                                 {
@@ -172,8 +84,8 @@ namespace SiliconStudio.Xenko.Assets
                 {
                     // Comparing absolute path of assets
                     var modelAsset = modelAssetsWithSekeleton.FirstOrDefault(
-                        x => UPath.Combine(animationAsset.Asset.AssetPath.GetParent(), new UFile((string)animationAsset.DynamicRootNode.Source))
-                             == UPath.Combine(x.Asset.AssetPath.GetParent(), new UFile((string)x.DynamicRootNode.Source)));
+                        x => UPath.Combine(animationAsset.Asset.AssetLocation.GetParent(), new UFile((string)animationAsset.DynamicRootNode.Source))
+                             == UPath.Combine(x.Asset.AssetLocation.GetParent(), new UFile((string)x.DynamicRootNode.Source)));
                     if (modelAsset != null)
                     {
                         animToModelMapping[animationAsset] = modelAsset;
@@ -207,7 +119,7 @@ namespace SiliconStudio.Xenko.Assets
                         skeletonAssetYaml.DynamicRootNode.ScaleImport = modelAsset.DynamicRootNode.ScaleImport;
 
                         // Update model to point to this skeleton
-                        modelAsset.DynamicRootNode.Skeleton = new AssetReference<Asset>(Guid.Parse((string)skeletonAssetYaml.DynamicRootNode.Id), skeletonAsset.AssetPath.MakeRelative(modelAsset.Asset.AssetPath.GetParent()));
+                        modelAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAssetYaml.DynamicRootNode.Id), skeletonAsset.AssetLocation.MakeRelative(modelAsset.Asset.AssetLocation.GetParent()));
                         modelToSkeletonMapping.Add(modelAsset, skeletonAssetYaml);
                     }
 
@@ -221,15 +133,15 @@ namespace SiliconStudio.Xenko.Assets
                     var modelAsset = animToModelEntry.Value;
 
                     var skeletonAsset = modelToSkeletonMapping[modelAsset];
-                    animationAsset.DynamicRootNode.Skeleton = new AssetReference<Asset>(Guid.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
-                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference<Asset>(Guid.Parse((string)modelAsset.DynamicRootNode.Id), modelAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
+                    animationAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetLocation.MakeRelative(animationAsset.Asset.AssetLocation.GetParent()));
+                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference(AssetId.Parse((string)modelAsset.DynamicRootNode.Id), modelAsset.Asset.AssetLocation.MakeRelative(animationAsset.Asset.AssetLocation.GetParent()));
                 }
 
                 // Remove Nodes from models
                 foreach (var modelAsset in modelAssets)
                 {
                     modelAsset.DynamicRootNode.Nodes = DynamicYamlEmpty.Default;
-                    modelAsset.DynamicRootNode[Asset.BaseProperty].Asset.Nodes = DynamicYamlEmpty.Default;
+                    modelAsset.DynamicRootNode["~Base"].Asset.Nodes = DynamicYamlEmpty.Default;
                 }
 
                 // Save back
@@ -244,7 +156,7 @@ namespace SiliconStudio.Xenko.Assets
                 // Delete EffectLogAsset
                 foreach (var assetFile in assetFiles)
                 {
-                    if (assetFile.FilePath.GetFileName() == EffectLogAsset.DefaultFile)
+                    if (assetFile.FilePath.GetFileNameWithoutExtension() == EffectLogAsset.DefaultFile)
                     {
                         assetFile.Deleted = true;
                     }
@@ -255,6 +167,9 @@ namespace SiliconStudio.Xenko.Assets
             {
                 foreach (var assetFile in assetFiles)
                 {
+                    if (!IsYamlAsset(assetFile))
+                        continue;
+
                     using (var assetYaml = assetFile.AsYamlAsset())
                     {
                         if (assetYaml == null)
@@ -318,7 +233,7 @@ namespace SiliconStudio.Xenko.Assets
                 // Delete EffectLogAsset (now, most of it is auto generated automatically by drawing one frame of the game)
                 foreach (var assetFile in assetFiles)
                 {
-                    if (assetFile.FilePath.GetFileName() == EffectLogAsset.DefaultFile)
+                    if (assetFile.FilePath.GetFileNameWithoutExtension() == EffectLogAsset.DefaultFile)
                     {
                         assetFile.Deleted = true;
                     }
@@ -350,6 +265,47 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
+            if (dependency.Version.MinVersion < new PackageVersion("1.9.0-beta"))
+            {
+                foreach (var assetFile in assetFiles)
+                {
+                    if (!IsYamlAsset(assetFile))
+                        continue;
+
+                    // This upgrader will also mark every yaml asset as dirty. We want to re-save everything with the new serialization system
+                    using (var assetYaml = assetFile.AsYamlAsset())
+                    {
+                        if (assetYaml == null)
+                            continue;
+
+                        try
+                        {
+                            if (assetYaml.DynamicRootNode["~Base"] != null)
+                            {
+                                var location = ((YamlScalarNode)assetYaml.DynamicRootNode["~Base"].Location.Node).Value;
+                                if (location != "--import--")
+                                {
+                                    var id = ((YamlScalarNode)assetYaml.DynamicRootNode["~Base"].Asset.Id.Node).Value;
+                                    var assetUrl = $"{id}:{location}";
+                                    assetYaml.DynamicRootNode["Archetype"] = assetUrl;
+                                }
+                                assetYaml.DynamicRootNode["~Base"] = DynamicYamlEmpty.Default;
+                            }
+                        }
+                        catch
+                            (Exception e)
+                        {
+                            e.Ignore();
+                        }
+                    }
+                }
+            }
+
+            if (dependency.Version.MinVersion < new PackageVersion("1.10.0-alpha01"))
+            {
+                ConvertAdditiveAnimationToAnimation(assetFiles);
+            }
+
             return true;
         }
 
@@ -360,7 +316,7 @@ namespace SiliconStudio.Xenko.Assets
                 if (assetFile.Deleted)
                     continue;
 
-                var context = new AssetMigrationContext(dependentPackage, log);
+                var context = new AssetMigrationContext(dependentPackage, assetFile.ToReference(), assetFile.FilePath.ToWindowsPath(), log);
                 AssetMigration.MigrateAssetIfNeeded(context, assetFile, dependencyName, maxVersion);
             }
         }
@@ -374,7 +330,7 @@ namespace SiliconStudio.Xenko.Assets
                 foreach (var assetItem in dependentPackage.Assets)
                 {
                     if (!AssetRegistry.IsAssetTypeAlwaysMarkAsRoot(assetItem.Asset.GetType()))
-                        dependentPackage.RootAssets.Add(new AssetReference<Asset>(assetItem.Id, assetItem.Location));
+                        dependentPackage.RootAssets.Add(new AssetReference(assetItem.Id, assetItem.Location));
                 }
             }
 
@@ -391,43 +347,6 @@ namespace SiliconStudio.Xenko.Assets
             }
 
             return true;
-        }
-
-        private void ChangeFileExtension(IList<PackageLoadingAssetFile> assetFiles, PackageLoadingAssetFile file, string newExtension)
-        {
-            // Create the new file
-            var newFileName = new UFile(file.FilePath.FullPath.Replace(file.FilePath.GetFileExtension(), newExtension));
-            var newFile = new PackageLoadingAssetFile(newFileName, file.SourceFolder) { AssetContent = file.AssetContent };
-
-            // Add the new file
-            assetFiles.Add(newFile);
-
-            // Mark the old file as "To Delete"
-            file.Deleted = true;
-        }
-
-        private void RenameAndChangeTag( IList<PackageLoadingAssetFile> assetFiles, IEnumerable<PackageLoadingAssetFile> groupFiles, string oldTag)
-        {
-            var oldTagLength = System.Text.Encoding.UTF8.GetBytes(oldTag).Length;
-            var newTagBuffer = System.Text.Encoding.UTF8.GetBytes("!SpriteSheet");
-            
-            foreach (var file in groupFiles.ToArray())
-            {
-                // set the content of the new asset (replace the tags)
-                using (var stream = new FileStream(file.FilePath.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    file.AssetContent = new byte[stream.Length + newTagBuffer.Length - oldTagLength];
-                    using (var memoryStream = new MemoryStream(file.AssetContent))
-                    {
-                        memoryStream.Write(newTagBuffer, 0, newTagBuffer.Length);
-                        stream.Position = oldTagLength;
-                        stream.CopyTo(memoryStream);
-                    }
-                }
-
-                // rename the file
-                ChangeFileExtension(assetFiles, file, ".pdxsheet");
-            }
         }
 
         public override bool UpgradeBeforeAssembliesLoaded(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage)
@@ -472,7 +391,7 @@ namespace SiliconStudio.Xenko.Assets
                         }
                         else
                         {
-                            log.Error("Cannot locate {0}.", f.FullName);
+                            log.Error($"Cannot locate project {f.FullName}.");
                         }
                     }
                 }))
@@ -481,6 +400,15 @@ namespace SiliconStudio.Xenko.Assets
             Task.WaitAll(tasks);
         }
 
+        private bool IsYamlAsset(PackageLoadingAssetFile assetFile)
+        {
+            // Determine if asset was Yaml or not
+            var assetFileExtension = Path.GetExtension(assetFile.FilePath);
+            assetFileExtension = assetFileExtension?.ToLowerInvariant();
+
+            var serializer = AssetFileSerializer.FindSerializer(assetFileExtension);
+            return serializer is YamlAssetSerializer;
+        }
         /// <summary>
         /// Base interface for code upgrading
         /// </summary>
@@ -614,6 +542,40 @@ namespace SiliconStudio.Xenko.Assets
                 }
 
                 return base.VisitIdentifierName(node);
+            }
+        }
+
+        private void ConvertAdditiveAnimationToAnimation(IList<PackageLoadingAssetFile> assetFiles)
+        {
+            //var animAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkanim").Select(x => x.AsYamlAsset()).ToArray();
+            var animAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkanim");
+
+            foreach (var assetFile in animAssets)
+            {
+                if (!IsYamlAsset(assetFile))
+                    continue;
+
+                // This upgrader will also mark every yaml asset as dirty. We want to re-save everything with the new serialization system
+                using (var yamlAsset = assetFile.AsYamlAsset())
+                {
+                    dynamic asset = yamlAsset.DynamicRootNode;
+
+                    var assetTag = asset.Node.Tag;
+                    if (assetTag != "!AdditiveAnimation")
+                        continue;
+
+                    asset.Node.Tag = "!Animation";
+                    dynamic newType = new DynamicYamlMapping(new YamlMappingNode());
+                    newType.Node.Tag = "!DifferenceAnimationAssetType";
+                    newType["BaseSource"] = asset["BaseSource"];
+                    newType["Mode"] = asset["Mode"];
+
+                    asset.RemoveChild("BaseSource");
+                    asset.RemoveChild("Mode");
+                    asset.RemoveChild("Type");
+
+                    asset.AddChild("Type", newType);
+                }
             }
         }
     }

@@ -137,7 +137,9 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             image.DisposingLibrary = this;
         }
 
-        public bool CanHandleRequest(TexImage image, IRequest request)
+        public bool CanHandleRequest(TexImage image, IRequest request) => CanHandleRequest(image.Format, request);
+
+        public bool CanHandleRequest(PixelFormat imageFormat, IRequest request)
         {
             switch (request.Type)
             {

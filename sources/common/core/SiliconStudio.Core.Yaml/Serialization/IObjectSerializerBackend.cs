@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Yaml.Serialization
@@ -38,8 +38,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Gets the style that will be used to serialize the object provided by <see cref="ObjectContext.Instance"/>.
         /// </summary>
         /// <param name="objectContext">The object context which contains the object instance to serialize.</param>
-        /// <returns>The <see cref="YamlStyle"/> to use when serializing the object instance.</returns>
-        YamlStyle GetStyle(ref ObjectContext objectContext);
+        /// <returns>The <see cref="DataStyle"/> to use when serializing the object instance.</returns>
+        DataStyle GetStyle(ref ObjectContext objectContext);
 
         /// <summary>
         /// Allows to transform the name of the member while reading for the specified object context.
@@ -74,12 +74,21 @@ namespace SiliconStudio.Core.Yaml.Serialization
         object ReadCollectionItem(ref ObjectContext objectContext, object value, Type itemType, int index);
 
         /// <summary>
-        /// Reads the dictionary item from the current YAML stream.
+        /// Reads the key of the dictionary item from the current YAML stream.
         /// </summary>
         /// <param name="objectContext">The object context.</param>
-        /// <param name="keyValueType">Type of the key value.</param>
-        /// <returns>The dictionary item (key,value) read from YAML stream.</returns>
-        KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType);
+        /// <param name="keyType">Type of the key.</param>
+        /// <returns>The key of the dictionary item read from YAML stream.</returns>
+        object ReadDictionaryKey(ref ObjectContext objectContext, Type keyType);
+
+        /// <summary>
+        /// Reads the value of the dictionary item from the current YAML stream.
+        /// </summary>
+        /// <param name="objectContext">The object context.</param>
+        /// <param name="valueType">Type of the value.</param>
+        /// <param name="key">The key corresponding to the value.</param>
+        /// <returns>The value of the dictionary item read from YAML stream.</returns>
+        object ReadDictionaryValue(ref ObjectContext objectContext, Type valueType, object key);
 
         /// <summary>
         /// Writes the name of the member.
@@ -108,11 +117,28 @@ namespace SiliconStudio.Core.Yaml.Serialization
         void WriteCollectionItem(ref ObjectContext objectContext, object item, Type itemType, int index);
 
         /// <summary>
-        /// Writes the dictionary item.
+        /// Writes the key of the dictionary item.
         /// </summary>
         /// <param name="objectContext">The object context.</param>
-        /// <param name="keyValue">The key value.</param>
-        /// <param name="types">The types.</param>
-        void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types);
+        /// <param name="key">The key of the dictionary item.</param>
+        /// <param name="keyType">Type of the key.</param>
+        void WriteDictionaryKey(ref ObjectContext objectContext, object key, Type keyType);
+
+        /// <summary>
+        /// Writes the value of the dictionary item.
+        /// </summary>
+        /// <param name="objectContext">The object context.</param>
+        /// <param name="key"></param>
+        /// <param name="value">The value of the dictionary item.</param>
+        /// <param name="valueType">Type of the value.</param>
+        void WriteDictionaryValue(ref ObjectContext objectContext, object key, object value, Type valueType);
+
+        /// <summary>
+        /// Indicates if the given member should be serialized.
+        /// </summary>
+        /// <param name="member">The member to evaluate.</param>
+        /// <param name="objectContext">The object context.</param>
+        /// <returns>True if the member should be serialized, False otherwise.</returns>
+        bool ShouldSerialize(IMemberDescriptor member, ref ObjectContext objectContext);
     }
 }

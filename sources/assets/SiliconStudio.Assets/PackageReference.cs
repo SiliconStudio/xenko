@@ -3,7 +3,6 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets
 {
@@ -61,20 +60,12 @@ namespace SiliconStudio.Assets
         /// <returns><c>true</c> if the package reference is a valid reference, <c>false</c> otherwise.</returns>
         public static bool TryParse(string packageReferenceAsText, out PackageReference packageReference)
         {
-            Guid id;
+            AssetId id;
             UFile location;
             packageReference = null;
-            Guid referenceId;
-            if (AssetReference.TryParse(packageReferenceAsText, out referenceId, out id, out location))
-            {
-                packageReference = new PackageReference(id, location);
-                if (referenceId != Guid.Empty)
-                {
-                    IdentifiableHelper.SetId(packageReference, referenceId);
-                }
-                return true;
-            }
-            return false;
+            if (!AssetReference.TryParse(packageReferenceAsText, out id, out location)) return false;
+            packageReference = new PackageReference((Guid)id, location);
+            return true;
         }
 
         /// <summary>

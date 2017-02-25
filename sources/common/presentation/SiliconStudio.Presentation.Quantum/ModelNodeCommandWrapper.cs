@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -12,7 +13,6 @@ namespace SiliconStudio.Presentation.Quantum
     {
         public readonly GraphNodePath NodePath;
         public readonly Index Index;
-        protected readonly ObservableViewModelService Service;
 
         public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, GraphNodePath nodePath, Index index)
             : base(serviceProvider)
@@ -21,7 +21,6 @@ namespace SiliconStudio.Presentation.Quantum
             NodePath = nodePath;
             Index = index;
             NodeCommand = nodeCommand;
-            Service = serviceProvider.Get<ObservableViewModelService>();
         }
 
         public override string Name => NodeCommand.Name;
@@ -32,14 +31,14 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override async Task Invoke(object parameter)
         {
-            using (var transaction = ActionService?.CreateTransaction())
+            using (var transaction = UndoRedoService?.CreateTransaction())
             {
                 var modelNode = NodePath.GetNode();
                 if (modelNode == null)
                     throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
-                await NodeCommand.Execute(modelNode.Content, Index, parameter);
-                ActionService?.SetName(transaction, ActionName);
+                await NodeCommand.Execute(modelNode, Index, parameter);
+                UndoRedoService?.SetName(transaction, ActionName);
             }
         }
     }

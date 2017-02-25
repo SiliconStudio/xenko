@@ -1,9 +1,8 @@
 !PrefabAsset
 Id: 103189ca-1e66-4b1c-84fc-aed9fe304421
-SerializedVersion: {Xenko: 1.9.0-beta01}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 Hierarchy:
-    ~Id: eb7f35dc-173b-43cc-90c7-e205678598bc
     RootPartIds:
         - 44b7da69-2103-4350-9aad-0d799a748f93
     Parts:
@@ -11,20 +10,21 @@ Hierarchy:
                 Id: 44b7da69-2103-4350-9aad-0d799a748f93
                 Name: Ramp2x2_1x1
                 Components:
-                    - !TransformComponent
-                        ~Id: 26ba3ce4-6d0f-4767-931d-b7e9fc00d84b
-                        Children: []
+                    e43cba260f6d6747931db7e9fc00d84b: !TransformComponent
+                        Id: 26ba3ce4-6d0f-4767-931d-b7e9fc00d84b
                         Position: {X: 1.0, Y: 0.25, Z: 0.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 92e7523b-b89d-4c64-a72d-1c2ea02c6ba7
-                        Model: 28688d2c-4c65-4c4d-b672-47ae4ea8f4c3/fe9e63cd-9e41-4e66-b66b-67d0e1f67a85:Models/Ramp2x2_1x1
+                        Children: {}
+                    3b52e7929db8644ca72d1c2ea02c6ba7: !ModelComponent
+                        Id: 92e7523b-b89d-4c64-a72d-1c2ea02c6ba7
+                        Model: fe9e63cd-9e41-4e66-b66b-67d0e1f67a85:Models/Ramp2x2_1x1
                         Materials:
-                            - 7c3edc74-636e-463f-a380-1edd86a197dd/08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
-                    - !StaticColliderComponent
-                        ~Id: 00643923-8428-4d90-9363-abaa329d6cec
-                        CanSleep: false
+                            74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
+                    233964002884904d9363abaa329d6cec: !StaticColliderComponent
+                        Id: 00643923-8428-4d90-9363-abaa329d6cec
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -32,6 +32,5 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         ColliderShapes:
-                            - !ColliderShapeAssetDesc
-                                ~Id: 0c8a9782-5fef-4fd8-ba6e-9e4734adb4c2
-                                Shape: 240d43cd-36a9-4da1-bc30-dd0659d9e5f3/815bd728-6629-4b0e-aa73-0dcf3435c715:CollisionMeshes/Ramp2x1_2x1
+                            82978a0cef5fd84fba6e9e4734adb4c2: !ColliderShapeAssetDesc
+                                Shape: 815bd728-6629-4b0e-aa73-0dcf3435c715:CollisionMeshes/Ramp2x1_2x1

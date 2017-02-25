@@ -78,9 +78,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shaderData.OffsetScale = shadow.BiasParameters.NormalOffsetScale;
 
             // Update the shadow camera
-            var viewMatrix = Matrix.LookAtLH(position, target, upDirection); // View;;
+            var viewMatrix = Matrix.LookAtRH(position, target, upDirection); // View;;
             // TODO: Calculation of near and far is hardcoded/approximated. We should find a better way to calculate it.
-            var projectionMatrix = Matrix.PerspectiveFovLH(spotLight.AngleOuterInRadians, 1.0f, 0.01f, spotLight.Range * 2.0f); // Perspective Projection for spotlights
+            var projectionMatrix = Matrix.PerspectiveFovRH(spotLight.AngleOuterInRadians, 1.0f, 0.01f, spotLight.Range * 2.0f); // Perspective Projection for spotlights
             Matrix viewProjectionMatrix;
             Matrix.Multiply(ref viewMatrix, ref projectionMatrix, out viewProjectionMatrix);
 
@@ -233,24 +233,34 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             public void ApplyDrawParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights, ref BoundingBoxExt boundingBox)
             {
-                for (int lightIndex = 0; lightIndex < currentLights.Count; ++lightIndex)
+                var boundingBox2 = (BoundingBox)boundingBox;
+                bool shadowMapCreated = false;
+                int lightIndex = 0;
+
+                for (int i = 0; i < currentLights.Count; ++i)
                 {
-                    var lightEntry = currentLights[lightIndex];
+                    var lightEntry = currentLights[i];
 
-                    var singleLightData = (LightSpotShadowMapShaderData)lightEntry.ShadowMapTexture.ShaderData;
-                    worldToShadowCascadeUV[lightIndex] = singleLightData.WorldToShadowCascadeUV;
+                    var light = lightEntry.Light;
 
-                    depthBiases[lightIndex] = singleLightData.DepthBias;
-                    offsetScales[lightIndex] = singleLightData.OffsetScale;
-
-                    // TODO: should be setup just once at creation time
-                    if (lightIndex == 0)
+                    if (light.BoundingBox.Intersects(ref boundingBox2))
                     {
-                        shadowMapTexture = singleLightData.Texture;
-                        if (shadowMapTexture != null)
+                        var singleLightData = (LightSpotShadowMapShaderData)lightEntry.ShadowMapTexture.ShaderData;
+                        worldToShadowCascadeUV[lightIndex] = singleLightData.WorldToShadowCascadeUV;
+
+                        depthBiases[lightIndex] = singleLightData.DepthBias;
+                        offsetScales[lightIndex] = singleLightData.OffsetScale;
+                        lightIndex++;
+
+                        if (!shadowMapCreated)
                         {
-                            shadowMapTextureSize = new Vector2(shadowMapTexture.Width, shadowMapTexture.Height);
-                            shadowMapTextureTexelSize = 1.0f / shadowMapTextureSize;
+                            shadowMapTexture = singleLightData.Texture;
+                            if (shadowMapTexture != null)
+                            {
+                                shadowMapTextureSize = new Vector2(shadowMapTexture.Width, shadowMapTexture.Height);
+                                shadowMapTextureTexelSize = 1.0f / shadowMapTextureSize;
+                            }
+                            shadowMapCreated = true;
                         }
                     }
                 }

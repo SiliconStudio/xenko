@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
@@ -13,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     [DataContract("MaterialInstance")]
     [InlineProperty]
-    public class MaterialInstance
+    public class MaterialInstance : IEquatable<MaterialInstance>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialInstance"/> class.
@@ -74,20 +75,41 @@ namespace SiliconStudio.Xenko.Rendering
 
         public override bool Equals(object obj)
         {
+            if (obj == null)
+                return false;
+
             var instance = (MaterialInstance)obj;
             return Material == instance.Material && IsShadowCaster == instance.IsShadowCaster && IsShadowReceiver == instance.IsShadowReceiver;
+        }
+
+        public bool Equals(MaterialInstance other)
+        {
+            if (ReferenceEquals(null, other))
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
+            return Equals(Material, other.Material) && IsShadowCaster == other.IsShadowCaster && IsShadowReceiver == other.IsShadowReceiver;
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                var hash = 17;
-                hash = hash * 23 + Material.GetHashCode();
-                hash = hash * 23 + IsShadowCaster.GetHashCode();
-                hash = hash * 23 + IsShadowReceiver.GetHashCode();
-                return hash;
+                var hashCode = Material?.GetHashCode() ?? 0;
+                hashCode = (hashCode*397) ^ IsShadowCaster.GetHashCode();
+                hashCode = (hashCode*397) ^ IsShadowReceiver.GetHashCode();
+                return hashCode;
             }
+        }
+
+        public static bool operator ==(MaterialInstance left, MaterialInstance right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(MaterialInstance left, MaterialInstance right)
+        {
+            return !Equals(left, right);
         }
     }
 }

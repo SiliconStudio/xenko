@@ -44,23 +44,18 @@
 // SOFTWARE.
 
 using System;
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
-using SiliconStudio.Core.Yaml.Serialization.Logging;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
     /// <summary>
     /// Base class for serializing an object that can be a Yaml !!map or !!seq.
     /// </summary>
+    [YamlSerializerFactory(YamlSerializerFactoryAttribute.Default)]
     public class ObjectSerializer : IYamlSerializable, IYamlSerializableFactory
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ObjectSerializer"/> class.
-        /// </summary>
-        public ObjectSerializer()
-        {
-        }
-
         /// <inheritdoc/>
         public virtual IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
@@ -83,8 +78,8 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// Gets the style that will be used to serialized the object.
         /// </summary>
         /// <param name="objectContext"></param>
-        /// <returns>The <see cref="YamlStyle"/> to use. Default is <see cref="ITypeDescriptor.Style"/>.</returns>
-        protected virtual YamlStyle GetStyle(ref ObjectContext objectContext)
+        /// <returns>The <see cref="DataStyle"/> to use. Default is <see cref="IYamlTypeDescriptor.Style"/>.</returns>
+        protected virtual DataStyle GetStyle(ref ObjectContext objectContext)
         {
             return objectContext.ObjectSerializerBackend.GetStyle(ref objectContext);
         }
@@ -176,7 +171,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             // throws an exception while deserializing
             if (objectContext.Instance == null)
             {
-                throw new YamlException(start.Start, start.End, "Cannot instantiate an object for type [{0}]".DoFormat(objectContext.Descriptor));
+                throw new YamlException(start.Start, start.End, $"Cannot instantiate an object for type [{objectContext.Descriptor}]");
             }
 
             while (!reader.Accept<TEnd>())
@@ -197,7 +192,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             string memberName;
             if (!TryReadMember(ref objectContext, out memberScalar, out memberName))
             {
-                throw new YamlException(memberScalar.Start, memberScalar.End, "Unable to deserialize property [{0}] not found in type [{1}]".DoFormat(memberName, objectContext.Descriptor));
+                throw new YamlException(memberScalar.Start, memberScalar.End, $"Unable to deserialize property [{memberName}] not found in type [{objectContext.Descriptor}]");
             }
         }
 
@@ -253,15 +248,11 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             {
                 if (objectContext.SerializerContext.AllowErrors)
                 {
-                    var logger = objectContext.SerializerContext.ContextSettings.Logger;
-                    if (logger != null)
-                        logger.Log(LogLevel.Warning, ex, "Ignored object member that could not be deserialized");
+                    var logger = objectContext.SerializerContext.Logger;
+                    logger?.Warning("Ignored dictionary item that could not be deserialized", ex);
                     skipMember = true;
                 }
-                else
-                {
-                    throw;
-                }
+                else throw;
             }
 
             if (skipMember)
@@ -293,7 +284,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                 return ReadMemberState.Skip;
             }
 
-            var memberAccessor = objectContext.Descriptor[memberName];
+            var memberAccessor = objectContext.Descriptor.TryGetMember(memberName);
 
             // If the member was remapped, store this in the context
             if (objectContext.Descriptor.IsMemberRemapped(memberName))
@@ -308,7 +299,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             }
 
             // Read the value according to the type
-            var memberValue = memberAccessor.SerializeMemberMode == SerializeMemberMode.Content ? memberAccessor.Get(objectContext.Instance) : null;
+            var memberValue = memberAccessor.Mode == DataMemberMode.Content ? memberAccessor.Get(objectContext.Instance) : null;
             var memberType = memberAccessor.Type;
 
             // In case of serializing a property/field which is not writeable
@@ -322,7 +313,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 
             // Handle late binding
             // Value types need to be reassigned even if it was a Content
-            if (memberAccessor.HasSet && (memberAccessor.SerializeMemberMode != SerializeMemberMode.Content || memberAccessor.Type.IsValueType || memberValue != oldMemberValue))
+            if (memberAccessor.HasSet && (memberAccessor.Mode != DataMemberMode.Content || memberAccessor.Type.IsValueType || memberValue != oldMemberValue))
             {
                 memberAccessor.Set(objectContext.Instance, memberValue);
             }
@@ -377,7 +368,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         }
 
         /// <summary>
-        /// Writes the members of the object to serialize. By default this method is iterating on the <see cref="ITypeDescriptor.Members"/> and
+        /// Writes the members of the object to serialize. By default this method is iterating on the <see cref="IYamlTypeDescriptor.Members"/> and
         /// calling <see cref="WriteMember"/> on each member.
         /// </summary>
         /// <param name="objectContext"></param>
@@ -401,7 +392,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                 return;
 
             // Skip any member that we won't serialize
-            if (!member.ShouldSerialize(objectContext.Instance))
+            if (!objectContext.SerializerContext.ObjectSerializerBackend.ShouldSerialize(member, ref objectContext))
                 return;
 
             // Emit the key name
@@ -413,7 +404,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             // In case of serializing a property/field which is not writeable
             // we need to change the expected type to the actual type of the 
             // content value
-            if (member.SerializeMemberMode == SerializeMemberMode.Content && !member.HasSet)
+            if (member.Mode == DataMemberMode.Content && !member.HasSet)
             {
                 if (memberValue != null)
                 {

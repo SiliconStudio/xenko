@@ -124,7 +124,9 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             UpdateImage(image, (DxtTextureLibraryData)image.LibraryData[this]);
         }
 
-        public bool CanHandleRequest(TexImage image, IRequest request)
+        public bool CanHandleRequest(TexImage image, IRequest request) => CanHandleRequest(image.Format, request);
+
+        public bool CanHandleRequest(PixelFormat format, IRequest request)
         {
             switch (request.Type)
             {
@@ -134,14 +136,14 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
                 case RequestType.Compressing:
                     CompressingRequest compress = (CompressingRequest)request;
-                    return SupportFormat(compress.Format) && SupportFormat(image.Format);
+                    return SupportFormat(compress.Format) && SupportFormat(format);
 
                 case RequestType.Converting:
                     ConvertingRequest converting = (ConvertingRequest)request;
-                    return SupportFormat(converting.Format) && SupportFormat(image.Format);
+                    return SupportFormat(converting.Format) && SupportFormat(format);
 
                 case RequestType.Export:
-                    return SupportFormat(image.Format) && Path.GetExtension(((ExportRequest)request).FilePath).Equals(".dds");
+                    return SupportFormat(format) && Path.GetExtension(((ExportRequest)request).FilePath).Equals(".dds");
 
                 case RequestType.Rescaling:
                     RescalingRequest rescale = (RescalingRequest)request;
@@ -151,7 +153,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                         rescale.Filter == Filter.Rescaling.Nearest;
 
                 case RequestType.Decompressing:
-                    return SupportFormat(image.Format);
+                    return SupportFormat(format);
 
                 case RequestType.PreMultiplyAlpha:
                 case RequestType.MipMapsGeneration:
@@ -400,7 +402,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             // TODO: temp if request format is SRGB we force it to non-srgb to perform the conversion. Will not work if texture input is SRGB
             var outputFormat = request.Format.IsSRgb() ? request.Format.ToNonSRgb() : request.Format;
 
-            Log.Debug("Converting texture from {0} to {1}", ((PixelFormat)libraryData.Metadata.format), outputFormat);
+            Log.Debug($"Converting texture from {(PixelFormat)libraryData.Metadata.format} to {outputFormat}");
 
             var scratchImage = new ScratchImage();
             var hr = Utilities.Convert(libraryData.DxtImages, libraryData.DxtImages.Length, ref libraryData.Metadata, (DXGI_FORMAT)outputFormat, TEX_FILTER_FLAGS.TEX_FILTER_BOX, 0.0f, scratchImage);

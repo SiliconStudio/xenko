@@ -1,7 +1,6 @@
 !Package
 Id: e0f7780a-6563-47ad-a81c-adfdccd9f26c
-SerializedVersion: {Assets: 0.0.3}
-Tags: []
+SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: JumpyJet
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.9.4-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -20,7 +19,6 @@ Profiles:
             -   Path: Assets/Shared
             -   Path: JumpyJet.Game/Effects
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: cdb18123-f59f-4852-9777-ed9d217eb043
                 Location: JumpyJet.Game/JumpyJet.Game.csproj
@@ -31,8 +29,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Windows
         OutputGroupDirectories: {}
-        Properties:
-            Xenko.GraphicsPlatform: Direct3D11
         ProjectReferences:
             -   Id: dfecf85b-19e9-4266-a031-696edc5d5ebb
                 Location: JumpyJet.Windows/JumpyJet.Windows.csproj

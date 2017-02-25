@@ -11,7 +11,6 @@ namespace SiliconStudio.Assets.Serializers
     /// </remarks>
     [DataContract]
     [DataStyle(DataStyle.Compact)]
-    [NonIdentifiable]
     public class IdentifiableAssetPartReference : IAssetPartReference
     {
         /// <summary>

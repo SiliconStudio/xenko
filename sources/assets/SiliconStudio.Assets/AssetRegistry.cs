@@ -5,14 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SiliconStudio.Assets.Analysis;
-using SiliconStudio.Assets.Diff;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.VisualStudio;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Assets
@@ -33,31 +31,28 @@ namespace SiliconStudio.Assets
         private static readonly Dictionary<KeyValuePair<Type, string>, AssetUpgraderCollection> RegisteredAssetUpgraders = new Dictionary<KeyValuePair<Type, string>, AssetUpgraderCollection>();
         private static readonly Dictionary<string, Type> RegisteredAssetFileExtensions = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
         private static readonly Dictionary<string, PackageUpgrader> RegisteredPackageUpgraders = new Dictionary<string, PackageUpgrader>();
-        private static readonly HashSet<Assembly> RegisteredAssemblies = new HashSet<Assembly>();
+        private static readonly HashSet<Assembly> RegisteredEngineAssemblies = new HashSet<Assembly>();
+        private static readonly HashSet<Assembly> RegisteredAssetAssemblies = new HashSet<Assembly>();
         private static readonly HashSet<IYamlSerializableFactory> RegisteredSerializerFactories = new HashSet<IYamlSerializableFactory>();
         private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodes = new List<IDataCustomVisitor>();
-        private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodeBuilders = new List<IDataCustomVisitor>();
         private static readonly Dictionary<string, IAssetFactory<Asset>> RegisteredAssetFactories = new Dictionary<string, IAssetFactory<Asset>>();
         private static readonly Dictionary<Type, HashSet<AssetPartReferenceAttribute>> RegisteredAssetCompositePartTypes = new Dictionary<Type, HashSet<AssetPartReferenceAttribute>>();
-
-        private static Func<object, string, string> stringExpander;
+        private static readonly Dictionary<Type, List<Type>> RegisteredContentTypes = new Dictionary<Type, List<Type>>();
+        private static readonly Dictionary<Type, List<Type>> ContentToAssetTypes = new Dictionary<Type, List<Type>>();
+        private static readonly Dictionary<Type, Type> AssetToContentTypes = new Dictionary<Type, Type>();
 
         // Global lock used to secure the registry with threads
         private static readonly object RegistryLock = new object();
 
         /// <summary>
-        /// Gets the list of assemblies currently registered.
+        /// Gets the list of engine assemblies currently registered.
         /// </summary>
-        public static IEnumerable<Assembly> Assemblies
-        {
-            get
-            {
-                lock (RegistryLock)
-                {
-                    return RegisteredAssemblies.ToList();
-                }
-            }
-        }
+        public static IEnumerable<Assembly> EngineAssemblies { get { lock (RegistryLock) { return RegisteredEngineAssemblies.ToList(); } } }
+
+        /// <summary>
+        /// Gets the list of asset assemblies currently registered.
+        /// </summary>
+        public static IEnumerable<Assembly> AssetAssemblies { get { lock (RegistryLock) { return RegisteredAssetAssemblies.ToList(); } } }
 
         /// <summary>
         /// Gets the supported platforms.
@@ -69,16 +64,7 @@ namespace SiliconStudio.Assets
         /// Gets an enumeration of registered importers.
         /// </summary>
         /// <value>The registered importers.</value>
-        public static IEnumerable<IAssetImporter> RegisteredImporters
-        {
-            get
-            {
-                lock (RegistryLock)
-                {
-                    return RegisteredImportersInternal;
-                }
-            }
-        }
+        public static IEnumerable<IAssetImporter> RegisteredImporters { get { lock (RegistryLock) { return RegisteredImportersInternal; } } }
 
         /// <summary>
         /// Registers the supported platforms.
@@ -90,42 +76,6 @@ namespace SiliconStudio.Assets
             if (platforms == null) throw new ArgumentNullException(nameof(platforms));
             if (SupportedPlatforms.Count > 0) throw new InvalidOperationException("Cannot register new platforms. RegisterSupportedPlatforms can only be called once");
             SupportedPlatforms.AddRange(platforms);
-        }
-
-        /// <summary>
-        /// Registers the string expander used by the package references.
-        /// </summary>
-        /// <param name="expander">The expander.</param>
-        public static void RegisterStringExpander(Func<object, string, string> expander)
-        {
-            stringExpander = expander;
-        }
-
-        /// <summary>
-        /// Expands a string using the registered string expander (<see cref="RegisterStringExpander"/>)
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="stringToExpand">The string to expand.</param>
-        /// <returns>System.String.</returns>
-        public static string ExpandString(object context, string stringToExpand)
-        {
-            if (stringExpander != null)
-            {
-                return stringExpander(context, stringToExpand);
-            }
-            return stringToExpand;
-        }
-
-        /// <summary>
-        /// Gets the asset file extensions.
-        /// </summary>
-        /// <returns>System.String[][].</returns>
-        public static string[] GetAssetFileExtensions()
-        {
-            lock (RegistryLock)
-            {
-                return RegisteredAssetFileExtensions.Keys.ToArray();
-            }
         }
 
         /// <summary>
@@ -201,7 +151,7 @@ namespace SiliconStudio.Assets
         /// <returns>System.String.</returns>
         public static string GetDefaultExtension(Type assetType)
         {
-            IsAssetType(assetType, true);
+            IsAssetOrPackageType(assetType, true);
             lock (RegistryLock)
             {
                 string extension;
@@ -217,7 +167,7 @@ namespace SiliconStudio.Assets
         /// <returns>The current format version of this asset.</returns>
         public static SortedList<string, PackageVersion> GetCurrentFormatVersions(Type assetType)
         {
-            IsAssetType(assetType, true);
+            IsAssetOrPackageType(assetType, true);
             lock (RegistryLock)
             {
                 SortedList<string, PackageVersion> versions;
@@ -234,7 +184,7 @@ namespace SiliconStudio.Assets
         /// <returns>The <see cref="AssetUpgraderCollection"/> of an asset type if available, or <c>null</c> otherwise.</returns>
         public static AssetUpgraderCollection GetAssetUpgraders(Type assetType, string dependencyName)
         {
-            IsAssetType(assetType, true);
+            IsAssetOrPackageType(assetType, true);
             lock (RegistryLock)
             {
                 AssetUpgraderCollection upgraders;
@@ -290,18 +240,6 @@ namespace SiliconStudio.Assets
             }
         }
 
-        /// <summary>
-        /// Returns an array of asset types that can be instanced with <see cref="ObjectFactory.NewInstance"/>.
-        /// </summary>
-        /// <returns>An array of <see cref="Type"/> elements.</returns>
-        public static Type[] GetInstantiableTypes()
-        {
-            lock (RegistryLock)
-            {
-                return ObjectFactory.FindRegisteredFactories().Where(type => typeof(Asset).IsAssignableFrom(type) && type.IsPublic).ToArray();
-            }
-        }
-
         public static bool IsAssetTypeAlwaysMarkAsRoot(Type type)
         {
             lock (AlwaysMarkAsRootAssetTypes)
@@ -319,6 +257,42 @@ namespace SiliconStudio.Assets
             lock (RegistryLock)
             {
                 return AssetTypes.ToArray();
+            }
+        }
+
+        public static IList<Type> GetContentTypes()
+        {
+            lock (RegistryLock)
+            {
+                return RegisteredContentTypes.Keys.ToList();
+            }
+        }
+
+        public static Type GetContentType(Type assetType)
+        {
+            IsAssetType(assetType, true);
+            lock (RegistryLock)
+            {
+                var currentType = assetType;
+                while (currentType != null)
+                {
+                    Type contentType;
+                    if (AssetToContentTypes.TryGetValue(assetType, out contentType))
+                        return contentType;
+
+                    currentType = currentType.BaseType;
+                }
+                return null;
+            }
+        }
+
+        public static IReadOnlyList<Type> GetAssetTypes(Type contentType)
+        {
+            lock (RegistryLock)
+            {
+                var currentType = contentType;
+                List<Type> assetTypes;
+                return ContentToAssetTypes.TryGetValue(currentType, out assetTypes) ? new List<Type>(assetTypes) : new List<Type>();
             }
         }
 
@@ -387,19 +361,19 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public static IEnumerable<IDataCustomVisitor> GetDataVisitNodeBuilders()
-        {
-            lock (RegistryLock)
-            {
-                return RegisteredDataVisitNodeBuilders;
-            }
-        }
-
         public static bool IsAssetPartType(Type type)
         {
             lock (RegistryLock)
             {
-                return RegisteredAssetCompositePartTypes.ContainsKey(type);
+                var currentType = type;
+                while (currentType != null)
+                {
+                    if (RegisteredAssetCompositePartTypes.ContainsKey(currentType))
+                        return true;
+
+                    currentType = currentType.BaseType;
+                }
+                return false;
             }
         }
 
@@ -413,226 +387,264 @@ namespace SiliconStudio.Assets
             }
         }
 
-        /// <summary>
-        /// Registers the asset assembly. This assembly should provide <see cref="Asset"/> objects, associated with
-        /// <see cref="IAssetCompiler"/> and optionaly a <see cref="IAssetImporter"/>.
-        /// </summary>
-        /// <param name="assembly">The assembly.</param>
-        /// <exception cref="System.ArgumentNullException">assembly</exception>
-        /// <exception cref="AssetException">
-        /// Invalid compiler type [{0}], must inherit from IAssetImporter.ToFormat(assetCompiler.TypeName)
-        /// or
-        /// Unable to instantiate compiler [{0}].ToFormat(assetCompiler.TypeName)
-        /// or
-        /// Invalid importer type [{0}], must inherit from IAssetImporter.ToFormat(assetImporter.ImpoterTypeName)
-        /// or
-        /// Unable to instantiate importer [{0}].ToFormat(assetImporter.ImpoterTypeName)
-        /// </exception>
-        public static void RegisterAssembly(Assembly assembly)
+        public static bool IsContentType(Type type)
+        {
+            lock (RegistryLock)
+            {
+                var currentType = type;
+                while (currentType != null)
+                {
+                    if (RegisteredContentTypes.ContainsKey(currentType))
+                        return true;
+
+                    currentType = currentType.BaseType;
+                }
+                return false;
+            }
+        }
+
+        private static void RegisterEngineAssembly(Assembly assembly)
         {
             if (assembly == null) throw new ArgumentNullException(nameof(assembly));
 
             lock (RegistryLock)
             {
-                if (RegisteredAssemblies.Contains(assembly))
-                {
+                if (RegisteredEngineAssemblies.Contains(assembly))
                     return;
-                }
-                RegisteredAssemblies.Add(assembly);
+
+                RegisteredEngineAssemblies.Add(assembly);
 
                 // Process Asset types.
                 foreach (var type in assembly.GetTypes())
                 {
+                    if (ReferenceSerializer.IsReferenceType(type))
+                    {
+                        RegisteredContentTypes.Add(type, null);
+                    }
+                }
+            }
+        }
+
+        private static void UnregisterEngineAssembly(Assembly assembly)
+        {
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+
+            lock (RegistryLock)
+            {
+                if (!RegisteredEngineAssemblies.Contains(assembly))
+                    return;
+
+                RegisteredEngineAssemblies.Remove(assembly);
+
+                foreach (var type in RegisteredContentTypes.Keys.Where(x => x.Assembly == assembly).ToList())
+                {
+                    RegisteredContentTypes.Remove(type);
+                }
+            }
+        }
+
+        private static void RegisterAssetAssembly(Assembly assembly)
+        {
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+
+            lock (RegistryLock)
+            {
+                if (RegisteredAssetAssemblies.Contains(assembly))
+                    return;
+
+                RegisteredAssetAssemblies.Add(assembly);
+
+                // Process Asset types.
+                foreach (var type in assembly.GetTypes())
+                {
+                    object instance = null;
+
                     // Register serializer factories
-                    if (type.GetCustomAttribute<YamlSerializerFactoryAttribute>() != null)
-                    {
-                        if (typeof(IYamlSerializableFactory).IsAssignableFrom(type))
-                        {
-                            try
-                            {
-                                var yamlFactory = (IYamlSerializableFactory)Activator.CreateInstance(type);
-                                RegisteredSerializerFactories.Add(yamlFactory);
-
-                                // TODO: Handle IDataCustomVisitor on its own instead of relying on the coupling with IYamlSerializableFactory
-                                var dataCustomVisitor = yamlFactory as IDataCustomVisitor;
-                                if (dataCustomVisitor != null)
-                                {
-                                    RegisteredDataVisitNodes.Add(dataCustomVisitor);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Error("Unable to instantiate serializer factory [{0}]", ex, type);
-                            }
-                        }
-                    }
-
-                    if (type.GetCustomAttribute<DiffNodeBuilderAttribute>() != null)
-                    {
-                        if (typeof(IDataCustomVisitor).IsAssignableFrom(type))
-                        {
-                            try
-                            {
-                                var dataCustomVisitor = (IDataCustomVisitor)Activator.CreateInstance(type);
-                                RegisteredDataVisitNodeBuilders.Add(dataCustomVisitor);
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Error("Unable to instantiate diff converter [{0}]", ex, type);
-                            }
-                        }
-                    }
-
-                    // Asset importer
-                    if (typeof(IAssetImporter).IsAssignableFrom(type) && type.GetConstructor(new Type[0]) != null)
+                    if (!type.IsAbstract && typeof(IYamlSerializableFactory).IsAssignableFrom(type) &&
+                        type.GetCustomAttribute<YamlSerializerFactoryAttribute>() != null && type.GetConstructor(Type.EmptyTypes) != null)
                     {
                         try
                         {
-                            var importerInstance = Activator.CreateInstance(type) as IAssetImporter;
-
-                            // Register the importer instance
-                            RegisterImporter(importerInstance);
+                            instance = Activator.CreateInstance(type);
+                            RegisteredSerializerFactories.Add((IYamlSerializableFactory)instance);
                         }
                         catch (Exception ex)
                         {
-                            Log.Error("Unable to instantiate importer [{0}]", ex, type.Name);
+                            Log.Error($"Unable to instantiate serializer factory [{type}]", ex);
+                        }
+                    }
+                    // Custom visitors
+                    if (!type.IsAbstract && typeof(IDataCustomVisitor).IsAssignableFrom(type) && type.GetConstructor(Type.EmptyTypes) != null)
+                    {
+                        try
+                        {
+                            if (instance == null)
+                                instance = Activator.CreateInstance(type);
+                            RegisteredDataVisitNodes.Add((IDataCustomVisitor)instance);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error($"Unable to instantiate custom visitor [{type}]", ex);
+                        }
+                    }
+                    // Asset importer
+                    if (!type.IsAbstract && typeof(IAssetImporter).IsAssignableFrom(type) && type.GetConstructor(Type.EmptyTypes) != null)
+                    {
+                        try
+                        {
+                            if (instance == null)
+                                instance = Activator.CreateInstance(type);
+                            // Register the importer instance
+                            RegisterImporter((IAssetImporter)instance);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error($"Unable to instantiate importer [{type.Name}]", ex);
                         }
                     }
 
                     // Register asset factory
-                    if (typeof(IAssetFactory<Asset>).IsAssignableFrom(type) && !type.IsAbstract && !type.IsGenericTypeDefinition && type.GetConstructor(Type.EmptyTypes) != null)
+                    if (!type.IsAbstract && typeof(IAssetFactory<Asset>).IsAssignableFrom(type) && !type.IsGenericTypeDefinition &&
+                        type.GetConstructor(Type.EmptyTypes) != null)
                     {
-                        var factory = (IAssetFactory<Asset>)Activator.CreateInstance(type);
-                        RegisteredAssetFactories.Add(type.Name, factory);
+                        if (instance == null)
+                            instance = Activator.CreateInstance(type);
+                        RegisteredAssetFactories.Add(type.Name, (IAssetFactory<Asset>)instance);
                     }
 
-                    if (typeof(PackageSessionAnalysisBase).IsAssignableFrom(type) && type.GetConstructor(new Type[0]) != null)
+                    if (typeof(PackageSessionAnalysisBase).IsAssignableFrom(type) && type.GetConstructor(Type.EmptyTypes) != null)
                     {
                         RegisteredPackageSessionAnalysisTypes.Add(type);
                     }
 
+                    // Package upgraders
+                    var packageUpgraderAttribute = type.GetCustomAttribute<PackageUpgraderAttribute>();
+                    if (packageUpgraderAttribute != null)
                     {
-                        var packageUpgraderAttribute = type.GetCustomAttribute<PackageUpgraderAttribute>();
-                        if (packageUpgraderAttribute != null)
+                        try
                         {
-                            try
-                            {
-                                var packageUpgrader = (PackageUpgrader)Activator.CreateInstance(type);
-                                packageUpgrader.Attribute = packageUpgraderAttribute;
-                                RegisteredPackageUpgraders[packageUpgraderAttribute.PackageName] = packageUpgrader;
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Error("Unable to instantiate package upgrader [{0}]", ex, type.Name);
-                            }
+                            var packageUpgrader = (PackageUpgrader)Activator.CreateInstance(type);
+                            packageUpgrader.Attribute = packageUpgraderAttribute;
+                            RegisteredPackageUpgraders[packageUpgraderAttribute.PackageName] = packageUpgrader;
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error($"Unable to instantiate package upgrader [{type.Name}]", ex);
                         }
                     }
 
-                    // Only process Asset types
+                    // Asset types
                     var assetType = type;
-                    if (!typeof(Asset).IsAssignableFrom(assetType) || !assetType.IsClass)
+                    if (typeof(Asset).IsAssignableFrom(assetType) || assetType == typeof(Package))
                     {
-                        continue;
-                    }
-
-                    // Store in a list all asset types loaded
-                    if (assetType.IsPublic && !assetType.IsAbstract)
-                    {
-                        AssetTypes.Add(assetType);
-                    }
-
-                    // Asset FileExtensions
-                    var assetDescriptionAttribute = assetType.GetCustomAttribute<AssetDescriptionAttribute>();
-                    if (assetDescriptionAttribute != null)
-                    {
-                        if (assetDescriptionAttribute.FileExtensions != null)
+                        // Store in a list all asset types loaded
+                        if (assetType.IsPublic && !assetType.IsAbstract)
                         {
-                            var extensions = FileUtility.GetFileExtensions(assetDescriptionAttribute.FileExtensions);
-                            RegisteredDefaultAssetExtension[assetType] = extensions.FirstOrDefault();
-                            foreach (var extension in extensions)
+                            AssetTypes.Add(assetType);
+                        }
+
+                        // Asset FileExtensions
+                        var assetDescriptionAttribute = assetType.GetCustomAttribute<AssetDescriptionAttribute>();
+                        if (assetDescriptionAttribute != null)
+                        {
+                            if (assetDescriptionAttribute.FileExtensions != null)
                             {
-                                if (!RegisteredAssetFileExtensions.ContainsKey(extension))
+                                var extensions = FileUtility.GetFileExtensions(assetDescriptionAttribute.FileExtensions);
+                                RegisteredDefaultAssetExtension[assetType] = extensions.FirstOrDefault();
+                                foreach (var extension in extensions)
                                 {
-                                    RegisteredAssetFileExtensions.Add(extension, assetType);
+                                    if (!RegisteredAssetFileExtensions.ContainsKey(extension))
+                                    {
+                                        RegisteredAssetFileExtensions.Add(extension, assetType);
+                                    }
+                                }
+                            }
+
+                            if (assetDescriptionAttribute.AlwaysMarkAsRoot)
+                            {
+                                lock (AlwaysMarkAsRootAssetTypes)
+                                {
+                                    AlwaysMarkAsRootAssetTypes.Add(assetType);
                                 }
                             }
                         }
 
-                        if (assetDescriptionAttribute.AlwaysMarkAsRoot)
+                        // Content type associated to assets
+                        var assetContentType = assetType.GetCustomAttribute<AssetContentTypeAttribute>();
+                        if (assetContentType != null)
                         {
-                            lock (AlwaysMarkAsRootAssetTypes)
+                            List<Type> assetTypes;
+                            if (!ContentToAssetTypes.TryGetValue(assetContentType.ContentType, out assetTypes))
                             {
-                                AlwaysMarkAsRootAssetTypes.Add(assetType);
+                                assetTypes = new List<Type>();
+                                ContentToAssetTypes[assetContentType.ContentType] = assetTypes;
+                            }
+                            assetTypes.Add(assetType);
+                            AssetToContentTypes.Add(assetType, assetContentType.ContentType);
+                        }
+
+                        // Asset format version (process name by name)
+                        var assetFormatVersions = assetType.GetCustomAttributes<AssetFormatVersionAttribute>();
+                        foreach (var assetFormatVersion in assetFormatVersions)
+                        {
+                            var formatVersion = assetFormatVersion.Version;
+                            var minVersion = assetFormatVersion.MinUpgradableVersion;
+                            SortedList<string, PackageVersion> formatVersions;
+                            if (!RegisteredFormatVersions.TryGetValue(assetType, out formatVersions))
+                            {
+                                RegisteredFormatVersions.Add(assetType, formatVersions = new SortedList<string, PackageVersion>());
+                            }
+                            formatVersions.Add(assetFormatVersion.Name, formatVersion);
+
+                            // Asset upgraders (only those matching current name)
+                            var assetUpgraders = assetType.GetCustomAttributes<AssetUpgraderAttribute>().Where(x => x.Name == assetFormatVersion.Name);
+                            AssetUpgraderCollection upgraderCollection = null;
+                            foreach (var upgrader in assetUpgraders)
+                            {
+                                if (upgraderCollection == null)
+                                    upgraderCollection = new AssetUpgraderCollection(assetType, formatVersion);
+
+                                upgraderCollection.RegisterUpgrader(upgrader.AssetUpgraderType, upgrader.StartVersion, upgrader.TargetVersion);
+                            }
+                            if (upgraderCollection != null)
+                            {
+                                upgraderCollection.Validate(minVersion);
+                                RegisteredAssetUpgraders.Add(new KeyValuePair<Type, string>(assetType, assetFormatVersion.Name), upgraderCollection);
                             }
                         }
-                    }
 
-                    // Asset format version (process name by name)
-                    var assetFormatVersions = assetType.GetCustomAttributes<AssetFormatVersionAttribute>();
-                    foreach (var assetFormatVersion in assetFormatVersions)
-                    {
-                        var formatVersion = assetFormatVersion.Version;
-                        var minVersion = assetFormatVersion.MinUpgradableVersion;
-                        SortedList<string, PackageVersion> formatVersions;
-                        if (!RegisteredFormatVersions.TryGetValue(assetType, out formatVersions))
+                        // Part reference types for asset composites
+                        if (typeof(AssetComposite).IsAssignableFrom(assetType))
                         {
-                            RegisteredFormatVersions.Add(assetType, formatVersions = new SortedList<string, PackageVersion>());
-                        }
-                        formatVersions.Add(assetFormatVersion.Name, formatVersion);
-
-                        // Asset upgraders (only those matching current name)
-                        var assetUpgraders = assetType.GetCustomAttributes<AssetUpgraderAttribute>().Where(x => x.Name == assetFormatVersion.Name);
-                        AssetUpgraderCollection upgraderCollection = null;
-                        foreach (var upgrader in assetUpgraders)
-                        {
-                            if (upgraderCollection == null)
-                                upgraderCollection = new AssetUpgraderCollection(assetType, formatVersion);
-
-                            upgraderCollection.RegisterUpgrader(upgrader.AssetUpgraderType, upgrader.StartVersion, upgrader.TargetVersion);
-                        }
-                        if (upgraderCollection != null)
-                        {
-                            upgraderCollection.Validate(minVersion);
-                            RegisteredAssetUpgraders.Add(new KeyValuePair<Type, string>(assetType, assetFormatVersion.Name), upgraderCollection);
-                        }
-                    }
-
-                    if (typeof(AssetComposite).IsAssignableFrom(assetType))
-                    {
-                        var attributes = assetType.GetCustomAttributes(typeof(AssetPartReferenceAttribute), true).Cast<AssetPartReferenceAttribute>().ToList();
-                        foreach (var attribute in attributes)
-                        {
-                            HashSet<AssetPartReferenceAttribute> relatedPartTypes;
-                            if (!RegisteredAssetCompositePartTypes.TryGetValue(attribute.ReferenceableType, out relatedPartTypes))
+                            var attributes = assetType.GetCustomAttributes(typeof(AssetPartReferenceAttribute), true).Cast<AssetPartReferenceAttribute>().ToList();
+                            foreach (var attribute in attributes)
                             {
-                                relatedPartTypes = new HashSet<AssetPartReferenceAttribute>();
-                                RegisteredAssetCompositePartTypes.Add(attribute.ReferenceableType, relatedPartTypes);
+                                HashSet<AssetPartReferenceAttribute> relatedPartTypes;
+                                if (!RegisteredAssetCompositePartTypes.TryGetValue(attribute.ReferenceableType, out relatedPartTypes))
+                                {
+                                    relatedPartTypes = new HashSet<AssetPartReferenceAttribute>();
+                                    RegisteredAssetCompositePartTypes.Add(attribute.ReferenceableType, relatedPartTypes);
+                                }
+                                attributes.ForEach(x => relatedPartTypes.Add(x));
                             }
-                            attributes.ForEach(x => relatedPartTypes.Add(x));
                         }
                     }
                 }
             }
         }
 
-        /// <summary>
-        /// Unregisters the specified assembly from the asset registry.
-        /// </summary>
-        /// <param name="assembly">A registered assembly.</param>
-        public static void UnregisterAssembly(Assembly assembly)
+        private static void UnregisterAssetAssembly(Assembly assembly)
         {
             if (assembly == null) throw new ArgumentNullException(nameof(assembly));
 
             lock (RegistryLock)
             {
-                if (!RegisteredAssemblies.Contains(assembly))
-                {
+                if (!RegisteredAssetAssemblies.Contains(assembly))
                     return;
-                }
-                RegisteredAssemblies.Remove(assembly);
 
+                RegisteredAssetAssemblies.Remove(assembly);
 
-                foreach (var typeToRemove in RegisteredDefaultAssetExtension.Keys.ToList().Where(type => type.Assembly == assembly))
+                foreach (var typeToRemove in RegisteredDefaultAssetExtension.Keys.Where(type => type.Assembly == assembly).ToList())
                 {
                     RegisteredDefaultAssetExtension.Remove(typeToRemove);
                 }
@@ -642,49 +654,44 @@ namespace SiliconStudio.Assets
                     AssetTypes.Remove(typeToRemove);
                 }
 
-                foreach (var typeToRemove in RegisteredPackageSessionAnalysisTypes.ToList().Where(type => type.Assembly == assembly))
+                foreach (var typeToRemove in RegisteredPackageSessionAnalysisTypes.Where(type => type.Assembly == assembly).ToList())
                 {
                     RegisteredPackageSessionAnalysisTypes.Remove(typeToRemove);
                 }
 
-                foreach (var instance in RegisteredImportersInternal.ToList().Where(instance => instance.GetType().Assembly == assembly))
+                foreach (var instance in RegisteredImportersInternal.Where(instance => instance.GetType().Assembly == assembly).ToList())
                 {
                     RegisteredImportersInternal.Remove(instance);
                 }
 
-                foreach (var typeToRemove in RegisteredFormatVersions.Keys.ToList().Where(type => type.Assembly == assembly))
+                foreach (var typeToRemove in RegisteredFormatVersions.Keys.Where(type => type.Assembly == assembly).ToList())
                 {
                     RegisteredFormatVersions.Remove(typeToRemove);
                 }
 
-                foreach (var typeToRemove in RegisteredAssetUpgraders.Keys.ToList().Where(type => type.Key.Assembly == assembly))
+                foreach (var typeToRemove in RegisteredAssetUpgraders.Keys.Where(type => type.Key.Assembly == assembly).ToList())
                 {
                     RegisteredAssetUpgraders.Remove(typeToRemove);
                 }
 
-                foreach (var extensionToRemove in RegisteredAssetFileExtensions.ToList().Where(keyValue => keyValue.Value.Assembly == assembly).Select(keyValue => keyValue.Key))
+                foreach (var extensionToRemove in RegisteredAssetFileExtensions.Where(keyValue => keyValue.Value.Assembly == assembly).Select(keyValue => keyValue.Key).ToList())
                 {
                     RegisteredAssetFileExtensions.Remove(extensionToRemove);
                 }
 
-                foreach (var upgraderToRemove in RegisteredPackageUpgraders.ToList().Where(keyValue => keyValue.Value.GetType().Assembly == assembly).Select(keyValue => keyValue.Key))
+                foreach (var upgraderToRemove in RegisteredPackageUpgraders.Where(keyValue => keyValue.Value.GetType().Assembly == assembly).Select(keyValue => keyValue.Key).ToList())
                 {
                     RegisteredPackageUpgraders.Remove(upgraderToRemove);
                 }
 
-                foreach (var instance in RegisteredSerializerFactories.ToList().Where(instance => instance.GetType().Assembly == assembly))
+                foreach (var instance in RegisteredSerializerFactories.Where(instance => instance.GetType().Assembly == assembly).ToList())
                 {
                     RegisteredSerializerFactories.Remove(instance);
                 }
 
-                foreach (var instance in RegisteredDataVisitNodes.ToList().Where(instance => instance.GetType().Assembly == assembly))
+                foreach (var instance in RegisteredDataVisitNodes.Where(instance => instance.GetType().Assembly == assembly).ToList())
                 {
                     RegisteredDataVisitNodes.Remove(instance);
-                }
-
-                foreach (var instance in RegisteredDataVisitNodeBuilders.ToList().Where(instance => instance.GetType().Assembly == assembly))
-                {
-                    RegisteredDataVisitNodeBuilders.Remove(instance);
                 }
             }
         }
@@ -703,7 +710,27 @@ namespace SiliconStudio.Assets
             if (!typeof(Asset).IsAssignableFrom(assetType))
             {
                 if (throwException)
-                    throw new ArgumentException("Type [{0}] must be assignable to Asset".ToFormat(assetType), nameof(assetType));
+                    throw new ArgumentException("Type [{0}] must be assignable to Asset or be a Package".ToFormat(assetType), nameof(assetType));
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Check if the specified type is an asset.
+        /// </summary>
+        /// <param name="assetType">Type of the asset.</param>
+        /// <param name="throwException">A boolean indicating whether this method should throw an exception if the type is not an asset type.</param>
+        /// <returns><c>true</c> if the asset is an asset type, false otherwise.</returns>
+        public static bool IsAssetOrPackageType(Type assetType, bool throwException = false)
+        {
+            if (assetType == null)
+                throw new ArgumentNullException(nameof(assetType));
+
+            if (!typeof(Asset).IsAssignableFrom(assetType) && assetType != typeof(Package))
+            {
+                if (throwException)
+                    throw new ArgumentException("Type [{0}] must be assignable to Asset or be a Package".ToFormat(assetType), nameof(assetType));
                 return false;
             }
             return true;
@@ -713,10 +740,13 @@ namespace SiliconStudio.Assets
         {
             SupportedPlatforms = new SolutionPlatformCollection();
             // Statically find all assemblies related to assets and register them
-            var assemblies = AssemblyRegistry.Find(AssemblyCommonCategories.Assets);
-            foreach (var assembly in assemblies)
+            foreach (var assembly in AssemblyRegistry.Find(AssemblyCommonCategories.Engine))
             {
-                RegisterAssembly(assembly);
+                RegisterEngineAssembly(assembly);
+            }
+            foreach (var assembly in AssemblyRegistry.Find(AssemblyCommonCategories.Assets))
+            {
+                RegisterAssetAssembly(assembly);
             }
             AssemblyRegistry.AssemblyRegistered += AssemblyRegistryAssemblyRegistered;
             AssemblyRegistry.AssemblyUnregistered += AssemblyRegistryOnAssemblyUnregistered;
@@ -726,16 +756,24 @@ namespace SiliconStudio.Assets
         {
             if (e.Categories.Contains(AssemblyCommonCategories.Assets))
             {
-                UnregisterAssembly(e.Assembly);
+                UnregisterAssetAssembly(e.Assembly);
+            }
+            if (e.Categories.Contains(AssemblyCommonCategories.Engine))
+            {
+                UnregisterEngineAssembly(e.Assembly);
             }
         }
 
-        static void AssemblyRegistryAssemblyRegistered(object sender, AssemblyRegisteredEventArgs e)
+        private static void AssemblyRegistryAssemblyRegistered(object sender, AssemblyRegisteredEventArgs e)
         {
             // Handle delay-loading assemblies
+            if (e.Categories.Contains(AssemblyCommonCategories.Engine))
+            {
+                RegisterEngineAssembly(e.Assembly);
+            }
             if (e.Categories.Contains(AssemblyCommonCategories.Assets))
             {
-                RegisterAssembly(e.Assembly);
+                RegisterAssetAssembly(e.Assembly);
             }
         }
     }

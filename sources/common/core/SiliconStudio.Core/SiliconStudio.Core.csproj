@@ -57,13 +57,17 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AccessorMetadata.cs" />
+    <Compile Include="Annotations\CanBeNullAttribute.cs" />
     <Compile Include="Annotations\CategoryOrderAttribute.cs" />
+    <Compile Include="Annotations\ItemCanBeNullAttribute.cs" />
+    <Compile Include="Annotations\ItemNotNullAttribute.cs" />
     <Compile Include="Annotations\MemberCollectionAttribute.cs" />
     <Compile Include="Annotations\DynamicTypeAttributeBase.cs" />
     <Compile Include="Annotations\InlinePropertyAttribute.cs" />
+    <Compile Include="Annotations\NonIdentifiableCollectionItemsAttribute.cs" />
     <Compile Include="Annotations\NonInstantiableAttribute.cs" />
+    <Compile Include="Annotations\NonOverridableAttribute.cs" />
     <Compile Include="Annotations\NotNullAttribute.cs" />
-    <Compile Include="Annotations\NotNullItemsAttribute.cs" />
     <Compile Include="AnonymousDisposable.cs" />
     <Compile Include="BrowsableAttribute.cs" />
     <Compile Include="CategoryAttribute.cs" />
@@ -82,6 +86,7 @@
     <Compile Include="Diagnostics\ProfilingCustomValue.cs" />
     <Compile Include="DisplayAttribute.cs" />
     <Compile Include="DisposeBase.cs" />
+    <Compile Include="PropertyContainerClass.cs" />
     <Compile Include="Reflection\TypeHelper.cs" />
     <Compile Include="IL\RemoveInitLocalsAttribute.cs" />
     <Compile Include="RuntimeIdHelper.cs" />
@@ -90,9 +95,11 @@
     <Compile Include="IO\NativeFile.UWP.cs" />
     <Compile Include="PlatformFolders.cs" />
     <Compile Include="Reflection\IObjectFactory.cs" />
-    <Compile Include="Reflection\ObjectFactory.cs" />
-    <Compile Include="Reflection\ObjectFactoryAttribute.cs" />
+    <Compile Include="Reflection\ObjectFactoryRegistry.cs" />
+    <Compile Include="Annotations\ObjectFactoryAttribute.cs" />
+    <Compile Include="Serialization\GenericSerializerFactory.cs" />
     <Compile Include="Serialization\NullSerializer.cs" />
+    <Compile Include="Serialization\SerializerFactory.cs" />
     <Compile Include="Serialization\Serializers\HashSetSerializer.cs" />
     <Compile Include="Storage\ObjectIdSimpleBuilder.cs" />
     <Compile Include="ThreadHelper.UWP.cs" />
@@ -184,7 +191,6 @@
     <Compile Include="ObjectInvalidationMetadata.cs" />
     <Compile Include="PlatformAndroid.cs" />
     <Compile Include="PropertyChangedExtendedEventArgs.cs" />
-    <Compile Include="PropertyContainer.Serializer.cs" />
     <Compile Include="ReferenceCounting\ReferenceCountingExtensions.cs" />
     <Compile Include="ReferenceEqualityComparer.cs" />
     <Compile Include="Reflection\AssemblyCommonCategories.cs" />
@@ -206,6 +212,7 @@
     <Compile Include="Serialization\DataSerializer.cs" />
     <Compile Include="DataStyle.cs" />
     <Compile Include="DataStyleAttribute.cs" />
+    <Compile Include="ScalarStyle.cs" />
     <Compile Include="Serialization\DataSerializerFactory.cs" />
     <Compile Include="Serialization\IDataSerializerGenericInstantiation.cs" />
     <Compile Include="Serialization\MemberSerializer.cs" />

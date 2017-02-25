@@ -58,7 +58,7 @@
 
             if (mode == ArchiveMode.Serialize)
             {
-                if (object.ReferenceEquals(obj, null))
+                if (ReferenceEquals(obj, null))
                 {
                     // Null contentRef
                     stream.Write((byte)SerializeClassFlags.IsNull);
@@ -175,14 +175,14 @@
 
 <# if (supportsNonSealed || supportsReuseReferences) { #>
                 flags = (SerializeClassFlags)stream.ReadByte();
-                bool isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
+                var isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
 <# } else { // optimized version where flags is only used for isNull: optimize locals #>
-                bool isNull = ((SerializeClassFlags)stream.ReadByte() & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
+                var isNull = ((SerializeClassFlags)stream.ReadByte() & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
 <# } #>
 <# if (supportsReuseReferences) { #>
                 var objectReferences = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeReferences) : null;
                 var referenceCallback = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeCallback) : null;
-                bool isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
+                var isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
                 index = reuseReferences && !isNull ? stream.ReadInt32() : -1;
 <# } #>
 <# if (supportsNonSealed) { #>

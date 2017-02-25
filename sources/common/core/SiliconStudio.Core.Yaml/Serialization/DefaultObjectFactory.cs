@@ -46,7 +46,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization
 {

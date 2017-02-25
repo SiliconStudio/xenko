@@ -395,6 +395,8 @@ namespace SiliconStudio.Xenko.Rendering
             // Step1: Perform permutations
             PrepareEffectPermutationsImpl(context);
 
+            var currentTime = DateTime.UtcNow;
+
             // Step2: Compile effects
             Dispatcher.ForEach(RenderObjects, renderObject =>
             {
@@ -423,7 +425,7 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffect.Effect = null;
                         renderEffect.State = RenderEffectState.Skip;
                     }
-                    else if (renderEffect.EffectValidator.EndEffectValidation() && (renderEffect.Effect == null || !renderEffect.Effect.SourceChanged))
+                    else if (renderEffect.EffectValidator.EndEffectValidation() && (renderEffect.Effect == null || !renderEffect.Effect.SourceChanged) && !(renderEffect.State == RenderEffectState.Error && currentTime >= renderEffect.RetryTime))
                     {
                         InvalidateEffectPermutation(renderObject, renderEffect);
 
@@ -435,6 +437,7 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffect.ClearFallbackParameters();
                         if (pendingEffect.IsFaulted)
                         {
+                            // The effect can fail compilation asynchronously
                             renderEffect.State = RenderEffectState.Error;
                             renderEffect.Effect = ComputeFallbackEffect?.Invoke(renderObject, renderEffect, RenderEffectState.Error);
                         }
@@ -460,17 +463,30 @@ namespace SiliconStudio.Xenko.Rendering
                             staticCompilerParameters.SetObject(effectValue.Key, effectValue.Value);
                         }
 
-                        var asyncEffect = RenderSystem.EffectSystem.LoadEffect(renderEffect.EffectSelector.EffectName, staticCompilerParameters);
-                        staticCompilerParameters.Clear();
+                        TaskOrResult<Effect> asyncEffect;
+                        try
+                        {
+                            // The effect can fail compilation synchronously
+                            asyncEffect = RenderSystem.EffectSystem.LoadEffect(renderEffect.EffectSelector.EffectName, staticCompilerParameters);
+                            staticCompilerParameters.Clear();
+                        }
+                        catch
+                        {
+                            staticCompilerParameters.Clear();
+                            renderEffect.ClearFallbackParameters();
+                            renderEffect.State = RenderEffectState.Error;
+                            renderEffect.Effect = ComputeFallbackEffect?.Invoke(renderObject, renderEffect, RenderEffectState.Error);
+                            continue;
+                        }
 
                         renderEffect.Effect = asyncEffect.Result;
                         if (renderEffect.Effect == null)
                         {
                             // Effect still compiling, let's find if there is a fallback
                             renderEffect.ClearFallbackParameters();
-                            renderEffect.Effect = ComputeFallbackEffect?.Invoke(renderObject, renderEffect, RenderEffectState.Compiling);
                             renderEffect.PendingEffect = asyncEffect.Task;
                             renderEffect.State = RenderEffectState.Compiling;
+                            renderEffect.Effect = ComputeFallbackEffect?.Invoke(renderObject, renderEffect, RenderEffectState.Compiling);
                         }
                     }
 
@@ -495,9 +511,20 @@ namespace SiliconStudio.Xenko.Rendering
                     var effect = renderEffect.Effect;
                     if (effect == null && renderEffect.State == RenderEffectState.Compiling)
                     {
-                        // Need to wait for completion
-                        renderEffect.Effect = effect = renderEffect.PendingEffect.Result;
-                        renderEffect.State = RenderEffectState.Normal;
+                        // Need to wait for completion because we have nothing else
+                        renderEffect.PendingEffect.Wait();
+
+                        if (!renderEffect.PendingEffect.IsFaulted)
+                        {
+                            renderEffect.Effect = effect = renderEffect.PendingEffect.Result;
+                            renderEffect.State = RenderEffectState.Normal;
+                        }
+                        else
+                        {
+                            renderEffect.ClearFallbackParameters();
+                            renderEffect.State = RenderEffectState.Error;
+                            renderEffect.Effect = effect = ComputeFallbackEffect?.Invoke(renderObject, renderEffect, RenderEffectState.Error);
+                        }
                     }
 
                     var effectHashCode = effect != null ? (uint)effect.GetHashCode() : 0;

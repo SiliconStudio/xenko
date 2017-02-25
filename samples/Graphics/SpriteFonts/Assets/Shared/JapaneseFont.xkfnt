@@ -3,8 +3,6 @@ Id: 76871742-df92-4a25-804d-e0f4f9301c19
 SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
 FontSource: !FileFontProvider
-    ~Id: 93b3aa74-2b0e-40c0-9a2e-aa7e5ea72508
     Source: ../../Resources/Fonts/SourceHanSans-Light.otf
 FontType: !RuntimeRasterizedSpriteFontType
-    ~Id: 314f9ad7-ebb4-430c-b60f-8aa9f231bbed
     Size: 18.66667

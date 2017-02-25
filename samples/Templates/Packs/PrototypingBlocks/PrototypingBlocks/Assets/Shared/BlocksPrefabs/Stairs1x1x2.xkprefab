@@ -1,30 +1,30 @@
 !PrefabAsset
 Id: d74cc744-2324-4e4b-ad1b-577d83087eea
-SerializedVersion: {Xenko: 1.9.0-beta01}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 Hierarchy:
-    ~Id: 8dd3ec1b-e863-43b2-a6ab-6413ec1ab96e
     RootPartIds:
-        - 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+        - b7b6a519-2edb-4e90-88ef-1426d0feac16
     Parts:
         -   Entity:
-                Id: 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+                Id: b7b6a519-2edb-4e90-88ef-1426d0feac16
                 Name: Stairs1x1x2
                 Components:
-                    - !TransformComponent
-                        ~Id: f64bd91f-2e11-4105-8d8b-81f8ee7c0a28
-                        Children: []
+                    1fd94bf6112e05418d8b81f8ee7c0a28: !TransformComponent
+                        Id: f64bd91f-2e11-4105-8d8b-81f8ee7c0a28
                         Position: {X: 0.5, Y: 0.5, Z: 0.9999991}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: be029228-5050-41af-832c-e05e2d398d2c
-                        Model: 41d02eb7-298a-4c9a-8438-a572b83295c4/da028d29-e641-4020-8977-dafaaf656ad4:Models/Stairs1x1x2
+                        Children: {}
+                    289202be5050af41832ce05e2d398d2c: !ModelComponent
+                        Id: be029228-5050-41af-832c-e05e2d398d2c
+                        Model: da028d29-e641-4020-8977-dafaaf656ad4:Models/Stairs1x1x2
                         Materials:
-                            - 7c3edc74-636e-463f-a380-1edd86a197dd/08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
-                    - !StaticColliderComponent
-                        ~Id: 91586301-4ed6-4d2c-98af-82259f64e540
-                        CanSleep: false
+                            74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
+                    01635891d64e2c4d98af82259f64e540: !StaticColliderComponent
+                        Id: 91586301-4ed6-4d2c-98af-82259f64e540
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -32,6 +32,5 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         ColliderShapes:
-                            - !ColliderShapeAssetDesc
-                                ~Id: e82509e5-996d-49e8-bde2-b006ac86de09
-                                Shape: 1bffcf0e-1568-4138-b238-66ab1715cd62/934024bf-9a3a-4e33-8fb0-fa4e14832f2b:CollisionMeshes/Stairs1x1x2
+                            e50925e86d99e849bde2b006ac86de09: !ColliderShapeAssetDesc
+                                Shape: 934024bf-9a3a-4e33-8fb0-fa4e14832f2b:CollisionMeshes/Stairs1x1x2

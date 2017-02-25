@@ -8,5 +8,4 @@ Type: !CapsuleProceduralModel
     UvScale: {X: 1.0, Y: 1.0}
     LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
     MaterialInstance:
-        ~Id: 656271b7-7025-48ed-b518-4573237f4bbe
-        Material: fc2dc24e-f7c4-4371-bb92-6b2306bdff79/941a637b-5e4f-4132-bb6c-0ab975e1ec4d:Materials/ControllerMat
+        Material: 941a637b-5e4f-4132-bb6c-0ab975e1ec4d:Materials/ControllerMat

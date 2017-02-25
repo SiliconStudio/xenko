@@ -157,7 +157,7 @@ namespace SiliconStudio.Xenko.Audio
             {
                 foreach (var instance in InstanceToListener)
                 {
-                    instance.Key.IsLooped = value;
+                    instance.Key.IsLooping = value;
                 }
                 isLooping = value;
             }

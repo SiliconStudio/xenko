@@ -24,7 +24,11 @@ namespace SiliconStudio.Xenko.Graphics
 
         private readonly Matrix defaultViewMatrix = Matrix.Identity;
         private Matrix defaultProjectionMatrix;
-        
+
+        private readonly EffectInstance textureSpriteFontEffect;
+
+        public EffectInstance TextureSpriteFontEffect { get { return textureSpriteFontEffect; } }
+
         /// <summary>
         /// Gets or sets the default depth value used by the <see cref="SpriteBatch"/> when the <see cref="VirtualResolution"/> is not set. 
         /// </summary>
@@ -46,6 +50,9 @@ namespace SiliconStudio.Xenko.Graphics
             : base(graphicsDevice, Bytecode, BytecodeSRgb, StaticQuadBufferInfo.CreateQuadBufferInfo("SpriteBatch.VertexIndexBuffer", true, bufferElementCount, batchCapacity), VertexPositionColorTextureSwizzle.Layout)
         {
             DefaultDepth = 200f;
+
+            // For signed distance field thumbnail rendering
+            textureSpriteFontEffect = new EffectInstance(new Effect(graphicsDevice, SpriteSignedDistanceFieldFontShader.Bytecode) { Name = "TextureSpriteFontEffect" });
         }
 
         /// <summary>
@@ -165,9 +172,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <remarks>
         /// Before making any calls to Draw, you must call Begin. Once all calls to Draw are complete, call End. 
         /// </remarks>
-        public void Draw(Texture texture, RectangleF destinationRectangle, Color4 color)
+        public void Draw(Texture texture, RectangleF destinationRectangle, Color4 color, Color4 colorAdd = default(Color4))
         {
-            DrawSprite(texture, ref destinationRectangle, false, ref nullRectangle, color, 0f, ref vector2Zero, SpriteEffects.None, ImageOrientation.AsIs, 0f);
+            DrawSprite(texture, ref destinationRectangle, false, ref nullRectangle, color, colorAdd, 0f, ref vector2Zero, SpriteEffects.None, ImageOrientation.AsIs, 0f);
         }
 
         /// <summary>
@@ -186,10 +193,10 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="texture">A texture.</param>
         /// <param name="position">The location (in screen coordinates) to draw the sprite.</param>
         /// <param name="color">The color to tint a sprite. Use Color.White for full color with no tinting.</param>
-        public void Draw(Texture texture, Vector2 position, Color color)
+        public void Draw(Texture texture, Vector2 position, Color color, Color4 colorAdd = default(Color4))
         {
             var destination = new RectangleF(position.X, position.Y, 1f, 1f);
-            DrawSprite(texture, ref destination, true, ref nullRectangle, color, 0f, ref vector2Zero, SpriteEffects.None, ImageOrientation.AsIs, 0f);
+            DrawSprite(texture, ref destination, true, ref nullRectangle, color, colorAdd, 0f, ref vector2Zero, SpriteEffects.None, ImageOrientation.AsIs, 0f);
         }
 
         /// <summary>
@@ -205,9 +212,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="effects">Effects to apply.</param>
         /// <param name="layerDepth">The depth of a layer. By default, 0 represents the front layer and 1 represents a back layer. Use SpriteSortMode if you want sprites to be sorted during drawing.</param>
         public void Draw(Texture texture, RectangleF destinationRectangle, RectangleF? sourceRectangle, Color4 color, float rotation, Vector2 origin, 
-            SpriteEffects effects = SpriteEffects.None, ImageOrientation orientation = ImageOrientation.AsIs, float layerDepth = 0f) 
+            SpriteEffects effects = SpriteEffects.None, ImageOrientation orientation = ImageOrientation.AsIs, float layerDepth = 0f, Color4 colorAdd = default(Color4), SwizzleMode swizzle = SwizzleMode.None) 
         {
-            DrawSprite(texture, ref destinationRectangle, false, ref sourceRectangle, color, rotation, ref origin, effects, orientation, layerDepth);
+            DrawSprite(texture, ref destinationRectangle, false, ref sourceRectangle, color, colorAdd, rotation, ref origin, effects, orientation, layerDepth, swizzle);
         }
 
 
@@ -254,10 +261,10 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="position">The location (in screen coordinates) to draw the sprite.</param>
         /// <param name="sourceRectangle">A rectangle that specifies (in texels) the source texels from a texture. Use null to draw the entire texture. </param>
         /// <param name="color">The color to tint a sprite. Use Color.White for full color with no tinting.</param>
-        public void Draw(Texture texture, Vector2 position, RectangleF? sourceRectangle, Color4 color)
+        public void Draw(Texture texture, Vector2 position, RectangleF? sourceRectangle, Color4 color, Color4 colorAdd = default(Color4))
         {
             var destination = new RectangleF(position.X, position.Y, 1f, 1f);
-            DrawSprite(texture, ref destination, true, ref sourceRectangle, color, 0f, ref vector2Zero, SpriteEffects.None, ImageOrientation.AsIs, 0f);
+            DrawSprite(texture, ref destination, true, ref sourceRectangle, color, colorAdd, 0f, ref vector2Zero, SpriteEffects.None, ImageOrientation.AsIs, 0f);
         }
 
         /// <summary>
@@ -274,10 +281,10 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="orientation">The source image orientation</param>
         /// <param name="layerDepth">The depth of a layer. By default, 0 represents the front layer and 1 represents a back layer. Use SpriteSortMode if you want sprites to be sorted during drawing.</param>
         public void Draw(Texture texture, Vector2 position, RectangleF? sourceRectangle, Color4 color, float rotation, 
-            Vector2 origin, float scale = 1f, SpriteEffects effects = SpriteEffects.None, ImageOrientation orientation = ImageOrientation.AsIs, float layerDepth = 0)
+            Vector2 origin, float scale = 1f, SpriteEffects effects = SpriteEffects.None, ImageOrientation orientation = ImageOrientation.AsIs, float layerDepth = 0, Color4 colorAdd = default(Color4), SwizzleMode swizzle = SwizzleMode.None)
         {
             var destination = new RectangleF(position.X, position.Y, scale, scale);
-            DrawSprite(texture, ref destination, true, ref sourceRectangle, color, rotation, ref origin, effects, orientation, layerDepth);
+            DrawSprite(texture, ref destination, true, ref sourceRectangle, color, colorAdd, rotation, ref origin, effects, orientation, layerDepth, swizzle);
         }
 
         /// <summary>
@@ -294,10 +301,10 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="orientation">The source image orientation</param>
         /// <param name="layerDepth">The depth of a layer. By default, 0 represents the front layer and 1 represents a back layer. Use SpriteSortMode if you want sprites to be sorted during drawing.</param>
         public void Draw(Texture texture, Vector2 position, RectangleF? sourceRectangle, Color4 color, float rotation, 
-            Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, ImageOrientation orientation = ImageOrientation.AsIs, float layerDepth = 0)
+            Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, ImageOrientation orientation = ImageOrientation.AsIs, float layerDepth = 0, Color4 colorAdd = default(Color4))
         {
             var destination = new RectangleF(position.X, position.Y, scale.X, scale.Y);
-            DrawSprite(texture, ref destination, true, ref sourceRectangle, color, rotation, ref origin, effects, orientation, layerDepth);
+            DrawSprite(texture, ref destination, true, ref sourceRectangle, color, colorAdd, rotation, ref origin, effects, orientation, layerDepth);
         }
 
         /// <summary>
@@ -506,7 +513,7 @@ namespace SiliconStudio.Xenko.Graphics
             spriteFont.InternalDraw(commandList, ref text, ref drawCommand, alignment);
         }
         
-        internal unsafe void DrawSprite(Texture texture, ref RectangleF destination, bool scaleDestination, ref RectangleF? sourceRectangle, Color4 color, 
+        internal unsafe void DrawSprite(Texture texture, ref RectangleF destination, bool scaleDestination, ref RectangleF? sourceRectangle, Color4 color, Color4 colorAdd,
             float rotation, ref Vector2 origin, SpriteEffects effects, ImageOrientation orientation, float depth, SwizzleMode swizzle = SwizzleMode.None, bool realSize = false)
         {
             // Check that texture is not null
@@ -568,7 +575,8 @@ namespace SiliconStudio.Xenko.Graphics
             spriteInfo->Rotation = rotation;
             spriteInfo->Depth = depth;
             spriteInfo->SpriteEffects = effects;
-            spriteInfo->Color = color;
+            spriteInfo->ColorScale = color;
+            spriteInfo->ColorAdd = colorAdd;
             spriteInfo->Swizzle = swizzle;
             spriteInfo->TextureSize.X = texture.ViewWidth;
             spriteInfo->TextureSize.Y = texture.ViewHeight;
@@ -610,7 +618,8 @@ namespace SiliconStudio.Xenko.Graphics
             public float Rotation;
             public float Depth;
             public SpriteEffects SpriteEffects;
-            public Color4 Color;
+            public Color4 ColorScale;
+            public Color4 ColorAdd;
             public SwizzleMode Swizzle;
             public Vector2 TextureSize;
             public ImageOrientation Orientation;

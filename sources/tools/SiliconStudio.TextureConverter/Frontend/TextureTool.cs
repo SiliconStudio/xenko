@@ -529,7 +529,7 @@ namespace SiliconStudio.TextureConverter
             if (image.Format != PixelFormat.R8G8B8A8_UNorm && image.Format != PixelFormat.B8G8R8A8_UNorm 
                 && image.Format != PixelFormat.B8G8R8A8_UNorm_SRgb && image.Format != PixelFormat.R8G8B8A8_UNorm_SRgb)
             {
-                Log.Error("ColorKey TextureConverter is only supporting R8G8B8A8_UNorm or B8G8R8A8_UNorm while Texture Format is [{0}]", image.Format);
+                Log.Error($"ColorKey TextureConverter is only supporting R8G8B8A8_UNorm or B8G8R8A8_UNorm while Texture Format is [{image.Format}]");
                 return;
             }
 
@@ -754,7 +754,7 @@ namespace SiliconStudio.TextureConverter
             if (texture.Dimension != TexImage.TextureDimension.Texture2D || !(format.IsRGBAOrder() || format.IsBGRAOrder() || pixelSize != 4))
             {
                 var guessedAlphaLevel = alphaDepth > 0 ? AlphaLevels.InterpolatedAlpha : AlphaLevels.NoAlpha;
-                logger?.Debug("Impossible to find alpha levels for texture type {0}. Returning default alpha level '{1}'.", format, guessedAlphaLevel);
+                logger?.Debug($"Unable to find alpha levels for texture type {format}. Returning default alpha level '{guessedAlphaLevel}'.");
                 return guessedAlphaLevel;
             }
 
@@ -1095,6 +1095,24 @@ namespace SiliconStudio.TextureConverter
             ExecuteRequest(image, request);
         }
 
+        /// <summary>
+        /// Finds a suitable library to handle the request.
+        /// </summary>
+        /// <param name="format">The format of the image to be processed.</param>
+        /// <param name="request">The request.</param>
+        /// <returns>The <see cref="ITexLibrary"/> which can handle the request or null if none could.</returns>
+        private ITexLibrary FindLibrary(PixelFormat format, IRequest request)
+        {
+            foreach (var library in textureLibraries)
+            {
+                if (library.CanHandleRequest(format, request))
+                {
+                    return library;
+                }
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Finds a suitable library to handle the request.
@@ -1428,8 +1446,54 @@ namespace SiliconStudio.TextureConverter
                 }
                 else // If no library could be found, an exception is thrown
                 {
-                    Log.Error("No available library could perform the task : " + request.Type);
-                    throw new TextureToolsException("No available library could perform the task : " + request.Type);
+                    // No library was found, attempt to execute the request using a 2-step cast
+                    ITexLibrary libraryOne = null;
+                    ITexLibrary libraryTwo = null;
+                    IRequest intermediateRequest = null;
+
+                    switch (request.Type)
+                    {
+                        case RequestType.Compressing:
+                            {
+                                var intermediateFormat = PixelFormat.R8G8B8A8_UNorm;
+                                intermediateRequest = new ConvertingRequest(intermediateFormat);
+                                libraryOne = FindLibrary(image, intermediateRequest);
+                                libraryTwo = FindLibrary(intermediateFormat, request);
+
+                                Log.Verbose("Using a 2-step conversion: " + image.Format + " -> " + intermediateFormat + " -> " + ((CompressingRequest)request).Format + " ...");
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    // One or both libraries were not found, cannot proceed with the request
+                    if (libraryOne == null || libraryTwo == null)
+                    {
+                        Log.Error("No available library could perform the task : " + request.Type);
+                        throw new TextureToolsException("No available library could perform the task : " + request.Type);
+                    }
+
+                    // Both libraries for intermediate processing were found, preceeding with the request
+                    if (image.Format.IsBGRAOrder() && !library.SupportBGRAOrder())
+                    {
+                        SwitchChannel(image);
+                    }
+
+                    if (image.CurrentLibrary != null) image.CurrentLibrary.EndLibrary(image); // Ending the use of the previous library (mainly to free memory)
+
+                    libraryOne.StartLibrary(image); // Preparing the new library : converting TexImage format to the library native format
+
+                    libraryOne.Execute(image, intermediateRequest);
+
+                    libraryOne.EndLibrary(image); // Ending the use of the previous library (mainly to free memory)
+
+                    libraryTwo.StartLibrary(image); // Preparing the new library : converting TexImage format to the library native format
+
+                    libraryTwo.Execute(image, request);
+
+                    image.CurrentLibrary = libraryTwo;
                 }
             }
         }

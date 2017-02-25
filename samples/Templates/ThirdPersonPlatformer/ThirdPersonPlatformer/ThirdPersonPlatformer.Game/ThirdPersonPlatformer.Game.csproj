@@ -5,7 +5,7 @@
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6807D261-4AF2-405C-8EBF-D8A0B08C7801}</ProjectGuid>
+    <ProjectGuid>{92B5077F-3D0D-4043-A3B4-25A32C9D64AA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ThirdPersonPlatformer</RootNamespace>

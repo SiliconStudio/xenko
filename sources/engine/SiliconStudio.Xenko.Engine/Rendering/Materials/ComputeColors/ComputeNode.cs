@@ -12,7 +12,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
     /// Base interface for all computer color nodes.
     /// </summary>
     [DataContract(Inherited = true)]
-    [NonIdentifiable]
     public abstract class ComputeNode : IComputeNode
     {
         /// <summary>

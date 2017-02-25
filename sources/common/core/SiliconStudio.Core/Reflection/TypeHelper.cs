@@ -5,12 +5,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Reflection
 {
+    // TODO: these methods should be compilant with collection/dictionary descriptors. Since they're used only for design-time, they should be removed from here anyway
+    [Obsolete("This class will be removed in a future version")]
     public static class TypeHelper
     {
-        public static bool IsCollection(Type type)
+        [Obsolete("This method will be removed in a future version")]
+        public static bool IsCollection([NotNull] this Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             var typeInfo = type.GetTypeInfo();
@@ -19,7 +23,7 @@ namespace SiliconStudio.Core.Reflection
                 return false;
             }
 
-            if (typeof(ICollection).GetTypeInfo().IsAssignableFrom(typeInfo))
+            if (typeof(IList).GetTypeInfo().IsAssignableFrom(typeInfo))
             {
                 return true;
             }
@@ -36,7 +40,8 @@ namespace SiliconStudio.Core.Reflection
             return false;
         }
 
-        public static bool IsDictionary(Type type)
+        [Obsolete("This method will be removed in a future version")]
+        public static bool IsDictionary([NotNull] this Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             var typeInfo = type.GetTypeInfo();

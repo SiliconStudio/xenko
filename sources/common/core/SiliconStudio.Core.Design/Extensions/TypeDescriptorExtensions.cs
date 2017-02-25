@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Extensions
@@ -23,23 +23,12 @@ namespace SiliconStudio.Core.Extensions
             AssemblyRegistry.AssemblyUnregistered += ClearCache;
         }
 
-        public static bool MatchType(this ITypeDescriptor descriptor, Type type)
+        public static bool MatchType([NotNull] this ITypeDescriptor descriptor, [NotNull] Type type)
         {
             return type.IsAssignableFrom(descriptor.Type);
         }
 
-        public static T GetAttribute<T>(this ITypeDescriptor descriptor, MemberInfo memberInfo) where T : Attribute
-        {
-            return descriptor.Factory.AttributeRegistry.GetAttribute<T>(memberInfo);
-        }
-
-        public static T GetAttribute<T>(this ITypeDescriptor descriptor, IMemberDescriptor memberDescriptor) where T : Attribute
-        {
-            var memberDescriptorBase = memberDescriptor as MemberDescriptorBase;
-            return memberDescriptorBase?.MemberInfo != null ? descriptor.Factory.AttributeRegistry.GetAttribute<T>(memberDescriptorBase.MemberInfo) : null;
-        }
-
-        public static IEnumerable<Type> GetInheritedInstantiableTypes(this Type type)
+        public static IEnumerable<Type> GetInheritedInstantiableTypes([NotNull] this Type type)
         {
             lock (AllAssemblies)
             {
@@ -64,7 +53,7 @@ namespace SiliconStudio.Core.Extensions
             }
         }
 
-        public static IEnumerable<Type> GetInheritedTypes(this Type type)
+        public static IEnumerable<Type> GetInheritedTypes([NotNull] this Type type)
         {
             lock (AllAssemblies)
             {
@@ -89,7 +78,7 @@ namespace SiliconStudio.Core.Extensions
             }
         }
 
-        private static bool IsInstantiableType(Type x)
+        private static bool IsInstantiableType([NotNull] Type x)
         {
             return (x.IsPublic || x.IsNestedPublic) && !x.IsAbstract && x.GetConstructor(Type.EmptyTypes) != null;
         }
@@ -114,7 +103,7 @@ namespace SiliconStudio.Core.Extensions
         /// </summary>
         /// <param name="typeDescriptor">The type descriptor.</param>
         /// <returns>The type of inner values of an <see cref="ITypeDescriptor"/>.</returns>
-        public static Type GetInnerCollectionType(this ITypeDescriptor typeDescriptor)
+        public static Type GetInnerCollectionType([NotNull] this ITypeDescriptor typeDescriptor)
         {
             var type = typeDescriptor.Type;
 

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,6 @@ using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Analysis
@@ -16,7 +16,7 @@ namespace SiliconStudio.Assets.Analysis
     /// <summary>
     /// Analysis for <see cref="AssetItem"/>.
     /// </summary>
-    public sealed class AssetAnalysis
+    public static class AssetAnalysis
     {
         public static LoggerResult Run(IEnumerable<AssetItem> items, AssetAnalysisParameters parameters)
         {
@@ -72,14 +72,14 @@ namespace SiliconStudio.Assets.Analysis
 
                     if (existingAsset != null)
                     {
-                        log.Error("Assets [{0}] with id [{1}] from Package [{2}] is already loaded from package [{3}]", existingAsset.FullPath, existingAsset.Id, package.FullPath, existingAsset.Package.FullPath);
+                        log.Error($"Assets [{existingAsset.FullPath}] with id [{existingAsset.Id}] from Package [{package.FullPath}] is already loaded from package [{existingAsset.Package.FullPath}]");
                     }
                     else
                     {
                         existingAsset = otherPackage.Assets.Find(assetItem.Location);
                         if (existingAsset != null)
                         {
-                            log.Error("Assets [{0}] with location [{1}] from Package [{2}] is already loaded from package [{3}]", existingAsset.FullPath, existingAsset.Location, package.FullPath, existingAsset.Package.FullPath);
+                            log.Error($"Assets [{existingAsset.FullPath}] with location [{existingAsset.Location}] from Package [{package.FullPath}] is already loaded from package [{existingAsset.Package.FullPath}]");
                         }
                     }
                 }
@@ -105,19 +105,13 @@ namespace SiliconStudio.Assets.Analysis
         internal static void UpdateAssetReferences(AssetItem assetItem, IEnumerable<AssetReferenceLink> assetReferences, ILogger log, AssetAnalysisParameters parameters)
         {
             var package = assetItem.Package;
-            var packageName = package.FullPath?.GetFileName() ?? "(Undefined path)";
+            var packageName = package.FullPath?.GetFileNameWithoutExtension() ?? "(Undefined path)";
             bool shouldSetDirtyFlag = false;
 
             // Update reference
             foreach (var assetReferenceLink in assetReferences.Where(link => link.Reference is IReference))
             {
                 var contentReference = (IReference)assetReferenceLink.Reference;
-                // If the content reference is an asset base that is in fact a root import, just skip it
-                if ((contentReference is AssetBase) && ((AssetBase)contentReference).IsRootImport)
-                {
-                    continue;
-                }
-
                 // Update Asset references (AssetReference, AssetBase, reference)
                 var id = contentReference.Id;
                 var newItemReference = package.FindAsset(id);
@@ -143,7 +137,7 @@ namespace SiliconStudio.Assets.Analysis
                         var packageFound = package.Session.Packages.FirstOrDefault(x => x.FindAsset(contentReference.Location) != null);
                         if (packageFound != null)
                         {
-                            log.Warning(package, contentReference, AssetMessageCode.AssetFoundInDifferentPackage, contentReference, packageFound.FullPath.GetFileName());
+                            log.Warning(package, contentReference, AssetMessageCode.AssetFoundInDifferentPackage, contentReference, packageFound.FullPath.GetFileNameWithoutExtension());
                         }
                     }
                     else

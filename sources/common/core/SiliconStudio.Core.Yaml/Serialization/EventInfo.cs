@@ -101,7 +101,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         }
 
         public bool IsImplicit { get; set; }
-        public YamlStyle Style { get; set; }
+        public DataStyle Style { get; set; }
     }
 
     public sealed class MappingEndEventInfo : EventInfo
@@ -120,7 +120,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         }
 
         public bool IsImplicit { get; set; }
-        public YamlStyle Style { get; set; }
+        public DataStyle Style { get; set; }
     }
 
     public sealed class SequenceEndEventInfo : EventInfo

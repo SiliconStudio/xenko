@@ -4,23 +4,20 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Assets.Tests
 {
     [DataContract("!AssetObjectTest")]
     [AssetDescription(FileExtension)]
-    public class AssetObjectTest : Asset, IEquatable<AssetObjectTest>
+    public class AssetObjectTest : TestAssetWithParts, IEquatable<AssetObjectTest>
     {
-        public const string FileExtension = ".xktest";
-
-        public string Name { get; set; }
+        private const string FileExtension = ".xktest";
 
         [DefaultValue(null)]
-        public AssetReference<AssetObjectTest> Reference { get; set; }
+        public AssetReference Reference { get; set; }
 
         [DefaultValue(null)]
         public UFile RawAsset { get; set; }
@@ -36,7 +33,7 @@ namespace SiliconStudio.Assets.Tests
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((AssetObjectTest)obj);
         }
 
@@ -44,9 +41,9 @@ namespace SiliconStudio.Assets.Tests
         {
             unchecked
             {
-                var hashCode = (Name != null ? Name.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Reference != null ? Reference.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (RawAsset != null ? RawAsset.GetHashCode() : 0);
+                var hashCode = Name?.GetHashCode() ?? 0;
+                hashCode = (hashCode*397) ^ (Reference != null ? Reference.GetHashCode() : 0);
+                hashCode = (hashCode*397) ^ (RawAsset != null ? RawAsset.GetHashCode() : 0);
                 return hashCode;
             }
         }
@@ -66,7 +63,7 @@ namespace SiliconStudio.Assets.Tests
     [AssetDescription(FileExtension)]
     public class TestAssetWithParts : AssetComposite
     {
-        public const string FileExtension = ".xkpart";
+        private const string FileExtension = ".xkpart";
 
         public TestAssetWithParts()
         {
@@ -79,12 +76,12 @@ namespace SiliconStudio.Assets.Tests
 
         public override IEnumerable<AssetPart> CollectParts()
         {
-            return Parts.Select(it => new AssetPart(it.Id, it.BaseId, it.BasePartInstanceId));
+            return Parts.Select(it => new AssetPart(it.Id, it.Base, x => it.Base = x));
         }
 
-        public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
+        public override IIdentifiable FindPart(Guid partId)
         {
-            throw new NotImplementedException();
+            return Parts.FirstOrDefault(x => x.Id == partId);
         }
 
         public override bool ContainsPart(Guid id)
@@ -97,65 +94,55 @@ namespace SiliconStudio.Assets.Tests
             throw new NotImplementedException();
         }
 
-        public override Asset CreateChildAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
+        public override Asset CreateDerivedAsset(string baseLocation, out Dictionary<Guid, Guid> idRemapping)
         {
-            var asset = (TestAssetWithParts)base.CreateChildAsset(baseLocation, idRemapping);
+            var asset = (TestAssetWithParts)base.CreateDerivedAsset(baseLocation, out idRemapping);
 
             // Create asset with new base
-            for (int i = 0; i < asset.Parts.Count; i++)
+            var assetRef = new AssetReference(Id, baseLocation);
+            var instanceId = Guid.NewGuid();
+            for (var i = 0; i < asset.Parts.Count; i++)
             {
-                var part = asset.Parts[i];
-                var newId = Guid.NewGuid();
-                idRemapping?.Add(part.Id, newId);
-                asset.Parts[i] = new AssetPartTestItem(newId, part.Id);
+                // Properly set the base
+                asset.Parts[i].Base = new BasePart(assetRef, Parts[i].Id, instanceId);
             }
 
             return asset;
         }
 
-        public void AddPart(TestAssetWithParts assetBaseWithParts)
+        public void AddParts(TestAssetWithParts assetBaseWithParts)
         {
             if (assetBaseWithParts == null) throw new ArgumentNullException(nameof(assetBaseWithParts));
 
             // The assetPartBase must be a plain child asset
-            if (assetBaseWithParts.Base == null) throw new InvalidOperationException($"Expecting a Base for {nameof(assetBaseWithParts)}");
-            if (assetBaseWithParts.BaseParts != null) throw new InvalidOperationException($"Expecting a null BaseParts for {nameof(assetBaseWithParts)}");
+            if (assetBaseWithParts.Archetype == null) throw new InvalidOperationException($"Expecting a Base for {nameof(assetBaseWithParts)}");
 
-            // Check that the assetPartBase contains only entities from its base (no new entity, must be a plain ChildAsset)
-            if (assetBaseWithParts.CollectParts().Any(it => !it.BaseId.HasValue))
-            {
-                throw new InvalidOperationException("An asset part base must contain only base assets");
-            }
-
-            AddBasePart(assetBaseWithParts.Base);
-
-            for (int i = 0; i < assetBaseWithParts.Parts.Count; i++)
-            {
-                var part = assetBaseWithParts.Parts[i];
-                Parts.Add(new AssetPartTestItem(part.Id, part.BaseId, assetBaseWithParts.Id));
-            }
+            Parts.AddRange(assetBaseWithParts.Parts);
         }
     }
 
     [DataContract("AssetPartTestItem")]
-    public class AssetPartTestItem
+    public class AssetPartTestItem : IIdentifiable
     {
         public AssetPartTestItem()
         {
         }
 
-        public AssetPartTestItem(Guid id, Guid? baseId = null, Guid? basePartInstanceId = null)
+        public AssetPartTestItem(Guid id)
         {
             Id = id;
-            BaseId = baseId;
-            BasePartInstanceId = basePartInstanceId;
         }
 
-        public Guid Id;
+        public AssetPartTestItem(Guid id, AssetReference baseAsset, Guid baseId, Guid basePartInstanceId)
+        {
+            Base = new BasePart(baseAsset, baseId, basePartInstanceId);
+            Id = id;
+        }
 
-        public Guid? BaseId;
+        public BasePart Base { get; set; }
 
-        public Guid? BasePartInstanceId;
+        [NonOverridable]
+        public Guid Id { get; set; }
     }
 
     [DataContract("!AssetImportObjectTest")]
@@ -164,13 +151,13 @@ namespace SiliconStudio.Assets.Tests
     {
         public AssetImportObjectTest()
         {
-            References = new Dictionary<string, AssetReference<AssetObjectTestSub>>();
+            References = new Dictionary<string, AssetReference>();
         }
 
         public string Name { get; set; }
 
         [DefaultValue(null)]
-        public Dictionary<string, AssetReference<AssetObjectTestSub>> References { get; set; }
+        public Dictionary<string, AssetReference> References { get; set; }
     }
 
     [DataContract("!AssetObjectTestSub")]
@@ -180,3 +167,4 @@ namespace SiliconStudio.Assets.Tests
         public int Value { get; set; }
     }
 }
+

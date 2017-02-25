@@ -1,11 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Assets
 {
     /// <summary>
-    /// Flags used by <see cref="AssetCloner.Clone"/>
+    /// Flags used by <see cref="AssetCloner"/>
     /// </summary>
     [Flags]
     public enum AssetClonerFlags
@@ -16,18 +17,23 @@ namespace SiliconStudio.Assets
         None,
 
         /// <summary>
-        /// Remove all attached overrides information when cloning (equivalent to revert everything to <see cref="SiliconStudio.Core.Reflection.OverrideType.Base"/>)
-        /// </summary>
-        RemoveOverrides = 1,
-
-        /// <summary>
         /// Attached references will be cloned as <c>null</c>
         /// </summary>
-        ReferenceAsNull = 2,
+        ReferenceAsNull = 1,
 
         /// <summary>
-        /// Keep cloned bases.
+        /// Remove ids attached to item of collections when cloning
         /// </summary>
-        KeepBases = 4,
+        RemoveItemIds = 2,
+
+        /// <summary>
+        /// Removes invalid objects
+        /// </summary>
+        RemoveUnloadableObjects = 4,
+
+        /// <summary>
+        /// Generates new ids for objects that implement <see cref="IIdentifiable"/>.
+        /// </summary>
+        GenerateNewIdsForIdentifiableObjects = 8,
     }
 }

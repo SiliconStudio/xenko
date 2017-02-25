@@ -12,20 +12,17 @@ Attributes:
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialSpecularMapFeature
         SpecularMap: !ComputeTextureColor
-            Swizzle: null
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
         Intensity: !ComputeFloat
             Value: 0.03
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: d1bffadb-3d8f-4399-bb5b-c2f58d822961
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: 3b092345-58f6-4c3d-a992-8495e40c791f
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: 8eaa7871-8ba4-4de5-bcd6-c6e1efdbd7e0
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Occlusion: !MaterialOcclusionMapFeature
         AmbientOcclusionMap: !ComputeFloat
             Value: 0.8
@@ -42,4 +39,4 @@ Attributes:
             Value: 1.0
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

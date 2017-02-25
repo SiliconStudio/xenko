@@ -4,7 +4,6 @@ using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
-using ITypeDescriptor = SiliconStudio.Core.Yaml.Serialization.ITypeDescriptor;
 
 namespace SiliconStudio.Assets.Serializers
 {

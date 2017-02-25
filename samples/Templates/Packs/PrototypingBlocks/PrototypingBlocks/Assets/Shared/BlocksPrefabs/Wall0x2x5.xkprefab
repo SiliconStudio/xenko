@@ -1,9 +1,8 @@
 !PrefabAsset
 Id: b459d7d8-b0db-4862-8579-6a511f4a9fe5
-SerializedVersion: {Xenko: 1.9.0-beta01}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 Hierarchy:
-    ~Id: a322e76f-7fbd-445f-a087-2067400c42bb
     RootPartIds:
         - fbdff817-df62-4a56-83f8-19a9d12589b8
     Parts:
@@ -11,20 +10,21 @@ Hierarchy:
                 Id: fbdff817-df62-4a56-83f8-19a9d12589b8
                 Name: Wall0x2x5
                 Components:
-                    - !TransformComponent
-                        ~Id: c9be07db-8cb8-4eb8-9f8d-6d3511eb10f2
-                        Children: []
+                    db07bec9b88cb84e9f8d6d3511eb10f2: !TransformComponent
+                        Id: c9be07db-8cb8-4eb8-9f8d-6d3511eb10f2
                         Position: {X: 0.0, Y: 1.0, Z: 2.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: d3e68565-27aa-4f88-8d14-790bf65b8607
-                        Model: b0e6f1ae-d020-4f99-81e7-b1270949a1f7/96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
+                        Children: {}
+                    6585e6d3aa27884f8d14790bf65b8607: !ModelComponent
+                        Id: d3e68565-27aa-4f88-8d14-790bf65b8607
+                        Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            - ed2295ec-912e-4a69-bd86-63b5b8ada228/af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
-                    - !StaticColliderComponent
-                        ~Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                    74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
+                        Id: f09a2974-5742-46e7-be4d-cca2e071c23f
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -32,8 +32,7 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         ColliderShapes:
-                            - !BoxColliderShapeDesc
-                                ~Id: b14b3ac4-0a93-42da-a165-1c91b5317898
+                            c43a4bb1930ada42a1651c91b5317898: !BoxColliderShapeDesc
                                 Is2D: false
                                 Size: {X: 0.1, Y: 2.0, Z: 5.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}

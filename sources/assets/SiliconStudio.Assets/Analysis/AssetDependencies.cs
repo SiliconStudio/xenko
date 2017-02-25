@@ -27,10 +27,9 @@ namespace SiliconStudio.Assets.Analysis
     public class AssetDependencies
     {
         private readonly AssetItem item;
-        private Dictionary<Guid, AssetLink> parents;
-        private Dictionary<Guid, AssetLink> children;
-        private Dictionary<Guid, AssetLink> missingChildren;
-        private Dictionary<Guid, AssetPart> parts;
+        private Dictionary<AssetId, AssetLink> parents;
+        private Dictionary<AssetId, AssetLink> children;
+        private Dictionary<AssetId, AssetLink> missingChildren;
 
         public AssetDependencies(AssetItem assetItem)
         {
@@ -54,13 +53,9 @@ namespace SiliconStudio.Assets.Analysis
             // Copy missing refs
             foreach (var child in set.BrokenLinksOut)
                 AddBrokenLinkOut(child.Element, child.Type);
-
-            // Copy parts
-            foreach (var part in set.Parts)
-                AddPart(part);
         }
 
-        public Guid Id
+        public AssetId Id
         {
             get
             {
@@ -119,31 +114,12 @@ namespace SiliconStudio.Assets.Analysis
         }
 
         /// <summary>
-        /// Gets the part assets.
-        /// </summary>
-        public IEnumerable<AssetPart> Parts
-        {
-            get
-            {
-                if (parts == null)
-                {
-                    yield break;
-                }
-                foreach (var part in parts)
-                {
-                    yield return part.Value;
-                }
-            }
-        }
-
-        /// <summary>
         /// Resets this instance and clear all dependencies (including missing)
         /// </summary>
         public void Reset(bool keepParents)
         {
             missingChildren = null;
             children = null;
-            parts = null;
 
             if (!keepParents) 
                 parents = null;
@@ -182,36 +158,6 @@ namespace SiliconStudio.Assets.Analysis
         public void AddLinkIn(AssetItem fromItem, ContentLinkType contentLinkType)
         {
             AddLink(ref parents, new AssetLink(fromItem, contentLinkType));
-        }
-
-        /// <summary>
-        /// Adds an part asset
-        /// </summary>
-        /// <param name="part">An part asset.</param>
-        public void AddPart(AssetPart part)
-        {
-            if (parts == null)
-            {
-                parts = new Dictionary<Guid, AssetPart>();
-            }
-            parts[part.Id] = part;
-        }
-
-        /// <summary>
-        /// Tries to get an part asset from its identifier.
-        /// </summary>
-        /// <param name="id">Identifier of the part asset.</param>
-        /// <param name="part">Returned part asset if this method returns <c>true</c></param>
-        /// <returns><c>true</c> if the part asset with the specified identifier exist; otherwise <c>false</c></returns>
-        public bool TryGetAssetPart(Guid id, out AssetPart part)
-        {
-
-            if (parts == null)
-            {
-                part = default(AssetPart);
-                return false;
-            }
-            return parts.TryGetValue(id, out part);
         }
 
         /// <summary>
@@ -327,7 +273,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <returns>The link</returns>
         /// <exception cref="ArgumentException">There is not link to the provided element</exception>
         /// <exception cref="ArgumentNullException">toItem</exception>
-        public IContentLink GetBrokenLinkOut(Guid id)
+        public IContentLink GetBrokenLinkOut(AssetId id)
         {
             return GetLink(ref missingChildren, id);
         }
@@ -338,15 +284,15 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="id">The id to the missing element</param>
         /// <exception cref="ArgumentNullException">toItem</exception>
         /// <returns>The removed link</returns>
-        public IContentLink RemoveBrokenLinkOut(Guid id)
+        public IContentLink RemoveBrokenLinkOut(AssetId id)
         {
             return RemoveLink(ref missingChildren, id, ContentLinkType.All);
         }
 
-        private void AddLink(ref Dictionary<Guid, AssetLink> dictionary, AssetLink contentLink)
+        private void AddLink(ref Dictionary<AssetId, AssetLink> dictionary, AssetLink contentLink)
         {
             if(dictionary == null)
-                dictionary = new Dictionary<Guid, AssetLink>();
+                dictionary = new Dictionary<AssetId, AssetLink>();
 
             var id = contentLink.Element.Id;
             if (dictionary.ContainsKey(id))
@@ -355,7 +301,7 @@ namespace SiliconStudio.Assets.Analysis
             dictionary[id] = contentLink;
         }
 
-        private AssetLink GetLink(ref Dictionary<Guid, AssetLink> dictionary, Guid id)
+        private AssetLink GetLink(ref Dictionary<AssetId, AssetLink> dictionary, AssetId id)
         {
             if(dictionary == null || !dictionary.ContainsKey(id))
                 throw new ArgumentException("There is currently no link between elements '{0}' and '{1}'".ToFormat(item.Id, id));
@@ -363,7 +309,7 @@ namespace SiliconStudio.Assets.Analysis
             return dictionary[id];
         }
 
-        private AssetLink RemoveLink(ref Dictionary<Guid, AssetLink> dictionary, Guid id, ContentLinkType type)
+        private AssetLink RemoveLink(ref Dictionary<AssetId, AssetLink> dictionary, AssetId id, ContentLinkType type)
         {
             if (dictionary == null || !dictionary.ContainsKey(id))
                 throw new ArgumentException("There is currently no link between elements '{0}' and '{1}'".ToFormat(item.Id, id));

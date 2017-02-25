@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.Runtime.InteropServices;
@@ -46,15 +47,15 @@ namespace SiliconStudio.Core.Diagnostics
 
         public static readonly bool IsAvailable = NativeLibrary.LoadLibrary(VTune2015DllName) != IntPtr.Zero;
 
-        public static Event CreateEvent(string eventName)
+        public static Event CreateEvent([NotNull] string eventName)
         {
-            if (eventName == null) throw new ArgumentNullException("eventName");
+            if (eventName == null) throw new ArgumentNullException(nameof(eventName));
             return IsAvailable ? __itt_event_createW(eventName, eventName.Length) : new Event();
         }
 
-        public static Domain CreateDomain(string domaiName)
+        public static Domain CreateDomain([NotNull] string domaiName)
         {
-            if (domaiName == null) throw new ArgumentNullException("domaiName");
+            if (domaiName == null) throw new ArgumentNullException(nameof(domaiName));
             return IsAvailable ? __itt_domain_createW(domaiName) : new Domain();
         }
 
@@ -112,7 +113,7 @@ namespace SiliconStudio.Core.Diagnostics
             }
         }
 
-        private static StringHandle GetStringHandle(string text)
+        private static StringHandle GetStringHandle([NotNull] string text)
         {
             StringHandle result;
             lock (StringHandles)

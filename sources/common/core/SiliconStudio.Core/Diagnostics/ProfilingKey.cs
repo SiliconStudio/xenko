@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -18,9 +19,9 @@ namespace SiliconStudio.Core.Diagnostics
         /// Initializes a new instance of the <see cref="ProfilingKey" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        public ProfilingKey(string name, ProfilingKeyFlags flags = ProfilingKeyFlags.None)
+        public ProfilingKey([NotNull] string name, ProfilingKeyFlags flags = ProfilingKeyFlags.None)
         {
-            if (name == null) throw new ArgumentNullException("name");
+            if (name == null) throw new ArgumentNullException(nameof(name));
             Children = new List<ProfilingKey>();
             Name = name;
             Flags = flags;
@@ -37,10 +38,10 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="parent">The parent.</param>
         /// <param name="name">The name.</param>
         /// <exception cref="System.ArgumentNullException">parent</exception>
-        public ProfilingKey(ProfilingKey parent, string name, ProfilingKeyFlags flags = ProfilingKeyFlags.None)
+        public ProfilingKey([NotNull] ProfilingKey parent, [NotNull] string name, ProfilingKeyFlags flags = ProfilingKeyFlags.None)
         {
-            if (parent == null) throw new ArgumentNullException("parent");
-            if (name == null) throw new ArgumentNullException("name");
+            if (parent == null) throw new ArgumentNullException(nameof(parent));
+            if (name == null) throw new ArgumentNullException(nameof(name));
             Children = new List<ProfilingKey>();
             Parent = parent;
             Name = $"{Parent}.{name}";
@@ -59,13 +60,13 @@ namespace SiliconStudio.Core.Diagnostics
         /// Gets the name.
         /// </summary>
         /// <value>The name.</value>
-        public string Name { get; private set; }
+        public string Name { get; }
 
         /// <summary>
         /// Gets the group.
         /// </summary>
         /// <value>The group.</value>
-        public ProfilingKey Parent { get; private set; }
+        public ProfilingKey Parent { get; }
 
         /// <summary>
         /// Gets the children.
@@ -73,7 +74,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <value>
         /// The children.
         /// </value>
-        public List<ProfilingKey> Children { get; private set; }
+        public List<ProfilingKey> Children { get; }
 
         public override string ToString()
         {

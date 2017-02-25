@@ -41,6 +41,11 @@
     <Compile Include="..\SiliconStudio.Core.Serialization\IO\NativeLockFile.cs">
       <Link>Windows\NativeLockFile.cs</Link>
     </Compile>
+    <Compile Include="Annotations\BaseTypeRequiredAttribute.cs" />
+    <Compile Include="Annotations\CollectionAccessAttribute.cs" />
+    <Compile Include="Annotations\MustUseReturnValueAttribute.cs" />
+    <Compile Include="Annotations\NoEnumerationAttribute.cs" />
+    <Compile Include="Collections\HybridDictionary.cs" />
     <Compile Include="Extensions\AnonymousEqualityComparer.cs" />
     <Compile Include="Extensions\DesignExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
@@ -60,35 +65,13 @@
     <Compile Include="NamingHelper.cs" />
     <Compile Include="ObjectCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reflection\ArrayDescriptor.cs" />
     <Compile Include="Reflection\AssemblyContainer.cs" />
-    <Compile Include="Reflection\AttributeRegistry.cs" />
-    <Compile Include="Reflection\CollectionDescriptor.cs" />
     <Compile Include="Reflection\DataVisitorBase.cs" />
-    <Compile Include="Reflection\DescriptorCategory.cs" />
-    <Compile Include="Reflection\DictionaryDescriptor.cs" />
-    <Compile Include="Reflection\FieldDescriptor.cs" />
-    <Compile Include="Reflection\IAttributeRegistry.cs" />
     <Compile Include="Reflection\IDataCustomVisitor.cs" />
     <Compile Include="Reflection\IDataVisitor.cs" />
-    <Compile Include="Reflection\IMemberDescriptor.cs" />
-    <Compile Include="Reflection\ITypeDescriptor.cs" />
-    <Compile Include="Reflection\ITypeDescriptorFactory.cs" />
-    <Compile Include="Reflection\MemberDescriptiorExtensions.cs" />
-    <Compile Include="Reflection\MemberPathAction.cs" />
-    <Compile Include="Reflection\MemberDescriptorBase.cs" />
-    <Compile Include="Reflection\MemberPathExtensions.cs" />
-    <Compile Include="Reflection\MemberPathNode.cs" />
-    <Compile Include="Reflection\NullableDescriptor.cs" />
-    <Compile Include="Reflection\ObjectDescriptor.cs" />
-    <Compile Include="Reflection\Override.cs" />
-    <Compile Include="Reflection\OverrideType.cs" />
-    <Compile Include="Reflection\PrimitiveDescriptor.cs" />
-    <Compile Include="Reflection\PropertyDescriptor.cs" />
-    <Compile Include="Reflection\MemberPath.cs" />
-    <Compile Include="Reflection\ShadowObjectExtensions.cs" />
+    <Compile Include="Reflection\ShadowObject.cs" />
+    <Compile Include="Reflection\ShadowObjectPropertyKey.cs" />
     <Compile Include="Reflection\ThisDescriptor.cs" />
-    <Compile Include="Reflection\TypeDescriptorFactory.cs" />
     <Compile Include="Reflection\TypeExtensions.cs" />
     <Compile Include="Reflection\VisitorContext.cs" />
     <Compile Include="Settings\ChangesValidatedEventArgs.cs" />
@@ -114,9 +97,8 @@
     <Compile Include="Transactions\TransactionStackFactory.cs" />
     <Compile Include="Windows\FileLock.cs" />
     <Compile Include="Windows\GlobalMutex.cs" />
-    <Compile Include="Yaml\DynamicYaml.cs" />
-    <Compile Include="Yaml\DynamicYamlExtensions.cs" />
-    <Compile Include="Yaml\IDynamicYamlNode.cs" />
+    <Compile Include="Yaml\AssetIdSerializer.cs" />
+    <Compile Include="Yaml\PropertyKeyNameResolver.cs" />
     <Compile Include="Yaml\ParsingEventListEmitter.cs" />
     <Compile Include="Settings\SettingsEntry.cs" />
     <Compile Include="Settings\SettingsEntryValue.cs" />
@@ -157,23 +139,24 @@
     <Compile Include="VisualStudio\VisualStudioVersions.cs" />
     <Compile Include="Windows\AppHelper.cs" />
     <Compile Include="Yaml\AssetScalarSerializerBase.cs" />
-    <Compile Include="Yaml\DynamicYamlArray.cs" />
-    <Compile Include="Yaml\DynamicYamlEmpty.cs" />
-    <Compile Include="Yaml\DynamicYamlMapping.cs" />
-    <Compile Include="Yaml\DynamicYamlObject.cs" />
-    <Compile Include="Yaml\DynamicYamlScalar.cs" />
     <Compile Include="Yaml\GuidSerializer.cs" />
     <Compile Include="Yaml\ObjectIdSerializer.cs" />
-    <Compile Include="Yaml\CustomObjectSerializerBackend.cs" />
+    <Compile Include="Yaml\PropertyKeyYamlSerializer.cs" />
+    <Compile Include="Settings\SettingsYamlSerializer.cs" />
     <Compile Include="Yaml\UDirectorySerializer.cs" />
     <Compile Include="Yaml\UFileSerializer.cs" />
     <Compile Include="Yaml\YamlSerializer.cs" />
-    <Compile Include="Yaml\YamlSerializerFactoryAttribute.cs" />
+    <Compile Include="Yaml\YamlSerializerBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
+      <Project>{0be7189b-f04e-4c0c-bbe9-f347c0a59fee}</Project>
+      <Name>SiliconStudio.Core.Reflection</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
@@ -184,6 +167,7 @@
     <ProjectReference Include="..\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
       <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
       <Name>SiliconStudio.Core.Yaml</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>

@@ -1,8 +1,0 @@
-!Texture
-Id: 5e7a5dcf-d029-4c1c-9980-4e852dc371fe
-SerializedVersion: {Xenko: 1.4.0-beta}
-Tags: []
-Source: ../../../Resources/Textures/Lower [Normal].tga
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: Color16Bits
-Hint: NormalMap

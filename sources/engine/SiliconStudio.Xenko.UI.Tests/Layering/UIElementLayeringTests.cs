@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             HorizontalAlignment = HorizontalAlignment.Stretch;
             VerticalAlignment = VerticalAlignment.Stretch;
             DepthAlignment = DepthAlignment.Back;
-            DependencyProperties = new PropertyContainer(this);
+            DependencyProperties = new PropertyContainerClass(this);
             onMeasureOverride = null;
             onArrageOverride = null;
             Arrange(Vector3.Zero, false);

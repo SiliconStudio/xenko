@@ -8,5 +8,4 @@ Type: !CubeProceduralModel
     UvScale: {X: 1.0, Y: 1.0}
     LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
     MaterialInstance:
-        ~Id: ad9a2d09-fd2a-4887-b667-53d79b0065f0
-        Material: 35c3468f-e271-4b6d-b193-56e1ee060013/4de4aa42-6f84-472f-8b50-7f4d8229723a:HighlightMaterial
+        Material: 4de4aa42-6f84-472f-8b50-7f4d8229723a:HighlightMaterial

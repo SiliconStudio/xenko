@@ -1,44 +1,35 @@
 !SceneAsset
 Id: 5f4a3789-b182-4b32-9088-acbf9e13edb5
-SerializedVersion: {Xenko: 1.9.0-beta02}
+SerializedVersion: {Xenko: 1.9.0-beta06}
 Tags: []
 SceneSettings:
     Id: df51691c-bfdf-40f2-859c-c41a1396724a
     GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: 5fb60a5b-739e-48ac-a79e-e3614447eff9
         Cameras:
-            -   ~Id: 0136befd-5aec-4254-a2de-c152f3d3f10e
+            fdbe3601ec5a5442a2dec152f3d3f10e:
                 Name: null
                 Camera: 970d3c33-9819-4206-a101-d81f9259477f/bdf6144e-9398-4baa-9a86-07bd2e81c981
-        Layers: []
+        Layers: {}
         Master:
-            ~Id: e6b18abc-d20b-465f-a030-7a91143b6311
             Name: SceneGraphicsLayer
             Output: !MasterRenderFrameProvider {}
             Renderers:
-                - !ClearRenderFrameRenderer
-                    ~Id: fda71f21-e2e5-481c-bb47-9c3450246993
+                211fa7fde5e21c48bb479c3450246993: !ClearRenderFrameRenderer
                     Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
                     Output: !CurrentRenderFrameProvider {}
-                - !SceneCameraRenderer
-                    ~Id: c8dfbb7f-63f6-4b86-8a7a-8475e56c5bd3
-                    Mode: !CameraRendererModeForward
-                        ~Id: 2888521e-34d2-42f9-af4a-e7795d141cd6
+                7fbbdfc8f663864b8a7a8475e56c5bd3: !SceneCameraRenderer
+                    Mode: !CameraRendererModeForward {}
                     Camera:
-                        ~Id: 95bf3075-1ea2-43b0-8c47-ab4e43ff47ea
                         Index: 0
                     Output: !CurrentRenderFrameProvider {}
                     Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
                     ForceAspectRatio: false
     EditorSettings:
-        ~Id: 1558e183-eeee-4a1b-ba1a-8d3f33abf299
         GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
         SceneUnit: 1.0
         Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: 0bb67ed4-918a-4b23-8de6-61a945085e12
             BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
 Hierarchy:
-    ~Id: 6bab66c7-1a75-4d3e-8865-8c3fdef200ef
     RootPartIds:
         - 970d3c33-9819-4206-a101-d81f9259477f
         - dececd10-b6ea-46fa-8129-c8683f4a6974
@@ -48,43 +39,43 @@ Hierarchy:
                 Id: 970d3c33-9819-4206-a101-d81f9259477f
                 Name: MainCamera
                 Components:
-                    - !TransformComponent
-                        ~Id: e7c290ae-0451-4b72-8560-bbfe351950b9
-                        Children: []
+                    ae90c2e75104724b8560bbfe351950b9: !TransformComponent
+                        Id: e7c290ae-0451-4b72-8560-bbfe351950b9
                         Position: {X: 0.0, Y: 0.0, Z: 7.72791433}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !CameraComponent
-                        ~Id: bdf6144e-9398-4baa-9a86-07bd2e81c981
+                        Children: {}
+                    4e14f6bd9893aa4b9a8607bd2e81c981: !CameraComponent
+                        Id: bdf6144e-9398-4baa-9a86-07bd2e81c981
                         Projection: Orthographic
                         FarClipPlane: 10.0
         -   Entity:
                 Id: dececd10-b6ea-46fa-8129-c8683f4a6974
                 Name: SoundScript
                 Components:
-                    - !TransformComponent
-                        ~Id: c94f42d8-44f4-4123-80ea-20a80f5473cb
-                        Children: []
+                    d8424fc9f444234180ea20a80f5473cb: !TransformComponent
+                        Id: c94f42d8-44f4-4123-80ea-20a80f5473cb
                         Position: {X: 0.0, Y: 0.0, Z: 4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !SimpleAudio.SoundScript,SimpleAudio.Game
-                        ~Id: 48a6638f-a42f-4d59-b3cf-9c5d37cbb31e
-                        SoundMusic: 098db006-a5b7-4a1c-924a-5e9748d09be5/8005b476-6375-4984-ae01-4ed70428924e:AmbientMusic
-                        SoundEffect: 35e9fa7a-f489-4c2d-aeec-7424e6631c7b/5c8a7de1-f572-41c6-a564-f300f42d7245:SoundEffect
-                        Page: ec11079c-24f0-43bf-a5ca-51b62624aee2/507637ea-07f7-46e1-96df-f39e5a4cc8b2:Page
+                        Children: {}
+                    8f63a6482fa4594db3cf9c5d37cbb31e: !SimpleAudio.SoundScript,SimpleAudio.Game
+                        Id: 48a6638f-a42f-4d59-b3cf-9c5d37cbb31e
+                        SoundMusic: 8005b476-6375-4984-ae01-4ed70428924e:AmbientMusic
+                        SoundEffect: 5c8a7de1-f572-41c6-a564-f300f42d7245:SoundEffect
+                        Page: 507637ea-07f7-46e1-96df-f39e5a4cc8b2:Page
         -   Entity:
                 Id: ea66315a-6e99-498e-b3b7-b20eff3d7a04
                 Name: UIText
                 Components:
-                    - !TransformComponent
-                        ~Id: de0672a2-6d1b-4a9e-a0fe-f236140f092a
-                        Children: []
+                    a27206de1b6d9e4aa0fef236140f092a: !TransformComponent
+                        Id: de0672a2-6d1b-4a9e-a0fe-f236140f092a
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !UIComponent
-                        ~Id: d8888db9-f55d-4b73-9b6b-3ec597f8f469
-                        Page: b7f985c9-0e7d-4302-a597-2491fe42c58b/507637ea-07f7-46e1-96df-f39e5a4cc8b2:Page
+                        Children: {}
+                    b98d88d85df5734b9b6b3ec597f8f469: !UIComponent
+                        Id: d8888db9-f55d-4b73-9b6b-3ec597f8f469
+                        Page: 507637ea-07f7-46e1-96df-f39e5a4cc8b2:Page
                         Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}

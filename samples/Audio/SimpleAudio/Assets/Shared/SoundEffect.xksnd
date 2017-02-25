@@ -2,5 +2,5 @@
 Id: 5c8a7de1-f572-41c6-a564-f300f42d7245
 Tags: []
 Source: ../../Resources/wave.wav
-Spatialized: true
 StreamFromDisk: false
+Spatialized: true

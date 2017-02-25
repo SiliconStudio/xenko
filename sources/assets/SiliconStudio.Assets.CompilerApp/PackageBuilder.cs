@@ -78,13 +78,14 @@ namespace SiliconStudio.Assets.CompilerApp
                 {
                     AutoCompileProjects = builderOptions.Platform != PlatformType.Windows || !builderOptions.DisableAutoCompileProjects,
                     ExtraCompileProperties = builderOptions.ExtraCompileProperties,
+                    RemoveUnloadableObjects = true,
                 };
 
                 // Loads the root Package
                 var projectSessionResult = PackageSession.Load(builderOptions.PackageFile, sessionLoadParameters);
+                projectSessionResult.CopyTo(builderOptions.Logger);
                 if (projectSessionResult.HasErrors)
                 {
-                    projectSessionResult.CopyTo(builderOptions.Logger);
                     return BuildResultCode.BuildError;
                 }
 
@@ -98,7 +99,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 var buildProfile = package.Profiles.FirstOrDefault(pair => pair.Name == builderOptions.BuildProfile);
                 if (buildProfile == null)
                 {
-                    builderOptions.Logger.Error("Unable to find profile [{0}] in package [{1}]", builderOptions.BuildProfile, package.FullPath);
+                    builderOptions.Logger.Error($"Unable to find profile [{builderOptions.BuildProfile}] in package [{package.FullPath}]");
                     return BuildResultCode.BuildError;
                 }
 
@@ -110,7 +111,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 var gameSettingsAsset = package.GetGameSettingsAsset();
                 if (gameSettingsAsset == null)
                 {
-                    builderOptions.Logger.Warning("Could not find game settings asset at location [{0}]. Use a Default One", GameSettingsAsset.GameSettingsLocation);
+                    builderOptions.Logger.Warning($"Could not find game settings asset at location [{GameSettingsAsset.GameSettingsLocation}]. Use a Default One");
                     gameSettingsAsset = GameSettingsFactory.Create();
                 }
 
@@ -128,15 +129,6 @@ namespace SiliconStudio.Assets.CompilerApp
 
                 // Set current game settings
                 context.SetGameSettingsAsset(gameSettingsAsset);
-
-                // Copy properties from shared profiles to context properties
-                if (sharedProfile != null)
-                {
-                    sharedProfile.Properties.CopyTo(context.PackageProperties, true);
-                }
-
-                // Copy properties from build profile
-                buildProfile.Properties.CopyTo(context.PackageProperties, true);
 
                 // Builds the project
                 var assetBuilder = new PackageCompiler(new RootPackageAssetEnumerator(package));
@@ -187,7 +179,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 AutoLoadTemporaryAssets = true,
                 LoadAssemblyReferences = false,
                 AutoCompileProjects = false,
-                TemporaryAssetFilter = (asset) => asset.AssetPath == GameSettingsAsset.GameSettingsLocation,
+                TemporaryAssetFilter = (asset) => asset.AssetLocation == GameSettingsAsset.GameSettingsLocation,
                 TemporaryAssetsInMsbuild = false,
             });
 
@@ -204,7 +196,7 @@ namespace SiliconStudio.Assets.CompilerApp
             var buildProfile = simplePackage.Profiles.FirstOrDefault(pair => pair.Name == builderOptions.BuildProfile);
             if (buildProfile == null)
             {
-                builderOptions.Logger.Error("Package {0} did not contain platform {1}", builderOptions.PackageFile, builderOptions.BuildProfile);
+                builderOptions.Logger.Error($"Package {builderOptions.PackageFile} did not contain platform {builderOptions.BuildProfile}");
                 return BuildResultCode.BuildError;
             }
 
@@ -229,16 +221,13 @@ namespace SiliconStudio.Assets.CompilerApp
             var assetItem = (AssetItem)e.Step.Tag;
             var assetRef = assetItem.ToReference();
             var project = assetItem.Package;
-            var stepLogger = e.Logger is BuildStepLogger ? ((BuildStepLogger)e.Logger).StepLogger : null;
+            var stepLogger = e.Step.Logger;
+            // TODO: Big review of the log infrastructure of CompilerApp & BuildEngine!
             if (stepLogger != null)
             {
-                foreach (var message in stepLogger.Messages.Where(x => x.LogMessage.IsAtLeast(LogMessageType.Warning)))
+                foreach (var message in stepLogger.Messages.Where(x => x.IsAtLeast(LogMessageType.Warning)))
                 {
-                    var assetMessage = new AssetLogMessage(project, assetRef, message.LogMessage.Type, AssetMessageCode.CompilationMessage, assetRef.Location, message.LogMessage.Text)
-                    {
-                        Exception = message.LogMessage is LogMessage ? ((LogMessage)message.LogMessage).Exception : null
-                    };
-                    builderOptions.Logger.Log(assetMessage);
+                    builderOptions.Logger.Log(message);
                 }
             }
             switch (e.Step.Status)

@@ -43,6 +43,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using SiliconStudio.Core.Yaml.Events;
@@ -160,6 +161,25 @@ namespace SiliconStudio.Core.Yaml
             return yamlEvent;
         }
 
+        public void ReadCurrent(IList<Event> events)
+        {
+            int depth = 0;
+
+            do
+            {
+                if (Accept<SequenceStart>() || Accept<MappingStart>() || Accept<StreamStart>() || Accept<DocumentStart>())
+                {
+                    ++depth;
+                }
+                else if (Accept<SequenceEnd>() || Accept<MappingEnd>() || Accept<StreamEnd>() || Accept<DocumentEnd>())
+                {
+                    --depth;
+                }
+
+                events.Add(Allow<Event>());
+            } while (depth > 0 && !endOfStream);
+        }
+
         /// <summary>
         /// Skips the current event and any "child" event.
         /// </summary>
@@ -179,18 +199,27 @@ namespace SiliconStudio.Core.Yaml
                 }
 
                 MoveNext();
-            } while (depth > 0);
+            } while (depth > 0 && !endOfStream);
         }
 
         /// <summary>
         /// Skips until we reach the appropriate depth again
         /// </summary>
-        public void Skip(int untilDepth)
+        public void Skip(int untilDepth, bool skipAtLeastOne = true)
         {
-            do
+            while (CurrentDepth > untilDepth || skipAtLeastOne)
             {
                 MoveNext();
-            } while (CurrentDepth > untilDepth);
+                skipAtLeastOne = false;
+            }
+        }
+
+        /// <summary>
+        /// Call this if <see cref="Parser"/> state has changed (i.e. it might not be at end of stream anymore).
+        /// </summary>
+        public void RefreshParserState()
+        {
+            endOfStream = parser.IsEndOfStream;
         }
 
         /// <summary>
