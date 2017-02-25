@@ -36,6 +36,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -59,7 +60,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="HorizontalLineVisibility"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty HorizontalLineVisibilityProperty =
-            DependencyProperty.Register(nameof(HorizontalLineVisibility), typeof(Visibility), typeof(TrackerControl), new PropertyMetadata(Visibility.Visible));
+            DependencyProperty.Register(nameof(HorizontalLineVisibility), typeof(Visibility), typeof(TrackerControl), new PropertyMetadata(VisibilityBoxes.VisibleBox));
 
         /// <summary>
         /// Identifies the <see cref="LineExtents"/> dependency property.
@@ -89,13 +90,13 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="TrackMouse"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty TrackMouseProperty =
-            DependencyProperty.Register(nameof(TrackMouse), typeof(bool), typeof(TrackerControl), new PropertyMetadata(false, OnTrackMouseChanged));
+            DependencyProperty.Register(nameof(TrackMouse), typeof(bool), typeof(TrackerControl), new PropertyMetadata(BooleanBoxes.FalseBox, OnTrackMouseChanged));
 
         /// <summary>
         /// Identifies the <see cref="VerticalLineVisibility"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty VerticalLineVisibilityProperty =
-            DependencyProperty.Register(nameof(VerticalLineVisibility), typeof(Visibility), typeof(TrackerControl), new PropertyMetadata(Visibility.Visible));
+            DependencyProperty.Register(nameof(VerticalLineVisibility), typeof(Visibility), typeof(TrackerControl), new PropertyMetadata(VisibilityBoxes.VisibleBox));
 
         private Line horizontalLine;
         private Line verticalLine;
@@ -116,7 +117,7 @@ namespace SiliconStudio.Presentation.Controls
 
         public Point Position { get { return (Point)GetValue(PositionProperty); } set { SetValue(PositionProperty, value); } }
 
-        public bool TrackMouse { get { return (bool)GetValue(TrackMouseProperty); } set { SetValue(TrackMouseProperty, value); } }
+        public bool TrackMouse { get { return (bool)GetValue(TrackMouseProperty); } set { SetValue(TrackMouseProperty, value.Box()); } }
         
         public Visibility VerticalLineVisibility { get { return (Visibility)GetValue(VerticalLineVisibilityProperty); }  set { SetValue(VerticalLineVisibilityProperty, value); } }
 

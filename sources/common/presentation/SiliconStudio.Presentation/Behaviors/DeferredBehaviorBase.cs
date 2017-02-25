@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Windows;
 using System.Windows.Interactivity;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -16,14 +17,14 @@ namespace SiliconStudio.Presentation.Behaviors
         /// Represents the <see cref="AttachOnEveryLoadedEvent"/> property.
         /// </summary>
         public static readonly DependencyProperty AttachOnEveryLoadedEventProperty =
-            DependencyProperty.Register(nameof(AttachOnEveryLoadedEvent), typeof(bool), typeof(DeferredBehaviorBase<T>), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(AttachOnEveryLoadedEvent), typeof(bool), typeof(DeferredBehaviorBase<T>), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         private bool currentlyLoaded;
 
         /// <summary>
         /// Gets or sets whether <see cref="OnAttachedAndLoaded"/> should be called each time the <see cref="FrameworkElement.Loaded"/> event is raised.
         /// </summary>
-        public bool AttachOnEveryLoadedEvent { get { return (bool)GetValue(AttachOnEveryLoadedEventProperty); } set { SetValue(AttachOnEveryLoadedEventProperty, value); } }
+        public bool AttachOnEveryLoadedEvent { get { return (bool)GetValue(AttachOnEveryLoadedEventProperty); } set { SetValue(AttachOnEveryLoadedEventProperty, value.Box()); } }
 
         protected override void OnAttached()
         {

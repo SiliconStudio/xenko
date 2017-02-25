@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Globalization;
 using System.Windows;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -24,7 +25,8 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value != DependencyProperty.UnsetValue;
+            var result = value != DependencyProperty.UnsetValue;
+            return result.Box();
         }
     }
 }

@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Input;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Extensions;
-
+using SiliconStudio.Presentation.Internal;
 using Color = SiliconStudio.Core.Mathematics.Color;
 using Point = System.Windows.Point;
 using Rectangle = System.Windows.Shapes.Rectangle;
@@ -87,7 +87,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="ShowAlpha"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ShowAlphaProperty = DependencyProperty.Register("ShowAlpha", typeof(bool), typeof(ColorPicker), new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty ShowAlphaProperty = DependencyProperty.Register("ShowAlpha", typeof(bool), typeof(ColorPicker), new FrameworkPropertyMetadata(BooleanBoxes.TrueBox, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         /// <summary>
         /// Identifies the <see cref="InputColumnWidth"/> dependency property.
@@ -148,7 +148,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether the alpha component of the color should be displayed in the color picker.
         /// </summary>
-        public bool ShowAlpha { get { return (bool)GetValue(ShowAlphaProperty); } set { SetValue(ShowAlphaProperty, value); } }
+        public bool ShowAlpha { get { return (bool)GetValue(ShowAlphaProperty); } set { SetValue(ShowAlphaProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets the length of the input column of the color picker.

@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Controls;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -21,7 +22,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// Gets or sets whether this behavior is currently enabled.
         /// </summary>
-        public bool IsEnabled { get { return (bool)GetValue(IsEnabledProperty); } set { SetValue(IsEnabledProperty, value); } }
+        public bool IsEnabled { get { return (bool)GetValue(IsEnabledProperty); } set { SetValue(IsEnabledProperty, value.Box()); } }
 
         /// <inheritdoc/>
         protected override void OnAttached()

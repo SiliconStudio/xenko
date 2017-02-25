@@ -45,6 +45,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation
 {
@@ -64,7 +65,7 @@ namespace SiliconStudio.Presentation
         /// Identifies the <see cref="StrictBoldItalic"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty StrictBoldItalicProperty =
-            DependencyProperty.Register(nameof(StrictBoldItalic), typeof(bool), typeof(XamlMarkdown), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(StrictBoldItalic), typeof(bool), typeof(XamlMarkdown), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
         /// maximum nested depth of [] and () supported by the transform; implementation detail
@@ -158,7 +159,7 @@ namespace SiliconStudio.Presentation
         /// WARNING: this is a significant deviation from the markdown spec
         /// </summary>
         /// 
-        public bool StrictBoldItalic { get { return (bool)GetValue(StrictBoldItalicProperty); } set { SetValue(StrictBoldItalicProperty, value); } }
+        public bool StrictBoldItalic { get { return (bool)GetValue(StrictBoldItalicProperty); } set { SetValue(StrictBoldItalicProperty, value.Box()); } }
 
         [CanBeNull]
         private Style CodeStyle => codeStyle ?? (codeStyle = TryFindStyle(CodeStyleKey));

@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -188,25 +189,25 @@ namespace SiliconStudio.Presentation.Controls
             "IsAliased",
             typeof(bool),
             typeof(ScaleBar),
-            new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsRender, OnIsAliasedPropertyChanged));
+            new FrameworkPropertyMetadata(BooleanBoxes.TrueBox, FrameworkPropertyMetadataOptions.AffectsRender, OnIsAliasedPropertyChanged));
 
         public static readonly DependencyProperty IsTextVisibleProperty = DependencyProperty.Register(
             "IsTextVisible",
             typeof(bool),
             typeof(ScaleBar),
-            new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsRender));
+            new FrameworkPropertyMetadata(BooleanBoxes.TrueBox, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly DependencyProperty IsSmallTickVisibleProperty = DependencyProperty.Register(
             "IsSmallTickVisible",
             typeof(bool),
             typeof(ScaleBar),
-            new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsRender));
+            new FrameworkPropertyMetadata(BooleanBoxes.TrueBox, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly DependencyProperty IsZoomingOnMouseWheelProperty = DependencyProperty.Register(
             "IsZoomingOnMouseWheel",
             typeof(bool),
             typeof(ScaleBar),
-            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
+            new FrameworkPropertyMetadata(BooleanBoxes.FalseBox, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly DependencyProperty MouseWheelZoomCoeficientProperty = DependencyProperty.Register(
             "MouseWheelZoomCoeficient",
@@ -218,13 +219,13 @@ namespace SiliconStudio.Presentation.Controls
             "IsDraggingOnLeftMouseButton",
             typeof(bool),
             typeof(ScaleBar),
-            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
+            new FrameworkPropertyMetadata(BooleanBoxes.FalseBox, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly DependencyProperty IsDraggingOnRightMouseButtonProperty = DependencyProperty.Register(
             "IsDraggingOnRightMouseButton",
             typeof(bool),
             typeof(ScaleBar),
-            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
+            new FrameworkPropertyMetadata(BooleanBoxes.FalseBox, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly DependencyProperty UnitSystemProperty = DependencyProperty.Register(
             "UnitSystem",
