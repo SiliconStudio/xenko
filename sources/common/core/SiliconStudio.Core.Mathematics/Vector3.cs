@@ -1010,6 +1010,28 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Orthonormalizes 2 vectors.
+        /// </summary>
+        /// <param name="normal">The normal vector.</param>
+        /// <param name="tangent">The tangent vector.</param>
+        /// <remarks>
+        /// <para>Makes vectors normalized and orthogonal to each other. 
+        /// Normalizes normal. Normalizes tangent and makes sure it is orthogonal to normal.</para>
+        /// </remarks>
+        public static void Orthonormalize(ref Vector3 normal, ref Vector3 tangent)
+        {
+            //Uses the modified Gram-Schmidt process.
+            //Because we are making unit vectors, we can optimize the math for orthogonalization
+            //and simplify the projection operation to remove the division.
+            //q1 = m1 / |m1|
+            //q2 = (m2 - (q1 ⋅ m2) * q1) / |m2 - (q1 ⋅ m2) * q1|
+
+            normal.Normalize();
+            tangent -= Vector3.Dot(normal, tangent) * normal;
+            tangent.Normalize();
+        }
+
+        /// <summary>
         /// Orthonormalizes a list of vectors.
         /// </summary>
         /// <param name="destination">The list of orthonormalized vectors.</param>

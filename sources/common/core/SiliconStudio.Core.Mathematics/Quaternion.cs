@@ -737,6 +737,41 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Creates a rotation with the specified forward and upwards directions.
+        /// </summary>
+        /// <param name="forward">The direction to look in.</param>
+        /// <param name="up">The vector that defines which direction is up.</param>
+        /// <returns>The created quaternion rotation</returns>
+        /// <example>
+        /// var cameraRotation = Quaternion.LookRotation(targetPosition - cameraPosition, Vector3.UnitY); 
+        /// </example>
+        public static Quaternion LookRotation(Vector3 forward, Vector3 up)
+        {
+            // usage forward = targetPos - cameraPos
+            // Which would create LH rotation. Xenko uses RH so we need to reverse it.
+            forward *= -1f;
+
+            Vector3.Orthonormalize(ref forward, ref up);
+            Vector3 right;
+            Vector3.Cross(ref up, ref forward, out right);
+
+            right.Normalize();
+
+            var w = (float)Math.Sqrt(1.0f + right.X + up.Y + forward.Z) * 0.5f;
+            var w4_recip = 1.0f / (4.0f * w);
+
+            var result = new Quaternion()
+            {
+                W = w,
+                X = (up.Z - forward.Y) * w4_recip,
+                Y = (forward.X - right.Z) * w4_recip,
+                Z = (right.Y - up.X) * w4_recip,
+            };
+
+            return result;
+        }
+
+        /// <summary>
         /// Rotates a Vector3 by the specified quaternion rotation.
         /// </summary>
         /// <param name="vector"></param>
