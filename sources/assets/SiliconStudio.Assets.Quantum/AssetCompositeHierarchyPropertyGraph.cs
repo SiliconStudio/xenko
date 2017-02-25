@@ -219,16 +219,13 @@ namespace SiliconStudio.Assets.Quantum
             // Remap ids from the root id collection to the new ids generated during cloning
             if (idRemapping != null)
             {
-                AssetPartsAnalysis.RemapPartsId(clonedHierarchy, idRemapping);
+                preCloningAsset.RemapIdentifiableIds(idRemapping);
             }
 
             foreach (var rootEntity in clonedHierarchy.RootPartIds)
             {
                 PostClonePart(clonedHierarchy.Parts[rootEntity].Part);
             }
-
-            if ((flags & SubHierarchyCloneFlags.GenerateNewBaseInstanceIds) != 0)
-                AssetPartsAnalysis.GenerateNewBaseInstanceIds(clonedHierarchy);
 
             return clonedHierarchy;
         }

@@ -22,7 +22,6 @@ namespace SiliconStudio.Assets
 
         public abstract bool ContainsPart(Guid id);
 
-        /// <inheritdoc />
         public override void FixupPartReferences(bool clearMissingReferences = true)
         {
             base.FixupPartReferences(clearMissingReferences);
