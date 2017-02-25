@@ -23,7 +23,8 @@ namespace SiliconStudio.Assets.Quantum.Commands
         public override bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)
         {
             var type = typeDescriptor.GetInnerCollectionType();
-            var isNullableStruct = type.IsNullable() && Nullable.GetUnderlyingType(type).IsStruct();
+            var underlyingType = Nullable.GetUnderlyingType(type);
+            var isNullableStruct = underlyingType != null && underlyingType.IsStruct();
             var isAbstractOrClass = type.IsAbstract || type.IsClass;
             //var isCollection = (typeDescriptor is CollectionDescriptor) || (typeDescriptor is DictionaryDescriptor);
 

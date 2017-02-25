@@ -52,6 +52,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the expected type of <see cref="Value"/>.
         /// </summary>
+        [NotNull]
         Type Type { get; }
 
         /// <summary>

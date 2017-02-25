@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Reflection
@@ -27,7 +28,7 @@ namespace SiliconStudio.Core.Reflection
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
         /// </summary>
-        public ObjectDescriptor(ITypeDescriptorFactory factory, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+        public ObjectDescriptor(ITypeDescriptorFactory factory, [NotNull] Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
         {
             if (factory == null) throw new ArgumentNullException(nameof(factory));
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -68,6 +69,7 @@ namespace SiliconStudio.Core.Reflection
 
         protected IAttributeRegistry AttributeRegistry => factory.AttributeRegistry;
 
+        [NotNull]
         public Type Type { get; }
 
         public IEnumerable<IMemberDescriptor> Members => members;
