@@ -166,11 +166,11 @@ namespace SiliconStudio.Assets.Quantum
                 var objectNode = node as AssetObjectNode;
                 if (objectNode != null)
                 {
-                    foreach (var overrideItem in objectNode.GetOverriddenItemIndices())
+                    foreach (var overrideItem in objectNode.GetOverriddenItemIndices().ToList())
                     {
                         objectNode.OverrideItem(false, overrideItem);
                     }
-                    foreach (var overrideKey in objectNode.GetOverriddenKeyIndices())
+                    foreach (var overrideKey in objectNode.GetOverriddenKeyIndices().ToList())
                     {
                         objectNode.OverrideKey(false, overrideKey);
                     }
@@ -373,12 +373,12 @@ namespace SiliconStudio.Assets.Quantum
                     }
                     if (objectNode != null)
                     {
-                        foreach (var index in objectNode.GetOverriddenItemIndices())
+                        foreach (var index in objectNode.GetOverriddenItemIndices().ToList())
                         {
                             objectNode.OverrideItem(false, index);
                             clearedOverrides.Add(new NodeOverride(objectNode, index, OverrideTarget.Item));
                         }
-                        foreach (var index in objectNode.GetOverriddenKeyIndices())
+                        foreach (var index in objectNode.GetOverriddenKeyIndices().ToList())
                         {
                             objectNode.OverrideKey(false, index);
                             clearedOverrides.Add(new NodeOverride(objectNode, index, OverrideTarget.Key));
