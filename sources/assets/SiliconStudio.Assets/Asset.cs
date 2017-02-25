@@ -153,15 +153,6 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Resolves the actual target of references to a part or base part of this asset. Depending on whether <paramref name="clearMissingReferences"/> is <c>true</c>,
-        /// missing references will be cleared, or left as-is.
-        /// </summary>
-        /// <param name="clearMissingReferences"><c>true</c> to clear missing references to parts or base parts; otherwise, <c>false</c>.</param>
-        public virtual void FixupPartReferences(bool clearMissingReferences = true)
-        {
-        }
-
-        /// <summary>
         /// Updates <see cref="Guid"/> properties of this asset representing references to <see cref="IIdentifiable"/> objects.
         /// </summary>
         /// <param name="remapping">The remapping to apply.</param>

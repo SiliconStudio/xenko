@@ -36,10 +36,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [AssetContentType(typeof(GraphicsCompositor))]
     [AssetDescription(FileExtension)]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
-    [AssetPartReference(typeof(RenderStage))]
-    // TODO: next 2 lines are here to force RenderStage to be serialized as references; ideally it should be separated from asset parts,
-    //       be a member attribute on RenderStages such as [ContainFullType(typeof(RenderStage))] and everywhere else is references
-    [AssetPartReference(typeof(ISharedRenderer))]
     [AssetCompiler(typeof(GraphicsCompositorAssetCompiler))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.10.0-beta01", typeof(FixPartReferenceUpgrader))]
     public class GraphicsCompositorAsset : AssetComposite
@@ -141,34 +137,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
             }
 
             return false;
-        }
-
-        /// <inheritdoc/>
-        public override object ResolvePartReference(object referencedObject)
-        {
-            var renderStageReference = referencedObject as RenderStage;
-            if (renderStageReference != null)
-            {
-                foreach (var renderStage in RenderStages)
-                {
-                    if (renderStage.Id == renderStageReference.Id)
-                        return renderStage;
-                }
-                return null;
-            }
-
-            var partReference = referencedObject as ISharedRenderer;
-            if (partReference != null)
-            {
-                foreach (var sharedRenderer in SharedRenderers)
-                {
-                    if (sharedRenderer.Id == partReference.Id)
-                        return sharedRenderer;
-                }
-                return null;
-            }
-
-            return null;
         }
 
         public GraphicsCompositor Compile(bool copyRenderers)
