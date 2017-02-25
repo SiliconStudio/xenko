@@ -16,8 +16,8 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("EntityComponentCollection")]
     [DebuggerTypeProxy(typeof(CollectionDebugView))]
-    [DebuggerDisplay("Count = {Count}")]
-    public class EntityComponentCollection : FastCollection<EntityComponent>
+    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
+    public sealed class EntityComponentCollection : FastCollection<EntityComponent>
     {
         private readonly Entity entity;
 
