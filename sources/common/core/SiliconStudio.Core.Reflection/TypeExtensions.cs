@@ -107,11 +107,12 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="obj">Any object</param>
         /// <param name="type">Numric type</param>
         /// <returns>Numeric value or null if the object is not a numeric value.</returns>
-        [NotNull]
+        [CanBeNull]
         public static object CastToNumericType([NotNull] this Type type, object obj)
         {
             if (!type.IsNumeric())
-                throw new InvalidOperationException($"{type} is not a valid numeric type");
+                // type is not a valid numeric type
+                return null;
 
             if (obj is decimal && type == typeof(decimal))
                 return obj; // do not convert into double
@@ -142,8 +143,9 @@ namespace SiliconStudio.Core.Reflection
                 if (type == typeof(decimal))
                     return (decimal)doubleValue;
             }
+
             // Note: this should never happen
-            throw new NotSupportedException();
+            return null;
         }
 
         /// <summary>
