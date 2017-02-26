@@ -306,7 +306,6 @@
     <Compile Include="ViewModel\DispatcherViewModel.cs" />
     <Compile Include="ViewModel\EditableViewModel.cs" />
     <Compile Include="Services\IDispatcherService.cs" />
-    <Compile Include="ViewModel\LoggerResultViewModel.cs" />
     <Compile Include="ViewModel\LoggerViewModel.cs" />
     <Compile Include="ValueConverters\VisibleOrCollapsed.cs" />
     <Compile Include="ValueConverters\VisibleOrHidden.cs" />

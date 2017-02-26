@@ -20,17 +20,17 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         }
 
         /// <inheritdoc/>
-        protected override void VisitMemberTarget(IMemberNode node, GraphNodePath currentPath)
+        protected override void VisitMemberTarget(IMemberNode node)
         {
             CheckAndProcessIdentifiable(node, Index.Empty);
-            base.VisitMemberTarget(node, currentPath);
+            base.VisitMemberTarget(node);
         }
 
         /// <inheritdoc/>
-        protected override void VisitItemTargets(IObjectNode node, GraphNodePath currentPath)
+        protected override void VisitItemTargets(IObjectNode node)
         {
             node.ItemReferences?.ForEach(x => CheckAndProcessIdentifiable(node, x.Index));
-            base.VisitItemTargets(node, currentPath);
+            base.VisitItemTargets(node);
         }
 
         /// <summary>

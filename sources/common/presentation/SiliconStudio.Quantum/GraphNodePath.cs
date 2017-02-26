@@ -8,7 +8,6 @@ using System.Linq;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Contents;
-using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
@@ -43,29 +42,49 @@ namespace SiliconStudio.Quantum
         public struct NodePathElement : IEquatable<NodePathElement>
         {
             public readonly ElementType Type;
-            public readonly object Value;
+            public readonly string Name;
+            public readonly Index Index;
+            public readonly Guid Guid;
 
-            private NodePathElement(object value, ElementType type)
+            private NodePathElement(string value)
             {
-                Value = value;
-                Type = type;
+                Name = value;
+                Index = Index.Empty;
+                Guid = Guid.Empty;
+                Type = ElementType.Member;
+            }
+
+            private NodePathElement(Index value)
+            {
+                Name = null;
+                Index = value;
+                Guid = Guid.Empty;
+                Type = ElementType.Index;
+            }
+
+            private NodePathElement(Guid value)
+            {
+                Name = null;
+                Index = Index.Empty;
+                Guid = value;
+                Type = ElementType.Target;
             }
 
             public static NodePathElement CreateMember([NotNull] string name)
             {
                 if (name == null) throw new ArgumentNullException(nameof(name));
-                return new NodePathElement(name, ElementType.Member);
+                return new NodePathElement(name);
             }
 
             public static NodePathElement CreateTarget()
             {
                 // We use a guid to allow equality test to fail between two different instances returned by CreateTarget
-                return new NodePathElement(Guid.NewGuid(), ElementType.Target);
+                return new NodePathElement(Guid.NewGuid());
             }
 
             public static NodePathElement CreateIndex(Index index)
             {
-                return new NodePathElement(index, ElementType.Index);
+                return new NodePathElement(index);
             }
 
             public bool EqualsInPath(NodePathElement other)
@@ -73,17 +92,9 @@ namespace SiliconStudio.Quantum
                 return Type == ElementType.Target && other.Type == ElementType.Target || Equals(other);
             }
 
-            public int GetHashCodeInPath()
-            {
-                unchecked
-                {
-                    return ((int)Type * 397) ^ (Type != ElementType.Target ? Value?.GetHashCode() ?? 0 : 0);
-                }
-            }
-
             public bool Equals(NodePathElement other)
             {
-                return Type == other.Type && Equals(Value, other.Value);
+                return Type == other.Type && Equals(Guid, other.Guid) && Equals(Index, other.Index) && Equals(Name, other.Name);
             }
 
             public override bool Equals(object obj)
@@ -97,9 +108,14 @@ namespace SiliconStudio.Quantum
             {
                 unchecked
                 {
-                    return ((int)Type*397) ^ (Value?.GetHashCode() ?? 0);
+                    var hashCode = (int)Type;
+                    hashCode = (hashCode * 397) ^ (Name?.GetHashCode() ?? 0);
+                    hashCode = (hashCode * 397) ^ Index.GetHashCode();
+                    hashCode = (hashCode * 397) ^ Guid.GetHashCode();
+                    return hashCode;
                 }
             }
+
 
             public static bool operator ==(NodePathElement left, NodePathElement right)
             {
@@ -116,11 +132,11 @@ namespace SiliconStudio.Quantum
                 switch (Type)
                 {
                     case ElementType.Member:
-                        return $".{Value}";
+                        return $".{Name}";
                     case ElementType.Target:
                         return "-> (Target)";
                     case ElementType.Index:
-                        return $"[{Value}]";
+                        return $"[{Index}]";
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -161,13 +177,13 @@ namespace SiliconStudio.Quantum
                     switch (element.Type)
                     {
                         case ElementType.Member:
-                            Current = ((IObjectNode)Current)[(string)element.Value];
+                            Current = ((IObjectNode)Current)[element.Name];
                             break;
                         case ElementType.Target:
                             Current = ((IMemberNode)Current).Target;
                             break;
                         case ElementType.Index:
-                            Current = ((IObjectNode)Current).ItemReferences[(Index)element.Value].TargetNode;
+                            Current = ((IObjectNode)Current).ItemReferences[element.Index].TargetNode;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -282,7 +298,7 @@ namespace SiliconStudio.Quantum
                 hashCode = (hashCode*397) ^ IsEmpty.GetHashCode();
                 foreach (var item in path)
                 {
-                    hashCode = (hashCode * 397) ^ item.GetHashCodeInPath();
+                    hashCode = (hashCode * 397) ^ item.GetHashCode();
                 }
                 return hashCode;
             }
@@ -345,41 +361,13 @@ namespace SiliconStudio.Quantum
         [Pure, NotNull]
         public GraphNodePath Clone() => Clone(RootNode, IsEmpty);
 
-        // TODO: re-implement each of the method below in an optimized way.
+        public void PushMember(string memberName) => PushElement(memberName, ElementType.Member);
 
-        /// <summary>
-        /// Creates a new <see cref="GraphNodePath"/> instance accessing a member node of the node represented by this path.
-        /// </summary>
-        /// <param name="memberName">The name of the member node.</param>
-        /// <returns>A new <see cref="GraphNodePath"/> instance accessing a member node of the node targeted by this path.</returns>
-        [Pure]
-        public GraphNodePath PushMember(string memberName) => PushElement(memberName, ElementType.Member);
+        public void PushTarget() => PushElement(null, ElementType.Target);
 
-        /// <summary>
-        /// Creates a new <see cref="GraphNodePath"/> instance accessing the target of the reference contained in the node represented by this path.
-        /// </summary>
-        /// <returns>A new <see cref="GraphNodePath"/> instance accessing the target of the reference contained in the node represented by this path.</returns>
-        [Pure, NotNull]
-        public GraphNodePath PushTarget() => PushElement(null, ElementType.Target);
+        public void PushIndex(Index index) => PushElement(index, ElementType.Index);
 
-        /// <summary>
-        /// Creates a new <see cref="GraphNodePath"/> instance accessing the target at a given index of the enumerable reference contained in the node represented by this path.
-        /// </summary>
-        /// <param name="index">The index of the target node.</param>
-        /// <returns>A new <see cref="GraphNodePath"/> instance accessing the target at a given index of the enumerable reference contained in the node represented by this path.</returns>
-        [Pure, NotNull]
-        public GraphNodePath PushIndex(Index index) => PushElement(index, ElementType.Index);
-
-        [Pure, NotNull]
-        public GraphNodePath PushChildPath(GraphNodePath childPath)
-        {
-            if (childPath.IsEmpty)
-                return Clone();
-
-            var result = Clone(RootNode, false);
-            result.path.AddRange(childPath.path);
-            return result;
-        }
+        public void Pop() => path.RemoveAt(path.Count - 1);
 
         // TODO: Switch to tuple return as soon as we have C# 7.0
         [NotNull]
@@ -394,7 +382,7 @@ namespace SiliconStudio.Quantum
                 bool lastItem = i == memberPathItems.Count - 1;
                 if (memberPathItem.MemberDescriptor != null)
                 {
-                    result = result.PushMember(memberPathItem.MemberDescriptor.Name);
+                    result.PushMember(memberPathItem.MemberDescriptor.Name);
                 }
                 else if (memberPathItem.GetIndex() != null)
                 {
@@ -407,7 +395,7 @@ namespace SiliconStudio.Quantum
                     }
                     else
                     {
-                        result = result.PushIndex(localIndex);
+                        result.PushIndex(localIndex);
                     }
                 }
 
@@ -419,7 +407,7 @@ namespace SiliconStudio.Quantum
                     var objectReference = (node as IMemberNode)?.TargetReference;
                     if (objectReference?.TargetNode != null)
                     {
-                        result = result.PushTarget();
+                        result.PushTarget();
                     }
                 }
             }
@@ -441,7 +429,7 @@ namespace SiliconStudio.Quantum
                 switch (itemPath.Type)
                 {
                     case ElementType.Member:
-                        var name = (string)itemPath.Value;
+                        var name = itemPath.Name;
                         node = ((IObjectNode)node)[name];
                         memberPath.Push(((MemberNode)node).MemberDescriptor);
                         break;
@@ -452,7 +440,7 @@ namespace SiliconStudio.Quantum
                         }
                         break;
                     case ElementType.Index:
-                        var index = (Index)itemPath.Value;
+                        var index = itemPath.Index;
                         var enumerableReference = ((IObjectNode)node).ItemReferences;
                         var descriptor = node.Descriptor;
                         var collectionDescriptor = descriptor as CollectionDescriptor;
@@ -482,27 +470,26 @@ namespace SiliconStudio.Quantum
             return clone;
         }
 
-        private GraphNodePath PushElement(object elementValue, ElementType type)
+        private void PushElement(object elementValue, ElementType type)
         {
-            var result = Clone(RootNode, false);
             switch (type)
             {
                 case ElementType.Member:
                     var name = elementValue as string;
                     if (name == null)
                         throw new ArgumentException("The value must be a non-null string when type is ElementType.Member.");
-                    result.path.Add(NodePathElement.CreateMember(name));
-                    return result;
+                    path.Add(NodePathElement.CreateMember(name));
+                    break;
                 case ElementType.Target:
                     if (elementValue != null)
                         throw new ArgumentException("The value must be null when type is ElementType.Target.");
-                    result.path.Add(NodePathElement.CreateTarget());
-                    return result;
+                    path.Add(NodePathElement.CreateTarget());
+                    break;
                 case ElementType.Index:
                     if (!(elementValue is Index))
                         throw new ArgumentException("The value must be an Index when type is ElementType.Index.");
-                    result.path.Add(NodePathElement.CreateIndex((Index)elementValue));
-                    return result;
+                    path.Add(NodePathElement.CreateIndex((Index)elementValue));
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type));
             }

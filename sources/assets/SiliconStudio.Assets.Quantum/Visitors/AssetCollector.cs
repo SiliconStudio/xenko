@@ -31,17 +31,17 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         }
 
         /// <inheritdoc/>
-        protected override void VisitReference(IGraphNode referencer, ObjectReference reference, GraphNodePath targetPath)
+        protected override void VisitReference(IGraphNode referencer, ObjectReference reference)
         {
             var asset = reference.TargetNode.Retrieve() as Asset;
             if (asset != null)
             {
-                assets.Add(targetPath.Clone(), asset);
+                assets.Add(CurrentPath.Clone(), asset);
             }
             // Don't continue the visit once we found an asset, we cannot have nested assets.
             else
             {
-                base.VisitReference(referencer, reference, targetPath);
+                base.VisitReference(referencer, reference);
             }
         }
     }

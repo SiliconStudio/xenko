@@ -328,7 +328,8 @@ namespace SiliconStudio.Presentation.Quantum
                     // The path is the source path here - the target path might contain the target resolution that we don't want at that point
                     if (Owner.PropertiesProvider.ShouldConstructMember(memberContent, ExpandReferencePolicy))
                     {
-                        var childPath = targetNodePath.PushMember(memberContent.Name);
+                        var childPath = targetNodePath.Clone();
+                        childPath.PushMember(memberContent.Name);
                         var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, memberContent.Name, memberContent.IsPrimitive, memberContent, childPath, memberContent.Type, Index.Empty);
                         AddChild(child);
                         child.Initialize();
@@ -470,19 +471,20 @@ namespace SiliconStudio.Presentation.Quantum
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
             if (sourceNodePath == null) throw new ArgumentNullException(nameof(sourceNodePath));
 
+            var targetPath = sourceNodePath.Clone();
             var objectReference = (sourceNode as IMemberNode)?.TargetReference;
             if (objectReference != null)
             {
-                return sourceNodePath.PushTarget();
+                targetPath.PushTarget();
             }
 
             var referenceEnumerable = (sourceNode as IObjectNode)?.ItemReferences;
             if (referenceEnumerable != null && !index.IsEmpty)
             {
-                return sourceNodePath.PushIndex(index);
+                targetPath.PushIndex(index);
             }
 
-            return sourceNodePath.Clone();
+            return targetPath;
         }
     }
 

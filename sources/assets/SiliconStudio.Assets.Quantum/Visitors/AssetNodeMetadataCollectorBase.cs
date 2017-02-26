@@ -15,7 +15,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         private int inNonIdentifiableType;
 
         /// <inheritdoc/>
-        protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
+        protected override void VisitNode(IGraphNode node)
         {
             var assetNode = (IAssetNode)node;
 
@@ -26,7 +26,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
                 inNonIdentifiableType++;
             }
 
-            var path = ConvertPath(currentPath, inNonIdentifiableType);
+            var path = ConvertPath(CurrentPath, inNonIdentifiableType);
             var memberNode = assetNode as IAssetMemberNode;
             if (memberNode != null)
             {
@@ -37,7 +37,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
             {
                 VisitObjectNode(objectNode, path);
             }
-            base.VisitNode(node, currentPath);
+            base.VisitNode(node);
 
             if (localInNonIdentifiableType)
                 inNonIdentifiableType--;
@@ -76,7 +76,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
                 {
                     case GraphNodePath.ElementType.Member:
                     {
-                        var member = (string)item.Value;
+                        var member = item.Name;
                         result.PushMember(member);
                         var objectNode = currentNode as IObjectNode;
                         if (objectNode == null) throw new InvalidOperationException($"An IObjectNode was expected when processing the path [{path}]");
@@ -95,7 +95,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
                     }
                     case GraphNodePath.ElementType.Index:
                     {
-                        var index = (Index)item.Value;
+                        var index = item.Index;
                         var objectNode = currentNode as AssetObjectNode;
                         if (objectNode == null) throw new InvalidOperationException($"An IObjectNode was expected when processing the path [{path}]");
                         if (inNonIdentifiableType > 0 || !CollectionItemIdHelper.HasCollectionItemIds(objectNode.Retrieve()))
