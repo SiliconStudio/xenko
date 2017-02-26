@@ -14,6 +14,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.MicroThreading;
 using System.Threading;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Assets.Effect;
 using SiliconStudio.Xenko.Graphics;
@@ -158,7 +159,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
                 // Fill list of bundles
                 var bundlePacker = new BundlePacker();
-                bundlePacker.Build(builderOptions.Logger, projectSession, buildProfile, indexName, outputDirectory, builder.DisableCompressionIds);
+                bundlePacker.Build(builderOptions.Logger, projectSession, buildProfile, indexName, outputDirectory, builder.DisableCompressionIds, context.GetCompilationMode() != CompilationMode.AppStore);
 
                 return result;
             }
