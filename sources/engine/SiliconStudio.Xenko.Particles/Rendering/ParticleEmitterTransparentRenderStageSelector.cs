@@ -10,13 +10,12 @@ namespace SiliconStudio.Xenko.Particles.Rendering
     {
         public override void Process(RenderObject renderObject)
         {
-            if (((RenderGroupMask)(1U << (int)renderObject.RenderGroup) & RenderGroup) != 0)
+            if (TransparentRenderStage != null && ((RenderGroupMask)(1U << (int)renderObject.RenderGroup) & RenderGroup) != 0)
             {
                 var renderParticleEmitter = (RenderParticleEmitter)renderObject;
                 var effectName = renderParticleEmitter.ParticleEmitter.Material.EffectName;
 
-                var renderStage = TransparentRenderStage;
-                renderObject.ActiveRenderStages[renderStage.Index] = new ActiveRenderStage(effectName);
+                renderObject.ActiveRenderStages[TransparentRenderStage.Index] = new ActiveRenderStage(effectName);
             }
         }
     }

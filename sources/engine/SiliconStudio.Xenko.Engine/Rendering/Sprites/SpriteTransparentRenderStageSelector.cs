@@ -11,7 +11,8 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 var renderSprite = (RenderSprite)renderObject;
 
                 var renderStage = renderSprite.SpriteComponent.CurrentSprite.IsTransparent ? TransparentRenderStage : OpaqueRenderStage;
-                renderObject.ActiveRenderStages[renderStage.Index] = new ActiveRenderStage(EffectName);
+                if (renderStage != null)
+                    renderObject.ActiveRenderStages[renderStage.Index] = new ActiveRenderStage(EffectName);
             }
         }
     }
