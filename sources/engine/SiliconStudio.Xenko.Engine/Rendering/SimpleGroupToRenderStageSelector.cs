@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public override void Process(RenderObject renderObject)
         {
-            if (((RenderGroupMask)(1U << (int)renderObject.RenderGroup) & RenderGroup) != 0)
+            if (RenderStage != null && ((RenderGroupMask)(1U << (int)renderObject.RenderGroup) & RenderGroup) != 0)
             {
                 renderObject.ActiveRenderStages[RenderStage.Index] = new ActiveRenderStage(EffectName);
             }
