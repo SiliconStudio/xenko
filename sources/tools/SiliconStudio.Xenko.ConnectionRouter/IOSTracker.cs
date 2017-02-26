@@ -113,8 +113,8 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     }
                 };
                 process.OutputDataReceived += (sender, args) =>
-                {               
-                    if (args.Data.IsNullOrEmpty()) return;
+                {
+                    if (string.IsNullOrEmpty(args.Data)) return;
 
                     thisRunDevices.Add(args.Data);
                     if (devices.ContainsKey(args.Data)) return;

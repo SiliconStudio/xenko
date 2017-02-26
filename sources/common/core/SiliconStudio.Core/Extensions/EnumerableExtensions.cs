@@ -32,18 +32,6 @@ namespace SiliconStudio.Core.Extensions
         }
 
         /// <summary>
-        /// Indicates whether the specified string is null or an empty string.
-        /// </summary>
-        /// <param name="value">The string to test.</param>
-        /// <returns><c>true</c> if the value parameter is null or an empty string (""); otherwise, <c>false</c>.</returns>
-        [Obsolete("Use string.IsNullOrEmpty() instead")]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNullOrEmpty(this string value)
-        {
-            return string.IsNullOrEmpty(value);
-        }
-
-        /// <summary>
         /// Executes an action for each (casted) item of the given enumerable.
         /// </summary>
         /// <typeparam name="T">Type of the item value in the enumerable.</typeparam>
