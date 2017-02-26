@@ -20,7 +20,6 @@ namespace SiliconStudio.Xenko.Assets.UI
     /// <summary>
     /// Base class for assets containing a hierarchy of <see cref="UIElement"/>.
     /// </summary>
-    [AssetPartReference(typeof(UIElement), ExistsTopLevel = true)]
     public abstract class UIAssetBase : AssetCompositeHierarchy<UIElementDesign, UIElement>
     {
         [DataContract("UIDesign")]

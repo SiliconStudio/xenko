@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Quantum.Visitors;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 
@@ -30,16 +28,11 @@ namespace SiliconStudio.Assets.Quantum
 
         public abstract bool IsChildPartReference(IGraphNode node, Index index);
 
-        /// <summary>
-        /// Clears all object reference targeting the given <see cref="IIdentifiable"/> object.
-        /// </summary>
-        /// <param name="obj">The target object for which to clear references.</param>
-        public override void ClearReferencesToObject(IIdentifiable obj)
+        /// <inheritdoc/>
+        public override void ClearReferencesToObjects(IEnumerable<Guid> objectIds)
         {
-            if (obj == null)
-                return;
-
-            var visitor = new ClearObjectReferenceVisitor(this, obj.Id, (node, index) => !IsChildPartReference(node, index));
+            if (objectIds == null) throw new ArgumentNullException(nameof(objectIds));
+            var visitor = new ClearObjectReferenceVisitor(this, objectIds, (node, index) => !IsChildPartReference(node, index));
             visitor.Visit(RootNode);
         }
 
@@ -92,13 +85,14 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         /// <summary>
-        /// Deletes the given part and all its children, recursively, and clear all object references to it.
+        /// Deletes the given parts and all its children, recursively, and clear all object references to it.
         /// </summary>
-        /// <param name="part">The part to delete.</param>
-        public virtual void DeletePart(TAssetPart part)
+        /// <param name="parts">The parts to delete.</param>
+        public virtual void DeleteParts([NotNull] IEnumerable<TAssetPart> parts)
         {
-            var partsToDelete = new Stack<TAssetPart>();
-            partsToDelete.Push(part);
+            if (parts == null) throw new ArgumentNullException(nameof(parts));
+            var partsToDelete = new Stack<TAssetPart>(parts);
+            var referencesToClear = new HashSet<Guid>();
             while (partsToDelete.Count > 0)
             {
                 // We need to remove children first to keep consistency in our data
@@ -114,14 +108,12 @@ namespace SiliconStudio.Assets.Quantum
                 partToDelete = partsToDelete.Pop();
                 // First remove all references to the entity (and its component!) we are deleting
                 // Note: we must do this first so instances of this prefabs will be able to properly make the connection with the base entity being cleared
-                var containedIdentifiable = IdentifiableObjectCollector.Collect(this, Container.NodeContainer.GetNode(partToDelete));
-                foreach (var identifiable in containedIdentifiable)
-                {
-                    ClearReferencesToObject(identifiable.Value);
-                }
+                var containedIdentifiables = IdentifiableObjectCollector.Collect(this, Container.NodeContainer.GetNode(partToDelete));
+                containedIdentifiables.Keys.ForEach(x => referencesToClear.Add(x));
                 // Then actually remove the entity from the hierarchy
                 RemovePartFromAsset(AssetHierarchy.Hierarchy.Parts[partToDelete.Id]);
             }
+            ClearReferencesToObjects(referencesToClear);
         }
 
         public override IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
@@ -225,27 +217,10 @@ namespace SiliconStudio.Assets.Quantum
             // Remap ids from the root id collection to the new ids generated during cloning
             if (idRemapping != null)
             {
-                AssetPartsAnalysis.RemapPartsId(clonedHierarchy, idRemapping);
+                preCloningAsset.RemapIdentifiableIds(idRemapping);
             }
-
-            foreach (var rootEntity in clonedHierarchy.RootPartIds)
-            {
-                PostClonePart(clonedHierarchy.Parts[rootEntity].Part);
-            }
-
-            if ((flags & SubHierarchyCloneFlags.GenerateNewBaseInstanceIds) != 0)
-                AssetPartsAnalysis.GenerateNewBaseInstanceIds(clonedHierarchy);
 
             return clonedHierarchy;
-        }
-
-        /// <summary>
-        /// Called by <see cref="CloneSubHierarchies"/> after a part has been cloned.
-        /// </summary>
-        /// <param name="part">The cloned part.</param>
-        protected virtual void PostClonePart(TAssetPart part)
-        {
-            // default implementation does nothing
         }
 
         public override GraphVisitorBase CreateReconcilierVisitor()
@@ -253,12 +228,11 @@ namespace SiliconStudio.Assets.Quantum
             return new AssetCompositeHierarchyPartVisitor<TAssetPartDesign, TAssetPart>(this);
         }
 
-        public override bool IsObjectReference(IGraphNode targetNode, Index index)
+        public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
         {
             if (targetNode is IObjectNode && index.IsEmpty)
-                return base.IsObjectReference(targetNode, index);
+                return base.IsObjectReference(targetNode, index, value);
 
-            var value = targetNode.Retrieve(index);
             if (value is TAssetPart)
             {
                 // Check if we're the part referenced by a part design - other cases are references
@@ -266,24 +240,9 @@ namespace SiliconStudio.Assets.Quantum
                 return member == null || member.Parent.Type != typeof(TAssetPartDesign);
             }
 
-            return base.IsObjectReference(targetNode, index);
+            return base.IsObjectReference(targetNode, index, value);
         }
 
-
-        public override bool IsReferencedPart(IMemberNode member, IGraphNode targetNode)
-        {
-            // If we're not accessing the target node through a member (eg. the target node is the root node of the visit)
-            // or if we're visiting the member itself and not yet its target, then we're not a referenced part.
-            if (member == null || targetNode == null || member == targetNode)
-                return false;
-
-            if (typeof(TAssetPart).IsAssignableFrom(targetNode.Type))
-            {
-                // Check if we're the part referenced by a part design - other cases are references
-                return member.Parent.Type != typeof(TAssetPartDesign);
-            }
-            return base.IsReferencedPart(member, targetNode);
-        }
 
         /// <summary>
         /// Adds the given child part to the list of children of the given parent part.

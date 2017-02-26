@@ -11,11 +11,6 @@ using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
-    [AssetPartReference(typeof(Method), typeof(Block), typeof(Link), typeof(Symbol))]
-    [AssetPartReference(typeof(Block), typeof(Slot), ReferenceType = typeof(BlockReference), KeepTypeInfo = false)]
-    [AssetPartReference(typeof(Link))]
-    [AssetPartReference(typeof(Symbol))]
-    [AssetPartReference(typeof(Slot))]
     [DataContract("VisualScriptAsset")]
     [Display(85, "Visual Script")]
     [AssetDescription(FileExtension)]
@@ -153,97 +148,6 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                             return slot;
                     }
                 }
-            }
-
-            return null;
-        }
-
-        /// <inheritdoc/>
-        public override object ResolvePartReference(object partReference)
-        {
-            var propertyReference = partReference as Property;
-            if (propertyReference != null)
-            {
-                foreach (var property in Properties)
-                {
-                    if (property.Id == propertyReference.Id)
-                    {
-                        return property;
-                    }
-                }
-                return null;
-            }
-
-            var parameterReference = partReference as Parameter;
-            if (parameterReference != null)
-            {
-                foreach (var method in Methods)
-                {
-                    foreach (var parameter in method.Parameters)
-                    {
-                        if (parameter.Id == parameterReference.Id)
-                        {
-                            return method;
-                        }
-                    }
-                }
-                return null;
-            }
-
-            var methodReference = partReference as Method;
-            if (methodReference != null)
-            {
-                foreach (var method in Methods)
-                {
-                    if (method.Id == methodReference.Id)
-                    {
-                        return method;
-                    }
-                }
-                return null;
-            }
-
-            var blockReference = partReference as Block;
-            if (blockReference != null)
-            {
-                foreach (var function in Methods)
-                {
-                    Block realPart;
-                    if (function.Blocks.TryGetValue(blockReference.Id, out realPart))
-                        return realPart;
-                }
-                return null;
-            }
-
-            var linkReference = partReference as Link;
-            if (linkReference != null)
-            {
-                foreach (var function in Methods)
-                {
-                    Link realPart;
-                    if (function.Links.TryGetValue(linkReference.Id, out realPart))
-                        return realPart;
-                }
-                return null;
-            }
-
-            var slotReference = partReference as Slot;
-            if (slotReference != null)
-            {
-                // TODO: store slot reference as Block Id + Slot Id for faster lookup?
-                foreach (var function in Methods)
-                {
-                    foreach (var block in function.Blocks)
-                    {
-                        foreach (var slot in block.Slots)
-                        {
-                            if (slot.Id == slotReference.Id)
-                                return slot;
-                        }
-                    }
-                }
-
-                return null;
             }
 
             return null;

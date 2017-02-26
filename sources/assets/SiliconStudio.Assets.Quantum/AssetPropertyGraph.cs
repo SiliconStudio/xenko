@@ -166,11 +166,11 @@ namespace SiliconStudio.Assets.Quantum
                 var objectNode = node as AssetObjectNode;
                 if (objectNode != null)
                 {
-                    foreach (var overrideItem in objectNode.GetOverriddenItemIndices())
+                    foreach (var overrideItem in objectNode.GetOverriddenItemIndices().ToList())
                     {
                         objectNode.OverrideItem(false, overrideItem);
                     }
-                    foreach (var overrideKey in objectNode.GetOverriddenKeyIndices())
+                    foreach (var overrideKey in objectNode.GetOverriddenKeyIndices().ToList())
                     {
                         objectNode.OverrideKey(false, overrideKey);
                     }
@@ -181,21 +181,19 @@ namespace SiliconStudio.Assets.Quantum
             ReconcileWithBase(rootNode);
         }
 
-        public virtual bool IsObjectReference(IGraphNode targetNode, Index index)
+        public virtual bool IsObjectReference(IGraphNode targetNode, Index index, object value)
         {
             return false;
         }
 
         /// <summary>
-        /// Clears all object reference targeting the given <see cref="IIdentifiable"/> object.
+        /// Clears all object references targeting the <see cref="IIdentifiable"/> objects corresponding to the given identifiers.
         /// </summary>
-        /// <param name="obj">The target object for which to clear references.</param>
-        public virtual void ClearReferencesToObject([CanBeNull] IIdentifiable obj)
+        /// <param name="objectIds">The identifiers of the objects for which to clear targeting references.</param>
+        public virtual void ClearReferencesToObjects([NotNull] IEnumerable<Guid> objectIds)
         {
-            if (obj == null)
-                return;
-
-            var visitor = new ClearObjectReferenceVisitor(this, obj.Id);
+            if (objectIds == null) throw new ArgumentNullException(nameof(objectIds));
+            var visitor = new ClearObjectReferenceVisitor(this, objectIds);
             visitor.Visit(RootNode);
         }
 
@@ -375,12 +373,12 @@ namespace SiliconStudio.Assets.Quantum
                     }
                     if (objectNode != null)
                     {
-                        foreach (var index in objectNode.GetOverriddenItemIndices())
+                        foreach (var index in objectNode.GetOverriddenItemIndices().ToList())
                         {
                             objectNode.OverrideItem(false, index);
                             clearedOverrides.Add(new NodeOverride(objectNode, index, OverrideTarget.Item));
                         }
-                        foreach (var index in objectNode.GetOverriddenKeyIndices())
+                        foreach (var index in objectNode.GetOverriddenKeyIndices().ToList())
                         {
                             objectNode.OverrideKey(false, index);
                             clearedOverrides.Add(new NodeOverride(objectNode, index, OverrideTarget.Key));
@@ -624,7 +622,7 @@ namespace SiliconStudio.Assets.Quantum
                     {
                         object clonedValue;
                         // Object references
-                        if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty))
+                        if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty, memberNode.BaseNode.Retrieve()))
                             clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseValue, memberNode);
                         else
                             clonedValue = CloneValueFromBase(baseValue, assetNode);
@@ -719,7 +717,7 @@ namespace SiliconStudio.Assets.Quantum
                                     object clonedValue;
                                     var baseItemValue = objectNode.BaseNode.Retrieve(index);
                                     // Object references
-                                    if (baseItemValue is IIdentifiable && IsObjectReference(objectNode.BaseNode, index))
+                                    if (baseItemValue is IIdentifiable && IsObjectReference(objectNode.BaseNode, index, objectNode.BaseNode.Retrieve(index)))
                                         clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseItemValue, objectNode);
                                     else
                                         clonedValue = CloneValueFromBase(baseItemValue, assetNode);
@@ -806,7 +804,7 @@ namespace SiliconStudio.Assets.Quantum
             var baseValue = memberNode.BaseNode.Retrieve();
 
             // Object references
-            if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty))
+            if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty, memberNode.BaseNode.Retrieve()))
             {
                 if (!reconcileObjectReference)
                     return false;
@@ -839,7 +837,7 @@ namespace SiliconStudio.Assets.Quantum
             var baseValue = node.BaseNode.Retrieve(baseIndex);
 
             // Object references
-            if (baseValue is IIdentifiable && IsObjectReference(node.BaseNode, baseIndex))
+            if (baseValue is IIdentifiable && IsObjectReference(node.BaseNode, baseIndex, node.BaseNode.Retrieve(baseIndex)))
             {
                 if (!reconcileObjectReference)
                     return false;

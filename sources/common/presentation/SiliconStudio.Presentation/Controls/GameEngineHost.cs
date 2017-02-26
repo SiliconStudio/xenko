@@ -64,7 +64,8 @@ namespace SiliconStudio.Presentation.Controls
             Unloaded -= OnUnloaded;
             LayoutUpdated -= OnLayoutUpdated;
             IsVisibleChanged -= OnIsVisibleChanged;
-            NativeHelper.SetParent(Handle, IntPtr.Zero);
+            // TODO: This seems to be blocking when exiting the Game Studio, but doesn't seem to be necessary
+            //NativeHelper.SetParent(Handle, IntPtr.Zero);
             NativeHelper.DestroyWindow(Handle);
             isDisposed = true;
         }

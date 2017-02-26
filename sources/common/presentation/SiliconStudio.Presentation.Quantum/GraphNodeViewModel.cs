@@ -181,16 +181,6 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal Guid ModelGuid => SourceNode.Guid;
 
-        /// <summary>
-        /// Indicates whether this <see cref="GraphNodeViewModel"/> instance corresponds to the given <see cref="IContentNode"/>.
-        /// </summary>
-        /// <param name="node">The node to match.</param>
-        /// <returns><c>true</c> if the node matches, <c>false</c> otherwise.</returns>
-        public bool MatchNode(IGraphNode node)
-        {
-            return SourceNode == node;
-        }
-
         // TODO: If possible, make this private, it's not a good thing to expose
         public IMemberDescriptor GetMemberDescriptor()
         {
@@ -307,30 +297,19 @@ namespace SiliconStudio.Presentation.Quantum
         {
             // Set the default policy for expanding reference children.
             ExpandReferencePolicy = ExpandReferencePolicy.Full;
-
-            var memberSourceNode = SourceNode as IMemberNode;
-
-            // Node representing a member with a reference to another object
-            if (SourceNode != targetNode && SourceNode.IsReference)
-            {
-                var objectReference = memberSourceNode?.TargetReference ?? (targetNode as IObjectNode)?.ItemReferences?[index];
-                // Discard the children of the referenced object if requested by the property provider
-                if (objectReference != null)
-                {
-                    ExpandReferencePolicy = Owner.PropertiesProvider.ShouldExpandReference(SourceNode as IMemberNode, objectReference);
-                    if (ExpandReferencePolicy == ExpandReferencePolicy.None)
-                        return;
-                }
-            }
-
             var initializedChildren = new List<NodeViewModel>();
 
             var objectNode = targetNode as IObjectNode;
             if (objectNode != null)
             {
-                GenerateItems((IObjectNode)targetNode, targetNodePath, initializedChildren);
-                GenerateMembers(objectNode, targetNodePath, initializedChildren);
+                ExpandReferencePolicy = Owner.PropertiesProvider.ShouldConstructChildren(SourceNode, index);
+                if (ExpandReferencePolicy != ExpandReferencePolicy.None)
+                {
+                    GenerateMembers(objectNode, targetNodePath, initializedChildren);
+                    GenerateItems(objectNode, targetNodePath, initializedChildren);
+                }
             }
+
             // Call FinalizeInitialization on all created nodes after they were all initialized.
             foreach (var child in initializedChildren)
             {
@@ -370,43 +349,50 @@ namespace SiliconStudio.Presentation.Quantum
                 // Case 1: the target is a collection of non-primitive values
                 // We create one node per item of the collection, we will check later if the reference should be expanded.
                 foreach (var reference in referenceEnumerable)
-                {
-                    // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
-                    // In this case, we must set the actual type to have type converter working, since they usually can't convert
-                    // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
-                    var type = reference.TargetNode != null && reference.TargetNode.IsPrimitive ? reference.TargetNode.Type : referenceEnumerable.ElementType;
-                    var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, false, objectNode, targetNodePath, type, reference.Index);
-                    AddChild(child);
-                    child.Initialize();
-                    initializedChildren.Add(child);
+                {                    
+                    if (Owner.PropertiesProvider.ShouldConstructItem(objectNode, reference.Index, ExpandReferencePolicy))
+                    {
+                        // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
+                        // In this case, we must set the actual type to have type converter working, since they usually can't convert
+                        // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
+                        var type = reference.TargetNode != null && reference.TargetNode.IsPrimitive ? reference.TargetNode.Type : referenceEnumerable.ElementType;
+                        var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, false, objectNode, targetNodePath, type, reference.Index);
+                        AddChild(child);
+                        child.Initialize();
+                        initializedChildren.Add(child);
+                    }
                 }
             }
             else if (dictionary != null && objectNode.Retrieve() != null)
             {
                 // Case 2: the target is a dictionary of primitive values
-                // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
                 // We create one node per item of the collection.
                 foreach (var key in dictionary.GetKeys(objectNode.Retrieve()))
                 {
                     var newIndex = new Index(key);
-                    var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, objectNode, targetNodePath, dictionary.ValueType, newIndex);
-                    AddChild(child);
-                    child.Initialize();
-                    initializedChildren.Add(child);
+                    if (Owner.PropertiesProvider.ShouldConstructItem(objectNode, newIndex, ExpandReferencePolicy))
+                    {
+                        var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, objectNode, targetNodePath, dictionary.ValueType, newIndex);
+                        AddChild(child);
+                        child.Initialize();
+                        initializedChildren.Add(child);
+                    }
                 }
             }
             else if (list != null && objectNode.Retrieve() != null)
             {
                 // Case 3: the target is a list of primitive values
-                // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
                 // We create one node per item of the collection.
-                for (int i = 0; i < list.GetCollectionCount(objectNode.Retrieve()); ++i)
+                for (var i = 0; i < list.GetCollectionCount(objectNode.Retrieve()); ++i)
                 {
                     var newIndex = new Index(i);
-                    var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, objectNode, targetNodePath, list.ElementType, newIndex);
-                    AddChild(child);
-                    child.Initialize();
-                    initializedChildren.Add(child);
+                    if (Owner.PropertiesProvider.ShouldConstructItem(objectNode, newIndex, ExpandReferencePolicy))
+                    {
+                        var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, objectNode, targetNodePath, list.ElementType, newIndex);
+                        AddChild(child);
+                        child.Initialize();
+                        initializedChildren.Add(child);
+                    }
                 }
             }
         }

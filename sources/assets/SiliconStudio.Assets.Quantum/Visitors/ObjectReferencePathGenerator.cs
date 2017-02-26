@@ -36,7 +36,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// <inheritdoc/>
         protected override void VisitMemberNode(IAssetMemberNode memberNode, YamlAssetPath currentPath)
         {
-            if (propertyGraph.IsObjectReference(memberNode, Index.Empty))
+            if (propertyGraph.IsObjectReference(memberNode, Index.Empty, memberNode.Retrieve()))
             {
                 var value = memberNode.Retrieve();
                 if (value == null)
@@ -60,7 +60,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
 
             foreach (var index in ((IAssetObjectNodeInternal)objectNode).Indices)
             {
-                if (!propertyGraph.IsObjectReference(objectNode, index))
+                if (!propertyGraph.IsObjectReference(objectNode, index, objectNode.Retrieve(index)))
                     continue;
 
                 var itemPath = currentPath.Clone();

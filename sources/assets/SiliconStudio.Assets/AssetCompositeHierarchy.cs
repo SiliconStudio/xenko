@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Assets
 {
@@ -115,9 +113,18 @@ namespace SiliconStudio.Assets
                 newPart.Base = new BasePart(new AssetReference(Id, baseLocation), part.Part.Id, instanceId);
             }
 
-            AssetPartsAnalysis.RemapPartsId(newAsset.Hierarchy, idRemapping);
-
             return newAsset;
+        }
+
+        /// <inheritdoc />
+        public override void RemapIdentifiableIds(Dictionary<Guid, Guid> remapping)
+        {
+            for (var i = 0; i < Hierarchy.RootPartIds.Count; ++i)
+            {
+                Guid newId;
+                if (remapping.TryGetValue(Hierarchy.RootPartIds[i], out newId))
+                    Hierarchy.RootPartIds[i] = newId;
+            }
         }
 
         /// <summary>
@@ -142,20 +149,6 @@ namespace SiliconStudio.Assets
             result.Parts.Add(partDesign);
             result.RootPartIds.Add(partDesign.Part.Id);
             return result;
-        }
-
-        /// <inheritdoc/>
-        [CanBeNull]
-        public override object ResolvePartReference(object partReference)
-        {
-            var reference = partReference as TAssetPart;
-            if (reference != null)
-            {
-                TAssetPartDesign realPart;
-                Hierarchy.Parts.TryGetValue(reference.Id, out realPart);
-                return realPart?.Part;
-            }
-            return null;
         }
     }
 }

@@ -136,6 +136,7 @@ namespace SiliconStudio.Assets
 
             // Clone this asset without overrides (as we want all parameters to inherit from base)
             var newAsset = AssetCloner.Clone(this, AssetClonerFlags.GenerateNewIdsForIdentifiableObjects, out idRemapping);
+            newAsset.RemapIdentifiableIds(idRemapping);
 
             // Create a new identifier for this asset
             var newId = AssetId.New();
@@ -152,12 +153,13 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Resolves the actual target of references to a part or base part of this asset. Depending on whether <paramref name="clearMissingReferences"/> is <c>true</c>,
-        /// missing references will be cleared, or left as-is.
+        /// Updates <see cref="Guid"/> properties of this asset representing references to <see cref="IIdentifiable"/> objects.
         /// </summary>
-        /// <param name="clearMissingReferences"><c>true</c> to clear missing references to parts or base parts; otherwise, <c>false</c>.</param>
-        public virtual void FixupPartReferences(bool clearMissingReferences = true)
+        /// <param name="remapping">The remapping to apply.</param>
+        [Obsolete("References by Guid will be forbidden and this method will be removed.")]
+        public virtual void RemapIdentifiableIds(Dictionary<Guid, Guid> remapping)
         {
+            // Do nothing by default.
         }
 
         public override string ToString()

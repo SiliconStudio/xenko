@@ -29,7 +29,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         public static HashSet<IIdentifiable> GetExternalReferences(AssetPropertyGraph propertyGraph, IGraphNode root)
         {
             var visitor = new ExternalReferenceCollector(propertyGraph);
-            visitor.Visit(propertyGraph.RootNode);
+            visitor.Visit(root);
             // An IIdentifiable can have been recorded both as internal and external reference. In this case we still want to clone it so let's remove it from external references
             visitor.externalReferences.ExceptWith(visitor.internalReferences);
             return visitor.externalReferences;
@@ -37,7 +37,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
 
         protected override void ProcessIdentifiable(IIdentifiable identifiable, IGraphNode node, Index index)
         {
-            if (propertyGraph.IsObjectReference(node, index))
+            if (propertyGraph.IsObjectReference(node, index, node.Retrieve(index)))
                 externalReferences.Add(identifiable);
             else
                 internalReferences.Add(identifiable);

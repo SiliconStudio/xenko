@@ -43,7 +43,6 @@
     <Compile Include="Analysis\AssetAnalysis.cs" />
     <Compile Include="Analysis\AssetAnalysisParameters.cs" />
     <Compile Include="Analysis\AssetBaseAnalysis.cs" />
-    <Compile Include="Analysis\AssetCompositePartReferenceCollector.cs" />
     <Compile Include="Analysis\AssetLink.cs" />
     <Compile Include="Analysis\AssetDependencyManager.cs" />
     <Compile Include="Analysis\AssetDependencies.cs" />
@@ -89,10 +88,7 @@
     <Compile Include="Reflection\OverrideTarget.cs" />
     <Compile Include="Reflection\OverrideType.cs" />
     <Compile Include="Reflection\ShadowId.cs" />
-    <Compile Include="Serializers\AssetCompositeVisitorContext.cs" />
     <Compile Include="Serializers\AssetPartContainedAttribute.cs" />
-    <Compile Include="Serializers\AssetPartReferenceAttribute.cs" />
-    <Compile Include="Serializers\AssetCompositeSerializer.cs" />
     <Compile Include="Serializers\FixupObjectReferences.cs" />
     <Compile Include="Serializers\IAssetPartReference.cs" />
     <Compile Include="Serializers\IdentifiableAssetPartReference.cs" />

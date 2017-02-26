@@ -48,6 +48,7 @@
     <Compile Include="AssetCompositeBaseToDerivedRegistry.cs" />
     <Compile Include="AssetCompositeHierarchyPartVisitor.cs" />
     <Compile Include="AssetCompositeHierarchyPropertyGraph.cs" />
+    <Compile Include="Visitors\AssetCollector.cs" />
     <Compile Include="Visitors\ExternalReferenceCollector.cs" />
     <Compile Include="Visitors\IdentifiableObjectVisitorBase.cs" />
     <Compile Include="Visitors\IdentifiableObjectCollector.cs" />
