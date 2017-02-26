@@ -28,7 +28,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.10.0-alpha02")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.11.0-beta")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public static readonly string DefaultGraphicsCompositorLevel9Url = "Compositing/DefaultGraphicsCompositorLevel9";
