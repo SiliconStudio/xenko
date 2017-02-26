@@ -15,6 +15,11 @@ namespace SiliconStudio.Quantum
         private readonly HashSet<IGraphNode> visitedNodes = new HashSet<IGraphNode>();
 
         /// <summary>
+        /// The current path in the visit. This path is mutable and must be cloned if used out of the visitor.
+        /// </summary>
+        protected GraphNodePath CurrentPath;
+
+        /// <summary>
         /// Gets or sets whether to skip the root node passed to <see cref="Visit"/> when raising the <see cref="Visiting"/> event.
         /// </summary>
         public bool SkipRootNode { get; set; }
@@ -48,9 +53,9 @@ namespace SiliconStudio.Quantum
         public virtual void Visit([NotNull] IGraphNode node, [CanBeNull] MemberNode memberNode = null, [CanBeNull] GraphNodePath initialPath = null)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
-            var path = initialPath ?? new GraphNodePath(node);
+            CurrentPath = initialPath ?? new GraphNodePath(node);
             RootNode = node;
-            VisitNode(node, path);
+            VisitNode(node);
             RootNode = null;
         }
 
@@ -58,27 +63,25 @@ namespace SiliconStudio.Quantum
         /// Visits a single node.
         /// </summary>
         /// <param name="node">The node being visited.</param>
-        /// <param name="currentPath">The path of the node being visited.</param>
         /// <remarks>This method is in charge of pursuing the visit with the children and references of the given node, as well as raising the <see cref="Visiting"/> event.</remarks>
-        protected virtual void VisitNode([NotNull] IGraphNode node, [NotNull] GraphNodePath currentPath)
+        protected virtual void VisitNode([NotNull] IGraphNode node)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
-            if (currentPath == null) throw new ArgumentNullException(nameof(currentPath));
             visitedNodes.Add(node);
             if (node != RootNode || !SkipRootNode)
             {
-                Visiting?.Invoke(node, currentPath);
+                Visiting?.Invoke(node, CurrentPath);
             }
             var objectNode = node as IObjectNode;
             if (objectNode != null)
             {
-                VisitChildren(objectNode, currentPath);
-                VisitItemTargets(objectNode, currentPath);
+                VisitChildren(objectNode);
+                VisitItemTargets(objectNode);
             }
             var memberNode = node as IMemberNode;
             if (memberNode != null)
             {
-                VisitMemberTarget(memberNode, currentPath);
+                VisitMemberTarget(memberNode);
             }
             visitedNodes.Remove(node);
         }
@@ -87,15 +90,14 @@ namespace SiliconStudio.Quantum
         /// Visits the children of the given node.
         /// </summary>
         /// <param name="node">The node being visited.</param>
-        /// <param name="currentPath">The path of the node being visited.</param>
-        protected virtual void VisitChildren([NotNull] IObjectNode node, [NotNull] GraphNodePath currentPath)
+        protected virtual void VisitChildren([NotNull] IObjectNode node)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
-            if (currentPath == null) throw new ArgumentNullException(nameof(currentPath));
             foreach (var child in node.Members)
             {
-                var childPath = currentPath.PushMember(child.Name);
-                VisitNode(child, childPath);
+                CurrentPath.PushMember(child.Name);
+                VisitNode(child);
+                CurrentPath.Pop();
             }
         }
 
@@ -103,17 +105,16 @@ namespace SiliconStudio.Quantum
         /// Visits the <see cref="ObjectReference"/> contained in the given node, if any.
         /// </summary>
         /// <param name="node">The node being visited.</param>
-        /// <param name="currentPath">The path of the node being visited.</param>
-        protected virtual void VisitMemberTarget([NotNull] IMemberNode node, [NotNull] GraphNodePath currentPath)
+        protected virtual void VisitMemberTarget([NotNull] IMemberNode node)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
-            if (currentPath == null) throw new ArgumentNullException(nameof(currentPath));
             if (node.TargetReference?.TargetNode != null)
             {
                 if (ShouldVisitMemberTarget(node))
                 {
-                    var targetPath = currentPath.PushTarget();
-                    VisitReference(node, node.TargetReference, targetPath);
+                    CurrentPath.PushTarget();
+                    VisitReference(node, node.TargetReference);
+                    CurrentPath.Pop();
                 }
             }
         }
@@ -122,20 +123,22 @@ namespace SiliconStudio.Quantum
         /// Visits the <see cref="ReferenceEnumerable"/> contained in the given node, if any.
         /// </summary>
         /// <param name="node">The node being visited.</param>
-        /// <param name="currentPath">The path of the node being visited.</param>
-        protected virtual void VisitItemTargets([NotNull] IObjectNode node, [NotNull] GraphNodePath currentPath)
+        protected virtual void VisitItemTargets([NotNull] IObjectNode node)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
-            if (currentPath == null) throw new ArgumentNullException(nameof(currentPath));
             var enumerableReference = node.ItemReferences;
             if (enumerableReference != null)
             {
-                foreach (var reference in enumerableReference.Where(x => x.TargetNode != null))
+                foreach (var reference in enumerableReference)
                 {
+                    if (reference.TargetNode == null)
+                        continue;
+
                     if (ShouldVisitTargetItem(node, reference.Index))
                     {
-                        var targetPath = currentPath.PushIndex(reference.Index);
-                        VisitReference(node, reference, targetPath);
+                        CurrentPath.PushIndex(reference.Index);
+                        VisitReference(node, reference);
+                        CurrentPath.Pop();
                     }
                 }
             }
@@ -146,13 +149,11 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="referencer">The node containing the reference to visit.</param>
         /// <param name="reference">The reference to visit.</param>
-        /// <param name="targetPath">The path of the node targeted by this reference.</param>
-        protected virtual void VisitReference([NotNull] IGraphNode referencer, [NotNull] ObjectReference reference, [NotNull] GraphNodePath targetPath)
+        protected virtual void VisitReference([NotNull] IGraphNode referencer, [NotNull] ObjectReference reference)
         {
             if (referencer == null) throw new ArgumentNullException(nameof(referencer));
             if (reference == null) throw new ArgumentNullException(nameof(reference));
-            if (targetPath == null) throw new ArgumentNullException(nameof(targetPath));
-            VisitNode(reference.TargetNode, targetPath);
+            VisitNode(reference.TargetNode);
         }
 
         protected virtual bool ShouldVisitMemberTarget([NotNull] IMemberNode memberContent)

@@ -39,7 +39,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         }
 
         /// <inheritdoc/>
-        protected override void VisitReference(IGraphNode referencer, ObjectReference reference, GraphNodePath targetPath)
+        protected override void VisitReference(IGraphNode referencer, ObjectReference reference)
         {
             // Remark: VisitReference is invoked only when IsObjectReference returned false, therefore we will visit only 'real' object here, not references to them.
             var value = reference.ObjectValue as IIdentifiable;
@@ -47,7 +47,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
             {
                 result[value.Id] = value;
             }
-            base.VisitReference(referencer, reference, targetPath);
+            base.VisitReference(referencer, reference);
         }
     }
 }

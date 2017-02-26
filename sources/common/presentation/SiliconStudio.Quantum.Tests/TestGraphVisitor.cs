@@ -61,10 +61,10 @@ namespace SiliconStudio.Quantum.Tests
                 base.Visit(node, memberNode, initialPath);
             }
 
-            protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
+            protected override void VisitNode(IGraphNode node)
             {
                 Result.Add(Tuple.Create(node, currentPath));
-                base.VisitNode(node, currentPath);
+                base.VisitNode(node);
             }
         }
 
