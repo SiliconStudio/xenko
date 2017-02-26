@@ -109,7 +109,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (!isPrimitive && targetNode != null)
             {
                 var targetNodePath = GetTargetNodePath();
-                if (targetNodePath == null || !targetNodePath.IsValid)
+                if (targetNodePath == null)
                     throw new InvalidOperationException("Unable to retrieve the path of the given model node.");
 
                 GenerateChildren(targetNode, targetNodePath, Index);
