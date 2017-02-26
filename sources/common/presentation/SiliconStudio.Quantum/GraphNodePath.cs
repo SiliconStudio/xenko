@@ -153,7 +153,6 @@ namespace SiliconStudio.Quantum
 
             public GraphNodePathEnumerator(GraphNodePath path)
             {
-                if (!path.IsValid) throw new InvalidOperationException("The node path is invalid.");
                 this.path = path;
             }
 
@@ -211,10 +210,9 @@ namespace SiliconStudio.Quantum
         private const int DefaultCapacity = 16;
         private readonly List<NodePathElement> path;
 
-        private GraphNodePath(IGraphNode rootNode, bool isEmpty, int defaultCapacity)
+        private GraphNodePath(IGraphNode rootNode, int defaultCapacity)
         {
             RootNode = rootNode;
-            IsEmpty = isEmpty;
             path = new List<NodePathElement>(defaultCapacity);
         }
 
@@ -223,7 +221,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="rootNode">The root node to represent with this instance of <see cref="GraphNodePath"/>.</param>
         public GraphNodePath(IGraphNode rootNode)
-            : this(rootNode, true, DefaultCapacity)
+            : this(rootNode, DefaultCapacity)
         {
         }
 
@@ -233,15 +231,10 @@ namespace SiliconStudio.Quantum
         public IGraphNode RootNode { get; }
 
         /// <summary>
-        /// Gets whether this path is a valid path.
-        /// </summary>
-        public bool IsValid => path.Count > 0 || IsEmpty;
-
-        /// <summary>
         /// Gets whether this path is empty.
         /// </summary>
         /// <remarks>An empty path resolves to <see cref="RootNode"/>.</remarks>
-        public bool IsEmpty { get; }
+        public bool IsEmpty => path.Count == 0;
 
         /// <summary>
         /// Gets the number of items in this path.
@@ -317,9 +310,6 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public override string ToString()
         {
-            if (!IsValid)
-                return "(invalid)";
-
             return "(root)" + (path.Count > 0 ? path.Select(x => x.ToString()).Aggregate((current, next) => current + next) : "");
         }
 
@@ -340,7 +330,7 @@ namespace SiliconStudio.Quantum
             if (IsEmpty)
                 return null;
 
-            var result = new GraphNodePath(RootNode, path.Count == 1, path.Count - 1);
+            var result = new GraphNodePath(RootNode, path.Count - 1);
             for (var i = 0; i < path.Count - 1; ++i)
                 result.path.Add(path[i]);
             return result;
@@ -352,14 +342,19 @@ namespace SiliconStudio.Quantum
         /// <param name="newRoot">The root node for the cloned path.</param>
         /// <returns>A copy of this path with the given node as root node.</returns>
         [Pure, NotNull]
-        public GraphNodePath Clone(IGraphNode newRoot) => Clone(newRoot, IsEmpty);
+        public GraphNodePath Clone(IGraphNode newRoot)
+        {
+            var clone = new GraphNodePath(newRoot, Math.Max(path.Count, DefaultCapacity));
+            clone.path.AddRange(path);
+            return clone;
+        }
 
         /// <summary>
         /// Clones this instance of <see cref="GraphNodePath"/>.
         /// </summary>
         /// <returns>A copy of this path with the same root node.</returns>
         [Pure, NotNull]
-        public GraphNodePath Clone() => Clone(RootNode, IsEmpty);
+        public GraphNodePath Clone() => Clone(RootNode);
 
         public void PushMember(string memberName) => PushElement(memberName, ElementType.Member);
 
@@ -418,9 +413,6 @@ namespace SiliconStudio.Quantum
         [Pure, NotNull]
         public MemberPath ToMemberPath()
         {
-            if (!IsValid)
-                throw new InvalidOperationException("The node path is invalid.");
-
             var memberPath = new MemberPath();
             var node = RootNode;
             for (var i = 0; i < path.Count; i++)
@@ -461,13 +453,6 @@ namespace SiliconStudio.Quantum
                 }
             }
             return memberPath;
-        }
-
-        private GraphNodePath Clone(IGraphNode newRoot, bool isEmpty)
-        {
-            var clone = new GraphNodePath(newRoot, isEmpty, Math.Max(path.Count, DefaultCapacity));
-            clone.path.AddRange(path);
-            return clone;
         }
 
         private void PushElement(object elementValue, ElementType type)
