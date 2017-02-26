@@ -89,6 +89,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             private int sceneHash = 0;
             private SceneAsset clonedSceneAsset;
             private List<Entity> sceneEntities;
+            private Vector3 offset;
             private bool sceneCloned = false; // Used so that the scene is only cloned once when ComputeParameterHash or DoCommand is called
 
             // Automatically calculated bounding box
@@ -116,6 +117,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 EnsureClonedSceneAndHash();
                 writer.Write(sceneHash);
+                writer.Write(offset);
+                writer.Write(1);
             }
             
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -338,6 +341,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                         // Turn the entire entity hierarchy into a single list
                         sceneEntities = clonedSceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
+                        offset = clonedSceneAsset.Offset;
 
                         sceneHash = 0;
                         foreach (var entity in sceneEntities)
@@ -384,6 +388,13 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 updatedAreas.Clear();
                 fullRebuild = oldBuild == null;
 
+                // Trigger full rebuild on offset change
+                currentBuild.Offset = offset;
+                if (oldBuild != null && oldBuild.Offset != currentBuild.Offset)
+                {
+                    fullRebuild = true;
+                }
+
                 sceneNavigationMeshInputBuilder = new NavigationMeshInputBuilder();
 
                 foreach (var entity in sceneEntities)
@@ -409,10 +420,10 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                             updatedAreas.Add(oldObject.Data.BoundingBox);
                         }
                     }
-                    else if (oldBuild?.IsUpdatedOrNew(entity) ?? true) // Is the entity updated?
+                    else if (fullRebuild || (oldBuild.IsUpdatedOrNew(entity))) // Is the entity updated?
                     {
                         TransformComponent entityTransform = entity.Transform;
-                        Matrix entityWorldMatrix = entityTransform.WorldMatrix;
+                        Matrix entityWorldMatrix = entityTransform.WorldMatrix * Matrix.Translation(offset);
 
                         NavigationMeshInputBuilder entityNavigationMeshInputBuilder = new NavigationMeshInputBuilder();
 
