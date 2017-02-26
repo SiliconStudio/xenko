@@ -19,7 +19,7 @@ using SiliconStudio.Xenko.Rendering.Compositing;
 namespace SiliconStudio.Xenko.Assets.Rendering
 {
     [DataContract("GraphicsCompositorAsset")]
-    [Display(82, "Graphics Compositor")]
+    [Display(8000, "Graphics Compositor")]
     [AssetContentType(typeof(GraphicsCompositor))]
     [AssetDescription(FileExtension)]
     [AssetPartReference(typeof(RenderStage))]
