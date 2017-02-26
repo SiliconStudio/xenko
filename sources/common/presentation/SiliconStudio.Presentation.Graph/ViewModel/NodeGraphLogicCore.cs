@@ -2,8 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using GraphX;
-using GraphX.GraphSharp;
-using GraphX.Logic;
+using GraphX.PCL.Logic.Models;
 using QuickGraph;
 
 namespace SiliconStudio.Presentation.Graph.ViewModel
