@@ -116,6 +116,11 @@ namespace SiliconStudio.Presentation.ViewModel
         public bool HasNewMessages { get { return hasNewMessages; } private set { SetValue(ref hasNewMessages, value); } }
 
         /// <summary>
+        /// Gets the minimum level of message that will be recorded by this view model.
+        /// </summary>
+        public LogMessageType MinLevel { get; set; } = LogMessageType.Debug;
+
+        /// <summary>
         /// Gets the command that will add a logger to monitor.
         /// </summary>
         /// <remarks>An instance of <see cref="Logger"/> must be passed as parameter of this command.</remarks>
@@ -227,11 +232,14 @@ namespace SiliconStudio.Presentation.ViewModel
         {
             lock (pendingMessages)
             {
-                pendingMessages.Add(Tuple.Create((Logger)sender, args.Message));
-                if (!updatePending)
+                if (args.Message.IsAtLeast(MinLevel))
                 {
-                    updatePending = true;
-                    Dispatcher.InvokeAsync(UpdateMessages);
+                    pendingMessages.Add(Tuple.Create((Logger)sender, args.Message));
+                    if (!updatePending)
+                    {
+                        updatePending = true;
+                        Dispatcher.InvokeAsync(UpdateMessages);
+                    }
                 }
             }
         }
