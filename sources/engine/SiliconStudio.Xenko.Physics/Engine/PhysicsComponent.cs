@@ -99,8 +99,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </userdoc>
         [Display("Collision events")]
         [DataMember(45)]
-        [DefaultValue(true)]
-        public virtual bool ProcessCollisions { get; set; } = true;
+        public bool ProcessCollisions { get; set; } = false;
 
         /// <summary>
         /// Gets or sets if this element is enabled in the physics engine
