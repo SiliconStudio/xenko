@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Threading;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Presentation.Internal;
@@ -508,7 +509,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         private void LogMessagesCollectionChanged(object sender, [NotNull] NotifyCollectionChangedEventArgs e)
         {
-            var shouldScroll = AutoScroll && logTextBox != null && logTextBox.ViewportHeight - logTextBox.ExtentHeight - logTextBox.VerticalOffset < 1.0;
+            var shouldScroll = AutoScroll && logTextBox != null && logTextBox.ExtentHeight - logTextBox.ViewportHeight - logTextBox.VerticalOffset < 1.0;
 
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
@@ -531,8 +532,9 @@ namespace SiliconStudio.Presentation.Controls
 
             if (shouldScroll)
             {
-                // Sometimes crashing with ExecutionEngineException in Window.GetWindowMinMax() if not ran with a dispatcher low priority
-                Dispatcher.InvokeAsync(() => logTextBox.ScrollToEnd(), System.Windows.Threading.DispatcherPriority.Background);
+                // Sometimes crashing with ExecutionEngineException in Window.GetWindowMinMax() if not ran with a dispatcher low priority.
+                // Note: priority should still be higher than DispatcherPriority.Input so that user input have a chance to scroll.
+                Dispatcher.InvokeAsync(() => logTextBox.ScrollToEnd(), DispatcherPriority.DataBind);
             }
         }
 
