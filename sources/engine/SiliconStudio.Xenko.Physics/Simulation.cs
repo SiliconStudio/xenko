@@ -1214,7 +1214,7 @@ namespace SiliconStudio.Xenko.Physics
         {
             IntPtr buffer;
             int bufferSize;
-            collisionWorld.GetCollisions(component.NativeCollisionObject, (short)component.CanCollideWith, (short)component.CollisionGroup, out buffer, out bufferSize);
+            collisionWorld.GetCollisions(component.NativeCollisionObject, out buffer, out bufferSize);
             var contacts = (ContactPoint*) buffer;
             for (var i = 0; i < bufferSize; i++)
             {
