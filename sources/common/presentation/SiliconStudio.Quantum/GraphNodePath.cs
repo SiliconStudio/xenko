@@ -92,6 +92,18 @@ namespace SiliconStudio.Quantum
                 return Type == ElementType.Target && other.Type == ElementType.Target || Equals(other);
             }
 
+            internal int GetHashCodeInPath()
+            {
+                unchecked
+                {
+                    // Skip the Guid in this scenario
+                    var hashCode = (int)Type;
+                    hashCode = (hashCode * 397) ^ (Name?.GetHashCode() ?? 0);
+                    hashCode = (hashCode * 397) ^ Index.GetHashCode();
+                    return hashCode;
+                }
+            }
+
             public bool Equals(NodePathElement other)
             {
                 return Type == other.Type && Equals(Guid, other.Guid) && Equals(Index, other.Index) && Equals(Name, other.Name);
@@ -291,7 +303,7 @@ namespace SiliconStudio.Quantum
                 hashCode = (hashCode*397) ^ IsEmpty.GetHashCode();
                 foreach (var item in path)
                 {
-                    hashCode = (hashCode * 397) ^ item.GetHashCode();
+                    hashCode = (hashCode * 397) ^ item.GetHashCodeInPath();
                 }
                 return hashCode;
             }
