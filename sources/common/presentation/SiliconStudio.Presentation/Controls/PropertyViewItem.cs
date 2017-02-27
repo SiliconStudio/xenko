@@ -8,6 +8,7 @@ using System.Windows.Input;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -21,22 +22,22 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="Highlightable"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty HighlightableProperty = DependencyProperty.Register("Highlightable", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(true));
+        public static readonly DependencyProperty HighlightableProperty = DependencyProperty.Register("Highlightable", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Identifies the <see cref="IsHighlighted"/> dependency property.
         /// </summary>
-        public static readonly DependencyPropertyKey IsHighlightedPropertyKey = DependencyProperty.RegisterReadOnly("IsHighlighted", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(false));
+        public static readonly DependencyPropertyKey IsHighlightedPropertyKey = DependencyProperty.RegisterReadOnly("IsHighlighted", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
         /// Identifies the <see cref="IsHovered"/> dependency property.
         /// </summary>
-        public static readonly DependencyPropertyKey IsHoveredPropertyKey = DependencyProperty.RegisterReadOnly("IsHovered", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(false));
+        public static readonly DependencyPropertyKey IsHoveredPropertyKey = DependencyProperty.RegisterReadOnly("IsHovered", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
         /// Identifies the <see cref="IsKeyboardActive"/> dependency property.
         /// </summary>
-        public static readonly DependencyPropertyKey IsKeyboardActivePropertyKey = DependencyProperty.RegisterReadOnly("IsKeyboardActive", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(false));
+        public static readonly DependencyPropertyKey IsKeyboardActivePropertyKey = DependencyProperty.RegisterReadOnly("IsKeyboardActive", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
         /// Identifies the <see cref="Offset"/> dependency property.
@@ -79,7 +80,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets or sets whether this control can be highlighted.
         /// </summary>
         /// <seealso cref="IsHighlighted"/>
-        public bool Highlightable { get { return (bool)GetValue(HighlightableProperty); } set { SetValue(HighlightableProperty, value); } }
+        public bool Highlightable { get { return (bool)GetValue(HighlightableProperty); } set { SetValue(HighlightableProperty, value.Box()); } }
 
         /// <summary>
         /// Gets whether this control is highlighted. The control is highlighted when <see cref="IsHovered"/> and <see cref="Highlightable"/> are both <c>true</c>

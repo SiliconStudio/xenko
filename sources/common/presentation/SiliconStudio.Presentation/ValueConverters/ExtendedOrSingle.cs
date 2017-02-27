@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Globalization;
 using System.Windows.Controls;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -20,7 +21,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var result = ConverterHelper.ConvertToBoolean(value, culture);
-            if (parameter is bool && (bool)parameter == false)
+            if (parameter as bool? == false)
             {
                 result = !result;
             }
@@ -31,11 +32,12 @@ namespace SiliconStudio.Presentation.ValueConverters
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var selectionMode = (SelectionMode)value;
-            if (parameter is bool && (bool)parameter == false)
+            var result = selectionMode == SelectionMode.Extended;
+            if (parameter as bool? == false)
             {
-                return selectionMode != SelectionMode.Extended;
+                result = !result;
             }
-            return selectionMode == SelectionMode.Extended;
+            return result.Box();
         }
     }
 
