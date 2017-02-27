@@ -21,6 +21,7 @@ namespace SiliconStudio.Xenko.Input
     {
         private readonly Stopwatch pointerClock;
         private readonly HashSet<WinFormsKeys> winformPressedKeys = new HashSet<WinFormsKeys>();
+        private readonly List<WinFormsKeys> winformPressedKeysProcessing = new List<WinFormsKeys>();
 
         public InputManagerWinforms(IServiceRegistry registry)
             : base(registry)
@@ -164,11 +165,15 @@ namespace SiliconStudio.Xenko.Input
             {
                 // WinForms sometimes don't properly send back key up events, so let's manually check it ourselves rather than trusting WM_KEYUP
                 foreach (var keyCode in winformPressedKeys)
+                    winformPressedKeysProcessing.Add(keyCode);
+
+                foreach (var keyCode in winformPressedKeysProcessing)
                 {
                     var state = Win32Native.GetKeyState((int)keyCode);
                     if ((state & 0x8000) == 0)
                         OnKeyEvent(keyCode, true);
                 }
+                winformPressedKeysProcessing.Clear();
 
                 base.Update(gameTime);
             }
