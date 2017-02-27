@@ -26,16 +26,15 @@ namespace SiliconStudio.Assets.Quantum.Visitors
                 inNonIdentifiableType++;
             }
 
-            var path = ConvertPath(CurrentPath, inNonIdentifiableType);
             var memberNode = assetNode as IAssetMemberNode;
             if (memberNode != null)
             {
-                VisitMemberNode(memberNode, path);
+                VisitMemberNode(memberNode, inNonIdentifiableType);
             }
             var objectNode = assetNode as IAssetObjectNode;
             if (objectNode != null)
             {
-                VisitObjectNode(objectNode, path);
+                VisitObjectNode(objectNode, inNonIdentifiableType);
             }
             base.VisitNode(node);
 
@@ -47,15 +46,15 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// Visits a node that is an <see cref="IAssetMemberNode"/>.
         /// </summary>
         /// <param name="memberNode">The node to visit.</param>
-        /// <param name="currentPath">The current path in the visit.</param>
-        protected abstract void VisitMemberNode(IAssetMemberNode memberNode, YamlAssetPath currentPath);
+        /// <param name="inNonIdentifiableType"></param>
+        protected abstract void VisitMemberNode(IAssetMemberNode memberNode, int inNonIdentifiableType);
 
         /// <summary>
         /// Visits a node that is an <see cref="IAssetObjectNode"/>.
         /// </summary>
         /// <param name="objectNode">The node to visit.</param>
-        /// <param name="currentPath">The current path in the visit.</param>
-        protected abstract void VisitObjectNode(IAssetObjectNode objectNode, YamlAssetPath currentPath);
+        /// <param name="inNonIdentifiableType"></param>
+        protected abstract void VisitObjectNode(IAssetObjectNode objectNode, int inNonIdentifiableType);
 
         /// <summary>
         /// Converts the given <see cref="GraphNodePath"/> to a <see cref="YamlAssetPath"/> that can be processed by YAML serialization.

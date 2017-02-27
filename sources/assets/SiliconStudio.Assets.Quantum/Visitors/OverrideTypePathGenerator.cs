@@ -15,28 +15,28 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         public YamlAssetMetadata<OverrideType> Result { get; } = new YamlAssetMetadata<OverrideType>();
 
         /// <inheritdoc/>
-        protected override void VisitMemberNode(IAssetMemberNode memberNode, YamlAssetPath currentPath)
+        protected override void VisitMemberNode(IAssetMemberNode memberNode, int inNonIdentifiableType)
         {
             if (memberNode?.IsContentOverridden() == true)
             {
-                Result.Set(currentPath, memberNode.GetContentOverride());
+                Result.Set(ConvertPath(CurrentPath, inNonIdentifiableType), memberNode.GetContentOverride());
             }
         }
 
         /// <inheritdoc/>
-        protected override void VisitObjectNode(IAssetObjectNode objectNode, YamlAssetPath currentPath)
+        protected override void VisitObjectNode(IAssetObjectNode objectNode, int inNonIdentifiableType)
         {
             foreach (var index in objectNode.GetOverriddenItemIndices())
             {
                 var id = objectNode.IndexToId(index);
-                var itemPath = currentPath.Clone();
+                var itemPath = ConvertPath(CurrentPath, inNonIdentifiableType);
                 itemPath.PushItemId(id);
                 Result.Set(itemPath, objectNode.GetItemOverride(index));
             }
             foreach (var index in objectNode.GetOverriddenKeyIndices())
             {
                 var id = objectNode.IndexToId(index);
-                var itemPath = currentPath.Clone();
+                var itemPath = ConvertPath(CurrentPath, inNonIdentifiableType);
                 itemPath.PushIndex(id);
                 Result.Set(itemPath, objectNode.GetKeyOverride(index));
             }
