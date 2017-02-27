@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -10,7 +11,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="IsExpanded"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register(nameof(IsExpanded), typeof(bool), typeof(ExpandableItemsControl), new FrameworkPropertyMetadata(false, OnIsExpandedChanged));
+        public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register(nameof(IsExpanded), typeof(bool), typeof(ExpandableItemsControl), new FrameworkPropertyMetadata(BooleanBoxes.FalseBox, OnIsExpandedChanged));
 
         /// <summary>
         /// Identifies the <see cref="Expanded"/> routed event.
@@ -25,7 +26,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether this control is expanded.
         /// </summary>
-        public bool IsExpanded { get { return (bool)GetValue(IsExpandedProperty); } set { SetValue(IsExpandedProperty, value); } }
+        public bool IsExpanded { get { return (bool)GetValue(IsExpandedProperty); } set { SetValue(IsExpandedProperty, value.Box()); } }
 
         protected bool CanExpand => HasItems;
 

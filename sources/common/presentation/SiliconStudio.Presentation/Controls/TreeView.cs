@@ -13,6 +13,7 @@ using System.Windows.Media;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -46,7 +47,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="IsVirtualizing"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IsVirtualizingProperty =
-            DependencyProperty.Register(nameof(IsVirtualizing), typeof(bool), typeof(TreeView), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(IsVirtualizing), typeof(bool), typeof(TreeView), new PropertyMetadata(BooleanBoxes.FalseBox));
         /// <summary>
         /// Identifies the <see cref="PrepareItem"/> routed event.
         /// This attached routed event may be raised by the PropertyGrid itself or by a PropertyItemBase containing sub-items.
@@ -104,7 +105,7 @@ namespace SiliconStudio.Presentation.Controls
             SelectedItems = new NonGenericObservableListWrapper<object>(new ObservableList<object>());
         }
 
-        public bool IsVirtualizing { get { return (bool)GetValue(IsVirtualizingProperty); } set { SetValue(IsVirtualizingProperty, value); } }
+        public bool IsVirtualizing { get { return (bool)GetValue(IsVirtualizingProperty); } set { SetValue(IsVirtualizingProperty, value.Box()); } }
 
         /// <summary>
         /// Gets the last selected item.

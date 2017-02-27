@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using System.Windows.Interactivity;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -54,7 +55,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// Gets or sets whether to set the event as handled.
         /// </summary>
-        public bool HandleEvent { get { return (bool)GetValue(HandleEventProperty); } set { SetValue(HandleEventProperty, value); } }
+        public bool HandleEvent { get { return (bool)GetValue(HandleEventProperty); } set { SetValue(HandleEventProperty, value.Box()); } }
 
         public ModifierKeys? Modifiers { get { return (ModifierKeys?)GetValue(ModifiersProperty); } set { SetValue(ModifiersProperty, value); } }
 
