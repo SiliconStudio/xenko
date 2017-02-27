@@ -98,7 +98,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Unchecking this will help with performance, ideally if this entity has no need to access collisions information should be set to false
         /// </userdoc>
         [Display("Collision events")]
-        [DataMember(45)]
+        [DataMemberIgnore]
         public bool ProcessCollisions { get; set; } = false;
 
         /// <summary>

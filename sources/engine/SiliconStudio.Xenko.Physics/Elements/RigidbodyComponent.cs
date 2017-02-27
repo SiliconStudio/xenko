@@ -43,6 +43,7 @@ namespace SiliconStudio.Xenko.Physics
         public RigidbodyComponent()
         {
             LinkedConstraints = new List<Constraint>();
+            ProcessCollisions = true;
         }
 
         private bool isKinematic;
