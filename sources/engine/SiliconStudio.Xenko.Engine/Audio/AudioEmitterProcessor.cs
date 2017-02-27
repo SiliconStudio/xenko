@@ -147,6 +147,11 @@ namespace SiliconStudio.Xenko.Audio
                 // First update the emitter data if required.
                 emitter.Velocity = pos - emitter.Position;
                 emitter.Position = pos;
+
+                // TODO: if the entity has just been added, it might crash because part of the Transform update is done at the Draw and we might have uninitialized values
+                if (emitter.WorldTransform == Matrix.Zero)
+                    return;
+
                 emitter.Forward = Vector3.Normalize((Vector3)emitter.WorldTransform.Row3);
                 emitter.Up = Vector3.Normalize((Vector3)emitter.WorldTransform.Row2);
 
