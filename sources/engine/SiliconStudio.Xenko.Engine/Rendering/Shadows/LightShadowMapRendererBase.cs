@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         protected LightShadowMapRendererBase()
         {
             ShadowRenderViews = new PoolListStruct<ShadowMapRenderView>(16, () => new ShadowMapRenderView());
-            ShadowMaps = new PoolListStruct<LightShadowMapTexture>(16, () => new LightShadowMapTexture { Renderer = this });
+            ShadowMaps = new PoolListStruct<LightShadowMapTexture>(16, () => new LightShadowMapTexture());
         }
 
         /// <summary>
