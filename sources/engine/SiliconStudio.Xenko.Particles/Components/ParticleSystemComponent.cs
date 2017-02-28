@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -69,6 +70,14 @@ namespace SiliconStudio.Xenko.Particles.Components
         [DataMemberRange(0, 10, 0.01, 1)]
         [Display("Speed Scale")]
         public float Speed { get; set; } = 1f;
+
+        /// <summary>
+        /// The render group for this component.
+        /// </summary>
+        [DataMember(50)]
+        [DefaultValue(RenderGroup.Group0)]
+        public RenderGroup RenderGroup { get; set; }
+
 
         public ParticleSystemComponent()
         {

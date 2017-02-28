@@ -23,6 +23,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
         public int SettingsHash = 0;
 
+        public Vector3 Offset;
+
         /// <summary>
         /// Registers a new processed object that is build into the navigation mesh
         /// </summary>

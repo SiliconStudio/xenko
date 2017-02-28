@@ -42,6 +42,8 @@
       <Link>TestMemberPathBase.cs</Link>
     </Compile>
     <Compile Include="CustomParameterCollection.cs" />
+    <Compile Include="Helpers\GuidGenerator.cs" />
+    <Compile Include="Helpers\IdentifierGenerator.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="PropertyKeySerializerTest.cs" />
     <Compile Include="TestAssetCloner.cs" />
@@ -63,6 +65,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestPathSelector.cs" />
     <Compile Include="TestTemplateManager.cs" />
+    <Compile Include="Yaml\TestObjectReferenceSerialization.cs" />
     <Compile Include="Yaml\TestUnloadable.cs" />
     <Compile Include="Yaml\TestCollectionIdsSerialization.cs" />
   </ItemGroup>
@@ -127,9 +130,9 @@
     <None Include="data\SiliconStudio.Assets.Tests\TestPackage\TestPackageLoadingWithAssets.xkpkg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="data\SiliconStudio.Assets.Tests\TestSerializing\TestSerializing_TestMyAssetObject_Reference.xkobj">
+    <None Include="data\SiliconStudio.Assets.Tests\TestSerializing\TestSerializing_TestMyAssetObject_Reference.xkobj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
     <Content Include="data\SiliconStudio.Assets.Tests\TestFileVersionManager\test.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

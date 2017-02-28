@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics.Regression;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
@@ -43,7 +44,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public LightingTests()
         {
-            CurrentVersion = 7;
+            CurrentVersion = 10;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
         }
 
@@ -58,6 +59,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         protected override async Task LoadContent()
         {
             await base.LoadContent();
+
+            // Load default graphics compositor
+            SceneSystem.GraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
             // Setup camera script
             var camera = SceneSystem.SceneInstance.First(x => x.Name == "Camera");

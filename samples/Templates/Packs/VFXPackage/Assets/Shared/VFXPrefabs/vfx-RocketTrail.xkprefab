@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: f949da4a-6b7a-4ef3-ab12-da762421b99d
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -16,7 +16,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            0cd0490e049aa04f9d6efe35417ad5f9: acecae33-691d-4406-8f2b-56b327255d02/0e49d00c-9a04-4fa0-9d6e-fe35417ad5f9
+                            0cd0490e049aa04f9d6efe35417ad5f9: acecae33-691d-4406-8f2b-56b327255d02/be6cfcf7-9aad-4d6e-9c62-ec10424bc1fc
                     3fb4f0aa604400429d9fc1ed9313363a: !ParticleSystemComponent
                         Id: aaf0b43f-4460-4200-9d9f-c1ed9313363a
                         Control:
@@ -186,13 +186,13 @@ Hierarchy:
                 Name: RoketTail
                 Components:
                     0cd0490e049aa04f9d6efe35417ad5f9: !TransformComponent
-                        Id: 0e49d00c-9a04-4fa0-9d6e-fe35417ad5f9
+                        Id: be6cfcf7-9aad-4d6e-9c62-ec10424bc1fc
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     3fb4f0aa604400429d9fc1ed9313363a: !ParticleSystemComponent
-                        Id: aaf0b43f-4460-4200-9d9f-c1ed9313363a
+                        Id: c691b9e7-77e2-40ea-9a0b-4e7bd1f7dbb2
                         Control:
                             ResetSeconds: 0.0
                             Control: Play

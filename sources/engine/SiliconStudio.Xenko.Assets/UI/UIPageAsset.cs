@@ -18,9 +18,10 @@ namespace SiliconStudio.Xenko.Assets.UI
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [Display("UI Page")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.9.0-beta01", typeof(BasePartsRemovalComponentUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta01", "1.10.0-beta01", typeof(FixPartReferenceUpgrader))]
     public sealed class UIPageAsset : UIAssetBase
     {
-        private const string CurrentVersion = "1.9.0-beta01";
+        private const string CurrentVersion = "1.10.0-beta01";
 
         /// <summary>
         /// The default file extension used by the <see cref="UIPageAsset"/>.

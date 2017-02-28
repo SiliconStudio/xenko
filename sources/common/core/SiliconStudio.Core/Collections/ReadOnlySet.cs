@@ -1,10 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SiliconStudio.Core.Collections
 {
@@ -26,10 +25,7 @@ namespace SiliconStudio.Core.Collections
             return innerSet.Contains(item);
         }
 
-        public int Count
-        {
-            get { return innerSet.Count; }
-        }
+        public int Count => innerSet.Count;
 
         public IEnumerator<T> GetEnumerator()
         {

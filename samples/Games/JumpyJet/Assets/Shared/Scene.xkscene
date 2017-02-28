@@ -1,40 +1,13 @@
 !SceneAsset
 Id: b07987b2-a262-45fb-9da6-ba05fc7aaf74
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: 142dc57f-0a87-4097-9abd-27d88e13bdb4
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            5985711bbb63464899a0a2c3e8dbdf34:
-                Name: null
-                Camera: 6ec17338-026d-4ad3-9615-4975281cf3ba/360f48ca-45bf-4b70-97ee-4d9531d642f6
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                a5ae7bda8ddf0b419d838fc23d23fe05: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                7eedd467d5da1141b77e17c7a9bf44c0: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 10.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - 6ec17338-026d-4ad3-9615-4975281cf3ba
         - ca4ad047-2db2-4ab1-baca-d8c4e9a469bb
         - d87ce433-90b0-4819-8f55-9d08330b581d
-        - c2306322-b9da-4756-8c50-0415142c6dd1
         - c2d8e639-281f-419d-b8cb-77d7ef14a7f7
         - 47550ad3-4887-4173-95e0-d98048465edd
     Parts:
@@ -70,23 +43,12 @@ Hierarchy:
                         Children: {}
                     ca480f36bf45704b97ee4d9531d642f6: !CameraComponent
                         Id: 360f48ca-45bf-4b70-97ee-4d9531d642f6
+                        Name: null
                         Projection: Orthographic
                         OrthographicSize: 1136.0
                         NearClipPlane: 1.0
                         AspectRatio: 0.56338
-        -   Entity:
-                Id: c2306322-b9da-4756-8c50-0415142c6dd1
-                Name: Background
-                Components:
-                    c9cce13a34525f4e86444531ed6e4427: !TransformComponent
-                        Id: 3ae1ccc9-5234-4e5f-8644-4531ed6e4427
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: {}
-                    c870d1c1091a674dbc8ef4c843b5fbcd: !JumpyJet.BackgroundScript,JumpyJet.Game
-                        Id: c1d170c8-1a09-4d67-bc8e-f4c843b5fbcd
-                        ParallaxBackgrounds: ca9993b7-1213-4037-8a77-333f3fa2e163:ParallaxBackgrounds
+                        Slot: {Index: 0}
         -   Entity:
                 Id: c2d8e639-281f-419d-b8cb-77d7ef14a7f7
                 Name: GameScript
@@ -101,7 +63,6 @@ Hierarchy:
                         Id: a48b5789-180f-4e2e-b061-6ac22108e376
                         Priority: 10
                         UI: 47550ad3-4887-4173-95e0-d98048465edd/00fd07e9-f2a1-4bc1-84bb-467e84daeb4a
-                        Background: c2306322-b9da-4756-8c50-0415142c6dd1/c1d170c8-1a09-4d67-bc8e-f4c843b5fbcd
                         Character: ca4ad047-2db2-4ab1-baca-d8c4e9a469bb/75708204-1bb2-4d09-93ae-75057e2a88b0
                         Pipes: d87ce433-90b0-4819-8f55-9d08330b581d/71cd41a9-093c-4595-8f02-918f1c0258bd
         -   Entity:

@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Physics.Tests
                 await game.Script.NextFrame();
                 await game.Script.NextFrame();
 
-                var character = game.SceneSystem.SceneInstance.Scene.Entities.First(ent => ent.Name == "Model");
+                var character = game.SceneSystem.SceneInstance.RootScene.Entities.First(ent => ent.Name == "Model");
                 var dynamicBody = character.GetAll<RigidbodyComponent>().First(x => !x.IsKinematic);
                 var kinematicBody = character.GetAll<RigidbodyComponent>().First(x => x.IsKinematic);
                 var model = character.Get<ModelComponent>();

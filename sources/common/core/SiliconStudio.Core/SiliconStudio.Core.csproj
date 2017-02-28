@@ -59,6 +59,8 @@
     <Compile Include="AccessorMetadata.cs" />
     <Compile Include="Annotations\CanBeNullAttribute.cs" />
     <Compile Include="Annotations\CategoryOrderAttribute.cs" />
+    <Compile Include="Annotations\ItemCanBeNullAttribute.cs" />
+    <Compile Include="Annotations\ItemNotNullAttribute.cs" />
     <Compile Include="Annotations\MemberCollectionAttribute.cs" />
     <Compile Include="Annotations\DynamicTypeAttributeBase.cs" />
     <Compile Include="Annotations\InlinePropertyAttribute.cs" />
@@ -126,7 +128,6 @@
     <Compile Include="Collections\MultiValueSortedDictionary.cs" />
     <Compile Include="Collections\MultiValueSortedList.cs" />
     <Compile Include="Collections\NamespaceDoc.cs" />
-    <Compile Include="Collections\ReadOnlyDictionary.cs" />
     <Compile Include="Collections\ReadOnlySet.cs" />
     <Compile Include="Collections\SortedList.cs" />
     <Compile Include="Collections\TrackingCollection.cs" />

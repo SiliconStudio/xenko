@@ -9,7 +9,9 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Presentation.Internal;
 using SiliconStudio.Presentation.Interop;
 using Point = System.Windows.Point;
 
@@ -32,7 +34,7 @@ namespace SiliconStudio.Presentation.Controls
 
         static GameEngineHost()
         {
-            FocusableProperty.OverrideMetadata(typeof(GameEngineHost), new FrameworkPropertyMetadata(true));
+            FocusableProperty.OverrideMetadata(typeof(GameEngineHost), new FrameworkPropertyMetadata(BooleanBoxes.TrueBox));
         }
 
         /// <summary>
@@ -63,7 +65,8 @@ namespace SiliconStudio.Presentation.Controls
             Unloaded -= OnUnloaded;
             LayoutUpdated -= OnLayoutUpdated;
             IsVisibleChanged -= OnIsVisibleChanged;
-            NativeHelper.SetParent(Handle, IntPtr.Zero);
+            // TODO: This seems to be blocking when exiting the Game Studio, but doesn't seem to be necessary
+            //NativeHelper.SetParent(Handle, IntPtr.Zero);
             NativeHelper.DestroyWindow(Handle);
             isDisposed = true;
         }
@@ -98,12 +101,12 @@ namespace SiliconStudio.Presentation.Controls
             if (newValue)
             {
                 Attach();
+                UpdateWindowPosition();
             }
             else
             {
                 Detach();
             }
-            UpdateWindowPosition();
         }
 
         private void Attach()
@@ -159,7 +162,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private void UpdateWindowPosition()
         {
-            if (updateRequested)
+            if (updateRequested || !attached)
                 return;
 
             updateRequested = true;
@@ -190,16 +193,16 @@ namespace SiliconStudio.Presentation.Controls
                 var positionTransform = TransformToAncestor(root);
                 var areaPosition = positionTransform.Transform(new Point(0, 0));
                 var boundingBox = new Int4((int)(areaPosition.X*dpiScale.DpiScaleX), (int)(areaPosition.Y*dpiScale.DpiScaleY), (int)(ActualWidth*dpiScale.DpiScaleX), (int)(ActualHeight*dpiScale.DpiScaleY));
-                if (boundingBox == lastBoundingBox)
-                    return;
-
-                lastBoundingBox = boundingBox;
-
-                // Move the window asynchronously, without activating it, without touching the Z order
-                // TODO: do we want SWP_NOCOPYBITS?
-                const int flags = NativeHelper.SWP_ASYNCWINDOWPOS | NativeHelper.SWP_NOACTIVATE | NativeHelper.SWP_NOZORDER;
-                NativeHelper.SetWindowPos(Handle, NativeHelper.HWND_TOP, boundingBox.X, boundingBox.Y, boundingBox.Z, boundingBox.W, flags);
-                if (shouldShow)
+                if (boundingBox != lastBoundingBox)
+                {
+                    lastBoundingBox = boundingBox;
+                    // Move the window asynchronously, without activating it, without touching the Z order
+                    // TODO: do we want SWP_NOCOPYBITS?
+                    const int flags = NativeHelper.SWP_ASYNCWINDOWPOS | NativeHelper.SWP_NOACTIVATE | NativeHelper.SWP_NOZORDER;
+                    NativeHelper.SetWindowPos(Handle, NativeHelper.HWND_TOP, boundingBox.X, boundingBox.Y, boundingBox.Z, boundingBox.W, flags);
+                }
+                
+                if (shouldShow && attached)
                 {
                     NativeHelper.ShowWindow(Handle, NativeHelper.SW_SHOWNOACTIVATE);
                 }
@@ -327,6 +330,7 @@ namespace SiliconStudio.Presentation.Controls
             return IntPtr.Zero;
         }
 
+        [CanBeNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private HwndSource GetHwndSource()
         {

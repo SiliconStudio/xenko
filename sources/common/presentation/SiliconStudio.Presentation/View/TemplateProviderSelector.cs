@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Presentation.View
@@ -42,9 +42,9 @@ namespace SiliconStudio.Presentation.View
         /// Registers the given template into the static <see cref="TemplateProviderSelector"/>.
         /// </summary>
         /// <param name="templateProvider"></param>
-        public void RegisterTemplateProvider(ITemplateProvider templateProvider)
+        public void RegisterTemplateProvider([NotNull] ITemplateProvider templateProvider)
         {
-            if (templateProvider == null) throw new ArgumentNullException("templateProvider");
+            if (templateProvider == null) throw new ArgumentNullException(nameof(templateProvider));
 
             if (templateProviderNames.Contains(templateProvider.Name))
                 throw new InvalidOperationException("A template provider with the same name has already been registered in this template selector.");
@@ -57,7 +57,7 @@ namespace SiliconStudio.Presentation.View
         /// Unregisters the given template into the static <see cref="TemplateProviderSelector"/>.
         /// </summary>
         /// <param name="templateProvider"></param>
-        public void UnregisterTemplateProvider(ITemplateProvider templateProvider)
+        public void UnregisterTemplateProvider([NotNull] ITemplateProvider templateProvider)
         {
             if (templateProviderNames.Remove(templateProvider.Name))
             {
@@ -72,7 +72,7 @@ namespace SiliconStudio.Presentation.View
 
             var element = container as FrameworkElement;
             if (element == null)
-                throw new ArgumentException(@"Container must be of type FrameworkElement", "container");
+                throw new ArgumentException(@"Container must be of type FrameworkElement", nameof(container));
 
             var provider = FindTemplateProvider(item, container);
             if (provider == null)
@@ -88,14 +88,14 @@ namespace SiliconStudio.Presentation.View
             return template;
         }
         
-        private static void InsertTemplateProvider(List<ITemplateProvider> list, ITemplateProvider templateProvider, List<ITemplateProvider> movedItems)
+        private static void InsertTemplateProvider([NotNull] List<ITemplateProvider> list, ITemplateProvider templateProvider, [NotNull] List<ITemplateProvider> movedItems)
         {
             movedItems.Add(templateProvider);
             // Find the first index where we can insert
-            int insertIndex = 1 + list.LastIndexOf(x => x.CompareTo(templateProvider) < 0);
+            var insertIndex = 1 + list.LastIndexOf(x => x.CompareTo(templateProvider) < 0);
             list.Insert(insertIndex, templateProvider);
             // Every following providers may have an override rule against the new template provider, we must potentially resort them.
-            for (int i = insertIndex + 1; i < list.Count; ++i)
+            for (var i = insertIndex + 1; i < list.Count; ++i)
             {
                 var followingProvider = list[i];
                 if (followingProvider.CompareTo(templateProvider) < 0)
@@ -109,17 +109,18 @@ namespace SiliconStudio.Presentation.View
             }
         }
 
-        private ITemplateProvider FindTemplateProvider(object item, DependencyObject container)
+        [CanBeNull]
+        private ITemplateProvider FindTemplateProvider([NotNull] object item, DependencyObject container)
         {
-            List<string> usedProvidersForItem = usedProviders.GetOrCreateValue(item);
+            var usedProvidersForItem = usedProviders.GetOrCreateValue(item);
 
-            bool shouldClear = true;
+            var shouldClear = true;
             WeakReference lastContainer;
             // We check if this item has been templated recently.
             if (lastContainers.TryGetValue(item, out lastContainer) && lastContainer.IsAlive)
             {
                 // If so, check if the last container used is a parent of the container to use now.
-                DependencyObject parent = VisualTreeHelper.GetParent(container);
+                var parent = VisualTreeHelper.GetParent(container);
                 while (parent != null)
                 {
                     // If so, we are applying template recursively. We want don't want to use the same template
@@ -142,7 +143,7 @@ namespace SiliconStudio.Presentation.View
 
             var availableSelectors = templateProviders.Where(x => x.Match(item)).ToList();
 
-            ITemplateProvider result = availableSelectors.FirstOrDefault(x => !usedProvidersForItem.Contains(x.Name));
+            var result = availableSelectors.FirstOrDefault(x => !usedProvidersForItem.Contains(x.Name));
 
             if (result != null)
             {

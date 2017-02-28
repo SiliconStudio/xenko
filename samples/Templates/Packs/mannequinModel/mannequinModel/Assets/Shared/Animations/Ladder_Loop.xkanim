@@ -5,6 +5,7 @@ Tags: []
 Source: ../../../Resources/Animation/Ladder_Loop.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 RepeatMode: LoopInfinite
+Type: !StandardAnimationAssetType {}
 Skeleton: a0d324bd-326a-4fd8-88a9-fc5e4dcc62e5:Models/mannequinModel Skeleton
 RootMotion: false
 PreviewModel: f68ea240-695a-4de5-9884-60d77544fcd6:Models/mannequinModel

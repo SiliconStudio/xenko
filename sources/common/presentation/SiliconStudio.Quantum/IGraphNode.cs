@@ -1,109 +1,57 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-
 using System;
 using System.Collections.Generic;
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
-using SiliconStudio.Quantum.Contents;
+using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
-    public interface IObjectNode : IContentNode
+    /// <summary>
+    /// The <see cref="IGraphNode"/> interface represents a node in a Quantum object graph. This node can represent an object or a member of an object.
+    /// </summary>
+    public interface IGraphNode
     {
         /// <summary>
-        /// Gets the member corresponding to the given name.
+        /// Gets or sets the <see cref="System.Guid"/>.
         /// </summary>
-        /// <param name="name">The name of the member to retrieve.</param>
-        /// <returns>The member corresponding to the given name.</returns>
-        /// <exception cref="KeyNotFoundException">This node has no member that matches the given name.</exception>
-        IMemberNode this[string name] { get; }
+        Guid Guid { get; }
 
         /// <summary>
-        /// Gets the collection of members of this node.
+        /// Gets the command collection.
         /// </summary>
-        IReadOnlyCollection<IMemberNode> Members { get; }
+        IReadOnlyCollection<INodeCommand> Commands { get; }
 
         /// <summary>
-        /// Attempts to retrieve the child node of this <see cref="IContentNode"/> that matches the given name.
+        /// Gets the expected type of for the content of this node.
         /// </summary>
-        /// <param name="name">The name of the child to retrieve.</param>
-        /// <returns>The child node that matches the given name, or <c>null</c> if no child matches.</returns>
-        IMemberNode TryGetChild(string name);
-    }
-
-    public interface IMemberNode : IContentNode
-    {
-        /// <summary>
-        /// Gets the member name.
-        /// </summary>
-        [NotNull]
-        string Name { get; }
+        /// <remarks>The actual type of the content can be different, for example it could be a type inheriting from this type.</remarks>
+        Type Type { get; }
 
         /// <summary>
-        /// Gets the <see cref="IObjectNode"/> containing this member node.
+        /// Gets whether this content hold a primitive type value. If so, the node owning this content should have no children and modifying its value should not trigger any node refresh.
         /// </summary>
-        [NotNull]
-        IObjectNode Parent { get; }
+        /// <remarks>Types registered as primitive types in the <see cref="INodeBuilder"/> used to build this content are taken in account by this property.</remarks>
+        bool IsPrimitive { get; }
 
         /// <summary>
-        /// Gets the target of this node, if this node contains a reference to another node. 
+        /// Gets or sets the type descriptor of this content
         /// </summary>
-        /// <exception cref="InvalidOperationException">The node does not contain a reference to another node.</exception>
-        IObjectNode Target { get; }
+        ITypeDescriptor Descriptor { get; }
 
         /// <summary>
-        /// Gets the member descriptor corresponding to this member node.
+        /// Gets wheither this content holds a reference or is a direct value.
         /// </summary>
-        [NotNull]
-        IMemberDescriptor MemberDescriptor { get; }
+        bool IsReference { get; }
 
         /// <summary>
-        /// Raised just before a change to this node occurs.
+        /// Retrieves the value of this content.
         /// </summary>
-        event EventHandler<MemberNodeChangeEventArgs> Changing;
+        object Retrieve();
 
         /// <summary>
-        /// Raised when a change to this node has occurred.
+        /// Retrieves the value of one of the item if this content, if it holds a collection.
         /// </summary>
-        event EventHandler<MemberNodeChangeEventArgs> Changed;
-    }
-
-    public interface IInitializingGraphNode : IContentNode
-    {
-        /// <summary>
-        /// Seal the node, indicating its construction is finished and that no more children or commands will be added.
-        /// </summary>
-        void Seal();
-
-        /// <summary>
-        /// Add a command to this node. The node must not have been sealed yet.
-        /// </summary>
-        /// <param name="command">The node command to add.</param>
-        void AddCommand(INodeCommand command);
-    }
-
-    public interface IInitializingObjectNode : IInitializingGraphNode, IObjectNode
-    {
-        /// <summary>
-        /// Add a member to this node. This node and the member node must not have been sealed yet.
-        /// </summary>
-        /// <param name="member">The member to add to this node.</param>
-        /// <param name="allowIfReference">if set to <c>false</c> throw an exception if <see cref="IContentNode.TargetReference"/> or <see cref="IContentNode.ItemReferences"/> is not null.</param>
-        void AddMember(IMemberNodeInternal member, bool allowIfReference = false);
-    }
-
-    public interface IMemberNodeInternal : IInitializingGraphNode, IMemberNode
-    {
-        /// <summary>
-        /// Raised before a change to this node occurs and before the <see cref="IMemberNode.Changing"/> event is raised.
-        /// </summary>
-        event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
-
-        /// <summary>
-        /// Raised after a change to this node has occurred and after the <see cref="IMemberNode.Changed"/> event is raised.
-        /// </summary>
-        event EventHandler<MemberNodeChangeEventArgs> FinalizeChange;
+        /// <param name="index">The index to use to retrieve the value.</param>
+        object Retrieve(Index index);
     }
 }

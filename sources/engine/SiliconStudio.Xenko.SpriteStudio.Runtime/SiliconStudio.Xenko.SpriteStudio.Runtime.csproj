@@ -34,7 +34,6 @@
     <Compile Include="SpriteStudioNodeLinkComponent.cs" />
     <Compile Include="SpriteStudioNodeLinkProcessor.cs" />
     <Compile Include="SpriteStudioNodeState.cs" />
-    <Compile Include="SpriteStudioPipelinePlugin.cs" />
     <Compile Include="SpriteStudioProcessor.cs" />
     <Compile Include="SpriteStudioRendererProcessor.cs" />
     <Compile Include="SpriteStudioRenderFeature.cs" />

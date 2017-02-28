@@ -25,7 +25,7 @@ namespace SiliconStudio.Quantum
         ITypeDescriptorFactory TypeDescriptorFactory { get; }
 
         /// <summary>
-        /// Gets or sets the factory that will create instances of <see cref="IContentNode"/> for nodes.
+        /// Gets or sets the factory that will create instances of <see cref="IGraphNode"/> for nodes.
         /// </summary>
         IContentFactory ContentFactory { get; set; }
 
@@ -84,6 +84,6 @@ namespace SiliconStudio.Quantum
         /// <param name="type">The type.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        IReference CreateReferenceForNode(Type type, object value);
+        IReference CreateReferenceForNode(Type type, object value, bool isMember);
     }
 }

@@ -5,6 +5,7 @@ Tags: []
 Source: ../../../Resources/Animation/Shoot.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 RepeatMode: LoopInfinite
+Type: !StandardAnimationAssetType {}
 Skeleton: 64401578-294c-4eb2-b92f-4c0a805d7314:Models/mannequinHandModel Skeleton
 RootMotion: false
 PreviewModel: a2ee43dd-1239-4930-bd7c-6017bb263391:Models/mannequinHandModel

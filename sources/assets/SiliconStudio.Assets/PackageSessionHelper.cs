@@ -204,7 +204,7 @@ MinimumVisualStudioVersion = 14.0.23107.0";
                                 projectInSolution = new Project(solution,
                                     project.Id,
                                     KnownProjectTypeGuid.CSharp,
-                                    project.Location.GetFileName(),
+                                    project.Location.GetFileNameWithoutExtension(),
                                     projectRelativePath.ToWindowsPath(),
                                     package.Id,
                                     Enumerable.Empty<Section>(),
@@ -331,7 +331,7 @@ MinimumVisualStudioVersion = 14.0.23107.0";
         {
             // Props file is in the same folder as the xkpkg file, just with a ".props" extension.
             var packagePath = package.FullPath;
-            var propsFilePath = UPath.Combine(packagePath.GetParent(), (UFile)(packagePath.GetFileName() + ".props")) ;
+            var propsFilePath = UPath.Combine(packagePath.GetParent(), (UFile)(packagePath.GetFileNameWithoutExtension() + ".props")) ;
 
             var projectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
             var project = new Microsoft.Build.Evaluation.Project(projectCollection);

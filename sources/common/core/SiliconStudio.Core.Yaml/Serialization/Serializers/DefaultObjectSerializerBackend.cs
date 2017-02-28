@@ -87,12 +87,14 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             return style;
         }
 
+        /// <inheritdoc/>
         public virtual string ReadMemberName(ref ObjectContext objectContext, string memberName, out bool skipMember)
         {
             skipMember = false;
             return memberName;
         }
 
+        /// <inheritdoc/>
         public virtual object ReadMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue,
             Type memberType)
         {
@@ -100,24 +102,28 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             return ReadYaml(ref memberObjectContext);
         }
 
+        /// <inheritdoc/>
         public virtual object ReadCollectionItem(ref ObjectContext objectContext, object value, Type itemType, int index)
         {
             var itemObjectContext = new ObjectContext(objectContext.SerializerContext, value, objectContext.SerializerContext.FindTypeDescriptor(itemType));
             return ReadYaml(ref itemObjectContext);
         }
 
+        /// <inheritdoc/>
         public virtual object ReadDictionaryKey(ref ObjectContext objectContext, Type keyType)
         {
             var keyObjectContext = new ObjectContext(objectContext.SerializerContext, null, objectContext.SerializerContext.FindTypeDescriptor(keyType));
             return ReadYaml(ref keyObjectContext);
         }
 
+        /// <inheritdoc/>
         public virtual object ReadDictionaryValue(ref ObjectContext objectContext, Type valueType, object key)
         {
             var valueObjectContext = new ObjectContext(objectContext.SerializerContext, null, objectContext.SerializerContext.FindTypeDescriptor(valueType));
             return ReadYaml(ref valueObjectContext);
         }
 
+        /// <inheritdoc/>
         public virtual void WriteMemberName(ref ObjectContext objectContext, IMemberDescriptor member, string name)
         {
             // Emit the key name
@@ -129,6 +135,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             });
         }
 
+        /// <inheritdoc/>
         public virtual void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue, Type memberType)
         {
             // Push the style of the current member
@@ -140,23 +147,29 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             WriteYaml(ref memberObjectContext);
         }
 
+        /// <inheritdoc/>
         public virtual void WriteCollectionItem(ref ObjectContext objectContext, object item, Type itemType, int index)
         {
             var itemObjectcontext = new ObjectContext(objectContext.SerializerContext, item, objectContext.SerializerContext.FindTypeDescriptor(itemType));
             WriteYaml(ref itemObjectcontext);
         }
 
+        /// <inheritdoc/>
         public virtual void WriteDictionaryKey(ref ObjectContext objectContext, object key, Type keyType)
         {
             var itemObjectcontext = new ObjectContext(objectContext.SerializerContext, key, objectContext.SerializerContext.FindTypeDescriptor(keyType));
             WriteYaml(ref itemObjectcontext);
         }
 
+        /// <inheritdoc/>
         public virtual void WriteDictionaryValue(ref ObjectContext objectContext, object key, object value, Type valueType)
         {
             var itemObjectcontext = new ObjectContext(objectContext.SerializerContext, value, objectContext.SerializerContext.FindTypeDescriptor(valueType));
             WriteYaml(ref itemObjectcontext);
         }
+
+        /// <inheritdoc/>
+        public virtual bool ShouldSerialize(IMemberDescriptor member, ref ObjectContext objectContext) => member.ShouldSerialize(objectContext.Instance);
 
         protected object ReadYaml(ref ObjectContext objectContext)
         {
@@ -179,6 +192,5 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         {
             objectContext.SerializerContext.Serializer.ObjectSerializer.WriteYaml(ref objectContext);
         }
-
     }
 }

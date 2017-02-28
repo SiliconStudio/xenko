@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
@@ -16,7 +17,7 @@ namespace SiliconStudio.Core.Collections
     /// </summary>
     /// <typeparam name="T">The type of elements in the list.</typeparam>
     [DataSerializer(typeof(ListAllSerializer<,>), Mode = DataSerializerGenericMode.TypeAndGenericArguments)]
-    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     public class FastList<T> : IList<T>, IReadOnlyList<T>, ICollection<T>, IEnumerable<T>, IEnumerable
     {
         // Fields
@@ -25,6 +26,7 @@ namespace SiliconStudio.Core.Collections
         /// <summary>
         /// Gets the items.
         /// </summary>
+        [DataMemberIgnore]
         public T[] Items { get; private set; }
 
         private int _size;
@@ -34,12 +36,12 @@ namespace SiliconStudio.Core.Collections
             Items = ArrayHelper<T>.Empty;
         }
 
-        public FastList(IEnumerable<T> collection)
+        public FastList([NotNull] IEnumerable<T> collection)
         {
             var is2 = collection as ICollection<T>;
             if (is2 != null)
             {
-                int count = is2.Count;
+                var count = is2.Count;
                 Items = new T[count];
                 is2.CopyTo(Items, 0);
                 _size = count;
@@ -48,7 +50,7 @@ namespace SiliconStudio.Core.Collections
             {
                 _size = 0;
                 Items = new T[_defaultCapacity];
-                using (IEnumerator<T> enumerator = collection.GetEnumerator())
+                using (var enumerator = collection.GetEnumerator())
                 {
                     while (enumerator.MoveNext())
                     {
@@ -113,7 +115,7 @@ namespace SiliconStudio.Core.Collections
         {
             if (item == null)
             {
-                for (int j = 0; j < _size; j++)
+                for (var j = 0; j < _size; j++)
                 {
                     if (Items[j] == null)
                     {
@@ -122,8 +124,8 @@ namespace SiliconStudio.Core.Collections
                 }
                 return false;
             }
-            EqualityComparer<T> comparer = EqualityComparer<T>.Default;
-            for (int i = 0; i < _size; i++)
+            var comparer = EqualityComparer<T>.Default;
+            for (var i = 0; i < _size; i++)
             {
                 if (comparer.Equals(Items[i], item))
                 {
@@ -159,7 +161,7 @@ namespace SiliconStudio.Core.Collections
 
         public bool Remove(T item)
         {
-            int index = IndexOf(item);
+            var index = IndexOf(item);
             if (index >= 0)
             {
                 RemoveAt(index);
@@ -189,10 +191,7 @@ namespace SiliconStudio.Core.Collections
             return new Enumerator(this);
         }
 
-        public int Count
-        {
-            get { return _size; }
-        }
+        public int Count => _size;
 
         public T this[int index]
         {
@@ -208,10 +207,7 @@ namespace SiliconStudio.Core.Collections
             }
         }
 
-        bool ICollection<T>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<T>.IsReadOnly => false;
 
         #endregion
 
@@ -221,18 +217,29 @@ namespace SiliconStudio.Core.Collections
         /// <param name="fastClear">if set to <c>true</c> this method only resets the count elements but doesn't clear items referenced already stored in the list.</param>
         public void Clear(bool fastClear)
         {
-            if (!fastClear && _size > 0)
-            {
-                Array.Clear(Items, 0, _size);
-            }
-            _size = 0;
+            Resize(0, fastClear);
         }
 
-        public void AddRange(IEnumerable<T> collection)
+        public void Resize(int newSize, bool fastClear)
+        {
+            if (_size < newSize)
+            {
+                EnsureCapacity(newSize);
+            }
+            else if (!fastClear && _size - newSize > 0)
+            {
+                Array.Clear(Items, newSize, _size - newSize);
+            }
+
+            _size = newSize;
+        }
+
+        public void AddRange([NotNull] IEnumerable<T> collection)
         {
             InsertRange(_size, collection);
         }
 
+        [NotNull]
         public ReadOnlyCollection<T> AsReadOnly()
         {
             return new ReadOnlyCollection<T>(this);
@@ -253,12 +260,12 @@ namespace SiliconStudio.Core.Collections
             return Array.BinarySearch(Items, index, count, item, comparer);
         }
 
-        public void CopyTo(T[] array)
+        public void CopyTo([NotNull] T[] array)
         {
             CopyTo(array, 0);
         }
 
-        public void CopyTo(int index, T[] array, int arrayIndex, int count)
+        public void CopyTo(int index, [NotNull] T[] array, int arrayIndex, int count)
         {
             Array.Copy(Items, index, array, arrayIndex, count);
         }
@@ -267,7 +274,7 @@ namespace SiliconStudio.Core.Collections
         {
             if (Items.Length < min)
             {
-                int num = (Items.Length == 0) ? _defaultCapacity : (Items.Length*2);
+                var num = (Items.Length == 0) ? _defaultCapacity : (Items.Length*2);
                 if (num < min)
                 {
                     num = min;
@@ -283,7 +290,7 @@ namespace SiliconStudio.Core.Collections
 
         public T Find(Predicate<T> match)
         {
-            for (int i = 0; i < _size; i++)
+            for (var i = 0; i < _size; i++)
             {
                 if (match(Items[i]))
                 {
@@ -293,10 +300,11 @@ namespace SiliconStudio.Core.Collections
             return default(T);
         }
 
+        [NotNull]
         public FastList<T> FindAll(Predicate<T> match)
         {
             var list = new FastList<T>();
-            for (int i = 0; i < _size; i++)
+            for (var i = 0; i < _size; i++)
             {
                 if (match(Items[i]))
                 {
@@ -318,8 +326,8 @@ namespace SiliconStudio.Core.Collections
 
         public int FindIndex(int startIndex, int count, Predicate<T> match)
         {
-            int num = startIndex + count;
-            for (int i = startIndex; i < num; i++)
+            var num = startIndex + count;
+            for (var i = startIndex; i < num; i++)
             {
                 if (match(Items[i]))
                 {
@@ -331,7 +339,7 @@ namespace SiliconStudio.Core.Collections
 
         public T FindLast(Predicate<T> match)
         {
-            for (int i = _size - 1; i >= 0; i--)
+            for (var i = _size - 1; i >= 0; i--)
             {
                 if (match(Items[i]))
                 {
@@ -353,8 +361,8 @@ namespace SiliconStudio.Core.Collections
 
         public int FindLastIndex(int startIndex, int count, Predicate<T> match)
         {
-            int num = startIndex - count;
-            for (int i = startIndex; i > num; i--)
+            var num = startIndex - count;
+            for (var i = startIndex; i > num; i--)
             {
                 if (match(Items[i]))
                 {
@@ -366,7 +374,7 @@ namespace SiliconStudio.Core.Collections
 
         public void ForEach(Action<T> action)
         {
-            for (int i = 0; i < _size; i++)
+            for (var i = 0; i < _size; i++)
             {
                 action(Items[i]);
             }
@@ -377,6 +385,7 @@ namespace SiliconStudio.Core.Collections
             return new Enumerator(this);
         }
 
+        [NotNull]
         public FastList<T> GetRange(int index, int count)
         {
             var list = new FastList<T>(count);
@@ -395,12 +404,12 @@ namespace SiliconStudio.Core.Collections
             return Array.IndexOf(Items, item, index, count);
         }
 
-        public void InsertRange(int index, IEnumerable<T> collection)
+        public void InsertRange(int index, [NotNull] IEnumerable<T> collection)
         {
             var is2 = collection as ICollection<T>;
             if (is2 != null)
             {
-                int count = is2.Count;
+                var count = is2.Count;
                 if (count > 0)
                 {
                     EnsureCapacity(_size + count);
@@ -422,7 +431,7 @@ namespace SiliconStudio.Core.Collections
             }
             else
             {
-                using (IEnumerator<T> enumerator = collection.GetEnumerator())
+                using (var enumerator = collection.GetEnumerator())
                 {
                     while (enumerator.MoveNext())
                     {
@@ -434,7 +443,7 @@ namespace SiliconStudio.Core.Collections
 
         private static bool IsCompatibleObject(object value)
         {
-            return ((value is T) || ((value == null) && (default(T) == null)));
+            return value is T || value == null && default(T) == null;
         }
 
         public int LastIndexOf(T item)
@@ -462,7 +471,7 @@ namespace SiliconStudio.Core.Collections
 
         public int RemoveAll(Predicate<T> match)
         {
-            int index = 0;
+            var index = 0;
             while ((index < _size) && !match(Items[index]))
             {
                 index++;
@@ -471,7 +480,7 @@ namespace SiliconStudio.Core.Collections
             {
                 return 0;
             }
-            int num2 = index + 1;
+            var num2 = index + 1;
             while (num2 < _size)
             {
                 while ((num2 < _size) && match(Items[num2]))
@@ -484,7 +493,7 @@ namespace SiliconStudio.Core.Collections
                 }
             }
             Array.Clear(Items, index, _size - index);
-            int num3 = _size - index;
+            var num3 = _size - index;
             _size = index;
             return num3;
         }
@@ -536,6 +545,7 @@ namespace SiliconStudio.Core.Collections
             Array.Sort(Items, index, count, comparer);
         }
 
+        [NotNull]
         public T[] ToArray()
         {
             var destinationArray = new T[_size];
@@ -554,7 +564,7 @@ namespace SiliconStudio.Core.Collections
 
         public bool TrueForAll(Predicate<T> match)
         {
-            for (int i = 0; i < _size; i++)
+            for (var i = 0; i < _size; i++)
             {
                 if (!match(Items[i]))
                 {
@@ -590,7 +600,7 @@ namespace SiliconStudio.Core.Collections
 
             public bool MoveNext()
             {
-                FastList<T> list = this.list;
+                var list = this.list;
                 if (index < list._size)
                 {
                     current = list.Items[index];
@@ -607,15 +617,9 @@ namespace SiliconStudio.Core.Collections
                 return false;
             }
 
-            public T Current
-            {
-                get { return current; }
-            }
+            public T Current => current;
 
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
+            object IEnumerator.Current => Current;
 
             void IEnumerator.Reset()
             {

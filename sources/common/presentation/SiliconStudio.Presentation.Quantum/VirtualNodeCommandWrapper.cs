@@ -12,11 +12,11 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class VirtualNodeCommandWrapper : NodeCommandWrapperBase
     {
-        private readonly IContentNode node;
+        private readonly IGraphNode node;
         private readonly Index index;
         protected readonly GraphViewModelService Service;
 
-        public VirtualNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, IContentNode node, Index index)
+        public VirtualNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, IGraphNode node, Index index)
             : base(serviceProvider)
         {
             if (nodeCommand == null) throw new ArgumentNullException(nameof(nodeCommand));
@@ -35,10 +35,10 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override async Task Invoke(object parameter)
         {
-            using (var transaction = ActionService.CreateTransaction())
+            using (var transaction = UndoRedoService.CreateTransaction())
             {
                 await NodeCommand.Execute(node, index, parameter);
-                ActionService.SetName(transaction, ActionName);
+                UndoRedoService.SetName(transaction, ActionName);
             }
         }
     }

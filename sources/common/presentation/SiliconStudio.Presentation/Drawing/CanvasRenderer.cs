@@ -38,6 +38,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Drawing
@@ -55,7 +56,7 @@ namespace SiliconStudio.Presentation.Drawing
         /// </summary>
         private Rect? clip;
 
-        public CanvasRenderer(Canvas canvas)
+        public CanvasRenderer([NotNull] Canvas canvas)
         {
             if (canvas == null) throw new ArgumentNullException(nameof(canvas));
             Canvas = canvas;
@@ -67,6 +68,7 @@ namespace SiliconStudio.Presentation.Drawing
         /// </summary>
         public double BalancedLineDrawingThicknessLimit { get; set; } = 3.5;
 
+        [NotNull]
         public Canvas Canvas { get; }
 
         /// <summary>
@@ -399,6 +401,7 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="clipOffsetX"></param>
         /// <param name="clipOffsetY"></param>
         /// <returns></returns>
+        [NotNull]
         private TElement Create<TElement>(bool isHitTestVisible, double clipOffsetX = 0, double clipOffsetY = 0)
             where TElement : UIElement, new()
         {
@@ -429,7 +432,7 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="aliased"></param>
         /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise.</param>
         /// <remarks>Using stream geometry seems to be slightly faster than using path geometry.</remarks>
-        private void DrawLineSegmentsByStreamGeometry(IList<Point> points, Color strokeColor,
+        private void DrawLineSegmentsByStreamGeometry([NotNull] IList<Point> points, Color strokeColor,
             double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset, bool aliased, bool isHitTestVisible)
         {
             var streamGeometry = new StreamGeometry();
@@ -458,7 +461,7 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="aliased"></param>
         /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise.</param>
         /// <remarks>See <a href="https://oxyplot.codeplex.com/discussions/456679">discussion</a>.</remarks>
-        private void DrawPolylineBalanced(IList<Point> points, Color strokeColor, double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, bool aliased, bool isHitTestVisible)
+        private void DrawPolylineBalanced([NotNull] IList<Point> points, Color strokeColor, double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, bool aliased, bool isHitTestVisible)
         {
             // balance the number of points per polyline and the number of polylines
             var numPointsPerPolyline = Math.Max(points.Count / MaxPolylinesPerLine, MinPointsPerPolyline);
@@ -538,7 +541,7 @@ namespace SiliconStudio.Presentation.Drawing
             return brush;
         }
 
-        private void SetStroke(Shape shape, Color color, double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset, bool aliased)
+        private void SetStroke([NotNull] Shape shape, Color color, double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset, bool aliased)
         {
             shape.Stroke = GetBrush(color);
             shape.StrokeThickness = thickness;
@@ -563,7 +566,7 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="sizeInEm">The size.</param>
         /// <param name="text">The text.</param>
         /// <returns>The text size.</returns>
-        private static Size MeasureTextSize(GlyphTypeface glyphTypeface, double sizeInEm, string text)
+        private static Size MeasureTextSize([NotNull] GlyphTypeface glyphTypeface, double sizeInEm, [NotNull] string text)
         {
             double width = 0;
             double lineWidth = 0;
@@ -618,13 +621,14 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="points">The points to convert.</param>
         /// <param name="aliased">Convert to pixel aligned points if set to <c>true</c>.</param>
         /// <returns>The point collection.</returns>
+        [NotNull]
         private static PointCollection ToPointCollection(IEnumerable<Point> points, bool aliased)
         {
             return new PointCollection(aliased ? points.Select(ToPixelAlignedPoint) : points);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool TryGetGlyphTypeface(FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, out GlyphTypeface glyphTypeface)
+        private static bool TryGetGlyphTypeface([NotNull] FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, out GlyphTypeface glyphTypeface)
         {
             var typeface = new Typeface(fontFamily, fontStyle, fontWeight, fontStretch);
             return typeface.TryGetGlyphTypeface(out glyphTypeface);

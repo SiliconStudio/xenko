@@ -39,7 +39,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the action stack.
         /// </summary>
-        protected IUndoRedoService ActionService => ServiceProvider.TryGet<IUndoRedoService>();
+        protected IUndoRedoService UndoRedoService => ServiceProvider.TryGet<IUndoRedoService>();
 
         /// <inheritdoc/>
         public override void Execute(object parameter)

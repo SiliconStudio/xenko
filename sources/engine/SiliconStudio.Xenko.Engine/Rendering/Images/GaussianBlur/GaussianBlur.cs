@@ -46,8 +46,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             base.InitializeCore();
 
-            blurH = ToLoadAndUnload(new ImageEffectShader("GaussianBlurEffect"));
-            blurV = ToLoadAndUnload(new ImageEffectShader("GaussianBlurEffect"));
+            blurH = ToLoadAndUnload(new ImageEffectShader("GaussianBlurEffect", true));
+            blurV = ToLoadAndUnload(new ImageEffectShader("GaussianBlurEffect", true));
             blurH.Initialize(Context);
             blurV.Initialize(Context);
 
@@ -110,6 +110,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     offsetsWeights = null;
                 }
             }
+        }
+
+        public void Collect(RenderContext context)
+        {
         }
 
         protected override void DrawCore(RenderDrawContext context)

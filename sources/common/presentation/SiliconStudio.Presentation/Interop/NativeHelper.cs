@@ -9,80 +9,91 @@ using System.Windows;
 
 namespace SiliconStudio.Presentation.Interop
 {
+    internal class ExternDll
+    {
+        public const string User32 = "user32.dll";
+    }
+
     public static class NativeHelper
     {
         #region Methods
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
         public static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr processId);
 
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport(ExternDll.User32, SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetCursorPos(int x, int y);
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetCursorPos(out POINT lpPoint);
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
+        public static extern bool ScreenToClient(IntPtr hwnd, ref POINT pt);
+
+        [DllImport(ExternDll.User32)]
         public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport(ExternDll.User32, SetLastError = true)]
         public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
-        [DllImport("user32.dll", EntryPoint = "SendMessage", CharSet = CharSet.Unicode)]
+        [DllImport(ExternDll.User32, EntryPoint = "SendMessage", CharSet = CharSet.Unicode)]
         public static extern int SendMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll", EntryPoint = "PostMessage", CharSet = CharSet.Unicode)]
+        [DllImport(ExternDll.User32, EntryPoint = "PostMessage", CharSet = CharSet.Unicode)]
         public static extern int PostMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam);
 
+        [DllImport(ExternDll.User32, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        [DllImport("user32.dll", SetLastError = true)]
         public static extern bool PostThreadMessage(uint threadId, int msg, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
         public static extern IntPtr SetParent(IntPtr hWnd, IntPtr hWndParent);
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
         public static extern IntPtr GetParent(IntPtr hWnd);
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport(ExternDll.User32, SetLastError = true)]
         public static extern bool GetWindowRect(IntPtr hwnd, out RECT lpRect);
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport(ExternDll.User32, SetLastError = true)]
         public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport(ExternDll.User32)]
         public static extern bool ShowWindow(IntPtr hWnd, int mCmdShow);
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport(ExternDll.User32, SetLastError = true)]
         public static extern IntPtr GetWindow(IntPtr hWnd, GetWindowCmd uCmd);
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
         public static extern IntPtr MonitorFromPoint(POINT lpPoint, int dwFlags);
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
         public static extern IntPtr MonitorFromWindow(IntPtr hwnd, int dwFlags);
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
         public static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr lprcClip, MonitorEnumDelegate lpfnEnum, IntPtr dwData);
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
         public static extern bool GetMonitorInfo(IntPtr hmonitor, [In, Out] MONITORINFO monitorInfo);
 
-        [DllImport("user32.dll", EntryPoint = "DestroyWindow", CharSet = CharSet.Unicode)]
+        [DllImport(ExternDll.User32, EntryPoint = "DestroyWindow", CharSet = CharSet.Unicode)]
         public static extern bool DestroyWindow(IntPtr hwnd);
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
         public static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
         public static extern bool UnhookWinEvent(IntPtr hWinEventHook);
 
-        [DllImport("user32.dll", ExactSpelling = true)]
+        [DllImport(ExternDll.User32, ExactSpelling = true)]
         public static extern IntPtr GetAncestor(IntPtr hwnd, GetAncestorFlags flags);
 
         public static IntPtr SetWindowLong(HandleRef hwnd, WindowLongType index, IntPtr wndProcPtr)
@@ -94,37 +105,37 @@ namespace SiliconStudio.Presentation.Interop
             return SetWindowLongPtr64(hwnd, index, wndProcPtr);
         }
 
-        [DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Unicode)]
+        [DllImport(ExternDll.User32, EntryPoint = "SetWindowLong", CharSet = CharSet.Unicode)]
         private static extern IntPtr SetWindowLong32(HandleRef hwnd, WindowLongType index, IntPtr wndProc);
 
-        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
+        [DllImport(ExternDll.User32, EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
         private static extern IntPtr SetWindowLongPtr64(HandleRef hwnd, WindowLongType index, IntPtr wndProc);
 
-        [DllImport("user32.dll", EntryPoint = "SetParent", CharSet = CharSet.Unicode)]
+        [DllImport(ExternDll.User32, EntryPoint = "SetParent", CharSet = CharSet.Unicode)]
         public static extern IntPtr SetParent(HandleRef hWnd, IntPtr hWndParent);
 
-        [DllImport("user32.dll", EntryPoint = "SetWindowPos", SetLastError = true)]
+        [DllImport(ExternDll.User32, EntryPoint = "SetWindowPos", SetLastError = true)]
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport(ExternDll.User32, SetLastError = true)]
         public static extern IntPtr SetActiveWindow(IntPtr hWnd);
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
         public static extern IntPtr GetActiveWindow();
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
         public static extern IntPtr GetProcessHandleFromHwnd(IntPtr hWnd);
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
         public static extern IntPtr GetFocus();
 
-        [DllImport("user32.dll")]
+        [DllImport(ExternDll.User32)]
         public static extern bool IsChild(IntPtr hWndParent, IntPtr hWnd);
 
-        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [DllImport(ExternDll.User32, CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern IntPtr SetClipboardViewer(IntPtr hWndNewViewer);
 
-        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [DllImport(ExternDll.User32, CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern bool ChangeClipboardChain(IntPtr hWndRemove, IntPtr hWndNewNext);
 
         #endregion // Methods
@@ -358,10 +369,14 @@ namespace SiliconStudio.Presentation.Interop
         public const uint WS_EX_COMPOSITED = 0x02000000;
         public const uint WS_EX_NOACTIVATE = 0x08000000;
 
+        // ShowWindow flags - https://msdn.microsoft.com/en-us/library/windows/desktop/ms633548(v=vs.85).aspx
         public const int SW_HIDE = 0x00000000;
         public const int SW_SHOWNORMAL = 0x00000001;
+        public const int SW_SHOWMINIMIZED = 0x00000002;
+        public const int SW_SHOWMAXIMIZED = 0x00000003;
         public const int SW_SHOWNOACTIVATE = 0x00000004;
         public const int SW_SHOW = 0x00000005;
+        public const int SW_RESTORE = 0x00000009;
 
         // Windows messages - http://www.pinvoke.net/default.aspx/Constants/WM.html
         public const int WM_ACTIVATE = 0x0006;

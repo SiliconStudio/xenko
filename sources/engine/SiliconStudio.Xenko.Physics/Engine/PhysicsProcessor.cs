@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -9,7 +10,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Physics.Engine;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Physics
 {
@@ -34,7 +35,6 @@ namespace SiliconStudio.Xenko.Physics
 
         private bool colliderShapesRendering;
 
-        private SceneChildRenderer debugSceneRenderer;
         private PhysicsShapesRenderingService debugShapeRendering;
 
         public PhysicsProcessor()
@@ -51,21 +51,26 @@ namespace SiliconStudio.Xenko.Physics
 
             if (!colliderShapesRendering)
             {
-                var mainCompositor = (SceneGraphicsCompositorLayers)sceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
-                var scene = debugEntityScene.Get<ChildSceneComponent>().Scene;
-
-                foreach (var element in elements)
-                {
-                    element.RemoveDebugEntity(scene);
-                }
-
-                sceneSystem.SceneInstance.Scene.Entities.Remove(debugEntityScene);
-                mainCompositor.Master.Renderers.Remove(debugSceneRenderer);
+                throw new NotImplementedException();
+                //var mainCompositor = sceneSystem.GraphicsCompositor;
+                //var scene = debugEntityScene.Get<ChildSceneComponent>().Scene;
+                //
+                //foreach (var element in elements)
+                //{
+                //    element.RemoveDebugEntity(scene);
+                //}
+                //
+                //sceneSystem.SceneInstance.RootScene.Entities.Remove(debugEntityScene);
+                //mainCompositor.Master.Renderers.Remove(debugSceneRenderer);
             }
             else
             {
+                // TODO GFXCOMP: Reimplement physics debug shapes rendering
+                throw new NotImplementedException();
+
+                /*
                 //we create a child scene to render the shapes, so that they are totally separated from the normal scene
-                var mainCompositor = (SceneGraphicsCompositorLayers)sceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
+                var mainCompositor = (SceneGraphicsCompositorLayers)sceneSystem.GraphicsCompositor;
 
                 var graphicsCompositor = new SceneGraphicsCompositorLayers
                 {
@@ -79,14 +84,14 @@ namespace SiliconStudio.Xenko.Physics
                     }
                 };
 
-                debugScene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
+                debugScene = new Scene();
 
                 var childComponent = new ChildSceneComponent { Scene = debugScene };
                 debugEntityScene = new Entity { childComponent };
-                debugSceneRenderer = new SceneChildRenderer(childComponent);
+                debugSceneRenderer = new SceneChildRenderer(childComponent) { GraphicsCompositorOverride = graphicsCompositor };
 
                 mainCompositor.Master.Add(debugSceneRenderer);
-                sceneSystem.SceneInstance.Scene.Entities.Add(debugEntityScene);
+                sceneSystem.SceneInstance.RootScene.Entities.Add(debugEntityScene);*/
 
                 foreach (var element in elements)
                 {
@@ -257,7 +262,8 @@ namespace SiliconStudio.Xenko.Physics
             foreach (var dataPair in ComponentDatas)
             {
                 var data = dataPair.Value;
-                if (data.PhysicsComponent.Enabled && data.PhysicsComponent.ProcessCollisions && data.PhysicsComponent.ColliderShape != null)
+                var shouldProcess = data.PhysicsComponent.ProcessCollisions || ((data.PhysicsComponent as PhysicsTriggerComponentBase)?.IsTrigger ?? false);
+                if (data.PhysicsComponent.Enabled && shouldProcess && data.PhysicsComponent.ColliderShape != null)
                 {
                     Simulation.ContactTest(data.PhysicsComponent);
                 }

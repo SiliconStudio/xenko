@@ -24,10 +24,34 @@ namespace SiliconStudio.Xenko.Assets.Models
         public Vector3 PivotPosition { get; set; }
 
         public bool Allow32BitIndex { get; set; }
+        public int MaxInputSlots { get; set; }
         public bool AllowUnsignedBlendIndices { get; set; }
         public List<ModelMaterial> Materials { get; set; }
         public string EffectName { get; set; }
         public bool TessellationAEN { get; set; }
+
+        /// <summary>
+        /// Checks if the vertex buffer input slots for the model are supported by the target graphics profile level
+        /// </summary>
+        /// <param name="commandContext">The context for this command, used to access the logger and parameters</param>
+        /// <param name="model">The model to be verified</param>
+        private bool CheckInputSlots(ICommandContext commandContext, Model model)
+        {
+            foreach (var mesh in model.Meshes)
+            {
+                foreach (var vertexBufferBinding in mesh.Draw.VertexBuffers)
+                {
+                    if (vertexBufferBinding.Declaration.VertexElements.Length > MaxInputSlots)
+                    {
+                        commandContext.Logger.Error($"The number of input vertex elements ({vertexBufferBinding.Declaration.VertexElements.Length}) " +
+                                                    $"is more than the maximum supported slots for this graphics level ({MaxInputSlots}).");
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
 
         private object ExportModel(ICommandContext commandContext, ContentManager contentManager)
         {
@@ -35,6 +59,10 @@ namespace SiliconStudio.Xenko.Assets.Models
             var modelSkeleton = LoadSkeleton(commandContext, contentManager); // we get model skeleton to compare it to real skeleton we need to map to
             AdjustSkeleton(modelSkeleton);
             var model = LoadModel(commandContext, contentManager);
+            if (!CheckInputSlots(commandContext, model))
+            {
+                return null;
+            }
 
             // Apply materials
             foreach (var modelMaterial in Materials)
@@ -300,5 +328,6 @@ namespace SiliconStudio.Xenko.Assets.Models
             // Convert to Entity
             return model;
         }
+
     }
 }

@@ -32,12 +32,12 @@ namespace SiliconStudio.Quantum.Commands
         /// <summary>
         /// Triggers the command and returns a task that complete when the command execution is done.
         /// </summary>
-        /// <param name="content">The content on which to execute the command.</param>
-        /// <param name="index">The index in the content on which to execute the command.</param>
+        /// <param name="node">The node on which to execute the command.</param>
+        /// <param name="index">The index in the node on which to execute the command.</param>
         /// <param name="parameter">The parameter of the command.</param>
         /// <returns>A task that complete when the command execution is done.</returns>
         /// <remarks>A command can execute asynchronous code and is not guaranteed to complete immediately.</remarks>
-        Task Execute(IContentNode content, Index index, object parameter);
+        Task Execute(IGraphNode node, Index index, object parameter);
 
         /// <summary>
         /// Notifies the command that the following invokes will be part of a combined execution (the same command being executed multiple times on multiple objects with the same parameters).

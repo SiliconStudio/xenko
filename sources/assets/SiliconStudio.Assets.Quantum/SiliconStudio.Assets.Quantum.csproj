@@ -44,17 +44,27 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssetBaseToDerivedRegistry.cs" />
+    <Compile Include="AssetCompositeBaseToDerivedRegistry.cs" />
     <Compile Include="AssetCompositeHierarchyPartVisitor.cs" />
     <Compile Include="AssetCompositeHierarchyPropertyGraph.cs" />
-    <Compile Include="AssetCompositePartVisitor.cs" />
+    <Compile Include="Visitors\AssetCollector.cs" />
+    <Compile Include="Visitors\ExternalReferenceCollector.cs" />
+    <Compile Include="Visitors\IdentifiableObjectVisitorBase.cs" />
+    <Compile Include="Visitors\IdentifiableObjectCollector.cs" />
+    <Compile Include="Visitors\AssetGraphVisitorBase.cs" />
     <Compile Include="AssetCompositePropertyGraph.cs" />
+    <Compile Include="AssetGraphNodeChangeListener.cs" />
+    <Compile Include="AssetGraphNodeLinker.cs" />
     <Compile Include="AssetMemberNodeChangeEventArgs.cs" />
     <Compile Include="AssetNode.cs" />
     <Compile Include="AssetNodeContainer.cs" />
+    <Compile Include="Visitors\AssetNodeMetadataCollectorBase.cs" />
     <Compile Include="AssetPropertyGraphContainer.cs" />
     <Compile Include="AssetPropertyGraph.cs" />
     <Compile Include="AssetQuantumRegistry.cs" />
     <Compile Include="AssetToBaseNodeLinker.cs" />
+    <Compile Include="Visitors\ClearObjectReferenceVisitor.cs" />
     <Compile Include="Commands\AbstractNodeDifferentValues.cs" />
     <Compile Include="Commands\AbstractNodeEntry.cs" />
     <Compile Include="Commands\AbstractNodeType.cs" />
@@ -65,11 +75,14 @@
     <Compile Include="Commands\MoveItemCommand.cs" />
     <Compile Include="Commands\RemoveItemCommand.cs" />
     <Compile Include="Commands\RenameStringKeyCommand.cs" />
+    <Compile Include="IBaseToDerivedRegistry.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="NodesToOwnerPartVisitor.cs" />
-    <Compile Include="OverrideTypePathGenerator.cs" />
+    <Compile Include="Visitors\ObjectReferencePathGenerator.cs" />
+    <Compile Include="Visitors\OverrideTypePathGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AssetPropertyGraphAttribute.cs" />
+    <Compile Include="SubHierarchyCloneFlags.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">

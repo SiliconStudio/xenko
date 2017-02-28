@@ -46,7 +46,17 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// <param name="importParameters">The import parameters.</param>
         /// <returns>The EntityInfo.</returns>
         public abstract EntityInfo GetEntityInfo(UFile localPath, Logger logger, AssetImporterParameters importParameters);
-        
+
+        /// <summary>
+        /// Get the total animation clip duration.
+        /// </summary>
+        /// <param name="localPath">The path of the asset.</param>
+        /// <param name="logger">The logger to use to log import message.</param>
+        /// <param name="importParameters">The import parameters.</param>
+        /// <param name="startTime">Returns the first (start) keyframe's time for the animation</param>
+        /// <param name="endTime">Returns the last (end) keyframe's time for the animation</param>
+        public abstract void GetAnimationDuration(UFile localPath, Logger logger, AssetImporterParameters importParameters, out TimeSpan startTime, out TimeSpan endTime);
+
         /// <summary>
         /// Imports the model.
         /// </summary>
@@ -83,7 +93,10 @@ namespace SiliconStudio.Xenko.Assets.Models
             // 3. Animation
             if (importParameters.IsTypeSelectedForOutput<AnimationAsset>())
             {
-                ImportAnimation(rawAssetReferences, localPath, entityInfo.AnimationNodes, isImportingModel, skeletonAsset);
+                TimeSpan startTime, endTime;
+                GetAnimationDuration(localPath, importParameters.Logger, importParameters, out startTime, out endTime);
+
+                ImportAnimation(rawAssetReferences, localPath, entityInfo.AnimationNodes, isImportingModel, skeletonAsset, startTime, endTime);
             }
 
             // 4. Materials
@@ -117,20 +130,20 @@ namespace SiliconStudio.Xenko.Assets.Models
             if (entityInfo.AnimationNodes != null && entityInfo.AnimationNodes.Count > 0)
                 asset.PreserveNodes(entityInfo.AnimationNodes);
 
-            var skeletonUrl = new UFile(localPath.GetFileName() + " Skeleton");
+            var skeletonUrl = new UFile(localPath.GetFileNameWithoutExtension() + " Skeleton");
             var assetItem = new AssetItem(skeletonUrl, asset);
             assetReferences.Add(assetItem);
             return assetItem;
         }
 
-        private static void ImportAnimation(List<AssetItem> assetReferences, UFile localPath, List<string> animationNodes, bool shouldPostFixName, AssetItem skeletonAsset)
+        private static void ImportAnimation(List<AssetItem> assetReferences, UFile localPath, List<string> animationNodes, bool shouldPostFixName, AssetItem skeletonAsset, TimeSpan animationStartTime, TimeSpan animationEndTime)
         {
             if (animationNodes != null && animationNodes.Count > 0)
             {
                 var assetSource = localPath;
 
-                var asset = new AnimationAsset { Source = assetSource };
-                var animUrl = localPath.GetFileName() + (shouldPostFixName ? " Animation" : "");
+                var asset = new AnimationAsset { Source = assetSource, AnimationTimeMaximum = animationEndTime, AnimationTimeMinimum = animationStartTime };
+                var animUrl = localPath.GetFileNameWithoutExtension() + (shouldPostFixName ? " Animation" : "");
 
                 if (skeletonAsset != null)
                     asset.Skeleton = AttachedReferenceManager.CreateProxyObject<Skeleton>(skeletonAsset.Id, skeletonAsset.Location);
@@ -172,7 +185,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             if (skeletonAsset != null)
                 asset.Skeleton = AttachedReferenceManager.CreateProxyObject<Skeleton>(skeletonAsset.Id, skeletonAsset.Location);
 
-            var modelUrl = new UFile(localPath.GetFileName() + (shouldPostFixName?" Model": ""));
+            var modelUrl = new UFile(localPath.GetFileNameWithoutExtension() + (shouldPostFixName?" Model": ""));
             var assetItem = new AssetItem(modelUrl, asset);
             assetReferences.Add(assetItem);
         }
@@ -279,7 +292,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 var texture = new TextureAsset { Source = source, PremultiplyAlpha = false };
 
                 // Create asset reference
-                assetReferences.Add(new AssetItem(texturePath.GetFileName(), texture));
+                assetReferences.Add(new AssetItem(texturePath.GetFileNameWithoutExtension(), texture));
             }
         }
     }

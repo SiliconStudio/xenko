@@ -5,6 +5,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 
 using SiliconStudio.Presentation.Core;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -19,42 +20,42 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="HasText"/> dependency property.
         /// </summary>
-        private static readonly DependencyPropertyKey HasTextPropertyKey = DependencyProperty.RegisterReadOnly("HasText", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(false));
+        private static readonly DependencyPropertyKey HasTextPropertyKey = DependencyProperty.RegisterReadOnly("HasText", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
         /// Identifies the <see cref="GetFocusOnLoad"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty GetFocusOnLoadProperty = DependencyProperty.Register("GetFocusOnLoad", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(false));
+        public static readonly DependencyProperty GetFocusOnLoadProperty = DependencyProperty.Register("GetFocusOnLoad", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
         /// Identifies the <see cref="SelectAllOnFocus"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty SelectAllOnFocusProperty = DependencyProperty.Register("SelectAllOnFocus", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(false));
+        public static readonly DependencyProperty SelectAllOnFocusProperty = DependencyProperty.Register("SelectAllOnFocus", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
         /// Identifies the <see cref="ValidateWithEnter"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ValidateWithEnterProperty = DependencyProperty.Register("ValidateWithEnter", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(true));
+        public static readonly DependencyProperty ValidateWithEnterProperty = DependencyProperty.Register("ValidateWithEnter", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Identifies the <see cref="ValidateOnTextChange"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ValidateOnTextChangeProperty = DependencyProperty.Register("ValidateOnTextChange", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(false));
+        public static readonly DependencyProperty ValidateOnTextChangeProperty = DependencyProperty.Register("ValidateOnTextChange", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
         /// Identifies the <see cref="ValidateOnLostFocus"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ValidateOnLostFocusProperty = DependencyProperty.Register("ValidateOnLostFocus", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(true, OnLostFocusActionChanged));
+        public static readonly DependencyProperty ValidateOnLostFocusProperty = DependencyProperty.Register("ValidateOnLostFocus", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(BooleanBoxes.TrueBox, OnLostFocusActionChanged));
 
         /// <summary>
         /// Identifies the <see cref="CancelWithEscape"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CancelWithEscapeProperty = DependencyProperty.Register("CancelWithEscape", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(true));
+        public static readonly DependencyProperty CancelWithEscapeProperty = DependencyProperty.Register("CancelWithEscape", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Identifies the <see cref="CancelOnLostFocus"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CancelOnLostFocusProperty = DependencyProperty.Register("CancelOnLostFocus", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(false, OnLostFocusActionChanged));
+        public static readonly DependencyProperty CancelOnLostFocusProperty = DependencyProperty.Register("CancelOnLostFocus", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(BooleanBoxes.FalseBox, OnLostFocusActionChanged));
 
         /// <summary>
         /// Identifies the <see cref="ValidateCommand"/> dependency property.
@@ -104,42 +105,42 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets whether this TextBox contains a non-empty text.
         /// </summary>
-        public bool HasText { get { return (bool)GetValue(HasTextPropertyKey.DependencyProperty); } private set { SetValue(HasTextPropertyKey, value); } }
+        public bool HasText { get { return (bool)GetValue(HasTextPropertyKey.DependencyProperty); } private set { SetValue(HasTextPropertyKey, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether the associated text box should get keyboard focus when this behavior is attached.
         /// </summary>
-        public bool GetFocusOnLoad { get { return (bool)GetValue(GetFocusOnLoadProperty); } set { SetValue(GetFocusOnLoadProperty, value); } }
+        public bool GetFocusOnLoad { get { return (bool)GetValue(GetFocusOnLoadProperty); } set { SetValue(GetFocusOnLoadProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether the text of the TextBox must be selected when the control gets focus.
         /// </summary>
-        public bool SelectAllOnFocus { get { return (bool)GetValue(SelectAllOnFocusProperty); } set { SetValue(SelectAllOnFocusProperty, value); } }
+        public bool SelectAllOnFocus { get { return (bool)GetValue(SelectAllOnFocusProperty); } set { SetValue(SelectAllOnFocusProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether the validation should happen when the user press <b>Enter</b>.
         /// </summary>
-        public bool ValidateWithEnter { get { return (bool)GetValue(ValidateWithEnterProperty); } set { SetValue(ValidateWithEnterProperty, value); } }
+        public bool ValidateWithEnter { get { return (bool)GetValue(ValidateWithEnterProperty); } set { SetValue(ValidateWithEnterProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether the validation should happen as soon as the <see cref="TextBox.Text"/> is changed.
         /// </summary>
-        public bool ValidateOnTextChange { get { return (bool)GetValue(ValidateOnTextChangeProperty); } set { SetValue(ValidateOnTextChangeProperty, value); } }
+        public bool ValidateOnTextChange { get { return (bool)GetValue(ValidateOnTextChangeProperty); } set { SetValue(ValidateOnTextChangeProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether the validation should happen when the control losts focus.
         /// </summary>
-        public bool ValidateOnLostFocus { get { return (bool)GetValue(ValidateOnLostFocusProperty); } set { SetValue(ValidateOnLostFocusProperty, value); } }
+        public bool ValidateOnLostFocus { get { return (bool)GetValue(ValidateOnLostFocusProperty); } set { SetValue(ValidateOnLostFocusProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether the cancellation should happen when the user press <b>Escape</b>.
         /// </summary>
-        public bool CancelWithEscape { get { return (bool)GetValue(CancelWithEscapeProperty); } set { SetValue(CancelWithEscapeProperty, value); } }
+        public bool CancelWithEscape { get { return (bool)GetValue(CancelWithEscapeProperty); } set { SetValue(CancelWithEscapeProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether the cancellation should happen when the control losts focus.
         /// </summary>
-        public bool CancelOnLostFocus { get { return (bool)GetValue(CancelOnLostFocusProperty); } set { SetValue(CancelOnLostFocusProperty, value); } }
+        public bool CancelOnLostFocus { get { return (bool)GetValue(CancelOnLostFocusProperty); } set { SetValue(CancelOnLostFocusProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets the command to execute when the validation occurs.

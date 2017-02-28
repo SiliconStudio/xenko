@@ -49,6 +49,7 @@
     <Compile Include="Serialization\SerializationTests.cs" />
     <Compile Include="Serialization\TracingVisitor.cs" />
     <Compile Include="Serialization\YamlStreamTests.cs" />
+    <Compile Include="TagTests.cs" />
     <Compile Include="YamlTest.cs" />
   </ItemGroup>
   <ItemGroup>

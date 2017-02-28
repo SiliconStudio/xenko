@@ -1,34 +1,8 @@
 !SceneAsset
 Id: 2195e36c-46ec-496b-8072-098c114f4a7f
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: 4b073557-2d1c-42db-b4ca-c8d80e648f92
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            b90e6cbd39ea124c97fbfca64ce486b9:
-                Name: null
-                Camera: 8be4d1c8-abc9-4afe-8117-a4489f4e88d6/4d31ee61-664a-4a90-9544-cf5405d608c8
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                a62694b0d8fcba48b8ae02ed15535949: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                4efb2aaa03ad574e8cb029397f777a2e: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - 8be4d1c8-abc9-4afe-8117-a4489f4e88d6
@@ -141,13 +115,13 @@ Hierarchy:
                 Name: Position Animation Additive
                 Components:
                     8b563151da59c84f9629ade0903860bc: !TransformComponent
-                        Id: 5131568b-59da-4fc8-9629-ade0903860bc
+                        Id: be695bea-87e9-40d0-b118-e378fb2a329e
                         Position: {X: -3.5, Y: 0.0, Z: -3.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     180df80a33b1b84dac02390719512882: !ParticleSystemComponent
-                        Id: 0af80d18-b133-4db8-ac02-390719512882
+                        Id: 8036bb0a-11aa-4b55-96c7-05b6ecffd410
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -239,13 +213,13 @@ Hierarchy:
                 Name: Rotation Animation Additive
                 Components:
                     8b563151da59c84f9629ade0903860bc: !TransformComponent
-                        Id: 5131568b-59da-4fc8-9629-ade0903860bc
+                        Id: e60e9f9a-217a-4ed2-bdfb-538a3f69f40e
                         Position: {X: 2.5, Y: 0.0, Z: -3.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     180df80a33b1b84dac02390719512882: !ParticleSystemComponent
-                        Id: 0af80d18-b133-4db8-ac02-390719512882
+                        Id: 8a059ff7-8e7e-4322-aae7-4c8123419e8b
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -343,13 +317,13 @@ Hierarchy:
                 Name: Rotation Animation
                 Components:
                     8b563151da59c84f9629ade0903860bc: !TransformComponent
-                        Id: 5131568b-59da-4fc8-9629-ade0903860bc
+                        Id: 720601ec-daaa-4596-89e4-6cf42b9edd84
                         Position: {X: 1.5, Y: 0.0, Z: -3.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     180df80a33b1b84dac02390719512882: !ParticleSystemComponent
-                        Id: 0af80d18-b133-4db8-ac02-390719512882
+                        Id: 07e3e9bd-c958-459e-8052-6d3db76e3b88
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -482,13 +456,13 @@ Hierarchy:
                 Name: Size Animation
                 Components:
                     8b563151da59c84f9629ade0903860bc: !TransformComponent
-                        Id: 5131568b-59da-4fc8-9629-ade0903860bc
+                        Id: 230b4b26-c18e-4d88-af36-a28b5641a84d
                         Position: {X: -1.5, Y: 0.0, Z: -3.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     180df80a33b1b84dac02390719512882: !ParticleSystemComponent
-                        Id: 0af80d18-b133-4db8-ac02-390719512882
+                        Id: d4a86906-a823-426a-aab7-7894654dee24
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -632,24 +606,21 @@ Hierarchy:
                         Children: {}
                     61ee314d4a66904a9544cf5405d608c8: !CameraComponent
                         Id: 4d31ee61-664a-4a90-9544-cf5405d608c8
+                        Name: null
                         Projection: Perspective
-                    2ab5a7ab8c6a394891c8d9b17504d930: !ParticlesSample.NextSceneScript,ParticlesSample.Game
-                        Id: aba7b52a-6a8c-4839-91c8-d9b17504d930
-                        Next: null
-                        Previous: null
-                        Font: null
+                        Slot: {Index: 0}
         -   Entity:
                 Id: 8e06c8ea-c2ae-4c9c-8844-1c1e948c9bef
                 Name: Color Animation
                 Components:
                     8b563151da59c84f9629ade0903860bc: !TransformComponent
-                        Id: 5131568b-59da-4fc8-9629-ade0903860bc
+                        Id: 620cb069-01c0-4824-9aff-2960dadb41e6
                         Position: {X: 0.5, Y: 0.0, Z: -3.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     180df80a33b1b84dac02390719512882: !ParticleSystemComponent
-                        Id: 0af80d18-b133-4db8-ac02-390719512882
+                        Id: c83ec1ef-22fd-45b3-b85e-72b3b5e9601a
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -769,13 +740,13 @@ Hierarchy:
                 Name: 3D Orientation Animation Additive
                 Components:
                     8b563151da59c84f9629ade0903860bc: !TransformComponent
-                        Id: 5131568b-59da-4fc8-9629-ade0903860bc
+                        Id: 22fbc005-165f-4233-a1ef-d5d9a6ead4a9
                         Position: {X: 3.5, Y: 0.0, Z: -3.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     180df80a33b1b84dac02390719512882: !ParticleSystemComponent
-                        Id: 0af80d18-b133-4db8-ac02-390719512882
+                        Id: 6b865151-9a17-49e3-9f8c-47c7ff8189f4
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -883,13 +854,13 @@ Hierarchy:
                 Name: Static Particle System
                 Components:
                     8b563151da59c84f9629ade0903860bc: !TransformComponent
-                        Id: 5131568b-59da-4fc8-9629-ade0903860bc
+                        Id: 56f36c1a-0e5f-47cb-a97f-9ee595b51e2b
                         Position: {X: -0.5, Y: 0.0, Z: -3.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     180df80a33b1b84dac02390719512882: !ParticleSystemComponent
-                        Id: 0af80d18-b133-4db8-ac02-390719512882
+                        Id: f322b549-ae5a-472d-a1fb-8d593fe7652a
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -959,13 +930,13 @@ Hierarchy:
                 Name: Complex Animation
                 Components:
                     8b563151da59c84f9629ade0903860bc: !TransformComponent
-                        Id: 5131568b-59da-4fc8-9629-ade0903860bc
+                        Id: 5e2b1acb-d350-4497-973d-39efa125fe45
                         Position: {X: 0.0, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     180df80a33b1b84dac02390719512882: !ParticleSystemComponent
-                        Id: 0af80d18-b133-4db8-ac02-390719512882
+                        Id: 64929fea-82fc-41e6-9be0-fc5ca12ca1d9
                         Control:
                             ResetSeconds: 5.0
                             Control: Play

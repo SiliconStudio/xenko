@@ -5,6 +5,9 @@ end_of_line = crlf
 insert_final_newline = true
 charset = utf-8
 
+[*.ttinclude]
+insert_final_newline = false
+
 # C# files
 [*.cs]
 indent_style = space

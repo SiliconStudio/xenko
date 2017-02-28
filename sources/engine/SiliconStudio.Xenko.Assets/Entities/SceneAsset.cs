@@ -1,10 +1,11 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
@@ -51,25 +52,29 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta03", "1.9.0-beta04", typeof(BasePartsRemovalComponentUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta04", "1.9.0-beta05", typeof(MaterialFromModelComponentUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta05", "1.9.0-beta06", typeof(ParticleTrailEdgeUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta06", "1.9.0-beta07", typeof(RemoveLightSkyboxDependencyUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta06", "1.10.0-beta01", typeof(RemoveSceneSettingsUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-beta01", "1.10.0-beta02", typeof(MoveRenderGroupInsideComponentUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-beta02", "1.10.0-beta03", typeof(FixPartReferenceUpgrader))]
     [Display(2000, "Scene")]
-    [AssetPartReference(typeof(SceneSettings))]
     public partial class SceneAsset : EntityHierarchyAssetBase
     {
-        private const string CurrentVersion = "1.9.0-beta07";
+        private const string CurrentVersion = "1.10.0-beta03";
 
         public const string FileSceneExtension = ".xkscene;.pdxscene";
 
-        public SceneAsset()
-        {
-            SceneSettings = new SceneSettings();
-        }
+        /// <summary>
+        /// The parent scene.
+        /// </summary>
+        /// <userdoc>The parent scene.</userdoc>
+        [DataMember(10)]
+        [DefaultValue(null)]
+        public Scene Parent { get; set; }
 
         /// <summary>
-        /// Gets the scene settings for this instance.
+        /// The translation offset relative to the <see cref="Parent"/> scene.
         /// </summary>
-        [DataMember(10)]
-        [AssetPartContained(typeof(SceneSettings))]
-        public SceneSettings SceneSettings { get; private set; }
+        /// <userdoc>The translation offset of the scene with regard to its parent scene, if any.</userdoc>
+        [DataMember(20)]
+        public Vector3 Offset { get; set; }
     }
 }

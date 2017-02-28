@@ -24,21 +24,21 @@ namespace SiliconStudio.Core.Serialization.Serializers
         {
             if (mode == ArchiveMode.Serialize)
             {
-                bool hasValue = obj.HasValue;
+                var hasValue = obj.HasValue;
                 stream.Serialize(ref hasValue);
                 if (obj.HasValue)
                 {
-                    T value = obj.Value;
+                    var value = obj.Value;
                     itemSerializer.Serialize(ref value, mode, stream);
                 }
             }
             else if (mode == ArchiveMode.Deserialize)
             {
-                bool hasValue = false;
+                var hasValue = false;
                 stream.Serialize(ref hasValue);
                 if (hasValue)
                 {
-                    T value = default(T);
+                    var value = default(T);
                     itemSerializer.Serialize(ref value, mode, stream);
                     obj = value;
                 }

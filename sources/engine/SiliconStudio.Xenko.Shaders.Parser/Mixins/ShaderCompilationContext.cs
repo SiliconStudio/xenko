@@ -338,15 +338,21 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 mixin.VirtualTable.AddVirtualTable(dep.VirtualTable, dep.MixinName, ErrorWarningLog);
             mixin.VirtualTable.AddFinalDeclarations(mixin.LocalVirtualTable.Methods.Select(x => x.Method).ToList(), mixin.MixinName, ErrorWarningLog);
 
-            foreach (var variable in mixin.VirtualTable.Variables.Select(x => x.Variable))
+            foreach (var variable in mixin.VirtualTable.Variables)
             {
-                if (mixin.VirtualTable.Variables.Any(x => x.Variable != variable && x.Variable.Name.Text == variable.Name.Text))
-                    mixin.PotentialConflictingVariables.Add(variable);
+                // Compare local against local and inherited against inherited
+                var local = variable.Shader == mixin.Shader;
+
+                if (mixin.VirtualTable.Variables.Any(x => (x.Shader == mixin.Shader) == local && x.Variable != variable.Variable && x.Variable.Name.Text == variable.Variable.Name.Text))
+                    mixin.PotentialConflictingVariables.Add(variable.Variable);
             }
-            foreach (var method in mixin.VirtualTable.Methods.Select(x => x.Method))
+            foreach (var method in mixin.VirtualTable.Methods)
             {
-                if (mixin.VirtualTable.Methods.Any(x => x.Method != method && x.Method.IsSameSignature(method)))
-                    mixin.PotentialConflictingMethods.Add(method);
+                // Compare local against local and inherited against inherited
+                var local = method.Shader == mixin.Shader;
+
+                if (mixin.VirtualTable.Methods.Any(x => (x.Shader == mixin.Shader) == local && x.Method != method.Method && x.Method.IsSameSignature(method.Method)))
+                    mixin.PotentialConflictingMethods.Add(method.Method);
             }
 
             CheckStageClass(mixin);

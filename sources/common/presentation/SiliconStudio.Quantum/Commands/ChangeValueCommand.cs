@@ -13,21 +13,30 @@ namespace SiliconStudio.Quantum.Commands
     /// </summary>
     public abstract class ChangeValueCommand : NodeCommandBase
     {
-        public override Task Execute(IContentNode content, Index index, object parameter)
+        public override Task Execute(IGraphNode node, Index index, object parameter)
         {
-            var hasIndex = content.Indices == null || content.Indices.Contains(index);
-            var currentValue = hasIndex ? content.Retrieve(index) : (content.Type.IsValueType ? Activator.CreateInstance(content.Type) : null);
+            // TODO: clean this!
+            var shouldUpdate = node is IMemberNode || ((IObjectNode)node).Indices == null || ((IObjectNode)node).Indices.Contains(index);
+            var currentValue = shouldUpdate ? node.Retrieve(index) : (node.Type.IsValueType ? Activator.CreateInstance(node.Type) : null);
             var newValue = ChangeValue(currentValue, parameter);
-            if (hasIndex)
+            var memberNode = node as IMemberNode;
+            if (memberNode != null)
             {
                 if (!Equals(newValue, currentValue))
                 {
-                    content.Update(newValue, index);
+                    memberNode.Update(newValue);
+                }
+            }
+            else if (shouldUpdate)
+            {
+                if (!Equals(newValue, currentValue))
+                {
+                    ((IObjectNode)node).Update(newValue, index);
                 }
             }
             else
             {
-                content.Add(newValue, index);
+                ((IObjectNode)node).Add(newValue, index);
             }
             return Task.FromResult(0);
         }

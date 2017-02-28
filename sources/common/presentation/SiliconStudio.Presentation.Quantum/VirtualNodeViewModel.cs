@@ -3,7 +3,6 @@ using System.Collections;
 using System.Linq;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -11,8 +10,9 @@ namespace SiliconStudio.Presentation.Quantum
     {
         protected readonly Func<object> Getter;
         protected readonly Action<object> Setter;
-        private IMemberNode associatedContent;
+        private IGraphNode associatedNode;
         private bool updatingValue;
+        private bool initialized;
 
         static VirtualNodeViewModel()
         {
@@ -33,11 +33,11 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override void Destroy()
         {
-            if (associatedContent != null)
+            if (associatedNode != null)
             {
-                associatedContent.Changing -= ContentChanging;
-                associatedContent.Changed -= ContentChanged;
-                associatedContent = null;
+                associatedNode.UnregisterChanging(ContentChanging);
+                associatedNode.UnregisterChanged(ContentChanged);
+                associatedNode = null;
             }
             base.Destroy();
         }
@@ -62,19 +62,32 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <summary>
-        /// Registers an <see cref="IContentNode"/> object to this virtual node so when the content is modified, this node will trigger notifications
+        /// Registers an <see cref="IGraphNode"/> object to this virtual node so when the content is modified, this node will trigger notifications
         /// of property changes for the <see cref="VirtualNodeViewModel{T}.TypedValue"/> property.
         /// </summary>
-        /// <param name="content">The content to register.</param>
+        /// <param name="nodeent">The content to register.</param>
         /// <remarks>Events subscriptions are cleaned when this virtual node is disposed.</remarks>
-        public void RegisterContentForNotifications(IMemberNode content)
+        public void RegisterContentForNotifications(IGraphNode node)
         {
-            if (associatedContent != null)
+            if (associatedNode != null)
                 throw new InvalidOperationException("A content has already been registered to this virtual node");
 
-            associatedContent = content;
-            associatedContent.Changing += ContentChanging;
-            associatedContent.Changed += ContentChanged;
+            associatedNode = node;
+            associatedNode.RegisterChanging(ContentChanging);
+            associatedNode.RegisterChanged(ContentChanged);
+        }
+
+        public void CompleteInitialization()
+        {
+            // Safety check
+            if (initialized) throw new InvalidOperationException("This node has already been initialized.");
+            Owner.GraphViewModelService.NotifyNodeInitialized(this);
+            initialized = true;
+        }
+
+        protected override void Refresh()
+        {
+            // TODO: what do we want to do for virtual nodes? They are constructed completely externally...
         }
 
         protected virtual void SetTypedValue(object value)
@@ -84,13 +97,13 @@ namespace SiliconStudio.Presentation.Quantum
             updatingValue = false;
         }
 
-        private void ContentChanging(object sender, MemberNodeChangeEventArgs e)
+        private void ContentChanging(object sender, INodeChangeEventArgs e)
         {
             if (!updatingValue)
                 OnPropertyChanging(nameof(VirtualNodeViewModel<object>.TypedValue));
         }
 
-        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
+        private void ContentChanged(object sender, INodeChangeEventArgs e)
         {
             if (!updatingValue)
                 OnPropertyChanged(nameof(VirtualNodeViewModel<object>.TypedValue));

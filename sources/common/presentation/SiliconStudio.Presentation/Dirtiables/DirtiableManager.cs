@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Transactions;
 
 namespace SiliconStudio.Presentation.Dirtiables
@@ -20,7 +21,7 @@ namespace SiliconStudio.Presentation.Dirtiables
         /// Initializes a new instance of the <seealso cref="DirtiableManager"/> class.
         /// </summary>
         /// <param name="transactionStack"></param>
-        public DirtiableManager(ITransactionStack transactionStack)
+        public DirtiableManager([NotNull] ITransactionStack transactionStack)
         {
             if (transactionStack == null) throw new ArgumentNullException(nameof(transactionStack));
             this.transactionStack = transactionStack;
@@ -68,6 +69,7 @@ namespace SiliconStudio.Presentation.Dirtiables
         /// </summary>
         /// <param name="operation">The operation in which to look for dirtyable operation.</param>
         /// <returns>A sequence of <see cref="IDirtyingOperation"/> contained in the given operation, including the operation itself if it is dirtying.</returns>
+        [ItemNotNull]
         public static IEnumerable<IDirtyingOperation> GetDirtyingOperations(Operation operation)
         {
             var queue = new Queue<Operation>();
@@ -90,9 +92,9 @@ namespace SiliconStudio.Presentation.Dirtiables
             }
         }
 
-        private void UpdateDirtiables(HashSet<IDirtiable> dirtiables)
+        private void UpdateDirtiables([NotNull] HashSet<IDirtiable> dirtiables)
         {
-            Dictionary<IDirtiable, bool> dirtiablesToUpdate = new Dictionary<IDirtiable, bool>();
+            var dirtiablesToUpdate = new Dictionary<IDirtiable, bool>();
 
             // For each dirtiable objects to update we compute its new dirty flag
             foreach (var dirtiable in dirtiables)
@@ -100,7 +102,7 @@ namespace SiliconStudio.Presentation.Dirtiables
                 var dirtyingOperations = TryGetOperationsMap(dirtyingOperationsMap, dirtiable);
                 var discardedOperations = TryGetOperationsMap(frozenOperationsMap, dirtiable);
 
-                bool isDirty = false;
+                var isDirty = false;
                 // Check if it is dirty regarding to operations currently in the transaction stack
                 if (dirtyingOperations != null)
                 {
@@ -123,7 +125,7 @@ namespace SiliconStudio.Presentation.Dirtiables
             }
         }
 
-        private void TransactionCompleted(object sender, TransactionEventArgs e)
+        private void TransactionCompleted(object sender, [NotNull] TransactionEventArgs e)
         {
             var dirtiables = new HashSet<IDirtiable>();
             foreach (var dirtyingOperation in e.Transaction.Operations.SelectMany(GetDirtyingOperations))
@@ -139,13 +141,13 @@ namespace SiliconStudio.Presentation.Dirtiables
             UpdateDirtiables(dirtiables);
         }
 
-        private void TransactionStatusChanged(object sender, TransactionEventArgs e)
+        private void TransactionStatusChanged(object sender, [NotNull] TransactionEventArgs e)
         {
             var dirtiables = e.Transaction.Operations.SelectMany(GetDirtyingOperations).SelectMany(x => x.Dirtiables);
             UpdateDirtiables(new HashSet<IDirtiable>(dirtiables));
         }
 
-        private void TransactionDiscarded(object sender, TransactionsDiscardedEventArgs e)
+        private void TransactionDiscarded(object sender, [NotNull] TransactionsDiscardedEventArgs e)
         {
             var dirtiables = new HashSet<IDirtiable>();
             foreach (var dirtyingOperation in e.Transactions.SelectMany(x => x.Operations).SelectMany(GetDirtyingOperations))
@@ -174,7 +176,8 @@ namespace SiliconStudio.Presentation.Dirtiables
             dirtyingOperationsMap.Clear();
         }
 
-        private static List<IDirtyingOperation> GetOrCreateOperationsMap(Dictionary<IDirtiable, List<IDirtyingOperation>> operationsMap, IDirtiable dirtiable)
+        [NotNull]
+        private static List<IDirtyingOperation> GetOrCreateOperationsMap([NotNull] Dictionary<IDirtiable, List<IDirtyingOperation>> operationsMap, [NotNull] IDirtiable dirtiable)
         {
             List<IDirtyingOperation> dirtyingOperations;
             if (!operationsMap.TryGetValue(dirtiable, out dirtyingOperations))
@@ -185,7 +188,8 @@ namespace SiliconStudio.Presentation.Dirtiables
             return dirtyingOperations;
         }
 
-        private static List<IDirtyingOperation> TryGetOperationsMap(Dictionary<IDirtiable, List<IDirtyingOperation>> operationsMap, IDirtiable dirtiable)
+        [CanBeNull]
+        private static List<IDirtyingOperation> TryGetOperationsMap([NotNull] Dictionary<IDirtiable, List<IDirtyingOperation>> operationsMap, [NotNull] IDirtiable dirtiable)
         {
             List<IDirtyingOperation> dirtyingOperations;
             operationsMap.TryGetValue(dirtiable, out dirtyingOperations);

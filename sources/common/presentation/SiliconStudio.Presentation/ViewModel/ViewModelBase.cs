@@ -21,12 +21,6 @@ namespace SiliconStudio.Presentation.ViewModel
 #endif
 
         /// <summary>
-        /// An <see cref="IViewModelServiceProvider"/> that allows to retrieve various service objects.
-        /// </summary>
-        [NotNull]
-        public IViewModelServiceProvider ServiceProvider = ViewModelServiceProvider.NullServiceProvider;
-
-        /// <summary>
         /// A collection of property names that are dependent. For each entry of this collection, if the key property name is notified
         /// as being changed, then the property names in the value will also be notified as being changed.
         /// </summary>
@@ -41,6 +35,12 @@ namespace SiliconStudio.Presentation.ViewModel
             if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
             ServiceProvider = serviceProvider;
         }
+
+        /// <summary>
+        /// An <see cref="IViewModelServiceProvider"/> that allows to retrieve various service objects.
+        /// </summary>
+        [NotNull]
+        public IViewModelServiceProvider ServiceProvider { get; protected set; } = ViewModelServiceProvider.NullServiceProvider;
 
         /// <summary>
         /// Gets whether this view model has been destroyed.
@@ -95,7 +95,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <param name="value">The new value to set.</param>
         /// <param name="propertyNames">The names of the properties that must be notified as changing/changed. At least one property name must be provided.</param>
         /// <returns><c>True</c> if the field was modified and events were raised, <c>False</c> if the new value was equal to the old one and nothing was done.</returns>
-        protected bool SetValue<T>(ref T field, T value, params string[] propertyNames)
+        protected bool SetValue<T>(ref T field, T value, [ItemNotNull, NotNull] params string[] propertyNames)
         {
             return SetValue(ref field, value, null, propertyNames);
         }
@@ -127,7 +127,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <param name="updateAction">The update action to execute after setting the value. Can be <c>null</c>.</param>
         /// <param name="propertyNames">The names of the properties that must be notified as changing/changed. At least one property name must be provided.</param>
         /// <returns><c>True</c> if the field was modified and events were raised, <c>False</c> if the new value was equal to the old one and nothing was done.</returns>
-        protected virtual bool SetValue<T>(ref T field, T value, Action updateAction, params string[] propertyNames)
+        protected virtual bool SetValue<T>(ref T field, T value, Action updateAction, [ItemNotNull, NotNull] params string[] propertyNames)
         {
             if (propertyNames.Length == 0)
                 throw new ArgumentOutOfRangeException(nameof(propertyNames), @"This method must be invoked with at least one property name.");
@@ -163,7 +163,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <param name="updateAction">The update action that will actually manage the update of the property.</param>
         /// <param name="propertyNames">The names of the properties that must be notified as changing/changed. At least one property name must be provided.</param>
         /// <returns>This method always returns<c>True</c> since it always performs the update.</returns>
-        protected bool SetValue(Action updateAction, params string[] propertyNames)
+        protected bool SetValue(Action updateAction, [ItemNotNull, NotNull] params string[] propertyNames)
         {
             return SetValue(null, updateAction, propertyNames);
         }
@@ -205,7 +205,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <param name="updateAction">The update action that will actually manage the update of the property.</param>
         /// <param name="propertyNames">The names of the properties that must be notified as changing/changed. At least one property name must be provided.</param>
         /// <returns>The value provided in the <see cref="hasChanged"/> argument.</returns>
-        protected bool SetValue(bool hasChanged, Action updateAction, params string[] propertyNames)
+        protected bool SetValue(bool hasChanged, Action updateAction, [ItemNotNull, NotNull] params string[] propertyNames)
         {
             return SetValue(() => hasChanged, updateAction, propertyNames);
         }
@@ -219,12 +219,12 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <param name="updateAction">The update action that will actually manage the update of the property.</param>
         /// <param name="propertyNames">The names of the properties that must be notified as changing/changed. At least one property name must be provided.</param>
         /// <returns><c>True</c> if the update was done and events were raised, <c>False</c> if <see cref="hasChangedFunction"/> is not <c>null</c> and returned false.</returns>
-        protected virtual bool SetValue(Func<bool> hasChangedFunction, Action updateAction, params string[] propertyNames)
+        protected virtual bool SetValue(Func<bool> hasChangedFunction, Action updateAction, [ItemNotNull, NotNull] params string[] propertyNames)
         {
             if (propertyNames.Length == 0)
                 throw new ArgumentOutOfRangeException(nameof(propertyNames), @"This method must be invoked with at least one property name.");
 
-            bool hasChanged = true;
+            var hasChanged = true;
             if (hasChangedFunction != null)
             {
                 hasChanged = hasChangedFunction();
@@ -242,11 +242,11 @@ namespace SiliconStudio.Presentation.ViewModel
         /// This method will raise the <see cref="PropertyChanging"/> for each of the property name passed as argument.
         /// </summary>
         /// <param name="propertyNames">The names of the properties that is changing.</param>
-        protected virtual void OnPropertyChanging(params string[] propertyNames)
+        protected virtual void OnPropertyChanging([ItemNotNull, NotNull] params string[] propertyNames)
         {
             var propertyChanging = PropertyChanging;
 
-            foreach (string propertyName in propertyNames)
+            foreach (var propertyName in propertyNames)
             {
 #if DEBUG
                 if (changingProperties.Contains(propertyName))
@@ -269,18 +269,18 @@ namespace SiliconStudio.Presentation.ViewModel
         /// This method will raise the <see cref="PropertyChanged"/> for each of the property name passed as argument.
         /// </summary>
         /// <param name="propertyNames">The names of the properties that has changed.</param>
-        protected virtual void OnPropertyChanged(params string[] propertyNames)
+        protected virtual void OnPropertyChanged([ItemNotNull, NotNull] params string[] propertyNames)
         {
             var propertyChanged = PropertyChanged;
 
-            for (int i = 0 ; i < propertyNames.Length; ++i)
+            for (var i = 0 ; i < propertyNames.Length; ++i)
             {
-                string propertyName = propertyNames[propertyNames.Length - 1 - i];
+                var propertyName = propertyNames[propertyNames.Length - 1 - i];
                 string[] dependentProperties;
                 if (DependentProperties.TryGetValue(propertyName, out dependentProperties))
                 {
                     var reverseList = new string[dependentProperties.Length];
-                    for (int j = 0; j < dependentProperties.Length; ++j)
+                    for (var j = 0; j < dependentProperties.Length; ++j)
                         reverseList[j] = dependentProperties[dependentProperties.Length - 1 - j];
                     OnPropertyChanged(reverseList);
                 }

@@ -25,8 +25,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             packer.Clear(Texture.Width, Texture.Height);
             Width = texture.Width;
             Height = texture.Height;
-
-            RenderFrame = RenderFrame.FromTexture((Texture)null, texture);
             Id = textureId;
         }
 
@@ -39,8 +37,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         public Type FilterType;
 
         public readonly Texture Texture;
-
-        public readonly RenderFrame RenderFrame;
 
         public void Clear()
         {

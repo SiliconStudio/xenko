@@ -105,7 +105,7 @@ namespace SiliconStudio.Assets.Analysis
         internal static void UpdateAssetReferences(AssetItem assetItem, IEnumerable<AssetReferenceLink> assetReferences, ILogger log, AssetAnalysisParameters parameters)
         {
             var package = assetItem.Package;
-            var packageName = package.FullPath?.GetFileName() ?? "(Undefined path)";
+            var packageName = package.FullPath?.GetFileNameWithoutExtension() ?? "(Undefined path)";
             bool shouldSetDirtyFlag = false;
 
             // Update reference
@@ -137,7 +137,7 @@ namespace SiliconStudio.Assets.Analysis
                         var packageFound = package.Session.Packages.FirstOrDefault(x => x.FindAsset(contentReference.Location) != null);
                         if (packageFound != null)
                         {
-                            log.Warning(package, contentReference, AssetMessageCode.AssetFoundInDifferentPackage, contentReference, packageFound.FullPath.GetFileName());
+                            log.Warning(package, contentReference, AssetMessageCode.AssetFoundInDifferentPackage, contentReference, packageFound.FullPath.GetFileNameWithoutExtension());
                         }
                     }
                     else

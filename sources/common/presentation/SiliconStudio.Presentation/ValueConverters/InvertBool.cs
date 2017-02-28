@@ -1,7 +1,8 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Globalization;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -13,8 +14,8 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var result = ConverterHelper.ConvertToBoolean(value, culture);
-            return !result;
+            var result = !ConverterHelper.ConvertToBoolean(value, culture);
+            return result.Box();
         }
 
         /// <inheritdoc/>

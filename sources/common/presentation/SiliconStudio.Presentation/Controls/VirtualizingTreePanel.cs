@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -19,7 +20,7 @@ namespace SiliconStudio.Presentation.Controls
 
             public double Bottom { get; set; }
 
-            public bool Overlaps(VerticalArea area)
+            public bool Overlaps([NotNull] VerticalArea area)
             {
                 return Top <= area.Bottom && area.Top <= Bottom;
             }
@@ -60,9 +61,9 @@ namespace SiliconStudio.Presentation.Controls
                     if (levelList.Count > 4)
                     {
                         cachedSize = new CachedSize { OccuranceCounter = int.MaxValue, Size = size };
-                        int indexToReplace = 0;
-                        int smallestCounter = int.MaxValue;
-                        for (int i = 0; i < 5; i++)
+                        var indexToReplace = 0;
+                        var smallestCounter = int.MaxValue;
+                        for (var i = 0; i < 5; i++)
                         {
                             if (levelList[i].OccuranceCounter < smallestCounter) indexToReplace = i;
                         }
@@ -112,7 +113,7 @@ namespace SiliconStudio.Presentation.Controls
             {
                 if (cache.ContainsKey(level))
                 {
-                    CachedSize maxUsedSize = new CachedSize { OccuranceCounter = 0 };
+                    var maxUsedSize = new CachedSize { OccuranceCounter = 0 };
                     foreach (var s in cache[level])
                     {
                         if (maxUsedSize.OccuranceCounter < s.OccuranceCounter) maxUsedSize = s;
@@ -136,6 +137,7 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
+        private const double ScrollLineDelta = 16.0;
         private readonly SizesCache cachedSizes;
         private Size extent = new Size(0, 0);
         private Size viewport = new Size(0, 0);
@@ -161,11 +163,11 @@ namespace SiliconStudio.Presentation.Controls
             }
 
             // We need to access InternalChildren before the generator to work around a bug
-            UIElementCollection children = InternalChildren;
-            IItemContainerGenerator generator = ItemContainerGenerator;
-            ItemsControl itemsControl = ItemsControl.GetItemsOwner(this);
-            TreeViewItem treeViewItem = itemsControl as TreeViewItem;
-            TreeView treeView = itemsControl as TreeView ?? treeViewItem.ParentTreeView;
+            var children = InternalChildren;
+            var generator = ItemContainerGenerator;
+            var itemsControl = ItemsControl.GetItemsOwner(this);
+            var treeViewItem = itemsControl as TreeViewItem;
+            var treeView = itemsControl as TreeView ?? treeViewItem.ParentTreeView;
             Debug(treeViewItem, "Measuring");
             double maxWidth = 0;
             double currentYinItemSystem = 0;
@@ -175,9 +177,9 @@ namespace SiliconStudio.Presentation.Controls
                 // never forget: virtualization of a tree is an approximation. there are some use cases which theoretically work and others
                 // we try to get it working by estimations. See GetCachedOrEstimatedHeight for more infos.
 
-                int itemCount = itemsControl.Items.Count;
-                int firstVisibleItemIndex = 0;
-                int lastVisibleItemIndex = itemCount;
+                var itemCount = itemsControl.Items.Count;
+                var firstVisibleItemIndex = 0;
+                var lastVisibleItemIndex = itemCount;
 
                 double itemTop;
                 if (treeViewItem != null)
@@ -189,7 +191,7 @@ namespace SiliconStudio.Presentation.Controls
                     // get the area where items have to be visualized. This is from top to bottom of the visible space in tree system. 
                     // We add a little of offset. It seems like it improves estimation of heights.
                     double predictionOffset = 50;
-                    double top = VerticalOffset - predictionOffset;
+                    var top = VerticalOffset - predictionOffset;
                     if (top < 0) top = 0;
                     treeView.RealizationSpace.Top = top;
                     treeView.RealizationSpace.Bottom = VerticalOffset + availableSize.Height + predictionOffset;
@@ -197,24 +199,24 @@ namespace SiliconStudio.Presentation.Controls
                     itemTop = GetHeightOfHeader(itemsControl);
                 }
 
-                int itemGeneratorIndex = 0;
-                bool isPreviousItemVisible = false;
+                var itemGeneratorIndex = 0;
+                var isPreviousItemVisible = false;
                 IDisposable generatorRun = null;
                 currentYinItemSystem = 0;
-                int childHierarchyLevel = 0;
+                var childHierarchyLevel = 0;
                 if(treeViewItem != null) childHierarchyLevel = treeViewItem.HierachyLevel + 1;
                 try
                 {
                     // iterate child items
-                    for (int i = 0; i < itemCount; i++)
+                    for (var i = 0; i < itemCount; i++)
                     {
-                        double estimatedHeight = GetCachedOrEstimatedHeight(treeView, childHierarchyLevel);
-                        VerticalArea childSpace = new VerticalArea();
+                        var estimatedHeight = GetCachedOrEstimatedHeight(treeView, childHierarchyLevel);
+                        var childSpace = new VerticalArea();
                         childSpace.Top = itemTop + currentYinItemSystem;
                         childSpace.Bottom = childSpace.Top + estimatedHeight;
 
                         // check if item is possibly visible or could become visible if someone changes expanding of siblings
-                        bool isVisibleItem = treeView.RealizationSpace.Overlaps(childSpace);
+                        var isVisibleItem = treeView.RealizationSpace.Overlaps(childSpace);
 
                         if (isVisibleItem)
                         {
@@ -224,7 +226,7 @@ namespace SiliconStudio.Presentation.Controls
                                 // we found a visible item, lets initialize the visible item section of the loop
                                 isPreviousItemVisible = true;
                                 firstVisibleItemIndex = i;
-                                GeneratorPosition startPos = generator.GeneratorPositionFromIndex(i);
+                                var startPos = generator.GeneratorPositionFromIndex(i);
                                 itemGeneratorIndex = (startPos.Offset == 0) ? startPos.Index : startPos.Index + 1;
                                 generatorRun = generator.StartAt(startPos, GeneratorDirection.Forward, true);
                             }
@@ -235,7 +237,7 @@ namespace SiliconStudio.Presentation.Controls
 
                             // Get or create the child
                             bool newlyRealized;
-                            TreeViewItem child = generator.GenerateNext(out newlyRealized) as TreeViewItem;
+                            var child = generator.GenerateNext(out newlyRealized) as TreeViewItem;
                             Debug(treeViewItem, "Found visible child: " + child.DataContext);
 
                             if (newlyRealized)
@@ -266,7 +268,7 @@ namespace SiliconStudio.Presentation.Controls
                             child.Measure(new Size(double.MaxValue, double.MaxValue));
 
                             // add real height to cache
-                            double heightOfChild = child.DesiredSize.Height;
+                            var heightOfChild = child.DesiredSize.Height;
                             RegisterHeight(treeView, childHierarchyLevel, heightOfChild);
                             currentYinItemSystem += child.DesiredSize.Height;
                             // save the maximum needed width
@@ -310,14 +312,14 @@ namespace SiliconStudio.Presentation.Controls
             else
             {
                 //Debug("Virtualization is OFF.");
-                GeneratorPosition startPos = generator.GeneratorPositionFromIndex(0);
+                var startPos = generator.GeneratorPositionFromIndex(0);
                 using (generator.StartAt(startPos, GeneratorDirection.Forward, true))
                 {
-                    for (int i = (startPos.Offset == 0) ? startPos.Index : startPos.Index + 1; i < itemsControl.Items.Count; i++)
+                    for (var i = (startPos.Offset == 0) ? startPos.Index : startPos.Index + 1; i < itemsControl.Items.Count; i++)
                     {
                         // Get or create the child
                         bool newlyRealized;
-                        TreeViewItem child = generator.GenerateNext(out newlyRealized) as TreeViewItem;
+                        var child = generator.GenerateNext(out newlyRealized) as TreeViewItem;
                         if (newlyRealized)
                         {
                             // Figure out if we need to insert the child at the end or somewhere in the middle
@@ -328,7 +330,7 @@ namespace SiliconStudio.Presentation.Controls
 
                         child.Measure(new Size(double.MaxValue, double.MaxValue));
                         // now get the real height
-                        double height = child.DesiredSize.Height;
+                        var height = child.DesiredSize.Height;
                         // add real height to current position
                         currentYinItemSystem += height;
                         // save the maximum needed width
@@ -348,7 +350,7 @@ namespace SiliconStudio.Presentation.Controls
             return Extent;
         }
 
-        private static void InvalidateMeasure(TreeViewItem child)
+        private static void InvalidateMeasure([NotNull] TreeViewItem child)
         {
             var itemsPresenter = child.Template.FindName("itemsPresenter", child) as FrameworkElement;
             if (itemsPresenter != null)
@@ -358,10 +360,9 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        private double GetHeightOfHeader(ItemsControl itemsControl)
+        private static double GetHeightOfHeader([NotNull] ItemsControl itemsControl)
         {
-            Border border = itemsControl.Template.FindName("border", itemsControl) as Border;
-            if (border == null) return 0.0;
+            var border = (FrameworkElement)itemsControl.Template.FindName("border", itemsControl);
             return border.DesiredSize.Height;
         }
 
@@ -372,21 +373,21 @@ namespace SiliconStudio.Presentation.Controls
         /// <returns>Size used</returns>
         protected override Size ArrangeOverride(Size finalSize)
         {
-            ItemsControl itemsControl = ItemsControl.GetItemsOwner(this);
-            TreeViewItem treeViewItem = itemsControl as TreeViewItem;
-            TreeView treeView = itemsControl as TreeView ?? treeViewItem.ParentTreeView;
-            IItemContainerGenerator generator = this.ItemContainerGenerator;
+            var itemsControl = ItemsControl.GetItemsOwner(this);
+            var treeViewItem = itemsControl as TreeViewItem;
+            var treeView = itemsControl as TreeView ?? treeViewItem.ParentTreeView;
+            var generator = ItemContainerGenerator;
 
             //Extent = finalSize;
-            bool foundVisibleItem = false; ;
+            var foundVisibleItem = false; ;
             double currentY = 0;
             if (treeView.IsVirtualizing)
             {
                 //Debug("Arrange-" + itemsControl.DataContext);
-                for (int i = 0; i < itemsControl.Items.Count; i++)
+                for (var i = 0; i < itemsControl.Items.Count; i++)
                 {
-                    TreeViewItem child = itemsControl.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewItem;
-                    int childHierarchyLevel = 0;
+                    var child = itemsControl.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewItem;
+                    var childHierarchyLevel = 0;
                     if (child != null) childHierarchyLevel = child.HierachyLevel;
 
                     if (foundVisibleItem)
@@ -419,11 +420,11 @@ namespace SiliconStudio.Presentation.Controls
             }
             else
             {
-                for (int i = 0; i < itemsControl.Items.Count; i++)
+                for (var i = 0; i < itemsControl.Items.Count; i++)
                 {
-                    UIElement child = itemsControl.ItemContainerGenerator.ContainerFromIndex(i) as UIElement;
+                    var child = itemsControl.ItemContainerGenerator.ContainerFromIndex(i) as UIElement;
 
-                    if (child != null) child.Arrange(new Rect(-HorizontalOffset, currentY - VerticalOffset, finalSize.Width, child.DesiredSize.Height));
+                    child?.Arrange(new Rect(-HorizontalOffset, currentY - VerticalOffset, finalSize.Width, child.DesiredSize.Height));
                     currentY += child.DesiredSize.Height;
                 }
             }
@@ -431,15 +432,15 @@ namespace SiliconStudio.Presentation.Controls
             return finalSize;
         }
 
-        private void AddOrInsertItemToInternalChildren(int itemGeneratorIndex, TreeViewItem child)
+        private void AddOrInsertItemToInternalChildren(int itemGeneratorIndex, [NotNull] TreeViewItem child)
         {
             if (itemGeneratorIndex >= InternalChildren.Count)
             {
-                base.AddInternalChild(child);
+                AddInternalChild(child);
             }
             else
             {
-                base.InsertInternalChild(itemGeneratorIndex, child);
+                InsertInternalChild(itemGeneratorIndex, child);
             }
         }
 
@@ -450,13 +451,13 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="maxDesiredGenerated">last item index that should be visible</param>
         private void CleanUpItems(int minDesiredGenerated, int maxDesiredGenerated)
         {
-            UIElementCollection children = this.InternalChildren;
-            IItemContainerGenerator generator = this.ItemContainerGenerator;
+            var children = InternalChildren;
+            var generator = ItemContainerGenerator;
 
-            for (int i = children.Count - 1; i >= 0; i--)
+            for (var i = children.Count - 1; i >= 0; i--)
             {
-                GeneratorPosition childGeneratorPos = new GeneratorPosition(i, 0);
-                int itemIndex = generator.IndexFromGeneratorPosition(childGeneratorPos);
+                var childGeneratorPos = new GeneratorPosition(i, 0);
+                var itemIndex = generator.IndexFromGeneratorPosition(childGeneratorPos);
                 if (itemIndex < minDesiredGenerated || itemIndex > maxDesiredGenerated)
                 {
                     generator.Remove(childGeneratorPos, 1);
@@ -504,7 +505,7 @@ namespace SiliconStudio.Presentation.Controls
             return tree.CachedSizes.GetEstimate(level);
         }
 
-        private void RegisterHeight(TreeView tree, int level, double size)
+        private void RegisterHeight([NotNull] TreeView tree, int level, double size)
         {
             cachedSizes.AddOrChange(0, size);
             tree.CachedSizes.AddOrChange(level, size);
@@ -522,8 +523,7 @@ namespace SiliconStudio.Presentation.Controls
                 if (extent == value) return;
                 extent = value;
 
-                if (ScrollOwner == null) return;
-                ScrollOwner.InvalidateScrollInfo();
+                ScrollOwner?.InvalidateScrollInfo();
             }
         }
 
@@ -538,29 +538,49 @@ namespace SiliconStudio.Presentation.Controls
                 if (viewport == value) return;
                 viewport = value;
 
-                if (ScrollOwner == null) return;
-                ScrollOwner.InvalidateScrollInfo();
+                ScrollOwner?.InvalidateScrollInfo();
             }
         }
 
         private double GetScrollLineHeightY()
         {
-            return 15;
+            var itemsControl = ItemsControl.GetItemsOwner(this);
+            if (GetScrollUnit(itemsControl) == ScrollUnit.Item)
+            {
+                var treeViewItem = itemsControl as TreeViewItem;
+                var treeView = itemsControl as TreeView ?? treeViewItem?.ParentTreeView;
+                if (treeView != null)
+                {
+                    if (treeView.IsVirtualizing)
+                        return GetCachedOrEstimatedHeight(treeView, treeViewItem?.HierachyLevel ?? 0);
+
+                    if (treeViewItem != null)
+                        return GetHeightOfHeader(treeViewItem);
+
+                    if (treeView.HasItems)
+                    {
+                        var firstItem = itemsControl.ItemContainerGenerator.ContainerFromIndex(0) as TreeViewItem;
+                        if (firstItem != null)
+                            return GetHeightOfHeader(firstItem);
+                    }
+                }
+            }
+            return ScrollLineDelta;
         }
 
         private double GetScrollLineHeightX()
         {
-            return 15;
+            return ScrollLineDelta;
         }
 
         [Conditional("DEBUGVIRTUALIZATION")]
-        private void Debug(TreeViewItem item, string message)
+        private void Debug(TreeViewItem item, [NotNull] string message)
         {
             if (item != null)
             {
-                System.Diagnostics.Debug.Write(String.Format("{0,15}--", item.DataContext));
-                int indent = GetHierarchyLevel();
-                for (int i = 0; i < indent; i++)
+                System.Diagnostics.Debug.Write($"{item.DataContext,15}--");
+                var indent = GetHierarchyLevel();
+                for (var i = 0; i < indent; i++)
                 {
                     System.Diagnostics.Debug.Write("--");
                 }
@@ -573,10 +593,11 @@ namespace SiliconStudio.Presentation.Controls
 
         private int GetHierarchyLevel()
         {
-            TreeViewItem treeViewItem = ItemsControl.GetItemsOwner(this) as TreeViewItem;
+            var treeViewItem = ItemsControl.GetItemsOwner(this) as TreeViewItem;
             if (treeViewItem == null) return 0;
             return treeViewItem.HierachyLevel;
         }
+
         #region IScrollInfo implementation
 
         public ScrollViewer ScrollOwner { get; set; }
@@ -589,74 +610,64 @@ namespace SiliconStudio.Presentation.Controls
 
         public double VerticalOffset { get; private set; }
 
-        public double ExtentHeight
-        {
-            get { return Extent.Height; }
-        }
+        public double ExtentHeight => Extent.Height;
 
-        public double ExtentWidth
-        {
-            get { return Extent.Width; }
-        }
+        public double ExtentWidth => Extent.Width;
 
-        public double ViewportHeight
-        {
-            get { return Viewport.Height; }
-        }
+        public double ViewportHeight => Viewport.Height;
 
-        public double ViewportWidth
-        {
-            get { return Viewport.Width; }
-        }
+        public double ViewportWidth => Viewport.Width;
 
         public void LineUp()
         {
-            SetVerticalOffset(this.VerticalOffset - GetScrollLineHeightY());
+            SetVerticalOffset(VerticalOffset - GetScrollLineHeightY());
         }
 
         public void LineDown()
         {
-            SetVerticalOffset(this.VerticalOffset + GetScrollLineHeightY());
+            SetVerticalOffset(VerticalOffset + GetScrollLineHeightY());
         }
 
         public void PageUp()
         {
-            SetVerticalOffset(this.VerticalOffset - viewport.Height + 10);
+            SetVerticalOffset(VerticalOffset - viewport.Height + 10);
         }
 
         public void PageDown()
         {
-            SetVerticalOffset(this.VerticalOffset + viewport.Height - 10);
+            SetVerticalOffset(VerticalOffset + viewport.Height - 10);
         }
 
         public void MouseWheelUp()
         {
-            SetVerticalOffset(this.VerticalOffset - GetScrollLineHeightY());
+            var lines = SystemParameters.WheelScrollLines;
+            SetVerticalOffset(VerticalOffset - lines * GetScrollLineHeightY());
         }
 
         public void MouseWheelDown()
         {
-            SetVerticalOffset(this.VerticalOffset + GetScrollLineHeightY());
+            var lines = SystemParameters.WheelScrollLines;
+            SetVerticalOffset(VerticalOffset + lines * GetScrollLineHeightY());
         }
 
         public void LineLeft()
         {
-            SetHorizontalOffset(this.HorizontalOffset - GetScrollLineHeightX());
+            SetHorizontalOffset(HorizontalOffset - GetScrollLineHeightX());
         }
 
         public void LineRight()
         {
-            SetHorizontalOffset(this.HorizontalOffset + GetScrollLineHeightX());
+            SetHorizontalOffset(HorizontalOffset + GetScrollLineHeightX());
         }
 
         public Rect MakeVisible(Visual visual, Rect rectangle)
         {
-            if (rectangle.IsEmpty || visual == null || visual == this || !base.IsAncestorOf(visual))
+            if (rectangle.IsEmpty || visual == null || ReferenceEquals(visual, this) || !IsAncestorOf(visual))
             {
                 return Rect.Empty;
             }
 
-            TreeViewItem treeViewItem = visual as TreeViewItem;
+            var treeViewItem = visual as TreeViewItem;
             FrameworkElement element;
             if (treeViewItem != null)
             {
@@ -668,8 +679,8 @@ namespace SiliconStudio.Presentation.Controls
             }
 
             var transform = visual.TransformToAncestor(this);
-            Point p = transform.Transform(new Point(0, 0));
-            Rect rect = new Rect(p, element.RenderSize);
+            var p = transform.Transform(new Point(0, 0));
+            var rect = new Rect(p, element.RenderSize);
 
             if (rect.X < 0)
             {
@@ -687,7 +698,7 @@ namespace SiliconStudio.Presentation.Controls
             else if (treeViewItem != null && treeViewItem.ParentTreeView.ActualHeight < rect.Y + rect.Height)
             {
                 // set 5 more, so the next item is realized for sure.
-                double verticalOffset = rect.Y + rect.Height + VerticalOffset - treeViewItem.ParentTreeView.ActualHeight + 5;
+                var verticalOffset = rect.Y + rect.Height + VerticalOffset - treeViewItem.ParentTreeView.ActualHeight + 5;
                 SetVerticalOffset(verticalOffset);
             }
 
@@ -696,22 +707,24 @@ namespace SiliconStudio.Presentation.Controls
 
         public void MouseWheelLeft()
         {
-            SetHorizontalOffset(this.HorizontalOffset - GetScrollLineHeightX());
+            var lines = SystemParameters.WheelScrollLines;
+            SetHorizontalOffset(HorizontalOffset - lines * GetScrollLineHeightX());
         }
 
         public void MouseWheelRight()
         {
-            SetHorizontalOffset(this.HorizontalOffset + GetScrollLineHeightX());
+            var lines = SystemParameters.WheelScrollLines;
+            SetHorizontalOffset(HorizontalOffset + lines * GetScrollLineHeightX());
         }
 
         public void PageLeft()
         {
-            SetHorizontalOffset(this.HorizontalOffset - viewport.Width + 10);
+            SetHorizontalOffset(HorizontalOffset - viewport.Width + 10);
         }
 
         public void PageRight()
         {
-            SetHorizontalOffset(this.HorizontalOffset + viewport.Width - 10);
+            SetHorizontalOffset(HorizontalOffset + viewport.Width - 10);
         }
 
         public void SetHorizontalOffset(double offset)
@@ -730,8 +743,7 @@ namespace SiliconStudio.Presentation.Controls
 
             HorizontalOffset = offset;
 
-            if (ScrollOwner != null)
-                ScrollOwner.InvalidateScrollInfo();
+            ScrollOwner?.InvalidateScrollInfo();
 
             // Force us to realize the correct children
             InvalidateMeasure();
@@ -753,8 +765,7 @@ namespace SiliconStudio.Presentation.Controls
 
             VerticalOffset = offset;
 
-            if (ScrollOwner != null)
-                ScrollOwner.InvalidateScrollInfo();
+            ScrollOwner?.InvalidateScrollInfo();
 
             // Force us to realize the correct children
             InvalidateMeasure();

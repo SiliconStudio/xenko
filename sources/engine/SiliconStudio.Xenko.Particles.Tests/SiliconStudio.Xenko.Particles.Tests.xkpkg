@@ -1,7 +1,6 @@
 !Package
 Id: 6d251236-da95-409a-8f4b-7d42ae1fd32c
-SerializedVersion: {Assets: 0.0.3}
-Tags: []
+SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: SiliconStudio.Xenko.Particles.Tests
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.6.0-beta
+            Version: 1.10.0-alpha02
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -19,7 +18,6 @@ Profiles:
         AssetFolders:
             -   Path: GameAssets
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 01700344-cf44-482c-bebc-60213b0f844c
                 Location: SiliconStudio.Xenko.Particles.Tests.Windows.csproj
@@ -29,7 +27,6 @@ Profiles:
         InheritProfiles: []
         AssetFolders: []
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 01700344-cf44-482c-bebc-60213b0f844c
                 Location: SiliconStudio.Xenko.Particles.Tests.Windows.csproj
@@ -39,7 +36,6 @@ Profiles:
         InheritProfiles: []
         AssetFolders: []
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 01700344-cf44-482c-bebc-60213b0f844c
                 Location: SiliconStudio.Xenko.Particles.Tests.Android.csproj
@@ -49,7 +45,6 @@ Profiles:
         InheritProfiles: []
         AssetFolders: []
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 01700344-cf44-482c-bebc-60213b0f844c
                 Location: SiliconStudio.Xenko.Particles.Tests.iOS.csproj

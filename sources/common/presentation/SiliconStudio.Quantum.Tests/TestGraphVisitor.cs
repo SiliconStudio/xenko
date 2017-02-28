@@ -53,18 +53,19 @@ namespace SiliconStudio.Quantum.Tests
 
         public class TestVisitor : GraphVisitorBase
         {
-            public readonly List<Tuple<IContentNode, GraphNodePath>> Result = new List<Tuple<IContentNode, GraphNodePath>>();
+            public readonly List<Tuple<IGraphNode, GraphNodePath>> Result = new List<Tuple<IGraphNode, GraphNodePath>>();
 
-            public override void Visit(IContentNode node, MemberContent memberContent = null, GraphNodePath initialPath = null)
+            public override void Visit(IGraphNode node, MemberNode memberNode = null, GraphNodePath initialPath = null)
             {
                 Result.Clear();
-                base.Visit(node, memberContent, initialPath);
+                base.Visit(node, memberNode, initialPath);
             }
 
-            protected override void VisitNode(IContentNode node, GraphNodePath currentPath)
+            protected override void VisitNode(IGraphNode node)
             {
+                var currentPath = CurrentPath.Clone();
                 Result.Add(Tuple.Create(node, currentPath));
-                base.VisitNode(node, currentPath);
+                base.VisitNode(node);
             }
         }
 
@@ -76,7 +77,7 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var visitor = new TestVisitor();
             visitor.Visit(rootNode);
-            var expectedNodes = new IContentNode[]
+            var expectedNodes = new IGraphNode[]
             {
                 rootNode,
                 rootNode[nameof(SimpleClass.Member1)],
@@ -85,15 +86,18 @@ namespace SiliconStudio.Quantum.Tests
                 rootNode[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member1)],
                 rootNode[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member2)],
             };
-            var expectedPaths = new[]
-            {
-                new GraphNodePath(rootNode),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass.Member2)),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass.Member2)).PushTarget(),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)),
-            };
+            var expectedPaths = new GraphNodePath[6];
+            expectedPaths[0] = new GraphNodePath(rootNode);
+            expectedPaths[1] = new GraphNodePath(rootNode);
+            expectedPaths[1].PushMember(nameof(SimpleClass.Member1));
+            expectedPaths[2] = new GraphNodePath(rootNode);
+            expectedPaths[2].PushMember(nameof(SimpleClass.Member2));
+            expectedPaths[3] = expectedPaths[2].Clone();
+            expectedPaths[3].PushTarget();
+            expectedPaths[4] = expectedPaths[3].Clone();
+            expectedPaths[4].PushMember(nameof(SimpleClass.Member1));
+            expectedPaths[5] = expectedPaths[3].Clone();
+            expectedPaths[5].PushMember(nameof(SimpleClass.Member2));
             VerifyNodesAndPath(expectedNodes, expectedPaths, visitor);
         }
 
@@ -105,10 +109,12 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var container = new SimpleClass { Member2 = instance };
             var containerNode = nodeContainer.GetOrCreateNode(container);
-            var initialPath = new GraphNodePath(containerNode).PushMember(nameof(SimpleClass.Member2)).PushTarget();
+            var initialPath = new GraphNodePath(containerNode);
+            initialPath.PushMember(nameof(SimpleClass.Member2));
+            initialPath.PushTarget();
             var visitor = new TestVisitor();
             visitor.Visit(rootNode, null, initialPath);
-            var expectedNodes = new IContentNode[]
+            var expectedNodes = new IGraphNode[]
             {
                 rootNode,
                 rootNode[nameof(SimpleClass.Member1)],
@@ -117,15 +123,18 @@ namespace SiliconStudio.Quantum.Tests
                 rootNode[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member1)],
                 rootNode[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member2)],
             };
-            var expectedPaths = new[]
-            {
-                new GraphNodePath(containerNode).PushMember(nameof(SimpleClass.Member2)).PushTarget(),
-                new GraphNodePath(containerNode).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member1)),
-                new GraphNodePath(containerNode).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)),
-                new GraphNodePath(containerNode).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)).PushTarget(),
-                new GraphNodePath(containerNode).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member1)),
-                new GraphNodePath(containerNode).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)),
-            };
+            var expectedPaths = new GraphNodePath[6];
+            expectedPaths[0] = initialPath.Clone();
+            expectedPaths[1] = initialPath.Clone();
+            expectedPaths[1].PushMember(nameof(SimpleClass.Member1));
+            expectedPaths[2] = initialPath.Clone();
+            expectedPaths[2].PushMember(nameof(SimpleClass.Member2));
+            expectedPaths[3] = expectedPaths[2].Clone();
+            expectedPaths[3].PushTarget();
+            expectedPaths[4] = expectedPaths[3].Clone();
+            expectedPaths[4].PushMember(nameof(SimpleClass.Member1));
+            expectedPaths[5] = expectedPaths[3].Clone();
+            expectedPaths[5].PushMember(nameof(SimpleClass.Member2));
             VerifyNodesAndPath(expectedNodes, expectedPaths, visitor);
         }
 
@@ -137,18 +146,18 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var visitor = new TestVisitor();
             visitor.Visit(rootNode);
-            var expectedNodes = new IContentNode[]
+            var expectedNodes = new IGraphNode[]
             {
                 rootNode,
                 rootNode[nameof(SimpleClass.Member1)],
                 rootNode[nameof(SimpleClass.Member2)],
             };
-            var expectedPaths = new[]
-            {
-                new GraphNodePath(rootNode),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass.Member2)),
-            };
+            var expectedPaths = new GraphNodePath[3];
+            expectedPaths[0] = new GraphNodePath(rootNode);
+            expectedPaths[1] = expectedPaths[0].Clone();
+            expectedPaths[1].PushMember(nameof(SimpleClass.Member1));
+            expectedPaths[2] = expectedPaths[0].Clone();
+            expectedPaths[2].PushMember(nameof(SimpleClass.Member2));
             VerifyNodesAndPath(expectedNodes, expectedPaths, visitor);
         }
 
@@ -160,7 +169,7 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var visitor = new TestVisitor();
             visitor.Visit(rootNode);
-            var expectedNodes = new IContentNode[]
+            var expectedNodes = new IGraphNode[]
             {
                 rootNode,
                 rootNode[nameof(StructClass.Member1)],
@@ -169,15 +178,18 @@ namespace SiliconStudio.Quantum.Tests
                 rootNode[nameof(StructClass.Member2)].Target[nameof(Struct.Member1)],
                 rootNode[nameof(StructClass.Member2)].Target[nameof(Struct.Member2)],
             };
-            var expectedPaths = new[]
-            {
-                new GraphNodePath(rootNode),
-                new GraphNodePath(rootNode).PushMember(nameof(StructClass.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(StructClass.Member2)),
-                new GraphNodePath(rootNode).PushMember(nameof(StructClass.Member2)).PushTarget(),
-                new GraphNodePath(rootNode).PushMember(nameof(StructClass.Member2)).PushTarget().PushMember(nameof(Struct.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(StructClass.Member2)).PushTarget().PushMember(nameof(Struct.Member2)),
-            };
+            var expectedPaths = new GraphNodePath[6];
+            expectedPaths[0] = new GraphNodePath(rootNode);
+            expectedPaths[1] = expectedPaths[0].Clone();
+            expectedPaths[1].PushMember(nameof(StructClass.Member1));
+            expectedPaths[2] = expectedPaths[0].Clone();
+            expectedPaths[2].PushMember(nameof(StructClass.Member2));
+            expectedPaths[3] = expectedPaths[2].Clone();
+            expectedPaths[3].PushTarget();
+            expectedPaths[4] = expectedPaths[3].Clone();
+            expectedPaths[4].PushMember(nameof(Struct.Member1));
+            expectedPaths[5] = expectedPaths[3].Clone();
+            expectedPaths[5].PushMember(nameof(Struct.Member2));
             VerifyNodesAndPath(expectedNodes, expectedPaths, visitor);
         }
 
@@ -189,21 +201,24 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var visitor = new TestVisitor();
             visitor.Visit(rootNode);
-            var expectedNodes = new IContentNode[]
+            var expectedNodes = new IGraphNode[]
             {
                 rootNode,
                 rootNode[nameof(PrimitiveListClass.Member1)],
                 rootNode[nameof(PrimitiveListClass.Member2)],
+                rootNode[nameof(PrimitiveListClass.Member2)].Target,
             };
-            var expectedPaths = new[]
-            {
-                new GraphNodePath(rootNode),
-                new GraphNodePath(rootNode).PushMember(nameof(PrimitiveListClass.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(PrimitiveListClass.Member2)),
-            };
+            var expectedPaths = new GraphNodePath[4];
+            expectedPaths[0] = new GraphNodePath(rootNode);
+            expectedPaths[1] = expectedPaths[0].Clone();
+            expectedPaths[1].PushMember(nameof(PrimitiveListClass.Member1));
+            expectedPaths[2] = expectedPaths[0].Clone();
+            expectedPaths[2].PushMember(nameof(PrimitiveListClass.Member2));
+            expectedPaths[3] = expectedPaths[2].Clone();
+            expectedPaths[3].PushTarget();
             VerifyNodesAndPath(expectedNodes, expectedPaths, visitor);
         }
-
+        
         [Test]
         public void TestObjectWithObjectList()
         {
@@ -213,42 +228,39 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var visitor = new TestVisitor();
             visitor.Visit(rootNode);
-            Index index = new Index(2);
-            IContentNode tempQualifier = rootNode[nameof(ObjectListClass.Member2)];
-            Index index1 = new Index(2);
-            IContentNode tempQualifier1 = rootNode[nameof(ObjectListClass.Member2)];
-            Index index2 = new Index(2);
-            IContentNode tempQualifier2 = rootNode[nameof(ObjectListClass.Member2)];
-            Index index3 = new Index(0);
-            IContentNode tempQualifier3 = rootNode[nameof(ObjectListClass.Member2)];
-            Index index4 = new Index(0);
-            IContentNode tempQualifier4 = rootNode[nameof(ObjectListClass.Member2)];
-            Index index5 = new Index(0);
-            IContentNode tempQualifier5 = rootNode[nameof(ObjectListClass.Member2)];
-            var expectedNodes = new IContentNode[]
+            var expectedNodes = new IGraphNode[]
             {
                 rootNode,
                 rootNode[nameof(ObjectListClass.Member1)],
                 rootNode[nameof(ObjectListClass.Member2)],
-                tempQualifier4.IndexedTarget(index4),
-                tempQualifier5.IndexedTarget(index5)[nameof(ObjectListClass.Member1)],
-                tempQualifier3.IndexedTarget(index3)[nameof(ObjectListClass.Member2)],
-                tempQualifier1.IndexedTarget(index1),
-                tempQualifier2.IndexedTarget(index2)[nameof(ObjectListClass.Member1)],
-                tempQualifier.IndexedTarget(index)[nameof(ObjectListClass.Member2)],
-              };
-            var expectedPaths = new[]
-            {
-                new GraphNodePath(rootNode),
-                new GraphNodePath(rootNode).PushMember(nameof(ObjectListClass.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(ObjectListClass.Member2)),
-                new GraphNodePath(rootNode).PushMember(nameof(ObjectListClass.Member2)).PushIndex(new Index(0)),
-                new GraphNodePath(rootNode).PushMember(nameof(ObjectListClass.Member2)).PushIndex(new Index(0)).PushMember(nameof(ObjectListClass.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(ObjectListClass.Member2)).PushIndex(new Index(0)).PushMember(nameof(ObjectListClass.Member2)),
-                new GraphNodePath(rootNode).PushMember(nameof(ObjectListClass.Member2)).PushIndex(new Index(2)),
-                new GraphNodePath(rootNode).PushMember(nameof(ObjectListClass.Member2)).PushIndex(new Index(2)).PushMember(nameof(ObjectListClass.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(ObjectListClass.Member2)).PushIndex(new Index(2)).PushMember(nameof(ObjectListClass.Member2)),
+                rootNode[nameof(ObjectListClass.Member2)].Target,
+                rootNode[nameof(ObjectListClass.Member2)].Target.IndexedTarget(new Index(0)),
+                rootNode[nameof(ObjectListClass.Member2)].Target.IndexedTarget(new Index(0))[nameof(ObjectListClass.Member1)],
+                rootNode[nameof(ObjectListClass.Member2)].Target.IndexedTarget(new Index(0))[nameof(ObjectListClass.Member2)],
+                rootNode[nameof(ObjectListClass.Member2)].Target.IndexedTarget(new Index(2)),
+                rootNode[nameof(ObjectListClass.Member2)].Target.IndexedTarget(new Index(2))[nameof(ObjectListClass.Member1)],
+                rootNode[nameof(ObjectListClass.Member2)].Target.IndexedTarget(new Index(2))[nameof(ObjectListClass.Member2)],
             };
+            var expectedPaths = new GraphNodePath[10];
+            expectedPaths[0] = new GraphNodePath(rootNode);
+            expectedPaths[1] = expectedPaths[0].Clone();
+            expectedPaths[1].PushMember(nameof(ObjectListClass.Member1));
+            expectedPaths[2] = expectedPaths[0].Clone();
+            expectedPaths[2].PushMember(nameof(ObjectListClass.Member2));
+            expectedPaths[3] = expectedPaths[2].Clone();
+            expectedPaths[3].PushTarget();
+            expectedPaths[4] = expectedPaths[3].Clone();
+            expectedPaths[4].PushIndex(new Index(0));
+            expectedPaths[5] = expectedPaths[4].Clone();
+            expectedPaths[5].PushMember(nameof(ObjectListClass.Member1));
+            expectedPaths[6] = expectedPaths[4].Clone();
+            expectedPaths[6].PushMember(nameof(ObjectListClass.Member2));
+            expectedPaths[7] = expectedPaths[3].Clone();
+            expectedPaths[7].PushIndex(new Index(2));
+            expectedPaths[8] = expectedPaths[7].Clone();
+            expectedPaths[8].PushMember(nameof(ObjectListClass.Member1));
+            expectedPaths[9] = expectedPaths[7].Clone();
+            expectedPaths[9].PushMember(nameof(ObjectListClass.Member2));
             VerifyNodesAndPath(expectedNodes, expectedPaths, visitor);
         }
 
@@ -261,42 +273,39 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var visitor = new TestVisitor();
             visitor.Visit(rootNode);
-            Index index = new Index(0);
-            IContentNode tempQualifier = rootNode[nameof(StructListClass.Member2)];
-            Index index1 = new Index(0);
-            IContentNode tempQualifier1 = rootNode[nameof(StructListClass.Member2)];
-            Index index2 = new Index(0);
-            IContentNode tempQualifier2 = rootNode[nameof(StructListClass.Member2)];
-            Index index3 = new Index(1);
-            IContentNode tempQualifier3 = rootNode[nameof(StructListClass.Member2)];
-            Index index4 = new Index(1);
-            IContentNode tempQualifier4 = rootNode[nameof(StructListClass.Member2)];
-            Index index5 = new Index(1);
-            IContentNode tempQualifier5 = rootNode[nameof(StructListClass.Member2)];
-            var expectedNodes = new IContentNode[]
+            var expectedNodes = new IGraphNode[]
             {
                 rootNode,
                 rootNode[nameof(StructListClass.Member1)],
                 rootNode[nameof(StructListClass.Member2)],
-                tempQualifier.IndexedTarget(index),
-                tempQualifier1.IndexedTarget(index1)[nameof(StructListClass.Member1)],
-                tempQualifier2.IndexedTarget(index2)[nameof(StructListClass.Member2)],
-                tempQualifier3.IndexedTarget(index3),
-                tempQualifier4.IndexedTarget(index4)[nameof(StructListClass.Member1)],
-                tempQualifier5.IndexedTarget(index5)[nameof(StructListClass.Member2)],
-              };
-            var expectedPaths = new[]
-            {
-                new GraphNodePath(rootNode),
-                new GraphNodePath(rootNode).PushMember(nameof(StructListClass.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(StructListClass.Member2)),
-                new GraphNodePath(rootNode).PushMember(nameof(StructListClass.Member2)).PushIndex(new Index(0)),
-                new GraphNodePath(rootNode).PushMember(nameof(StructListClass.Member2)).PushIndex(new Index(0)).PushMember(nameof(StructListClass.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(StructListClass.Member2)).PushIndex(new Index(0)).PushMember(nameof(StructListClass.Member2)),
-                new GraphNodePath(rootNode).PushMember(nameof(StructListClass.Member2)).PushIndex(new Index(1)),
-                new GraphNodePath(rootNode).PushMember(nameof(StructListClass.Member2)).PushIndex(new Index(1)).PushMember(nameof(StructListClass.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(StructListClass.Member2)).PushIndex(new Index(1)).PushMember(nameof(StructListClass.Member2)),
+                rootNode[nameof(StructListClass.Member2)].Target,
+                rootNode[nameof(StructListClass.Member2)].Target.IndexedTarget(new Index(0)),
+                rootNode[nameof(StructListClass.Member2)].Target.IndexedTarget(new Index(0))[nameof(StructListClass.Member1)],
+                rootNode[nameof(StructListClass.Member2)].Target.IndexedTarget(new Index(0))[nameof(StructListClass.Member2)],
+                rootNode[nameof(StructListClass.Member2)].Target.IndexedTarget(new Index(1)),
+                rootNode[nameof(StructListClass.Member2)].Target.IndexedTarget(new Index(1))[nameof(StructListClass.Member1)],
+                rootNode[nameof(StructListClass.Member2)].Target.IndexedTarget(new Index(1))[nameof(StructListClass.Member2)],
             };
+            var expectedPaths = new GraphNodePath[10];
+            expectedPaths[0] = new GraphNodePath(rootNode);
+            expectedPaths[1] = expectedPaths[0].Clone();
+            expectedPaths[1].PushMember(nameof(StructListClass.Member1));
+            expectedPaths[2] = expectedPaths[0].Clone();
+            expectedPaths[2].PushMember(nameof(StructListClass.Member2));
+            expectedPaths[3] = expectedPaths[2].Clone();
+            expectedPaths[3].PushTarget();
+            expectedPaths[4] = expectedPaths[3].Clone();
+            expectedPaths[4].PushIndex(new Index(0));
+            expectedPaths[5] = expectedPaths[4].Clone();
+            expectedPaths[5].PushMember(nameof(StructListClass.Member1));
+            expectedPaths[6] = expectedPaths[4].Clone();
+            expectedPaths[6].PushMember(nameof(StructListClass.Member2));
+            expectedPaths[7] = expectedPaths[3].Clone();
+            expectedPaths[7].PushIndex(new Index(1));
+            expectedPaths[8] = expectedPaths[7].Clone();
+            expectedPaths[8].PushMember(nameof(StructListClass.Member1));
+            expectedPaths[9] = expectedPaths[7].Clone();
+            expectedPaths[9].PushMember(nameof(StructListClass.Member2));
             VerifyNodesAndPath(expectedNodes, expectedPaths, visitor);
         }
 
@@ -312,7 +321,7 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode2 = nodeContainer.GetOrCreateNode(obj2);
             var visitor = new TestVisitor();
             visitor.Visit(rootNode1);
-            var expectedNodes = new IContentNode[]
+            var expectedNodes = new IGraphNode[]
             {
                 rootNode1,
                 rootNode1[nameof(SimpleClass.Member1)],
@@ -321,19 +330,22 @@ namespace SiliconStudio.Quantum.Tests
                 rootNode2[nameof(SimpleClass.Member1)],
                 rootNode2[nameof(SimpleClass.Member2)],
             };
-            var expectedPaths = new[]
-            {
-                new GraphNodePath(rootNode1),
-                new GraphNodePath(rootNode1).PushMember(nameof(SimpleClass.Member1)),
-                new GraphNodePath(rootNode1).PushMember(nameof(SimpleClass.Member2)),
-                new GraphNodePath(rootNode1).PushMember(nameof(SimpleClass.Member2)).PushTarget(),
-                new GraphNodePath(rootNode1).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member1)),
-                new GraphNodePath(rootNode1).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)),
-            };
+            var expectedPaths = new GraphNodePath[6];
+            expectedPaths[0] = new GraphNodePath(rootNode1);
+            expectedPaths[1] = expectedPaths[0].Clone();
+            expectedPaths[1].PushMember(nameof(SimpleClass.Member1));
+            expectedPaths[2] = expectedPaths[0].Clone();
+            expectedPaths[2].PushMember(nameof(SimpleClass.Member2));
+            expectedPaths[3] = expectedPaths[2].Clone();
+            expectedPaths[3].PushTarget();
+            expectedPaths[4] = expectedPaths[3].Clone();
+            expectedPaths[4].PushMember(nameof(SimpleClass.Member1));
+            expectedPaths[5] = expectedPaths[3].Clone();
+            expectedPaths[5].PushMember(nameof(SimpleClass.Member2));
             VerifyNodesAndPath(expectedNodes, expectedPaths, visitor);
 
             visitor.Visit(rootNode2);
-            expectedNodes = new IContentNode[]
+            expectedNodes = new IGraphNode[]
             {
                 rootNode2,
                 rootNode2[nameof(SimpleClass.Member1)],
@@ -342,15 +354,18 @@ namespace SiliconStudio.Quantum.Tests
                 rootNode1[nameof(SimpleClass.Member1)],
                 rootNode1[nameof(SimpleClass.Member2)],
             };
-            expectedPaths = new[]
-            {
-                new GraphNodePath(rootNode2),
-                new GraphNodePath(rootNode2).PushMember(nameof(SimpleClass.Member1)),
-                new GraphNodePath(rootNode2).PushMember(nameof(SimpleClass.Member2)),
-                new GraphNodePath(rootNode2).PushMember(nameof(SimpleClass.Member2)).PushTarget(),
-                new GraphNodePath(rootNode2).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member1)),
-                new GraphNodePath(rootNode2).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)),
-            };
+            expectedPaths = new GraphNodePath[6];
+            expectedPaths[0] = new GraphNodePath(rootNode2);
+            expectedPaths[1] = expectedPaths[0].Clone();
+            expectedPaths[1].PushMember(nameof(SimpleClass.Member1));
+            expectedPaths[2] = expectedPaths[0].Clone();
+            expectedPaths[2].PushMember(nameof(SimpleClass.Member2));
+            expectedPaths[3] = expectedPaths[2].Clone();
+            expectedPaths[3].PushTarget();
+            expectedPaths[4] = expectedPaths[3].Clone();
+            expectedPaths[4].PushMember(nameof(SimpleClass.Member1));
+            expectedPaths[5] = expectedPaths[3].Clone();
+            expectedPaths[5].PushMember(nameof(SimpleClass.Member2));
             VerifyNodesAndPath(expectedNodes, expectedPaths, visitor);
         }
 
@@ -363,7 +378,7 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var visitor = new TestVisitor();
             visitor.Visit(rootNode);
-            var expectedNodes = new IContentNode[]
+            var expectedNodes = new IGraphNode[]
             {
                 rootNode,
                 rootNode[nameof(SimpleClass2.Member1)],
@@ -382,29 +397,42 @@ namespace SiliconStudio.Quantum.Tests
                 rootNode[nameof(SimpleClass2.Member3)].Target[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member1)],
                 rootNode[nameof(SimpleClass2.Member3)].Target[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member2)],
             };
-            var expectedPaths = new[]
-            {
-                new GraphNodePath(rootNode),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass2.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass2.Member2)),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass2.Member2)).PushTarget(),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass2.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass2.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass2.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)).PushTarget(),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass2.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass2.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass2.Member3)),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass2.Member3)).PushTarget(),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass2.Member3)).PushTarget().PushMember(nameof(SimpleClass.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass2.Member3)).PushTarget().PushMember(nameof(SimpleClass.Member2)),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass2.Member3)).PushTarget().PushMember(nameof(SimpleClass.Member2)).PushTarget(),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass2.Member3)).PushTarget().PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(SimpleClass2.Member3)).PushTarget().PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)),
-            };
+            var expectedPaths = new GraphNodePath[16];
+            expectedPaths[0] = new GraphNodePath(rootNode);
+            expectedPaths[1] = expectedPaths[0].Clone();
+            expectedPaths[1].PushMember(nameof(SimpleClass2.Member1));
+            expectedPaths[2] = expectedPaths[0].Clone();
+            expectedPaths[2].PushMember(nameof(SimpleClass2.Member2));
+            expectedPaths[3] = expectedPaths[2].Clone();
+            expectedPaths[3].PushTarget();
+            expectedPaths[4] = expectedPaths[3].Clone();
+            expectedPaths[4].PushMember(nameof(SimpleClass.Member1));
+            expectedPaths[5] = expectedPaths[3].Clone();
+            expectedPaths[5].PushMember(nameof(SimpleClass.Member2));
+            expectedPaths[6] = expectedPaths[5].Clone();
+            expectedPaths[6].PushTarget();
+            expectedPaths[7] = expectedPaths[6].Clone();
+            expectedPaths[7].PushMember(nameof(SimpleClass.Member1));
+            expectedPaths[8] = expectedPaths[6].Clone();
+            expectedPaths[8].PushMember(nameof(SimpleClass.Member2));
+            expectedPaths[9] = expectedPaths[0].Clone();
+            expectedPaths[9].PushMember(nameof(SimpleClass2.Member3));
+            expectedPaths[10] = expectedPaths[9].Clone();
+            expectedPaths[10].PushTarget();
+            expectedPaths[11] = expectedPaths[10].Clone();
+            expectedPaths[11].PushMember(nameof(SimpleClass.Member1));
+            expectedPaths[12] = expectedPaths[10].Clone();
+            expectedPaths[12].PushMember(nameof(SimpleClass.Member2));
+            expectedPaths[13] = expectedPaths[12].Clone();
+            expectedPaths[13].PushTarget();
+            expectedPaths[14] = expectedPaths[13].Clone();
+            expectedPaths[14].PushMember(nameof(SimpleClass.Member1));
+            expectedPaths[15] = expectedPaths[13].Clone();
+            expectedPaths[15].PushMember(nameof(SimpleClass.Member2));
             VerifyNodesAndPath(expectedNodes, expectedPaths, visitor);
         }
 
-        private static void VerifyNodesAndPath(IReadOnlyList<IContentNode> expectedNodes, IReadOnlyList<GraphNodePath> expectedPaths, TestVisitor visitor)
+        private static void VerifyNodesAndPath(IReadOnlyList<IGraphNode> expectedNodes, IReadOnlyList<GraphNodePath> expectedPaths, TestVisitor visitor)
         {
             Assert.AreEqual(expectedNodes.Count, visitor.Result.Count);
             Assert.AreEqual(expectedPaths.Count, visitor.Result.Count);
