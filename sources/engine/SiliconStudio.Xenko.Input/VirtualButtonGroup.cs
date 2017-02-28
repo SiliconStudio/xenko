@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.ObjectModel;
@@ -16,6 +16,15 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <value><c>true</c> if this instance is disjunction; otherwise, <c>false</c>.</value>
         public bool IsDisjunction { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VirtualButtonGroup"/> class.
+        /// </summary>
+        /// <param name="isDisjunction">Indicates whether the value is determined as a disjunction ('||' operator between buttons). The default value is false ('&&' operator).</param>
+        public VirtualButtonGroup(bool isDisjunction = false)
+        {
+            IsDisjunction = isDisjunction;
+        }
 
         protected override void InsertItem(int index, IVirtualButton item)
         {
