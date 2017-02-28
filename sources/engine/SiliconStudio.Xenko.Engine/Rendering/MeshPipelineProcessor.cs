@@ -52,13 +52,15 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 if (cullMode == CullMode.Front)
                 {
-                    pipelineState.RasterizerState.CullMode = CullMode.Back;
+                    cullMode = CullMode.Back;
                 }
                 else if (cullMode == CullMode.Back)
                 {
-                    pipelineState.RasterizerState.CullMode = CullMode.Front;
+                    cullMode = CullMode.Front;
                 }
             }
+
+            pipelineState.RasterizerState.CullMode = cullMode;
 
             if (isMsaa)
             {
