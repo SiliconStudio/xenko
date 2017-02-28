@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -123,23 +124,31 @@ namespace SiliconStudio.Xenko.Rendering
         private class StateAndTargets
         {
             private const int MaxRenderTargetCount = 8;
+            private const int MaxViewportAndScissorRectangleCount = 16;
 
             public int RenderTargetCount;
+            public int ViewportCounts;
 
-            public readonly Viewport[] Viewports = new Viewport[MaxRenderTargetCount];
+            public readonly Viewport[] Viewports = new Viewport[MaxViewportAndScissorRectangleCount];
+            public readonly Rectangle[] ScissorRectangles = new Rectangle[MaxViewportAndScissorRectangleCount];
             public readonly Texture[] RenderTargets = new Texture[MaxRenderTargetCount];
             public Texture DepthStencilBuffer;
 
             public void Capture(CommandList commandList)
             {
                 RenderTargetCount = commandList.RenderTargetCount;
+                ViewportCounts = commandList.ViewportCount;
 
                 DepthStencilBuffer = commandList.DepthStencilBuffer;
 
                 for (int i = 0; i < RenderTargetCount; i++)
                 {
-                    Viewports[i] = commandList.Viewports[i];
                     RenderTargets[i] = commandList.RenderTargets[i];
+                }
+
+                for (int i = 0; i < ViewportCounts; i++)
+                {
+                    Viewports[i] = commandList.Viewports[i];
                 }
             }
 

@@ -66,11 +66,9 @@ namespace SiliconStudio.Xenko.Graphics
 
         private VertexBufferView[] vertexBuffers = new VertexBufferView[8];
 
-        private Rectangle[] currentScissorRectangles = new Rectangle[MaxBoundRenderTargets];
-
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-        private float[] _currentViewportsSetBuffer = new float[4 * MaxBoundRenderTargets];
-        private int[] _currentScissorsSetBuffer = new int[4 * MaxBoundRenderTargets];
+        private readonly float[] nativeViewports = new float[4 * MaxViewportAndScissorRectangleCount];
+        private readonly int[] nativeScissorRectangles = new int[4 * MaxViewportAndScissorRectangleCount];
 #endif
 
         public static CommandList New(GraphicsDevice device)
@@ -1382,31 +1380,15 @@ namespace SiliconStudio.Xenko.Graphics
             samplerStates[slot] = samplerState;
         }
 
-        /// <summary>
-        /// Binds a single scissor rectangle to the rasterizer stage.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="top">The top.</param>
-        /// <param name="right">The right.</param>
-        /// <param name="bottom">The bottom.</param>
-        public void SetScissorRectangles(int left, int top, int right, int bottom)
+        unsafe partial void SetScissorRectangleImpl(ref Rectangle scissorRectangle)
         {
 #if DEBUG
             GraphicsDevice.EnsureContextActive();
 #endif
-            currentScissorRectangles[0].Left = left;
-            currentScissorRectangles[0].Top = top;
-            currentScissorRectangles[0].Width = right - left;
-            currentScissorRectangles[0].Height = bottom - top;
-
-            UpdateScissor(currentScissorRectangles[0]);
+            GL.Scissor(scissorRectangle.Left, scissorRectangle.Top, scissorRectangle.Width, scissorRectangle.Height);
         }
 
-        /// <summary>
-        /// Binds a set of scissor rectangles to the rasterizer stage.
-        /// </summary>
-        /// <param name="scissorRectangles">The set of scissor rectangles to bind.</param>
-        public void SetScissorRectangles(params Rectangle[] scissorRectangles)
+        unsafe partial void SetScissorRectanglesImpl(int scissorCount, Rectangle[] scissorRectangles)
         {
 #if DEBUG
             GraphicsDevice.EnsureContextActive();
@@ -1415,26 +1397,16 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             Internal.Refactor.ThrowNotImplementedException();
 #else
-            var scissorCount = scissorRectangles.Length > currentScissorRectangles.Length ? currentScissorRectangles.Length : scissorRectangles.Length;
-
-            for (var i = 0; i < scissorCount; ++i)
-                currentScissorRectangles[i] = scissorRectangles[i];
-
             for (int i = 0; i < scissorCount; ++i)
             {
-                _currentScissorsSetBuffer[4 * i] = scissorRectangles[i].X;
-                _currentScissorsSetBuffer[4 * i + 1] = scissorRectangles[i].Y;
-                _currentScissorsSetBuffer[4 * i + 2] = scissorRectangles[i].Width;
-                _currentScissorsSetBuffer[4 * i + 3] = scissorRectangles[i].Height;
+                nativeScissorRectangles[4 * i] = scissorRectangles[i].X;
+                nativeScissorRectangles[4 * i + 1] = scissorRectangles[i].Y;
+                nativeScissorRectangles[4 * i + 2] = scissorRectangles[i].Width;
+                nativeScissorRectangles[4 * i + 3] = scissorRectangles[i].Height;
             }
 
-            GL.ScissorArray(0, scissorCount, _currentScissorsSetBuffer);
+            GL.ScissorArray(0, scissorCount, nativeScissorRectangles);
 #endif
-        }
-
-        private void UpdateScissor(Rectangle scissorRect)
-        {
-            GL.Scissor(scissorRect.Left, scissorRect.Top, scissorRect.Width, scissorRect.Height);
         }
 
         /// <summary>
@@ -1487,10 +1459,6 @@ namespace SiliconStudio.Xenko.Graphics
                 boundFBO = GraphicsDevice.FindOrCreateFBO(boundDepthStencilBuffer, boundRenderTargets, boundRenderTargetCount);
             }
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
-
-            // TODO: support multiple viewports and scissors?
-            UpdateViewport(viewports[0]);
-            UpdateScissor(currentScissorRectangles[0]);
         }
 
         public void SetPipelineState(PipelineState pipelineState)
@@ -1573,16 +1541,16 @@ namespace SiliconStudio.Xenko.Graphics
         private void UpdateViewports()
         {
             int nbViewports = viewports.Length;
-            for (int i = 0; i < nbViewports; ++i)
+            for (int i = 0; i < boundViewportCount; ++i)
             {
                 var currViewport = viewports[i];
-                _currentViewportsSetBuffer[4 * i] = currViewport.X;
-                _currentViewportsSetBuffer[4 * i + 1] = currViewport.Y;
-                _currentViewportsSetBuffer[4 * i + 2] = currViewport.Width;
-                _currentViewportsSetBuffer[4 * i + 3] = currViewport.Height;
+                nativeViewports[4 * i] = currViewport.X;
+                nativeViewports[4 * i + 1] = currViewport.Y;
+                nativeViewports[4 * i + 2] = currViewport.Width;
+                nativeViewports[4 * i + 3] = currViewport.Height;
             }
             GL.DepthRange(viewports[0].MinDepth, viewports[0].MaxDepth);
-            GL.ViewportArray(0, nbViewports, _currentViewportsSetBuffer);
+            GL.ViewportArray(0, boundViewportCount, nativeViewports);
         }
 #endif
 
