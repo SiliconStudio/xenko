@@ -1,5 +1,6 @@
 using System;
 using SiliconStudio.Assets.Quantum.Visitors;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Quantum;
 
@@ -12,9 +13,11 @@ namespace SiliconStudio.Assets.Quantum
         {
         }
 
-        public override GraphVisitorBase CreateReconcilierVisitor()
+        protected void LinkToOwnerPart([NotNull] IGraphNode node, object part)
         {
-            return new AssetGraphVisitorBase(this);
+            if (node == null) throw new ArgumentNullException(nameof(node));
+            var visitor = new NodesToOwnerPartVisitor(this, Container.NodeContainer, part);
+            visitor.Visit(node);
         }
 
         protected sealed override IBaseToDerivedRegistry CreateBaseToDerivedRegistry()

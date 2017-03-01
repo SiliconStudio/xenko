@@ -46,7 +46,6 @@
     </Compile>
     <Compile Include="AssetBaseToDerivedRegistry.cs" />
     <Compile Include="AssetCompositeBaseToDerivedRegistry.cs" />
-    <Compile Include="AssetCompositeHierarchyPartVisitor.cs" />
     <Compile Include="AssetCompositeHierarchyPropertyGraph.cs" />
     <Compile Include="AssetPartChangeEventArgs.cs" />
     <Compile Include="Visitors\AssetCollector.cs" />

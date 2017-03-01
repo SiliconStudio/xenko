@@ -44,6 +44,11 @@ namespace SiliconStudio.Assets.Quantum
             }
             var partsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<IAssetPartDesign<IIdentifiable>, IIdentifiable>.Parts)].Target;
             partsNode.ItemChanged += PartsChanged;
+
+            foreach (var part in Asset.Hierarchy.Parts)
+            {
+                LinkToOwnerPart(Container.NodeContainer.GetNode(part.Part), part);
+            }
         }
 
         public AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> AssetHierarchy => Asset;
@@ -75,11 +80,6 @@ namespace SiliconStudio.Assets.Quantum
             }
             var partsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<IAssetPartDesign<IIdentifiable>, IIdentifiable>.Parts)].Target;
             partsNode.ItemChanged -= PartsChanged;
-            foreach (var part in Asset.Hierarchy.Parts)
-            {
-                var visitor = new NodesToOwnerPartVisitor<TAssetPartDesign, TAssetPart>(this, Container.NodeContainer, part);
-                visitor.Visit(Container.NodeContainer.GetNode(part.Part));
-            }
         }
         /// <inheritdoc/>
         public override void ClearReferencesToObjects(IEnumerable<Guid> objectIds)
@@ -116,12 +116,11 @@ namespace SiliconStudio.Assets.Quantum
         {
             foreach (var part in assetPartDesigns.Where(x => x.Base != null))
             {
-                var node = Container.NodeContainer.GetNode(part);
+                var node = (IAssetObjectNode)Container.NodeContainer.GetNode(part);
                 node[nameof(IAssetPartDesign<IIdentifiable>.Base)].Update(null);
+                // We must refresh the base to stop further update from the prefab to the instance entities
+                RefreshBase(node, (IAssetNode)node.BaseNode);
             }
-            // We must refresh the base to stop further update from the prefab to the instance entities
-            // TODO: pass the archetype
-            RefreshBase();
         }
 
 
@@ -327,12 +326,6 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         /// <inheritdoc/>
-        public override GraphVisitorBase CreateReconcilierVisitor()
-        {
-            return new AssetCompositeHierarchyPartVisitor<TAssetPartDesign, TAssetPart>(this);
-        }
-
-        /// <inheritdoc/>
         public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
         {
             if (targetNode is IObjectNode && index.IsEmpty)
@@ -352,15 +345,6 @@ namespace SiliconStudio.Assets.Quantum
         public override void RefreshBase()
         {
             base.RefreshBase();
-
-            // This method might be called because of unusual changes in the asset.
-            // So let's refresh the link to owner part to ensure everything is in a correct state.
-            foreach (var part in Asset.Hierarchy.Parts)
-            {
-                var visitor = new NodesToOwnerPartVisitor<TAssetPartDesign, TAssetPart>(this, Container.NodeContainer, part);
-                visitor.Visit(Container.NodeContainer.GetNode(part.Part));
-            }
-
             UpdateAssetPartBases();
         }
 
@@ -518,6 +502,33 @@ namespace SiliconStudio.Assets.Quantum
             return insertIndex;
         }
 
+        protected override void OnContentChanged(MemberNodeChangeEventArgs args)
+        {
+            RelinkToOwnerPart((IAssetNode)args.Member, args.NewValue);
+            base.OnContentChanged(args);
+        }
+
+        protected override void OnItemChanged(ItemChangeEventArgs args)
+        {
+            RelinkToOwnerPart((IAssetNode)args.Node, args.NewValue);
+            base.OnItemChanged(args);
+        }
+
+        private void RelinkToOwnerPart(IAssetNode node, object newValue)
+        {
+            var partDesign = (TAssetPartDesign)node.GetContent(NodesToOwnerPartVisitor.OwnerPartContentName)?.Retrieve();
+            if (partDesign != null)
+            {
+                // A property of a part has changed
+                LinkToOwnerPart(node, partDesign);
+            }
+            else if (node.Type == typeof(AssetPartCollection<TAssetPartDesign, TAssetPart>) && newValue is TAssetPartDesign)
+            {
+                // A new part has been added
+                partDesign = (TAssetPartDesign)newValue;
+                LinkToOwnerPart(Container.NodeContainer.GetNode(partDesign.Part), partDesign);
+            }
+        }
         private void UpdateAssetPartBases()
         {
             foreach (var basePartAsset in basePartAssets.Keys)
@@ -646,8 +657,6 @@ namespace SiliconStudio.Assets.Quantum
             }
 
             // Reconcile with base
-            // TODO: fixme
-            //RefreshBase(Archetype?.PropertyGraph);
             RefreshBase();
             ReconcileWithBase();
 
