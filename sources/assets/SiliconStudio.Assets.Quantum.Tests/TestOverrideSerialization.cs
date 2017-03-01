@@ -762,7 +762,7 @@ MyObjects:
             // Manually link base of non-identifiable items - this simulates a scenario similar to prefabs
             context.DerivedGraph.RegisterCustomBaseLink(derivedPropertyNode.Target.IndexedTarget(new Index(0)), basePropertyNode.Target.IndexedTarget(new Index(0)));
             context.DerivedGraph.RegisterCustomBaseLink(derivedPropertyNode.Target.IndexedTarget(new Index(1)), basePropertyNode.Target.IndexedTarget(new Index(1)));
-            context.DerivedGraph.RefreshBase(context.BaseGraph);
+            context.DerivedGraph.RefreshBase();
 
             basePropertyNode.Target.IndexedTarget(new Index(1))[nameof(Types.SomeObject.Value)].Update("MyBaseString");
             derivedPropertyNode.Target.IndexedTarget(new Index(0))[nameof(Types.SomeObject.Value)].Update("MyDerivedString");
@@ -779,7 +779,7 @@ MyObjects:
             // Manually link base of non-identifiable items - this simulates a scenario similar to prefabs
             context.DerivedGraph.RegisterCustomBaseLink(derivedPropertyNode.Target.IndexedTarget(new Index(0)), basePropertyNode.Target.IndexedTarget(new Index(0)));
             context.DerivedGraph.RegisterCustomBaseLink(derivedPropertyNode.Target.IndexedTarget(new Index(1)), basePropertyNode.Target.IndexedTarget(new Index(1)));
-            context.DerivedGraph.RefreshBase(context.BaseGraph);
+            context.DerivedGraph.RefreshBase();
 
             Assert.AreEqual(2, context.BaseAsset.MyObjects.Count);
             Assert.AreEqual(2, context.DerivedAsset.MyObjects.Count);

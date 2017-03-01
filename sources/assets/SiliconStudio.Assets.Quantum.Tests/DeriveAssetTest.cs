@@ -20,7 +20,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var derivedGraph = AssetQuantumRegistry.ConstructPropertyGraph(Container, DerivedAssetItem, null);
             Assert.IsInstanceOf<MyAssetBasePropertyGraph>(baseGraph);
             DerivedGraph = (MyAssetBasePropertyGraph)derivedGraph;
-            DerivedGraph.RefreshBase(BaseGraph);
+            DerivedGraph.RefreshBase();
         }
 
         public static Stream ToStream(string str)
