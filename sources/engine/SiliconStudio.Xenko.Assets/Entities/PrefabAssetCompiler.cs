@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
@@ -9,7 +10,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     public class PrefabAssetCompiler : EntityHierarchyCompilerBase<PrefabAsset>
     {
-        protected override AssetCommand<PrefabAsset> Create(string url, PrefabAsset assetParameters)
+        protected override AssetCommand<PrefabAsset> Create(string url, PrefabAsset assetParameters, Package package)
         {
             return new PrefabCommand(url, assetParameters, package);
         }

@@ -19,13 +19,13 @@ namespace SiliconStudio.Xenko.Assets.Rendering
             // TODO: We should ignore game settings stored in dependencies
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new GraphicsCompositorCompileCommand(targetUrlInStorage, asset),
+                new GraphicsCompositorCompileCommand(targetUrlInStorage, asset, assetItem.Package),
             };
         }
 
         internal class GraphicsCompositorCompileCommand : AssetCommand<GraphicsCompositorAsset>
         {
-            public GraphicsCompositorCompileCommand(string url, GraphicsCompositorAsset asset) : base(url, asset)
+            public GraphicsCompositorCompileCommand(string url, GraphicsCompositorAsset asset, Package assetItemPackage) : base(url, asset, assetItemPackage)
             {
             }
 
