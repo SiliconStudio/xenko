@@ -1,0 +1,47 @@
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Shadows
+{
+    shader ShadowMapCasterParaboloidProjection : ShaderBase, PositionStream4, Texturing
+    {
+        static const float ClippingEpsilon = 0.03;
+
+        cbuffer PerView.ShadowCaster
+        {
+            // x = Near; y = 1/(Far-Near)
+            float2 DepthParameters;
+        }
+
+        // Used to write the distance from an object to the light to the depth buffer
+        stage stream float PixelDepth : SV_DEPTH;
+        
+        stage override void VSMain()
+        {
+            // Project into light view space
+            float4 lightSpace = mul(streams.Position, Transformation.WorldView);
+
+            // Store length and normalize
+            float distanceToLight = length(lightSpace.xyz);
+            float3 intermediate = lightSpace.xyz / distanceToLight;
+
+            // Project x/y coordinates on parabola
+            intermediate.xy /= 1.0f+intermediate.z;
+
+            // 2 different depth values
+            // The first one is the depth written to the depth buffer (always positive, since it is the distance to the point light)
+            // The second one is used for clipping (world space along the light's z-axis)
+            float2 depthValues = float2(distanceToLight, lightSpace.z + ClippingEpsilon) * DepthParameters.y;
+
+            // Send projected depth to pixel shader
+            streams.DepthVS = depthValues.x;
+
+            streams.ShadingPosition = float4(intermediate.xy, depthValues.y, 1);
+        }
+        
+        stage override void PSMain()
+        {
+            streams.PixelDepth = streams.DepthVS;
+        }
+    };
+}

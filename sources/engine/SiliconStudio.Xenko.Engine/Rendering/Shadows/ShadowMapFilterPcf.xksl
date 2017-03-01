@@ -7,11 +7,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     shader ShadowMapFilterPcf<MemberName PerLighting, int TFilterSize> : ShadowMapFilterBase<PerLighting>
     {
-        cbuffer PerLighting
-        {
-            float Bias;
-        }
-
         float SampleTextureAndCompare(float2 position, float positionDepth)
         {
             return ShadowMapTexture.SampleCmp(LinearClampCompareLessEqualSampler, position, positionDepth);
@@ -35,11 +30,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             base_uv -= float2(0.5, 0.5);
             base_uv *= ShadowMapTextureTexelSize;
 
-            if (TFilterSize == 2)
-            {
-                shadow = SampleTextureAndCompare(position, positionDepth);
-            }
-            else if (TFilterSize == 3)
+            // TODO: Apply gradient for initial offset in this way once gradient mapping has been added
+            //          Replacing the above 2 lines this this and using the float2 parameter depthGradient which contains the change in depth along the x and y axis over the size of the entire texture atlas
+            //base_uv -= float2(0.5, 0.5);
+            //float2 initialOffset = base_uv - uv;
+            //base_uv *= ShadowMapTextureTexelSize;
+            //
+            // Take offset to pixel center into account according to the depth gradient
+            //positionDepth += dot(initialOffset * ShadowMapTextureTexelSize, depthGradient);
+
+            if (TFilterSize == 3)
             {
                 float uw0 = (3 - 2 * s);
                 float uw1 = (1 + 2 * s);

@@ -114,6 +114,9 @@
         <Reference Include="SiliconStudio.Xenko.Native">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Native.dll</HintPath>
         </Reference>
+        <Reference Include="SiliconStudio.Xenko.VirtualReality">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.VirtualReality.dll</HintPath>
+        </Reference>
       </ItemGroup>
     </When>
   </Choose>

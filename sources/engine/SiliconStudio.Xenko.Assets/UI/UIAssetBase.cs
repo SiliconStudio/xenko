@@ -20,7 +20,6 @@ namespace SiliconStudio.Xenko.Assets.UI
     /// <summary>
     /// Base class for assets containing a hierarchy of <see cref="UIElement"/>.
     /// </summary>
-    [AssetPartReference(typeof(UIElement), ExistsTopLevel = true)]
     public abstract class UIAssetBase : AssetCompositeHierarchy<UIElementDesign, UIElement>
     {
         [DataContract("UIDesign")]
@@ -70,14 +69,6 @@ namespace SiliconStudio.Xenko.Assets.UI
             var elementChildren = (IUIElementChildren)part;
             var enumerator = isRecursive ? elementChildren.Children.DepthFirst(t => t.Children) : elementChildren.Children;
             return enumerator.NotNull().Cast<UIElement>();
-        }
-
-        /// <inheritdoc/>
-        protected override void ClearPartReferences(AssetCompositeHierarchyData<UIElementDesign, UIElement> clonedHierarchy)
-        {
-            // set to null reference outside of the sub-tree
-            var tempAsset = new UILibraryAsset { Hierarchy = clonedHierarchy };
-            tempAsset.FixupPartReferences();
         }
 
         protected class BasePartsRemovalComponentUpgrader : AssetUpgraderBase

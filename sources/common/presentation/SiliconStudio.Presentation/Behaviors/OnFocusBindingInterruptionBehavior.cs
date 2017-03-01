@@ -3,15 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Interactivity;
-using System.ComponentModel;
-
 using SiliconStudio.Core;
-using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Behaviors
@@ -42,14 +37,13 @@ namespace SiliconStudio.Presentation.Behaviors
 
             if (Binding == null)
             {
-                throw new ArgumentException(string.Format("Binding must be set for {0} property of host '{1}' on behavior '{2}'.",
-                    PropertyName, AssociatedObject, this.GetType().FullName));
+                throw new ArgumentException($"Binding must be set for {PropertyName} property of host '{AssociatedObject}' on behavior '{GetType().FullName}'.");
             }
 
             property = AssociatedObject.GetDependencyProperties(true).FirstOrDefault(dp => dp.Name == PropertyName);
 
             if (property == null /* need to check DesignMode as well ? */)
-                throw new InvalidOperationException(string.Format("Impossible to find property named '{0}' on object typed '{1}'.", PropertyName, AssociatedObject.GetType()));
+                throw new InvalidOperationException($"Impossible to find property named '{PropertyName}' on object typed '{AssociatedObject.GetType()}'.");
 
             if ((Binding is Binding) == false)
                 throw new InvalidOperationException("Not supported binding type.");
@@ -57,8 +51,8 @@ namespace SiliconStudio.Presentation.Behaviors
             var element = AssociatedObject as FrameworkElement;
             if (element == null)
             {
-                throw new InvalidOperationException(string.Format("Behavior of type '{0}' must be bound to objects of type '{1}'. (currently bound to object typed '{2}')",
-                    this.GetType(), typeof(FrameworkElement), AssociatedObject.GetType()));
+                throw new InvalidOperationException(
+                    $"Behavior of type '{GetType()}' must be bound to objects of type '{typeof(FrameworkElement)}'. (currently bound to object typed '{AssociatedObject.GetType()}')");
             }
 
             BindingOperations.SetBinding(AssociatedObject, property, Binding);
@@ -84,7 +78,7 @@ namespace SiliconStudio.Presentation.Behaviors
         private void OnHostGotFocus(object sender, RoutedEventArgs e)
         {
             // retrieve current value before clearing binding
-            object value = AssociatedObject.GetValue(property);
+            var value = AssociatedObject.GetValue(property);
 
             // clear binding (the side-effect is that value is also clear from within the control)
             BindingOperations.ClearBinding(AssociatedObject, property);
@@ -102,12 +96,12 @@ namespace SiliconStudio.Presentation.Behaviors
         private void PushTargetValueToSource()
         {
             // retrieve the current value of the target (UI control)
-            object currentValue = AssociatedObject.GetValue(property);
+            var currentValue = AssociatedObject.GetValue(property);
 
             var binding = (Binding)Binding;
 
             // resolve the source instance here (seems BindingOperations.SetBinding does not resolve DataContext)
-            object source = binding.Source ?? ((FrameworkElement)AssociatedObject).DataContext;
+            var source = binding.Source ?? ((FrameworkElement)AssociatedObject).DataContext;
 
             var intermediateBinding = new Binding
             {

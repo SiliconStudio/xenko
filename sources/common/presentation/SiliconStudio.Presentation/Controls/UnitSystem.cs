@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -66,7 +67,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// If the <see cref="GroupingValues" /> list is empty, indicate that the values can be grouped using the default grouping method  (which groups by the closest value of the form {1/2/5} * 10^n * <see cref="Value" />)
         /// </summary>
-        public bool IsMultipliable { get { return (bool)GetValue(IsMultipliableProperty); } set { SetValue(IsMultipliableProperty, value); } }
+        public bool IsMultipliable { get { return (bool)GetValue(IsMultipliableProperty); } set { SetValue(IsMultipliableProperty, value.Box()); } }
 
         public UnitConversion()
         {
@@ -94,7 +95,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Indicate that the values can be grouped more efficiently using the default grouping method (which groups by the closest value of the form {1/2/5} * 10^n * <see cref="LargeIntervalSize" />)
         /// </summary>
-        public bool IsMultipliable { get { return (bool)GetValue(IsMultipliableProperty); } set { SetValue(IsMultipliableProperty, value); } }
+        public bool IsMultipliable { get { return (bool)GetValue(IsMultipliableProperty); } set { SetValue(IsMultipliableProperty, value.Box()); } }
 
         public UnitGrouping() { }
 

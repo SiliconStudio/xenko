@@ -4,9 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Assets
 {
@@ -21,44 +20,53 @@ namespace SiliconStudio.Assets
 
         public abstract bool ContainsPart(Guid id);
 
-        /// <inheritdoc />
-        public override void FixupPartReferences(bool clearMissingReferences = true)
+        public class FixPartReferenceUpgrader : AssetUpgraderBase
         {
-            base.FixupPartReferences(clearMissingReferences);
-
-            var visitor = new AssetCompositePartReferenceCollector();
-            visitor.VisitAsset(this);
-            var references = visitor.Result;
-
-            // Reverse the list, so that we can still properly update everything
-            // (i.e. if we have a[0], a[1], a[1].Test, we have to do it from back to front to be valid at each step)
-            // TODO: I don't think this is needed. Find a proper example or remove it.
-            references.Reverse();
-
-            foreach (var reference in references)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
-                var realPart = ResolvePartReference(reference.AssetPart);
-                if (realPart != reference.AssetPart)
+                var rootNode = (YamlNode)asset.Node;
+
+                var allScalarNodes = rootNode.AllNodes.OfType<YamlScalarNode>().ToList();
+
+                var nextIsId = false;
+                var inPublicUIElements = false;
+                foreach (var node in allScalarNodes)
                 {
-                    if (realPart != null || clearMissingReferences)
+                    var indexFirstSlash = node.Value.IndexOf('/');
+                    Guid targetGuid = Guid.Empty;
+                    if (indexFirstSlash == -1)
                     {
-                        reference.Path.Apply(this, MemberPathAction.ValueSet, realPart);
+                        Guid.TryParseExact(node.Value, "D", out targetGuid);
+                    }
+                    else
+                    {
+                        Guid entityGuid;
+                        if (Guid.TryParseExact(node.Value.Substring(0, indexFirstSlash), "D", out entityGuid))
+                        {
+                            Guid.TryParseExact(node.Value.Substring(indexFirstSlash + 1), "D", out targetGuid);
+                        }
+                    }
+
+                    if (targetGuid != Guid.Empty && !nextIsId && !inPublicUIElements)
+                    {
+                        node.Value = "ref!! " + targetGuid;
+                    }
+                    else
+                    {
+                        if (nextIsId && targetGuid == Guid.Empty)
+                            nextIsId = false;
+
+                        if (inPublicUIElements && node.Value == "Hierarchy")
+                            inPublicUIElements = false;
+
+                        if (node.Value.Contains("Id"))
+                            nextIsId = true;
+
+                        if (node.Value == "PublicUIElements")
+                            inPublicUIElements = true;
                     }
                 }
             }
         }
-
-        /// <summary>
-        /// Resolves the actual target of a reference to a part of this asset that is currently targeting the given <paramref name="referencedObject"/>.
-        /// </summary>
-        /// <param name="referencedObject">The object currently referenced by the part.</param>
-        /// <returns></returns>
-        /// <seealso cref="FixupPartReferences"/>
-        /// <remarks>
-        /// The <paramref name="referencedObject"/> can already be the actual target of the reference, but it can also be a proxy object,
-        /// a temporary object, or an old version of the actual object. Implementations of this methods are supposed to identify this given object
-        /// and retrieve the actual one from the asset itself to return it.
-        /// </remarks>
-        protected abstract object ResolvePartReference(object referencedObject);
     }
 }

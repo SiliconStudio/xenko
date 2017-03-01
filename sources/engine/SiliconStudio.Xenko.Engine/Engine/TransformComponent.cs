@@ -13,6 +13,12 @@ using SiliconStudio.Xenko.Engine.Processors;
 
 namespace SiliconStudio.Xenko.Engine
 {
+    // TODO: temporary, will be removed once we have better way to detect when we're visiting this collection
+    [DataContract]
+    public class TransformChildrenCollection : TrackingCollection<TransformComponent>
+    {
+    }
+
     /// <summary>
     /// Defines Position, Rotation and Scale of its <see cref="Entity"/>.
     /// </summary>
@@ -85,7 +91,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         public TransformComponent()
         {
-            var children = new TrackingCollection<TransformComponent>();
+            var children = new TransformChildrenCollection();
             children.CollectionChanged += ChildrenCollectionChanged;
 
             Children = children;
@@ -111,10 +117,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Gets the children of this <see cref="TransformComponent"/>.
         /// </summary>
-        /// <value>
-        /// The children.
-        /// </value>
-        public FastCollection<TransformComponent> Children { get; private set; }
+        public FastCollection<TransformComponent> Children { get; }
 
         /// <summary>
         /// Gets or sets the euler rotation, with XYZ order.

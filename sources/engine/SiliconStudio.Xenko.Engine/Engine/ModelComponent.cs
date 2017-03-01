@@ -149,6 +149,13 @@ namespace SiliconStudio.Xenko.Engine
         public bool IsShadowReceiver { get; set; }
 
         /// <summary>
+        /// The render group for this component.
+        /// </summary>
+        [DataMember(50)]
+        [DefaultValue(RenderGroup.Group0)]
+        public RenderGroup RenderGroup { get; set; }
+
+        /// <summary>
         /// Gets the bounding box in world space.
         /// </summary>
         /// <value>The bounding box.</value>

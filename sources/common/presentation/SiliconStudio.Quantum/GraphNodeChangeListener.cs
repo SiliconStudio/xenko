@@ -9,25 +9,22 @@ using SiliconStudio.Quantum.Contents;
 namespace SiliconStudio.Quantum
 {
     /// <summary>
-    /// An object that tracks the changes in the content of <see cref="IContentNode"/> referenced by a given root node.
+    /// An object that tracks the changes in the content of <see cref="IGraphNode"/> referenced by a given root node.
     /// A <see cref="GraphNodeChangeListener"/> will raise events on changes on any node that is either a child, or the
     /// target of a reference from the root node, recursively.
     /// </summary>
-    public class GraphNodeChangeListener : IDisposable
+    public class GraphNodeChangeListener : INotifyContentValueChange, INotifyItemChange, IDisposable
     {
-        private readonly IContentNode rootNode;
-        private readonly Func<IMemberNode, IContentNode, bool> shouldRegisterNode;
-        protected readonly HashSet<IContentNode> RegisteredNodes = new HashSet<IContentNode>();
+        private readonly IGraphNode rootNode;
+        private readonly Func<IMemberNode, bool> shouldRegisterMemberTarget;
+        private readonly Func<IGraphNode, Index, bool> shouldRegisterItemTarget;
+        protected readonly HashSet<IGraphNode> RegisteredNodes = new HashSet<IGraphNode>();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GraphNodeChangeListener"/> class.
-        /// </summary>
-        /// <param name="rootNode">The root node for which to track referenced node changes.</param>
-        /// <param name="shouldRegisterNode">A method that can indicate whether a node of the hierarchy should be registered to the listener.</param>
-        public GraphNodeChangeListener(IContentNode rootNode, Func<IMemberNode, IContentNode, bool> shouldRegisterNode = null)
+        public GraphNodeChangeListener(IGraphNode rootNode, Func<IMemberNode, bool> shouldRegisterMemberTarget = null, Func<IGraphNode, Index, bool> shouldRegisterItemTarget = null)
         {
             this.rootNode = rootNode;
-            this.shouldRegisterNode = shouldRegisterNode;
+            this.shouldRegisterMemberTarget = shouldRegisterMemberTarget;
+            this.shouldRegisterItemTarget = shouldRegisterItemTarget;
             RegisterAllNodes();
         }
 
@@ -41,6 +38,10 @@ namespace SiliconStudio.Quantum
         /// </summary>
         public event EventHandler<MemberNodeChangeEventArgs> Changed;
 
+        public event EventHandler<ItemChangeEventArgs> ItemChanging;
+
+        public event EventHandler<ItemChangeEventArgs> ItemChanged;
+
         /// <inheritdoc/>
         public void Dispose()
         {
@@ -49,31 +50,49 @@ namespace SiliconStudio.Quantum
             visitor.Visit(rootNode);
         }
 
-        protected virtual bool RegisterNode(IContentNode node)
+        protected virtual bool RegisterNode(IGraphNode node)
         {
             // A node can be registered multiple times when it is referenced via multiple paths
-            var memberNode = node as IMemberNode;
-            if (memberNode != null && RegisteredNodes.Add(node))
+            if (RegisteredNodes.Add(node))
             {
-                ((IMemberNodeInternal)memberNode).PrepareChange += ContentPrepareChange;
-                ((IMemberNodeInternal)memberNode).FinalizeChange += ContentFinalizeChange;
-                memberNode.Changing += ContentChanging;
-                memberNode.Changed += ContentChanged;
+                ((IGraphNodeInternal)node).PrepareChange += ContentPrepareChange;
+                ((IGraphNodeInternal)node).FinalizeChange += ContentFinalizeChange;
+                var memberNode = node as IMemberNode;
+                if (memberNode != null)
+                {
+                    memberNode.Changing += ContentChanging;
+                    memberNode.Changed += ContentChanged;
+                }
+                var objectNode = node as IObjectNode;
+                if (objectNode != null)
+                {
+                    objectNode.ItemChanging += OnItemChanging;
+                    objectNode.ItemChanged += OnItemChanged;
+                }
                 return true;
             }
 
             return false;
         }
 
-        protected virtual bool UnregisterNode(IContentNode node)
+        protected virtual bool UnregisterNode(IGraphNode node)
         {
-            var memberNode = node as IMemberNode;
-            if (memberNode != null && RegisteredNodes.Remove(node))
+            if (RegisteredNodes.Remove(node))
             {
-                ((IMemberNodeInternal)memberNode).PrepareChange -= ContentPrepareChange;
-                ((IMemberNodeInternal)memberNode).FinalizeChange -= ContentFinalizeChange;
-                memberNode.Changing -= ContentChanging;
-                memberNode.Changed -= ContentChanged;
+                ((IGraphNodeInternal)node).PrepareChange -= ContentPrepareChange;
+                ((IGraphNodeInternal)node).FinalizeChange -= ContentFinalizeChange;
+                var memberNode = node as IMemberNode;
+                if (memberNode != null)
+                {
+                    memberNode.Changing -= ContentChanging;
+                    memberNode.Changed -= ContentChanged;
+                }
+                var objectNode = node as IObjectNode;
+                if (objectNode != null)
+                {
+                    objectNode.ItemChanging -= OnItemChanging;
+                    objectNode.ItemChanged -= OnItemChanged;
+                }
                 return true;
             }
             return false;
@@ -83,16 +102,18 @@ namespace SiliconStudio.Quantum
         {
             var visitor = new GraphVisitorBase();
             visitor.Visiting += (node, path) => RegisterNode(node);
-            visitor.ShouldVisit = shouldRegisterNode;
+            visitor.ShouldVisitMemberTargetNode =  shouldRegisterMemberTarget;
+            visitor.ShouldVisitTargetItemNode = shouldRegisterItemTarget;
             visitor.Visit(rootNode);
         }
 
-        private void ContentPrepareChange(object sender, MemberNodeChangeEventArgs e)
+        private void ContentPrepareChange(object sender, INodeChangeEventArgs e)
         {
-            var node = e.Member;
+            var node = e.Node;
             var visitor = new GraphVisitorBase();
             visitor.Visiting += (node1, path) => UnregisterNode(node1);
-            visitor.ShouldVisit = shouldRegisterNode;
+            visitor.ShouldVisitMemberTargetNode = shouldRegisterMemberTarget;
+            visitor.ShouldVisitTargetItemNode = shouldRegisterItemTarget;
             switch (e.ChangeType)
             {
                 case ContentChangeType.ValueChange:
@@ -105,51 +126,55 @@ namespace SiliconStudio.Quantum
                 case ContentChangeType.CollectionRemove:
                     if (node.IsReference && e.OldValue != null)
                     {
-                        var removedNode = node.ItemReferences[e.Index].TargetNode;
+                        var removedNode = (node as IObjectNode)?.ItemReferences[e.Index].TargetNode;
                         if (removedNode != null)
                         {
-                            visitor.Visit(removedNode, node as MemberContent);
+                            // TODO: review this
+                            visitor.Visit(removedNode, node as MemberNode);
                         }
                     }
                     break;
             }
         }
 
-        private void ContentFinalizeChange(object sender, MemberNodeChangeEventArgs e)
+        private void ContentFinalizeChange(object sender, INodeChangeEventArgs e)
         {
             var visitor = new GraphVisitorBase();
             visitor.Visiting += (node, path) => RegisterNode(node);
-            visitor.ShouldVisit = shouldRegisterNode;
+            visitor.ShouldVisitMemberTargetNode = shouldRegisterMemberTarget;
+            visitor.ShouldVisitTargetItemNode = shouldRegisterItemTarget;
             switch (e.ChangeType)
             {
                 case ContentChangeType.ValueChange:
                 case ContentChangeType.CollectionUpdate:
                     // The changed node itself is still valid, we don't want to re-register it
                     visitor.SkipRootNode = true;
-                    visitor.Visit(e.Member);
+                    visitor.Visit(e.Node);
                     // TODO: In case of CollectionUpdate we could probably visit only the target node of the corresponding index
                     break;
                 case ContentChangeType.CollectionAdd:
-                    if (e.Member.IsReference && e.NewValue != null)
+                    if (e.Node.IsReference && e.NewValue != null)
                     {
-                        IContentNode addedNode;
+                        IGraphNode addedNode;
                         Index index;
                         if (!e.Index.IsEmpty)
                         {
                             index = e.Index;
-                            addedNode = e.Member.ItemReferences[e.Index].TargetNode;
+                            addedNode = (e.Node as IObjectNode)?.ItemReferences[e.Index].TargetNode;
                         }
                         else
                         {
-                            var reference = e.Member.ItemReferences.First(x => x.TargetNode.Retrieve() == e.NewValue);
+                            // TODO: review this
+                            var reference = (e.Node as IObjectNode)?.ItemReferences.First(x => x.TargetNode.Retrieve() == e.NewValue);
                             index = reference.Index;
                             addedNode = reference.TargetNode;
                         }
 
                         if (addedNode != null)
                         {
-                            var path = new GraphNodePath(e.Member).PushIndex(index);
-                            visitor.Visit(addedNode, e.Member as MemberContent, path);
+                            var path = new GraphNodePath(e.Node);
+                            path.PushIndex(index);
+                            visitor.Visit(addedNode, e.Node as MemberNode, path);
                         }
                     }
                     break;
@@ -164,6 +189,16 @@ namespace SiliconStudio.Quantum
         private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
         {
             Changed?.Invoke(sender, e);
+        }
+
+        private void OnItemChanging(object sender, ItemChangeEventArgs e)
+        {
+            ItemChanging?.Invoke(sender, e);
+        }
+
+        private void OnItemChanged(object sender, ItemChangeEventArgs e)
+        {
+            ItemChanged?.Invoke(sender, e);
         }
     }
 }

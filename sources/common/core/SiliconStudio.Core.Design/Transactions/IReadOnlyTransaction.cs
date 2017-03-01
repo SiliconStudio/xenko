@@ -17,5 +17,10 @@ namespace SiliconStudio.Core.Transactions
         /// Gets the operations executed during the transaction.
         /// </summary>
         IReadOnlyList<Operation> Operations { get; }
+
+        /// <summary>
+        /// Gets the transaction flags.
+        /// </summary>
+        TransactionFlags Flags { get; }
     }
 }

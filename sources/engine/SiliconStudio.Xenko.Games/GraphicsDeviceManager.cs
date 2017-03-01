@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;

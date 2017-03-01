@@ -1,7 +1,7 @@
 namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
-    /// Result of <see cref="IPropertiesProviderViewModel.ShouldExpandReference"/>.
+    /// Result of <see cref="IPropertiesProviderViewModel.ShouldConstructChildren"/>.
     /// </summary>
     public enum ExpandReferencePolicy
     {

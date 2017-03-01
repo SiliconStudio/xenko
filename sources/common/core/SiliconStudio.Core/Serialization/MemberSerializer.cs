@@ -15,12 +15,10 @@ namespace SiliconStudio.Core.Serialization
         public static readonly Dictionary<Type, string> ReverseCachedTypes = new Dictionary<Type, string>();
 
         // Holds object references during serialization, useful when same object is referenced multiple time in same serialization graph.
-        public static PropertyKey<Dictionary<object, int>> ObjectSerializeReferences = new PropertyKey<Dictionary<object, int>>("ObjectSerializeReferences", typeof(SerializerExtensions),
-            DefaultValueMetadata.Delegate(
-                delegate
-                {
-                    return new Dictionary<object, int>(ObjectReferenceEqualityComparer.Default);
-                }));
+        public static PropertyKey<Dictionary<object, int>> ObjectSerializeReferences = new PropertyKey<Dictionary<object, int>>("ObjectSerializeReferences", typeof(SerializerExtensions), DefaultValueMetadata.Delegate(delegate { return new Dictionary<object, int>(ObjectReferenceEqualityComparer.Default); }));
+
+        public static PropertyKey<Dictionary<Guid, IIdentifiable>> ExternalIdentifiables = new PropertyKey<Dictionary<Guid, IIdentifiable>>("ExternalIdentifiables", typeof(SerializerExtensions), DefaultValueMetadata.Delegate(delegate { return new Dictionary<Guid, IIdentifiable>(); }));
+
         public static PropertyKey<List<object>> ObjectDeserializeReferences = new PropertyKey<List<object>>("ObjectDeserializeReferences", typeof(SerializerExtensions), DefaultValueMetadata.Delegate(delegate { return new List<object>(); }));
 
         public static PropertyKey<Action<int, object>> ObjectDeserializeCallback = new PropertyKey<Action<int, object>>("ObjectDeserializeCallback", typeof(SerializerExtensions));

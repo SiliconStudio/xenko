@@ -26,6 +26,7 @@ namespace SiliconStudio.Core.Collections
         /// <summary>
         /// Gets the items.
         /// </summary>
+        [DataMemberIgnore]
         public T[] Items { get; private set; }
 
         private int _size;
@@ -216,11 +217,21 @@ namespace SiliconStudio.Core.Collections
         /// <param name="fastClear">if set to <c>true</c> this method only resets the count elements but doesn't clear items referenced already stored in the list.</param>
         public void Clear(bool fastClear)
         {
-            if (!fastClear && _size > 0)
+            Resize(0, fastClear);
+        }
+
+        public void Resize(int newSize, bool fastClear)
+        {
+            if (_size < newSize)
             {
-                Array.Clear(Items, 0, _size);
+                EnsureCapacity(newSize);
             }
-            _size = 0;
+            else if (!fastClear && _size - newSize > 0)
+            {
+                Array.Clear(Items, newSize, _size - newSize);
+            }
+
+            _size = newSize;
         }
 
         public void AddRange([NotNull] IEnumerable<T> collection)

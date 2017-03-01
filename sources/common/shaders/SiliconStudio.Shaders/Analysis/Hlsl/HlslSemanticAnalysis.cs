@@ -13,6 +13,7 @@ using SiliconStudio.Shaders.Parser.Hlsl;
 using SiliconStudio.Shaders.Properties;
 using SiliconStudio.Shaders.Utility;
 using ParameterQualifier = SiliconStudio.Shaders.Ast.ParameterQualifier;
+using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Shaders.Analysis.Hlsl
 {
@@ -567,33 +568,6 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
                     InitializeBuiltins();
                     builtinsInitialized = true;
                 }
-            }
-        }
-
-        /// <inheritdoc/>
-        protected override IEnumerable<IDeclaration> FindDeclarations(string nameArg)
-        {
-            string name = nameArg;
-            bool isGenericLookingForBaseDeclarator = false;
-            if (name.StartsWith("__") && name.EndsWith("_base"))
-            {
-                name = name.Substring("__".Length);
-                name = name.Substring(0, name.Length - "_base".Length);
-                isGenericLookingForBaseDeclarator = true;
-            }
-
-            // Override find declaration in order to return generic types from a generic declarator
-            foreach (var scopeDeclaration in ScopeStack)
-            {
-                foreach (var genericDecl in scopeDeclaration.FindGenerics(name))
-                {
-                    yield return new GenericDeclaration(genericDecl.Name, genericDecl.Holder, genericDecl.Index, isGenericLookingForBaseDeclarator) { Span = genericDecl.Span };
-                }
-            }
-
-            foreach (var item in base.FindDeclarations(name))
-            {
-                yield return item;
             }
         }
 
