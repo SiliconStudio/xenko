@@ -397,7 +397,7 @@ namespace SiliconStudio.Assets
             return attachedReference != null ? this.FindAsset(attachedReference) : null;
         }
 
-        internal UDirectory GetDefaultAssetFolder()
+        public UDirectory GetDefaultAssetFolder()
         {
             var sharedProfile = Profiles.FindSharedProfile();
             var folder = sharedProfile?.AssetFolders.FirstOrDefault();
