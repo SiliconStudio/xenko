@@ -57,11 +57,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
         private class MyAssetPropertyGraph : AssetCompositeHierarchyPropertyGraph<MyPartDesign, MyPart>
         {
             public MyAssetPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger) : base(container, assetItem, logger) { }
+            public override bool IsChildPartReference(IGraphNode node, Index index) => node.Type == typeof(ChildrenList);
             protected override void AddChildPartToParentPart(MyPart parentPart, MyPart childPart, int index) => Container.NodeContainer.GetNode(parentPart)[nameof(MyPart.Children)].Target.Add(childPart, new Index(index));
             protected override void RemoveChildPartFromParentPart(MyPart parentPart, MyPart childPart) => Container.NodeContainer.GetNode(parentPart)[nameof(MyPart.Children)].Target.Remove(childPart, new Index(parentPart.Children.IndexOf(childPart)));
-            public override bool IsChildPartReference(IGraphNode node, Index index)
+            protected override Guid GetIdFromChildPart(object part) => ((MyPart)part).Id;
+            protected override IEnumerable<IGraphNode> RetrieveChildPartNodes(MyPart part)
             {
-                return node.Type == typeof(ChildrenList);
+                yield return Container.NodeContainer.GetNode(part.Children);
             }
         }
 
