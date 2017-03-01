@@ -378,7 +378,7 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         [DataMemberIgnore]
-        public bool CanScaleShape { get; private set; }
+        public bool CanScaleShape { get; set; }
 
         [DataMemberIgnore]
         public Matrix PhysicsWorldTransform
