@@ -7,6 +7,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Physics
@@ -314,6 +315,24 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
+        protected override void EnsureEnabledState()
+        {
+            if (NativeCollisionObject == null) return;
+
+            if (Enabled && !Simulating)
+            {
+                Simulation.AddRigidBody(this, (CollisionFilterGroupFlags)CollisionGroup, CanCollideWith);
+                Simulating = true;
+            }
+            else if (!Enabled && Simulating)
+            {
+                Simulation.RemoveRigidBody(this);
+                Simulating = false;
+            }
+
+            DebugEntity?.EnableAll(Enabled, true);
+        }
+
         protected override void OnAttach()
         {
             MotionState = new XenkoMotionState(this);
@@ -382,7 +401,8 @@ namespace SiliconStudio.Xenko.Physics
             LinkedConstraints.Clear();
             //~Remove constraints
 
-            Simulation.RemoveRigidBody(this);
+            if(Simulating)
+                Simulation.RemoveRigidBody(this);
 
             InternalRigidBody = null;
 

@@ -272,12 +272,31 @@ namespace SiliconStudio.Xenko.Physics
         {
             if (KinematicCharacter == null) return;
 
-            Simulation.RemoveCharacter(this);
+            if(Simulating)
+                Simulation.RemoveCharacter(this);
 
             KinematicCharacter.Dispose();
             KinematicCharacter = null;
 
             base.OnDetach();
+        }
+
+        protected override void EnsureEnabledState()
+        {
+            if (NativeCollisionObject == null) return;
+
+            if (Enabled && !Simulating)
+            {
+                Simulation.AddCharacter(this, (CollisionFilterGroupFlags)CollisionGroup, CanCollideWith);
+                Simulating = true;
+            }
+            else if (!Enabled && Simulating)
+            {
+                Simulation.RemoveCharacter(this);
+                Simulating = false;
+            }
+
+            DebugEntity?.EnableAll(Enabled, true);
         }
     }
 }
