@@ -12,7 +12,7 @@ using SiliconStudio.Core.IO;
 using System.Diagnostics;
 using System.ServiceModel;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Xenko.VisualStudio.Debugging;
+using SiliconStudio.VisualStudio.Debugging;
 
 namespace SiliconStudio.BuildEngine
 {
