@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.ServiceModel;
 using System.Threading;
+using SiliconStudio.VisualStudio.Debugging;
 
 namespace SiliconStudio.ExecServer
 {
@@ -64,7 +65,7 @@ namespace SiliconStudio.ExecServer
         {
         }
 
-        public int Run(string currentDirectory, Dictionary<string, string> environmentVariables, string[] args, bool shadowCache)
+        public int Run(string currentDirectory, Dictionary<string, string> environmentVariables, string[] args, bool shadowCache, int? debuggerProcessId)
         {
             bool lockTaken = false;
             try
@@ -80,6 +81,14 @@ namespace SiliconStudio.ExecServer
                 Console.WriteLine("Run Received {0}", string.Join(" ", args));
 
                 upTime.Restart();
+
+                if (debuggerProcessId.HasValue && !Debugger.IsAttached)
+                {
+                    using (var debugger = VisualStudioDebugger.GetByProcess(debuggerProcessId.Value))
+                    {
+                        debugger?.Attach();
+                    }
+                }
 
                 var logger = OperationContext.Current.GetCallbackChannel<IServerLogger>();
                 var result = shadowManager.Run(currentDirectory, environmentVariables, args, shadowCache, logger);

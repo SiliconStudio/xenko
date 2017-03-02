@@ -12,6 +12,7 @@ using System.ServiceModel;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using SiliconStudio.VisualStudio.Debugging;
 using Binding = System.ServiceModel.Channels.Binding;
 
 namespace SiliconStudio.ExecServer
@@ -55,7 +56,7 @@ namespace SiliconStudio.ExecServer
                 args.RemoveAt(0);
                 var executablePath = ExtractPath(args, "executable");
                 var execServerApp = new ExecServerRemote(executablePath, false, false, true);
-                int result = execServerApp.Run(Environment.CurrentDirectory, new Dictionary<string, string>(), args.ToArray(), false);
+                int result = execServerApp.Run(Environment.CurrentDirectory, new Dictionary<string, string>(), args.ToArray(), false, null);
                 return result;
             }
 
@@ -103,7 +104,16 @@ namespace SiliconStudio.ExecServer
                 foreach (DictionaryEntry environmentVariable in Environment.GetEnvironmentVariables())
                     environmentVariables.Add((string)environmentVariable.Key, (string)environmentVariable.Value);
 
-                var result = RunClient(executablePath, workingDirectory, environmentVariables, args, useShadowCache);
+                int? debuggerProcessId = null;
+                using (var debugger = VisualStudioDebugger.GetAttached())
+                {
+                    if (debugger != null)
+                    {
+                        debuggerProcessId = debugger.ProcessId;
+                    }
+                }
+
+                var result = RunClient(executablePath, workingDirectory, environmentVariables, args, useShadowCache, debuggerProcessId);
                 return result;
             }
         }
@@ -166,7 +176,7 @@ namespace SiliconStudio.ExecServer
         /// <param name="args">The arguments.</param>
         /// <param name="shadowCache">If [true], use shadow cache.</param>
         /// <returns>Return status.</returns>
-        private int RunClient(string executablePath, string workingDirectory, Dictionary<string, string> environmentVariables, List<string> args, bool shadowCache)
+        private int RunClient(string executablePath, string workingDirectory, Dictionary<string, string> environmentVariables, List<string> args, bool shadowCache, int? debuggerProcessId)
         {
             var binding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None)
             {
@@ -211,7 +221,7 @@ namespace SiliconStudio.ExecServer
                             //Console.WriteLine("{0}: ExecServer - running start", DateTime.Now);
                             try
                             {
-                                var result = service.Run(workingDirectory, environmentVariables, args.ToArray(), shadowCache);
+                                var result = service.Run(workingDirectory, environmentVariables, args.ToArray(), shadowCache, debuggerProcessId);
                                 if (result == ExecServerRemote.BusyReturnCode)
                                 {
                                     // Try next server
