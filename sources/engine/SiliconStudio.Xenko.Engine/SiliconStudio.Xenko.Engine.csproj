@@ -180,6 +180,12 @@
     <Compile Include="Profiling\GameProfilerSystem.cs" />
     <Compile Include="Profiling\GcProfiling.cs" />
     <Compile Include="Rendering\ActiveRenderStage.cs" />
+    <Compile Include="Rendering\Background\BackgroundShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>BackgroundShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\BackToFrontSortMode.cs" />
     <Compile Include="Rendering\Compositing\ClearRenderer.cs" />
     <Compile Include="Rendering\Compositing\DefaultRenderTargets.cs" />
@@ -310,6 +316,10 @@
     <Compile Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightRamp.cs" />
+    <None Include="Rendering\Background\BackgroundShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>BackgroundShader.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Compositing\DefaultGraphicsCompositorLevel10.xkgfxcomp" />
     <None Include="Rendering\Compositing\DefaultGraphicsCompositorLevel9.xkgfxcomp" />
     <None Include="Rendering\Images\Dither\Dither.xksl">

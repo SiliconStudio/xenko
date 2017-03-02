@@ -200,11 +200,6 @@
     <Compile Include="SDL\FormWindowState.cs" />
     <Compile Include="SDL\SDLMessageLoop.cs" />
     <Compile Include="SDL\Window.cs" />
-    <Compile Include="Shaders.Bytecodes\BackgroundShader.bytecode.Direct3D11.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\BackgroundShader.bytecode.OpenGL.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\BackgroundShader.bytecode.OpenGLES.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\BackgroundShader.bytecode.Vulkan.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\BackgroundShader.Extensions.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.Null.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.Vulkan.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
@@ -233,12 +228,6 @@
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
-    <Compile Include="Shaders\BackgroundShader.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>BackgroundShader.xksl</DependentUpon>
-    </Compile>
     <Compile Include="Shaders\ColorUtility.cs">
       <DependentUpon>ColorUtility.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -607,10 +596,6 @@
     <None Include="Shaders.Bytecodes\CompileShaders.cmd" />
     <None Include="Shaders.Bytecodes\Graphics.xkpkg" />
     <None Include="Shaders.Bytecodes\Shaders.xkeffectlog" />
-    <None Include="Shaders\BackgroundShader.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>BackgroundShader.cs</LastGenOutput>
-    </None>
     <None Include="Shaders\SignedDistanceFieldFontShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SignedDistanceFieldFontShader.cs</LastGenOutput>
