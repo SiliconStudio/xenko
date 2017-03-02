@@ -45,6 +45,7 @@
     <Compile Include="..\SiliconStudio.Assets.Tests\Helpers\IdentifierGenerator.cs">
       <Link>Helpers\IdentifierGenerator.cs</Link>
     </Compile>
+    <Compile Include="Helpers\AssetHierarchyHelper.cs" />
     <Compile Include="Helpers\AssetTestContainer.cs" />
     <Compile Include="Helpers\DeriveAssetTest.cs" />
     <Compile Include="Module.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="TestArchetypesAdvanced.cs" />
     <Compile Include="TestArchetypesBasic.cs" />
     <Compile Include="TestAssetCompositeHierarchy.cs" />
+    <Compile Include="TestAssetCompositeHierarchyBases.cs" />
     <Compile Include="TestAssetPropertyGraph.cs" />
     <Compile Include="TestCollectionUpdates.cs" />
     <Compile Include="TestObjectReferenceGraph.cs" />

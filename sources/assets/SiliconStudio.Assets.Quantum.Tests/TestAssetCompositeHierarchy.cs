@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using SiliconStudio.Assets.Quantum.Tests.Helpers;
 using SiliconStudio.Assets.Tests.Helpers;
-using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Assets.Quantum.Tests
 {
@@ -16,8 +14,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestSimpleCloneSubHierarchy()
         {
-            var graph = BuildAssetAndGraph(2, 2, 2);
-            Debug.Write(PrintHierarchy(graph.AssetHierarchy));
+            var graph = AssetHierarchyHelper.BuildAssetAndGraph(2, 2, 2);
+            Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.AssetHierarchy));
             var originalRoot = graph.AssetHierarchy.Hierarchy.Parts[graph.AssetHierarchy.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
             var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.None, out remapping);
@@ -47,8 +45,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestCloneSubHierarchyWithInternalReference()
         {
-            var graph = BuildAssetAndGraph(2, 2, 2, x => x.Parts[GuidGenerator.Get(5)].Part.MyReference = x.Parts[GuidGenerator.Get(6)].Part);
-            Debug.Write(PrintHierarchy(graph.AssetHierarchy));
+            var graph = AssetHierarchyHelper.BuildAssetAndGraph(2, 2, 2, x => x.Parts[GuidGenerator.Get(5)].Part.MyReference = x.Parts[GuidGenerator.Get(6)].Part);
+            Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.AssetHierarchy));
             var originalRoot = graph.AssetHierarchy.Hierarchy.Parts[graph.AssetHierarchy.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
             var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.None, out remapping);
@@ -79,8 +77,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestCloneSubHierarchyWithExternalReferences()
         {
-            var graph = BuildAssetAndGraph(2, 2, 2, x => x.Parts[GuidGenerator.Get(5)].Part.MyReferences = new List<MyPart> { x.Parts[GuidGenerator.Get(2)].Part });
-            Debug.Write(PrintHierarchy(graph.AssetHierarchy));
+            var graph = AssetHierarchyHelper.BuildAssetAndGraph(2, 2, 2, x => x.Parts[GuidGenerator.Get(5)].Part.MyReferences = new List<Types.MyPart> { x.Parts[GuidGenerator.Get(2)].Part });
+            Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.AssetHierarchy));
             var originalRoot = graph.AssetHierarchy.Hierarchy.Parts[graph.AssetHierarchy.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
             var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.None, out remapping);
@@ -111,8 +109,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestSimpleCloneSubHierarchyWithCleanExternalReferences()
         {
-            var graph = BuildAssetAndGraph(2, 2, 2);
-            Debug.Write(PrintHierarchy(graph.AssetHierarchy));
+            var graph = AssetHierarchyHelper.BuildAssetAndGraph(2, 2, 2);
+            Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.AssetHierarchy));
             var originalRoot = graph.AssetHierarchy.Hierarchy.Parts[graph.AssetHierarchy.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
             var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
@@ -142,8 +140,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestCloneSubHierarchyWithInternalReferenceWithCleanExternalReferences()
         {
-            var graph = BuildAssetAndGraph(2, 2, 2, x => x.Parts[GuidGenerator.Get(5)].Part.MyReference = x.Parts[GuidGenerator.Get(6)].Part);
-            Debug.Write(PrintHierarchy(graph.AssetHierarchy));
+            var graph = AssetHierarchyHelper.BuildAssetAndGraph(2, 2, 2, x => x.Parts[GuidGenerator.Get(5)].Part.MyReference = x.Parts[GuidGenerator.Get(6)].Part);
+            Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.AssetHierarchy));
             var originalRoot = graph.AssetHierarchy.Hierarchy.Parts[graph.AssetHierarchy.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
             var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
@@ -174,8 +172,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestCloneSubHierarchyWithExternalReferencesWithCleanExternalReferences()
         {
-            var graph = BuildAssetAndGraph(2, 2, 2, x => x.Parts[GuidGenerator.Get(5)].Part.MyReferences = new List<MyPart> { x.Parts[GuidGenerator.Get(2)].Part });
-            Debug.Write(PrintHierarchy(graph.AssetHierarchy));
+            var graph = AssetHierarchyHelper.BuildAssetAndGraph(2, 2, 2, x => x.Parts[GuidGenerator.Get(5)].Part.MyReferences = new List<Types.MyPart> { x.Parts[GuidGenerator.Get(2)].Part });
+            Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.AssetHierarchy));
             var originalRoot = graph.AssetHierarchy.Hierarchy.Parts[graph.AssetHierarchy.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
             var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
@@ -201,62 +199,6 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(cloneRoot.Part, cloneRoot.Part.Children[0].Parent);
             Assert.AreEqual(cloneRoot.Part, cloneRoot.Part.Children[1].Parent);
             Assert.AreEqual(null, cloneRoot.Part.Children[0].MyReferences[0]);
-        }
-
-        private static string PrintHierarchy(AssetCompositeHierarchy<MyPartDesign, MyPart> asset)
-        {
-            var stack = new Stack<Tuple<MyPartDesign, int>>();
-            asset.Hierarchy.RootPartIds.Select(x => asset.Hierarchy.Parts[x]).Reverse().ForEach(x => stack.Push(Tuple.Create(x, 0)));
-            var sb = new StringBuilder();
-            while (stack.Count > 0)
-            {
-                var current = stack.Pop();
-                sb.Append("".PadLeft(current.Item2 * 2));
-                sb.AppendLine($"- {current.Item1.Part.Name} [{current.Item1.Part.Id}]");
-                foreach (var child in asset.EnumerateChildPartDesigns(current.Item1, asset.Hierarchy, false).Reverse())
-                {
-                    stack.Push(Tuple.Create(child, current.Item2 + 1));
-                }
-            }
-            var str = sb.ToString();
-            return str;
-        }
-
-        private static MyAssetPropertyGraph BuildAssetAndGraph(int rootCount, int depth, int childPerPart, Action<AssetCompositeHierarchyData<MyPartDesign, MyPart>> initializeProperties = null)
-        {
-            var container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } });
-            var asset = BuildHierarchy(rootCount,  depth,  childPerPart);
-            var assetItem = new AssetItem("MyAsset", asset);
-            initializeProperties?.Invoke(asset.Hierarchy);
-            var graph = (MyAssetPropertyGraph)AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem, null);
-            return graph;
-        }
-
-        private static MyAssetHierarchy BuildHierarchy(int rootCount, int depth, int childPerPart)
-        {
-            var asset = new MyAssetHierarchy();
-            var guid = 0;
-            for (var i = 0; i < rootCount; ++i)
-            {
-                var rootPart = BuildPart(asset, $"Part{i+1}", depth - 1, childPerPart, ref guid);
-                asset.Hierarchy.RootPartIds.Add(rootPart.Part.Id);
-            }
-            return asset;
-        }
-
-        private static MyPartDesign BuildPart(MyAssetHierarchy asset, string name, int depth, int childPerPart, ref int guidCount)
-        {
-            var part = new MyPartDesign { Part = new MyPart { Id = GuidGenerator.Get(++guidCount), Name = name } };
-            asset.Hierarchy.Parts.Add(part);
-            if (depth <= 0)
-                return part;
-
-            for (var i = 0; i < childPerPart; ++i)
-            {
-                var child = BuildPart(asset, name + $"-{i + 1}", depth - 1, childPerPart, ref guidCount);
-                part.Part.AddChild(child.Part);
-            }
-            return part;
         }
     }
 }

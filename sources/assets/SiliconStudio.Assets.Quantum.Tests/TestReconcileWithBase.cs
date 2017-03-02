@@ -29,14 +29,14 @@ Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 Tags: []
 MyString: MyDerivedString
 ";
-            var context = DeriveAssetTest<Types.MyAsset1>.LoadFromYaml(primitiveMemberBaseYaml, primitiveMemberOverridenYaml);
+            var context = DeriveAssetTest<Types.MyAsset1, Types.MyAssetBasePropertyGraph>.LoadFromYaml(primitiveMemberBaseYaml, primitiveMemberOverridenYaml);
             Assert.AreEqual("MyBaseString", context.BaseAsset.MyString);
             Assert.AreEqual("MyDerivedString", context.DerivedAsset.MyString);
             context.DerivedGraph.ReconcileWithBase();
             Assert.AreEqual("MyBaseString", context.BaseAsset.MyString);
             Assert.AreEqual("MyDerivedString", context.DerivedAsset.MyString);
 
-            context = DeriveAssetTest<Types.MyAsset1>.LoadFromYaml(primitiveMemberBaseYaml, primitiveMemberToReconcileYaml);
+            context = DeriveAssetTest<Types.MyAsset1, Types.MyAssetBasePropertyGraph>.LoadFromYaml(primitiveMemberBaseYaml, primitiveMemberToReconcileYaml);
             Assert.AreEqual("MyBaseString", context.BaseAsset.MyString);
             Assert.AreEqual("MyDerivedString", context.DerivedAsset.MyString);
             context.DerivedGraph.ReconcileWithBase();
@@ -66,7 +66,7 @@ MyStrings:
     0a0000000a0000000a0000000a000000*: MyDerivedString
     14000000140000001400000014000000: MyBaseString
 ";
-            var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
@@ -122,7 +122,7 @@ MyStrings:
     1a0000001a0000001a0000001a000000: String1
     14000000140000001400000014000000: String2
 ";
-            var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
@@ -179,7 +179,7 @@ MyStrings:
     0a0000000a0000000a0000000a000000: String1
     14000000140000001400000014000000: String2
 ";
-            var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             Assert.AreEqual(3, context.BaseAsset.MyStrings.Count);
@@ -242,7 +242,7 @@ MyStrings:
     24000000240000002400000024000000: String2
     14000000140000001400000014000000: String3
 ";
-            var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
@@ -301,7 +301,7 @@ MyStrings:
     24000000240000002400000024000000: String2
     14000000140000001400000014000000: ~(Deleted)
 ";
-            var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
@@ -354,7 +354,7 @@ MyDictionary:
     0a0000000a0000000a0000000a000000*~Key1: MyDerivedString
     14000000140000001400000014000000~Key2: MyBaseString
 ";
-            var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
@@ -407,7 +407,7 @@ MyDictionary:
     0a0000000a0000000a0000000a000000~Key1: String1
     14000000140000001400000014000000~Key2: String2
 ";
-            var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(3, context.BaseAsset.MyDictionary.Count);
@@ -465,7 +465,7 @@ MyDictionary:
     0a0000000a0000000a0000000a000000~Key1: String1
     15000000150000001500000015000000*~Key2: String3
 ";
-            var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
@@ -519,7 +519,7 @@ MyDictionary:
     24000000240000002400000024000000~Key2: String2
     14000000140000001400000014000000~Key3: String3
 ";
-            var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
@@ -574,7 +574,7 @@ MyDictionary:
     24000000240000002400000024000000~Key3: String2
     14000000140000001400000014000000~: ~(Deleted)
 ";
-            var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
@@ -631,7 +631,7 @@ MyDictionary:
     14000000140000001400000014000000*~Key3: MyDerivedString
     34000000340000003400000034000000~Key4*: MyDerivedString
 ";
-            var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(4, context.BaseAsset.MyDictionary.Count);

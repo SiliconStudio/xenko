@@ -7,8 +7,6 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
 {
     public class AssetTestContainer
     {
-        private readonly LoggerResult logger = new LoggerResult();
-
         public AssetTestContainer(AssetPropertyGraphContainer container, Asset asset)
         {
             Container = container;
@@ -19,15 +17,6 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
 
         public AssetItem AssetItem { get; }
 
-        public MyAssetBasePropertyGraph Graph { get; private set; }
-
-        public void BuildGraph()
-        {
-            var baseGraph = AssetQuantumRegistry.ConstructPropertyGraph(Container, AssetItem, logger);
-            Container.RegisterGraph(baseGraph);
-            Assert.IsInstanceOf<MyAssetBasePropertyGraph>(baseGraph);
-            Graph = (MyAssetBasePropertyGraph)baseGraph;
-        }
 
         [NotNull]
         public static Stream ToStream(string str)
@@ -41,33 +30,45 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
         }
     }
 
-    public class AssetTestContainer<T> : AssetTestContainer where T : Asset
+    public class AssetTestContainer<TAsset, TAssetPropertyGraph> : AssetTestContainer where TAsset : Asset where TAssetPropertyGraph : AssetPropertyGraph
     {
-        public AssetTestContainer(AssetPropertyGraphContainer container, T asset)
+        private readonly LoggerResult logger = new LoggerResult();
+
+        public AssetTestContainer(AssetPropertyGraphContainer container, TAsset asset)
             : base(container, asset)
         {
         }
 
-        public AssetTestContainer(T asset)
+        public AssetTestContainer(TAsset asset)
             : base(new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } }), asset)
         {
         }
 
-        public T Asset => (T)AssetItem.Asset;
+        public TAsset Asset => (TAsset)AssetItem.Asset;
 
-        public AssetTestContainer<T> DeriveAsset()
+        public TAssetPropertyGraph Graph { get; private set; }
+
+        public void BuildGraph()
         {
-            var derivedAsset = (T)Asset.CreateDerivedAsset("MyAsset");
-            var result = new AssetTestContainer<T>(Container, derivedAsset);
+            var baseGraph = AssetQuantumRegistry.ConstructPropertyGraph(Container, AssetItem, logger);
+            Container.RegisterGraph(baseGraph);
+            Assert.IsInstanceOf<TAssetPropertyGraph>(baseGraph);
+            Graph = (TAssetPropertyGraph)baseGraph;
+        }
+
+        public AssetTestContainer<TAsset, TAssetPropertyGraph> DeriveAsset()
+        {
+            var derivedAsset = (TAsset)Asset.CreateDerivedAsset("MyAsset");
+            var result = new AssetTestContainer<TAsset, TAssetPropertyGraph>(Container, derivedAsset);
             result.BuildGraph();
             return result;
         }
 
-        public static AssetTestContainer<T> LoadFromYaml(string yaml)
+        public static AssetTestContainer<TAsset, TAssetPropertyGraph> LoadFromYaml(string yaml)
         {
-            var asset = AssetFileSerializer.Load<T>(ToStream(yaml), $"MyAsset{Types.FileExtension}");
+            var asset = AssetFileSerializer.Load<TAsset>(ToStream(yaml), $"MyAsset{Types.FileExtension}");
             var graphContainer = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } });
-            var assetContainer = new AssetTestContainer<T>(graphContainer, asset.Asset);
+            var assetContainer = new AssetTestContainer<TAsset, TAssetPropertyGraph>(graphContainer, asset.Asset);
             asset.YamlMetadata.CopyInto(assetContainer.AssetItem.YamlMetadata);
             assetContainer.BuildGraph();
             return assetContainer;

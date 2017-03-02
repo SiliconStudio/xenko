@@ -6,25 +6,6 @@ using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum.Tests
 {
-    [AssetPropertyGraph(typeof(Types.MyAssetWithRef2))]
-    public class AssetWithRefPropertyGraph2 : MyAssetBasePropertyGraph
-    {
-        public AssetWithRefPropertyGraph2(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
-            : base(container, assetItem, logger)
-        {
-        }
-
-        public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
-        {
-            if ((targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef2.Reference))
-                return true;
-            if ((targetNode as IObjectNode)?.Retrieve() == ((Types.MyAssetWithRef2)Asset).References)
-                return true;
-
-            return false;
-        }
-    }
-
     [TestFixture]
     public class TestObjectReferenceGraph
     {
@@ -33,7 +14,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         {
             var obj = new Types.MyReferenceable { Id = GuidGenerator.Get(2), Value = "MyInstance" };
             var asset = new Types.MyAssetWithRef2 { NonReference = obj, Reference = obj };
-            var context = DeriveAssetTest<Types.MyAssetWithRef2>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAssetWithRef2, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             Assert.AreEqual(Types.MyAssetWithRef2.MemberCount, context.BaseGraph.RootNode.Members.Count);
             Assert.True(context.BaseGraph.RootNode[nameof(Types.MyAssetWithRef2.NonReference)].IsReference);
             Assert.AreEqual(obj, context.BaseGraph.RootNode[nameof(Types.MyAssetWithRef2.NonReference)].Target.Retrieve());
@@ -52,7 +33,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         {
             var obj = new Types.MyReferenceable { Id = GuidGenerator.Get(2), Value = "MyInstance" };
             var asset = new Types.MyAssetWithRef2 { NonReference = obj, Reference = obj };
-            var context = DeriveAssetTest<Types.MyAssetWithRef2>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAssetWithRef2, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             Assert.AreEqual(Types.MyAssetWithRef2.MemberCount, context.BaseGraph.RootNode.Members.Count);
             Assert.True(context.BaseGraph.RootNode[nameof(Types.MyAssetWithRef2.NonReference)].IsReference);
             Assert.AreEqual(obj, context.BaseGraph.RootNode[nameof(Types.MyAssetWithRef2.NonReference)].Target.Retrieve());
@@ -72,7 +53,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         {
             var obj = new Types.MyReferenceable { Id = GuidGenerator.Get(2), Value = "MyInstance" };
             var asset = new Types.MyAssetWithRef2 { NonReference = obj, References = { obj } };
-            var context = DeriveAssetTest<Types.MyAssetWithRef2>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAssetWithRef2, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             Assert.AreEqual(Types.MyAssetWithRef2.MemberCount, context.BaseGraph.RootNode.Members.Count);
             Assert.True(context.BaseGraph.RootNode[nameof(Types.MyAssetWithRef2.NonReference)].IsReference);
             Assert.AreEqual(obj, context.BaseGraph.RootNode[nameof(Types.MyAssetWithRef2.NonReference)].Target.Retrieve());

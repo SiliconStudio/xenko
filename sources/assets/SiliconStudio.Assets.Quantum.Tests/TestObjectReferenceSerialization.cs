@@ -1,31 +1,13 @@
-using System;
 using System.IO;
 using NUnit.Framework;
 using SiliconStudio.Assets.Quantum.Tests.Helpers;
 using SiliconStudio.Assets.Tests.Helpers;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Quantum;
 
 // ReSharper disable ConvertToLambdaExpression
 
 namespace SiliconStudio.Assets.Quantum.Tests
 {
-    [AssetPropertyGraph(typeof(Types.MyAssetWithRef))]
-    public class AssetWithRefPropertyGraph : MyAssetBasePropertyGraph
-    {
-        public AssetWithRefPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
-            : base(container, assetItem, logger)
-        {
-        }
-
-        public static Func<IGraphNode, Index, bool> IsObjectReferenceFunc { get; set; }
-
-        public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
-        {
-            return IsObjectReferenceFunc?.Invoke(targetNode, index) ?? base.IsObjectReference(targetNode, index, value);
-        }
-    }
-
     [TestFixture]
     public class TestObjectReferenceSerialization
     {
@@ -61,17 +43,17 @@ MyNonIdObjects: []
         [Test]
         public void TestSimpleReference()
         {
-            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) =>
+            Types.AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) =>
             {
                 return (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
             };
             var obj = new Types.MyReferenceable { Id = GuidGenerator.Get(2), Value = "MyInstance" };
             var asset = new Types.MyAssetWithRef { MyObject1 = obj, MyObject2 = obj };
-            var context = new AssetTestContainer<Types.MyAssetWithRef>(asset);
+            var context = new AssetTestContainer<Types.MyAssetWithRef, Types.MyAssetBasePropertyGraph>(asset);
             context.BuildGraph();
             SerializeAndCompare(context.AssetItem, context.Graph, SimpleReferenceYaml, false);
 
-            context = AssetTestContainer<Types.MyAssetWithRef>.LoadFromYaml(SimpleReferenceYaml);
+            context = AssetTestContainer<Types.MyAssetWithRef, Types.MyAssetBasePropertyGraph>.LoadFromYaml(SimpleReferenceYaml);
             Assert.AreEqual(context.Asset.MyObject1, context.Asset.MyObject2);
             Assert.AreEqual(GuidGenerator.Get(2), context.Asset.MyObject1.Id);
         }

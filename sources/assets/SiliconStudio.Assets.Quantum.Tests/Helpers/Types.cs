@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
@@ -159,79 +160,120 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
             public int Number { get; set; }
         }
 
-    }
-
-    // TODO: we don't want to have to do this to detect children!
-    [DataContract]
-    public class ChildrenList : List<MyPart> { }
-
-    [DataContract("MyPart")]
-    public class MyPart : IIdentifiable
-    {
-        [NonOverridable]
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public MyPart Parent { get; set; }
-        public MyPart MyReference { get; set; }
-        public List<MyPart> MyReferences { get; set; }
-        public List<MyPart> Children { get; } = new List<MyPart>();
-        public void AddChild([NotNull] MyPart child) { Children.Add(child); child.Parent = this; }
-        public override string ToString() => $"{Name} [{Id}]";
-    }
-
-    [DataContract("MyPartDesign")]
-    public class MyPartDesign : IAssetPartDesign<MyPart>
-    {
-        public BasePart Base { get; set; }
-        // ReSharper disable once NotNullMemberIsNotInitialized
-        public MyPart Part { get; set; }
-        public override string ToString() => $"Design: {Part.Name} [{Part.Id}]";
-    }
-
-    public class MyAssetHierarchy : AssetCompositeHierarchy<MyPartDesign, MyPart>
-    {
-        public override MyPart GetParent(MyPart part) => part.Parent;
-        public override int IndexOf(MyPart part) => GetParent(part)?.Children.IndexOf(part) ?? Hierarchy.RootPartIds.IndexOf(part.Id);
-        public override MyPart GetChild(MyPart part, int index) => part.Children[index];
-        public override int GetChildCount(MyPart part) => part.Children.Count;
-        public override IEnumerable<MyPart> EnumerateChildParts(MyPart part, bool isRecursive) => isRecursive ? part.Children.DepthFirst(t => t.Children) : part.Children;
-    }
-
-    [AssetPropertyGraph(typeof(MyAssetHierarchy))]
-    // ReSharper disable once ClassNeverInstantiated.Local
-    public class MyAssetPropertyGraph : AssetCompositeHierarchyPropertyGraph<MyPartDesign, MyPart>
-    {
-        public MyAssetPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger) : base(container, assetItem, logger) { }
-        public override bool IsChildPartReference(IGraphNode node, Index index) => node.Type == typeof(ChildrenList);
-        protected override void AddChildPartToParentPart(MyPart parentPart, MyPart childPart, int index) => Container.NodeContainer.GetNode(parentPart)[nameof(MyPart.Children)].Target.Add(childPart, new Index(index));
-        protected override void RemoveChildPartFromParentPart(MyPart parentPart, MyPart childPart) => Container.NodeContainer.GetNode(parentPart)[nameof(MyPart.Children)].Target.Remove(childPart, new Index(parentPart.Children.IndexOf(childPart)));
-        protected override Guid GetIdFromChildPart(object part) => ((MyPart)part).Id;
-        protected override IEnumerable<IGraphNode> RetrieveChildPartNodes(MyPart part)
+        [AssetPropertyGraph(typeof(MyAssetWithRef))]
+        public class AssetWithRefPropertyGraph : MyAssetBasePropertyGraph
         {
-            yield return Container.NodeContainer.GetNode(part.Children);
-        }
-    }
+            public AssetWithRefPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
+                : base(container, assetItem, logger)
+            {
+            }
 
+            public static Func<IGraphNode, Index, bool> IsObjectReferenceFunc { get; set; }
 
-    [AssetPropertyGraph(typeof(Types.MyAssetBase))]
-    public class MyAssetBasePropertyGraph : AssetPropertyGraph
-    {
-        private readonly Dictionary<IGraphNode, IGraphNode> customBases = new Dictionary<IGraphNode, IGraphNode>();
-
-        public MyAssetBasePropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
-            : base(container, assetItem, logger)
-        {
+            public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
+            {
+                return IsObjectReferenceFunc?.Invoke(targetNode, index) ?? base.IsObjectReference(targetNode, index, value);
+            }
         }
 
-        public void RegisterCustomBaseLink(IGraphNode node, IGraphNode baseNode)
+        [AssetPropertyGraph(typeof(MyAssetWithRef2))]
+        public class AssetWithRefPropertyGraph2 : MyAssetBasePropertyGraph
         {
-            customBases.Add(node, baseNode);
+            public AssetWithRefPropertyGraph2(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
+                : base(container, assetItem, logger)
+            {
+            }
+
+            public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
+            {
+                if ((targetNode as IMemberNode)?.Name == nameof(MyAssetWithRef2.Reference))
+                    return true;
+                if ((targetNode as IObjectNode)?.Retrieve() == ((MyAssetWithRef2)Asset).References)
+                    return true;
+
+                return false;
+            }
         }
 
-        public override IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
+        // TODO: we don't want to have to do this to detect children!
+        [DataContract]
+        public class ChildrenList : List<MyPart> { }
+
+        [DataContract("MyPart")]
+        public class MyPart : IIdentifiable
         {
-            IGraphNode baseNode;
-            return customBases.TryGetValue(sourceNode, out baseNode) ? baseNode : base.FindTarget(sourceNode, target);
+            [NonOverridable]
+            public Guid Id { get; set; }
+            public string Name { get; set; }
+            public MyPart Parent { get; set; }
+            public MyPart MyReference { get; set; }
+            public List<MyPart> MyReferences { get; set; }
+            public List<MyPart> Children { get; } = new List<MyPart>();
+            public void AddChild([NotNull] MyPart child) { Children.Add(child); child.Parent = this; }
+            public override string ToString() => $"{Name} [{Id}]";
+        }
+
+        [DataContract("MyPartDesign")]
+        public class MyPartDesign : IAssetPartDesign<MyPart>
+        {
+            public BasePart Base { get; set; }
+            // ReSharper disable once NotNullMemberIsNotInitialized
+            public MyPart Part { get; set; }
+            public override string ToString() => $"Design: {Part.Name} [{Part.Id}]";
+        }
+
+        public class MyAssetHierarchy : AssetCompositeHierarchy<MyPartDesign, MyPart>
+        {
+            public override MyPart GetParent(MyPart part) => part.Parent;
+            public override int IndexOf(MyPart part) => GetParent(part)?.Children.IndexOf(part) ?? Hierarchy.RootPartIds.IndexOf(part.Id);
+            public override MyPart GetChild(MyPart part, int index) => part.Children[index];
+            public override int GetChildCount(MyPart part) => part.Children.Count;
+            public override IEnumerable<MyPart> EnumerateChildParts(MyPart part, bool isRecursive) => isRecursive ? part.Children.DepthFirst(t => t.Children) : part.Children;
+            public AssetCompositeHierarchyData<MyPartDesign, MyPart> CreatePartInstances()
+            {
+                Dictionary<Guid, Guid> idRemapping;
+                var instance = (MyAssetHierarchy)CreateDerivedAsset("", out idRemapping);
+                var instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
+                return instance.Hierarchy;
+            }
+        }
+
+        [AssetPropertyGraph(typeof(MyAssetHierarchy))]
+        // ReSharper disable once ClassNeverInstantiated.Local
+        public class MyAssetHierarchyPropertyGraph : AssetCompositeHierarchyPropertyGraph<MyPartDesign, MyPart>
+        {
+            public MyAssetHierarchyPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger) : base(container, assetItem, logger) { }
+            public override bool IsChildPartReference(IGraphNode node, Index index) => node.Type == typeof(ChildrenList);
+            protected override void AddChildPartToParentPart(MyPart parentPart, MyPart childPart, int index) => Container.NodeContainer.GetNode(parentPart)[nameof(MyPart.Children)].Target.Add(childPart, new Index(index));
+            protected override void RemoveChildPartFromParentPart(MyPart parentPart, MyPart childPart) => Container.NodeContainer.GetNode(parentPart)[nameof(MyPart.Children)].Target.Remove(childPart, new Index(parentPart.Children.IndexOf(childPart)));
+            protected override Guid GetIdFromChildPart(object part) => ((MyPart)part).Id;
+            protected override IEnumerable<IGraphNode> RetrieveChildPartNodes(MyPart part)
+            {
+                yield return Container.NodeContainer.GetNode(part.Children);
+            }
+        }
+
+
+        [AssetPropertyGraph(typeof(MyAssetBase))]
+        public class MyAssetBasePropertyGraph : AssetPropertyGraph
+        {
+            private readonly Dictionary<IGraphNode, IGraphNode> customBases = new Dictionary<IGraphNode, IGraphNode>();
+
+            public MyAssetBasePropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
+                : base(container, assetItem, logger)
+            {
+            }
+
+            public void RegisterCustomBaseLink(IGraphNode node, IGraphNode baseNode)
+            {
+                customBases.Add(node, baseNode);
+            }
+
+            public override IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
+            {
+                IGraphNode baseNode;
+                return customBases.TryGetValue(sourceNode, out baseNode) ? baseNode : base.FindTarget(sourceNode, target);
+            }
         }
     }
 }

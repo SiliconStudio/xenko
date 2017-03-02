@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public void TestSimpleDictionaryAddWithCollision()
         {
             var asset = new Types.MyAsset3 { MyDictionary = { { "Key1", "String1" }, { "Key2", "String2" } } };
-            var context = DeriveAssetTest<Types.MyAsset3>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
@@ -56,7 +56,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public void TestSimpleCollectionRemoveDeleted()
         {
             var asset = new Types.MyAsset2 { MyStrings = { "String1", "String2", "String3", "String4" } };
-            var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
@@ -98,7 +98,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public void TestSimpleDictionaryRemoveDeleted()
         {
             var asset = new Types.MyAsset3 { MyDictionary = { { "Key1", "String1" }, { "Key2", "String2" }, { "Key3", "String3" }, { "Key4", "String4" } } };
-            var context = DeriveAssetTest<Types.MyAsset3>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
@@ -140,7 +140,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public void TestSimpleCollectionUpdateDeleted()
         {
             var asset = new Types.MyAsset2 { MyStrings = { "String1", "String2", "String3", "String4" } };
-            var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
@@ -182,7 +182,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public void TestSimpleDictionaryUpdateDeleted()
         {
             var asset = new Types.MyAsset3 { MyDictionary = { { "Key1", "String1" }, { "Key2", "String2" }, { "Key3", "String3" }, { "Key4", "String4" } } };
-            var context = DeriveAssetTest<Types.MyAsset3>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
@@ -224,7 +224,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public void TestSimpleCollectionAddMultipleAndCheckOrder()
         {
             var asset = new Types.MyAsset2 { MyStrings = { "String1", "String2", "String3", "String4" } };
-            var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
