@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             // Create the skybox
             var skyboxEntity = new Entity(SkyboxEntityName)
             {
-                new BackgroundComponent {Intensity = skyIntensity },
+                new BackgroundComponent { Intensity = skyIntensity },
             };
             skyboxEntity.Transform.Position = new Vector3(0.0f, 2.0f, -2.0f);
 
