@@ -30,7 +30,7 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
 
         public static Types.MyAssetHierarchyPropertyGraph BuildAssetAndGraph(int rootCount, int depth, int childPerPart, Action<AssetCompositeHierarchyData<Types.MyPartDesign, Types.MyPart>> initializeProperties = null)
         {
-            var container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } });
+            var container = new AssetPropertyGraphContainer(new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } });
             var asset = BuildHierarchy(rootCount, depth, childPerPart);
             var assetItem = new AssetItem("MyAsset", asset);
             initializeProperties?.Invoke(asset.Hierarchy);
@@ -40,7 +40,7 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
 
         public static AssetTestContainer<Types.MyAssetHierarchy, Types.MyAssetHierarchyPropertyGraph> BuildAssetContainer(int rootCount, int depth, int childPerPart, AssetPropertyGraphContainer graphContainer = null, Action<AssetCompositeHierarchyData<Types.MyPartDesign, Types.MyPart>> initializeProperties = null)
         {
-            graphContainer = graphContainer ?? new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } });
+            graphContainer = graphContainer ?? new AssetPropertyGraphContainer(new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } });
             var asset = BuildHierarchy(rootCount, depth, childPerPart);
             initializeProperties?.Invoke(asset.Hierarchy);
             var container = new AssetTestContainer<Types.MyAssetHierarchy, Types.MyAssetHierarchyPropertyGraph>(graphContainer, asset);

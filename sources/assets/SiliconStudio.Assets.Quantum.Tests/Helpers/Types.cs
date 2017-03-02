@@ -209,6 +209,7 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
             public MyPart MyReference { get; set; }
             public List<MyPart> MyReferences { get; set; }
             public List<MyPart> Children { get; } = new List<MyPart>();
+            public SomeObject Object { get; set; }
             public void AddChild([NotNull] MyPart child) { Children.Add(child); child.Parent = this; }
             public override string ToString() => $"{Name} [{Id}]";
         }

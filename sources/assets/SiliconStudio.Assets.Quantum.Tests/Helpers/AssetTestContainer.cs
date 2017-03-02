@@ -40,7 +40,7 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
         }
 
         public AssetTestContainer(TAsset asset)
-            : base(new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } }), asset)
+            : base(new AssetPropertyGraphContainer(new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } }), asset)
         {
         }
 
@@ -67,7 +67,7 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
         public static AssetTestContainer<TAsset, TAssetPropertyGraph> LoadFromYaml(string yaml)
         {
             var asset = AssetFileSerializer.Load<TAsset>(ToStream(yaml), $"MyAsset{Types.FileExtension}");
-            var graphContainer = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } });
+            var graphContainer = new AssetPropertyGraphContainer(new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } });
             var assetContainer = new AssetTestContainer<TAsset, TAssetPropertyGraph>(graphContainer, asset.Asset);
             asset.YamlMetadata.CopyInto(assetContainer.AssetItem.YamlMetadata);
             assetContainer.BuildGraph();

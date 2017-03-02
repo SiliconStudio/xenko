@@ -7,12 +7,10 @@ namespace SiliconStudio.Assets.Quantum
 {
     public class AssetPropertyGraphContainer
     {
-        private readonly PackageSession session;
         private readonly Dictionary<AssetId, AssetPropertyGraph> registeredGraphs = new Dictionary<AssetId, AssetPropertyGraph>();
 
-        public AssetPropertyGraphContainer(PackageSession session, AssetNodeContainer nodeContainer)
+        public AssetPropertyGraphContainer(AssetNodeContainer nodeContainer)
         {
-            this.session = session;
             NodeContainer = nodeContainer;
         }
 
@@ -46,11 +44,6 @@ namespace SiliconStudio.Assets.Quantum
         public bool UnregisterGraph(AssetId assetId)
         {
             return registeredGraphs.Remove(assetId);
-        }
-
-        public AssetItem GetAssetById(AssetId assetId)
-        {
-            return session.FindAsset(assetId);
         }
     }
 }

@@ -216,14 +216,14 @@ namespace SiliconStudio.Assets.Quantum
                 // The part might be being moved and could possibly be currently not into the Parts collection.
                 if (AssetHierarchy.Hierarchy.Parts.TryGetValue(part.Id, out partDesign) && partDesign.Base != null)
                 {
-                    var baseAsset = Container.GetAssetById(partDesign.Base.BasePartAsset.Id);
+                    var baseAssetGraph = Container.GetGraph(partDesign.Base.BasePartAsset.Id);
                     // Base prefab might have been deleted
-                    if (baseAsset == null)
+                    if (baseAssetGraph == null)
                         return base.FindTarget(sourceNode, target);
 
                     // Part might have been deleted in base asset
                     TAssetPartDesign basePart;
-                    ((AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)baseAsset.Asset).Hierarchy.Parts.TryGetValue(partDesign.Base.BasePartId, out basePart);
+                    ((AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)baseAssetGraph.RootNode.Retrieve()).Hierarchy.Parts.TryGetValue(partDesign.Base.BasePartId, out basePart);
                     return basePart != null ? Container.NodeContainer.GetOrCreateNode(basePart.Part) : base.FindTarget(sourceNode, target);
                 }
             }
