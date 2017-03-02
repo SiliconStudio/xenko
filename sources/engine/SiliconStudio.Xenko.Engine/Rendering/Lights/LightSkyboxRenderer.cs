@@ -118,8 +118,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public override void ApplyEffectPermutations(RenderEffect renderEffect)
             {
                 var lightSkybox = (LightSkybox)light.Type;
-                var skyboxComponent = lightSkybox.SkyboxComponent;
-                var skybox = skyboxComponent.Skybox;
+                var skybox = lightSkybox.Skybox;
 
                 var diffuseParameters = skybox.DiffuseLightingParameters;
                 var specularParameters = skybox.SpecularLightingParameters;
@@ -136,12 +135,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 base.ApplyViewParameters(context, viewIndex, parameters);
 
                 var lightSkybox = ((LightSkybox)light.Type);
-                var skyboxComponent = lightSkybox.SkyboxComponent;
-                var skybox = skyboxComponent.Skybox;
+                var skybox = lightSkybox.Skybox;
 
                 var intensity = light.Intensity;
 
-                var rotationMatrix = lightSkybox.SkyMatrix;
+                var skyMatrix = Matrix.Invert(Matrix.RotationQuaternion(lightSkybox.Rotation));
 
                 var diffuseParameters = skybox.DiffuseLightingParameters;
                 var specularParameters = skybox.SpecularLightingParameters;
@@ -156,7 +154,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                 // global parameters
                 parameters.Set(intensityKey, intensity);
-                parameters.Set(skyMatrixKey, rotationMatrix);
+                parameters.Set(skyMatrixKey, skyMatrix);
 
                 // This need to be working with new system
                 parameters.Set(sphericalColorsKey, sphericalColors);

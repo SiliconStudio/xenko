@@ -1,12 +1,16 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Skyboxes;
 
 namespace SiliconStudio.Xenko.Assets.Skyboxes
@@ -31,8 +35,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         /// </summary>
         public SkyboxAsset()
         {
-            Model = new SkyboxCubeMapModel();
-            Usage = SkyboxUsage.LightingAndBackground;
+            Usage = SkyboxUsage.Lighting;
             DiffuseSHOrder = SkyboxPreFilteringDiffuseOrder.Order3;
             SpecularCubeMapSize = 256;
         }
@@ -48,16 +51,15 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         /// <value>The type of skybox.</value>
         /// <userdoc>The source to use as skybox</userdoc>
         [DataMember(10)]
-        [NotNull]
-        [Display("Type", Expand = ExpandRule.Always)]
-        public ISkyboxModel Model { get; set; }
+        [Display("CubeMap", Expand = ExpandRule.Always)]
+        public Texture CubeMap { get; set; }
 
         /// <summary>
         /// Gets or sets the usge of this skybox
         /// </summary>
         /// <userdoc>The usage of this skybox</userdoc>
         [DataMember(15)]
-        [DefaultValue(SkyboxUsage.LightingAndBackground)]
+        [DefaultValue(SkyboxUsage.Lighting)]
         public SkyboxUsage Usage { get; set; }
 
         /// <summary>
@@ -79,5 +81,14 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         [Display("Specular CubeMap Size")]
         [DataMember(30)]
         public int SpecularCubeMapSize { get; set; }
+
+        public IEnumerable<IReference> GetDependencies()
+        {
+            if (CubeMap != null)
+            {
+                var reference = AttachedReferenceManager.GetAttachedReference(CubeMap);
+                yield return new AssetReference(reference.Id, reference.Url);
+            }
+        }
     }
 }

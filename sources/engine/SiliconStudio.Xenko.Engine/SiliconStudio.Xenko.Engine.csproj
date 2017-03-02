@@ -631,9 +631,6 @@
     <Compile Include="Rendering\Shadows\ShadowMapRenderView.cs" />
     <Compile Include="Rendering\SimpleGroupToRenderStageSelector.cs" />
     <Compile Include="Rendering\SkinningRenderFeature.cs" />
-    <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxRenderProcessor.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxRenderFeature.cs" />
     <Compile Include="Rendering\LightProbes\ComputeSphericalHarmonics.cs">
       <DependentUpon>ComputeSphericalHarmonics.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -774,7 +771,6 @@
     <Compile Include="Engine\ModelNodeLinkComponent.cs" />
     <Compile Include="Engine\SceneInstance.cs" />
     <Compile Include="Engine\ScriptComponent.cs" />
-    <Compile Include="Engine\SkyboxComponent.cs" />
     <Compile Include="Engine\SpriteComponent.cs" />
     <Compile Include="Engine\TransformComponent.cs" />
     <Compile Include="Rendering\RenderEffectState.cs" />
@@ -2488,12 +2484,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Skyboxes\ComputeSkyboxCubeMapColor.cs">
-      <DependentUpon>ComputeSkyboxCubeMapColor.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Rendering\Skyboxes\CubemapUtils.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2519,13 +2509,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\Skyboxes\Skybox.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxBackground.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxEffect.cs">
-      <DependentUpon>SkyboxEffect.xkfx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Rendering\Skyboxes\SkyboxKeys.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxShader.cs">
       <DependentUpon>SkyboxShader.xksl</DependentUpon>
@@ -3869,10 +3852,6 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TransformationSkinning.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Skyboxes\ComputeSkyboxCubeMapColor.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeSkyboxCubeMapColor.cs</LastGenOutput>
-    </None>
     <None Include="Rendering\Skyboxes\CubemapUtils.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapUtils.cs</LastGenOutput>
@@ -3888,10 +3867,6 @@
     <None Include="Rendering\Skyboxes\RoughnessCubeMapEnvironmentColor.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>RoughnessCubeMapEnvironmentColor.cs</LastGenOutput>
-    </None>
-    <None Include="Rendering\Skyboxes\SkyboxEffect.xkfx">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>SkyboxEffect.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Skyboxes\SkyboxShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

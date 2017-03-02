@@ -37,7 +37,7 @@ UsedParameters:
     EffectSourceCode.FieldName: binaryBytecodeSRgb
 ---
 !EffectCompileRequest
-EffectName: BackgroundEffect
+EffectName: BackgroundShader
 UsedParameters:
     EffectSourceCode.Enable: true
     EffectSourceCode.Namespace: SiliconStudio.Xenko.Graphics

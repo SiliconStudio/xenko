@@ -5,7 +5,7 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Graphics
 {
-    internal partial class BackgroundEffect
+    internal partial class BackgroundShader
     {
         private static EffectBytecode bytecode;
 

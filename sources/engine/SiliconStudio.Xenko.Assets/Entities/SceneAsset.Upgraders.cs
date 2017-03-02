@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -1075,45 +1075,11 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
         
-        class RemoveLightSkyboxDependencyUpgrader : AssetUpgraderBase
+        class RemoveSceneSettingsUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
-                var hierarchy = asset.Hierarchy;
-                var parts = hierarchy.Parts;
-                foreach (var part in parts)
-                {
-                    var entity = part.Entity;
-                    foreach (var component in entity.Components)
-                    {
-                        var componentTag = component.Value.Node.Tag;
-                        if (componentTag != "!LightComponent")
-                            continue;
-
-                        var lightComponent = component.Value;
-
-                        if (lightComponent.Type.Node.Tag != "!LightSkybox")
-                            break; // Maximum of 1 light per entity, so this can't be a skybox light anymore
-
-                        // Find skybox component
-                        foreach (var component1 in entity.Components)
-                        {
-                            if (component1.Value.Node.Tag != "!SkyboxComponent")
-                                continue;
-
-                            var skybox = component1.Value;
-
-                            // Combine light and skybox intensity
-                            var lightIntensity = lightComponent.Intensity;
-                            var skyboxIntensity = skybox.Intensity;
-                            float intensity = (lightIntensity != null) ? lightIntensity : 1.0f;
-                            intensity *= ((skyboxIntensity != null) ? (float)skyboxIntensity : 1.0f);
-
-                            lightComponent.Intensity = intensity;
-                            break;
-                        }
-                    }
-                }
+                asset.RemoveChild("SceneSettings");
             }
         }
     }
