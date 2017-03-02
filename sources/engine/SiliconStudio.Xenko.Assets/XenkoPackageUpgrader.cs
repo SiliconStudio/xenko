@@ -25,10 +25,11 @@ using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Assets.Effect;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Skyboxes;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.11.0-beta")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.11.0-beta01")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public static readonly string DefaultGraphicsCompositorLevel9Url = "Compositing/DefaultGraphicsCompositorLevel9";
@@ -123,7 +124,8 @@ namespace SiliconStudio.Xenko.Assets
                         skeletonAssetYaml.DynamicRootNode.ScaleImport = modelAsset.DynamicRootNode.ScaleImport;
 
                         // Update model to point to this skeleton
-                        modelAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAssetYaml.DynamicRootNode.Id), skeletonAsset.AssetLocation.MakeRelative(modelAsset.Asset.AssetLocation.GetParent()));
+                        modelAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAssetYaml.DynamicRootNode.Id),
+                            skeletonAsset.AssetLocation.MakeRelative(modelAsset.Asset.AssetLocation.GetParent()));
                         modelToSkeletonMapping.Add(modelAsset, skeletonAssetYaml);
                     }
 
@@ -137,8 +139,10 @@ namespace SiliconStudio.Xenko.Assets
                     var modelAsset = animToModelEntry.Value;
 
                     var skeletonAsset = modelToSkeletonMapping[modelAsset];
-                    animationAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetLocation.MakeRelative(animationAsset.Asset.AssetLocation.GetParent()));
-                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference(AssetId.Parse((string)modelAsset.DynamicRootNode.Id), modelAsset.Asset.AssetLocation.MakeRelative(animationAsset.Asset.AssetLocation.GetParent()));
+                    animationAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAsset.DynamicRootNode.Id),
+                        skeletonAsset.Asset.AssetLocation.MakeRelative(animationAsset.Asset.AssetLocation.GetParent()));
+                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference(AssetId.Parse((string)modelAsset.DynamicRootNode.Id),
+                        modelAsset.Asset.AssetLocation.MakeRelative(animationAsset.Asset.AssetLocation.GetParent()));
                 }
 
                 // Remove Nodes from models
@@ -220,7 +224,7 @@ namespace SiliconStudio.Xenko.Assets
                         {
                             assetYaml.RootNode.Tag = "!Sound";
                             assetYaml.DynamicRootNode.Spatialized = false;
-                            assetYaml.DynamicRootNode.StreamFromDisk = true;  
+                            assetYaml.DynamicRootNode.StreamFromDisk = true;
                         }
                         else
                         {
@@ -354,7 +358,9 @@ namespace SiliconStudio.Xenko.Assets
                         var graphicsCompositorAssetId = AssetId.New();
                         var graphicsCompositorAsset = new PackageLoadingAssetFile(dependentPackage, "GraphicsCompositor.xkgfxcomp", null)
                         {
-                            AssetContent = System.Text.Encoding.UTF8.GetBytes($"!GraphicsCompositorAsset\r\nId: {graphicsCompositorAssetId}\r\nSerializedVersion: {{Xenko: 1.10.0-beta01}}\r\nArchetype: {defaultGraphicsCompositor.ToReference()}"),
+                            AssetContent =
+                                System.Text.Encoding.UTF8.GetBytes(
+                                    $"!GraphicsCompositorAsset\r\nId: {graphicsCompositorAssetId}\r\nSerializedVersion: {{Xenko: 1.10.0-beta01}}\r\nArchetype: {defaultGraphicsCompositor.ToReference()}"),
                         };
 
                         assetFiles.Add(graphicsCompositorAsset);
@@ -370,6 +376,23 @@ namespace SiliconStudio.Xenko.Assets
                     if (assetFile.FilePath.GetFileName() == EffectLogAsset.DefaultFile)
                     {
                         assetFile.Deleted = true;
+                    }
+                }
+            }
+
+            // Skybox/Background separation
+            if (dependency.Version.MinVersion < new PackageVersion("1.11.0-beta01"))
+            {
+                SplitSkyboxLightingUpgrader upgrader = new SplitSkyboxLightingUpgrader();
+                foreach (var skyboxAsset in assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xksky"))
+                {
+                    upgrader.ProcessSkybox(skyboxAsset);
+                }
+                foreach (var sceneAsset in assetFiles.Where(f => (f.FilePath.GetFileExtension() == ".xkscene") || (f.FilePath.GetFileExtension() == ".xkprefab")))
+                {
+                    using (var yaml = sceneAsset.AsYamlAsset())
+                    {
+                        upgrader.UpgradeAsset(yaml.DynamicRootNode);
                     }
                 }
             }
@@ -390,7 +413,8 @@ namespace SiliconStudio.Xenko.Assets
         }
 
         /// <inheritdoc/>
-        public override bool UpgradeAfterAssetsLoaded(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, PackageVersionRange dependencyVersionBeforeUpdate)
+        public override bool UpgradeAfterAssetsLoaded(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage,
+            PackageVersionRange dependencyVersionBeforeUpdate)
         {
             if (dependencyVersionBeforeUpdate.MinVersion < new PackageVersion("1.3.0-alpha02"))
             {
@@ -436,7 +460,8 @@ namespace SiliconStudio.Xenko.Assets
             if (dependentPackage == null) throw new ArgumentNullException(nameof(dependentPackage));
             if (codeUpgrader == null) throw new ArgumentNullException(nameof(codeUpgrader));
 
-            var csharpWorkspaceAssemblies = new[] { Assembly.Load("Microsoft.CodeAnalysis.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.CSharp.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.Workspaces.Desktop") };
+            var csharpWorkspaceAssemblies = new[]
+                { Assembly.Load("Microsoft.CodeAnalysis.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.CSharp.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.Workspaces.Desktop") };
             var workspace = MSBuildWorkspace.Create(ImmutableDictionary<string, string>.Empty, MefHostServices.Create(csharpWorkspaceAssemblies));
 
             var tasks = dependentPackage.Profiles
@@ -477,6 +502,7 @@ namespace SiliconStudio.Xenko.Assets
             var serializer = AssetFileSerializer.FindSerializer(assetFileExtension);
             return serializer is YamlAssetSerializer;
         }
+
         /// <summary>
         /// Base interface for code upgrading
         /// </summary>
@@ -610,6 +636,217 @@ namespace SiliconStudio.Xenko.Assets
                 }
 
                 return base.VisitIdentifierName(node);
+            }
+        }
+
+        /// <summary>
+        /// Splits skybox lighting functionality from background functionality
+        /// </summary>
+        private class SplitSkyboxLightingUpgrader
+        {
+            private readonly Dictionary<string, SkyboxAssetInfo> skyboxAssetInfos = new Dictionary<string, SkyboxAssetInfo>();
+
+            public void UpgradeAsset(dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                var parts = (DynamicYamlArray)hierarchy.Parts;
+                foreach (dynamic part in parts)
+                {
+                    var entity = part.Entity;
+                    var components = entity.Components;
+
+                    List<ComponentInfo> skyboxInfos = new List<ComponentInfo>();
+                    List<dynamic> skyboxKeys = new List<dynamic>();
+
+                    // Find skybox components
+                    foreach (dynamic component in components)
+                    {
+                        ComponentInfo componentInfo = GetComponentInfo(component);
+
+                        if (componentInfo.Component.Node.Tag == "!SkyboxComponent")
+                        {
+                            skyboxInfos.Add(componentInfo);
+                            skyboxKeys.Add(component);
+                        }
+                    }
+
+                    if (skyboxInfos.Count == 0)
+                        continue;
+
+                    // Remove skybox light dependency on skybox component
+                    foreach (var component in entity.Components)
+                    {
+                        ComponentInfo componentInfo = GetComponentInfo(component);
+                        if (componentInfo.Component.Node.Tag == "!LightComponent")
+                        {
+                            var lightComponent = componentInfo.Component;
+                            if (lightComponent.Type != null && lightComponent.Type.Node.Tag == "!LightSkybox")
+                            {
+                                // Use first skybox component
+                                var skyboxInfo = skyboxInfos.First();
+
+                                // Combine light and skybox intensity into light intensity
+                                var lightIntensity = lightComponent.Intensity;
+                                var skyboxIntensity = skyboxInfo.Component.Intensity;
+                                float intensity = (lightIntensity != null) ? lightIntensity : 1.0f;
+                                intensity *= ((skyboxIntensity != null) ? (float)skyboxIntensity : 1.0f);
+                                lightComponent.Intensity = intensity;
+
+                                // Copy skybox assignment
+                                lightComponent.Type["Skybox"] = (string)skyboxInfo.Component.Skybox;
+
+                                // 1 light per entity max.
+                                break;
+                            }
+                        }
+                    }
+
+                    // Add background components
+                    foreach (var skyboxInfo in skyboxInfos)
+                    {
+                        SkyboxAssetInfo skyboxAssetInfo;
+                        if (skyboxInfo.Component.Skybox == null)
+                            continue;
+
+                        string referenceId = ((string)skyboxInfo.Component.Skybox).Split('/').Last().Split(':').First();
+                        if (!skyboxAssetInfos.TryGetValue(referenceId, out skyboxAssetInfo))
+                            continue;
+                        
+                        if (skyboxAssetInfo.IsBackground)
+                        {
+                            string newId = Guid.NewGuid().ToString();
+                            var backgroundComponentNode = new YamlMappingNode();
+                            backgroundComponentNode.Tag = "!BackgroundComponent";
+                            backgroundComponentNode.Add("Texture", skyboxAssetInfo.TextureReference);
+                            if (skyboxInfo.Component.Intensity != null)
+                                backgroundComponentNode.Add("Intensity", (string)skyboxInfo.Component.Intensity);
+                            AddComponent(components, backgroundComponentNode, newId);
+                        }
+                    }
+
+                    // Remove skybox components
+                    foreach (var skybox in skyboxKeys)
+                    {
+                        RemoveComponent(components, skybox);
+                    }
+                }
+            }
+
+            public void ProcessSkybox(PackageLoadingAssetFile skyboxAsset)
+            {
+                using (var skyboxYaml = skyboxAsset.AsYamlAsset())
+                {
+                    var root = skyboxYaml.DynamicRootNode;
+                    var rootMapping = (DynamicYamlMapping)root;
+
+                    string cubemapReference = "null";
+
+                    // Insert cubmap into skybox root instead of in Model
+                    if (root.Model != null)
+                    {
+                        if (root.Model.Node.Tag == "!SkyboxCubeMapModel")
+                        {
+                            cubemapReference = root.Model.CubeMap;
+                        }
+                        rootMapping.RemoveChild("Model");
+                    }
+                    rootMapping.AddChild("CubeMap", cubemapReference);
+                    var splitReference = cubemapReference.Split('/'); // TODO
+
+                    bool isBackground = root.Usage == null ||
+                                        (string)root.Usage == "Background" ||
+                                        (string)root.Usage == "LightingAndBackground";
+                    skyboxAssetInfos.Add((string)root.Id, new SkyboxAssetInfo
+                    {
+                        TextureReference = splitReference.Last(),
+                        IsBackground = isBackground
+                    });
+                    
+                    // We will remove skyboxes that are only used as a background
+                    if (root.Usage != null && (string)root.Usage == "Background")
+                    {
+                        skyboxAsset.Deleted = true;
+                    }
+                    else if (root.Usage == null || (string)root.Usage == "LightingAndBackground")
+                    {
+                        root.Usage = "Lighting";
+                    }
+                }
+            }
+
+            private void AddComponent(dynamic componentsNode, YamlMappingNode node, string id)
+            {
+                try
+                {
+                    // New format (1.9)
+                    DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
+                    mapping.AddChild(new YamlScalarNode(id), node);
+                }
+                catch (Exception)
+                {
+                    // Old format (<= 1.8)
+                    DynamicYamlArray array = (DynamicYamlArray)componentsNode;
+                    node.Add("~Id", id); // TODO
+                    array.Add(node);
+                }
+            }
+
+            private void RemoveComponent(dynamic componentsNode, dynamic componentsEntry)
+            {
+                try
+                {
+                    // New format (1.9)
+                    DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
+                    mapping.RemoveChild(componentsEntry.Key);
+                }
+                catch (Exception)
+                {
+                    // Old format (<= 1.8)
+                    DynamicYamlArray array = (DynamicYamlArray)componentsNode;
+                    for (int i = 0; i < array.Count; i++)
+                    {
+                        if (componentsNode[i].Node == componentsEntry.Node)
+                        {
+                            array.RemoveAt(i);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            /// <returns>A tuple of (tag, id, component node)</returns>
+            private ComponentInfo GetComponentInfo(dynamic componentNode)
+            {
+                if(componentNode.Key != null && componentNode.Value != null)
+                {
+                    // New format (1.9)
+                    return new ComponentInfo
+                    {
+                        Id = (string)componentNode.Key,
+                        Component = componentNode.Value
+                    };
+                }
+                else
+                {
+                    // Old format (<= 1.8)
+                    return new ComponentInfo
+                    {
+                        Id = (string)componentNode["~Id"], // TODO
+                        Component = componentNode
+                    };
+                }
+            }
+
+            private struct SkyboxAssetInfo
+            {
+                public string TextureReference;
+                public bool IsBackground;
+            }
+
+            private struct ComponentInfo
+            {
+                public string Id;
+                public dynamic Component;
             }
         }
 
