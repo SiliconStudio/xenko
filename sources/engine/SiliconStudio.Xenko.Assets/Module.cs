@@ -26,7 +26,6 @@ namespace SiliconStudio.Xenko.Assets
 
             AssemblyRegistry.Register(typeof(Module).Assembly, AssemblyCommonCategories.Assets);
             AssemblyRegistry.Register(typeof(ParameterKeys).Assembly, AssemblyCommonCategories.Assets);
-            AssemblyRegistry.Register(typeof(SkyboxComponent).Assembly, AssemblyCommonCategories.Assets);
             AssemblyRegistry.Register(typeof(Texture).Assembly, AssemblyCommonCategories.Assets);
             AssemblyRegistry.Register(typeof(ShaderClassSource).Assembly, AssemblyCommonCategories.Assets);
 
