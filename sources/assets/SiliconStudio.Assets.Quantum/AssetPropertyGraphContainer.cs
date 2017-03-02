@@ -27,7 +27,7 @@ namespace SiliconStudio.Assets.Quantum
                 return null;
 
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(this, assetItem, logger);
-            RegisterGraph(assetItem.Id, graph);
+            RegisterGraph(graph);
             return graph;
         }
 
@@ -38,9 +38,9 @@ namespace SiliconStudio.Assets.Quantum
             return graph;
         }
 
-        public void RegisterGraph(AssetId assetId, AssetPropertyGraph graph)
+        public void RegisterGraph(AssetPropertyGraph graph)
         {
-            registeredGraphs.Add(assetId, graph);
+            registeredGraphs.Add(graph.Id, graph);
         }
 
         public bool UnregisterGraph(AssetId assetId)

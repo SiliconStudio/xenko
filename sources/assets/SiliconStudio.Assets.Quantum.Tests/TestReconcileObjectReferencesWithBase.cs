@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using SiliconStudio.Assets.Quantum.Tests.Helpers;
 using SiliconStudio.Assets.Tests.Helpers;
 using SiliconStudio.Quantum;
 
@@ -10,16 +11,16 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestWithCorrectObjectReferences()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 MyObject1:
     Value: MyInstance
     Id: 00000002-0002-0000-0200-000002000000
 MyObject2: ref!! 00000002-0002-0000-0200-000002000000
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
-Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyObject1:
     Value: MyModifiedInstance
     Id: 00000003-0003-0000-0300-000003000000
@@ -39,16 +40,16 @@ MyObject2: ref!! 00000003-0003-0000-0300-000003000000
         [Test]
         public void TestWithIncorrectObjectReferences()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 MyObject1:
     Value: MyInstance
     Id: 00000002-0002-0000-0200-000002000000
 MyObject2: ref!! 00000002-0002-0000-0200-000002000000
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
-Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyObject1:
     Value: MyModifiedInstance
     Id: 00000003-0003-0000-0300-000003000000
@@ -72,7 +73,7 @@ MyObject3:
         [Test]
         public void TestWithOverriddenObjectReferences()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 MyObject1:
     Value: MyInstance
@@ -82,9 +83,9 @@ MyObject3:
     Value: MyInstance
     Id: 00000003-0003-0003-0300-000003000000
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
-Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyObject1:
     Value: MyModifiedInstance
     Id: 00000003-0003-0003-0300-000003000000
@@ -110,16 +111,16 @@ MyObject3:
         [Test]
         public void TestWithInvalidObjectReferencesAndMissingTarget()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 MyObject1:
     Value: MyInstance
     Id: 00000002-0002-0000-0200-000002000000
 MyObject2: ref!! 00000002-0002-0000-0200-000002000000
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
-Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyObject1: null
 MyObject2: ref!! 00000004-0004-0004-0400-000004000000
 ";
@@ -137,7 +138,7 @@ MyObject2: ref!! 00000004-0004-0004-0400-000004000000
         [Test]
         public void TestWithCorrectObjectReferencesInList()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 MyObject1:
     Value: MyInstance
@@ -145,9 +146,9 @@ MyObject1:
 MyObjects:
     0a0000000a0000000a0000000a000000: ref!! 00000002-0002-0000-0200-000002000000
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
-Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyObject1:
     Value: MyInstance
     Id: 00000003-0003-0000-0300-000003000000
@@ -168,7 +169,7 @@ MyObjects:
         [Test]
         public void TestWithIncorrectObjectReferencesInList()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 MyObject1:
     Value: MyInstance
@@ -176,9 +177,9 @@ MyObject1:
 MyObjects:
     0a0000000a0000000a0000000a000000: ref!! 00000002-0002-0000-0200-000002000000
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
-Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyObject1:
     Value: MyModifiedInstance
     Id: 00000003-0003-0000-0300-000003000000
@@ -203,7 +204,7 @@ MyObjects:
         [Test]
         public void TestWithOverriddenObjectReferencesInList()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 MyObject1:
     Value: MyInstance
@@ -214,9 +215,9 @@ MyObject2:
 MyObjects:
     0a0000000a0000000a0000000a000000: ref!! 00000002-0002-0000-0200-000002000000
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
-Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyObject1:
     Value: MyModifiedInstance
     Id: 00000003-0003-0003-0300-000003000000
@@ -243,7 +244,7 @@ MyObjects:
         [Test]
         public void TestWithInvalidObjectReferencesAndMissingTargetInList()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 MyObject1:
     Value: MyInstance
@@ -251,9 +252,9 @@ MyObject1:
 MyObjects:
     0a0000000a0000000a0000000a000000: ref!! 00000002-0002-0000-0200-000002000000
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
-Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyObject1: null
 MyObjects:
     0a0000000a0000000a0000000a000000: ref!! 00000002-0002-0000-0200-000002000000
@@ -272,16 +273,16 @@ MyObjects:
         [Test]
         public void TestAllMissing()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 MyObject1:
     Value: MyInstance
     Id: 00000002-0002-0000-0200-000002000000
 MyObject2: ref!! 00000002-0002-0000-0200-000002000000
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
-Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 ";
             AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
             var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);
@@ -295,16 +296,16 @@ Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
         [Test]
         public void TestAllMissingInvertOrder()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 MyObject1: ref!! 00000002-0002-0000-0200-000002000000
 MyObject2:
     Value: MyInstance
     Id: 00000002-0002-0000-0200-000002000000
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
-Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 ";
             AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject1);
             var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);
@@ -318,7 +319,7 @@ Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
         [Test]
         public void TestAllMissingInList()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 MyObjects:
     0a0000000a0000000a0000000a000000:
@@ -326,9 +327,9 @@ MyObjects:
         Id: 00000002-0002-0000-0200-000002000000
     0a0000000b0000000b0000000b000000: ref!! 00000002-0002-0000-0200-000002000000
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
-Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 ";
             AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) => index.IsInt && index.Int == 1;
             var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);

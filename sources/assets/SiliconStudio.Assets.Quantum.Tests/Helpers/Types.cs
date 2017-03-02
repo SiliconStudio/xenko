@@ -4,11 +4,10 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
-namespace SiliconStudio.Assets.Quantum.Tests
+namespace SiliconStudio.Assets.Quantum.Tests.Helpers
 {
     public static class Types
     {
@@ -161,6 +160,58 @@ namespace SiliconStudio.Assets.Quantum.Tests
         }
 
     }
+
+    // TODO: we don't want to have to do this to detect children!
+    [DataContract]
+    public class ChildrenList : List<MyPart> { }
+
+    [DataContract("MyPart")]
+    public class MyPart : IIdentifiable
+    {
+        [NonOverridable]
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public MyPart Parent { get; set; }
+        public MyPart MyReference { get; set; }
+        public List<MyPart> MyReferences { get; set; }
+        public List<MyPart> Children { get; } = new List<MyPart>();
+        public void AddChild([NotNull] MyPart child) { Children.Add(child); child.Parent = this; }
+        public override string ToString() => $"{Name} [{Id}]";
+    }
+
+    [DataContract("MyPartDesign")]
+    public class MyPartDesign : IAssetPartDesign<MyPart>
+    {
+        public BasePart Base { get; set; }
+        // ReSharper disable once NotNullMemberIsNotInitialized
+        public MyPart Part { get; set; }
+        public override string ToString() => $"Design: {Part.Name} [{Part.Id}]";
+    }
+
+    public class MyAssetHierarchy : AssetCompositeHierarchy<MyPartDesign, MyPart>
+    {
+        public override MyPart GetParent(MyPart part) => part.Parent;
+        public override int IndexOf(MyPart part) => GetParent(part)?.Children.IndexOf(part) ?? Hierarchy.RootPartIds.IndexOf(part.Id);
+        public override MyPart GetChild(MyPart part, int index) => part.Children[index];
+        public override int GetChildCount(MyPart part) => part.Children.Count;
+        public override IEnumerable<MyPart> EnumerateChildParts(MyPart part, bool isRecursive) => isRecursive ? part.Children.DepthFirst(t => t.Children) : part.Children;
+    }
+
+    [AssetPropertyGraph(typeof(MyAssetHierarchy))]
+    // ReSharper disable once ClassNeverInstantiated.Local
+    public class MyAssetPropertyGraph : AssetCompositeHierarchyPropertyGraph<MyPartDesign, MyPart>
+    {
+        public MyAssetPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger) : base(container, assetItem, logger) { }
+        public override bool IsChildPartReference(IGraphNode node, Index index) => node.Type == typeof(ChildrenList);
+        protected override void AddChildPartToParentPart(MyPart parentPart, MyPart childPart, int index) => Container.NodeContainer.GetNode(parentPart)[nameof(MyPart.Children)].Target.Add(childPart, new Index(index));
+        protected override void RemoveChildPartFromParentPart(MyPart parentPart, MyPart childPart) => Container.NodeContainer.GetNode(parentPart)[nameof(MyPart.Children)].Target.Remove(childPart, new Index(parentPart.Children.IndexOf(childPart)));
+        protected override Guid GetIdFromChildPart(object part) => ((MyPart)part).Id;
+        protected override IEnumerable<IGraphNode> RetrieveChildPartNodes(MyPart part)
+        {
+            yield return Container.NodeContainer.GetNode(part.Children);
+        }
+    }
+
 
     [AssetPropertyGraph(typeof(Types.MyAssetBase))]
     public class MyAssetBasePropertyGraph : AssetPropertyGraph

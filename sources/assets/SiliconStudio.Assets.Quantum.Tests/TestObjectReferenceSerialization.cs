@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using NUnit.Framework;
+using SiliconStudio.Assets.Quantum.Tests.Helpers;
 using SiliconStudio.Assets.Tests.Helpers;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Quantum;
@@ -46,7 +47,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(expectedYaml, yaml);
         }
 
-        private const string SimpleReferenceYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+        private const string SimpleReferenceYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 Tags: []
 MyObject1:
@@ -66,12 +67,13 @@ MyNonIdObjects: []
             };
             var obj = new Types.MyReferenceable { Id = GuidGenerator.Get(2), Value = "MyInstance" };
             var asset = new Types.MyAssetWithRef { MyObject1 = obj, MyObject2 = obj };
-            var context = DeriveAssetTest<Types.MyAssetWithRef>.DeriveAsset(asset);
-            SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, SimpleReferenceYaml, false);
+            var context = new AssetTestContainer<Types.MyAssetWithRef>(asset);
+            context.BuildGraph();
+            SerializeAndCompare(context.AssetItem, context.Graph, SimpleReferenceYaml, false);
 
-            context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(SimpleReferenceYaml, SimpleReferenceYaml);
-            Assert.AreEqual(context.BaseAsset.MyObject1, context.BaseAsset.MyObject2);
-            Assert.AreEqual(GuidGenerator.Get(2), context.BaseAsset.MyObject1.Id);
+            context = AssetTestContainer<Types.MyAssetWithRef>.LoadFromYaml(SimpleReferenceYaml);
+            Assert.AreEqual(context.Asset.MyObject1, context.Asset.MyObject2);
+            Assert.AreEqual(GuidGenerator.Get(2), context.Asset.MyObject1.Id);
         }
     }
 }

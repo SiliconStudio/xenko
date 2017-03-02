@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using SiliconStudio.Assets.Quantum.Tests.Helpers;
 using SiliconStudio.Assets.Tests.Helpers;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Quantum;

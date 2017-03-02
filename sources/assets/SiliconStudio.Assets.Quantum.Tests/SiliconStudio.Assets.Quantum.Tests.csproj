@@ -45,7 +45,8 @@
     <Compile Include="..\SiliconStudio.Assets.Tests\Helpers\IdentifierGenerator.cs">
       <Link>Helpers\IdentifierGenerator.cs</Link>
     </Compile>
-    <Compile Include="DeriveAssetTest.cs" />
+    <Compile Include="Helpers\AssetTestContainer.cs" />
+    <Compile Include="Helpers\DeriveAssetTest.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestArchetypesAdvanced.cs" />
@@ -58,7 +59,7 @@
     <Compile Include="TestOverrideSerialization.cs" />
     <Compile Include="TestReconcileObjectReferencesWithBase.cs" />
     <Compile Include="TestReconcileWithBase.cs" />
-    <Compile Include="Types.cs" />
+    <Compile Include="Helpers\Types.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">
