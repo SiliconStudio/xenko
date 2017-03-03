@@ -1,7 +1,7 @@
 using System;
 using SiliconStudio.Core.Reflection;
 
-namespace SiliconStudio.Quantum.Contents
+namespace SiliconStudio.Quantum
 {
     /// <summary>
     /// A helper class containing methods to manipulate contents.

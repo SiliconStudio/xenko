@@ -5,7 +5,6 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 using IReference = SiliconStudio.Core.Serialization.Contents.IReference;
 

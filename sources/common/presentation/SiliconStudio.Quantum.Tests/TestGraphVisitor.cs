@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Tests
 {

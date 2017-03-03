@@ -3,7 +3,6 @@
 
 using System;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum
 {
