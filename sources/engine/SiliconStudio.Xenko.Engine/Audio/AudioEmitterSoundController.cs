@@ -75,18 +75,23 @@ namespace SiliconStudio.Xenko.Audio
 
         internal void DestroySoundInstance(SoundInstance instance)
         {
-            instance.Dispose();
             InstanceToListener.Remove(instance);
+            instance.Dispose();
         }
 
         internal void DestroySoundInstances(AudioListenerComponent listener)
         {
+            var deferRemoval = new List<SoundInstance>();
+
             foreach (var instance in InstanceToListener.Keys)
             {
-                instance.Dispose();
+                deferRemoval.Add(instance);
             }
 
-            InstanceToListener.Clear();
+            foreach (var soundInstance in deferRemoval)
+            {
+                DestroySoundInstance(soundInstance);
+            }
 
             for (var i = 0; i < FastInstances.Count; i++)
             {
@@ -95,7 +100,7 @@ namespace SiliconStudio.Xenko.Audio
                 {
                     //Decrement the loop counter to iterate this index again, since later elements will get moved down during the remove operation.
                     FastInstances.RemoveAt(i--);
-                    DestroySoundInstance(instance);
+                    instance.Dispose();
                 }
             }
         }
@@ -110,6 +115,12 @@ namespace SiliconStudio.Xenko.Audio
                 instance.Key.Dispose();
             }
             InstanceToListener.Clear();
+
+            foreach (var soundInstance in FastInstances)
+            {
+                soundInstance.Dispose();
+            }
+            FastInstances.Clear();
         }
 
         private SoundPlayState playState;

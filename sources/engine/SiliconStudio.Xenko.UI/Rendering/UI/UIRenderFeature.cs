@@ -333,7 +333,11 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 // rotate the UI element perpendicular to the camera view vector, if billboard is activated
                 var uiComponent = entity.Get<UIComponent>();
 
-                if (!uiComponent.IsFullScreen)
+                if (uiComponent.IsFullScreen)
+                {
+                    worldMatrix = Matrix.Identity;
+                }
+                else
                 {
                     Matrix viewInverse;
                     Matrix.Invert(ref camera.ViewMatrix, out viewInverse);
