@@ -322,6 +322,30 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Scales a vector by the given vector.
+        /// </summary>
+        /// <param name="value">The vector to scale.</param>
+        /// <param name="scale">The amount by which to scale the vector.</param>
+        /// <param name="result">When the method completes, contains the scaled vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Multiply(ref Vector3 value, ref Vector3 scale, out Vector3 result)
+        {
+            result = new Vector3(value.X * scale.X, value.Y * scale.Y, value.Z * scale.Z);
+        }
+
+        /// <summary>
+        /// Scales a vector by the given vector.
+        /// </summary>
+        /// <param name="value">The vector to scale.</param>
+        /// <param name="scale">The amount by which to scale the vector.</param>
+        /// <returns>The scaled vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 Multiply(Vector3 value, Vector3 scale)
+        {
+            return new Vector3(value.X * scale.X, value.Y * scale.Y, value.Z * scale.Z);
+        }
+
+        /// <summary>
         /// Modulates a vector with another by performing component-wise multiplication.
         /// </summary>
         /// <param name="left">The first vector to modulate.</param>
@@ -370,7 +394,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Scales a vector by the given vector components.
+        /// Scales a vector by the given vector.
         /// </summary>
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
@@ -382,7 +406,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Scales a vector by the given vector components.
+        /// Scales a vector by the given vector.
         /// </summary>
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
