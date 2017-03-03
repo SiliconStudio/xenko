@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Globalization;
 using System.Windows;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -20,11 +21,11 @@ namespace SiliconStudio.Presentation.ValueConverters
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var result = ConverterHelper.ConvertToBoolean(value, culture);
-            if (parameter is bool && (bool)parameter == false)
+            if (parameter as bool? == false)
             {
                 result = !result;
             }
-            return result ? Visibility.Visible : Visibility.Collapsed;
+            return result ? VisibilityBoxes.VisibleBox : VisibilityBoxes.CollapsedBox;
         }
 
         /// <inheritdoc/>
@@ -32,11 +33,12 @@ namespace SiliconStudio.Presentation.ValueConverters
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var visibility = (Visibility)value;
-            if (parameter is bool && (bool)parameter == false)
+            var result = visibility == Visibility.Visible;
+            if (parameter as bool? == false)
             {
-                return visibility != Visibility.Visible;
+                result = !result;
             }
-            return visibility == Visibility.Visible;
+            return result.Box();
         }
     }
 }

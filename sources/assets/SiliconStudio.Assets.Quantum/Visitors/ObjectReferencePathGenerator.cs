@@ -34,7 +34,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         public Func<Guid, bool> ShouldOutputReference { get; set; }
 
         /// <inheritdoc/>
-        protected override void VisitMemberNode(IAssetMemberNode memberNode, YamlAssetPath currentPath)
+        protected override void VisitMemberNode(IAssetMemberNode memberNode, int inNonIdentifiableType)
         {
             if (propertyGraph.IsObjectReference(memberNode, Index.Empty, memberNode.Retrieve()))
             {
@@ -48,12 +48,12 @@ namespace SiliconStudio.Assets.Quantum.Visitors
 
                 var id = identifiable.Id;
                 if (ShouldOutputReference?.Invoke(id) ?? true)
-                    Result.Set(currentPath, id);
+                    Result.Set(ConvertPath(CurrentPath, inNonIdentifiableType), id);
             }
         }
 
         /// <inheritdoc/>
-        protected override void VisitObjectNode(IAssetObjectNode objectNode, YamlAssetPath currentPath)
+        protected override void VisitObjectNode(IAssetObjectNode objectNode, int inNonIdentifiableType)
         {
             if (!objectNode.IsReference)
                 return;
@@ -63,7 +63,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
                 if (!propertyGraph.IsObjectReference(objectNode, index, objectNode.Retrieve(index)))
                     continue;
 
-                var itemPath = currentPath.Clone();
+                var itemPath = ConvertPath(CurrentPath, inNonIdentifiableType);
                 if (CollectionItemIdHelper.HasCollectionItemIds(objectNode.Retrieve()))
                 {
                     var itemId = objectNode.IndexToId(index);

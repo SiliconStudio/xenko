@@ -17,7 +17,6 @@ using System.Windows.Interactivity;
 using GraphX.Controls;
 using System.Collections.Generic;
 using System.Collections;
-using GraphX.Models;
 using System.Collections.Specialized;
 using System.Collections.ObjectModel;
 using SiliconStudio.Presentation.Graph.ViewModel;
@@ -128,7 +127,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             // Change from dependency property collection -> internal collection
             if (AssociatedObject != null)
             {
-                EdgeControl[] edgeControls = graph_area_.GetAllEdgeControls();
+                var edgeControls = graph_area_.EdgesList.Values.ToList();
 
                 // TODO Many different cases for this. Might to return to this in the future.
                 if (e.Action == NotifyCollectionChangedAction.Reset)
@@ -236,7 +235,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 ClearLinkSelection();
             }
 
-            foreach (NodeEdgeControl control in graph_area_.GetAllEdgeControls())
+            foreach (NodeEdgeControl control in graph_area_.EdgesList.Values)
             {
                 if (VisualTreeHelper.HitTest(control.Path, point) != null)
                 {

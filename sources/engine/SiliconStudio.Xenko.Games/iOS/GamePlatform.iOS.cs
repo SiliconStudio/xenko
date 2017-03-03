@@ -71,8 +71,8 @@ namespace SiliconStudio.Xenko.Games
                         {
                             Adapter = GraphicsAdapterFactory.Default,
                             GraphicsProfile = featureLevel,
-                            PresentationParameters = new PresentationParameters(gameWindowiOS.ClientBounds.Width,
-                                                                                gameWindowiOS.ClientBounds.Height,
+                            PresentationParameters = new PresentationParameters(preferredParameters.PreferredBackBufferWidth,
+                                                                                preferredParameters.PreferredBackBufferHeight,
                                                                                 gameWindowiOS.NativeWindow)
                             {
                                 // TODO: PDX-364: Transmit what was actually created

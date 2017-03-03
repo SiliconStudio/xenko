@@ -10,14 +10,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-
-
-using GraphX;
-using GraphX.Controls.Models;
-using SiliconStudio.Presentation.Graph.Helper;
-using SiliconStudio.Presentation.Extensions;
 using System.Windows.Input;
+using GraphX.Controls;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Mathematics;
+using Point = System.Windows.Point;
 
 namespace SiliconStudio.Presentation.Graph.Controls
 {
@@ -28,7 +25,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
     public class NodeEdgeControl : EdgeControl, INotifyPropertyChanged
     {
         private Path path;
-        private Path arrow;
+        private IEdgePointer arrow;
 
         #region Dependency Properties
         public static readonly DependencyProperty SourceSlotProperty = DependencyProperty.Register("SourceSlot", typeof(object), typeof(NodeEdgeControl));
@@ -77,7 +74,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
             if (Template != null)
             {
                 path = Template.FindName("PART_edgePath", this) as Path;
-                arrow = Template.FindName("PART_edgeArrowPath", this) as Path;
+                arrow = Template.FindName("PART_EdgePointerForTarget", this) as IEdgePointer;
 
                 //
                 UpdateEdge();
@@ -190,8 +187,13 @@ namespace SiliconStudio.Presentation.Graph.Controls
 
             //
             path.Data = geometry;
-            if (arrow != null)
-                arrow.Data = new PathGeometry { Figures = { GeometryHelper.GenerateOldArrow(bezier.Point2, bezier.Point3) } };
+            var direction = bezier.Point3 - bezier.Point2;
+            if (direction.Length > MathUtil.ZeroToleranceDouble)
+                direction.Normalize();
+            else
+                direction = new Vector(0, 0);
+            EdgePointerForTarget?.Update(bezier.Point3, direction, EdgePointerForTarget.NeedRotation ? (-MathHelper.GetAngleBetweenPoints(bezier.Point3, bezier.Point2).ToDegrees()) : 0);
+            //arrow.Data = new PathGeometry { Figures = { GeometryHelper.GenerateOldArrow(bezier.Point2, bezier.Point3) } };
 
             // TODO Should I be doing this here??? should I be uing setcurrentvalue??
             Visibility = Visibility.Visible;

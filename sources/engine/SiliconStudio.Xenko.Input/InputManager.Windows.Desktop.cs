@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
@@ -19,6 +20,8 @@ namespace SiliconStudio.Xenko.Input
     internal class InputManagerWinforms: InputManagerWindows<Control>
     {
         private readonly Stopwatch pointerClock;
+        private readonly HashSet<WinFormsKeys> winformPressedKeys = new HashSet<WinFormsKeys>();
+        private readonly List<WinFormsKeys> winformPressedKeysProcessing = new List<WinFormsKeys>();
 
         public InputManagerWinforms(IServiceRegistry registry)
             : base(registry)
@@ -90,20 +93,13 @@ namespace SiliconStudio.Xenko.Input
 
         private IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam)
         {
-            WinFormsKeys virtualKey;
             switch (msg)
             {
                 case Win32Native.WM_KEYDOWN:
                 case Win32Native.WM_SYSKEYDOWN:
-                    virtualKey = (WinFormsKeys)wParam.ToInt64();
+                    var virtualKey = (WinFormsKeys)wParam.ToInt64();
                     virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
                     OnKeyEvent(virtualKey, false);
-                    break;
-                case Win32Native.WM_KEYUP:
-                case Win32Native.WM_SYSKEYUP:
-                    virtualKey = (WinFormsKeys)wParam.ToInt64();
-                    virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
-                    OnKeyEvent(virtualKey, true);
                     break;
             }
 
@@ -163,7 +159,27 @@ namespace SiliconStudio.Xenko.Input
             ControlHeight = UiControl.ClientSize.Height;
         }
 
-        private void OnKeyEvent(WinFormsKeys keyCode, bool isKeyUp)
+        public override void Update(GameTime gameTime)
+        {
+            lock (KeyboardInputEvents)
+            {
+                // WinForms sometimes don't properly send back key up events, so let's manually check it ourselves rather than trusting WM_KEYUP
+                foreach (var keyCode in winformPressedKeys)
+                    winformPressedKeysProcessing.Add(keyCode);
+
+                foreach (var keyCode in winformPressedKeysProcessing)
+                {
+                    var state = Win32Native.GetKeyState((int)keyCode);
+                    if ((state & 0x8000) == 0)
+                        OnKeyEvent(keyCode, true);
+                }
+                winformPressedKeysProcessing.Clear();
+
+                base.Update(gameTime);
+            }
+        }
+
+        private void OnKeyEvent(WinFormsKeys keyCode, bool isKeyUp, bool outOfFocus = false)
         {
             Keys key;
             if (WinKeys.mapKeys.TryGetValue(keyCode, out key) && key != Keys.None)
@@ -171,7 +187,11 @@ namespace SiliconStudio.Xenko.Input
                 var type = isKeyUp ? InputEventType.Up : InputEventType.Down;
                 lock (KeyboardInputEvents)
                 {
-                    KeyboardInputEvents.Add(new KeyboardInputEvent { Key = key, Type = type });
+                    if (!isKeyUp)
+                        winformPressedKeys.Add(keyCode);
+                    else
+                        winformPressedKeys.Remove(keyCode);
+                    KeyboardInputEvents.Add(new KeyboardInputEvent { Key = key, Type = type, OutOfFocus = outOfFocus });
                 }
             }
         }
@@ -217,9 +237,8 @@ namespace SiliconStudio.Xenko.Input
             CurrentMouseDelta += CurrentMousePosition - previousMousePosition;
             
             // trigger touch move events
-            foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
+            for (int buttonId = 0; buttonId < MouseButtonCurrentlyDown.Length; ++buttonId)
             {
-                var buttonId = (int)button;
                 if (MouseButtonCurrentlyDown[buttonId])
                     HandlePointerEvents(buttonId, CurrentMousePosition, PointerState.Move, PointerType.Mouse);
             }
@@ -255,7 +274,7 @@ namespace SiliconStudio.Xenko.Input
                 {
                     var state = Win32Native.GetKeyState((int)key.Key);
                     if ((state & 0x8000) == 0x8000)
-                        KeyboardInputEvents.Add(new KeyboardInputEvent { Key = key.Value, Type = InputEventType.Down, OutOfFocus = true });
+                        OnKeyEvent(key.Key, false, true);
                 }
             }
             LostFocus = false;

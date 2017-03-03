@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:ctrl="clr-namespace:SiliconStudio.Presentation.Graph.Controls"
                     xmlns:behavior="clr-namespace:SiliconStudio.Presentation.Graph.Behaviors"
-                    xmlns:graphx="clr-namespace:GraphX;assembly=GraphX.WPF.Controls"        
+                    xmlns:graphx="http://schemas.panthernet.ru/graphx/"
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:cvt="clr-namespace:SiliconStudio.Presentation.ValueConverters"
                     xmlns:mwt="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
@@ -136,16 +136,20 @@
                 <ControlTemplate TargetType="{x:Type ctrl:NodeEdgeControl}">
                     <Grid>
                         <Path x:Name="PART_edgePath" Stroke="{TemplateBinding LinkStroke}" Visibility="Visible" StrokeThickness="{TemplateBinding LinkStrokeThickness}" MinWidth="1" MinHeight="1" ToolTip="{TemplateBinding ToolTip}"  />
-                        <Path x:Name="PART_edgeArrowPath" Stroke="{TemplateBinding LinkStroke}" Visibility="Visible" StrokeThickness="{TemplateBinding LinkStrokeThickness}" MinWidth="1" MinHeight="1" />
+                        <graphx:DefaultEdgePointer NeedRotation="true" x:Name="PART_EdgePointerForTarget" >
+                            <Path x:Name="edgeArrowPath" Data="M0,0.5 L1,1 1,0 0,0.5" Fill="{TemplateBinding LinkStroke}" Stroke="{TemplateBinding LinkStroke}" StrokeThickness="{TemplateBinding LinkStrokeThickness}" Stretch="Uniform" Width="10" Height="10"/>
+                        </graphx:DefaultEdgePointer>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="Selector.IsSelected" Value="True">
                             <Setter TargetName="PART_edgePath" Property="Stroke" Value="{Binding SelectedLinkStroke, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeEdgeControl}}}" />
-                            <Setter TargetName="PART_edgeArrowPath" Property="Stroke" Value="{Binding SelectedLinkStroke, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeEdgeControl}}}" />
+                            <Setter TargetName="edgeArrowPath" Property="Fill" Value="{Binding SelectedLinkStroke, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeEdgeControl}}}" />
+                            <Setter TargetName="edgeArrowPath" Property="Stroke" Value="{Binding SelectedLinkStroke, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeEdgeControl}}}" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="PART_edgePath" Property="Stroke" Value="{Binding MouseOverLinkStroke, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeEdgeControl}}}" />
-                            <Setter TargetName="PART_edgeArrowPath" Property="Stroke" Value="{Binding MouseOverLinkStroke, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeEdgeControl}}}" />
+                            <Setter TargetName="edgeArrowPath" Property="Fill" Value="{Binding MouseOverLinkStroke, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeEdgeControl}}}" />
+                            <Setter TargetName="edgeArrowPath" Property="Stroke" Value="{Binding MouseOverLinkStroke, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeEdgeControl}}}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

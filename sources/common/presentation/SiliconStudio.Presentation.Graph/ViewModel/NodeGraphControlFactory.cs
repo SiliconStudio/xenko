@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Windows;
 using GraphX;
+using GraphX.Controls;
 using GraphX.Controls.Models;
 using SiliconStudio.Presentation.Graph.Controls;
 

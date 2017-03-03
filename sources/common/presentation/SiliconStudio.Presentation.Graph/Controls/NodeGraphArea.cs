@@ -1,10 +1,9 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using GraphX;
-using GraphX.GraphSharp;
 using QuickGraph;
 using SiliconStudio.Presentation.Graph.ViewModel;
 using System.Windows;
+using GraphX.Controls;
 
 namespace SiliconStudio.Presentation.Graph.Controls
 {    
@@ -17,10 +16,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
 
         internal virtual void OnLinkSelected(FrameworkElement link)
         {
-            if (LinkSelected != null)
-            {
-                LinkSelected(this, new LinkSelectedEventArgs(link));
-            }
+            LinkSelected?.Invoke(this, new LinkSelectedEventArgs(link));
         }
     }
 }

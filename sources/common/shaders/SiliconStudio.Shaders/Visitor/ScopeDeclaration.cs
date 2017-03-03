@@ -30,7 +30,6 @@ namespace SiliconStudio.Shaders.Visitor
         {
             ScopeContainer = scopeContainer;
             Declarations = new Dictionary<string, List<IDeclaration>>();
-            Generics = new Dictionary<string, List<GenericDeclaration>>();
         }
 
         #endregion
@@ -53,8 +52,6 @@ namespace SiliconStudio.Shaders.Visitor
         /// </value>
         public IDictionary<string, List<IDeclaration>> Declarations { get; private set; }
 
-        public IDictionary<string, List<GenericDeclaration>> Generics { get; private set; }
-        
         public IEnumerable<IDeclaration> FindDeclaration(string name)
         {
             List<IDeclaration> declarationList;
@@ -62,15 +59,6 @@ namespace SiliconStudio.Shaders.Visitor
                 return declarationList;
 
             return Enumerable.Empty<IDeclaration>();
-        }
-
-        public IEnumerable<GenericDeclaration> FindGenerics(string name)
-        {
-            List<GenericDeclaration> declarationList;
-            if (Generics.TryGetValue(name, out declarationList))
-                return declarationList;
-
-            return Enumerable.Empty<GenericDeclaration>();
         }
 
         public void AddDeclaration(IDeclaration declaration)
@@ -100,15 +88,22 @@ namespace SiliconStudio.Shaders.Visitor
                 for (int i = 0; i < genericsDeclarator.GenericParameters.Count; i++)
                 {
                     var genericArgument = genericsDeclarator.GenericParameters[i];
-                    var genericName = genericArgument.Name.Text;
-                    List<GenericDeclaration> generics;
-                    if (!Generics.TryGetValue(genericName, out generics))
+                    var genericName = genericArgument.Name;
+                    if (!Declarations.TryGetValue(genericName.Text, out declarations))
                     {
-                        generics = new List<GenericDeclaration>();
-                        Generics.Add(genericName, generics);
+                        declarations = new List<IDeclaration>();
+                        Declarations.Add(genericName, declarations);
                     }
 
-                    generics.Add(new GenericDeclaration(genericArgument.Name, genericsDeclarator, i, false) { Span = genericArgument.Span });
+                    declarations.Add(new GenericDeclaration(genericName, genericsDeclarator, i, false) { Span = genericArgument.Span });
+
+                    genericName = new Identifier($"__{genericArgument.Name}_base");
+                    if (!Declarations.TryGetValue(genericName.Text, out declarations))
+                    {
+                        declarations = new List<IDeclaration>();
+                        Declarations.Add(genericName, declarations);
+                    }
+                    declarations.Add(new GenericDeclaration(genericName, genericsDeclarator, i, true) { Span = genericArgument.Span });
                 }
             }
             
