@@ -90,10 +90,28 @@ namespace SiliconStudio.Xenko.Particles.Materials
             }
         }
 
+        public void ForceMaterialRecreation()
+        {
+            
+        }
+
+        /// <inheritdoc/>
+        public override void ForceUpdate()
+        {
+            base.ForceUpdate();
+            particleMaterialSimpleHasChanged = true;
+        }
+
+        private bool particleMaterialSimpleHasChanged = true;
+
         /// <inheritdoc />
         public override void Setup(RenderContext context)
         {
             base.Setup(context);
+
+            if (particleMaterialSimpleHasChanged)
+                return;
+            particleMaterialSimpleHasChanged = false;
 
             // This is correct. We invert the value here to reduce calculations on the shader side later
             Parameters.Set(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);
