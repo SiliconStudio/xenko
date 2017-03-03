@@ -283,11 +283,14 @@ namespace SiliconStudio.Presentation.Quantum
         protected virtual bool SetNodeValue(IGraphNode node, object newValue)
         {
             // Check to accept the value
-            var accept = AcceptValueCallback?.Invoke(newValue) ?? true;
-            if (!accept)
+            if (AcceptValueCallback?.Invoke(newValue) == false)
                 return false;
 
-            newValue = CoerceValueCallback?.Invoke(newValue) ?? newValue;
+            // Coerce the value if needed
+            if (CoerceValueCallback != null)
+            {
+                newValue = CoerceValueCallback?.Invoke(newValue);
+            }
 
             if (Index == Index.Empty)
             {
