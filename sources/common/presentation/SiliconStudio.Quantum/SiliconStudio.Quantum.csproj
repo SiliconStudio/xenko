@@ -38,7 +38,6 @@
     <Compile Include="GraphVisitorBase.cs" />
     <Compile Include="IContentFactory.cs" />
     <Compile Include="IGraphNode.cs" />
-    <Compile Include="IGuidContainer.cs" />
     <Compile Include="Index.cs" />
     <Compile Include="INodeBuilder.cs" />
     <Compile Include="INodeContainer.cs" />
@@ -62,7 +61,6 @@
     <Compile Include="References\ReferenceEnumerable.cs" />
     <Compile Include="DefaultNodeBuilder.cs" />
     <Compile Include="NodeContainer.cs" />
-    <Compile Include="GuidContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
