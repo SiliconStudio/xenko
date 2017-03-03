@@ -576,7 +576,7 @@ namespace SiliconStudio.Presentation.Quantum
 
                 // This node can have been disposed by its parent already (if its parent is being refreshed and share the same source node)
                 // In this case, let's trigger the notifications gracefully before being discarded, but skip refresh
-                if (!IsPrimitive && !IsDestroyed && !(Value?.GetType().IsStruct() ?? false))
+                if (!IsPrimitive && !IsDestroyed)
                 {
                     Refresh();
                 }
