@@ -29,7 +29,7 @@ using SiliconStudio.Xenko.Rendering.Skyboxes;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.11.0-beta01")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.11.0.1")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public static readonly string DefaultGraphicsCompositorLevel9Url = "Compositing/DefaultGraphicsCompositorLevel9";
@@ -381,7 +381,7 @@ namespace SiliconStudio.Xenko.Assets
             }
 
             // Skybox/Background separation
-            if (dependency.Version.MinVersion < new PackageVersion("1.11.0-beta01"))
+            if (dependency.Version.MinVersion < new PackageVersion("1.11.0.1"))
             {
                 SplitSkyboxLightingUpgrader upgrader = new SplitSkyboxLightingUpgrader();
                 foreach (var skyboxAsset in assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xksky"))
