@@ -541,19 +541,19 @@ namespace SiliconStudio.Assets.Quantum
         {
             var assetNode = (IAssetNode)currentNode;
 
-            foreach (var linkedNode in baseLinkedNodes)
+            NodeChangeHandlers linkedNode;
+            if (baseLinkedNodes.TryGetValue(assetNode, out linkedNode))
             {
-                var member = linkedNode.Key.BaseNode as IMemberNode;
+                var member = assetNode.BaseNode as IMemberNode;
                 if (member != null)
                 {
-                    member.Changed -= linkedNode.Value.ValueChange;
+                    member.Changed -= linkedNode.ValueChange;
                 }
-                var objectNode = linkedNode.Key.BaseNode as IObjectNode;
+                var objectNode = assetNode.BaseNode as IObjectNode;
                 if (objectNode != null)
                 {
-                    objectNode.ItemChanged -= linkedNode.Value.ItemChange;
+                    objectNode.ItemChanged -= linkedNode.ItemChange;
                 }
-
             }
             baseLinkedNodes.Remove(assetNode);
         }
