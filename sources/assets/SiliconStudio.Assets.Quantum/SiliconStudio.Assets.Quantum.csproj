@@ -47,6 +47,7 @@
     <Compile Include="AssetBaseToDerivedRegistry.cs" />
     <Compile Include="AssetCompositeBaseToDerivedRegistry.cs" />
     <Compile Include="AssetCompositeHierarchyPropertyGraph.cs" />
+    <Compile Include="AssetNodeFactory.cs" />
     <Compile Include="AssetPartChangeEventArgs.cs" />
     <Compile Include="Visitors\AssetCollector.cs" />
     <Compile Include="Visitors\ExternalReferenceCollector.cs" />

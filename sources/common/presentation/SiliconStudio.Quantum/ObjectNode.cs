@@ -35,7 +35,7 @@ namespace SiliconStudio.Quantum
         public IMemberNode this[string name] => childrenMap[name];
 
         /// <inheritdoc/>
-        public IReadOnlyCollection<IMemberNode> Members => children;
+        public IReadOnlyCollection<IMemberNode> Members => (IReadOnlyCollection<IMemberNode>)childrenMap.Values;
 
         /// <inheritdoc/>
         public IEnumerable<Index> Indices => GetIndices();

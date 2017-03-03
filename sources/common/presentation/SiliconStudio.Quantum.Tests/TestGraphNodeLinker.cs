@@ -92,7 +92,7 @@ namespace SiliconStudio.Quantum.Tests
 
             protected override IGraphNode FindTarget(IGraphNode sourceNode)
             {
-                if (sourceNode is ObjectNode && sourceNode.Type == typeof(SimpleClass) && sourceNode != root)
+                if (sourceNode is IObjectNode && sourceNode.Type == typeof(SimpleClass) && sourceNode != root)
                 {
                     return CustomTarget;
                 }
