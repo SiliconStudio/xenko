@@ -90,11 +90,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
             }
         }
 
-        public void ForceMaterialRecreation()
-        {
-            
-        }
-
         /// <inheritdoc/>
         public override void ForceUpdate()
         {
