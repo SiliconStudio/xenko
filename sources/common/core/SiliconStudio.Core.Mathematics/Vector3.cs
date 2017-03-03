@@ -370,6 +370,30 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Scales a vector by the given vector components.
+        /// </summary>
+        /// <param name="value">The vector to scale.</param>
+        /// <param name="scale">The amount by which to scale the vector.</param>
+        /// <param name="result">When the method completes, contains the scaled vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Divide(ref Vector3 value, ref Vector3 scale, out Vector3 result)
+        {
+            result = new Vector3(value.X / scale.X, value.Y / scale.Y, value.Z / scale.Z);
+        }
+
+        /// <summary>
+        /// Scales a vector by the given vector components.
+        /// </summary>
+        /// <param name="value">The vector to scale.</param>
+        /// <param name="scale">The amount by which to scale the vector.</param>
+        /// <returns>The scaled vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 Divide(Vector3 value, Vector3 scale)
+        {
+            return new Vector3(value.X / scale.X, value.Y / scale.Y, value.Z / scale.Z);
+        }
+
+        /// <summary>
         /// Demodulates a vector with another by performing component-wise division.
         /// </summary>
         /// <param name="left">The first vector to demodulate.</param>
@@ -1160,6 +1184,20 @@ namespace SiliconStudio.Core.Mathematics
                 (vector.X * transform.M12) + (vector.Y * transform.M22) + (vector.Z * transform.M32) + transform.M42,
                 (vector.X * transform.M13) + (vector.Y * transform.M23) + (vector.Z * transform.M33) + transform.M43,
                 (vector.X * transform.M14) + (vector.Y * transform.M24) + (vector.Z * transform.M34) + transform.M44);
+        }
+
+        /// <summary>
+        /// Transforms a 3D vector by the given <see cref="SiliconStudio.Core.Mathematics.Matrix"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="SiliconStudio.Core.Mathematics.Matrix"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed <see cref="SiliconStudio.Core.Mathematics.Vector3"/>.</param>
+        public static void Transform(ref Vector3 vector, ref Matrix transform, out Vector3 result)
+        {
+            result = new Vector3(
+                (vector.X * transform.M11) + (vector.Y * transform.M21) + (vector.Z * transform.M31) + transform.M41,
+                (vector.X * transform.M12) + (vector.Y * transform.M22) + (vector.Z * transform.M32) + transform.M42,
+                (vector.X * transform.M13) + (vector.Y * transform.M23) + (vector.Z * transform.M33) + transform.M43);
         }
 
         /// <summary>

@@ -452,6 +452,62 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Divides a quaternion by another quaternion.
+        /// </summary>
+        /// <param name="quaternion1">Source Quaternion</param>
+        /// <param name="quaternion2">The divisor</param>
+        /// <param name="result">When the method completes, contains a result of the division</param>
+        public static void Divide(ref Quaternion quaternion1, ref Quaternion quaternion2, out Quaternion result)
+        {
+            float single = quaternion2.X * quaternion2.X + quaternion2.Y * quaternion2.Y + quaternion2.Z * quaternion2.Z + quaternion2.W * quaternion2.W;
+            float single1 = 1.0f / single;
+
+            float x1 = -quaternion2.X * single1;
+            float y1 = -quaternion2.Y * single1;
+            float z1 = -quaternion2.Z * single1;
+            float w1 = quaternion2.W * single1;
+
+            float single2 = quaternion1.Y * z1 - quaternion1.Z * y1;
+            float single3 = quaternion1.Z * x1 - quaternion1.X * z1;
+            float single4 = quaternion1.X * y1 - quaternion1.Y * x1;
+            float single5 = quaternion1.X * x1 + quaternion1.Y * y1 + quaternion1.Z * z1;
+
+            result = new Quaternion(
+                quaternion1.X * w1 + x1 * quaternion1.W + single2,
+                quaternion1.Y * w1 + y1 * quaternion1.W + single3,
+                quaternion1.Z * w1 + z1 * quaternion1.W + single4,
+                quaternion1.W * w1 - single5);
+        }
+
+        /// <summary>
+        /// Divides a quaternion by another quaternion.
+        /// </summary>
+        /// <param name="quaternion1">Source Quaternion</param>
+        /// <param name="quaternion2">The divisor</param>
+        /// <returns>Result of the division</returns>
+        public static Quaternion Divide(Quaternion quaternion1, Quaternion quaternion2)
+        {
+            float single = quaternion2.X * quaternion2.X + quaternion2.Y * quaternion2.Y + quaternion2.Z * quaternion2.Z + quaternion2.W * quaternion2.W;
+            float single1 = 1.0f / single;
+
+            float x1 = -quaternion2.X * single1;
+            float y1 = -quaternion2.Y * single1;
+            float z1 = -quaternion2.Z * single1;
+            float w1 = quaternion2.W * single1;
+
+            float single2 = quaternion1.Y * z1 - quaternion1.Z * y1;
+            float single3 = quaternion1.Z * x1 - quaternion1.X * z1;
+            float single4 = quaternion1.X * y1 - quaternion1.Y * x1;
+            float single5 = quaternion1.X * x1 + quaternion1.Y * y1 + quaternion1.Z * z1;
+
+            return new Quaternion(
+                quaternion1.X * w1 + x1 * quaternion1.W + single2,
+                quaternion1.Y * w1 + y1 * quaternion1.W + single3,
+                quaternion1.Z * w1 + z1 * quaternion1.W + single4,
+                quaternion1.W * w1 - single5);
+        }
+
+        /// <summary>
         /// Reverses the direction of a given quaternion.
         /// </summary>
         /// <param name="value">The quaternion to negate.</param>
