@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
@@ -43,7 +44,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
         private bool CanVisit(Type type)
         {
             // Also handles Entity, EntityComponent and Script
-            return ReferenceSerializer.IsReferenceType(type)
+            return AssetRegistry.IsContentType(type)
                    || type == typeof(Entity) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type);
         }
 

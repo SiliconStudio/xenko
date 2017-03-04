@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// This class is able to create constant buffers, indexelementCountrtex buffers, structured buffer, raw buffers, argument buffers.
     /// </remarks>
     [DataSerializer(typeof(BufferSerializer))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Buffer>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<Buffer>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<Buffer>))]
     public partial class Buffer : GraphicsResource
     {

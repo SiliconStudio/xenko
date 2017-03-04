@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SiliconStudio.AssemblyProcessor.Serializers;
 
 namespace SiliconStudio.AssemblyProcessor
@@ -20,7 +21,8 @@ namespace SiliconStudio.AssemblyProcessor
 
                 var alias = (string)dataContractAttribute.ConstructorArguments[0].Value;
 
-                context.DataContractAliases.Add(alias, type);
+                // Third parameter is IsAlias (differentiate DataAlias from DataContract)
+                context.DataContractAliases.Add(Tuple.Create(alias, type, dataContractAttribute.AttributeType.FullName == "SiliconStudio.Core.DataAliasAttribute"));
             }
         }
     }

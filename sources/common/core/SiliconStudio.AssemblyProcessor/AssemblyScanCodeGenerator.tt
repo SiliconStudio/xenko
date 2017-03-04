@@ -1,0 +1,31 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+
+using System;
+using System.Collections.Generic;
+
+namespace SiliconStudio.Core.Serialization.AssemblyScan
+{
+   	public static class <#=assemblyScanClassName#>
+	{
+	    [SiliconStudio.Core.ModuleInitializer(-2000)]
+        internal static void Initialize()
+		{
+			var scanTypes = new Dictionary<Type, List<Type>>();
+<# foreach (var scanTypeEntry in scanTypes) { #>
+			{
+				// Types scanned for <#=scanTypeEntry.Key.ConvertCSharp(true)#>
+				var scanTypeList = new List<Type>();
+<# foreach (var scanType in scanTypeEntry.Value) { #>
+				scanTypeList.Add(typeof(<#=scanType.ConvertCSharp()#>));
+<# } #>
+				scanTypes.Add(typeof(<#=scanTypeEntry.Key.ConvertCSharp(true)#>), scanTypeList);
+			}
+<# } #>
+			SiliconStudio.Core.Reflection.AssemblyRegistry.RegisterScanTypes(typeof(<#=assemblyScanClassName#>).Assembly, new SiliconStudio.Core.Reflection.AssemblyRegistry.ScanTypes(scanTypes));
+		}
+	}
+}

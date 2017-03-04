@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
     /// <summary>
     /// The Skybox at runtime.
     /// </summary>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Skybox>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<Skybox>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<Skybox>))]
     [DataContract]
     public class Skybox

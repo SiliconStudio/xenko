@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Audio
     /// </summary>
     [DebuggerDisplay("{Name}")]
     [ContentSerializer(typeof(DataContentSerializer<Sound>))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Sound>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<Sound>), Profile = "Content")]
     [DataSerializer(typeof(SoundSerializer))]
     public class Sound : ComponentBase
     {

@@ -7,6 +7,7 @@ namespace SiliconStudio.Core.Reflection
     /// <summary>
     /// A custom visitor used by <see cref="DataVisitorBase"/>.
     /// </summary>
+    [AssemblyScan]
     public interface IDataCustomVisitor
     {
         /// <summary>

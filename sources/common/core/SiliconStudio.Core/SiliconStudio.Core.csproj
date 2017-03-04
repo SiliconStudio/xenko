@@ -87,6 +87,7 @@
     <Compile Include="DisplayAttribute.cs" />
     <Compile Include="DisposeBase.cs" />
     <Compile Include="PropertyContainerClass.cs" />
+    <Compile Include="Reflection\AssemblyScanAttribute.cs" />
     <Compile Include="Reflection\TypeHelper.cs" />
     <Compile Include="IL\RemoveInitLocalsAttribute.cs" />
     <Compile Include="RuntimeIdHelper.cs" />

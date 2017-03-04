@@ -62,7 +62,7 @@ namespace SiliconStudio.Assets.Serializers
             objectContext.SerializerContext.Writer.Emit(scalar);
         }
 
-        private class YamlRedirectSerializer : AssetScalarSerializerBase
+        internal class YamlRedirectSerializer : AssetScalarSerializerBase
         {
             private readonly ScalarOrObjectSerializer realScalarSerializer;
 
