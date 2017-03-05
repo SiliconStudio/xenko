@@ -32,13 +32,8 @@ SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-#if NONATIVETASKS
-using Microsoft.Runtime.CompilerServices;
-#else
 using System.Runtime.CompilerServices;
-#endif
 
 namespace SiliconStudio.Core.Threading
 {
@@ -51,7 +46,7 @@ namespace SiliconStudio.Core.Threading
         /// <summary>
         /// The underlying task.
         /// </summary>
-        private readonly Task<T> _task;
+        private readonly Task<T> task;
 
         /// <summary>
         /// Initializes a new awaitable wrapper around the specified task.
@@ -59,7 +54,7 @@ namespace SiliconStudio.Core.Threading
         /// <param name="task">The underlying task to wrap.</param>
         public AwaitableDisposable(Task<T> task)
         {
-            _task = task;
+            this.task = task;
         }
 
         /// <summary>
@@ -67,7 +62,7 @@ namespace SiliconStudio.Core.Threading
         /// </summary>
         public Task<T> AsTask()
         {
-            return _task;
+            return task;
         }
 
         /// <summary>
@@ -84,7 +79,7 @@ namespace SiliconStudio.Core.Threading
         /// </summary>
         public TaskAwaiter<T> GetAwaiter()
         {
-            return _task.GetAwaiter();
+            return task.GetAwaiter();
         }
 
         /// <summary>
@@ -93,7 +88,7 @@ namespace SiliconStudio.Core.Threading
         /// <param name="continueOnCapturedContext">Whether to attempt to marshal the continuation back to the captured context.</param>
         public ConfiguredTaskAwaitable<T> ConfigureAwait(bool continueOnCapturedContext)
         {
-            return _task.ConfigureAwait(continueOnCapturedContext);
+            return task.ConfigureAwait(continueOnCapturedContext);
         }
     }
 }

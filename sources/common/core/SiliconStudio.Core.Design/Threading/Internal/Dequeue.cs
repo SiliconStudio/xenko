@@ -33,6 +33,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Threading
 {
@@ -66,26 +67,8 @@ namespace SiliconStudio.Core.Threading
         public Deque(int capacity)
         {
             if (capacity < 1)
-                throw new ArgumentOutOfRangeException("capacity", "Capacity must be greater than 0.");
+                throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be greater than 0.");
             buffer = new T[capacity];
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Deque&lt;T&gt;"/> class with the elements from the specified collection.
-        /// </summary>
-        /// <param name="collection">The collection.</param>
-        public Deque(IEnumerable<T> collection)
-        {
-            int count = collection.Count();
-            if (count > 0)
-            {
-                buffer = new T[count];
-                DoInsertRange(0, collection, count);
-            }
-            else
-            {
-                buffer = new T[DefaultCapacity];
-            }
         }
 
         /// <summary>
@@ -102,10 +85,7 @@ namespace SiliconStudio.Core.Threading
         /// Gets a value indicating whether this list is read-only. This implementation always returns <c>false</c>.
         /// </summary>
         /// <returns>true if this list is read-only; otherwise, false.</returns>
-        bool ICollection<T>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<T>.IsReadOnly => false;
 
         /// <summary>
         /// Gets or sets the item at the specified index.
@@ -117,13 +97,13 @@ namespace SiliconStudio.Core.Threading
         {
             get
             {
-                CheckExistingIndexArgument(this.Count, index);
+                CheckExistingIndexArgument(Count, index);
                 return DoGetItem(index);
             }
 
             set
             {
-                CheckExistingIndexArgument(this.Count, index);
+                CheckExistingIndexArgument(Count, index);
                 DoSetItem(index, value);
             }
         }
@@ -199,7 +179,7 @@ namespace SiliconStudio.Core.Threading
         /// <returns>
         /// true if <paramref name="item"/> is found in this list; otherwise, false.
         /// </returns>
-        bool ICollection<T>.Contains(T item)
+        bool ICollection<T>.Contains([NotNull] T item)
         {
             return this.Contains(item, null);
         }
@@ -223,9 +203,9 @@ namespace SiliconStudio.Core.Threading
         void ICollection<T>.CopyTo(T[] array, int arrayIndex)
         {
             if (array == null)
-                throw new ArgumentNullException("array", "Array is null");
+                throw new ArgumentNullException(nameof(array), "Array is null");
 
-            int count = this.Count;
+            int count = Count;
             CheckRangeArguments(array.Length, arrayIndex, count);
             for (int i = 0; i != count; ++i)
             {
@@ -261,7 +241,7 @@ namespace SiliconStudio.Core.Threading
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            int count = this.Count;
+            int count = Count;
             for (int i = 0; i != count; ++i)
             {
                 yield return DoGetItem(i);
@@ -276,10 +256,11 @@ namespace SiliconStudio.Core.Threading
         /// </returns>
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
 
         #endregion
+
         #region ObjectListImplementations
 
         int System.Collections.IList.Add(object value)
@@ -303,15 +284,9 @@ namespace SiliconStudio.Core.Threading
             Insert(index, (T)value);
         }
 
-        bool System.Collections.IList.IsFixedSize
-        {
-            get { return false; }
-        }
+        bool System.Collections.IList.IsFixedSize => false;
 
-        bool System.Collections.IList.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool System.Collections.IList.IsReadOnly => false;
 
         void System.Collections.IList.Remove(object value)
         {
@@ -334,7 +309,7 @@ namespace SiliconStudio.Core.Threading
         void System.Collections.ICollection.CopyTo(Array array, int index)
         {
             if (array == null)
-                throw new ArgumentNullException("array", "Destination array cannot be null.");
+                throw new ArgumentNullException(nameof(array), "Destination array cannot be null.");
             CheckRangeArguments(array.Length, index, Count);
 
             for (int i = 0; i != Count; ++i)
@@ -350,17 +325,12 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        bool System.Collections.ICollection.IsSynchronized
-        {
-            get { return false; }
-        }
+        bool System.Collections.ICollection.IsSynchronized => false;
 
-        object System.Collections.ICollection.SyncRoot
-        {
-            get { return this; }
-        }
+        object System.Collections.ICollection.SyncRoot => this;
 
         #endregion
+
         #region GenericListHelpers
 
         /// <summary>
@@ -373,7 +343,7 @@ namespace SiliconStudio.Core.Threading
         {
             if (index < 0 || index > sourceLength)
             {
-                throw new ArgumentOutOfRangeException("index", "Invalid new index " + index + " for source length " + sourceLength);
+                throw new ArgumentOutOfRangeException(nameof(index), "Invalid new index " + index + " for source length " + sourceLength);
             }
         }
 
@@ -387,7 +357,7 @@ namespace SiliconStudio.Core.Threading
         {
             if (index < 0 || index >= sourceLength)
             {
-                throw new ArgumentOutOfRangeException("index", "Invalid existing index " + index + " for source length " + sourceLength);
+                throw new ArgumentOutOfRangeException(nameof(index), "Invalid existing index " + index + " for source length " + sourceLength);
             }
         }
 
@@ -403,12 +373,12 @@ namespace SiliconStudio.Core.Threading
         {
             if (offset < 0)
             {
-                throw new ArgumentOutOfRangeException("offset", "Invalid offset " + offset);
+                throw new ArgumentOutOfRangeException(nameof(offset), "Invalid offset " + offset);
             }
 
             if (count < 0)
             {
-                throw new ArgumentOutOfRangeException("count", "Invalid count " + count);
+                throw new ArgumentOutOfRangeException(nameof(count), "Invalid count " + count);
             }
 
             if (sourceLength - offset < count)
@@ -422,30 +392,17 @@ namespace SiliconStudio.Core.Threading
         /// <summary>
         /// Gets a value indicating whether this instance is empty.
         /// </summary>
-        private bool IsEmpty
-        {
-            get { return Count == 0; }
-        }
+        private bool IsEmpty => Count == 0;
 
         /// <summary>
         /// Gets a value indicating whether this instance is at full capacity.
         /// </summary>
-        private bool IsFull
-        {
-            get { return Count == Capacity; }
-        }
+        private bool IsFull => Count == Capacity;
 
         /// <summary>
         /// Gets a value indicating whether the buffer is "split" (meaning the beginning of the view is at a later index in <see cref="buffer"/> than the end).
         /// </summary>
-        private bool IsSplit
-        {
-            get
-            {
-                // Overflow-safe version of "(offset + Count) > Capacity"
-                return offset > (Capacity - Count);
-            }
-        }
+        private bool IsSplit => offset > (Capacity - Count);
 
         /// <summary>
         /// Gets or sets the capacity for this deque. This value must always be greater than zero, and this property cannot be set to a value less than <see cref="Count"/>.
@@ -461,7 +418,7 @@ namespace SiliconStudio.Core.Threading
             set
             {
                 if (value < 1)
-                    throw new ArgumentOutOfRangeException("value", "Capacity must be greater than 0.");
+                    throw new ArgumentOutOfRangeException(nameof(value), "Capacity must be greater than 0.");
 
                 if (value < Count)
                     throw new InvalidOperationException("Capacity cannot be set to a value less than Count");
@@ -642,7 +599,7 @@ namespace SiliconStudio.Core.Threading
         /// <param name="index">The index into the view at which the elements are to be inserted.</param>
         /// <param name="collection">The elements to insert.</param>
         /// <param name="collectionCount">The number of elements in <paramref name="collection"/>. Must be greater than zero, and the sum of <paramref name="collectionCount"/> and <see cref="Count"/> must be less than or equal to <see cref="Capacity"/>.</param>
-        private void DoInsertRange(int index, IEnumerable<T> collection, int collectionCount)
+        private void DoInsertRange(int index, [NotNull] IEnumerable<T> collection, int collectionCount)
         {
             // Make room in the existing list
             if (index < Count / 2)
@@ -658,7 +615,7 @@ namespace SiliconStudio.Core.Threading
                     buffer[DequeIndexToBufferIndex(writeIndex + j)] = buffer[DequeIndexToBufferIndex(j)];
 
                 // Rotate to the new view
-                this.PreDecrement(collectionCount);
+                PreDecrement(collectionCount);
             }
             else
             {
@@ -693,7 +650,7 @@ namespace SiliconStudio.Core.Threading
             if (index == 0)
             {
                 // Removing from the beginning: rotate to the new view
-                this.PostIncrement(collectionCount);
+                PostIncrement(collectionCount);
                 Count -= collectionCount;
                 return;
             }
@@ -715,7 +672,7 @@ namespace SiliconStudio.Core.Threading
                     buffer[DequeIndexToBufferIndex(writeIndex + j)] = buffer[DequeIndexToBufferIndex(j)];
 
                 // Rotate to new view
-                this.PostIncrement(collectionCount);
+                PostIncrement(collectionCount);
             }
             else
             {
@@ -737,9 +694,9 @@ namespace SiliconStudio.Core.Threading
         /// </summary>
         private void EnsureCapacityForOneElement()
         {
-            if (this.IsFull)
+            if (IsFull)
             {
-                this.Capacity = this.Capacity * 2;
+                Capacity = Capacity * 2;
             }
         }
 
@@ -769,7 +726,7 @@ namespace SiliconStudio.Core.Threading
         /// <param name="index">The index at which the collection is inserted.</param>
         /// <param name="collection">The collection of elements to insert.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index to an insertion point for the source.</exception>
-        public void InsertRange(int index, IEnumerable<T> collection)
+        public void InsertRange(int index, [NotNull] IEnumerable<T> collection)
         {
             int collectionCount = collection.Count();
             CheckNewIndexArgument(Count, index);
@@ -777,7 +734,7 @@ namespace SiliconStudio.Core.Threading
             // Overflow-safe check for "this.Count + collectionCount > this.Capacity"
             if (collectionCount > Capacity - Count)
             {
-                this.Capacity = checked(Count + collectionCount);
+                Capacity = checked(Count + collectionCount);
             }
 
             if (collectionCount == 0)
@@ -785,7 +742,7 @@ namespace SiliconStudio.Core.Threading
                 return;
             }
 
-            this.DoInsertRange(index, collection, collectionCount);
+            DoInsertRange(index, collection, collectionCount);
         }
 
         /// <summary>
@@ -804,7 +761,7 @@ namespace SiliconStudio.Core.Threading
                 return;
             }
 
-            this.DoRemoveRange(offset, count);
+            DoRemoveRange(offset, count);
         }
 
         /// <summary>
@@ -814,10 +771,10 @@ namespace SiliconStudio.Core.Threading
         /// <exception cref="InvalidOperationException">The deque is empty.</exception>
         public T RemoveFromBack()
         {
-            if (this.IsEmpty)
+            if (IsEmpty)
                 throw new InvalidOperationException("The deque is empty.");
 
-            return this.DoRemoveFromBack();
+            return DoRemoveFromBack();
         }
 
         /// <summary>
@@ -827,10 +784,10 @@ namespace SiliconStudio.Core.Threading
         /// <exception cref="InvalidOperationException">The deque is empty.</exception>
         public T RemoveFromFront()
         {
-            if (this.IsEmpty)
+            if (IsEmpty)
                 throw new InvalidOperationException("The deque is empty.");
 
-            return this.DoRemoveFromFront();
+            return DoRemoveFromFront();
         }
 
         /// <summary>
@@ -838,8 +795,8 @@ namespace SiliconStudio.Core.Threading
         /// </summary>
         public void Clear()
         {
-            this.offset = 0;
-            this.Count = 0;
+            offset = 0;
+            Count = 0;
         }
 
         [DebuggerNonUserCode]
@@ -852,6 +809,7 @@ namespace SiliconStudio.Core.Threading
                 this.deque = deque;
             }
 
+            [NotNull]
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
             public T[] Items
             {

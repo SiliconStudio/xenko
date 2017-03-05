@@ -49,7 +49,7 @@ namespace SiliconStudio.Core.Threading
         /// The last id generated for this type. This is 0 if no ids have been generated.
         /// </summary>
         // ReSharper disable StaticFieldInGenericType
-        private static int _lastId;
+        private static int lastId;
         // ReSharper restore StaticFieldInGenericType
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace SiliconStudio.Core.Threading
             //  If there are tons of Id allocations going on, we want to skip over 0 no matter how many times we get it.
             do
             {
-                newId = Interlocked.Increment(ref _lastId);
+                newId = Interlocked.Increment(ref lastId);
             } while (newId == 0);
 
             // Update the Id unless another thread already updated it.

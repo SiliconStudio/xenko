@@ -41,34 +41,34 @@ namespace SiliconStudio.Core.Threading
     /// <summary>
     /// A mutual exclusion lock that is compatible with async. Note that this lock is <b>not</b> recursive!
     /// </summary>
-    [DebuggerDisplay("Id = {Id}, Taken = {_taken}")]
+    [DebuggerDisplay("Id = {Id}, Taken = {taken}")]
     [DebuggerTypeProxy(typeof(DebugView))]
     public sealed class AsyncLock
     {
         /// <summary>
         /// Whether the lock is taken by a task.
         /// </summary>
-        private bool _taken;
+        private bool taken;
 
         /// <summary>
         /// The queue of TCSs that other tasks are awaiting to acquire the lock.
         /// </summary>
-        private readonly IAsyncWaitQueue<IDisposable> _queue;
+        private readonly IAsyncWaitQueue<IDisposable> queue;
 
         /// <summary>
         /// A task that is completed with the key object for this lock.
         /// </summary>
-        private readonly Task<IDisposable> _cachedKeyTask;
+        private readonly Task<IDisposable> cachedKeyTask;
 
         /// <summary>
         /// The semi-unique identifier for this instance. This is 0 if the id has not yet been created.
         /// </summary>
-        private int _id;
+        private int id;
 
         /// <summary>
         /// The object used for mutual exclusion.
         /// </summary>
-        private readonly object _mutex;
+        private readonly object mutex;
 
         /// <summary>
         /// Creates a new async-compatible mutual exclusion lock.
@@ -84,18 +84,15 @@ namespace SiliconStudio.Core.Threading
         /// <param name="queue">The wait queue used to manage waiters.</param>
         public AsyncLock(IAsyncWaitQueue<IDisposable> queue)
         {
-            _queue = queue;
-            _cachedKeyTask = TaskShim.FromResult<IDisposable>(new Key(this));
-            _mutex = new object();
+            this.queue = queue;
+            cachedKeyTask = Task.FromResult((IDisposable)new Key(this));
+            mutex = new object();
         }
 
         /// <summary>
         /// Gets a semi-unique identifier for this asynchronous lock.
         /// </summary>
-        public int Id
-        {
-            get { return IdManager<AsyncLock>.GetId(ref _id); }
-        }
+        public int Id => IdManager<AsyncLock>.GetId(ref id);
 
         /// <summary>
         /// Asynchronously acquires the lock. Returns a disposable that releases the lock when disposed.
@@ -105,18 +102,18 @@ namespace SiliconStudio.Core.Threading
         public AwaitableDisposable<IDisposable> LockAsync(CancellationToken cancellationToken)
         {
             Task<IDisposable> ret;
-            lock (_mutex)
+            lock (mutex)
             {
-                if (!_taken)
+                if (!taken)
                 {
                     // If the lock is available, take it immediately.
-                    _taken = true;
-                    ret = _cachedKeyTask;
+                    taken = true;
+                    ret = cachedKeyTask;
                 }
                 else
                 {
                     // Wait for the lock to become available or cancellation.
-                    ret = _queue.Enqueue(_mutex, cancellationToken);
+                    ret = queue.Enqueue(mutex, cancellationToken);
                 }
 
                 //Enlightenment.Trace.AsyncLock_TrackLock(this, ret);
@@ -132,18 +129,19 @@ namespace SiliconStudio.Core.Threading
         public IDisposable Lock(CancellationToken cancellationToken)
         {
             Task<IDisposable> enqueuedTask;
-            lock (_mutex)
+            lock (mutex)
             {
-                if (!_taken)
+                if (!taken)
                 {
-                    _taken = true;
-                    return _cachedKeyTask.Result;
+                    taken = true;
+                    return cachedKeyTask.Result;
                 }
 
-                enqueuedTask = _queue.Enqueue(_mutex, cancellationToken);
+                enqueuedTask = queue.Enqueue(mutex, cancellationToken);
             }
 
-            return enqueuedTask.WaitAndUnwrapException();
+            // WaitAndUnwrapException
+            return enqueuedTask.GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -169,16 +167,15 @@ namespace SiliconStudio.Core.Threading
         internal void ReleaseLock()
         {
             IDisposable finish = null;
-            lock (_mutex)
+            lock (mutex)
             {
                 //Enlightenment.Trace.AsyncLock_Unlocked(this);
-                if (_queue.IsEmpty)
-                    _taken = false;
+                if (queue.IsEmpty)
+                    taken = false;
                 else
-                    finish = _queue.Dequeue(_cachedKeyTask.Result);
+                    finish = queue.Dequeue(cachedKeyTask.Result);
             }
-            if (finish != null)
-                finish.Dispose();
+            finish?.Dispose();
         }
 
         /// <summary>
@@ -189,7 +186,7 @@ namespace SiliconStudio.Core.Threading
             /// <summary>
             /// The lock to release.
             /// </summary>
-            private readonly AsyncLock _asyncLock;
+            private readonly AsyncLock asyncLock;
 
             /// <summary>
             /// Creates the key for a lock.
@@ -197,7 +194,7 @@ namespace SiliconStudio.Core.Threading
             /// <param name="asyncLock">The lock to release. May not be <c>null</c>.</param>
             public Key(AsyncLock asyncLock)
             {
-                _asyncLock = asyncLock;
+                this.asyncLock = asyncLock;
             }
 
             /// <summary>
@@ -205,7 +202,7 @@ namespace SiliconStudio.Core.Threading
             /// </summary>
             public void Dispose()
             {
-                _asyncLock.ReleaseLock();
+                asyncLock.ReleaseLock();
             }
         }
 
@@ -213,18 +210,18 @@ namespace SiliconStudio.Core.Threading
         [DebuggerNonUserCode]
         private sealed class DebugView
         {
-            private readonly AsyncLock _mutex;
+            private readonly AsyncLock mutex;
 
             public DebugView(AsyncLock mutex)
             {
-                _mutex = mutex;
+                this.mutex = mutex;
             }
 
-            public int Id { get { return _mutex.Id; } }
+            public int Id => mutex.Id;
 
-            public bool Taken { get { return _mutex._taken; } }
+            public bool Taken => mutex.taken;
 
-            public IAsyncWaitQueue<IDisposable> WaitQueue { get { return _mutex._queue; } }
+            public IAsyncWaitQueue<IDisposable> WaitQueue => mutex.queue;
         }
         // ReSharper restore UnusedMember.Local
     }
