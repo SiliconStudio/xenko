@@ -15,6 +15,16 @@ extern "C" {
 
 extern void npExit(int code);
 
+#undef qsort
+#define qsort npQsort
+
+extern void npQsort(void *base, size_t nitems, size_t size, int (*compar)(const void *, const void*));
+
+#undef rand
+#define rand npRand
+
+extern int npRand();
+
 #ifdef __cplusplus
 }
 #endif
