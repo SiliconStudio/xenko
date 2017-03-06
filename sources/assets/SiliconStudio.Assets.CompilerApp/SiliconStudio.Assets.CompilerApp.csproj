@@ -34,7 +34,6 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssetSerializableLogMessage.cs" />
     <Compile Include="BundlePacker.cs" />
     <Compile Include="IPackageBuilderApp.cs" />
     <Compile Include="LogListenerRedirectToAction.cs" />
