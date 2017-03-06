@@ -22,6 +22,7 @@ namespace SiliconStudio.Xenko.Input
         private readonly IntPtr oldWndProc;
 
         private bool textInputEnabled;
+        private Win32Native.WndProc wndProcDelegate;
 
         public KeyboardWinforms(InputSourceWinforms source, Control uiControl)
         {
@@ -33,9 +34,10 @@ namespace SiliconStudio.Xenko.Input
                 Location = new Point(-100, -100),
                 Size = new Size(80, 80)
             };
-
-            // Move so it is not in view
-            var windowProc = Marshal.GetFunctionPointerForDelegate((Win32Native.WndProc)WndProc);
+            
+            // Assign custom window procedure to this text box
+            wndProcDelegate = WndProc;
+            var windowProc = Marshal.GetFunctionPointerForDelegate(wndProcDelegate);
             oldWndProc = Win32Native.SetWindowLong(richTextBox.Handle, Win32Native.WindowLongType.WndProc, windowProc);
         }
 
@@ -43,7 +45,7 @@ namespace SiliconStudio.Xenko.Input
         {
             richTextBox?.Dispose();
         }
-
+         
         public override string Name => "Windows Keyboard";
 
         public override Guid Id => new Guid("027cf994-681f-4ed5-b38f-ce34fc295b8f");
