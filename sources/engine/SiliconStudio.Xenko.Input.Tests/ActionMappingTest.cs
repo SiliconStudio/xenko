@@ -18,6 +18,7 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Input.Gestures;
 using SiliconStudio.Xenko.Input.Mapping;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.UI;
 using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Panels;
@@ -79,6 +80,9 @@ namespace SiliconStudio.Xenko.Input.Tests
         protected override async Task LoadContent()
         {
             await base.LoadContent();
+
+            // Load the default graphics compositor
+            SceneSystem.GraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
             actionMapping = new InputActionMapping(Input);
 
@@ -334,7 +338,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             var width = 500;
             var bufferRatio = GraphicsDevice.Presenter.BackBuffer.Width / (float)GraphicsDevice.Presenter.BackBuffer.Height;
             var ui = new UIComponent { Resolution = new Vector3(width, width / bufferRatio, 500) };
-            SceneSystem.SceneInstance.Scene.Entities.Add(new Entity { ui });
+            SceneSystem.SceneInstance.RootScene.Entities.Add(new Entity { ui });
 
             var stackPanel = new StackPanel();
             for (int i = 0; i < actions.Count; i++)
