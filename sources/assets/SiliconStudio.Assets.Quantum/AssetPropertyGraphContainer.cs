@@ -7,12 +7,10 @@ namespace SiliconStudio.Assets.Quantum
 {
     public class AssetPropertyGraphContainer
     {
-        private readonly PackageSession session;
         private readonly Dictionary<AssetId, AssetPropertyGraph> registeredGraphs = new Dictionary<AssetId, AssetPropertyGraph>();
 
-        public AssetPropertyGraphContainer(PackageSession session, AssetNodeContainer nodeContainer)
+        public AssetPropertyGraphContainer(AssetNodeContainer nodeContainer)
         {
-            this.session = session;
             NodeContainer = nodeContainer;
         }
 
@@ -27,7 +25,7 @@ namespace SiliconStudio.Assets.Quantum
                 return null;
 
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(this, assetItem, logger);
-            RegisterGraph(assetItem.Id, graph);
+            RegisterGraph(graph);
             return graph;
         }
 
@@ -38,19 +36,14 @@ namespace SiliconStudio.Assets.Quantum
             return graph;
         }
 
-        public void RegisterGraph(AssetId assetId, AssetPropertyGraph graph)
+        public void RegisterGraph(AssetPropertyGraph graph)
         {
-            registeredGraphs.Add(assetId, graph);
+            registeredGraphs.Add(graph.Id, graph);
         }
 
         public bool UnregisterGraph(AssetId assetId)
         {
             return registeredGraphs.Remove(assetId);
-        }
-
-        public AssetItem GetAssetById(AssetId assetId)
-        {
-            return session.FindAsset(assetId);
         }
     }
 }
