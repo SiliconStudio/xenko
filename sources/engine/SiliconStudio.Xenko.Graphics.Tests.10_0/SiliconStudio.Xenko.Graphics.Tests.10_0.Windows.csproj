@@ -52,7 +52,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Xenko.Engine.NextGen.NextGenTest1</StartupObject>
+    <StartupObject>SiliconStudio.Xenko.Graphics.Tests.TestLightShafts</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -144,6 +144,10 @@
       <Name>SiliconStudio.Xenko.SpriteStudio.Runtime</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.UI\SiliconStudio.Xenko.UI.csproj">
+      <Project>{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}</Project>
+      <Name>SiliconStudio.Xenko.UI</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -170,7 +174,9 @@
     <Compile Include="Module.cs" />
     <Compile Include="GraphicTestGameBase.cs" />
     <Compile Include="TestImageEffect.cs" />
+    <Compile Include="TestLightShafts.cs" />
     <Compile Include="TestMultipleRenderTargets.cs" />
+    <Compile Include="TestShadows.cs" />
     <None Include="Assets\MultipleRenderTargetsEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MultipleRenderTargetsEffect.cs</LastGenOutput>

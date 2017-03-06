@@ -7,7 +7,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Commands;
@@ -37,7 +37,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// Initializes a new instance of the <see cref="LoggerViewModel"/> class.
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> to use for this view model.</param>
-        public LoggerViewModel(IViewModelServiceProvider serviceProvider)
+        public LoggerViewModel([NotNull] IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
             AddLoggerCommand = new AnonymousCommand<Logger>(serviceProvider, AddLogger);
@@ -53,7 +53,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> to use for this view model.</param>
         /// <param name="logger">The <see cref="Logger"/> to monitor.</param>
-        public LoggerViewModel(IViewModelServiceProvider serviceProvider, Logger logger)
+        public LoggerViewModel([NotNull] IViewModelServiceProvider serviceProvider, [NotNull] Logger logger)
             : this(serviceProvider)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
@@ -66,7 +66,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> to use for this view model.</param>
         /// <param name="loggers">The collection of <see cref="Logger"/> to monitor.</param>
-        public LoggerViewModel(IViewModelServiceProvider serviceProvider, IEnumerable<Logger> loggers)
+        public LoggerViewModel([NotNull] IViewModelServiceProvider serviceProvider, [ItemNotNull, NotNull] IEnumerable<Logger> loggers)
             : this(serviceProvider)
         {
             if (loggers == null) throw new ArgumentNullException(nameof(loggers));
@@ -88,6 +88,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Gets the collection of messages currently contained in this view model.
         /// </summary>
+        [NotNull]
         public IReadOnlyObservableCollection<ILogMessage> Messages => messages;
 
         /// <summary>
@@ -115,35 +116,46 @@ namespace SiliconStudio.Presentation.ViewModel
         public bool HasNewMessages { get { return hasNewMessages; } private set { SetValue(ref hasNewMessages, value); } }
 
         /// <summary>
+        /// Gets the minimum level of message that will be recorded by this view model.
+        /// </summary>
+        public LogMessageType MinLevel { get; set; } = LogMessageType.Debug;
+
+        /// <summary>
         /// Gets the command that will add a logger to monitor.
         /// </summary>
         /// <remarks>An instance of <see cref="Logger"/> must be passed as parameter of this command.</remarks>
-        public ICommandBase AddLoggerCommand { get; protected set; }
+        [NotNull]
+        public ICommandBase AddLoggerCommand { get; }
 
         /// <summary>
         /// Gets the command that will remove a logger from monitoring.
         /// </summary>
-        public ICommandBase RemoveLoggerCommand { get; protected set; }
+        [NotNull]
+        public ICommandBase RemoveLoggerCommand { get; }
 
         /// <summary>
         /// Gets the command that will remove all loggers from monitoring. 
         /// </summary>
-        public ICommandBase ClearLoggersCommand { get; protected set; }
+        [NotNull]
+        public ICommandBase ClearLoggersCommand { get; }
 
         /// <summary>
         /// Gets the command that will clear the <see cref="Messages"/> collection.
         /// </summary>
+        [NotNull]
         public ICommandBase ClearMessagesCommand { get; }
 
         /// <summary>
         /// Gets the command that will reset the <see cref="HasNewMessages"/> flag.
         /// </summary>
+        [NotNull]
         public ICommandBase ClearNewMessageFlagCommand { get; }
+        
         /// <summary>
         /// Adds a <see cref="Logger"/> to monitor.
         /// </summary>
         /// <param name="logger">The <see cref="Logger"/> to monitor.</param>
-        public virtual void AddLogger(Logger logger)
+        public virtual void AddLogger([NotNull] Logger logger)
         {
             Loggers.Add(logger, new List<ILogMessage>());
             logger.MessageLogged += MessageLogged;
@@ -153,7 +165,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// Removes a <see cref="Logger"/> from monitoring.
         /// </summary>
         /// <param name="logger">The <see cref="Logger"/> to remove from monitoring.</param>
-        public virtual void RemoveLogger(Logger logger)
+        public virtual void RemoveLogger([NotNull] Logger logger)
         {
             Loggers.Remove(logger);
             logger.MessageLogged -= MessageLogged;
@@ -199,7 +211,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Removes messages that comes from the given logger from the <see cref="Messages"/> collection.
         /// </summary>
-        public void ClearMessages(Logger logger)
+        public void ClearMessages([NotNull] Logger logger)
         {
             List<ILogMessage> messagesToRemove;
             if (Loggers.TryGetValue(logger, out messagesToRemove))
@@ -216,15 +228,18 @@ namespace SiliconStudio.Presentation.ViewModel
         /// </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="args">The event argument.</param>
-        private void MessageLogged(object sender, MessageLoggedEventArgs args)
+        private void MessageLogged(object sender, [NotNull] MessageLoggedEventArgs args)
         {
             lock (pendingMessages)
             {
-                pendingMessages.Add(Tuple.Create((Logger)sender, args.Message));
-                if (!updatePending)
+                if (args.Message.IsAtLeast(MinLevel))
                 {
-                    updatePending = true;
-                    Dispatcher.InvokeAsync(UpdateMessages);
+                    pendingMessages.Add(Tuple.Create((Logger)sender, args.Message));
+                    if (!updatePending)
+                    {
+                        updatePending = true;
+                        Dispatcher.InvokeAsync(UpdateMessages);
+                    }
                 }
             }
         }
@@ -265,7 +280,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Raised when the messages collection is changed. Updates <see cref="HasWarnings"/> and <see cref="HasErrors"/> properties.
         /// </summary>
-        private void MessagesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void MessagesCollectionChanged(object sender, [NotNull] NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {

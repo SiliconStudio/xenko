@@ -9,8 +9,10 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Media;
-
+using System.Windows.Threading;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -39,27 +41,27 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="AutoScroll"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty AutoScrollProperty = DependencyProperty.Register("AutoScroll", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true));
+        public static readonly DependencyProperty AutoScrollProperty = DependencyProperty.Register("AutoScroll", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Identifies the <see cref="IsToolBarVisible"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsToolBarVisibleProperty = DependencyProperty.Register("IsToolBarVisible", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true));
+        public static readonly DependencyProperty IsToolBarVisibleProperty = DependencyProperty.Register("IsToolBarVisible", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Identifies the <see cref="CanClearLog"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CanClearLogProperty = DependencyProperty.Register("CanClearLog", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true));
+        public static readonly DependencyProperty CanClearLogProperty = DependencyProperty.Register("CanClearLog", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Identifies the <see cref="CanFilterLog"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CanFilterLogProperty = DependencyProperty.Register("CanFilterLog", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true));
+        public static readonly DependencyProperty CanFilterLogProperty = DependencyProperty.Register("CanFilterLog", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Identifies the <see cref="CanSearchLog"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CanSearchLogProperty = DependencyProperty.Register("CanSearchLog", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true));
+        public static readonly DependencyProperty CanSearchLogProperty = DependencyProperty.Register("CanSearchLog", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Identifies the <see cref="SearchToken"/> dependency property.
@@ -69,12 +71,12 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="SearchMatchCase"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty SearchMatchCaseProperty = DependencyProperty.Register("SearchMatchCase", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(false, SearchTokenChanged));
+        public static readonly DependencyProperty SearchMatchCaseProperty = DependencyProperty.Register("SearchMatchCase", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.FalseBox, SearchTokenChanged));
 
         /// <summary>
         /// Identifies the <see cref="SearchMatchWord"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty SearchMatchWordProperty = DependencyProperty.Register("SearchMatchWord", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(false, SearchTokenChanged));
+        public static readonly DependencyProperty SearchMatchWordProperty = DependencyProperty.Register("SearchMatchWord", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.FalseBox, SearchTokenChanged));
 
         /// <summary>
         /// Identifies the <see cref="SearchMatchBrush"/> dependency property.
@@ -114,39 +116,39 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="ShowDebugMessages"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ShowDebugMessagesProperty = DependencyProperty.Register("ShowDebugMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true, TextPropertyChanged));
+        public static readonly DependencyProperty ShowDebugMessagesProperty = DependencyProperty.Register("ShowDebugMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox, TextPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="ShowVerboseMessages"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ShowVerboseMessagesProperty = DependencyProperty.Register("ShowVerboseMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true, TextPropertyChanged));
+        public static readonly DependencyProperty ShowVerboseMessagesProperty = DependencyProperty.Register("ShowVerboseMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox, TextPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="ShowInfoMessages"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ShowInfoMessagesProperty = DependencyProperty.Register("ShowInfoMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true, TextPropertyChanged));
+        public static readonly DependencyProperty ShowInfoMessagesProperty = DependencyProperty.Register("ShowInfoMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox, TextPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="ShowWarningMessages"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ShowWarningMessagesProperty = DependencyProperty.Register("ShowWarningMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true, TextPropertyChanged));
+        public static readonly DependencyProperty ShowWarningMessagesProperty = DependencyProperty.Register("ShowWarningMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox, TextPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="ShowErrorMessages"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ShowErrorMessagesProperty = DependencyProperty.Register("ShowErrorMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true, TextPropertyChanged));
+        public static readonly DependencyProperty ShowErrorMessagesProperty = DependencyProperty.Register("ShowErrorMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox, TextPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="ShowFatalMessages"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ShowFatalMessagesProperty = DependencyProperty.Register("ShowFatalMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true, TextPropertyChanged));
+        public static readonly DependencyProperty ShowFatalMessagesProperty = DependencyProperty.Register("ShowFatalMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(BooleanBoxes.TrueBox, TextPropertyChanged));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextLogViewer"/> class.
         /// </summary>
         public TextLogViewer()
         {
-            Loaded += (s, e) => { if (AutoScroll && logTextBox != null) logTextBox.ScrollToEnd(); };
+            Loaded += (s, e) => { if (AutoScroll) logTextBox?.ScrollToEnd(); };
         }
 
         /// <summary>
@@ -157,27 +159,27 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether the control should automatically scroll when new lines are added when the scrollbar is already at the bottom.
         /// </summary>
-        public bool AutoScroll { get { return (bool)GetValue(AutoScrollProperty); } set { SetValue(AutoScrollProperty, value); } }
+        public bool AutoScroll { get { return (bool)GetValue(AutoScrollProperty); } set { SetValue(AutoScrollProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether the tool bar should be visible.
         /// </summary>
-        public bool IsToolBarVisible { get { return (bool)GetValue(IsToolBarVisibleProperty); } set { SetValue(IsToolBarVisibleProperty, value); } }
+        public bool IsToolBarVisible { get { return (bool)GetValue(IsToolBarVisibleProperty); } set { SetValue(IsToolBarVisibleProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether it is possible to clear the log text.
         /// </summary>
-        public bool CanClearLog { get { return (bool)GetValue(CanClearLogProperty); } set { SetValue(CanClearLogProperty, value); } }
+        public bool CanClearLog { get { return (bool)GetValue(CanClearLogProperty); } set { SetValue(CanClearLogProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether it is possible to filter the log text.
         /// </summary>
-        public bool CanFilterLog { get { return (bool)GetValue(CanFilterLogProperty); } set { SetValue(CanFilterLogProperty, value); } }
+        public bool CanFilterLog { get { return (bool)GetValue(CanFilterLogProperty); } set { SetValue(CanFilterLogProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether it is possible to search the log text.
         /// </summary>
-        public bool CanSearchLog { get { return (bool)GetValue(CanSearchLogProperty); } set { SetValue(CanSearchLogProperty, value); } }
+        public bool CanSearchLog { get { return (bool)GetValue(CanSearchLogProperty); } set { SetValue(CanSearchLogProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets the current search token.
@@ -192,7 +194,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether the search result should match whole words only.
         /// </summary>
-        public bool SearchMatchWord { get { return (bool)GetValue(SearchMatchWordProperty); } set { SetValue(SearchMatchWordProperty, value); } }
+        public bool SearchMatchWord { get { return (bool)GetValue(SearchMatchWordProperty); } set { SetValue(SearchMatchWordProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets the brush used to emphasize search results.
@@ -232,32 +234,32 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether the log viewer should display debug messages.
         /// </summary>
-        public bool ShowDebugMessages { get { return (bool)GetValue(ShowDebugMessagesProperty); } set { SetValue(ShowDebugMessagesProperty, value); } }
+        public bool ShowDebugMessages { get { return (bool)GetValue(ShowDebugMessagesProperty); } set { SetValue(ShowDebugMessagesProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether the log viewer should display verbose messages.
         /// </summary>
-        public bool ShowVerboseMessages { get { return (bool)GetValue(ShowVerboseMessagesProperty); } set { SetValue(ShowVerboseMessagesProperty, value); } }
+        public bool ShowVerboseMessages { get { return (bool)GetValue(ShowVerboseMessagesProperty); } set { SetValue(ShowVerboseMessagesProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether the log viewer should display info messages.
         /// </summary>
-        public bool ShowInfoMessages { get { return (bool)GetValue(ShowInfoMessagesProperty); } set { SetValue(ShowInfoMessagesProperty, value); } }
+        public bool ShowInfoMessages { get { return (bool)GetValue(ShowInfoMessagesProperty); } set { SetValue(ShowInfoMessagesProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether the log viewer should display warning messages.
         /// </summary>
-        public bool ShowWarningMessages { get { return (bool)GetValue(ShowWarningMessagesProperty); } set { SetValue(ShowWarningMessagesProperty, value); } }
+        public bool ShowWarningMessages { get { return (bool)GetValue(ShowWarningMessagesProperty); } set { SetValue(ShowWarningMessagesProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether the log viewer should display error messages.
         /// </summary>
-        public bool ShowErrorMessages { get { return (bool)GetValue(ShowErrorMessagesProperty); } set { SetValue(ShowErrorMessagesProperty, value); } }
+        public bool ShowErrorMessages { get { return (bool)GetValue(ShowErrorMessagesProperty); } set { SetValue(ShowErrorMessagesProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether the log viewer should display fatal messages.
         /// </summary>
-        public bool ShowFatalMessages { get { return (bool)GetValue(ShowFatalMessagesProperty); } set { SetValue(ShowFatalMessagesProperty, value); } }
+        public bool ShowFatalMessages { get { return (bool)GetValue(ShowFatalMessagesProperty); } set { SetValue(ShowFatalMessagesProperty, value.Box()); } }
 
         /// <inheritdoc/>
         public override void OnApplyTemplate()
@@ -308,10 +310,11 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        private void AppendText(FlowDocument document, IEnumerable<ILogMessage> logMessages)
+        private void AppendText([NotNull] FlowDocument document, [NotNull] IEnumerable<ILogMessage> logMessages)
         {
-            if (document == null) throw new ArgumentNullException("document");
-            if (logTextBox != null && logMessages != null)
+            if (document == null) throw new ArgumentNullException(nameof(document));
+            if (logMessages == null) throw new ArgumentNullException(nameof(logMessages));
+            if (logTextBox != null)
             {
                 var paragraph = (Paragraph)document.Blocks.AsEnumerable().First();
                 var stringComparison = SearchMatchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
@@ -328,24 +331,24 @@ namespace SiliconStudio.Presentation.Controls
                     {
                         do
                         {
-                            int tokenIndex = lineText.IndexOf(searchToken, stringComparison);
+                            var tokenIndex = lineText.IndexOf(searchToken, stringComparison);
                             if (tokenIndex == -1)
                             {
                                 paragraph.Inlines.Add(new Run(lineText) { Foreground = logColor });
                                 break;
                             }
-                            bool acceptResult = true;
+                            var acceptResult = true;
                             if (SearchMatchWord && lineText.Length > 1)
                             {
                                 if (tokenIndex > 0)
                                 {
-                                    char c = lineText[tokenIndex - 1];
+                                    var c = lineText[tokenIndex - 1];
                                     if ((c >= 'A' && c <= 'A') || (c >= 'a' && c <= 'z'))
                                         acceptResult = false;
                                 }
                                 if (tokenIndex + searchToken.Length < lineText.Length)
                                 {
-                                    char c = lineText[tokenIndex + searchToken.Length];
+                                    var c = lineText[tokenIndex + searchToken.Length];
                                     if ((c >= 'A' && c <= 'A') || (c >= 'a' && c <= 'z'))
                                         acceptResult = false;
                                 }
@@ -386,7 +389,7 @@ namespace SiliconStudio.Presentation.Controls
         {
             if (searchMatches.Count > 0)
             {
-                int previousResult = (searchMatches.Count + currentResult - 1) % searchMatches.Count;
+                var previousResult = (searchMatches.Count + currentResult - 1) % searchMatches.Count;
                 SelectSearchResult(previousResult);
             }
         }
@@ -395,7 +398,7 @@ namespace SiliconStudio.Presentation.Controls
         {
             if (searchMatches.Count > 0)
             {
-                int nextResult = (currentResult + 1) % searchMatches.Count;
+                var nextResult = (currentResult + 1) % searchMatches.Count;
                 SelectSearchResult(nextResult);
             }
         }
@@ -404,8 +407,8 @@ namespace SiliconStudio.Presentation.Controls
         {
             var result = searchMatches[resultIndex];
             logTextBox.Selection.Select(result.Start, result.End);
-            Rect selectionRect = logTextBox.Selection.Start.GetCharacterRect(LogicalDirection.Forward);
-            double offset = selectionRect.Top + logTextBox.VerticalOffset;
+            var selectionRect = logTextBox.Selection.Start.GetCharacterRect(LogicalDirection.Forward);
+            var offset = selectionRect.Top + logTextBox.VerticalOffset;
             logTextBox.ScrollToVerticalOffset(offset - logTextBox.ActualHeight / 2);
             logTextBox.BringIntoView();
             currentResult = resultIndex;
@@ -428,7 +431,7 @@ namespace SiliconStudio.Presentation.Controls
                 case LogMessageType.Fatal:
                     return ShowFatalMessages;
                 default:
-                    throw new ArgumentOutOfRangeException("type");
+                    throw new ArgumentOutOfRangeException(nameof(type));
             }
         }
 
@@ -449,7 +452,7 @@ namespace SiliconStudio.Presentation.Controls
                 case LogMessageType.Fatal:
                     return FatalBrush;
                 default:
-                    throw new ArgumentOutOfRangeException("type");
+                    throw new ArgumentOutOfRangeException(nameof(type));
             }
         }
 
@@ -457,10 +460,7 @@ namespace SiliconStudio.Presentation.Controls
         {
             var logViewer = (TextLogViewer)d;
             logViewer.ResetText();
-            if (logViewer.logTextBox != null)
-            {
-                logViewer.logTextBox.ScrollToEnd();
-            }
+            logViewer.logTextBox?.ScrollToEnd();
         }
 
         /// <summary>
@@ -507,9 +507,9 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Raised when the collection of log messages is observable and changes.
         /// </summary>
-        private void LogMessagesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void LogMessagesCollectionChanged(object sender, [NotNull] NotifyCollectionChangedEventArgs e)
         {
-            bool shouldScroll = AutoScroll && logTextBox != null && logTextBox.ViewportHeight - logTextBox.ExtentHeight - logTextBox.VerticalOffset < 1.0;
+            var shouldScroll = AutoScroll && logTextBox != null && logTextBox.ExtentHeight - logTextBox.ViewportHeight - logTextBox.VerticalOffset < 1.0;
 
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
@@ -532,7 +532,9 @@ namespace SiliconStudio.Presentation.Controls
 
             if (shouldScroll)
             {
-                logTextBox.ScrollToEnd();
+                // Sometimes crashing with ExecutionEngineException in Window.GetWindowMinMax() if not ran with a dispatcher low priority.
+                // Note: priority should still be higher than DispatcherPriority.Input so that user input have a chance to scroll.
+                Dispatcher.InvokeAsync(() => logTextBox.ScrollToEnd(), DispatcherPriority.DataBind);
             }
         }
 

@@ -1,7 +1,11 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using System.Collections.Specialized;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Engine.Processors;
 
@@ -12,28 +16,26 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("ChildSceneComponent")]
     [Display("Child scene", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentProcessor(typeof(ChildSceneProcessor))]
+    [DefaultEntityComponentProcessor(typeof(ChildSceneProcessor), ExecutionMode = ExecutionMode.Runtime)]
     [ComponentOrder(11200)]
     public sealed class ChildSceneComponent : ActivableEntityComponent
     {
+        private readonly ChildSceneTransformOperation transformOperation;
         private Scene scene;
-
-        // Used by the ChildSceneProcessor
-        [DataMemberIgnore]
-        internal SceneInstance SceneInstance;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChildSceneComponent"/> class.
         /// </summary>
         public ChildSceneComponent()
         {
+            transformOperation = new ChildSceneTransformOperation(this);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChildSceneComponent"/> class.
         /// </summary>
         /// <param name="scene">The scene.</param>
-        public ChildSceneComponent(Scene scene)
+        public ChildSceneComponent(Scene scene) : this()
         {
             Scene = scene;
         }
@@ -49,9 +51,78 @@ namespace SiliconStudio.Xenko.Engine
             get { return scene; }
             set
             {
+                if (scene == value)
+                    return;
+
+                if (scene != null)
+                {
+                    scene.Parent = null;
+                    scene.Entities.CollectionChanged -= Entities_CollectionChanged;
+
+                    foreach (var entity in scene.Entities)
+                        UnregisterEntity(entity);
+                }
+
                 scene = value;
-                if (SceneInstance != null)
-                    SceneInstance.Scene = null; // unload the current scene, so that it can be unloaded from memory directly (without having to wait one frame)
+
+                if (value != null)
+                {
+                    foreach (var entity in scene.Entities)
+                        RegisterEntity(entity);
+
+                    scene.Entities.CollectionChanged += Entities_CollectionChanged;
+                    scene.Parent = Entity?.Scene;
+                }
+            }
+        }
+
+        public void UpdateScene()
+        {
+            if (scene != null)
+            {
+                scene.Parent = Entity?.Scene;
+            }
+        }
+
+        private void Entities_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    RegisterEntity((Entity)e.Item);
+                    break;
+
+                case NotifyCollectionChangedAction.Remove:
+                    UnregisterEntity((Entity)e.Item);
+                    break;
+
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+
+        private void RegisterEntity(Entity entity)
+        {
+            entity.Transform.PostOperations.Add(transformOperation);
+        }
+
+        private void UnregisterEntity(Entity entity)
+        {
+            entity.Transform.PostOperations.Remove(transformOperation);
+        }
+
+        private class ChildSceneTransformOperation : TransformOperation
+        {
+            private readonly ChildSceneComponent childSceneComponent;
+
+            public ChildSceneTransformOperation(ChildSceneComponent childSceneComponent)
+            {
+                this.childSceneComponent = childSceneComponent;
+            }
+
+            public override void Process(TransformComponent transformComponent)
+            {
+                Matrix.Multiply(ref transformComponent.WorldMatrix, ref childSceneComponent.Entity.Transform.WorldMatrix, out transformComponent.WorldMatrix);
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
@@ -202,6 +202,8 @@ namespace SiliconStudio.Xenko.Games
         public const int WM_IME_STARTCOMPOSITION = 0x010D;
         public const int WM_PAINT = 0x000F;
         public const int WM_NCPAINT = 0x0085;
+
+        public const int PM_REMOVE = 0x0001;
     }
 }
 

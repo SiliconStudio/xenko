@@ -3,6 +3,7 @@
 using System;
 using System.Globalization;
 using System.Windows.Data;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -12,6 +13,7 @@ namespace SiliconStudio.Presentation.ValueConverters
     public abstract class CompareNum<T> : OneWayValueConverter<T> where T : class, IValueConverter, new()
     {
         /// <inheritdoc/>
+        [NotNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var doubleValue = ConverterHelper.ConvertToDouble(value, culture);

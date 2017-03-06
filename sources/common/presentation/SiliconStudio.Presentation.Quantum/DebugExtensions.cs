@@ -9,7 +9,7 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public static class DebugExtensions
     {
-        public static void AssertHierarchy(this IObservableNode node)
+        public static void AssertHierarchy(this INodeViewModel node)
         {
             foreach (var child in node.Children)
             {
@@ -20,14 +20,14 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         [Pure]
-        public static string PrintHierarchy(this IObservableNode node, int indentation = 0)
+        public static string PrintHierarchy(this INodeViewModel node, int indentation = 0)
         {
             var builder = new StringBuilder();
             PrintHierarchyInternal(node, 0, builder);
             return builder.ToString();
         }
 
-        private static void PrintHierarchyInternal(IObservableNode node, int indentation, StringBuilder builder)
+        private static void PrintHierarchyInternal(INodeViewModel node, int indentation, StringBuilder builder)
         {
             PrintIndentation(indentation, builder);
             builder.Append(node.Name ?? "<untitled>");

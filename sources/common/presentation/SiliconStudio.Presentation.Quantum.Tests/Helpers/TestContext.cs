@@ -1,25 +1,24 @@
 ﻿using System.Windows.Threading;
-using SiliconStudio.Presentation.Quantum;
 using SiliconStudio.Presentation.View;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 
-namespace SiliconStudio.Presentation.Tests.Helpers
+namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
 {
     public class TestContext
     {
         public TestContext()
         {
-            ObservableViewModelService = new ObservableViewModelService();
+            GraphViewModelService = new GraphViewModelService();
             ServiceProvider = new ViewModelServiceProvider();
             ServiceProvider.RegisterService(new DispatcherService(Dispatcher.CurrentDispatcher));
-            ServiceProvider.RegisterService(ObservableViewModelService);
+            ServiceProvider.RegisterService(GraphViewModelService);
             NodeContainer = new NodeContainer();
         }
 
         public ViewModelServiceProvider ServiceProvider { get; }
 
-        public ObservableViewModelService ObservableViewModelService { get; }
+        public GraphViewModelService GraphViewModelService { get; }
 
         public NodeContainer NodeContainer { get; }
 

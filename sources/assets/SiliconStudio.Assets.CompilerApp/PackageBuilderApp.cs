@@ -24,6 +24,7 @@ using SiliconStudio.Xenko.Particles;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 using SiliconStudio.Xenko.SpriteStudio.Offline;
+using SiliconStudio.Xenko.VisualStudio.Debugging;
 
 namespace SiliconStudio.Assets.CompilerApp
 {
@@ -148,6 +149,22 @@ namespace SiliconStudio.Assets.CompilerApp
                         }
                     }
                 }
+                },
+                {
+                    "reattach-debugger=", "Reattach to a Visual Studio debugger", v =>
+                    {
+                        int debuggerProcessId;
+                        if (!string.IsNullOrEmpty(v) && int.TryParse(v, out debuggerProcessId))
+                        {
+                            if (!Debugger.IsAttached)
+                            {
+                                using (var debugger = VisualStudioDebugger.GetByProcess(debuggerProcessId))
+                                {
+                                    debugger?.Attach();
+                                }
+                            }
+                        }
+                    }
                 },
             };
 

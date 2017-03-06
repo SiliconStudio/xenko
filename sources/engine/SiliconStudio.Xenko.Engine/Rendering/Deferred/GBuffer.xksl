@@ -1,0 +1,17 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Deferred
+{
+    /// <summary>
+    /// An array of light groups
+    /// </summary>
+    shader GBuffer : ShaderBase, MaterialPixelStream
+    {
+        stage override void PSMain()
+        {
+            base.PSMain();
+
+            streams.ColorTarget = float4(streams.normalWS, 1.0f);
+        }
+    };
+}

@@ -229,6 +229,26 @@
     <Compile Include="Regression\UITestGameBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\BorderButton.xktex" />
+    <None Include="Assets\BorderButtonCentered.xktex" />
+    <None Include="Assets\CourierNew12.xkfnt" />
+    <None Include="Assets\cube Model.xkm3d" />
+    <None Include="Assets\DebugSlider.xksheet" />
+    <None Include="Assets\DumbWhite.xktex" />
+    <None Include="Assets\GameSettings.xkgamesettings" />
+    <None Include="Assets\GraphicsCompositor.xkgfxcomp" />
+    <None Include="Assets\HanSans13.xkfnt" />
+    <None Include="Assets\ImageButtonNotPressed.xktex" />
+    <None Include="Assets\ImageButtonPressed.xktex" />
+    <None Include="Assets\lambert1.xkmat" />
+    <None Include="Assets\MainScene.xkscene" />
+    <None Include="Assets\MicrosoftSansSerif15.xkfnt" />
+    <None Include="Assets\RotatedImages.xksheet" />
+    <None Include="Assets\rotatedUV.xktex" />
+    <None Include="Assets\UIImages.xksheet" />
+    <None Include="Assets\Untitled.xktex" />
+    <None Include="Assets\uv.xktex" />
+    <None Include="Assets\XenkoBackground.xktex" />
     <None Include="Regression\ElementTestDesigns.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ElementTestDesigns.cs</LastGenOutput>

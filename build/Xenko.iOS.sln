@@ -187,6 +187,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Build", "00-Targ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Physics.Tests.iOS", "..\sources\engine\SiliconStudio.Xenko.Physics.Tests\SiliconStudio.Xenko.Physics.Tests.iOS.csproj", "{4F0E7E04-F067-4CE8-B8C8-1105F319D123}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.VirtualReality", "..\sources\engine\SiliconStudio.Xenko.VirtualReality\SiliconStudio.Xenko.VirtualReality.csproj", "{53782603-3096-40C2-ABD3-F8F311BAE4BE}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{7af4b563-aad3-42ff-b91e-84b9d34d904a}*SharedItemsImports = 4
@@ -1022,6 +1024,30 @@ Global
 		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Testing|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
 		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Testing|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Testing|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.AppStore|iPhone.ActiveCfg = Release|iPhone
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.AppStore|iPhone.Build.0 = Release|iPhone
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.AppStore|iPhone.Deploy.0 = Release|iPhone
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Debug|iPhone.Build.0 = Debug|iPhone
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Debug|iPhone.Deploy.0 = Debug|iPhone
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Release|iPhone.ActiveCfg = Release|iPhone
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Release|iPhone.Build.0 = Release|iPhone
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Release|iPhone.Deploy.0 = Release|iPhone
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Testing|iPhone.ActiveCfg = Release|iPhone
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Testing|iPhone.Build.0 = Release|iPhone
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Testing|iPhone.Deploy.0 = Release|iPhone
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.AppStore|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.AppStore|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.AppStore|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Debug|iPhoneSimulator.Deploy.0 = Debug|iPhoneSimulator
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Release|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Testing|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Testing|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Testing|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1064,5 +1090,6 @@ Global
 		{1AC70118-C90F-4EC6-9D8B-C628BDF900F7} = {4C142567-C42B-40F5-B092-798882190209}
 		{FCF36D39-BFFE-4719-B245-05640EE34C5F} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
 		{4F0E7E04-F067-4CE8-B8C8-1105F319D123} = {A7ED9F01-7D78-4381-90A6-D50E51C17250}
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE} = {4C142567-C42B-40F5-B092-798882190209}
 	EndGlobalSection
 EndGlobal

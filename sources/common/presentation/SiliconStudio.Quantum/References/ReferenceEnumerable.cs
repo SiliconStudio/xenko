@@ -13,41 +13,27 @@ namespace SiliconStudio.Quantum.References
     /// <summary>
     /// A class representing an enumeration of references to multiple objects.
     /// </summary>
-    public sealed class ReferenceEnumerable : IReference, IEnumerable<ObjectReference>
+    public sealed class ReferenceEnumerable : IReferenceInternal, IEnumerable<ObjectReference>
     {
-        private readonly Type elementType;
-
         private HybridDictionary<Index, ObjectReference> items;
 
-        internal ReferenceEnumerable(IEnumerable enumerable, Type enumerableType, Index index)
+        internal ReferenceEnumerable(IEnumerable enumerable, Type enumerableType)
         {
             Reference.CheckReferenceCreationSafeGuard();
-            Type = enumerableType;
-            Index = index;
             ObjectValue = enumerable;
 
             if (enumerableType.HasInterface(typeof(IDictionary<,>)))
-                elementType = enumerableType.GetInterface(typeof(IDictionary<,>)).GetGenericArguments()[1];
+                ElementType = enumerableType.GetInterface(typeof(IDictionary<,>)).GetGenericArguments()[1];
             else if (enumerableType.HasInterface(typeof(IEnumerable<>)))
-                elementType = enumerableType.GetInterface(typeof(IEnumerable<>)).GetGenericArguments()[0];
+                ElementType = enumerableType.GetInterface(typeof(IEnumerable<>)).GetGenericArguments()[0];
             else
-                elementType = typeof(object);
+                ElementType = typeof(object);
         }
 
         /// <inheritdoc/>
         public object ObjectValue { get; private set; }
 
-        /// <inheritdoc/>
-        public Type Type { get; }
-
-        /// <inheritdoc/>
-        public Index Index { get; }
-
-        /// <inheritdoc/>
-        public ObjectReference AsObject { get { throw new InvalidCastException("This reference is not an ObjectReference"); } }
-
-        /// <inheritdoc/>
-        public ReferenceEnumerable AsEnumerable => this;
+        public Type ElementType { get; }
 
         /// <summary>
         /// Gets whether this reference enumerates a dictionary collection.
@@ -60,20 +46,25 @@ namespace SiliconStudio.Quantum.References
         /// <summary>
         /// Gets the indices of each reference in this instance.
         /// </summary>
-        public IReadOnlyCollection<Index> Indices { get; private set; }
+        internal IReadOnlyCollection<Index> Indices { get; private set; }
 
         /// <inheritdoc/>
         public ObjectReference this[Index index] => items[index];
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Indicates whether the reference contains the given index.
+        /// </summary>
+        /// <param name="index">The index to check.</param>
+        /// <returns><c>True</c> if the reference contains the given index, <c>False</c> otherwise.</returns>
+        /// <remarks>If it is an <see cref="ObjectReference"/> it will return true only for <c>null</c>.</remarks>
         public bool HasIndex(Index index)
         {
             return items?.ContainsKey(index) ?? false;
         }
 
-        public void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory)
+        public void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer)
         {
-            var newObjectValue = ownerNode.Content.Value;
+            var newObjectValue = ownerNode.Retrieve();
             if (!(newObjectValue is IEnumerable)) throw new ArgumentException(@"The object is not an IEnumerable", nameof(newObjectValue));
 
             ObjectValue = newObjectValue;
@@ -84,7 +75,7 @@ namespace SiliconStudio.Quantum.References
                 foreach (var item in (IEnumerable)ObjectValue)
                 {
                     var key = GetKey(item);
-                    var value = (ObjectReference)Reference.CreateReference(GetValue(item), elementType, key);
+                    var value = (ObjectReference)Reference.CreateReference(GetValue(item), ElementType, key, true);
                     newReferences.Add(key, value);
                 }
             }
@@ -94,7 +85,7 @@ namespace SiliconStudio.Quantum.References
                 foreach (var item in (IEnumerable)ObjectValue)
                 {
                     var key = new Index(i);
-                    var value = (ObjectReference)Reference.CreateReference(item, elementType, key);
+                    var value = (ObjectReference)Reference.CreateReference(item, ElementType, key, true);
                     newReferences.Add(key, value);
                     ++i;
                 }
@@ -108,7 +99,25 @@ namespace SiliconStudio.Quantum.References
                 var oldReferenceMapping = new List<KeyValuePair<object, ObjectReference>>();
                 if (items != null)
                 {
-                    oldReferenceMapping.AddRange(items.Values.Where(x => x.ObjectValue != null && !(x.TargetNode?.Content is BoxedContent)).Select(x => new KeyValuePair<object, ObjectReference>(x.ObjectValue, x)));
+                    var existingIndices = GraphNodeBase.GetIndices(ownerNode).ToList();
+                    foreach (var item in items)
+                    {
+                        var boxedTarget = item.Value.TargetNode as BoxedNode;
+                        // For collection of struct, we need to update the target nodes first so equity comparer will work. Careful tho, we need to skip removed items!
+                        if (boxedTarget != null && existingIndices.Contains(item.Key))
+                        {
+                            // If we are boxing a struct, we reuse the same nodes if they are type-compatible and just overwrite the struct value.
+                            var value = ownerNode.Retrieve(item.Key);
+                            if (value?.GetType() == item.Value.TargetNode?.Type)
+                            {
+                                boxedTarget.UpdateFromOwner(ownerNode.Retrieve(item.Key));
+                            }
+                        }
+                        if (item.Value.ObjectValue != null)
+                        {
+                            oldReferenceMapping.Add(new KeyValuePair<object, ObjectReference>(item.Value.ObjectValue, item.Value));
+                        }
+                    }
                 }
 
                 foreach (var newReference in newReferences)
@@ -133,7 +142,7 @@ namespace SiliconStudio.Quantum.References
                         if (!found)
                         {
                             // Otherwise, do a full update that will properly initialize the new reference.
-                            newReference.Value.Refresh(ownerNode, nodeContainer, nodeFactory, newReference.Key);
+                            newReference.Value.Refresh(ownerNode, nodeContainer, newReference.Key);
                         }
                     }
                 }
@@ -184,11 +193,17 @@ namespace SiliconStudio.Quantum.References
 
             foreach (var item in items1)
             {
-                ObjectReference otherItem;
-                if (!items2.TryGetValue(item.Key, out otherItem))
+                ObjectReference otherValue;
+                if (!items2.TryGetValue(item.Key, out otherValue))
                     return false;
 
-                if (!otherItem.Equals(item.Value))
+                if (!otherValue.Index.Equals(item.Value.Index))
+                    return false;
+
+                if (otherValue.ObjectValue == null && item.Value.ObjectValue != null)
+                    return false;
+
+                if (otherValue.ObjectValue != null && !otherValue.ObjectValue.Equals(item.Value.ObjectValue))
                     return false;
             }
 

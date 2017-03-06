@@ -39,14 +39,24 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SiliconStudio.Assets.Tests\Helpers\GuidGenerator.cs">
+      <Link>Helpers\GuidGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\SiliconStudio.Assets.Tests\Helpers\IdentifierGenerator.cs">
+      <Link>Helpers\IdentifierGenerator.cs</Link>
+    </Compile>
     <Compile Include="DeriveAssetTest.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestArchetypesAdvanced.cs" />
     <Compile Include="TestArchetypesBasic.cs" />
+    <Compile Include="TestAssetCompositeHierarchy.cs" />
     <Compile Include="TestAssetPropertyGraph.cs" />
     <Compile Include="TestCollectionUpdates.cs" />
+    <Compile Include="TestObjectReferenceGraph.cs" />
+    <Compile Include="TestObjectReferenceSerialization.cs" />
     <Compile Include="TestOverrideSerialization.cs" />
+    <Compile Include="TestReconcileObjectReferencesWithBase.cs" />
     <Compile Include="TestReconcileWithBase.cs" />
     <Compile Include="Types.cs" />
   </ItemGroup>

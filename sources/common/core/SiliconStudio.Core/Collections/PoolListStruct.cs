@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Collections
 {
@@ -35,9 +36,9 @@ namespace SiliconStudio.Core.Collections
         /// <param name="capacity">The capacity.</param>
         /// <param name="factory">The factory.</param>
         /// <exception cref="System.ArgumentNullException">factory</exception>
-        public PoolListStruct(int capacity, Func<T> factory)
+        public PoolListStruct(int capacity, [NotNull] Func<T> factory)
         {
-            if (factory == null) throw new ArgumentNullException("factory");
+            if (factory == null) throw new ArgumentNullException(nameof(factory));
             this.factory = factory;
             allocated = new FastListStruct<T>(capacity);
             Count = 0;
@@ -57,7 +58,7 @@ namespace SiliconStudio.Core.Collections
         public void Reset()
         {
             Clear();
-            for (int i = 0; i < allocated.Count; i++)
+            for (var i = 0; i < allocated.Count; i++)
             {
                 allocated[i] = null;
             }

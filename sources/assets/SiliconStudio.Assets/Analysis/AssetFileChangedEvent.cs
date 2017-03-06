@@ -21,7 +21,7 @@ namespace SiliconStudio.Assets.Analysis
         {
             Package = package;
             ChangeType = changeType;
-            AssetLocation = assetLocation.GetDirectoryAndFileName(); // Make sure we are using the location withint the package without the extension
+            AssetLocation = assetLocation.GetDirectoryAndFileNameWithoutExtension(); // Make sure we are using the location withint the package without the extension
         }
 
         /// <summary>

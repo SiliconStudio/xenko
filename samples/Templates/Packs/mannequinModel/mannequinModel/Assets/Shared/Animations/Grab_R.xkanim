@@ -5,6 +5,7 @@ Tags: []
 Source: ../../../Resources/Animation/Grab_R.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 RepeatMode: LoopInfinite
+Type: !StandardAnimationAssetType {}
 Skeleton: 81c9644d-cf07-4cfe-a3dd-5836202ba647:Models/HandModelRight Skeleton
 RootMotion: false
 PreviewModel: 15618002-dbfc-46ba-8be9-edacd2146a9d:Models/HandModelRight

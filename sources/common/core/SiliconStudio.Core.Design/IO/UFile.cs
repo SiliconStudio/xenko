@@ -22,10 +22,53 @@ namespace SiliconStudio.Core.IO
         }
 
         /// <summary>
-        /// Gets the file path (<see cref="UPath.GetDirectory()"/> + '/' + <see cref="UFile.GetFileName()"/>) without the extension or drive. Can be an null if no filepath.
+        /// Gets the name of the file with its extension. Can be null.
+        /// </summary>
+        /// <returns>The name.</returns>
+        public string GetFileName()
+        {
+            var span = NameSpan;
+            if (ExtensionSpan.IsValid)
+            {
+                span.Length = ExtensionSpan.Next - span.Start;
+            }
+            return span.IsValid ? FullPath.Substring(span) : null;
+
+            
+        }
+
+        /// <summary>
+        /// Gets the name of the file without its extension.
+        /// </summary>
+        /// <value>The name of file.</value>
+        public string GetFileNameWithoutExtension()
+        {
+            return NameSpan.IsValid ? FullPath.Substring(NameSpan) : null;
+        }
+
+        /// <summary>
+        /// Gets the file path (<see cref="UPath.GetDirectory()"/> + '/' + <see cref="UFile.GetFileName()"/>) with the extension or drive. Can be an null if no filepath.
         /// </summary>
         /// <returns>The path.</returns>
         public string GetDirectoryAndFileName()
+        {
+            var span = DirectorySpan;
+            if (ExtensionSpan.IsValid)
+            {
+                span.Length = ExtensionSpan.Next - span.Start;
+            }
+            else if (NameSpan.IsValid)
+            {
+                span.Length = NameSpan.Next - span.Start;
+            }
+            return span.IsValid ? FullPath.Substring(span) : null;
+        }
+
+        /// <summary>
+        /// Gets the file path (<see cref="UPath.GetDirectory()"/> + '/' + <see cref="UFile.GetFileName()"/>) without the extension or drive. Can be an null if no filepath.
+        /// </summary>
+        /// <returns>The path.</returns>
+        public string GetDirectoryAndFileNameWithoutExtension()
         {
             var span = DirectorySpan;
             if (NameSpan.IsValid)
@@ -36,35 +79,12 @@ namespace SiliconStudio.Core.IO
         }
 
         /// <summary>
-        /// Gets the name of the file without its extension. Can be null.
-        /// </summary>
-        /// <returns>The name.</returns>
-        public string GetFileName()
-        {
-            return NameSpan.IsValid ? FullPath.Substring(NameSpan) : null;
-        }
-
-        /// <summary>
         /// Gets the extension of the file. Can be null.
         /// </summary>
         /// <returns>The extension.</returns>
         public string GetFileExtension()
         {
             return ExtensionSpan.IsValid ? FullPath.Substring(ExtensionSpan) : null;
-        }
-
-        /// <summary>
-        /// Gets the name of the file with its extension.
-        /// </summary>
-        /// <value>The name of file.</value>
-        public string GetFileNameWithExtension()
-        {
-            var span = NameSpan;
-            if (ExtensionSpan.IsValid)
-            {
-                span.Length = ExtensionSpan.Next - span.Start;
-            }
-            return span.IsValid ? FullPath.Substring(span) : null;
         }
 
         /// <summary>

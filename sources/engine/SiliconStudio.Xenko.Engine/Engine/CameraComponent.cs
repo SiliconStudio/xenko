@@ -6,9 +6,11 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -18,7 +20,9 @@ namespace SiliconStudio.Xenko.Engine
     [DataContract("CameraComponent")]
     [Display("Camera", Expand = ExpandRule.Once)]
     //[DefaultEntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
+    [DefaultEntityComponentProcessor(typeof(CameraProcessor))]
     [ComponentOrder(13000)]
+    [ObjectFactory(typeof(CameraComponent.Factory))]
     public sealed class CameraComponent : ActivableEntityComponent
     {
         public const float DefaultAspectRatio = 16.0f / 9.0f;
@@ -53,6 +57,9 @@ namespace SiliconStudio.Xenko.Engine
             NearClipPlane = nearClipPlane;
             FarClipPlane = farClipPlane;
         }
+
+        [DataMember(-5)]
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the projection.
@@ -131,6 +138,9 @@ namespace SiliconStudio.Xenko.Engine
         [DefaultValue(DefaultAspectRatio)]
         public float AspectRatio { get; set; }
 
+        [DataMember(50)]
+        public SceneCameraSlotIndex Slot { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether to use custom <see cref="ViewMatrix"/>. Default is <c>false</c>
         /// </summary>
@@ -191,6 +201,9 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="screenAspectRatio">The current screen aspect ratio. If null, use the <see cref="AspectRatio"/> even if <see cref="UseCustomAspectRatio"/> is false.</param>
         public void Update(float? screenAspectRatio)
         {
+            // Calculates the aspect ratio
+            var aspectRatio = (screenAspectRatio.HasValue && !UseCustomAspectRatio) ? screenAspectRatio.Value : AspectRatio;
+
             // Calculates the View
             if (!UseCustomViewMatrix)
             {
@@ -214,12 +227,6 @@ namespace SiliconStudio.Xenko.Engine
             if (!UseCustomProjectionMatrix)
             {
                 // Calculates the aspect ratio
-                var aspectRatio = AspectRatio;
-                if (screenAspectRatio.HasValue && !UseCustomAspectRatio)
-                {
-                    aspectRatio = screenAspectRatio.Value;
-                }
-
                 ProjectionMatrix = Projection == CameraProjectionMode.Perspective ?
                     Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(VerticalFieldOfView), aspectRatio, NearClipPlane, FarClipPlane) :
                     Matrix.OrthoRH(aspectRatio * OrthographicSize, OrthographicSize, NearClipPlane, FarClipPlane);
@@ -230,6 +237,18 @@ namespace SiliconStudio.Xenko.Engine
 
             // Update the frustum.
             Frustum = new BoundingFrustum(ref ViewProjectionMatrix);
+        }
+
+        private class Factory : IObjectFactory
+        {
+            public object New(Type type)
+            {
+                return new CameraComponent
+                {
+                    Enabled = false, // disabled by default to not override current camera
+                    Projection = CameraProjectionMode.Perspective,
+                };
+            }
         }
     }
 }

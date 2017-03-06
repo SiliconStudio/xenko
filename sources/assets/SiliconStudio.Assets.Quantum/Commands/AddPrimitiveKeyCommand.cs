@@ -5,10 +5,8 @@ using System;
 using System.Linq;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum.Commands
 {
@@ -36,19 +34,30 @@ namespace SiliconStudio.Assets.Quantum.Commands
             if (dictionaryDescriptor == null)
                 return false;
 
-            return !dictionaryDescriptor.KeyType.IsClass || dictionaryDescriptor.KeyType == typeof(string) || dictionaryDescriptor.KeyType.GetConstructor(Type.EmptyTypes) != null;
+            // Check key type
+            if (!CanConstruct(dictionaryDescriptor.KeyType))
+                return false;
+
+            // Check value type
+            var elementType = dictionaryDescriptor.ValueType;
+            return CanConstruct(elementType) || elementType.IsAbstract || elementType.IsNullable() || IsReferenceType(elementType);
         }
 
-        protected override void ExecuteSync(IContent content, Index index, object parameter)
+        protected override void ExecuteSync(IGraphNode node, Index index, object parameter)
         {
-            var value = content.Retrieve(index);
+            var objectNode = ((IMemberNode)node).Target;
+            var value = node.Retrieve(index);
             var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
             var newKey = dictionaryDescriptor.KeyType != typeof(string) ? new Index(Activator.CreateInstance(dictionaryDescriptor.KeyType)) : GenerateStringKey(value, dictionaryDescriptor, parameter as string);
-            object newItem = null;
-            // TODO: Find a better solution that doesn't require to reference Core.Serialization (and unreference this assembly)
-            if (!dictionaryDescriptor.ValueType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any())
-                newItem = CreateInstance(dictionaryDescriptor.ValueType);
-            content.Add(newItem, newKey);
+            // default(T)
+            var newItem = dictionaryDescriptor.ValueType.IsValueType ? Activator.CreateInstance(dictionaryDescriptor.ValueType) : null;
+
+            var propertyGraph = (node as IAssetNode)?.PropertyGraph;
+            var instance = CreateInstance(dictionaryDescriptor.ValueType);
+            if (!IsReferenceType(dictionaryDescriptor.ValueType) && (propertyGraph == null || !propertyGraph.IsObjectReference(node, index, instance)))
+                newItem = instance;
+
+            objectNode.Add(newItem, newKey);
         }
 
         /// <summary>
@@ -73,7 +82,7 @@ namespace SiliconStudio.Assets.Quantum.Commands
             // note:
             //      Type not having a public parameterless constructor will throw a MissingMethodException at this point.
             //      This is intended as YAML serialization requires this constructor.
-            return Activator.CreateInstance(type);
+            return ObjectFactoryRegistry.NewInstance(type);
         }
 
         internal static Index GenerateStringKey(object value, ITypeDescriptor descriptor, string baseValue)
@@ -103,5 +112,9 @@ namespace SiliconStudio.Assets.Quantum.Commands
 
             return baseName;
         }
+
+        private static bool CanConstruct(Type type) => !type.IsClass || type.GetConstructor(Type.EmptyTypes) != null || type == typeof(string);
+
+        private static bool IsReferenceType(Type type) => AssetRegistry.IsContentType(type) || typeof(AssetReference).IsAssignableFrom(type);
     }
 }

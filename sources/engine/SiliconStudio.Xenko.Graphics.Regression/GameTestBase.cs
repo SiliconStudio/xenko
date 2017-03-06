@@ -16,7 +16,7 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Graphics.Regression
 {
@@ -261,7 +261,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             RunGameTest(game);
         }
 
-        protected void PerformDrawTest(Action<Game, RenderDrawContext, RenderFrame> drawTestAction, GraphicsProfile? profileOverride = null, string subTestName = null, bool takeSnapshot = true)
+        protected void PerformDrawTest(Action<Game, RenderDrawContext> drawTestAction, GraphicsProfile? profileOverride = null, string subTestName = null, bool takeSnapshot = true)
         {
             // create the game instance
             var typeGame = GetType();
@@ -275,20 +275,15 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             if (takeSnapshot)
                 game.FrameGameSystem.TakeScreenshot(null, testName);
 
-            // add the render callback
-            var graphicsCompositor = new SceneGraphicsCompositorLayers
-            {
-                Master =
-                {
-                    Renderers =
-                    {
-                        new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
-                        new SceneDelegateRenderer((context, frame) => drawTestAction(game, context, frame)),
-                    }
-                }
-            };
-            var scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
+            // setup empty scene
+            var scene = new Scene();
             game.SceneSystem.SceneInstance = new SceneInstance(Services, scene);
+
+            // add the render callback
+            game.SceneSystem.GraphicsCompositor = new GraphicsCompositor
+            {
+                Game = new DelegateSceneRenderer(context => drawTestAction(game, context)),
+            };
 
             RunGameTest(game);
         }
@@ -317,8 +312,9 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             {
                 foreach (var testName in game.FrameGameSystem.TestNames)
                 {
-                    if (!ImageTester.RequestImageComparisonStatus(testName))
-                        failedTests.Add(testName);
+                    var localTestName = testName;
+                    if (!ImageTester.RequestImageComparisonStatus(ref localTestName))
+                        failedTests.Add(localTestName);
                 }
             }
 

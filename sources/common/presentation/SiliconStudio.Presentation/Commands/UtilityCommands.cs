@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.View;
 using SiliconStudio.Presentation.ViewModel;
 
@@ -13,6 +14,7 @@ namespace SiliconStudio.Presentation.Commands
 
         public static ICommandBase OpenHyperlinkCommand => LazyOpenHyperlinkCommand.Value;
 
+        [NotNull]
         private static ICommandBase OpenHyperlinkCommandFactory()
         {
             // TODO: have a proper way to initialize the services (maybe at application startup)
@@ -22,10 +24,10 @@ namespace SiliconStudio.Presentation.Commands
 
         private static bool CanOpenHyperlink(string url)
         {
-            return Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute);
+            return !string.IsNullOrEmpty(url) && Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute);
         }
 
-        private static void OpenHyperlink(string url)
+        private static void OpenHyperlink([NotNull] string url)
         {
             // see https://support.microsoft.com/en-us/kb/305703
             try

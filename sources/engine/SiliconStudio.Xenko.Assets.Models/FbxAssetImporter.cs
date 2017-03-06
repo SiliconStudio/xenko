@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Assets.Textures;
@@ -11,6 +12,11 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     public class FbxAssetImporter : ModelAssetImporter
     {
+        static FbxAssetImporter()
+        {
+            NativeLibrary.PreloadLibrary("libfbxsdk.dll");
+        }
+
         // Supported file extensions for this importer
         private const string FileExtensions = ".fbx";
 
@@ -28,6 +34,16 @@ namespace SiliconStudio.Xenko.Assets.Models
             var meshConverter = new Importer.FBX.MeshConverter(logger);
             var entityInfo = meshConverter.ExtractEntity(localPath.FullPath, importParameters.IsTypeSelectedForOutput(typeof(TextureAsset)));
             return entityInfo;
+        }
+
+        /// <inheritdoc/>
+        public override void GetAnimationDuration(UFile localPath, Logger logger, AssetImporterParameters importParameters, out TimeSpan startTime, out TimeSpan endTime)
+        {
+            var meshConverter = new Importer.FBX.MeshConverter(logger);
+            var durationInSeconds = meshConverter.GetAnimationDuration(localPath.FullPath);
+
+            startTime = TimeSpan.Zero;
+            endTime = TimeSpan.FromSeconds(durationInSeconds);
         }
     }
 }

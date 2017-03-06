@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Shadows;
@@ -12,6 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// <summary>
     /// Base class for light renderers.
     /// </summary>
+    [DataContract(Inherited = true, DefaultMemberMode = DataMemberMode.Never)]
     public abstract class LightGroupRendererBase
     {
         private static readonly Dictionary<Type, int> LightRendererIds = new Dictionary<Type, int>();
@@ -34,6 +36,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         public bool IsEnvironmentLight { get; protected set; }
 
         public byte LightRendererId { get; private set; }
+
+        public abstract Type[] LightTypes { get; }
 
         public virtual void Initialize(RenderContext context)
         {
@@ -70,11 +74,16 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public int LightStart;
             public int LightEnd;
 
-            public ShadowMapRenderer ShadowMapRenderer;
+            public IShadowMapRenderer ShadowMapRenderer;
 
             public Dictionary<LightComponent, LightShadowMapTexture> ShadowMapTexturesPerLight;
         }
 
         public abstract void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry);
+
+        public virtual void PrepareResources(RenderDrawContext drawContext)
+        {
+            
+        }
     }
 }

@@ -153,6 +153,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
             // Compute translation speed according to framerate and modifiers
             var translationSpeed = MoveSpeed * (float)Game.UpdateTime.Elapsed.TotalSeconds;
+            if (Input.IsKeyDown(Keys.LeftShift))
+                translationSpeed *= 3.0f;
 
             var oldPitch = Pitch;
 

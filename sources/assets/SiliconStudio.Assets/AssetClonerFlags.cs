@@ -1,11 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Assets
 {
     /// <summary>
-    /// Flags used by <see cref="AssetCloner.Clone"/>
+    /// Flags used by <see cref="AssetCloner"/>
     /// </summary>
     [Flags]
     public enum AssetClonerFlags
@@ -29,5 +30,15 @@ namespace SiliconStudio.Assets
         /// Removes invalid objects
         /// </summary>
         RemoveUnloadableObjects = 4,
+
+        /// <summary>
+        /// Generates new ids for objects that implement <see cref="IIdentifiable"/>.
+        /// </summary>
+        GenerateNewIdsForIdentifiableObjects = 8,
+
+        /// <summary>
+        /// Clears any external references in the cloned object
+        /// </summary>
+        ClearExternalReferences = 16,
     }
 }

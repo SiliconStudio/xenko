@@ -17,9 +17,35 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
   </ItemGroup>
+  <Choose>
+    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+      <ItemGroup>
+        <Reference Include="SharpDX">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+        </Reference>
+        <Reference Include="SharpDX.Direct3D11">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderDocManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
+      <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

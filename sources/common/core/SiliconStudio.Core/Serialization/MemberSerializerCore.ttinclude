@@ -1,4 +1,4 @@
-﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ template debug="false" hostspecific="false" language="C#" #>
 <#@ assembly name="System.Core" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
@@ -47,6 +47,9 @@
             bool reuseReferences = context.SerializerSelector.ReuseReferences;
             int index;
 <# } #>
+<# if (supportsExternalIdentifiableAsGuid) { #>
+            bool externalIdentifiableAsGuid = context.SerializerSelector.ExternalIdentifiableAsGuid;
+<# } #>
 <# if (supportsNonSealed) { #>
             bool hasTypeInfo;
 <# if (supportsGenerics) { #>
@@ -58,7 +61,7 @@
 
             if (mode == ArchiveMode.Serialize)
             {
-                if (object.ReferenceEquals(obj, null))
+                if (ReferenceEquals(obj, null))
                 {
                     // Null contentRef
                     stream.Write((byte)SerializeClassFlags.IsNull);
@@ -68,6 +71,22 @@
 <# if (supportsNonSealed || supportsReuseReferences) { #>
                     flags = SerializeClassFlags.None;
 <# } #>
+
+<# if (supportsExternalIdentifiableAsGuid) { #>
+                    if (externalIdentifiableAsGuid)
+                    {
+                        var identifiable = obj as IIdentifiable;
+                        var externalIdentifiables = context.Get(MemberSerializer.ExternalIdentifiables);
+                        if (identifiable != null && externalIdentifiables?.ContainsKey(identifiable.Id) == true)
+                        {
+                            flags |= SerializeClassFlags.IsExternalIdentifiable;
+                            stream.Write((byte)flags);
+                            stream.Write(identifiable.Id);
+                            return;
+                        }
+                    }
+<# } #>
+
 <# if (supportsReuseReferences) { #>
                     index = -1;
                     if (reuseReferences)
@@ -175,15 +194,16 @@
 
 <# if (supportsNonSealed || supportsReuseReferences) { #>
                 flags = (SerializeClassFlags)stream.ReadByte();
-                bool isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
+                var isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
 <# } else { // optimized version where flags is only used for isNull: optimize locals #>
-                bool isNull = ((SerializeClassFlags)stream.ReadByte() & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
+                var isNull = ((SerializeClassFlags)stream.ReadByte() & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
 <# } #>
 <# if (supportsReuseReferences) { #>
                 var objectReferences = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeReferences) : null;
                 var referenceCallback = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeCallback) : null;
-                bool isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
-                index = reuseReferences && !isNull ? stream.ReadInt32() : -1;
+                var isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
+                var isExternalIdentifiable = (flags & SerializeClassFlags.IsExternalIdentifiable) == SerializeClassFlags.IsExternalIdentifiable;
+                index = reuseReferences && !isNull && !isExternalIdentifiable ? stream.ReadInt32() : -1;
 <# } #>
 <# if (supportsNonSealed) { #>
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
@@ -193,6 +213,16 @@
                 {
                     obj = <# if (supportsGenerics) { #>default(T)<# } else { #>null<# } #>;
                 }
+<# if (supportsExternalIdentifiableAsGuid) { #>
+                else if (externalIdentifiableAsGuid && isExternalIdentifiable)
+                {
+                    var externalIdentifiables = context.Get(MemberSerializer.ExternalIdentifiables);
+					var identifier = stream.Read<Guid>();
+					IIdentifiable identifiable;
+					externalIdentifiables.TryGetValue(identifier, out identifiable);
+                    obj = <#= castExpr #>identifiable;
+                }
+<# } #>
 <# if (supportsReuseReferences) { #>
                 else if (reuseReferences && isReference)
                 {

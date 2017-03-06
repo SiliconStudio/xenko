@@ -8,7 +8,6 @@ using System.Dynamic;
 using System.Linq;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Contents;
-using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
@@ -28,7 +27,7 @@ namespace SiliconStudio.Quantum
         /// <returns>A <see cref="DynamicNode"/> representing the given node.</returns>
         public static dynamic FromNode(IGraphNode node)
         {
-            if (node.Content is MemberContent)
+            if (node is MemberNode)
                 throw new ArgumentException("Cannot create a dynamic node from a member node.");
 
             return new DynamicDirectNode(node);
@@ -60,7 +59,7 @@ namespace SiliconStudio.Quantum
             var targetNode = GetTargetNode();
             if (targetNode == null)
                 throw new InvalidOperationException($"Cannot invoke {nameof(Add)} on this property.");
-            targetNode.Content.Add(item);
+            targetNode.Add(item);
         }
 
         /// <summary>
@@ -73,7 +72,7 @@ namespace SiliconStudio.Quantum
             var targetNode = GetTargetNode();
             if (targetNode == null)
                 throw new InvalidOperationException($"Cannot invoke {nameof(Insert)} on this property.");
-            targetNode.Content.Add(item, index);
+            targetNode.Add(item, index);
         }
 
         /// <summary>
@@ -86,7 +85,7 @@ namespace SiliconStudio.Quantum
             var targetNode = GetTargetNode();
             if (targetNode == null)
                 throw new InvalidOperationException($"Cannot invoke {nameof(Remove)} on this property.");
-            targetNode.Content.Remove(item, index);
+            targetNode.Remove(item, index);
         }
 
         /// <summary>
@@ -118,7 +117,7 @@ namespace SiliconStudio.Quantum
             try
             {
                 // TODO: "changing" notifications will still be sent even if the update fails (but not the "changed") - we should detect preemptively if we can update (implements a bool TryUpdate?)
-                memberNode.Content.Update(value);
+                memberNode.Update(value);
                 return true;
             }
             catch (Exception)
@@ -148,14 +147,15 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public override IEnumerable<string> GetDynamicMemberNames()
         {
-            return GetTargetNode()?.Children.Select(x => x.Name) ?? Enumerable.Empty<string>();
+            return GetTargetNode()?.Members.Select(x => x.Name) ?? Enumerable.Empty<string>();
         }
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator()
         {
             var node = GetTargetNode();
-            var indices = GetAllIndices(Node);
+            // TODO: review this, is there a typo here?
+            var indices = (Node as IObjectNode)?.Indices.Select(x => x.Value);
             if (indices == null)
                 throw new InvalidOperationException("This node is not enumerable.");
 
@@ -163,40 +163,22 @@ namespace SiliconStudio.Quantum
             return indices.Cast<object>().Select(x => thisNode[x]).GetEnumerator();
         }
 
-        protected IGraphNode GetTargetMemberNode(string memberName)
+        protected IMemberNode GetTargetMemberNode(string memberName)
         {
             var targetNode = GetTargetNode();
-            var memberNode = targetNode?.Children.FirstOrDefault(x => x.Name == memberName);
+            var memberNode = targetNode?[memberName];
             return memberNode;
         }
 
         protected abstract object RetrieveValue();
 
-        protected abstract IGraphNode GetTargetNode();
-
-        protected static IEnumerable GetAllIndices(IGraphNode node)
-        {
-            if (node.Content.IsReference)
-            {
-                var reference = node.Content.Reference as ReferenceEnumerable;
-                return reference?.Indices.Select(x => x.Value);
-            }
-            var value = node.Content.Retrieve();
-            var collectionDescriptor = node.Content.Descriptor as CollectionDescriptor;
-            if (collectionDescriptor != null)
-            {
-                var count = collectionDescriptor.GetCollectionCount(value);
-                return Enumerable.Range(0, count);
-            }
-            var dictionaryDescriptor = node.Content.Descriptor as DictionaryDescriptor;
-            return dictionaryDescriptor?.GetKeys(value).Cast<object>();
-        }
+        protected abstract IObjectNode GetTargetNode();
 
         protected static bool IsIndexExisting(IGraphNode node, Index index)
         {
-            if (node.Content.IsReference)
+            if (node.IsReference)
             {
-                var reference = node.Content.Reference as ReferenceEnumerable;
+                var reference = (node as IObjectNode)?.ItemReferences;
                 if (reference?.HasIndex(index) ?? false)
                 {
                     return true;
@@ -204,13 +186,13 @@ namespace SiliconStudio.Quantum
             }
             else
             {
-                var value = node.Content.Retrieve();
-                var collectionDescriptor = node.Content.Descriptor as CollectionDescriptor;
+                var value = node.Retrieve();
+                var collectionDescriptor = node.Descriptor as CollectionDescriptor;
                 if (collectionDescriptor != null && index.IsInt && index.Int >= 0 && index.Int < collectionDescriptor.GetCollectionCount(value))
                 {
                     return true;
                 }
-                var dictionaryDescriptor = node.Content.Descriptor as DictionaryDescriptor;
+                var dictionaryDescriptor = node.Descriptor as DictionaryDescriptor;
                 if (dictionaryDescriptor != null && dictionaryDescriptor.KeyType.IsInstanceOfType(index.Value) && dictionaryDescriptor.ContainsKey(value, index.Value))
                 {
                     return true;
@@ -221,17 +203,17 @@ namespace SiliconStudio.Quantum
 
         protected static bool IsIndexValid(IGraphNode node, Index index)
         {
-            if (node.Content.IsReference)
+            if (node.IsReference)
             {
-                var reference = node.Content.Reference as ReferenceEnumerable;
+                var reference = (node as IObjectNode)?.ItemReferences;
                 return reference != null;
             }
-            var collectionDescriptor = node.Content.Descriptor as CollectionDescriptor;
+            var collectionDescriptor = node.Descriptor as CollectionDescriptor;
             if (collectionDescriptor != null)
             {
                 return index.IsInt && index.Int >= 0;
             }
-            var dictionaryDescriptor = node.Content.Descriptor as DictionaryDescriptor;
+            var dictionaryDescriptor = node.Descriptor as DictionaryDescriptor;
             if (dictionaryDescriptor != null)
             {
                 return dictionaryDescriptor.KeyType.IsInstanceOfType(index.Value);
@@ -239,16 +221,16 @@ namespace SiliconStudio.Quantum
             return false;
         }
 
-        protected static bool UpdateCollection(IGraphNode node, object value, Index index)
+        protected static bool UpdateCollection(IObjectNode node, object value, Index index)
         {
             if (IsIndexExisting(node, index))
             {
-                node.Content.Update(value, index);
+                node.Update(value, index);
                 return true;
             }
             if (IsIndexValid(node, index))
             {
-                node.Content.Add(value, index);
+                node.Add(value, index);
                 return true;
             }
             return false;
@@ -282,24 +264,19 @@ namespace SiliconStudio.Quantum
             if (indexes.Length == 1)
             {
                 var index = new Index(indexes[0]);
-                return UpdateCollection(Node, value, index);
+                return UpdateCollection((IObjectNode)Node, value, index);
             }
             return false;
         }
 
         protected override object RetrieveValue()
         {
-            return Node.Content.Retrieve();
+            return Node.Retrieve();
         }
 
-        protected override IGraphNode GetTargetNode()
+        protected override IObjectNode GetTargetNode()
         {
-            var objectReference = Node.Content.Reference as ObjectReference;
-            if (Node.Content.IsReference && objectReference != null)
-            {
-                return objectReference.TargetNode;
-            }
-            return Node;
+            return (Node as IMemberNode)?.Target;
         }
     }
 
@@ -335,20 +312,20 @@ namespace SiliconStudio.Quantum
             if (indexes.Length == 1 && targetNode != null)
             {
                 var nextIndex = new Index(indexes[0]);
-                return UpdateCollection(Node, value, nextIndex);
+                return UpdateCollection((IObjectNode)Node, value, nextIndex);
             }
             return false;
         }
 
         protected override object RetrieveValue()
         {
-            return Node.Content.Retrieve(index);
+            return Node.Retrieve(index);
         }
 
-        protected override IGraphNode GetTargetNode()
+        protected override IObjectNode GetTargetNode()
         {
-            var reference = Node.Content.Reference as ReferenceEnumerable;
-            if (Node.Content.IsReference && (reference?.HasIndex(index) ?? false))
+            var reference = (Node as IObjectNode)?.ItemReferences;
+            if (Node.IsReference && (reference?.HasIndex(index) ?? false))
             {
                 return reference[index].TargetNode;
             }

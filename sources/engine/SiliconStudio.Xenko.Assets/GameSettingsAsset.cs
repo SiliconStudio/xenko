@@ -22,6 +22,7 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Physics;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Assets
 { 
@@ -37,9 +38,10 @@ namespace SiliconStudio.Xenko.Assets
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.6.0-beta", typeof(UpgraderPlatformsConfiguration))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.6.0-beta", "1.6.1-alpha01", typeof(UpgradeNewGameSettings))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.6.1-alpha01", "1.9.3-alpha01", typeof(UpgradeAddAudioSettings))]
     public class GameSettingsAsset : Asset
     {
-        private const string CurrentVersion = "1.6.1-alpha01";
+        private const string CurrentVersion = "1.9.3-alpha01";
 
         /// <summary>
         /// The default file extension used by the <see cref="GameSettingsAsset"/>.
@@ -58,6 +60,9 @@ namespace SiliconStudio.Xenko.Assets
         /// <userdoc>The default scene that will be loaded at game startup.</userdoc>
         [DataMember(1000)]
         public Scene DefaultScene { get; set; }
+
+        [DataMember(1500)]
+        public GraphicsCompositor GraphicsCompositor { get; set; }
 
         [DataMember(2000)]
         [MemberCollection(ReadOnly = true, NotNullItems = true)]
@@ -246,6 +251,15 @@ namespace SiliconStudio.Xenko.Assets
                     dynamic setting = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Assets.Textures.TextureSettings,SiliconStudio.Xenko.Assets" });
                     asset.Defaults.Add(setting);
                 }
+            }
+        }
+
+        internal class UpgradeAddAudioSettings : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                dynamic setting = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Audio.AudioEngineSettings,SiliconStudio.Xenko.Audio" });
+                asset.Defaults.Add(setting);
             }
         }
     }

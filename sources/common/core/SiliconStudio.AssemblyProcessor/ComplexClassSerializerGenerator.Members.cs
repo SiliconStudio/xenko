@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Mono.Cecil;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.AssemblyProcessor
 {
@@ -244,11 +245,29 @@ namespace SiliconStudio.AssemblyProcessor
             else
                 flags = ComplexTypeSerializerFlags.SerializePublicProperties;
 
+            // Find default member mode (find DataContractAttribute in the hierarchy)
+            var defaultMemberMode = DataMemberMode.Default;
+            var currentType = type;
+            while (currentType != null)
+            {
+                var dataContractAttribute = currentType.CustomAttributes.FirstOrDefault(x => x.AttributeType.FullName == "SiliconStudio.Core.DataContractAttribute");
+                if (dataContractAttribute != null)
+                {
+                    var dataMemberModeArg = dataContractAttribute.Properties.FirstOrDefault(x => x.Name == "DefaultMemberMode").Argument;
+                    if (dataMemberModeArg.Value != null)
+                    {
+                        defaultMemberMode = (DataMemberMode)(int)dataMemberModeArg.Value;
+                        break;
+                    }
+                }
+                currentType = currentType.BaseType?.Resolve();
+            }
+
             if ((flags & ComplexTypeSerializerFlags.SerializePublicFields) != 0)
             {
                 foreach (var field in fields)
                 {
-                    if (IsMemberIgnored(field.CustomAttributes, flags)) continue;
+                    if (IsMemberIgnored(field.CustomAttributes, flags, defaultMemberMode)) continue;
                     var attributes = field.CustomAttributes;
                     var fixedAttribute = field.CustomAttributes.FirstOrDefault(x => x.AttributeType.FullName == typeof(FixedBufferAttribute).FullName);
                     var assignBack = !field.IsInitOnly;
@@ -268,7 +287,7 @@ namespace SiliconStudio.AssemblyProcessor
                     // Ignore properties with indexer
                     if (property.GetMethod.Parameters.Count > 0)
                         continue;
-                    if (IsMemberIgnored(property.CustomAttributes, flags)) continue;
+                    if (IsMemberIgnored(property.CustomAttributes, flags, defaultMemberMode)) continue;
                     var attributes = property.CustomAttributes;
                     var assignBack = property.SetMethod != null && (property.SetMethod.IsPublic || property.SetMethod.IsAssembly);
 
@@ -281,7 +300,7 @@ namespace SiliconStudio.AssemblyProcessor
             }
         }
 
-        private static bool IsMemberIgnored(ICollection<CustomAttribute> customAttributes, ComplexTypeSerializerFlags flags)
+        private static bool IsMemberIgnored(ICollection<CustomAttribute> customAttributes, ComplexTypeSerializerFlags flags, DataMemberMode dataMemberMode)
         {
             // Check for DataMemberIgnore
             if (customAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberIgnoreAttribute"))
@@ -291,13 +310,34 @@ namespace SiliconStudio.AssemblyProcessor
                       && customAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Xenko.Updater.DataMemberUpdatableAttribute")))
                     return true;
             }
+            var dataMemberAttribute = customAttributes.FirstOrDefault(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberAttribute");
+            if (dataMemberAttribute != null)
+            {
+                var dataMemberModeArg = dataMemberAttribute.ConstructorArguments.FirstOrDefault(x => x.Type.Name == nameof(DataMemberMode));
+                if (dataMemberModeArg.Value != null)
+                {
+                    dataMemberMode = (DataMemberMode)(int)dataMemberModeArg.Value;
+                }
+                else
+                {
+                    // Default value if not specified in .ctor
+                    dataMemberMode = DataMemberMode.Default;
+                }
+            }
+
+            // Ignored?
+            if (dataMemberMode == DataMemberMode.Never)
+                return true;
+
             return false;
         }
 
         private static bool IsReadOnlyTypeSerializable(TypeReference type)
         {
-            // For now, we allow any class which is not a string (since they are immutable)
-            return type.MetadataType != MetadataType.String && type.Resolve().IsClass;
+            // For now, we allow any non-valuetype (class & interface) which is not a string (since they are immutable)
+            return type.MetadataType != MetadataType.String
+                // sometimes class/valuetype is not properly set in some reference types (not sure if it was the exact same case)
+                && !((type.MetadataType == MetadataType.ValueType || type.MetadataType == MetadataType.Class) && type.Resolve().IsValueType);
         }
 
         protected static string CreateMemberVariableName(IMemberDefinition memberInfo)

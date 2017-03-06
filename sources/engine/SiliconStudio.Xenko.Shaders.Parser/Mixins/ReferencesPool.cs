@@ -6,6 +6,8 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Shaders.Parser.Analysis;
 using SiliconStudio.Shaders.Ast;
+using SiliconStudio.Shaders.Ast.Hlsl;
+using SiliconStudio.Shaders.Ast.Xenko;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
@@ -71,6 +73,18 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         {
             if (!VariablesReferences.ContainsKey(variable))
                 VariablesReferences.Add(variable, new HashSet<ExpressionNodeCouple>());
+
+            // Also add all the variables in that buffer so that they are not removed
+            var cbuffer = (ConstantBuffer)variable.GetTag(XenkoTags.ConstantBuffer);
+            if (cbuffer != null)
+            {
+                foreach (var otherVariable in cbuffer.Members.OfType<Variable>())
+                {
+                    if (!VariablesReferences.ContainsKey(otherVariable))
+                        VariablesReferences.Add(otherVariable, new HashSet<ExpressionNodeCouple>());
+                }
+            }
+
             VariablesReferences[variable].Add(expression);
         }
 

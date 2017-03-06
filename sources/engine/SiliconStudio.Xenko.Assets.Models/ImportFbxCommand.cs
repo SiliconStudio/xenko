@@ -12,7 +12,6 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    [CommandDependsOn(typeof(Importer.FBX.MeshConverter))]
     [Description("Import FBX")]
     public class ImportFbxCommand : ImportModelCommand
     {

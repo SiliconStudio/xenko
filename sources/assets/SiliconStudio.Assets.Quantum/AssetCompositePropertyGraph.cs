@@ -1,7 +1,7 @@
-using SiliconStudio.Core;
+using System;
+using SiliconStudio.Assets.Quantum.Visitors;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum
 {
@@ -12,30 +12,14 @@ namespace SiliconStudio.Assets.Quantum
         {
         }
 
-        public override bool ShouldListenToTargetNode(MemberContent member, IGraphNode targetNode)
-        {
-            // Make sure it's actually a target (not a member) node.
-            return !IsReferencedPart(member, targetNode) && base.ShouldListenToTargetNode(member, targetNode);
-        }
-
-        public virtual bool IsReferencedPart(MemberContent member, IGraphNode targetNode)
-        {
-            return false;
-        }
-
         public override GraphVisitorBase CreateReconcilierVisitor()
         {
-            return new AssetCompositePartVisitor(this);
+            return new AssetGraphVisitorBase(this);
         }
 
-        protected override bool ShouldReconcileItem(MemberContent member, IGraphNode targetNode, object localValue, object baseValue, bool isReference)
+        protected sealed override IBaseToDerivedRegistry CreateBaseToDerivedRegistry()
         {
-            // Always reconcile referenced parts
-            if (isReference && IsReferencedPart(member, targetNode))
-            {
-                return true;
-            }
-            return base.ShouldReconcileItem(member, targetNode, localValue, baseValue, isReference);
+            return new AssetCompositeBaseToDerivedRegistry(this);
         }
     }
 }

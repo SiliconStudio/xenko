@@ -6,15 +6,17 @@
   <!-- Embed native libraries -->
   <ItemGroup>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libfreetype.a" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libcore.a" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libcore*.a" />
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libbulletc.a" />
 
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libxenko.a" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libxenko*.a" />
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libNativePath.a" />
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libCelt.a" />
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libRecast.a" />
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libDetour.a" />
-    
+    <!-- Let users add this if they want for now.
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libgvr.a" />
+    -->
     <!-- Users custom native libraries -->
     <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\*.a" />
   </ItemGroup>
@@ -36,6 +38,10 @@
     <XamarinVersion>$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Xamarin\iOS', 'InstalledVersion', '8.2.0', RegistryView.Registry32))</XamarinVersion>
     <XamarinIOSMajorVersion>$([System.Text.RegularExpressions.Regex]::Match($(XamarinVersion), `^(\d+)\.(\d+)\.`).get_Groups().get_Item(1).ToString())</XamarinIOSMajorVersion>
     <XamarinIOSMinorVersion>$([System.Text.RegularExpressions.Regex]::Match($(XamarinVersion), `^(\d+)\.(\d+)\.`).get_Groups().get_Item(2).ToString())</XamarinIOSMinorVersion>
+    <!-- Let users add this if they want for now.
+    <XenkoMTouchExtras>-framework OpenGLES -framework SpriteKit -framework CoreAudio -framework CoreMedia -framework CoreText -framework CoreVideo -framework AudioToolbox -framework MediaPlayer -framework GLKit</XenkoMTouchExtras>
+    -->
+    <XenkoMTouchExtras></XenkoMTouchExtras>
   </PropertyGroup>
 
   <Target Name="EnsureXamarinVersion" BeforeTargets="PrepareForBuild">
@@ -92,15 +98,15 @@
   <!-- Deploy assets and native libraries (Xamarin iOS 8.2+ version) -->
   <Target Name="DeployAssetsiOS8" DependsOnTargets="_GenerateBundleName;SiliconStudioCompileAsset" Condition="'$(SiliconStudioIsExecutable)' == 'true' And $(XamarinIOSMajorVersion) >= 8">
     <PropertyGroup Condition="$(XamarinIOSMajorVersion) == 8 And $(XamarinIOSMinorVersion) &lt; 6">
-      <MtouchExtraArgsLibs>@(_SiliconStudioEmbeddedNativeLibrary->'-l%(LibraryName) -force_load "%24{ProjectDir}/$(_AppBundlePath)../%(Filename)%(Extension)"',' ')</MtouchExtraArgsLibs>
+      <MtouchExtraArgsLibs>$(XenkoMTouchExtras) @(_SiliconStudioEmbeddedNativeLibrary->'-l%(LibraryName) "%24{ProjectDir}/$(_AppBundlePath)../%(Filename)%(Extension)"',' ')</MtouchExtraArgsLibs>
       <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags "-L%24{ProjectDir}/$(_AppBundlePath)../ -lstdc++ $(MtouchExtraArgsLibs)"</MtouchExtraArgs>
     </PropertyGroup>
     <PropertyGroup Condition="$(XamarinIOSMajorVersion) == 8 And $(XamarinIOSMinorVersion) == 9">
-      <MtouchExtraArgsLibs>@(_SiliconStudioEmbeddedNativeLibrary->'-L"%24{ProjectDir}/%(RootDir)%(Directory)" -l%(LibraryName) -force_load "%24{ProjectDir}/%(FullPath)"',' ')</MtouchExtraArgsLibs>
+      <MtouchExtraArgsLibs>$(XenkoMTouchExtras) @(_SiliconStudioEmbeddedNativeLibrary->'-L"%24{ProjectDir}/%(RootDir)%(Directory)" -l%(LibraryName) "%24{ProjectDir}/%(FullPath)"',' ')</MtouchExtraArgsLibs>
       <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags '-lstdc++ $(MtouchExtraArgsLibs)'</MtouchExtraArgs>
     </PropertyGroup>
     <PropertyGroup Condition="($(XamarinIOSMajorVersion) == 8 And $(XamarinIOSMinorVersion) >= 10) Or $(XamarinIOSMajorVersion) >= 9">
-      <MtouchExtraArgsLibs>-L"%24{ProjectDir}" @(_SiliconStudioEmbeddedNativeLibrary->'-l%(LibraryName) -force_load "%24{ProjectDir}/%(Filename)%(Extension)"',' ')</MtouchExtraArgsLibs>
+      <MtouchExtraArgsLibs>$(XenkoMTouchExtras) -L"%24{ProjectDir}" @(_SiliconStudioEmbeddedNativeLibrary->'-l%(LibraryName) "%24{ProjectDir}/%(Filename)%(Extension)"',' ')</MtouchExtraArgsLibs>
       <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags '-lstdc++ $(MtouchExtraArgsLibs)'</MtouchExtraArgs>
     </PropertyGroup>
 
@@ -126,7 +132,7 @@
        Deprecated, later we will only support Xamarin iOS 8.2+ -->
   <Target Name="DeployAssetsiOS7" BeforeTargets="_GenerateBundleContentDir" Condition="'$(SiliconStudioIsExecutable)' == 'true' And $(XamarinIOSMajorVersion) &lt;= 7">
     <PropertyGroup>
-      <MtouchExtraArgsLibs>@(_SiliconStudioEmbeddedNativeLibrary->'-l%(LibraryName) -force_load "%24{ProjectDir}/source/%(Filename)%(Extension)"',' ')</MtouchExtraArgsLibs>
+      <MtouchExtraArgsLibs>$(XenkoMTouchExtras) @(_SiliconStudioEmbeddedNativeLibrary->'-l%(LibraryName) "%24{ProjectDir}/source/%(Filename)%(Extension)"',' ')</MtouchExtraArgsLibs>
       <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags "-L%24{ProjectDir}/source -lstdc++ $(MtouchExtraArgsLibs)"</MtouchExtraArgs>
     </PropertyGroup>
 

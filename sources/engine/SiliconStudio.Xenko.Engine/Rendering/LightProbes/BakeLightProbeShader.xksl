@@ -1,0 +1,29 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.LightProbes
+{
+	// TODO: Inherit from SpriteBase; however we can't redefine SV_Target0 to have a different type due to ColorTarget being defined by ShaderBase => ShaderBaseStream
+    shader BakeLightProbeShader : PositionStream4, Texturing
+    {
+		// Default SV_POSITION output for VS/GS shaders
+		stage stream float4 ShadingPosition : SV_Position;
+
+		stage stream uint LightProbeId : LIGHTPROBE_ID;
+		stage stream uint LightProbeIdOutput : SV_Target0;
+
+	    cbuffer PerDraw
+		{
+			stage float4x4 MatrixTransform;
+		}
+
+		stage void VSMain()
+		{
+			streams.ShadingPosition = mul(streams.Position, MatrixTransform);
+		}
+
+		stage void PSMain()
+		{
+			streams.LightProbeIdOutput = streams.LightProbeId;
+		}
+    };
+}

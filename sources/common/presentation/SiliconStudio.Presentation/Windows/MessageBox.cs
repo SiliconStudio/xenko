@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using SiliconStudio.Presentation.Interop;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Resources;
 
 namespace SiliconStudio.Presentation.Windows
@@ -32,7 +34,7 @@ namespace SiliconStudio.Presentation.Windows
         {
             base.OnInitialized(e);
 
-            CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, (_, __) => Clipboard.SetDataObject(Content ?? string.Empty, true)));
+            CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, (_, __) => SafeClipboard.SetDataObject(Content ?? string.Empty, true)));
         }
 
         public ImageSource Image
@@ -47,6 +49,7 @@ namespace SiliconStudio.Presentation.Windows
         /// <remarks>
         /// <see cref="DialogButtonInfo.IsCancel"/> is set to <see langword="true"/>.
         /// <see cref="DialogButtonInfo.Result"/> is set to <see cref="MessageBoxResult.Cancel"/>.</remarks>
+        [NotNull]
         public static DialogButtonInfo ButtonCancel => new DialogButtonInfo
         {
             IsCancel = true,
@@ -59,6 +62,7 @@ namespace SiliconStudio.Presentation.Windows
         /// </summary>
         /// <remarks>
         /// <see cref="DialogButtonInfo.Result"/> is set to <see cref="MessageBoxResult.No"/>.</remarks>
+        [NotNull]
         public static DialogButtonInfo ButtonNo => new DialogButtonInfo
         {
             Result = (int)MessageBoxResult.No,
@@ -72,6 +76,7 @@ namespace SiliconStudio.Presentation.Windows
         /// <remarks>
         /// <see cref="DialogButtonInfo.IsDefault"/> is set to <see langword="true"/>.
         /// <see cref="DialogButtonInfo.Result"/> is set to <see cref="MessageBoxResult.OK"/>.</remarks>
+        [NotNull]
         public static DialogButtonInfo ButtonOK => new DialogButtonInfo
         {
             IsDefault = true,
@@ -85,6 +90,7 @@ namespace SiliconStudio.Presentation.Windows
         /// <remarks>
         /// <see cref="DialogButtonInfo.IsDefault"/> is set to <see langword="true"/>.
         /// <see cref="DialogButtonInfo.Result"/> is set to <see cref="MessageBoxResult.Yes"/>.</remarks>
+        [NotNull]
         public static DialogButtonInfo ButtonYes => new DialogButtonInfo
         {
             IsDefault = true,
@@ -93,6 +99,7 @@ namespace SiliconStudio.Presentation.Windows
             Key = KeyGestures.ButtonYes,
         };
 
+        [NotNull]
         internal static ICollection<DialogButtonInfo> GetButtons(MessageBoxButton button)
         {
             ICollection<DialogButtonInfo> buttons;
@@ -123,7 +130,7 @@ namespace SiliconStudio.Presentation.Windows
             return buttons;
         }
 
-        internal static void SetImage(MessageBox messageBox, MessageBoxImage image)
+        internal static void SetImage([NotNull] MessageBox messageBox, MessageBoxImage image)
         {
             string imageKey;
             switch (image)
@@ -162,6 +169,7 @@ namespace SiliconStudio.Presentation.Windows
         /// <param name="button">A <see cref="MessageBoxButton"/> value that specifies which button or buttons to display</param>
         /// <param name="image">A <see cref="MessageBoxImage"/> value that specifies the icon to display.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
+        [NotNull]
         public static Task<MessageBoxResult> Show(WindowOwner owner, string message, string caption, MessageBoxButton button, MessageBoxImage image)
         {
             return Show(owner, message, caption, GetButtons(button), image);
@@ -176,7 +184,7 @@ namespace SiliconStudio.Presentation.Windows
         /// <param name="buttons">A n enumeration of <see cref="DialogButtonInfo"/> that specifies buttons to display</param>
         /// <param name="image">A <see cref="MessageBoxImage"/> value that specifies the icon to display.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
-        public static async Task<MessageBoxResult> Show(WindowOwner owner, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image)
+        public static async Task<MessageBoxResult> Show(WindowOwner owner, string message, string caption, [NotNull] IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image)
         {
             var buttonList = buttons.ToList();
             var messageBox = new MessageBox
@@ -190,7 +198,7 @@ namespace SiliconStudio.Presentation.Windows
             return (MessageBoxResult)await messageBox.ShowInternal(owner);
         }
 
-        internal static void SetKeyBindings(MessageBox messageBox, IEnumerable<DialogButtonInfo> buttons)
+        internal static void SetKeyBindings(MessageBox messageBox, [NotNull] IEnumerable<DialogButtonInfo> buttons)
         {
             foreach (var button in buttons)
             {

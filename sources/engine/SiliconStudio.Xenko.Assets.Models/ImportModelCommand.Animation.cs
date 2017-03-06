@@ -19,6 +19,8 @@ namespace SiliconStudio.Xenko.Assets.Models
     {
         public AnimationRepeatMode AnimationRepeatMode { get; set; }
         public bool AnimationRootMotion { get; set; }
+        public TimeSpan StartFrame { get; set; } = TimeSpan.Zero;
+        public TimeSpan EndFrame { get; set; } = AnimationAsset.LongestTimeSpan;
 
         private unsafe object ExportAnimation(ICommandContext commandContext, ContentManager contentManager)
         {
@@ -28,6 +30,24 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             TimeSpan duration;
             var animationClips = LoadAnimation(commandContext, contentManager, out duration);
+
+            // Fix the animation frames
+            double startFrameSeconds = StartFrame.TotalSeconds;
+            double endFrameSeconds = EndFrame.TotalSeconds;
+            var startTime = CompressedTimeSpan.FromSeconds(-startFrameSeconds);
+
+            foreach (var clip in animationClips)
+            {
+                foreach (var animationCurve in clip.Value.Curves)
+                {
+                    animationCurve.ShiftKeys(startTime);
+                }
+            }
+
+            var durationTimeSpan = TimeSpan.FromSeconds((endFrameSeconds - startFrameSeconds));
+            if (duration > durationTimeSpan)
+                duration = durationTimeSpan;
+
             AnimationClip animationClip = null;
 
             if (animationClips.Count > 0)
@@ -120,6 +140,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
                             foreach (var node in nodesToMerge)
                             {
+                                if (node.Item3 != null)
                                 foreach (var curve in node.Item3.Clip.Curves)
                                 {
                                     foreach (CompressedTimeSpan time in curve.Keys)
@@ -152,21 +173,21 @@ namespace SiliconStudio.Xenko.Assets.Models
                                     // Needs to be an array in order for it to be modified by the UpdateEngine, otherwise it would get passed by value
                                     var modelNodeDefinitions = new ModelNodeDefinition[1] {node.Item1};
 
-                                    // Compute
-                                    AnimationClipResult animationClipResult = null;
-                                    animationOperations.Clear();
-                                    animationOperations.Add(AnimationOperation.NewPush(node.Item3, animationKey));
-                                    node.Item2.Compute(animationOperations, ref animationClipResult);
-
-                                    var updateMemberInfos = new List<UpdateMemberInfo>();
-                                    foreach (var channel in animationClipResult.Channels)
-                                        updateMemberInfos.Add(new UpdateMemberInfo { Name = "[0]." + channel.PropertyName, DataOffset = channel.Offset });
-
-                                    // TODO: Cache this
-                                    var compiledUpdate = UpdateEngine.Compile(typeof(ModelNodeDefinition[]), updateMemberInfos);
-
-                                    unsafe
+                                    if (node.Item2 != null && node.Item3 != null)
                                     {
+                                        // Compute
+                                        AnimationClipResult animationClipResult = null;
+                                        animationOperations.Clear();
+                                        animationOperations.Add(AnimationOperation.NewPush(node.Item3, animationKey));
+                                        node.Item2.Compute(animationOperations, ref animationClipResult);
+
+                                        var updateMemberInfos = new List<UpdateMemberInfo>();
+                                        foreach (var channel in animationClipResult.Channels)
+                                            updateMemberInfos.Add(new UpdateMemberInfo { Name = "[0]." + channel.PropertyName, DataOffset = channel.Offset });
+
+                                        // TODO: Cache this
+                                        var compiledUpdate = UpdateEngine.Compile(typeof(ModelNodeDefinition[]), updateMemberInfos);
+
                                         fixed (byte* data = animationClipResult.Data)
                                         {
                                             UpdateEngine.Run(modelNodeDefinitions, compiledUpdate, (IntPtr)data, null);
@@ -233,7 +254,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             {
                 if (animationClip.Duration.Ticks == 0)
                 {
-                    commandContext.Logger.Warning($"File {SourcePath} has a 0 tick long animation.");
+                    commandContext.Logger.Verbose($"File {SourcePath} has a 0 tick long animation.");
                 }
 
                 // Optimize and set common parameters

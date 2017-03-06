@@ -8,7 +8,7 @@ using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.BuildEngine.Tests
 {
-    [TestFixture]
+    [TestFixture, Ignore("BuildEngine tests are deprecated")]
     class TestCancellation
     {
         [Test]

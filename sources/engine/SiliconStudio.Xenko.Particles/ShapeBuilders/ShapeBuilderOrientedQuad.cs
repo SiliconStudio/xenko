@@ -40,11 +40,11 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         public override int QuadsPerParticle { get; protected set; } = 1;
 
         /// <inheritdoc />
-        public unsafe override int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
-            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter)
+        public override unsafe int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
+            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter, ref Matrix viewProj)
         {
             // Update the curve samplers if required
-            base.BuildVertexBuffer(ref bufferState, invViewX, invViewY, ref spaceTranslation, ref spaceRotation, spaceScale, ref sorter);
+            base.BuildVertexBuffer(ref bufferState, invViewX, invViewY, ref spaceTranslation, ref spaceRotation, spaceScale, ref sorter, ref viewProj);
 
             // Get all the required particle fields
             var positionField = sorter.GetField(ParticleFields.Position);
@@ -65,6 +65,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             var posAttribute = bufferState.GetAccessor(VertexAttributes.Position);
             var texAttribute = bufferState.GetAccessor(bufferState.DefaultTexCoords);
 
+            // TODO Use viewProj
             Vector3 invViewZ;
             Vector3.Cross(ref invViewX, ref invViewY, out invViewZ);
             invViewZ.Normalize();

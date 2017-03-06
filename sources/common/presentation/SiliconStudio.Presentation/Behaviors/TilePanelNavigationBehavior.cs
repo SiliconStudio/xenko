@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Controls;
 
 namespace SiliconStudio.Presentation.Behaviors
@@ -45,7 +45,7 @@ namespace SiliconStudio.Presentation.Behaviors
             selector = null;
         }
 
-        private void OnAssociatedObjectKeyDown(object sender, KeyEventArgs e)
+        private void OnAssociatedObjectKeyDown(object sender, [NotNull] KeyEventArgs e)
         {
             if (selector.SelectedIndex == -1 || selector.Items.Count == 0)
                 return;

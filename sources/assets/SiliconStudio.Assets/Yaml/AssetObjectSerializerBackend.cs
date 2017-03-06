@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
@@ -17,7 +18,8 @@ namespace SiliconStudio.Core.Yaml
     {
         private readonly ITypeDescriptorFactory typeDescriptorFactory;
         private static readonly PropertyKey<YamlAssetPath> MemberPathKey = new PropertyKey<YamlAssetPath>("MemberPath", typeof(AssetObjectSerializerBackend));
-        public static readonly PropertyKey<Dictionary<YamlAssetPath, OverrideType>> OverrideDictionaryKey = new PropertyKey<Dictionary<YamlAssetPath, OverrideType>>("OverrideDictionary", typeof(AssetObjectSerializerBackend));
+        public static readonly PropertyKey<YamlAssetMetadata<OverrideType>> OverrideDictionaryKey = new PropertyKey<YamlAssetMetadata<OverrideType>>("OverrideDictionary", typeof(AssetObjectSerializerBackend));
+        public static readonly PropertyKey<YamlAssetMetadata<Guid>> ObjectReferencesKey = new PropertyKey<YamlAssetMetadata<Guid>>("ObjectReferences", typeof(AssetObjectSerializerBackend));
 
         public AssetObjectSerializerBackend(ITypeDescriptorFactory typeDescriptorFactory)
         {
@@ -85,16 +87,16 @@ namespace SiliconStudio.Core.Yaml
             var overrideType = overrideTypes[overrideTypes.Length - 1];
             if (overrideType != OverrideType.Base)
             {
-                Dictionary<YamlAssetPath, OverrideType> overrides;
+                YamlAssetMetadata<OverrideType> overrides;
                 if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
                 {
-                    overrides = new Dictionary<YamlAssetPath, OverrideType>();
+                    overrides = new YamlAssetMetadata<OverrideType>();
                     objectContext.SerializerContext.Properties.Add(OverrideDictionaryKey, overrides);
                 }
 
                 var path = GetCurrentPath(ref objectContext, true);
                 path.PushMember(realMemberName);
-                overrides.Add(path, overrideType);
+                overrides.Set(path, overrideType);
             }
 
             var resultMemberName = base.ReadMemberName(ref objectContext, realMemberName, out skipMember);
@@ -122,23 +124,20 @@ namespace SiliconStudio.Core.Yaml
 
                 if (customDescriptor != null)
                 {
-                    Dictionary<YamlAssetPath, OverrideType> overrides;
+                    YamlAssetMetadata<OverrideType> overrides;
                     if (objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
                     {
                         var path = GetCurrentPath(ref objectContext, true);
                         path.PushMember(memberName);
 
-                        OverrideType overrideType;
-                        if (overrides.TryGetValue(path, out overrideType))
+                        var overrideType = overrides.TryGet(path);
+                        if ((overrideType & OverrideType.New) != 0)
                         {
-                            if ((overrideType & OverrideType.New) != 0)
-                            {
-                                memberName += OverridePostfixes.PostFixNew;
-                            }
-                            if ((overrideType & OverrideType.Sealed) != 0)
-                            {
-                                memberName += OverridePostfixes.PostFixSealed;
-                            }
+                            memberName += OverridePostfixes.PostFixNew;
+                        }
+                        if ((overrideType & OverrideType.Sealed) != 0)
+                        {
+                            memberName += OverridePostfixes.PostFixSealed;
                         }
                     }
                 }
@@ -176,10 +175,10 @@ namespace SiliconStudio.Core.Yaml
 
             if (overrideTypes[0] != OverrideType.Base)
             {
-                Dictionary<YamlAssetPath, OverrideType> overrides;
+                YamlAssetMetadata<OverrideType> overrides;
                 if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
                 {
-                    overrides = new Dictionary<YamlAssetPath, OverrideType>();
+                    overrides = new YamlAssetMetadata<OverrideType>();
                     objectContext.SerializerContext.Properties.Add(OverrideDictionaryKey, overrides);
                 }
 
@@ -194,7 +193,7 @@ namespace SiliconStudio.Core.Yaml
                 {
                     path.PushIndex(key);
                 }
-                overrides.Add(path, overrideTypes[0]);
+                overrides.Set(path, overrideTypes[0]);
             }
 
             if (overrideTypes.Length > 1 && overrideTypes[1] != OverrideType.Base)
@@ -203,16 +202,16 @@ namespace SiliconStudio.Core.Yaml
                 object actualKey;
                 if (YamlAssetPath.IsCollectionWithIdType(objectContext.Descriptor.Type, keyValue, out id, out actualKey))
                 {
-                    Dictionary<YamlAssetPath, OverrideType> overrides;
+                    YamlAssetMetadata<OverrideType> overrides;
                     if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
                     {
-                        overrides = new Dictionary<YamlAssetPath, OverrideType>();
+                        overrides = new YamlAssetMetadata<OverrideType>();
                         objectContext.SerializerContext.Properties.Add(OverrideDictionaryKey, overrides);
                     }
 
                     var path = GetCurrentPath(ref objectContext, true);
                     path.PushIndex(actualKey);
-                    overrides.Add(path, overrideTypes[1]);
+                    overrides.Set(path, overrideTypes[1]);
                 }
             }
 
@@ -221,7 +220,7 @@ namespace SiliconStudio.Core.Yaml
 
         public override void WriteDictionaryKey(ref ObjectContext objectContext, object key, Type keyType)
         {
-            Dictionary<YamlAssetPath, OverrideType> overrides;
+            YamlAssetMetadata<OverrideType> overrides;
             if (objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
             {
                 var itemPath = GetCurrentPath(ref objectContext, true);
@@ -238,20 +237,18 @@ namespace SiliconStudio.Core.Yaml
                 {
                     itemPath.PushIndex(key);
                 }
-                OverrideType overrideType;
-                if (overrides.TryGetValue(itemPath, out overrideType))
+                var overrideType = overrides.TryGet(itemPath);
+                if ((overrideType & OverrideType.New) != 0)
                 {
-                    if ((overrideType & OverrideType.New) != 0)
-                    {
-                        objectContext.SerializerContext.Properties.Set(ItemIdSerializerBase.OverrideInfoKey, OverridePostfixes.PostFixNew.ToString());
-                    }
-                    if ((overrideType & OverrideType.Sealed) != 0)
-                    {
-                        objectContext.SerializerContext.Properties.Set(ItemIdSerializerBase.OverrideInfoKey, OverridePostfixes.PostFixSealed.ToString());
-                    }
+                    objectContext.SerializerContext.Properties.Set(ItemIdSerializerBase.OverrideInfoKey, OverridePostfixes.PostFixNew.ToString());
                 }
-                if (keyPath != null && overrides.TryGetValue(keyPath, out overrideType))
+                if ((overrideType & OverrideType.Sealed) != 0)
                 {
+                    objectContext.SerializerContext.Properties.Set(ItemIdSerializerBase.OverrideInfoKey, OverridePostfixes.PostFixSealed.ToString());
+                }
+                if (keyPath != null)
+                {
+                    overrideType = overrides.TryGet(keyPath);
                     if ((overrideType & OverrideType.New) != 0)
                     {
                         objectContext.SerializerContext.Properties.Set(KeyWithIdSerializer.OverrideKeyInfoKey, OverridePostfixes.PostFixNew.ToString());
@@ -299,7 +296,23 @@ namespace SiliconStudio.Core.Yaml
             WriteYaml(ref itemObjectcontext);
         }
 
-        private static YamlAssetPath GetCurrentPath(ref ObjectContext objectContext, bool clone)
+        public override bool ShouldSerialize(IMemberDescriptor member, ref ObjectContext objectContext)
+        {
+            YamlAssetMetadata<OverrideType> overrides;
+            if (objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
+            {
+                var path = GetCurrentPath(ref objectContext, true);
+                path.PushMember(member.Name);
+
+                var overrideType = overrides.TryGet(path);
+                if (overrideType != OverrideType.Base)
+                    return true;
+            }
+
+            return base.ShouldSerialize(member, ref objectContext);
+        }
+
+        public static YamlAssetPath GetCurrentPath(ref ObjectContext objectContext, bool clone)
         {
             YamlAssetPath path;
             path = objectContext.Properties.TryGetValue(MemberPathKey, out path) ? path : new YamlAssetPath();

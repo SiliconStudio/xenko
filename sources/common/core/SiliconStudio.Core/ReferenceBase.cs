@@ -18,7 +18,7 @@ namespace SiliconStudio.Core
         /// <inheritdoc/>
         public virtual int AddReference()
         {
-            int newCounter = Interlocked.Increment(ref counter);
+            var newCounter = Interlocked.Increment(ref counter);
             if (newCounter <= 1) throw new InvalidOperationException(FrameworkResources.AddReferenceError);
             return newCounter;
         }
@@ -26,7 +26,7 @@ namespace SiliconStudio.Core
         /// <inheritdoc/>
         public virtual int Release()
         {
-            int newCounter = Interlocked.Decrement(ref counter);
+            var newCounter = Interlocked.Decrement(ref counter);
             if (newCounter == 0)
             {
                 try

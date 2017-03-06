@@ -35,7 +35,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override async Task Invoke(object parameter)
         {
-            using (var transaction = ActionService?.CreateTransaction())
+            using (var transaction = UndoRedoService?.CreateTransaction())
             {
                 firstCommand?.NodeCommand.StartCombinedInvoke();
                 foreach (var command in commands)
@@ -43,7 +43,7 @@ namespace SiliconStudio.Presentation.Quantum
                     await command.Invoke(parameter);
                 }
                 firstCommand?.NodeCommand.EndCombinedInvoke();
-                ActionService?.SetName(transaction, ActionName);
+                UndoRedoService?.SetName(transaction, ActionName);
             }
         }
     }

@@ -94,7 +94,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             attributeRegistry = new AttributeRegistry();
             ObjectFactory = new DefaultObjectFactory();
             ObjectSerializerBackend = new DefaultObjectSerializerBackend();
-            ComparerForKeySorting = new DefaultKeyComparer();
+            ComparerForKeySorting = new DefaultMemberComparer();
             NamingConvention = new DefaultNamingConvention();
             SerializerFactorySelector = new ProfileSerializerFactorySelector(YamlSerializerFactoryAttribute.Default);
             // Register default mapping for map and seq
@@ -184,7 +184,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         /// <summary>
         /// Gets or sets the default key comparer used to sort members (<see cref="IMemberDescriptor"/>) or
-        /// dictionary keys, when serializing objects as YAML mappings. Default is <see cref="DefaultKeyComparer"/>. 
+        /// dictionary keys, when serializing objects as YAML mappings. Default is <see cref="DefaultMemberComparer"/>. 
         /// To disable the default comparer, this value can be set to null.
         /// </summary>
         /// <value>The key comparer.</value>
@@ -316,6 +316,11 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public IYamlSchema Schema { get { return schema; } }
 
         public ISerializerFactorySelector SerializerFactorySelector { get; set; }
+
+        /// <summary>
+        /// Gets a methods that will build the proper chain of serializers out of the default chain.
+        /// </summary>
+        public Action<ChainedSerializer> ChainedSerializerFactory { get; set; }
 
         /// <summary>
         /// Register a mapping between a tag and a type.

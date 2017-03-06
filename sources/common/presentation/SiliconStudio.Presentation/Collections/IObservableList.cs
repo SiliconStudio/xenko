@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Collections
 {
@@ -8,6 +12,7 @@ namespace SiliconStudio.Presentation.Collections
     /// <typeparam name="T">The type of item contained in the list.</typeparam>
     public interface IObservableList<T> : IList<T>, IObservableCollection<T>
     {
-        void AddRange(IEnumerable<T> items);
+        [CollectionAccess(CollectionAccessType.UpdatedContent)]
+        void AddRange([NotNull] IEnumerable<T> items);
     }
 }

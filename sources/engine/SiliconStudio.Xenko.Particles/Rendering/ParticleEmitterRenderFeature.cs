@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             // Update existing materials
             foreach (var material in allMaterialInfos)
             {
-                material.Key.Setup(RenderSystem.RenderContextOld);
+                material.Key.Setup(context.RenderContext);
             }
 
             foreach (var renderObject in RenderObjects)
@@ -135,11 +135,11 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                         renderParticleEmitter.ParticleMaterialInfo = materialInfo;
 
                         // Update new materials
-                        material.Setup(RenderSystem.RenderContextOld);
+                        material.Setup(context.RenderContext);
                     }
 
                     // TODO: Iterate PermuatationParameters automatically?
-                    material.ValidateEffect(RenderSystem.RenderContextOld, ref renderEffect.EffectValidator);
+                    material.ValidateEffect(context.RenderContext, ref renderEffect.EffectValidator);
                 }
             }
         }
@@ -264,7 +264,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
                 Matrix viewInverse; // TODO Build this per view, not per node!!!
                 Matrix.Invert(ref renderNode.RenderView.View, out viewInverse);
-                renderParticleEmitter.ParticleEmitter.BuildVertexBuffer(sharedBufferPtr + nodeData.VertexBufferOffset, ref viewInverse);
+                renderParticleEmitter.ParticleEmitter.BuildVertexBuffer(sharedBufferPtr + nodeData.VertexBufferOffset, ref viewInverse, ref renderNode.RenderView.ViewProjection);
             });
 
             commandList.UnmapSubresource(mappedVertices);

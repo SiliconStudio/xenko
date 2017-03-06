@@ -30,11 +30,11 @@ namespace SiliconStudio.Core.Diagnostics
         /// Gets the messages logged to this instance.
         /// </summary>
         /// <value>The messages.</value>
-        public List<Message> Messages { get; private set; }
+        public List<Message> Messages { get; }
 
         protected override void LogRaw(ILogMessage logMessage)
         {
-            TimeSpan timestamp = DateTime.Now - startTime;
+            var timestamp = DateTime.Now - startTime;
             lock (Messages)
             {
                 Messages.Add(new Message(timestamp.Ticks, logMessage));

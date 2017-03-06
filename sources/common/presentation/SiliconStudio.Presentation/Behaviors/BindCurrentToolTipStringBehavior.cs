@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,12 +18,12 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// Identifies the <see cref="ToolTipTarget"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ToolTipTargetProperty = DependencyProperty.Register("ToolTipTarget", typeof(string), typeof(BindCurrentToolTipStringBehavior), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty ToolTipTargetProperty = DependencyProperty.Register(nameof(ToolTipTarget), typeof(string), typeof(BindCurrentToolTipStringBehavior), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         /// <summary>
         /// Identifies the <see cref="DefaultValue"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty DefaultValueProperty = DependencyProperty.Register("DefaultValue", typeof(string), typeof(BindCurrentToolTipStringBehavior), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty DefaultValueProperty = DependencyProperty.Register(nameof(DefaultValue), typeof(string), typeof(BindCurrentToolTipStringBehavior), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         /// <summary>
         /// Gets or sets the tool tip text of the control when the mouse is over the control, or <see cref="DefaultValue"/> otherwise. This property should usually be bound.

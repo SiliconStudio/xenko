@@ -13,11 +13,6 @@ namespace SiliconStudio.Assets.Quantum.Commands
     {
         public const string CommandName = "CreateNewInstance";
 
-        /// <summary>
-        /// An object that can be passed as parameter to the command, in order to set the value of the node to <c>null</c>.
-        /// </summary>
-        public static object SetToNull { get; } = new object();
-
         /// <inheritdoc/>
         public override string Name => CommandName;
 
@@ -39,11 +34,13 @@ namespace SiliconStudio.Assets.Quantum.Commands
 
         protected override object ChangeValue(object currentValue, object parameter)
         {
-            if (parameter == SetToNull)
-                return null;
+            var entry = (AbstractNodeEntry)parameter;
 
-            var type = parameter as Type;
-            return type != null && (currentValue == null || currentValue.GetType() != type) ? ObjectFactoryRegistry.NewInstance(type) : currentValue;
+            // If value is already OK, keep it
+            if (entry.IsMatchingValue(currentValue))
+                return currentValue;
+
+            return entry.GenerateValue(currentValue);
         }
     }
 }

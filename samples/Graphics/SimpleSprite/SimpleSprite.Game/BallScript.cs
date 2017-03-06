@@ -3,7 +3,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SimpleSprite
@@ -46,7 +46,7 @@ namespace SimpleSprite
             }
 
             // Add Graphics Layer
-            var scene = SceneSystem.SceneInstance.Scene;
+            var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
             compositor.Master.Renderers.Add(delegateRenderer = new SceneDelegateRenderer(RenderSpheres));
         }
@@ -80,7 +80,7 @@ namespace SimpleSprite
         public override void Cancel()
         {
             // Remove the delegate renderer from the pipeline
-            var scene = SceneSystem.SceneInstance.Scene;
+            var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
             compositor.Master.Renderers.Remove(delegateRenderer);
 

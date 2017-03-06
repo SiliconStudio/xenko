@@ -128,7 +128,6 @@
     <Compile Include="Collections\MultiValueSortedDictionary.cs" />
     <Compile Include="Collections\MultiValueSortedList.cs" />
     <Compile Include="Collections\NamespaceDoc.cs" />
-    <Compile Include="Collections\ReadOnlyDictionary.cs" />
     <Compile Include="Collections\ReadOnlySet.cs" />
     <Compile Include="Collections\SortedList.cs" />
     <Compile Include="Collections\TrackingCollection.cs" />

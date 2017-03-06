@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using System.Text;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Extensions
 {
@@ -17,7 +18,7 @@ namespace SiliconStudio.Core.Extensions
         /// Explicitly ignores the exception. This method does nothing but suppress warnings related to a catch block doing nothing.
         /// </summary>
         /// <param name="exception">The exception to ignore.</param>
-        public static void Ignore(this Exception exception)
+        public static void Ignore([NotNull] this Exception exception)
         {
             // Intentionally does nothing.
         }
@@ -28,7 +29,8 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="exception">The exception to format</param>
         /// <param name="startWithNewLine">Indicate whether a <see cref="Environment.NewLine"/> symbol should be included at the beginning of the resulting string.</param>
         /// <returns>A string representing the exception formatted for dialog message.</returns>
-        public static string FormatSummary(this Exception exception, bool startWithNewLine)
+        [NotNull]
+        public static string FormatSummary([NotNull] this Exception exception, bool startWithNewLine)
         {
             // Get the innermost exception.
             while (exception.InnerException != null)
@@ -47,7 +49,8 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="indentIncrement">The number of spaces to add to the current indent when printing an inner exception.</param>
         /// <param name="indent">The number of spaces to insert at the beginning of each line.</param>
         /// <returns>A string representing the exception formatted for log or report.</returns>
-        public static string FormatFull(this Exception exception, int indentIncrement = 2, int indent = 0)
+        [NotNull]
+        public static string FormatFull([NotNull] this Exception exception, int indentIncrement = 2, int indent = 0)
         {
             var stringBuilder = new StringBuilder();
             FormatForReportRecursively(stringBuilder, exception, indentIncrement, indent);
@@ -61,14 +64,15 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="indent">The number of spaces to insert at the beginning of each line.</param>
         /// <param name="maxLines">The maximum number of lines to return in the resulting string. Zero or negative numbers mean no limit.</param>
         /// <returns>A properly formated string containing the stack trace.</returns>
-        public static string ExtractStackTrace(this Exception exception, int indent = 0, int maxLines = -1)
+        [NotNull]
+        public static string ExtractStackTrace([NotNull] this Exception exception, int indent = 0, int maxLines = -1)
         {
             var sb = new StringBuilder();
             ExtractStackTrace(sb, exception, indent, maxLines);
             return sb.ToString();
         }
 
-        private static void FormatForReportRecursively(StringBuilder sb, Exception exception, int indentIncrement, int indent)
+        private static void FormatForReportRecursively([NotNull] StringBuilder sb, [NotNull] Exception exception, int indentIncrement, int indent)
         {
             var indentString = "".PadLeft(indent);
             sb.Append(indentString);
@@ -98,7 +102,7 @@ namespace SiliconStudio.Core.Extensions
             }
         }
 
-        private static void ExtractStackTrace(StringBuilder sb, Exception exception, int indent, int maxLines)
+        private static void ExtractStackTrace([NotNull] StringBuilder sb, [NotNull] Exception exception, int indent, int maxLines)
         {
             if (exception.StackTrace == null)
                 return;

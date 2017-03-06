@@ -31,12 +31,12 @@ namespace SiliconStudio.Assets.Quantum
             partDesignNode = nodeContainer.GetOrCreateNode(partDesign);
         }
 
-        protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
+        protected override void VisitNode(IGraphNode node)
         {
-            var assetNode = node as MultiContentNode;
-            assetNode?.SetContent(NodesToOwnerPartVisitor.OwnerPartContentName, partDesignNode.Content);
+            var assetNode = node as IAssetNode;
+            assetNode?.SetContent(NodesToOwnerPartVisitor.OwnerPartContentName, partDesignNode);
 
-            base.VisitNode(node, currentPath);
+            base.VisitNode(node);
         }
     }
 }

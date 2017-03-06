@@ -1,34 +1,8 @@
 !SceneAsset
 Id: 3b831f6c-eb4c-4276-9f4c-fd6c9fe13f77
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: 013586b9-ac71-43da-b43d-e25993b39fa8
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            08336845b58ce64986489f4c5ca69ecc:
-                Name: null
-                Camera: 339ed07f-b58b-4d72-9d97-b7679f710573/6b94cf5f-c890-4d8d-a2be-c91b136bb3ed
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                e3454ff27bdd9d4693fed8b2685047cd: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                9293bc3c4193b74d8da05125e3c44d86: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - 339ed07f-b58b-4d72-9d97-b7679f710573
@@ -86,8 +60,10 @@ Hierarchy:
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
                     5fcf946b90c88d4da2bec91b136bb3ed: !CameraComponent
                         Id: 6b94cf5f-c890-4d8d-a2be-c91b136bb3ed
+                        Name: null
                         Projection: Orthographic
                         FarClipPlane: 10.0
+                        Slot: {Index: 0}
         -   Entity:
                 Id: 3d8e427f-90f5-4579-b8dd-1f0264f1b47c
                 Name: GroundTop

@@ -7,7 +7,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
     {
         protected DeriveAssetTestBase(Asset baseAsset, Asset derivedAsset)
         {
-            Container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer());
+            Container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } });
             BaseAssetItem = new AssetItem("MyAsset", baseAsset);
             DerivedAssetItem = new AssetItem("MyDerivedAsset", derivedAsset);
         }
@@ -15,10 +15,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
         protected void BuildGraph()
         {
             var baseGraph = AssetQuantumRegistry.ConstructPropertyGraph(Container, BaseAssetItem, null);
-            Assert.IsAssignableFrom<MyAssetBasePropertyGraph>(baseGraph);
+            Assert.IsInstanceOf<MyAssetBasePropertyGraph>(baseGraph);
             BaseGraph = (MyAssetBasePropertyGraph)baseGraph;
             var derivedGraph = AssetQuantumRegistry.ConstructPropertyGraph(Container, DerivedAssetItem, null);
-            Assert.IsAssignableFrom<MyAssetBasePropertyGraph>(baseGraph);
+            Assert.IsInstanceOf<MyAssetBasePropertyGraph>(baseGraph);
             DerivedGraph = (MyAssetBasePropertyGraph)derivedGraph;
             DerivedGraph.RefreshBase(BaseGraph);
         }
@@ -58,11 +58,9 @@ namespace SiliconStudio.Assets.Quantum.Tests
         {
             var baseAsset = AssetFileSerializer.Load<T>(ToStream(baseYaml), $"MyAsset{Types.FileExtension}");
             var derivedAsset = AssetFileSerializer.Load<T>(ToStream(derivedYaml), $"MyDerivedAsset{Types.FileExtension}");
-            var result = new DeriveAssetTest<T>(baseAsset.Asset, derivedAsset.Asset)
-            {
-                BaseAssetItem = { Overrides = baseAsset.Overrides },
-                DerivedAssetItem = { Overrides = derivedAsset.Overrides }
-            };
+            var result = new DeriveAssetTest<T>(baseAsset.Asset, derivedAsset.Asset);
+            baseAsset.YamlMetadata.CopyInto(result.BaseAssetItem.YamlMetadata);
+            derivedAsset.YamlMetadata.CopyInto(result.DerivedAssetItem.YamlMetadata);
             result.BuildGraph();
             return result;
         }

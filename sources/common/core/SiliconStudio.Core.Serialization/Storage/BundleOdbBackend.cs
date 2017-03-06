@@ -19,6 +19,7 @@ namespace SiliconStudio.Core.Storage
     /// Object Database Backend (ODB) implementation that bundles multiple chunks into a .bundle files, optionally compressed with LZ4.
     /// </summary>
     [DataSerializerGlobal(null, typeof(List<string>))]
+    [DataSerializerGlobal(null, typeof(List<ObjectId>))]
     [DataSerializerGlobal(null, typeof(List<KeyValuePair<ObjectId, BundleOdbBackend.ObjectInfo>>))]
     [DataSerializerGlobal(null, typeof(List<KeyValuePair<string, ObjectId>>))]
     public class BundleOdbBackend : IOdbBackend
@@ -34,9 +35,6 @@ namespace SiliconStudio.Core.Storage
         private readonly string vfsBundleDirectory;
 
         private readonly Dictionary<ObjectId, ObjectLocation> objects = new Dictionary<ObjectId, ObjectLocation>();
-
-        // Stream pool to avoid reopening same file multiple time
-        private readonly Dictionary<string, Stream> bundleStreams = new Dictionary<string, Stream>();
 
         // Bundle name => Bundle VFS URL
         private readonly Dictionary<string, string> resolvedBundles = new Dictionary<string, string>();
@@ -178,12 +176,22 @@ namespace SiliconStudio.Core.Storage
 
         public async Task LoadBundleFromUrl(string bundleName, ObjectDatabaseContentIndexMap objectDatabaseContentIndexMap, string bundleUrl, bool ignoreDependencies = false)
         {
-            BundleDescription bundle;
+            BundleDescription bundle = null;
 
+            // If there is a .bundle, add incremental id before it
+            var currentBundleExtensionUrl = bundleUrl.Length - (bundleUrl.EndsWith(BundleExtension) ? BundleExtension.Length : 0);
+
+            // Process incremental bundles one by one
             using (var packStream = VirtualFileSystem.OpenStream(bundleUrl, VirtualFileMode.Open, VirtualFileAccess.Read))
             {
                 bundle = ReadBundleDescription(packStream);
             }
+
+            var files = new List<string> { bundleUrl };
+            files.AddRange(bundle.IncrementalBundles.Select(x => bundleUrl.Insert(currentBundleExtensionUrl, "." + x)));
+
+            if (bundle == null)
+                throw new FileNotFoundException("Could not find bundle", bundleUrl);
 
             // Read and resolve dependencies
             if (!ignoreDependencies)
@@ -194,10 +202,10 @@ namespace SiliconStudio.Core.Storage
                 }
             }
 
+            LoadedBundle loadedBundle = null;
+
             lock (loadedBundles)
             {
-                LoadedBundle loadedBundle = null;
-
                 foreach (var currentBundle in loadedBundles)
                 {
                     if (currentBundle.BundleName == bundleName)
@@ -214,7 +222,9 @@ namespace SiliconStudio.Core.Storage
                         BundleName = bundleName,
                         BundleUrl = bundleUrl,
                         Description = bundle,
-                        ReferenceCount = 1
+                        ReferenceCount = 1,
+                        Files = files,
+                        Streams = new List<Stream>(files.Select(x => (Stream)null)),
                     };
 
                     loadedBundles.Add(loadedBundle);
@@ -230,7 +240,7 @@ namespace SiliconStudio.Core.Storage
             {
                 foreach (var objectEntry in bundle.Objects)
                 {
-                    objects[objectEntry.Key] = new ObjectLocation { Info = objectEntry.Value, BundleUrl = bundleUrl };
+                    objects[objectEntry.Key] = new ObjectLocation { Info = objectEntry.Value, LoadedBundle = loadedBundle };
                 }
             }
 
@@ -263,7 +273,7 @@ namespace SiliconStudio.Core.Storage
                     // Read objects
                     foreach (var objectEntry in bundle.Objects)
                     {
-                        objects[objectEntry.Key] = new ObjectLocation { Info = objectEntry.Value, BundleUrl = otherLoadedBundle.BundleUrl };
+                        objects[objectEntry.Key] = new ObjectLocation { Info = objectEntry.Value, LoadedBundle = otherLoadedBundle };
                     }
 
                     contentIndexMap.Merge(bundle.Assets);
@@ -298,13 +308,13 @@ namespace SiliconStudio.Core.Storage
                 if (--loadedBundle.ReferenceCount == 0)
                 {
                     // Remove and dispose stream from pool
-                    lock (bundleStreams)
+                    lock (loadedBundle.Streams)
                     {
-                        Stream stream;
-                        if (bundleStreams.TryGetValue(loadedBundle.BundleUrl, out stream))
+                        for (int index = 0; index < loadedBundle.Streams.Count; index++)
                         {
-                            bundleStreams.Remove(loadedBundle.BundleUrl);
+                            var stream = loadedBundle.Streams[index];
                             stream.Dispose();
+                            loadedBundle.Streams[index] = null;
                         }
                     }
 
@@ -332,6 +342,31 @@ namespace SiliconStudio.Core.Storage
                     }
                 }
             }
+        }
+
+        private static bool ValidateHeader(Stream stream)
+        {
+            var binaryReader = new BinarySerializationReader(stream);
+
+            // Read header
+            var header = binaryReader.Read<Header>();
+
+            var result = new BundleDescription();
+            result.Header = header;
+
+            // Check magic header
+            if (header.MagicHeader != Header.MagicHeaderValid)
+            {
+                return false;
+            }
+
+            // Ensure size has properly been set
+            if (header.Size != stream.Length)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -367,31 +402,49 @@ namespace SiliconStudio.Core.Storage
             }
 
             // Read dependencies
-            List<string> dependencies = result.Dependencies;
+            var dependencies = result.Dependencies;
             binaryReader.Serialize(ref dependencies, ArchiveMode.Deserialize);
-                
+
+            // Read incremental bundles
+            var incrementalBundles = result.IncrementalBundles;
+            binaryReader.Serialize(ref incrementalBundles, ArchiveMode.Deserialize);
+
             // Read objects
-            List<KeyValuePair<ObjectId, ObjectInfo>> objects = result.Objects;
+            var objects = result.Objects;
             binaryReader.Serialize(ref objects, ArchiveMode.Deserialize);
 
             // Read assets
-            List<KeyValuePair<string, ObjectId>> assets = result.Assets;
+            var assets = result.Assets;
             binaryReader.Serialize(ref assets, ArchiveMode.Deserialize);
 
             return result;
         }
 
-        public static void CreateBundle(string vfsUrl, IOdbBackend backend, ObjectId[] objectIds, ISet<ObjectId> disableCompressionIds, Dictionary<string, ObjectId> indexMap, IList<string> dependencies)
+        public static void CreateBundle(string bundleUrl, IOdbBackend backend, ObjectId[] objectIds, ISet<ObjectId> disableCompressionIds, Dictionary<string, ObjectId> indexMap, IList<string> dependencies, bool useIncrementalBundle)
         {
             if (objectIds.Length == 0)
                 throw new InvalidOperationException("Nothing to pack.");
 
+            var objectsToIndex = new Dictionary<ObjectId, int>(objectIds.Length);
+
+            var objects = new List<KeyValuePair<ObjectId, ObjectInfo>>();
+            for (int i = 0; i < objectIds.Length; ++i)
+            {
+                objectsToIndex.Add(objectIds[i], objects.Count);
+                objects.Add(new KeyValuePair<ObjectId, ObjectInfo>(objectIds[i], new ObjectInfo()));
+            }
+
+            var incrementalBundles = new List<ObjectId>();
+
+            // If there is a .bundle, add incremental id before it
+            var bundleExtensionLength = (bundleUrl.EndsWith(BundleExtension) ? BundleExtension.Length : 0);
+
             // Early exit if package didn't change (header-check only)
-            if (VirtualFileSystem.FileExists(vfsUrl))
+            if (VirtualFileSystem.FileExists(bundleUrl))
             {
                 try
                 {
-                    using (var packStream = VirtualFileSystem.OpenStream(vfsUrl, VirtualFileMode.Open, VirtualFileAccess.Read))
+                    using (var packStream = VirtualFileSystem.OpenStream(bundleUrl, VirtualFileMode.Open, VirtualFileAccess.Read))
                     {
                         var bundle = ReadBundleDescription(packStream);
 
@@ -400,7 +453,93 @@ namespace SiliconStudio.Core.Storage
                             && ArrayExtensions.ArraysEqual(bundle.Assets.OrderBy(x => x.Key).ToList(), indexMap.OrderBy(x => x.Key).ToList())
                             && ArrayExtensions.ArraysEqual(bundle.Objects.Select(x => x.Key).OrderBy(x => x).ToList(), objectIds.OrderBy(x => x).ToList()))
                         {
-                            return;
+                            // Make sure all incremental bundles exist
+                            // Also, if we don't want incremental bundles but we have some (or vice-versa), let's force a regeneration
+                            if ((useIncrementalBundle == (bundle.IncrementalBundles.Count > 0))
+                                && bundle.IncrementalBundles.Select(x => bundleUrl.Insert(bundleUrl.Length - bundleExtensionLength, "." + x)).All(x =>
+                            {
+                                if (!VirtualFileSystem.FileExists(x))
+                                    return false;
+                                using (var incrementalStream = VirtualFileSystem.OpenStream(x, VirtualFileMode.Open, VirtualFileAccess.Read))
+                                    return ValidateHeader(incrementalStream);
+                            }))
+                            {
+                                return;
+                            }
+                        }
+                    }
+
+                    // Process existing incremental bundles one by one
+                    // Try to find if there is enough to reuse in each of them
+                    var filename = VirtualFileSystem.GetFileName(bundleUrl);
+                    var directory = VirtualFileSystem.GetParentFolder(bundleUrl);
+
+                    foreach (var incrementalBundleUrl in VirtualFileSystem.ListFiles(directory, filename.Insert(filename.Length - bundleExtensionLength, ".*"), VirtualSearchOption.TopDirectoryOnly).Result)
+                    {
+                        var incrementalIdString = incrementalBundleUrl.Substring(incrementalBundleUrl.Length - bundleExtensionLength - ObjectId.HashStringLength, ObjectId.HashStringLength);
+                        ObjectId incrementalId;
+                        if (!ObjectId.TryParse(incrementalIdString, out incrementalId))
+                            continue;
+
+                        // If we don't want incremental bundles, delete old ones from previous build
+                        if (!useIncrementalBundle)
+                        {
+                            VirtualFileSystem.FileDelete(incrementalBundleUrl);
+                            continue;
+                        }
+
+                        long sizeNeededItems = 0;
+                        long sizeTotal = 0;
+
+                        BundleDescription incrementalBundle;
+                        try
+                        {
+                            using (var packStream = VirtualFileSystem.OpenStream(incrementalBundleUrl, VirtualFileMode.Open, VirtualFileAccess.Read))
+                            {
+                                incrementalBundle = ReadBundleDescription(packStream);
+                            }
+
+                            // Compute size of objects (needed ones and everything)
+                            foreach (var @object in incrementalBundle.Objects)
+                            {
+                                var objectCompressedSize = @object.Value.EndOffset - @object.Value.StartOffset;
+
+                                // TODO: Detect object that are stored without ObjectId being content hash: we need to check actual content hash is same in this case
+                                if (objectsToIndex.ContainsKey(@object.Key))
+                                    sizeNeededItems += objectCompressedSize;
+                                sizeTotal += objectCompressedSize;
+                            }
+
+                            // Check if we would reuse at least 50% of the incremental bundle, otherwise let's just get rid of it
+                            var reuseRatio = (float)((double)sizeNeededItems/(double)sizeTotal);
+                            if (reuseRatio < 0.5f)
+                            {
+                                VirtualFileSystem.FileDelete(incrementalBundleUrl);
+                            }
+                            else
+                            {
+                                // We will reuse this incremental bundle
+                                // Let's add ObjectId entries
+                                foreach (var @object in incrementalBundle.Objects)
+                                {
+                                    int objectIndex;
+                                    if (objectsToIndex.TryGetValue(@object.Key, out objectIndex))
+                                    {
+                                        var objectInfo = @object.Value;
+                                        objectInfo.IncrementalBundleIndex = incrementalBundles.Count + 1;
+                                        objects[objectIndex] = new KeyValuePair<ObjectId, ObjectInfo>(@object.Key, objectInfo);
+                                    }
+                                }
+
+                                // Add this incremental bundle in the list
+                                incrementalBundles.Add(incrementalId);
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            // Could not read incremental bundle (format changed?)
+                            // Let's delete it
+                            VirtualFileSystem.FileDelete(incrementalBundleUrl);
                         }
                     }
                 }
@@ -411,108 +550,173 @@ namespace SiliconStudio.Core.Storage
                 }
             }
 
-            using (var packStream = VirtualFileSystem.OpenStream(vfsUrl, VirtualFileMode.Create, VirtualFileAccess.Write))
+            // Count objects which needs to be saved
+            var incrementalObjects = new List<KeyValuePair<ObjectId, ObjectInfo>>();
+            if (useIncrementalBundle)
+            {
+                for (int i = 0; i < objectIds.Length; ++i)
+                {
+                    // Skip if already part of an existing incremental package
+                    if (objects[i].Value.IncrementalBundleIndex > 0)
+                        continue;
+
+                    incrementalObjects.Add(new KeyValuePair<ObjectId, ObjectInfo>(objects[i].Key, new ObjectInfo()));
+                }
+            }
+
+            // Create an incremental package
+            var newIncrementalId = ObjectId.New();
+            var incrementalBundleIndex = incrementalBundles.Count;
+            if (useIncrementalBundle && incrementalObjects.Count > 0)
+                incrementalBundles.Add(newIncrementalId);
+
+            using (var packStream = VirtualFileSystem.OpenStream(bundleUrl, VirtualFileMode.Create, VirtualFileAccess.Write))
             {
                 var header = new Header();
                 header.MagicHeader = Header.MagicHeaderValid;
 
-                var binaryWriter = new BinarySerializationWriter(packStream);
-                binaryWriter.Write(header);
-
+                var packBinaryWriter = new BinarySerializationWriter(packStream);
+                packBinaryWriter.Write(header);
                 // Write dependencies
-                binaryWriter.Write(dependencies.ToList());
+                packBinaryWriter.Write(dependencies.ToList());
+                // Write inecremental bundles
+                packBinaryWriter.Write(incrementalBundles.ToList());
 
                 // Save location of object ids
-                var objectIdPosition = packStream.Position;
+                var packObjectIdPosition = packStream.Position;
 
                 // Write empty object ids (reserve space, will be rewritten later)
-                var objects = new List<KeyValuePair<ObjectId, ObjectInfo>>();
-                for (int i = 0; i < objectIds.Length; ++i)
-                {
-                    objects.Add(new KeyValuePair<ObjectId, ObjectInfo>(objectIds[i], new ObjectInfo()));
-                }
-
-                binaryWriter.Write(objects);
-                objects.Clear();
+                packBinaryWriter.Write(objects);
 
                 // Write index
-                binaryWriter.Write(indexMap.ToList());
+                packBinaryWriter.Write(indexMap.ToList());
 
-                for (int i = 0; i < objectIds.Length; ++i)
+                using (var incrementalStream = incrementalObjects.Count > 0 ? VirtualFileSystem.OpenStream(bundleUrl.Insert(bundleUrl.Length - bundleExtensionLength, "." + newIncrementalId), VirtualFileMode.Create, VirtualFileAccess.Write) : null)
                 {
-                    using (var objectStream = backend.OpenStream(objectIds[i]))
+                    var incrementalBinaryWriter = incrementalStream != null ? new BinarySerializationWriter(incrementalStream) : null;
+                    long incrementalObjectIdPosition = 0;
+                    if (incrementalStream != null)
                     {
-                        // Prepare object info
-                        var objectInfo = new ObjectInfo { StartOffset = packStream.Position, SizeNotCompressed = objectStream.Length };
+                        incrementalBinaryWriter.Write(header);
+                        // Write dependencies
+                        incrementalBinaryWriter.Write(new List<string>());
+                        // Write inecremental bundles
+                        incrementalBinaryWriter.Write(new List<ObjectId>());
 
-                        // re-order the file content so that it is not necessary to seek while reading the input stream (header/object/refs -> header/refs/object)
-                        var inputStream = objectStream;
-                        var originalStreamLength = objectStream.Length;
-                        var streamReader = new BinarySerializationReader(inputStream);
-                        var chunkHeader = ChunkHeader.Read(streamReader);
-                        if (chunkHeader != null)
+                        // Save location of object ids
+                        incrementalObjectIdPosition = incrementalStream.Position;
+
+                        // Write empty object ids (reserve space, will be rewritten later)
+                        incrementalBinaryWriter.Write(incrementalObjects);
+
+                        // Write index
+                        incrementalBinaryWriter.Write(new List<KeyValuePair<string, ObjectId>>());
+                    }
+
+                    var objectOutputStream = incrementalStream ?? packStream;
+                    int incrementalObjectIndex = 0;
+                    for (int i = 0; i < objectIds.Length; ++i)
+                    {
+                        // Skip if already part of an existing incremental package
+                        if (objects[i].Value.IncrementalBundleIndex > 0)
+                            continue;
+
+                        using (var objectStream = backend.OpenStream(objectIds[i]))
                         {
-                            // create the reordered stream
-                            var reorderedStream = new MemoryStream((int)originalStreamLength);
+                            // Prepare object info
+                            var objectInfo = new ObjectInfo { StartOffset = objectOutputStream.Position, SizeNotCompressed = objectStream.Length };
 
-                            // copy the header
-                            var streamWriter = new BinarySerializationWriter(reorderedStream);
-                            chunkHeader.Write(streamWriter);
+                            // re-order the file content so that it is not necessary to seek while reading the input stream (header/object/refs -> header/refs/object)
+                            var inputStream = objectStream;
+                            var originalStreamLength = objectStream.Length;
+                            var streamReader = new BinarySerializationReader(inputStream);
+                            var chunkHeader = ChunkHeader.Read(streamReader);
+                            if (chunkHeader != null)
+                            {
+                                // create the reordered stream
+                                var reorderedStream = new MemoryStream((int)originalStreamLength);
 
-                            // copy the references
-                            var newOffsetReferences = reorderedStream.Position;
-                            inputStream.Position = chunkHeader.OffsetToReferences;
-                            inputStream.CopyTo(reorderedStream);
+                                // copy the header
+                                var streamWriter = new BinarySerializationWriter(reorderedStream);
+                                chunkHeader.Write(streamWriter);
 
-                            // copy the object
-                            var newOffsetObject = reorderedStream.Position;
-                            inputStream.Position = chunkHeader.OffsetToObject;
-                            inputStream.CopyTo(reorderedStream, chunkHeader.OffsetToReferences - chunkHeader.OffsetToObject);
+                                // copy the references
+                                var newOffsetReferences = reorderedStream.Position;
+                                inputStream.Position = chunkHeader.OffsetToReferences;
+                                inputStream.CopyTo(reorderedStream);
 
-                            // rewrite the chunk header with correct offsets
-                            chunkHeader.OffsetToObject = (int)newOffsetObject;
-                            chunkHeader.OffsetToReferences = (int)newOffsetReferences;
-                            reorderedStream.Position = 0;
-                            chunkHeader.Write(streamWriter);
+                                // copy the object
+                                var newOffsetObject = reorderedStream.Position;
+                                inputStream.Position = chunkHeader.OffsetToObject;
+                                inputStream.CopyTo(reorderedStream, chunkHeader.OffsetToReferences - chunkHeader.OffsetToObject);
 
-                            // change the input stream to use reordered stream
-                            inputStream = reorderedStream;
-                            inputStream.Position = 0;
+                                // rewrite the chunk header with correct offsets
+                                chunkHeader.OffsetToObject = (int)newOffsetObject;
+                                chunkHeader.OffsetToReferences = (int)newOffsetReferences;
+                                reorderedStream.Position = 0;
+                                chunkHeader.Write(streamWriter);
+
+                                // change the input stream to use reordered stream
+                                inputStream = reorderedStream;
+                                inputStream.Position = 0;
+                            }
+
+                            // compress the stream
+                            if (!disableCompressionIds.Contains(objectIds[i]))
+                            {
+                                objectInfo.IsCompressed = true;
+
+                                var lz4OutputStream = new LZ4Stream(objectOutputStream, CompressionMode.Compress);
+                                inputStream.CopyTo(lz4OutputStream);
+                                lz4OutputStream.Flush();
+                            }
+                            else // copy the stream "as is"
+                            {
+                                // Write stream
+                                inputStream.CopyTo(objectOutputStream);
+                            }
+
+                            // release the reordered created stream
+                            if (chunkHeader != null)
+                                inputStream.Dispose();
+
+                            // Add updated object info
+                            objectInfo.EndOffset = objectOutputStream.Position;
+                            // Note: we add 1 because 0 is reserved for self; first incremental bundle starts at 1
+                            objectInfo.IncrementalBundleIndex = objectOutputStream == incrementalStream ? incrementalBundleIndex + 1 : 0;
+                            objects[i] = new KeyValuePair<ObjectId, ObjectInfo>(objectIds[i], objectInfo);
+
+                            if (useIncrementalBundle)
+                            {
+                                // Also update incremental bundle object info
+                                objectInfo.IncrementalBundleIndex = 0; // stored in same bundle
+                                incrementalObjects[incrementalObjectIndex++] = new KeyValuePair<ObjectId, ObjectInfo>(objectIds[i], objectInfo);
+                            }
                         }
- 
-                        // compress the stream
-                        if (!disableCompressionIds.Contains(objectIds[i]))
-                        {
-                            objectInfo.IsCompressed = true;
+                    }
 
-                            var lz4OutputStream = new LZ4Stream(packStream, CompressionMode.Compress);
-                            inputStream.CopyTo(lz4OutputStream);
-                            lz4OutputStream.Flush();
-                        }
-                        else // copy the stream "as is"
-                        {
-                            // Write stream
-                            inputStream.CopyTo(packStream);
-                        }
+                    // First finish to write incremental package so that main one can't be valid on the HDD without the incremental one being too
+                    if (incrementalStream != null)
+                    {
+                        // Rewrite headers
+                        header.Size = incrementalStream.Length;
+                        incrementalStream.Position = 0;
+                        incrementalBinaryWriter.Write(header);
 
-                        // release the reordered created stream
-                        if (chunkHeader != null)
-                            inputStream.Dispose();
-
-                        // Add updated object info
-                        objectInfo.EndOffset = packStream.Position;
-                        objects.Add(new KeyValuePair<ObjectId, ObjectInfo>(objectIds[i], objectInfo));
+                        // Rewrite object with updated offsets/size
+                        incrementalStream.Position = incrementalObjectIdPosition;
+                        incrementalBinaryWriter.Write(incrementalObjects);
                     }
                 }
 
-                // Rewrite header
+                // Rewrite headers
                 header.Size = packStream.Length;
                 packStream.Position = 0;
-                binaryWriter.Write(header);
+                packBinaryWriter.Write(header);
 
-                // Rewrite object locations
-                packStream.Position = objectIdPosition;
-                binaryWriter.Write(objects);
+                // Rewrite object with updated offsets/size
+                packStream.Position = packObjectIdPosition;
+                packBinaryWriter.Write(objects);
             }
         }
 
@@ -525,30 +729,32 @@ namespace SiliconStudio.Core.Storage
                     throw new FileNotFoundException();
             }
 
+            var loadedBundle = objectLocation.LoadedBundle;
+            var streams = objectLocation.LoadedBundle.Streams;
             Stream stream;
 
             // Try to reuse same streams
-            lock (bundleStreams)
+            lock (streams)
             {
                 // Available stream?
-                if (bundleStreams.TryGetValue(objectLocation.BundleUrl, out stream))
+                if ((stream = streams[objectLocation.Info.IncrementalBundleIndex]) != null)
                 {
                     // Remove from available streams
-                    bundleStreams.Remove(objectLocation.BundleUrl);
+                    streams[objectLocation.Info.IncrementalBundleIndex] = null;
                 }
                 else
                 {
-                    stream = VirtualFileSystem.OpenStream(objectLocation.BundleUrl, VirtualFileMode.Open, VirtualFileAccess.Read);
+                    stream = VirtualFileSystem.OpenStream(loadedBundle.Files[objectLocation.Info.IncrementalBundleIndex], VirtualFileMode.Open, VirtualFileAccess.Read);
                 }
             }
 
             if (objectLocation.Info.IsCompressed)
             {
                 stream.Position = objectLocation.Info.StartOffset;
-                return new PackageFileStreamLZ4(this, objectLocation.BundleUrl, stream, CompressionMode.Decompress, objectLocation.Info.SizeNotCompressed, objectLocation.Info.EndOffset - objectLocation.Info.StartOffset);
+                return new PackageFileStreamLZ4(this, objectLocation, stream, CompressionMode.Decompress, objectLocation.Info.SizeNotCompressed, objectLocation.Info.EndOffset - objectLocation.Info.StartOffset);
             }
 
-            return new PackageFileStream(this, objectLocation.BundleUrl, stream, objectLocation.Info.StartOffset, objectLocation.Info.EndOffset, false);
+            return new PackageFileStream(this, objectLocation, stream, objectLocation.Info.StartOffset, objectLocation.Info.EndOffset, false);
         }
 
         public int GetSize(ObjectId objectId)
@@ -599,7 +805,7 @@ namespace SiliconStudio.Core.Storage
         private struct ObjectLocation
         {
             public ObjectInfo Info;
-            public string BundleUrl;
+            public LoadedBundle LoadedBundle;
         }
 
         private class LoadedBundle
@@ -608,15 +814,20 @@ namespace SiliconStudio.Core.Storage
             public string BundleUrl;
             public int ReferenceCount;
             public BundleDescription Description;
+
+            // Stream pool to avoid reopening same file multiple time (list, one per incremental file)
+            public List<string> Files;
+            public List<Stream> Streams;
         }
 
-        internal void ReleasePackageStream(string packageLocation, Stream stream)
+        void ReleasePackageStream(ObjectLocation objectLocation, Stream stream)
         {
-            lock (bundleStreams)
+            var loadedBundle = objectLocation.LoadedBundle;
+            lock (loadedBundle.Streams)
             {
-                if (!bundleStreams.ContainsKey(packageLocation))
+                if (loadedBundle.Streams[objectLocation.Info.IncrementalBundleIndex] == null)
                 {
-                    bundleStreams.Add(packageLocation, stream);
+                    loadedBundle.Streams[objectLocation.Info.IncrementalBundleIndex] = stream;
                 }
                 else
                 {
@@ -634,6 +845,9 @@ namespace SiliconStudio.Core.Storage
             public long SizeNotCompressed;
             public bool IsCompressed;
 
+            // Note: 0 means self, remove 1 to get index in BundleDescription.IncrementalBundles
+            public int IncrementalBundleIndex;
+
             internal class Serializer : DataSerializer<ObjectInfo>
             {
                 public override void Serialize(ref ObjectInfo obj, ArchiveMode mode, SerializationStream stream)
@@ -642,6 +856,7 @@ namespace SiliconStudio.Core.Storage
                     stream.Serialize(ref obj.EndOffset);
                     stream.Serialize(ref obj.SizeNotCompressed);
                     stream.Serialize(ref obj.IsCompressed);
+                    stream.Serialize(ref obj.IncrementalBundleIndex);
                 }
             }
         }
@@ -650,7 +865,7 @@ namespace SiliconStudio.Core.Storage
         [DataSerializer(typeof(Header.Serializer))]
         public struct Header
         {
-            public const uint MagicHeaderValid = 0x42584450; // "PDXB"
+            public const uint MagicHeaderValid = 0x31424B58; // "XKB1"
 
             public uint MagicHeader;
             public long Size;
@@ -666,43 +881,43 @@ namespace SiliconStudio.Core.Storage
                 }
             }
         }
-        public class PackageFileStreamLZ4 : LZ4Stream
+        class PackageFileStreamLZ4 : LZ4Stream
         {
             private readonly BundleOdbBackend bundleOdbBackend;
-            private readonly string packageLocation;
+            private readonly ObjectLocation objectLocation;
             private readonly Stream innerStream;
 
-            public PackageFileStreamLZ4(BundleOdbBackend bundleOdbBackend, string packageLocation, Stream innerStream, CompressionMode compressionMode, long uncompressedStreamSize, long compressedSize)
+            public PackageFileStreamLZ4(BundleOdbBackend bundleOdbBackend, ObjectLocation objectLocation, Stream innerStream, CompressionMode compressionMode, long uncompressedStreamSize, long compressedSize)
                 : base(innerStream, compressionMode, uncompressedSize: uncompressedStreamSize, compressedSize: compressedSize, disposeInnerStream: false)
             {
                 this.bundleOdbBackend = bundleOdbBackend;
-                this.packageLocation = packageLocation;
+                this.objectLocation = objectLocation;
                 this.innerStream = innerStream;
             }
 
             protected override void Dispose(bool disposing)
             {
-                bundleOdbBackend.ReleasePackageStream(packageLocation, innerStream);
+                bundleOdbBackend.ReleasePackageStream(objectLocation, innerStream);
 
                 base.Dispose(disposing);
             }
         }
 
-        public class PackageFileStream : VirtualFileStream
+        class PackageFileStream : VirtualFileStream
         {
             private readonly BundleOdbBackend bundleOdbBackend;
-            private readonly string packageLocation;
+            private readonly ObjectLocation objectLocation;
 
-            public PackageFileStream(BundleOdbBackend bundleOdbBackend, string packageLocation, Stream internalStream, long startPosition = 0, long endPosition = -1, bool disposeInternalStream = true, bool seekToBeginning = true)
+            public PackageFileStream(BundleOdbBackend bundleOdbBackend, ObjectLocation objectLocation, Stream internalStream, long startPosition = 0, long endPosition = -1, bool disposeInternalStream = true, bool seekToBeginning = true)
                 : base(internalStream, startPosition, endPosition, disposeInternalStream, seekToBeginning)
             {
                 this.bundleOdbBackend = bundleOdbBackend;
-                this.packageLocation = packageLocation;
+                this.objectLocation = objectLocation;
             }
 
             protected override void Dispose(bool disposing)
             {
-                bundleOdbBackend.ReleasePackageStream(packageLocation, virtualFileStream ?? InternalStream);
+                bundleOdbBackend.ReleasePackageStream(objectLocation, virtualFileStream ?? InternalStream);
 
                 // If there was a VirtualFileStream, we don't want it to be released as it has been pushed back in the stream pool
                 virtualFileStream = null;
@@ -713,23 +928,32 @@ namespace SiliconStudio.Core.Storage
 
         public void DeleteBundles(Func<string, bool> bundleFileDeletePredicate)
         {
-            var bundleFiles = VirtualFileSystem.ListFiles(vfsBundleDirectory, "*.bundle", VirtualSearchOption.TopDirectoryOnly).Result;
+            var bundleFiles = VirtualFileSystem.ListFiles(vfsBundleDirectory, "*" + BundleExtension, VirtualSearchOption.TopDirectoryOnly).Result;
 
-            // Obsolete: Android used to have .bundle.mp3 to avoid compression. Still here so that they get deleted on next build.
-            // This can be removed later.
-            bundleFiles = bundleFiles.Union(VirtualFileSystem.ListFiles(vfsBundleDirectory, "*.mp3", VirtualSearchOption.TopDirectoryOnly).Result).ToArray();
-
-            foreach (var bundleFile in bundleFiles)
+            // Group incremental bundles together
+            var bundleFilesGroups = bundleFiles.GroupBy(bundleUrl =>
             {
-                var bundleRealFile = VirtualFileSystem.GetAbsolutePath(bundleFile);
-
-                // Remove ".mp3" (Android only)
-                if (bundleRealFile.EndsWith(".mp3", StringComparison.CurrentCultureIgnoreCase))
-                    bundleRealFile = bundleRealFile.Substring(0, bundleRealFile.Length - 4);
-
-                if (bundleFileDeletePredicate(bundleRealFile))
+                // Remove incremental ID from bundle url
+                ObjectId incrementalId;
+                var filename = VirtualFileSystem.GetFileName(bundleUrl);
+                var bundleExtensionLength = filename.EndsWith(BundleExtension) ? BundleExtension.Length : 0;
+                if (filename.Length - bundleExtensionLength >= ObjectId.HashStringLength + 1 && filename[filename.Length - bundleExtensionLength - ObjectId.HashStringLength - 1] == '.'
+                    && ObjectId.TryParse(filename.Substring(filename.Length - bundleExtensionLength - ObjectId.HashStringLength, ObjectId.HashStringLength), out incrementalId))
                 {
-                    NativeFile.FileDelete(bundleRealFile);
+                    bundleUrl = bundleUrl.Remove(bundleUrl.Length - bundleExtensionLength - ObjectId.HashStringLength - 1, 1 + ObjectId.HashStringLength);
+                }
+
+                return bundleUrl;
+            });
+
+            foreach (var bundleFilesInGroup in bundleFilesGroups)
+            {
+                var bundleMainFile = VirtualFileSystem.GetAbsolutePath(bundleFilesInGroup.Key);
+
+                if (bundleFileDeletePredicate(bundleMainFile))
+                {
+                    foreach (var bundleRealFile in bundleFilesInGroup)
+                        NativeFile.FileDelete(VirtualFileSystem.GetAbsolutePath(bundleRealFile));
                 }
             }
         }

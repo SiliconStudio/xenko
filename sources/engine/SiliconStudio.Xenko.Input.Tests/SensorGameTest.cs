@@ -86,9 +86,9 @@ namespace SiliconStudio.Xenko.Input.Tests
             entity = new Entity { spriteComponent, modelComponent };
             entity2 = new Entity { modelComponent2 };
             entity3 = new Entity { modelComponent3 };
-            SceneSystem.SceneInstance.Scene.Entities.Add(entity);
-            SceneSystem.SceneInstance.Scene.Entities.Add(entity2);
-            SceneSystem.SceneInstance.Scene.Entities.Add(entity3);
+            SceneSystem.SceneInstance.RootScene.Entities.Add(entity);
+            SceneSystem.SceneInstance.RootScene.Entities.Add(entity2);
+            SceneSystem.SceneInstance.RootScene.Entities.Add(entity3);
 
             if (Input.Accelerometer != null)
                 Input.Accelerometer.IsEnabled = true;
@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             var width = 400;
             var bufferRatio = GraphicsDevice.Presenter.BackBuffer.Width / (float)GraphicsDevice.Presenter.BackBuffer.Height;
             var ui = new UIComponent { Resolution = new Vector3(width, width / bufferRatio, 500) };
-            SceneSystem.SceneInstance.Scene.Entities.Add(new Entity { ui });
+            SceneSystem.SceneInstance.RootScene.Entities.Add(new Entity { ui });
 
             currentText = new TextBlock { Font = font, TextColor = Color.White, VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Center };
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Interactivity;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Presentation.Core
@@ -22,14 +22,14 @@ namespace SiliconStudio.Presentation.Core
         {
         }
 
-        public DependencyPropertyWatcher(FrameworkElement attachTo)
+        public DependencyPropertyWatcher([NotNull] FrameworkElement attachTo)
         {
             Attach(attachTo);
         }
 
         public DependencyObject AssociatedObject => frameworkElement;
 
-        public void Attach(DependencyObject dependencyObject)
+        public void Attach([NotNull] DependencyObject dependencyObject)
         {
             if (dependencyObject == null) throw new ArgumentNullException(nameof(dependencyObject));
             if (ReferenceEquals(dependencyObject, frameworkElement))
@@ -98,7 +98,7 @@ namespace SiliconStudio.Presentation.Core
             }
         }
 
-        private void AttachHandler(DependencyProperty property, EventHandler handler)
+        private void AttachHandler([NotNull] DependencyProperty property, [NotNull] EventHandler handler)
         {
             if (property == null) throw new ArgumentNullException(nameof(property));
             if (handler == null) throw new ArgumentNullException(nameof(handler));
@@ -113,7 +113,7 @@ namespace SiliconStudio.Presentation.Core
             descriptor.AddValueChanged(AssociatedObject, handler);
         }
 
-        private void DetachHandler(DependencyProperty property, EventHandler handler)
+        private void DetachHandler([NotNull] DependencyProperty property, [NotNull] EventHandler handler)
         {
             if (property == null) throw new ArgumentNullException(nameof(property));
             if (handler == null) throw new ArgumentNullException(nameof(handler));

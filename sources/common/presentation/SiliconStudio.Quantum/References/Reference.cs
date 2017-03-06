@@ -11,7 +11,8 @@ namespace SiliconStudio.Quantum.References
     {
         private static readonly ThreadLocal<int> CreatingReference = new ThreadLocal<int>();
 
-        internal static IReference CreateReference(object objectValue, Type objectType, Index index)
+        [Obsolete("This method will be rewritten to handle separately the different types of references")]
+        internal static IReference CreateReference(object objectValue, Type objectType, Index index, bool isMember)
         {
             if (objectValue != null && !objectType.IsInstanceOfType(objectValue)) throw new ArgumentException(@"objectValue type does not match objectType", nameof(objectValue));
 
@@ -22,13 +23,20 @@ namespace SiliconStudio.Quantum.References
 
             IReference reference;
             var isCollection = HasCollectionReference(objectValue?.GetType() ?? objectType);
-            if (objectValue != null && isCollection && index.IsEmpty)
+            if (isMember)
             {
-                reference = new ReferenceEnumerable((IEnumerable)objectValue, objectType, index);
+                reference = new ObjectReference(objectValue, objectType, index);
             }
             else
             {
-                reference = new ObjectReference(objectValue, objectType, index);
+                if (objectValue != null && isCollection && index.IsEmpty)
+                {
+                    reference = new ReferenceEnumerable((IEnumerable)objectValue, objectType);
+                }
+                else
+                {
+                    reference = null;
+                }
             }
 
             --CreatingReference.Value;
@@ -39,12 +47,6 @@ namespace SiliconStudio.Quantum.References
         private static bool HasCollectionReference(Type type)
         {
             return type.IsArray || CollectionDescriptor.IsCollection(type) || DictionaryDescriptor.IsDictionary(type);
-        }
-
-        [Obsolete]
-        internal static Type GetReferenceType(object objectValue, Index index)
-        {
-            return objectValue != null && HasCollectionReference(objectValue.GetType()) && index.IsEmpty ? typeof(ReferenceEnumerable) : typeof(ObjectReference);
         }
 
         internal static void CheckReferenceCreationSafeGuard()

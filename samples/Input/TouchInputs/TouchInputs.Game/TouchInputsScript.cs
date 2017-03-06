@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Input.Gestures;
@@ -19,16 +19,12 @@ namespace TouchInputs
         public SpriteFont Font;
         public Texture RoundTexture;
 
-        private SpriteBatch spriteBatch;
-
         private Vector2 roundTextureSize;
 
         private readonly Color fontColor = Color.WhiteSmoke;
 
         private float textHeight;
         private readonly Vector2 textLeftTopCorner = new Vector2(5, 5);
-
-        private Vector2 screenSize;
 
         // keyboard
         private string keyEvents;
@@ -73,18 +69,10 @@ namespace TouchInputs
 
         private readonly TimeSpan displayGestureDuration = TimeSpan.FromSeconds(1f);
 
-        private Vector2 virtualResolution = new Vector2(1920, 1080);
-
-        private SceneDelegateRenderer delegateRenderer;
-
         public override void Start()
         {
-            // create the SpriteBatch used to render them
-            spriteBatch = new SpriteBatch(GraphicsDevice) { VirtualResolution = new Vector3(virtualResolution, 1000) };
-
             // initialize parameters
             textHeight = Font.MeasureString(KeyboardSessionString).Y;
-            screenSize = new Vector2(virtualResolution.X, virtualResolution.Y);
             roundTextureSize = new Vector2(RoundTexture.Width, RoundTexture.Height);
 
             // activate the gesture recognitions
@@ -122,22 +110,6 @@ namespace TouchInputs
                     lastTapEvent = Tuple.Create(args, Game.DrawTime.Total);
                 };
             }
-
-            // Add Graphics Layer
-            var scene = SceneSystem.SceneInstance.Scene;
-            var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
-            compositor.Master.Renderers.Add(delegateRenderer = new SceneDelegateRenderer(Render));
-        }
-
-        public override void Cancel()
-        {
-            // remove the delegate renderer from the pipeline
-            var scene = SceneSystem.SceneInstance.Scene;
-            var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
-            compositor.Master.Renderers.Remove(delegateRenderer);
-
-            // Unload graphic objects
-            spriteBatch.Dispose();
         }
 
         public override void Update()
@@ -248,8 +220,10 @@ namespace TouchInputs
             }
         }
 
-        private void Render(RenderDrawContext context, RenderFrame frame)
+        public void Render(RenderDrawContext context, SpriteBatch spriteBatch)
         {
+            var screenSize = spriteBatch.VirtualResolution.Value;
+
             // depth test off mode 
             spriteBatch.Begin(context.GraphicsContext, depthStencilState: DepthStencilStates.None);
             
@@ -270,11 +244,11 @@ namespace TouchInputs
 
             // render the pointer states
             foreach (var tuple in pointerPressed)
-                DrawPointers(tuple, 1.5f, Color.Blue);
+                DrawPointers(spriteBatch, tuple, 1.5f, Color.Blue);
             foreach (var tuple in pointerMoved)
-                DrawPointers(tuple, 1f, Color.Green);
+                DrawPointers(spriteBatch, tuple, 1f, Color.Green);
             foreach (var tuple in pointerReleased)
-                DrawPointers(tuple, 2f, Color.Red);
+                DrawPointers(spriteBatch, tuple, 2f, Color.Red);
 
             // render the gesture states
             spriteBatch.DrawString(Font, "Gestures :", textLeftTopCorner + new Vector2(0, 10 * (textHeight + TextSpaceY)), fontColor);
@@ -287,8 +261,9 @@ namespace TouchInputs
             spriteBatch.DrawString(Font, "GamePads: " + gamePadText, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, 17 * (textHeight + TextSpaceY)), fontColor);
             spriteBatch.End();
         }
-        private void DrawPointers(Tuple<Vector2, TimeSpan> tuple, float baseScale, Color baseColor)
+        private void DrawPointers(SpriteBatch spriteBatch, Tuple<Vector2, TimeSpan> tuple, float baseScale, Color baseColor)
         {
+            var screenSize = spriteBatch.VirtualResolution.Value;
             var position = tuple.Item1;
             var duration = Game.DrawTime.Total - tuple.Item2;
 

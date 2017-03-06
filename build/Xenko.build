@@ -48,7 +48,7 @@ Example of use:
 
     <Delete Files="@(FilesToDeleteLauncher)"/>
 
-    <MSBuild Targets="40-Editor\SiliconStudio_LauncherApp" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    <MSBuild Targets="60-Editor\SiliconStudio_LauncherApp" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
     <!-- IL Repack is not used anymore -->
     <!--<Exec Command='"$(ILRepackPath)" SiliconStudio.LauncherApp.exe Nuget.Core.dll /out:Xenko.exe' WorkingDirectory="$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"/>-->
     <!-- Generate the nuget package for the launcher application -->

@@ -1,79 +1,135 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_NULL 
-using System;
 
 namespace SiliconStudio.Xenko.Graphics
 {
     public partial class GraphicsDevice
     {
         /// <summary>
-        /// Creates a new deferred context.
+        /// Identification of the current graphic platform.
         /// </summary>
-        /// <returns>A deferred graphics device context.</returns>
-        public GraphicsDevice NewDeferred()
+        /// <implement>To be implemented.</implement>
+        private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Null;
+        private string rendererName = "Null";
+
+        /// <summary>
+        /// Buffer data placement alignment.
+        /// </summary>
+        /// <implement>To be implemented.</implement>
+        internal int ConstantBufferDataPlacementAlignment = 256;
+
+        /// <summary>
+        /// Action called when device is destroyed.
+        /// </summary>
+        internal void OnDestroyed()
         {
-            throw new NotImplementedException();
+            NullHelper.ToImplement();
         }
 
         /// <summary>
-        /// Initializes this instance.
+        /// Increases usage of <param name="resourceLink"/> if its usage is dynamic.
         /// </summary>
-        /// <param name="adapter">The graphics adapter.</param>
-        /// <param name="profile">The graphics profile.</param>
-        protected void Initialize(GraphicsAdapter adapter, GraphicsProfile profile, PresentationParameters presentationParameters, object windowHandle)
+        /// <param name="resourceLink">The resource link.</param>
+        internal void TagResource(GraphicsResourceLink resourceLink)
         {
-            throw new NotImplementedException();
+            NullHelper.ToImplement();
         }
 
         /// <summary>
-        /// Initializes factories for this instance.
+        /// Initializes this device.
         /// </summary>
-        protected void InitializeFactories()
+        /// <param name="graphicsProfiles">The graphics profiles.</param>
+        /// <param name="deviceCreationFlags">The device creation flags.</param>
+        /// <param name="windowHandle">The window handle.</param>
+        private void InitializePlatformDevice(GraphicsProfile[] graphicsProfiles, DeviceCreationFlags deviceCreationFlags, object windowHandle)
         {
-            throw new NotImplementedException();
+            NullHelper.ToImplement();
         }
 
         /// <summary>
-        /// Gets or sets the immediate graphics device context.
+        /// Gets status of this device.
         /// </summary>
-        /// <value>
-        /// The immediate graphics device context.
-        /// </value>
-        public GraphicsDevice ImmediateContext
+        /// <value>The graphics device status.</value>
+        public GraphicsDeviceStatus GraphicsDeviceStatus
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                NullHelper.ToImplement();
+                return GraphicsDeviceStatus.Normal;
+            }
         }
 
         /// <summary>
-        /// Gets a value indicating whether this instance is supporting deferred context.
+        /// Executes a deferred command list.
         /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this instance is supporting deferred context; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsDeferredContextSupported
+        /// <param name="commandList">The deferred command list.</param>
+        public void ExecuteCommandList(CompiledCommandList commandList)
         {
-            get { throw new NotImplementedException(); }
+            NullHelper.ToImplement();
         }
 
         /// <summary>
-        /// Gets the default presentation parameters associated with this graphics device.
+        /// Executes multiple deferred command lists.
         /// </summary>
-        public PresentationParameters PresentationParameters
+        /// <param name="count">Number of command lists to execute.</param>
+        /// <param name="commandLists">The deferred command lists.</param>
+        public void ExecuteCommandLists(int count, CompiledCommandList[] commandLists)
         {
-            get { throw new NotImplementedException(); }
+            NullHelper.ToImplement();
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this GraphicsDevice is in fullscreen.
+        /// Begin new drawing on current device.
         /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this GraphicsDevice is fullscreen; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsFullScreen
+        public void Begin()
         {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
+            NullHelper.ToImplement();
+        }
+
+        /// <summary>
+        /// End drawing on current device.
+        /// </summary>
+        public void End()
+        {
+            NullHelper.ToImplement();
+        }
+
+        /// <summary>
+        /// Adjust default pipeline state description.
+        /// </summary>
+        /// <param name="pipelineStateDescription">The pipeline state description to be adjusted.</param>
+        private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)
+        {
+            NullHelper.ToImplement();
+        }
+
+        /// <summary>
+        /// Initialize post features.
+        /// </summary>
+        private void InitializePostFeatures()
+        {
+            NullHelper.ToImplement();
+        }
+
+        /// <summary>
+        /// Name of the renderer for the current device.
+        /// </summary>
+        /// <returns>Name of renderer.</returns>
+        private string GetRendererName()
+        {
+            NullHelper.ToImplement();
+            return rendererName;
+        }
+
+        /// <summary>
+        /// Destroy device.
+        /// </summary>
+        /// <remarks>Called from <see cref="GraphicsDevice.Destroy"/></remarks>
+        private void DestroyPlatformDevice()
+        {
+            NullHelper.ToImplement();
         }
     }
 } 

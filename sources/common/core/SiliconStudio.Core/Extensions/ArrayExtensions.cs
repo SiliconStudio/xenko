@@ -2,8 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Linq;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Core.Extensions
@@ -37,7 +36,7 @@ namespace SiliconStudio.Core.Extensions
 
             if (comparer == null)
                 comparer = EqualityComparer<T>.Default;
-            for (int i = 0; i < a1.Count; i++)
+            for (var i = 0; i < a1.Count; i++)
             {
                 if (!comparer.Equals(a1[i], a2[i]))
                     return false;
@@ -64,7 +63,7 @@ namespace SiliconStudio.Core.Extensions
             if (a1.Count != a2.Count)
                 return false;
 
-            for (int i = 0; i < a1.Count; i++)
+            for (var i = 0; i < a1.Count; i++)
             {
                 if (a1[i] != a2[i])
                     return false;
@@ -91,7 +90,7 @@ namespace SiliconStudio.Core.Extensions
             if (a1.Count != a2.Count)
                 return false;
 
-            for (int i = 0; i < a1.Count; i++)
+            for (var i = 0; i < a1.Count; i++)
             {
                 if (a1[i] != a2[i])
                     return false;
@@ -118,7 +117,7 @@ namespace SiliconStudio.Core.Extensions
             if (a1.Count != a2.Count)
                 return false;
 
-            for (int i = 0; i < a1.Count; i++)
+            for (var i = 0; i < a1.Count; i++)
             {
                 if (a1[i] != a2[i])
                     return false;
@@ -144,9 +143,9 @@ namespace SiliconStudio.Core.Extensions
                 if (comparer == null)
                     comparer = EqualityComparer<T>.Default;
 
-                int hash = 17 + data.Count;
-                int result = hash;
-                foreach (T unknown in data)
+                var hash = 17 + data.Count;
+                var result = hash;
+                foreach (var unknown in data)
                     result = result*31 + comparer.GetHashCode(unknown);
                 return result;
             }
@@ -169,9 +168,9 @@ namespace SiliconStudio.Core.Extensions
                 if (comparer == null)
                     comparer = EqualityComparer<T>.Default;
 
-                int hash = 17 + data.Length;
-                int result = hash;
-                foreach (T unknown in data)
+                var hash = 17 + data.Length;
+                var result = hash;
+                foreach (var unknown in data)
                     result = result * 31 + comparer.GetHashCode(unknown);
                 return result;
             }
@@ -185,7 +184,8 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="index">The start of the index to get the data from.</param>
         /// <param name="length">The length of elements to slice</param>
         /// <returns>A slice of the array.</returns>
-        public static T[] SubArray<T>(this T[] data, int index, int length)
+        [NotNull]
+        public static T[] SubArray<T>([NotNull] this T[] data, int index, int length)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             var result = new T[length];
@@ -200,7 +200,8 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="array1">The array1 to concat</param>
         /// <param name="array2">The array2 to concat</param>
         /// <returns>The concat of the array.</returns>
-        public static T[] Concat<T>(this T[] array1, T[] array2)
+        [NotNull]
+        public static T[] Concat<T>([NotNull] this T[] array1, [NotNull] T[] array2)
         {
             if (array1 == null) throw new ArgumentNullException(nameof(array1));
             if (array2 == null) throw new ArgumentNullException(nameof(array2));

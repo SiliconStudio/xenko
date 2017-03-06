@@ -8,7 +8,6 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
-using SiliconStudio.Core.Yaml.Serialization.Serializers;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Serializers

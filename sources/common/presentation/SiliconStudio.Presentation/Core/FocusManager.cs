@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Windows;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Core
 {
@@ -12,7 +14,7 @@ namespace SiliconStudio.Presentation.Core
         /// <summary>
         /// Identify the IsFocused attached dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsFocusedProperty = DependencyProperty.RegisterAttached("IsFocused", typeof(bool), typeof(FocusManager), new UIPropertyMetadata(false, OnIsFocusedPropertyChanged));
+        public static readonly DependencyProperty IsFocusedProperty = DependencyProperty.RegisterAttached("IsFocused", typeof(bool), typeof(FocusManager), new UIPropertyMetadata(BooleanBoxes.FalseBox, OnIsFocusedPropertyChanged));
 
         /// <summary>
         /// Gets whether the given object has currently the focus.
@@ -30,7 +32,7 @@ namespace SiliconStudio.Presentation.Core
         /// </summary>
         /// <param name="obj">The object that should get the focus.</param>
         /// <param name="value">The state of the focus. If value is <c>true</c>, the object will get the focus. Otherwise, this method does nothing.</param>
-        public static void SetIsFocused(DependencyObject obj, bool value)
+        public static void SetIsFocused([NotNull] DependencyObject obj, bool value)
         {
             obj.SetValue(IsFocusedProperty, value);
         }

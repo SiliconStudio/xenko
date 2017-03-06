@@ -3,9 +3,11 @@ using SiliconStudio.Assets.Quantum.Commands;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Commands;
+using SiliconStudio.Quantum.Contents;
+using SiliconStudio.Quantum.References;
+using IReference = SiliconStudio.Core.Serialization.Contents.IReference;
 
 namespace SiliconStudio.Assets.Quantum
 {
@@ -44,7 +46,29 @@ namespace SiliconStudio.Assets.Quantum
             {
                 NodeBuilder.RegisterPrimitiveType(contentType);
             }
-            OverrideNodeFactory((name, content, guid) => new AssetNode(name, content, guid));
+        }
+    }
+
+    public class AssetNodeFactory : IContentFactory
+    {
+        /// <inheritdoc/>
+        public IGraphNode CreateObjectContent(INodeBuilder nodeBuilder, Guid guid, object obj, ITypeDescriptor descriptor, bool isPrimitive)
+        {
+            var reference = nodeBuilder.CreateReferenceForNode(descriptor.Type, obj, false) as ReferenceEnumerable;
+            return new AssetObjectNode(nodeBuilder, obj, guid, descriptor, isPrimitive, reference);
+        }
+
+        /// <inheritdoc/>
+        public IGraphNode CreateBoxedContent(INodeBuilder nodeBuilder, Guid guid, object structure, ITypeDescriptor descriptor, bool isPrimitive)
+        {
+            return new AssetBoxedNode(nodeBuilder, structure, guid, descriptor, isPrimitive);
+        }
+
+        /// <inheritdoc/>
+        public IGraphNode CreateMemberContent(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor member, bool isPrimitive, object value)
+        {
+            var reference = nodeBuilder.CreateReferenceForNode(member.Type, value, true);
+            return new AssetMemberNode(nodeBuilder, guid, parent, member, isPrimitive, reference);
         }
     }
 }

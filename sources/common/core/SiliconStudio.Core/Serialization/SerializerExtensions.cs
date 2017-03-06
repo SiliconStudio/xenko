@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Serialization
 {
-    using SiliconStudio.Core.Reflection;
-
     /// <summary>
     /// Various useful extension methods on top of SerializationStream for serialization/deserialization of common types.
     /// </summary>
@@ -18,13 +18,13 @@ namespace SiliconStudio.Core.Serialization
         {
             var memoryStream = new MemoryStream();
             var writer = new BinarySerializationWriter(memoryStream);
-            writer.SerializeExtended(obj, ArchiveMode.Serialize, null);
+            writer.SerializeExtended(obj, ArchiveMode.Serialize);
             writer.Flush();
 
-            T result = default(T);
+            var result = default(T);
             memoryStream.Seek(0, SeekOrigin.Begin);
             var reader = new BinarySerializationReader(memoryStream);
-            reader.SerializeExtended(ref result, ArchiveMode.Deserialize, null);
+            reader.SerializeExtended(ref result, ArchiveMode.Deserialize);
             return result;
         }
 
@@ -37,7 +37,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="mode">The serialization mode.</param>
         /// <param name="dataSerializer">The data serializer (can be null).</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SerializeExtended<T>(this SerializationStream stream, T obj, ArchiveMode mode, DataSerializer<T> dataSerializer = null)
+        public static void SerializeExtended<T>([NotNull] this SerializationStream stream, T obj, ArchiveMode mode, DataSerializer<T> dataSerializer = null)
         {
             MemberReuseSerializer<T>.SerializeExtended(ref obj, mode, stream, dataSerializer);
         }
@@ -51,7 +51,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="mode">The serialization mode.</param>
         /// <param name="dataSerializer">The data serializer (can be null).</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SerializeExtended<T>(this SerializationStream stream, ref T obj, ArchiveMode mode, DataSerializer<T> dataSerializer = null)
+        public static void SerializeExtended<T>([NotNull] this SerializationStream stream, ref T obj, ArchiveMode mode, DataSerializer<T> dataSerializer = null)
         {
             MemberReuseSerializer<T>.SerializeExtended(ref obj, mode, stream, dataSerializer);
         }
@@ -63,9 +63,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream to read the object from.</param>
         /// <returns>The object that has just been read.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T Read<T>(this SerializationStream stream)
+        public static T Read<T>([NotNull] this SerializationStream stream)
         {
-            T result = default(T);
+            var result = default(T);
             stream.Serialize(ref result, ArchiveMode.Deserialize);
             return result;
         }
@@ -76,7 +76,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream to write the object to.</param>
         /// <param name="obj">The object to write.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Write<T>(this SerializationStream stream, T obj)
+        public static void Write<T>([NotNull] this SerializationStream stream, T obj)
         {
             Serialize(stream, ref obj, ArchiveMode.Serialize);
         }
@@ -89,11 +89,11 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="obj">The object to serialize.</param>
         /// <param name="mode">The serialization mode.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Serialize<T>(this SerializationStream stream, ref T obj, ArchiveMode mode)
+        public static void Serialize<T>([NotNull] this SerializationStream stream, ref T obj, ArchiveMode mode)
         {
-            DataSerializer<T> dataSerializer = stream.Context.SerializerSelector.GetSerializer<T>();
+            var dataSerializer = stream.Context.SerializerSelector.GetSerializer<T>();
             if (dataSerializer == null)
-                throw new InvalidOperationException(string.Format("Could not find serializer for type {0}.", typeof(T)));
+                throw new InvalidOperationException($"Could not find serializer for type {typeof(T)}.");
 
             dataSerializer.PreSerialize(ref obj, mode, stream);
             dataSerializer.Serialize(ref obj, mode, stream);
@@ -105,9 +105,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <returns>A boolean value read from the stream.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool ReadBoolean(this SerializationStream stream)
+        public static bool ReadBoolean([NotNull] this SerializationStream stream)
         {
-            bool value = false;
+            var value = false;
             stream.Serialize(ref value);
             return value;
         }
@@ -118,9 +118,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <returns>A 4-byte floating point value read from the stream.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float ReadSingle(this SerializationStream stream)
+        public static float ReadSingle([NotNull] this SerializationStream stream)
         {
-            float value = 0.0f;
+            var value = 0.0f;
             stream.Serialize(ref value);
             return value;
         }
@@ -131,9 +131,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <returns>A 8-byte floating point value read from the stream.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double ReadDouble(this SerializationStream stream)
+        public static double ReadDouble([NotNull] this SerializationStream stream)
         {
-            double value = 0.0;
+            var value = 0.0;
             stream.Serialize(ref value);
             return value;
         }
@@ -144,7 +144,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <returns>A 2-byte signed integer read from the stream.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static short ReadInt16(this SerializationStream stream)
+        public static short ReadInt16([NotNull] this SerializationStream stream)
         {
             short value = 0;
             stream.Serialize(ref value);
@@ -157,9 +157,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <returns>A 4-byte signed integer read from the stream.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int ReadInt32(this SerializationStream stream)
+        public static int ReadInt32([NotNull] this SerializationStream stream)
         {
-            int value = 0;
+            var value = 0;
             stream.Serialize(ref value);
             return value;
         }
@@ -170,7 +170,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <returns>A 8-byte signed integer read from the stream.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long ReadInt64(this SerializationStream stream)
+        public static long ReadInt64([NotNull] this SerializationStream stream)
         {
             long value = 0;
             stream.Serialize(ref value);
@@ -183,7 +183,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <returns>A 2-byte unsigned integer read from the stream.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ushort ReadUInt16(this SerializationStream stream)
+        public static ushort ReadUInt16([NotNull] this SerializationStream stream)
         {
             ushort value = 0;
             stream.Serialize(ref value);
@@ -196,7 +196,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <returns>A 4-byte unsigned integer read from the stream.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static uint ReadUInt32(this SerializationStream stream)
+        public static uint ReadUInt32([NotNull] this SerializationStream stream)
         {
             uint value = 0;
             stream.Serialize(ref value);
@@ -209,7 +209,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <returns>A 8-byte unsigned integer read from the stream.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ulong ReadUInt64(this SerializationStream stream)
+        public static ulong ReadUInt64([NotNull] this SerializationStream stream)
         {
             ulong value = 0;
             stream.Serialize(ref value);
@@ -222,7 +222,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <returns>A string read from the stream.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string ReadString(this SerializationStream stream)
+        public static string ReadString([NotNull] this SerializationStream stream)
         {
             string value = null;
             stream.Serialize(ref value);
@@ -235,9 +235,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <returns>A unicode character read from the stream.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static char ReadChar(this SerializationStream stream)
+        public static char ReadChar([NotNull] this SerializationStream stream)
         {
-            char value = '\0';
+            var value = '\0';
             stream.Serialize(ref value);
             return value;
         }
@@ -248,7 +248,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <returns>An unsigned byte read from the stream.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static byte ReadByte(this SerializationStream stream)
+        public static byte ReadByte([NotNull] this SerializationStream stream)
         {
             byte value = 0;
             stream.Serialize(ref value);
@@ -261,7 +261,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <returns>A signed byte read from the stream.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static sbyte ReadSByte(this SerializationStream stream)
+        public static sbyte ReadSByte([NotNull] this SerializationStream stream)
         {
             sbyte value = 0;
             stream.Serialize(ref value);
@@ -272,11 +272,13 @@ namespace SiliconStudio.Core.Serialization
         /// Reads the specified number of bytes.
         /// </summary>
         /// <param name="stream">The stream.</param>
+        /// <param name="count"></param>
         /// <returns>A byte array containing the data read from the stream.</returns>
+        [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static byte[] ReadBytes(this SerializationStream stream, int count)
+        public static byte[] ReadBytes([NotNull] this SerializationStream stream, int count)
         {
-            byte[] value = new byte[count];
+            var value = new byte[count];
             stream.Serialize(value, 0, count);
             return value;
         }
@@ -287,8 +289,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <param name="value">The boolean value to write.</param>
         /// <returns>The stream.</returns>
+        [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SerializationStream Write(this SerializationStream stream, bool value)
+        public static SerializationStream Write([NotNull] this SerializationStream stream, bool value)
         {
             stream.Serialize(ref value);
             return stream;
@@ -300,8 +303,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <param name="value">The 4-byte floating point value to write.</param>
         /// <returns>The stream.</returns>
+        [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SerializationStream Write(this SerializationStream stream, float value)
+        public static SerializationStream Write([NotNull] this SerializationStream stream, float value)
         {
             stream.Serialize(ref value);
             return stream;
@@ -313,8 +317,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <param name="value">The 8-byte floating point value to write.</param>
         /// <returns>The stream.</returns>
+        [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SerializationStream Write(this SerializationStream stream, double value)
+        public static SerializationStream Write([NotNull] this SerializationStream stream, double value)
         {
             stream.Serialize(ref value);
             return stream;
@@ -326,8 +331,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <param name="value">The 2-byte signed integer to write.</param>
         /// <returns>The stream.</returns>
+        [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SerializationStream Write(this SerializationStream stream, short value)
+        public static SerializationStream Write([NotNull] this SerializationStream stream, short value)
         {
             stream.Serialize(ref value);
             return stream;
@@ -339,8 +345,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <param name="value">The 4-byte signed integer to write.</param>
         /// <returns>The stream.</returns>
+        [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SerializationStream Write(this SerializationStream stream, int value)
+        public static SerializationStream Write([NotNull] this SerializationStream stream, int value)
         {
             stream.Serialize(ref value);
             return stream;
@@ -352,8 +359,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <param name="value">The 8-byte signed integer to write.</param>
         /// <returns>The stream.</returns>
+        [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SerializationStream Write(this SerializationStream stream, long value)
+        public static SerializationStream Write([NotNull] this SerializationStream stream, long value)
         {
             stream.Serialize(ref value);
             return stream;
@@ -365,8 +373,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <param name="value">The 2-byte unsigned integer to write.</param>
         /// <returns>The stream.</returns>
+        [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SerializationStream Write(this SerializationStream stream, ushort value)
+        public static SerializationStream Write([NotNull] this SerializationStream stream, ushort value)
         {
             stream.Serialize(ref value);
             return stream;
@@ -378,8 +387,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <param name="value">The 4-byte unsigned integer to write.</param>
         /// <returns>The stream.</returns>
+        [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SerializationStream Write(this SerializationStream stream, uint value)
+        public static SerializationStream Write([NotNull] this SerializationStream stream, uint value)
         {
             stream.Serialize(ref value);
             return stream;
@@ -391,8 +401,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <param name="value">The 8-byte unsigned integer to write.</param>
         /// <returns>The stream.</returns>
+        [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SerializationStream Write(this SerializationStream stream, ulong value)
+        public static SerializationStream Write([NotNull] this SerializationStream stream, ulong value)
         {
             stream.Serialize(ref value);
             return stream;
@@ -404,8 +415,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <param name="value">The string to write.</param>
         /// <returns>The stream.</returns>
+        [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SerializationStream Write(this SerializationStream stream, string value)
+        public static SerializationStream Write([NotNull] this SerializationStream stream, string value)
         {
             stream.Serialize(ref value);
             return stream;
@@ -417,8 +429,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <param name="value">The unicode character to write.</param>
         /// <returns>The stream.</returns>
+        [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SerializationStream Write(this SerializationStream stream, char value)
+        public static SerializationStream Write([NotNull] this SerializationStream stream, char value)
         {
             stream.Serialize(ref value);
             return stream;
@@ -430,8 +443,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <param name="value">The unsigned byte to write.</param>
         /// <returns>The stream.</returns>
+        [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SerializationStream Write(this SerializationStream stream, byte value)
+        public static SerializationStream Write([NotNull] this SerializationStream stream, byte value)
         {
             stream.Serialize(ref value);
             return stream;
@@ -443,8 +457,9 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="stream">The stream.</param>
         /// <param name="value">The signed byte to write.</param>
         /// <returns>The stream.</returns>
+        [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SerializationStream Write(this SerializationStream stream, sbyte value)
+        public static SerializationStream Write([NotNull] this SerializationStream stream, sbyte value)
         {
             stream.Serialize(ref value);
             return stream;
@@ -460,8 +475,9 @@ namespace SiliconStudio.Core.Serialization
         /// <returns>
         /// The stream.
         /// </returns>
+        [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SerializationStream Write(this SerializationStream stream, byte[] values, int offset, int count)
+        public static SerializationStream Write([NotNull] this SerializationStream stream, byte[] values, int offset, int count)
         {
             stream.Serialize(values, offset, count);
             return stream;

@@ -5,7 +5,6 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum.Commands
 {
@@ -31,13 +30,14 @@ namespace SiliconStudio.Assets.Quantum.Commands
             return dictionaryDescriptor != null && dictionaryDescriptor.KeyType == typeof(string);
         }
 
-        protected override void ExecuteSync(IContent content, Index index, object parameter)
+        protected override void ExecuteSync(IGraphNode node, Index index, object parameter)
         {
+            var objectNode = (IObjectNode)node;
             var oldName = index;
-            var renamedObject = content.Retrieve(oldName);
-            content.Remove(renamedObject, oldName);
-            var newName = AddPrimitiveKeyCommand.GenerateStringKey(content.Value, content.Descriptor, (string)parameter);
-            content.Add(renamedObject, newName);
+            var renamedObject = node.Retrieve(oldName);
+            objectNode.Remove(renamedObject, oldName);
+            var newName = AddPrimitiveKeyCommand.GenerateStringKey(node.Retrieve(), node.Descriptor, (string)parameter);
+            objectNode.Add(renamedObject, newName);
         }
     }
 }
