@@ -143,15 +143,9 @@ namespace SiliconStudio.Xenko.Input
             uiControl.Focus();
             HandleButtonDown(ConvertMouseButton(mouseEventArgs.Button));
         }
+
         private void OnLostMouseCapture(object sender, EventArgs args)
         {
-            // On windows forms, the controls capture of the mouse button events at the first button pressed and release them at the first button released.
-            // This has for consequence that all up-events of button simultaneously pressed are lost after the release of first button (if outside of the window).
-            // This function fixes the problem by forcing the mouse event capture if any mouse buttons are still down at the first button release.
-            //if(DownButtons.Count > 0)
-            //{
-            //    uiControl.Capture = true;
-            //}
             var buttonsToRelease = DownButtons.ToArray();
             foreach (var button in buttonsToRelease)
             {
