@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using NUnit.Framework;
+using SiliconStudio.Assets.Quantum.Internal;
 using SiliconStudio.Assets.Quantum.Tests.Helpers;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;

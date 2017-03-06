@@ -9,7 +9,6 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum
 {
@@ -71,9 +70,9 @@ namespace SiliconStudio.Assets.Quantum
 
         public override void Dispose()
         {
+            base.Dispose();
             var rootPartsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootPartIds)].Target;
             rootPartsNode.ItemChanged -= RootPartsChanged;
-            base.Dispose();
             foreach (var childPartNode in Asset.Hierarchy.Parts.SelectMany(x => RetrieveChildPartNodes(x.Part)))
             {
                 childPartNode.UnregisterChanged(ChildPartChanged);

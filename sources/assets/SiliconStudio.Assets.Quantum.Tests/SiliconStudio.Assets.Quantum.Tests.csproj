@@ -45,6 +45,7 @@
     <Compile Include="..\SiliconStudio.Assets.Tests\Helpers\IdentifierGenerator.cs">
       <Link>Helpers\IdentifierGenerator.cs</Link>
     </Compile>
+    <Compile Include="Helpers\AssetNodeInternalExtensions.cs" />
     <Compile Include="Helpers\AssetHierarchyHelper.cs" />
     <Compile Include="Helpers\AssetTestContainer.cs" />
     <Compile Include="Helpers\DeriveAssetTest.cs" />

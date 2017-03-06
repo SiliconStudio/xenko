@@ -2,6 +2,9 @@ using SiliconStudio.Quantum.Commands;
 
 namespace SiliconStudio.Quantum
 {
+    /// <summary>
+    /// An interface representing an <see cref="IGraphNode"/> during its initialization phase.
+    /// </summary>
     public interface IInitializingGraphNode : IGraphNode
     {
         /// <summary>

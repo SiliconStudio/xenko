@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using SiliconStudio.Core;
-using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Tests.Obsolete

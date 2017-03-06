@@ -1,6 +1,6 @@
-﻿using SiliconStudio.Assets.Yaml;
+﻿using SiliconStudio.Assets.Quantum.Internal;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Quantum.Visitors
 {
@@ -31,14 +31,14 @@ namespace SiliconStudio.Assets.Quantum.Visitors
                 var id = objectNode.IndexToId(index);
                 var itemPath = ConvertPath(CurrentPath, inNonIdentifiableType);
                 itemPath.PushItemId(id);
-                Result.Set(itemPath, objectNode.GetItemOverride(index));
+                Result.Set(itemPath, ((IAssetObjectNodeInternal)objectNode).GetItemOverride(index));
             }
             foreach (var index in objectNode.GetOverriddenKeyIndices())
             {
                 var id = objectNode.IndexToId(index);
                 var itemPath = ConvertPath(CurrentPath, inNonIdentifiableType);
                 itemPath.PushIndex(id);
-                Result.Set(itemPath, objectNode.GetKeyOverride(index));
+                Result.Set(itemPath, ((IAssetObjectNodeInternal)objectNode).GetKeyOverride(index));
             }
         }
     }

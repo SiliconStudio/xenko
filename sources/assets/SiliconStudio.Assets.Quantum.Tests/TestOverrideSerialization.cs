@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using SiliconStudio.Assets.Quantum.Internal;
 using SiliconStudio.Assets.Quantum.Tests.Helpers;
 using SiliconStudio.Assets.Tests.Helpers;
 using SiliconStudio.Assets.Yaml;

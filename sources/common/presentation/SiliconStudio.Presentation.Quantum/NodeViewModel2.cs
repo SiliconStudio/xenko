@@ -6,7 +6,6 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
 {

@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using SiliconStudio.Assets.Quantum.Internal;
 using SiliconStudio.Assets.Quantum.Tests.Helpers;
 using SiliconStudio.Assets.Tests.Helpers;
 using SiliconStudio.Core.Reflection;
@@ -11,7 +12,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestSimpleConstruction()
         {
-            var container = new AssetPropertyGraphContainer(new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } });
+            var container = new AssetPropertyGraphContainer(new AssetNodeContainer { NodeBuilder = { NodeFactory = new AssetNodeFactory() } });
             var asset = new Types.MyAsset1 { MyString = "String" };
             var assetItem = new AssetItem("MyAsset", asset);
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem, null);
@@ -21,7 +22,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestCollectionConstruction()
         {
-            var container = new AssetPropertyGraphContainer(new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } });
+            var container = new AssetPropertyGraphContainer(new AssetNodeContainer { NodeBuilder = { NodeFactory = new AssetNodeFactory() } });
             var asset = new Types.MyAsset2 { MyStrings = { "aaa", "bbb", "ccc" } };
             var assetItem = new AssetItem("MyAsset", asset);
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem, null);
@@ -38,7 +39,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestNestedCollectionConstruction()
         {
-            var container = new AssetPropertyGraphContainer(new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } });
+            var container = new AssetPropertyGraphContainer(new AssetNodeContainer { NodeBuilder = { NodeFactory = new AssetNodeFactory() } });
             var asset = new Types.MyAsset7 { MyAsset2 = new Types.MyAsset2 { MyStrings = { "aaa", "bbb", "ccc" } } };
             var assetItem = new AssetItem("MyAsset", asset);
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem, null);
@@ -55,7 +56,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestCollectionItemIdentifierWithDuplicates()
         {
-            var container = new AssetPropertyGraphContainer(new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } });
+            var container = new AssetPropertyGraphContainer(new AssetNodeContainer { NodeBuilder = { NodeFactory = new AssetNodeFactory() } });
             var asset = new Types.MyAsset2 { MyStrings = { "aaa", "bbb", "ccc" } };
             var ids = CollectionItemIdHelper.GetCollectionItemIds(asset.MyStrings);
             ids.Add(0, IdentifierGenerator.Get(100));

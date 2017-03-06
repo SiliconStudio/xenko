@@ -20,7 +20,7 @@
 
         public static DeriveAssetTest<TAsset, TAssetPropertyGraph> DeriveAsset(TAsset baseAsset)
         {
-            var container = new AssetPropertyGraphContainer(new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } });
+            var container = new AssetPropertyGraphContainer(new AssetNodeContainer { NodeBuilder = { NodeFactory = new AssetNodeFactory() } });
             var baseContainer = new AssetTestContainer<TAsset, TAssetPropertyGraph>(container, baseAsset);
             baseContainer.BuildGraph();
             var derivedAsset = (TAsset)baseContainer.Asset.CreateDerivedAsset("MyAsset");
@@ -33,7 +33,7 @@
 
         public static DeriveAssetTest<TAsset, TAssetPropertyGraph> LoadFromYaml(string baseYaml, string derivedYaml)
         {
-            var container = new AssetPropertyGraphContainer(new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } });
+            var container = new AssetPropertyGraphContainer(new AssetNodeContainer { NodeBuilder = { NodeFactory = new AssetNodeFactory() } });
             var baseAsset = AssetFileSerializer.Load<TAsset>(AssetTestContainer.ToStream(baseYaml), $"MyAsset{Types.FileExtension}");
             var derivedAsset = AssetFileSerializer.Load<TAsset>(AssetTestContainer.ToStream(derivedYaml), $"MyDerivedAsset{Types.FileExtension}");
             var baseContainer = new AssetTestContainer<TAsset, TAssetPropertyGraph>(container, baseAsset.Asset);

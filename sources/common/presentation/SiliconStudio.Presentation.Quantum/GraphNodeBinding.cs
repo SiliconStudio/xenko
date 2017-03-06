@@ -1,7 +1,6 @@
 using System;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
 {
