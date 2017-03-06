@@ -105,27 +105,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                         atlas.Clear();
                     }
 
-                    // orthographic ?
-                    bool refuseDirectionalCascades = renderViewData.Key.Projection.M44 == 1.0f;
-
                     // Collect all required shadow maps
                     CollectShadowMaps(renderViewData.Key, renderViewData.Value);
 
                     foreach (var lightShadowMapTexture in renderViewData.Value.LightComponentsWithShadows)
                     {
-                        if (refuseDirectionalCascades)
-                        {
-                            foreach (var lc in renderViewData.Value.LightComponentsWithShadows)
-                            {
-                                if (lc.Value.LightComponent.Type is LightDirectional)
-                                {
-                                    lc.Value.ShadowType &= ~(LightShadowType.CascadeMask);
-                                    lc.Value.ShadowType |= LightShadowType.Cascade1;
-                                    lc.Value.CascadeCount = (int)LightShadowMapCascadeCount.OneCascade;
-                                }
-                            }
-                        }
-
                         var shadowMapTexture = lightShadowMapTexture.Value;
 
                         // Could we allocate shadow map? if not, skip
