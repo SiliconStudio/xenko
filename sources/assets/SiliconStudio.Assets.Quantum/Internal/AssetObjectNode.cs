@@ -5,7 +5,7 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.References;
 
-namespace SiliconStudio.Assets.Quantum
+namespace SiliconStudio.Assets.Quantum.Internal
 {
     internal class AssetObjectNode : ObjectNode, IAssetObjectNodeInternal
     {
@@ -32,7 +32,9 @@ namespace SiliconStudio.Assets.Quantum
 
         public IGraphNode GetContent(string key) => ex.GetContent(key);
 
-        public void ResetOverride(Index indexToReset) => ex.ResetOverride(indexToReset);
+        public void ResetOverrideRecursively() => ex.ResetOverrideRecursively(Index.Empty);
+
+        public void ResetOverrideRecursively(Index indexToReset) => ex.ResetOverrideRecursively(indexToReset);
 
         public void OverrideItem(bool isOverridden, Index index) => ex.OverrideItem(isOverridden, index);
 

@@ -1,7 +1,7 @@
 ﻿using SiliconStudio.Core.Annotations;
 using SiliconStudio.Quantum;
 
-namespace SiliconStudio.Assets.Quantum
+namespace SiliconStudio.Assets.Quantum.Internal
 {
     /// <summary>
     /// An interface exposing internal methods of <see cref="IAssetNode"/>

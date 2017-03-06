@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Assets.Quantum.Internal;
 using SiliconStudio.Assets.Quantum.Visitors;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
@@ -186,9 +187,12 @@ namespace SiliconStudio.Assets.Quantum
         /// </summary>
         /// <param name="rootNode">The node for which to reset overrides.</param>
         /// <param name="indexToReset">The index of the override to reset in this node, if relevant.</param>
-        public void ResetOverride(IAssetNode rootNode, Index indexToReset)
+        internal void ResetAllOverridesRecursively(IAssetNode rootNode, Index indexToReset)
         {
-            var visitor = new AssetGraphVisitorBase(this) { SkipRootNode = true };
+            if (rootNode is IAssetMemberNode && indexToReset != Index.Empty) throw new ArgumentException(@"The index must be empty when invoking this method on a member node.", nameof(indexToReset));
+
+            // We first use a visitor to reset recursively all overrides
+            var visitor = new AssetGraphVisitorBase(this);
             visitor.Visiting += (node, path) =>
             {
                 var memberNode = node as AssetMemberNode;
@@ -197,18 +201,28 @@ namespace SiliconStudio.Assets.Quantum
                 var objectNode = node as AssetObjectNode;
                 if (objectNode != null)
                 {
-                    foreach (var overrideItem in objectNode.GetOverriddenItemIndices().ToList())
+                    if (objectNode == rootNode && indexToReset != Index.Empty)
                     {
-                        objectNode.OverrideItem(false, overrideItem);
+                        // If it's the root node and an index was provided, make sure we reset only this index.
+                        objectNode.OverrideItem(false, indexToReset);
                     }
-                    foreach (var overrideKey in objectNode.GetOverriddenKeyIndices().ToList())
+                    else
                     {
-                        objectNode.OverrideKey(false, overrideKey);
+                        // Otherwise reset everything
+                        foreach (var overrideItem in objectNode.GetOverriddenItemIndices().ToList())
+                        {
+                            objectNode.OverrideItem(false, overrideItem);
+                        }
+                        foreach (var overrideKey in objectNode.GetOverriddenKeyIndices().ToList())
+                        {
+                            objectNode.OverrideKey(false, overrideKey);
+                        }
                     }
                 }
             };
             visitor.Visit(rootNode);
 
+            // Then we reconcile (recursively) with the base.
             ReconcileWithBase(rootNode);
         }
 

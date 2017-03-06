@@ -6,7 +6,7 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.References;
 
-namespace SiliconStudio.Assets.Quantum
+namespace SiliconStudio.Assets.Quantum.Internal
 {
     internal class AssetMemberNode : MemberNode, IAssetMemberNode, IAssetNodeInternal
     {
@@ -64,10 +64,9 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         /// <inheritdoc/>
-        public void ResetOverride(Index indexToReset)
+        public void ResetOverrideRecursively()
         {
-            OverrideContent(false);
-            PropertyGraph.ResetOverride(this, indexToReset);
+            PropertyGraph.ResetAllOverridesRecursively(this, Index.Empty);
         }
 
         private void ContentChanged(object sender, MemberNodeChangeEventArgs e)

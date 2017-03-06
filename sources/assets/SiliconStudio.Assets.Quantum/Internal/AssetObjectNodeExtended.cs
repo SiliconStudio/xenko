@@ -4,7 +4,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 
-namespace SiliconStudio.Assets.Quantum
+namespace SiliconStudio.Assets.Quantum.Internal
 {
     internal struct AssetObjectNodeExtended
     {
@@ -47,10 +47,10 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         /// <inheritdoc/>
-        public void ResetOverride(Index indexToReset)
+        public void ResetOverrideRecursively(Index indexToReset)
         {
             OverrideItem(false, indexToReset);
-            PropertyGraph.ResetOverride(node, indexToReset);
+            PropertyGraph.ResetAllOverridesRecursively(node, indexToReset);
         }
 
         public void OverrideItem(bool isOverridden, Index index)

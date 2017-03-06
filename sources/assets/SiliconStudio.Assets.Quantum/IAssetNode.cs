@@ -37,10 +37,8 @@ namespace SiliconStudio.Assets.Quantum
         event EventHandler<EventArgs> OverrideChanged;
 
         /// <summary>
-        /// Resets the overrides attached to this node and its descendants, recursively.
+        /// Resets all the overrides attached to this node and its descendants, recursively.
         /// </summary>
-        /// <param name="indexToReset">The index of the override to reset in this node, if relevant.</param>
-        // TODO: switch to two versions: one with and one without index, and move into specialized interfaces
-        void ResetOverride(Index indexToReset);
+        void ResetOverrideRecursively();
     }
 }

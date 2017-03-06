@@ -7,9 +7,6 @@ namespace SiliconStudio.Assets.Quantum
 {
     public interface IAssetObjectNode : IAssetNode, IObjectNode
     {
-        // TODO: this should be only here!
-        //void ResetOverride(Index indexToReset);
-
         [NotNull]
         new IAssetMemberNode this[string name] { get; }
 
@@ -54,6 +51,13 @@ namespace SiliconStudio.Assets.Quantum
         Index IdToIndex(ItemId id);
 
         bool TryIdToIndex(ItemId id, out Index index);
+
+        /// <summary>
+        /// Resets the overrides attached to this node at a specific index and to its descendants, recursively.
+        /// </summary>
+        /// <param name="indexToReset">The index of the override to reset in this node.</param>
+        void ResetOverrideRecursively(Index indexToReset);
+
 
         IEnumerable<Index> GetOverriddenItemIndices();
 
