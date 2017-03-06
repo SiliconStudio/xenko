@@ -179,25 +179,6 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Binds a single scissor rectangle to the rasterizer stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="top">The top.</param>
-        /// <param name="right">The right.</param>
-        /// <param name="bottom">The bottom.</param>
-        public void SetScissorRectangles(int left, int top, int right, int bottom)
-        {
-        }
-
-        /// <summary>
-        /// Binds a set of scissor rectangles to the rasterizer stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="scissorRectangles">The set of scissor rectangles to bind.</param>
-        public void SetScissorRectangles(params Rectangle[] scissorRectangles)
-        {
-        }
-
-        /// <summary>
         /// Sets the stream targets.
         /// </summary>
         /// <param name="buffers">The buffers.</param>
@@ -211,17 +192,36 @@ namespace SiliconStudio.Xenko.Graphics
         /// <value>The viewport.</value>
         private unsafe void SetViewportImpl()
         {
-            if (!viewportDirty)
+            if (!viewportDirty && !scissorsDirty)
                 return;
 
             //// TODO D3D12 Hardcoded for one viewport
             var viewportCopy = Viewport;
-            currentCommandList.NativeCommandBuffer.SetViewport(0, 1, (SharpVulkan.Viewport*)&viewportCopy);
+            if (viewportDirty)
+            {
+                currentCommandList.NativeCommandBuffer.SetViewport(0, 1, (SharpVulkan.Viewport*)&viewportCopy);
+                viewportDirty = false;
+            }
 
-            var scissor = new Rect2D((int)viewportCopy.X, (int)viewportCopy.Y, (uint)viewportCopy.Width, (uint)viewportCopy.Height);
-            currentCommandList.NativeCommandBuffer.SetScissor(0, 1, &scissor);
+            if (activePipeline?.Description.RasterizerState.ScissorTestEnable ?? false)
+            {
+                if (scissorsDirty)
+                {
+                    // Use manual scissor
+                    var scissor = scissors[0];
+                    var nativeScissor = new Rect2D(scissor.Left, scissor.Top, (uint)scissor.Width, (uint)scissor.Height);
+                    currentCommandList.NativeCommandBuffer.SetScissor(0, 1, &nativeScissor);
+                }
+            }
+            else
+            {
+                // Use viewport
+                // Always update, because either scissor or viewport was dirty and we use viewport size
+                var scissor = new Rect2D((int)viewportCopy.X, (int)viewportCopy.Y, (uint)viewportCopy.Width, (uint)viewportCopy.Height);
+                currentCommandList.NativeCommandBuffer.SetScissor(0, 1, &scissor);
+            }
 
-            viewportDirty = false;
+            scissorsDirty = false;
         }
 
         /// <summary>
@@ -388,6 +388,9 @@ namespace SiliconStudio.Xenko.Graphics
         {
             if (pipelineState == activePipeline)
                 return;
+
+            // If scissor state changed, force a refresh
+            scissorsDirty |= (pipelineState?.Description.RasterizerState.ScissorTestEnable ?? false) != (activePipeline?.Description.RasterizerState.ScissorTestEnable ?? false);
 
             activePipeline = pipelineState;
 
