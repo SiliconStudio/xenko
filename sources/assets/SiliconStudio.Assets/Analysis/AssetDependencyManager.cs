@@ -1,17 +1,278 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Visitors;
+using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.MicroThreading;
 
 namespace SiliconStudio.Assets.Analysis
 {
+    public enum BuildDependencyType
+    {
+        Runtime,
+        CompileAsset,
+        CompileContent
+    }
+
+    public class BuildAssetNode : IDisposable
+    {
+        private static readonly AssetCompilerRegistry AssetCompilerRegistry = new AssetCompilerRegistry();
+
+        private readonly BuildDependencyManager buildDependencyManager;
+        private readonly AssetDependenciesCompiler assetDependenciesCompiler;
+        private readonly ConcurrentDictionary<AssetId, BuildAssetNode> dependencyLinks = new ConcurrentDictionary<AssetId, BuildAssetNode>();
+        private readonly ConcurrentDictionary<AssetId, BuildAssetNode> parentLinks = new ConcurrentDictionary<AssetId, BuildAssetNode>();
+        private readonly CancellationTokenSource buildCancellationTokenSource = new CancellationTokenSource();
+        private ListBuildStep currentBuildStep;
+
+        public readonly AssetItem AssetItem;
+
+        public ListBuildStep CurrentBuildStep
+        {
+            get
+            {
+                lock (this)
+                {
+                    return currentBuildStep;
+                }
+            }
+            set
+            {
+                lock (this)
+                {
+                    if (currentBuildStep != null)
+                    {
+                        buildCancellationTokenSource.Cancel();                       
+                    }
+
+                    currentBuildStep = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets a collection of dependencies of this node
+        /// </summary>
+        public ICollection<BuildAssetNode> Dependencies => dependencyLinks.Values;
+
+        public void AddDependency(AssetCompilerContext context, [NotNull] BuildAssetNode dependency)
+        {
+            if (dependencyLinks.TryAdd(dependency.AssetItem.Id, dependency))
+            {
+                dependency.Prepare(context, this);
+            }
+        }
+
+        public void RemoveDependency([NotNull] BuildAssetNode dependency)
+        {
+            BuildAssetNode link;
+            if (dependencyLinks.TryGetValue(dependency.AssetItem.Id, out link))
+            {
+                link.Dispose();
+            }
+        }
+
+        public BuildDependencyType DependencyType { get; }
+
+        public BuildAssetNode(AssetItem assetItem, BuildDependencyType type, AssetDependenciesCompiler assetDependenciesCompiler, BuildDependencyManager dependencyManager)
+        {
+            AssetItem = assetItem;
+            DependencyType = type;
+            buildDependencyManager = dependencyManager;
+            this.assetDependenciesCompiler = assetDependenciesCompiler;         
+        }
+
+        /// <summary>
+        /// Task that will receive the asset version when a build of this node has ended.
+        /// Or throw cancellation if build was interrupted
+        /// </summary>
+        public async Task<long> Build()
+        {
+            //todo lock, hmm
+            var dependencies = Dependencies.ToList();
+
+            foreach (var dependency in dependencies)
+            {
+                await dependency.Build();
+            }
+
+            var currentStep = CurrentBuildStep;
+
+            //need to add the unit itself to the builder
+            buildDependencyManager.ReadySteps.Enqueue(currentStep);
+
+            //wait for it to be built
+            await currentStep.ExecutedAsync();
+
+            return AssetItem.Version; //todo wrong version most likely
+        }
+
+        public void Prepare(AssetCompilerContext context, BuildAssetNode parent)
+        {
+            if(parent != null)
+                parentLinks.TryAdd(parent.AssetItem.Id, parent);
+
+            //process dependency discovery etc
+            //create all the necessary BuildAssetNodes if needed
+            var mainCompiler = AssetCompilerRegistry.GetCompiler(AssetItem.Asset.GetType());
+
+            var compilerResult = mainCompiler.Compile(context, AssetItem);
+            if (compilerResult.HasErrors)
+            {
+                //handle errors
+                return;
+            }
+
+            CurrentBuildStep = compilerResult.BuildSteps;
+            
+            //todo do better processing
+            dependencyLinks.Clear();
+
+            //run time deps
+            var dependencies = AssetItem.Package.Session.DependencyManager.ComputeDependencies(AssetItem.Id, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
+            if (dependencies != null)
+            {
+                foreach (var assetDependency in dependencies.LinksOut)
+                {
+                    var assetType = assetDependency.Item.Asset.GetType();
+                    if (mainCompiler.CompileTimeDependencyTypes.Contains(assetType))
+                    {
+                        //todo change dependency type to proper build dependency type, as content means it will always compile which is not needed most of the time
+                        var node = new BuildAssetNode(assetDependency.Item, BuildDependencyType.CompileContent, assetDependenciesCompiler, buildDependencyManager);
+                        AddDependency(context, node);
+                    }
+                }
+            }
+
+            //compile time
+            foreach (var commandStep in assetDependenciesCompiler.EnumerateCommandBuildSteps(compilerResult.BuildSteps))
+            {
+                foreach (var inputFile in commandStep.Command.GetInputFiles())
+                {
+                    if (inputFile.Type == UrlType.Content || inputFile.Type == UrlType.ContentLink)
+                    {
+                        var asset = AssetItem.Package.FindAsset(inputFile.Path);
+                        if (asset == null) continue; //this might be an error tho...
+
+                        //todo change dependency type to proper build dependency type, as content means it will always compile which is not needed most of the time
+                        var node = new BuildAssetNode(asset, BuildDependencyType.CompileContent, assetDependenciesCompiler, buildDependencyManager);
+                        AddDependency(context, node);
+                    }
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            buildCancellationTokenSource.Cancel();
+
+            foreach (var dependencyLink in dependencyLinks)
+            {
+                dependencyLink.Value.Dispose();
+            }
+            dependencyLinks.Clear();
+        }
+    }
+
+    public sealed class BuildDependencyManager : IDisposable
+    {
+        private readonly AssetDependenciesCompiler assetDependenciesCompiler;
+
+        private readonly Scheduler scheduler = new Scheduler();
+
+        public AnonymousBuildStepProvider StepProvider { get; private set; }
+
+        public ConcurrentDictionary<AssetId, BuildAssetNode> ConcreteNodes { get; } = new ConcurrentDictionary<AssetId, BuildAssetNode>();
+
+        internal ConcurrentQueue<BuildStep> ReadySteps { get; } = new ConcurrentQueue<BuildStep>();
+
+        public BuildDependencyManager(AssetDependenciesCompiler compiler)
+        {
+            assetDependenciesCompiler = compiler;
+            StepProvider = new AnonymousBuildStepProvider(x =>
+            {
+                BuildStep step;
+                if (ReadySteps.TryDequeue(out step))
+                {
+                    return step;
+                }
+                return null;
+            });
+        }
+
+        public BuildAssetNode Insert(AssetItem item)
+        {
+            BuildAssetNode node;
+            if (!ConcreteNodes.TryGetValue(item.Id, out node))
+            {
+                //add
+                node = new BuildAssetNode(item, BuildDependencyType.Runtime, assetDependenciesCompiler, this);
+                ConcreteNodes.TryAdd(item.Id, node);
+            }
+
+//            scheduler.Add(async () =>
+//            {
+//                node.Prepare();
+//                await node.Build();
+//            });
+
+            return node;
+        }
+
+//        public void Remove(AssetItem item)
+//        {
+//            BuildAssetNode node;
+//            if (ConcreteNodes.TryRemove(item.Id, out node))
+//            {
+//                node.Dispose();
+//            }
+//        }
+//
+//        public void Changed(AssetItem item)
+//        {
+//            BuildAssetNode node;
+//            if (ConcreteNodes.TryGetValue(item.Id, out node))
+//            {
+//                scheduler.Add(async () =>
+//                {
+//                    node.Prepare();
+//                    await node.Build();
+//                });
+//            }
+//            else
+//            {
+//                throw new Exception($"No asset node for {item.Location} could be found.");
+//            }
+//        }
+
+        public void Run()
+        {
+            scheduler.Run();
+        }
+
+        public void Dispose()
+        {
+            foreach (var buildAssetNode in ConcreteNodes)
+            {
+                buildAssetNode.Value.Dispose();
+            }
+            ConcreteNodes.Clear();
+        }
+    }
+
     /// <summary>
     /// A class responsible for providing asset dependencies for a <see cref="PackageSession"/> and file tracking dependency.
     /// </summary>

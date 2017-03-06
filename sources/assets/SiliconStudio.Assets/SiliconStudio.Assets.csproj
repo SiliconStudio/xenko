@@ -305,6 +305,10 @@
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
+      <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
+      <Name>SiliconStudio.Core.MicroThreading</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
       <Project>{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}</Project>
       <Name>SiliconStudio.Core.Reflection</Name>

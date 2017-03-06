@@ -147,6 +147,7 @@ namespace SiliconStudio.Assets
                 isDirty = isDirty,
                 SourceFolder = SourceFolder,
                 SourceProject = SourceProject,
+                version = Version
             };
             YamlMetadata.CopyInto(item.YamlMetadata);
             return item;

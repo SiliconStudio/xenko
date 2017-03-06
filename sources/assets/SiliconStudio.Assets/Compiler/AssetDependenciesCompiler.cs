@@ -111,7 +111,7 @@ namespace SiliconStudio.Assets.Compiler
             return compilerResult;
         }
 
-        private IEnumerable<CommandBuildStep> EnumerateCommandBuildSteps(ListBuildStep enumerableBuildStep)
+        internal IEnumerable<CommandBuildStep> EnumerateCommandBuildSteps(ListBuildStep enumerableBuildStep)
         {
             foreach (var buildStep in enumerableBuildStep)
             {
