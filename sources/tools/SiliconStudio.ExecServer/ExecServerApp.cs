@@ -46,7 +46,7 @@ namespace SiliconStudio.ExecServer
         {
             if (argsCopy.Length == 0)
             {
-                Console.WriteLine("Usage ExecServer.exe [/direct executablePath|/server executablePath CPUindex] /shadow [executableArguments]");
+                Console.WriteLine("Usage ExecServer.exe [/direct executablePath|/server entryAssemblyPath executablePath CPUindex] /shadow [executableArguments]");
                 return 0;
             }
             var args = new List<string>(argsCopy);
@@ -55,7 +55,7 @@ namespace SiliconStudio.ExecServer
             {
                 args.RemoveAt(0);
                 var executablePath = ExtractPath(args, "executable");
-                var execServerApp = new ExecServerRemote(executablePath, false, false, true);
+                var execServerApp = new ExecServerRemote(executablePath, executablePath, false, false, true);
                 int result = execServerApp.Run(Environment.CurrentDirectory, new Dictionary<string, string>(), args.ToArray(), false, null);
                 return result;
             }
@@ -63,13 +63,14 @@ namespace SiliconStudio.ExecServer
             if (args[0] == "/server")
             {
                 args.RemoveAt(0);
+                var entryAssemblyPath = ExtractPath(args, "entryAssembly");
                 var executablePath = ExtractPath(args, "executable");
                 var cpu = int.Parse(args[0]);
                 args.RemoveAt(0);
                 int result = 0;
                 try
                 {
-                    result = RunServer(executablePath, cpu);
+                    result = RunServer(entryAssemblyPath, executablePath, cpu);
                 }
                 catch (Exception ex)
                 {
@@ -126,8 +127,9 @@ namespace SiliconStudio.ExecServer
         /// <summary>
         /// Runs ExecServer in server mode (waiting for connection from ExecServer clients)
         /// </summary>
+        /// <param name="entryAssemblyPath">Path to the client assembly in case we need to start another instance of same process.</param>
         /// <param name="executablePath">Path of the executable to run from this ExecServer instance</param>
-        private int RunServer(string executablePath, int serverInstanceIndex)
+        private int RunServer(string entryAssemblyPath, string executablePath, int serverInstanceIndex)
         {
             var address = GetEndpointAddress(executablePath, serverInstanceIndex);
 
@@ -135,7 +137,7 @@ namespace SiliconStudio.ExecServer
             var useAppDomainCaching = Environment.GetEnvironmentVariable(DisableExecServerAppDomainCaching) != "true";
 
             // Start WCF pipe for communication with process
-            var execServerApp = new ExecServerRemote(executablePath, true, useAppDomainCaching, serverInstanceIndex == 0);
+            var execServerApp = new ExecServerRemote(entryAssemblyPath, executablePath, true, useAppDomainCaching, serverInstanceIndex == 0);
             var host = new ServiceHost(execServerApp);
             host.AddServiceEndpoint(typeof(IExecServerRemote), new NetNamedPipeBinding(NetNamedPipeSecurityMode.None)
             {
@@ -419,7 +421,7 @@ namespace SiliconStudio.ExecServer
             // NOTE: We are not using Process.Start as it is for some unknown reasons blocking the process calling this process on Process.ExitProcess
             // Handling directly the creation of the process with Win32 function solves this. Not sure why.
             // TODO: We might want the process to not inherit environment
-            var result = ProcessHelper.LaunchProcess(finalExecServerPath, $"/server \"{executablePath}\" {serverInstanceIndex}", out processHandle, out processId);
+            var result = ProcessHelper.LaunchProcess(finalExecServerPath, $"/server \"{Assembly.GetEntryAssembly()?.Location}\" \"{executablePath}\" {serverInstanceIndex}", out processHandle, out processId);
             return result;
         }
 

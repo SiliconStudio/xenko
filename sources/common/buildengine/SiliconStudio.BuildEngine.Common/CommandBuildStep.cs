@@ -324,7 +324,7 @@ namespace SiliconStudio.BuildEngine
                 var commandContext = new LocalCommandContext(executeContext, this, builderContext);
 
                 // Actually processing the command
-                if (Command.ShouldSpawnNewProcess() && builderContext.MaxParallelProcesses > 0)
+                if (Command.ShouldSpawnNewProcess() && builderContext.MaxParallelProcesses > 0 && builderContext.SlaveBuilderPath != null)
                 {
                     while (!builderContext.CanSpawnParallelProcess())
                     {
