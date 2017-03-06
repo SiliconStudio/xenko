@@ -20,17 +20,11 @@ namespace SiliconStudio.Assets.Quantum
 
         bool IsItemDeleted(ItemId itemId);
 
-        bool TryGetCollectionItemIds(object instance, out CollectionItemIdentifiers itemIds);
-
         void Restore(object restoredItem, ItemId id);
 
         void Restore(object restoredItem, Index index, ItemId id);
 
         void RemoveAndDiscard(object item, Index itemIndex, ItemId id);
-
-        OverrideType GetItemOverride(Index index);
-
-        OverrideType GetKeyOverride(Index index);
 
         bool IsItemInherited(Index index);
 
@@ -57,7 +51,6 @@ namespace SiliconStudio.Assets.Quantum
         /// </summary>
         /// <param name="indexToReset">The index of the override to reset in this node.</param>
         void ResetOverrideRecursively(Index indexToReset);
-
 
         IEnumerable<Index> GetOverriddenItemIndices();
 

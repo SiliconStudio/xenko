@@ -97,7 +97,7 @@ namespace SiliconStudio.Assets.Quantum.Internal
             return ids.IsDeleted(itemId);
         }
 
-        public bool TryGetCollectionItemIds(object instance, out CollectionItemIdentifiers itemIds)
+        private bool TryGetCollectionItemIds(object instance, out CollectionItemIdentifiers itemIds)
         {
             if (collectionItemIdentifiers != null)
             {

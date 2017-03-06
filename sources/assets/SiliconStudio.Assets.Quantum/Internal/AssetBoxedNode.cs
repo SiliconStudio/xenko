@@ -43,8 +43,6 @@ namespace SiliconStudio.Assets.Quantum.Internal
 
         public bool IsItemDeleted(ItemId itemId) => ex.IsItemDeleted(itemId);
 
-        public bool TryGetCollectionItemIds(object instance, out CollectionItemIdentifiers itemIds) => ex.TryGetCollectionItemIds(instance, out itemIds);
-
         public void Restore(object restoredItem, ItemId id) => ex.Restore(restoredItem, id);
 
         public void Restore(object restoredItem, Index index, ItemId id) => ex.Restore(restoredItem, index, id);
