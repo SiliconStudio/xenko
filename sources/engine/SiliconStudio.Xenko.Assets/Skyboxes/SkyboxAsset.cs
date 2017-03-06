@@ -80,6 +80,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         [DefaultValue(256)]
         [Display("Specular CubeMap Size")]
         [DataMember(30)]
+        [DataMemberRange(64, int.MaxValue)]
         public int SpecularCubeMapSize { get; set; }
 
         public IEnumerable<IReference> GetDependencies()
