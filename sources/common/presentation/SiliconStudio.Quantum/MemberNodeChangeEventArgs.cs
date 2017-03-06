@@ -1,7 +1,7 @@
 ﻿using System;
 using SiliconStudio.Core.Annotations;
 
-namespace SiliconStudio.Quantum.Contents
+namespace SiliconStudio.Quantum
 {
     public enum ContentChangeType
     {

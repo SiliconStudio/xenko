@@ -1,15 +1,15 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.References;
-using System.Reflection;
-using SiliconStudio.Core.Extensions;
 
-namespace SiliconStudio.Quantum.Contents
+namespace SiliconStudio.Quantum
 {
     /// <summary>
     /// An implementation of <see cref="IGraphNode"/> that gives access to an object or a boxed struct.
@@ -35,7 +35,7 @@ namespace SiliconStudio.Quantum.Contents
         public IMemberNode this[string name] => childrenMap[name];
 
         /// <inheritdoc/>
-        public IReadOnlyCollection<IMemberNode> Members => children;
+        public IReadOnlyCollection<IMemberNode> Members => (IReadOnlyCollection<IMemberNode>)childrenMap.Values;
 
         /// <inheritdoc/>
         public IEnumerable<Index> Indices => GetIndices();

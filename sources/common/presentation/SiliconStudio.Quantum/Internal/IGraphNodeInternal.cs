@@ -5,7 +5,7 @@ using System;
 
 namespace SiliconStudio.Quantum
 {
-    public interface IGraphNodeInternal : IInitializingGraphNode
+    internal interface IGraphNodeInternal : IInitializingGraphNode
     {
         event EventHandler<INodeChangeEventArgs> PrepareChange;
         event EventHandler<INodeChangeEventArgs> FinalizeChange;
