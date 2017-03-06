@@ -27,7 +27,12 @@
     <Compile Include="Controls\AsyncContentControl.cs" />
     <Compile Include="ExpandReferencePolicy.cs" />
     <Compile Include="GraphNodeBinding.cs" />
+    <Compile Include="Presenters\ItemNodePresenter.cs" />
+    <Compile Include="Presenters\MemberNodePresenter.cs" />
+    <Compile Include="Presenters\GraphNodePresenter.cs" />
+    <Compile Include="IInitializingNodePresenter.cs" />
     <Compile Include="INodeCommandWrapper.cs" />
+    <Compile Include="Presenters\INodePresenter.cs" />
     <Compile Include="INodeViewModel.cs" />
     <Compile Include="IPropertiesProviderViewModel.cs" />
     <Compile Include="IPropertyNodeUpdater.cs" />
@@ -39,6 +44,7 @@
     <Compile Include="GraphViewModelConsistencyException.cs" />
     <Compile Include="GraphViewModelService.cs" />
     <Compile Include="NodeViewModel2.cs" />
+    <Compile Include="Presenters\RootNodePresenter.cs" />
     <Compile Include="SingleNodeViewModel.cs" />
     <Compile Include="DebugExtensions.cs" />
     <Compile Include="NodeViewModelDynamicMetaObject.cs" />

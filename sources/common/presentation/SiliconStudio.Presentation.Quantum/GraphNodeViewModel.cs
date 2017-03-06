@@ -7,6 +7,7 @@ using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum

@@ -98,7 +98,7 @@ namespace SiliconStudio.Presentation.Quantum
         //    PropertiesProvider = propertyProvider;
         //    var presenterFactory = new NodePresenterFactory();
         //    var viewModelFactory = new GraphViewModelFactory();
-        //    var node = presenterFactory.CreateNodeTree(rootNode, new GraphNodePath(rootNode));
+        //    var node = presenterFactory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
         //    var viewModel = viewModelFactory.CreateGraph(this, node);
         //    //node.Initialize();
         //    RootNode = viewModel;

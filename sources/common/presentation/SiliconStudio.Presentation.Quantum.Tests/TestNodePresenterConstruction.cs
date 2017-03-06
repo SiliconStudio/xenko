@@ -30,7 +30,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             var instance = new SimpleType { String = "aaa" };
             var rootNode = BuildQuantumGraph(instance);
             var factory = new NodePresenterFactory();
-            var presenter = factory.CreateNodeTree(rootNode, new GraphNodePath(rootNode));
+            var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
             Assert.AreEqual(false, presenter.IsPrimitive);
             Assert.Null(presenter.Parent);
             Assert.AreEqual(1, presenter.Children.Count);
@@ -51,7 +51,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             var instance = new ClassWithRef { String = "aaa", Ref = new ClassWithRef { String = "bbb", Ref = new ClassWithRef { String = "ccc" } } };
             var rootNode = BuildQuantumGraph(instance);
             var factory = new NodePresenterFactory();
-            var presenter = factory.CreateNodeTree(rootNode, new GraphNodePath(rootNode));
+            var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
             Assert.AreEqual(false, presenter.IsPrimitive);
             Assert.Null(presenter.Parent);
             Assert.AreEqual(2, presenter.Children.Count);
