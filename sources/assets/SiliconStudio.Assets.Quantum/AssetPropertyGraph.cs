@@ -509,7 +509,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             var assetNode = (IAssetNode)currentNode;
             ((IAssetNodeInternal)assetNode).SetPropertyGraph(this);
-            ((IAssetNodeInternal)assetNode).SetBaseContent(baseNode);
+            ((IAssetNodeInternal)assetNode).SetBaseNode(baseNode);
 
             BaseToDerivedRegistry.RegisterBaseToDerived((IAssetNode)baseNode, (IAssetNode)currentNode);
 
