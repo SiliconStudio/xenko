@@ -24,7 +24,7 @@ Settings:
     Package/SceneSettings:
         ae4ecc1b-0b47-4c9d-ac8e-7f9720913084:
             CamPosition: {X: 4.0, Y: 4.0, Z: 4.0}
-            CamPitchYaw: {X: -0.223532423, Y: 0.707158}
+            CamPitchYaw: {X: -0.551043332, Y: 0.7008764}
             CamProjection: Perspective
             CamVerticalFieldOfView: 45.0
             CamOrthographicSize: 10.0
@@ -37,8 +37,10 @@ Settings:
             RotationSnapValue: 22.5
             ScaleSnapActive: false
             ScaleSnapValue: 1.1
+            SceneUnit: 1.0
             SelectionMaskVisible: true
             GridVisible: true
+            GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
             CameraPreviewVisible: true
             RenderMode: Lighting
             ActiveStream: 
@@ -49,3 +51,5 @@ Settings:
                 - Transform
             NavigationVisible: false
             NavigationWireframes: false
+            LightProbeWireframe: false
+            SceneLoaded: false
