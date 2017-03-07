@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Packages
 {
-    public static class PackagesConstants
+    public static class PackageConstants
     {
         public static readonly string PackageExtension = ".nupkg";
     }
