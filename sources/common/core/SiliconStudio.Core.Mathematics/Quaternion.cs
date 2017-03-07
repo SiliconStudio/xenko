@@ -450,42 +450,7 @@ namespace SiliconStudio.Core.Mathematics
             Multiply(ref left, ref right, out result);
             return result;
         }
-
-        /// <summary>
-        /// Divides a quaternion by another quaternion.
-        /// </summary>
-        /// <param name="left">Source Quaternion</param>
-        /// <param name="right">The divisor</param>
-        /// <param name="result">When the method completes, contains a result of the division</param>
-        public static void Divide(ref Quaternion left, ref Quaternion right, out Quaternion result)
-        {
-            float invLength = 1.0f / right.LengthSquared();
-
-            float x1 = -right.X * invLength;
-            float y1 = -right.Y * invLength;
-            float z1 = -right.Z * invLength;
-            float w1 = right.W * invLength;
-
-            result = new Quaternion(
-                left.X * w1 + x1 * left.W + left.Y * z1 - left.Z * y1,
-                left.Y * w1 + y1 * left.W + left.Z * x1 - left.X * z1,
-                left.Z * w1 + z1 * left.W + left.X * y1 - left.Y * x1,
-                left.W * w1 - (left.X * x1 + left.Y * y1 + left.Z * z1));
-        }
-
-        /// <summary>
-        /// Divides a quaternion by another quaternion.
-        /// </summary>
-        /// <param name="left">Source Quaternion</param>
-        /// <param name="right">The divisor</param>
-        /// <returns>Result of the division</returns>
-        public static Quaternion Divide(Quaternion left, Quaternion right)
-        {
-            Quaternion result;
-            Multiply(ref left, ref right, out result);
-            return result;
-        }
-
+        
         /// <summary>
         /// Reverses the direction of a given quaternion.
         /// </summary>

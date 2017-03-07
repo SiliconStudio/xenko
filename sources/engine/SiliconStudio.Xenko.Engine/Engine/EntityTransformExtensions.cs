@@ -140,8 +140,9 @@ namespace SiliconStudio.Xenko.Engine
             Matrix.Invert(ref transformComponent.WorldMatrix, out worldMatrixInv);
 
             Vector3.Transform(ref position, ref worldMatrixInv, out position);
-            Quaternion.Divide(ref rotation, ref worldRotation, out rotation);
-            Vector3.Divide(ref scale, ref worldScale, out scale);
+            rotation.Invert();
+            Quaternion.Multiply(ref rotation, ref worldRotation, out rotation);
+            Vector3.Demodulate(ref scale, ref worldScale, out scale);
         }
 
         /// <summary>
@@ -186,7 +187,7 @@ namespace SiliconStudio.Xenko.Engine
 
             Vector3.Transform(ref position, ref transformComponent.WorldMatrix, out position);
             Quaternion.Multiply(ref rotation, ref worldRotation, out rotation);
-            Vector3.Multiply(ref scale, ref worldScale, out scale);
+            Vector3.Modulate(ref scale, ref worldScale, out scale);
         }
 
         /// <summary>

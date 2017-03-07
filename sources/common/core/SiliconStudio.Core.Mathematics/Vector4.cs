@@ -402,31 +402,7 @@ namespace SiliconStudio.Core.Mathematics
         {
             return new Vector4(value.X / scale, value.Y / scale, value.Z / scale, value.W / scale);
         }
-
-        /// <summary>
-        /// Scales a vector by the given vector.
-        /// </summary>
-        /// <param name="value">The vector to scale.</param>
-        /// <param name="scale">The amount by which to scale the vector.</param>
-        /// <param name="result">When the method completes, contains the scaled vector.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Divide(ref Vector4 value, ref Vector4 scale, out Vector4 result)
-        {
-            result = new Vector4(value.X / scale.X, value.Y / scale.Y, value.Z / scale.Z, value.Z / scale.W);
-        }
-
-        /// <summary>
-        /// Scales a vector by the given vector.
-        /// </summary>
-        /// <param name="value">The vector to scale.</param>
-        /// <param name="scale">The amount by which to scale the vector.</param>
-        /// <returns>The scaled vector.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector4 Divide(Vector4 value, Vector4 scale)
-        {
-            return new Vector4(value.X / scale.X, value.Y / scale.Y, value.Z / scale.Z, value.Z / scale.W);
-        }
-
+        
         /// <summary>
         /// Demodulates a vector with another by performing component-wise division.
         /// </summary>
