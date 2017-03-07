@@ -454,57 +454,36 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Divides a quaternion by another quaternion.
         /// </summary>
-        /// <param name="quaternion1">Source Quaternion</param>
-        /// <param name="quaternion2">The divisor</param>
+        /// <param name="left">Source Quaternion</param>
+        /// <param name="right">The divisor</param>
         /// <param name="result">When the method completes, contains a result of the division</param>
-        public static void Divide(ref Quaternion quaternion1, ref Quaternion quaternion2, out Quaternion result)
+        public static void Divide(ref Quaternion left, ref Quaternion right, out Quaternion result)
         {
-            float single = quaternion2.X * quaternion2.X + quaternion2.Y * quaternion2.Y + quaternion2.Z * quaternion2.Z + quaternion2.W * quaternion2.W;
-            float single1 = 1.0f / single;
+            float invLength = 1.0f / right.LengthSquared();
 
-            float x1 = -quaternion2.X * single1;
-            float y1 = -quaternion2.Y * single1;
-            float z1 = -quaternion2.Z * single1;
-            float w1 = quaternion2.W * single1;
-
-            float single2 = quaternion1.Y * z1 - quaternion1.Z * y1;
-            float single3 = quaternion1.Z * x1 - quaternion1.X * z1;
-            float single4 = quaternion1.X * y1 - quaternion1.Y * x1;
-            float single5 = quaternion1.X * x1 + quaternion1.Y * y1 + quaternion1.Z * z1;
+            float x1 = -right.X * invLength;
+            float y1 = -right.Y * invLength;
+            float z1 = -right.Z * invLength;
+            float w1 = right.W * invLength;
 
             result = new Quaternion(
-                quaternion1.X * w1 + x1 * quaternion1.W + single2,
-                quaternion1.Y * w1 + y1 * quaternion1.W + single3,
-                quaternion1.Z * w1 + z1 * quaternion1.W + single4,
-                quaternion1.W * w1 - single5);
+                left.X * w1 + x1 * left.W + left.Y * z1 - left.Z * y1,
+                left.Y * w1 + y1 * left.W + left.Z * x1 - left.X * z1,
+                left.Z * w1 + z1 * left.W + left.X * y1 - left.Y * x1,
+                left.W * w1 - (left.X * x1 + left.Y * y1 + left.Z * z1));
         }
 
         /// <summary>
         /// Divides a quaternion by another quaternion.
         /// </summary>
-        /// <param name="quaternion1">Source Quaternion</param>
-        /// <param name="quaternion2">The divisor</param>
+        /// <param name="left">Source Quaternion</param>
+        /// <param name="right">The divisor</param>
         /// <returns>Result of the division</returns>
-        public static Quaternion Divide(Quaternion quaternion1, Quaternion quaternion2)
+        public static Quaternion Divide(Quaternion left, Quaternion right)
         {
-            float single = quaternion2.X * quaternion2.X + quaternion2.Y * quaternion2.Y + quaternion2.Z * quaternion2.Z + quaternion2.W * quaternion2.W;
-            float single1 = 1.0f / single;
-
-            float x1 = -quaternion2.X * single1;
-            float y1 = -quaternion2.Y * single1;
-            float z1 = -quaternion2.Z * single1;
-            float w1 = quaternion2.W * single1;
-
-            float single2 = quaternion1.Y * z1 - quaternion1.Z * y1;
-            float single3 = quaternion1.Z * x1 - quaternion1.X * z1;
-            float single4 = quaternion1.X * y1 - quaternion1.Y * x1;
-            float single5 = quaternion1.X * x1 + quaternion1.Y * y1 + quaternion1.Z * z1;
-
-            return new Quaternion(
-                quaternion1.X * w1 + x1 * quaternion1.W + single2,
-                quaternion1.Y * w1 + y1 * quaternion1.W + single3,
-                quaternion1.Z * w1 + z1 * quaternion1.W + single4,
-                quaternion1.W * w1 - single5);
+            Quaternion result;
+            Multiply(ref left, ref right, out result);
+            return result;
         }
 
         /// <summary>

@@ -911,7 +911,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="result">When the method completes, contains the vector in screen space.</param>
         public static void Project(ref Vector3 vector, float x, float y, float width, float height, float minZ, float maxZ, ref Matrix worldViewProjection, out Vector3 result)
         {
-            Vector3 v = new Vector3();
+            Vector3 v;
             TransformCoordinate(ref vector, ref worldViewProjection, out v);
 
             result = new Vector3(((1.0f + v.X) * 0.5f * width) + x, ((1.0f - v.Y) * 0.5f * height) + y, (v.Z * (maxZ - minZ)) + minZ);
@@ -951,7 +951,7 @@ namespace SiliconStudio.Core.Mathematics
         public static void Unproject(ref Vector3 vector, float x, float y, float width, float height, float minZ, float maxZ, ref Matrix worldViewProjection, out Vector3 result)
         {
             Vector3 v = new Vector3();
-            Matrix matrix = new Matrix();
+            Matrix matrix;
             Matrix.Invert(ref worldViewProjection, out matrix);
 
             v.X = (((vector.X - x) / width) * 2.0f) - 1.0f;
