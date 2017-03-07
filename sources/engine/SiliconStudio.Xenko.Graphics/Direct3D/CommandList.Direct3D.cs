@@ -340,6 +340,8 @@ namespace SiliconStudio.Xenko.Graphics
             PrepareDraw();
 
             NativeDeviceContext.Dispatch(threadCountX, threadCountY, threadCountZ);
+			
+			ClearUavSlots();
         }
 
         /// <summary>
@@ -353,7 +355,17 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (indirectBuffer == null) throw new ArgumentNullException("indirectBuffer");
             NativeDeviceContext.DispatchIndirect(indirectBuffer.NativeBuffer, offsetInBytes);
+			
+			ClearUavSlots();
         }
+		
+		private void ClearUavSlots()
+		{
+			// TODO: why unorderedAccessViews variable is not used? why no state caching and batched flushing?
+			SharpDX.Direct3D11.UnorderedAccessView[] emptyUnorderedAcccesViews = new UnorderedAccessView[UnorderedAcccesViewCount];
+
+			NativeDeviceContext.ComputeShader.SetUnorderedAccessViews(0, emptyUnorderedAcccesViews);
+		}
 
         /// <summary>
         /// Draw non-indexed, non-instanced primitives.
