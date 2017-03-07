@@ -89,11 +89,6 @@ namespace SiliconStudio.Assets.Tests
             return Parts.Any(t => t.Id == id);
         }
 
-        protected override object ResolvePartReference(object referencedObject)
-        {
-            throw new NotImplementedException();
-        }
-
         public override Asset CreateDerivedAsset(string baseLocation, out Dictionary<Guid, Guid> idRemapping)
         {
             var asset = (TestAssetWithParts)base.CreateDerivedAsset(baseLocation, out idRemapping);

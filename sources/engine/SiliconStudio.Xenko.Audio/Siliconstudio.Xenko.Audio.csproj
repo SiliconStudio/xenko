@@ -2,8 +2,9 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+    <XenkoNativeOutputName>libxenkoaudio</XenkoNativeOutputName>
   </PropertyGroup>
-  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <Import Project="..\..\native\Xenko.Native.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -31,10 +32,13 @@
     <Compile Include="AudioEmitter.cs" />
     <Compile Include="AudioEngine.cs" />
     <Compile Include="AudioEngine.iOS.cs" />
+    <Compile Include="AudioEngineSettings.cs" />
     <Compile Include="AudioEngineState.cs" />
     <Compile Include="AudioExceptions.cs" />
     <Compile Include="AudioListener.cs" />
     <Compile Include="AudioEngineFactory.cs" />
+    <Compile Include="Native\AudioLayer.cs" />
+    <Compile Include="Native\Celt.cs" />
     <Compile Include="CompressedSoundPacket.cs" />
     <Compile Include="CompressedSoundSource.cs" />
     <Compile Include="IPositionableSound.cs" />
@@ -43,6 +47,8 @@
     <Compile Include="Microphone.cs" />
     <Compile Include="Microphone.Windows.cs" />
     <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="NativeInvoke.cs" />
+    <Compile Include="Native\HrtfEnvironment.cs" />
     <Compile Include="PlayRange.cs" />
     <Compile Include="RecorderState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -62,6 +68,11 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
+      <Project>{FCF36D39-BFFE-4719-B245-05640EE34C5F}</Project>
+      <Name>SiliconStudio.Core.Native</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
@@ -85,7 +96,27 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Native\Celt.cpp" />
+    <None Include="SiliconStudio.Xenko.Native.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Xenko.Native.Libs.targets">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Native\Common.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Native\OpenAL.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Native\OpenSLES.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Native\XAudio2.cpp" />
+  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

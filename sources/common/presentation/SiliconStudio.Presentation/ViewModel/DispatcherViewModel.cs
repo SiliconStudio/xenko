@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Services;
@@ -20,13 +21,15 @@ namespace SiliconStudio.Presentation.ViewModel
         protected DispatcherViewModel([NotNull] IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            Dispatcher = serviceProvider.Get<IDispatcherService>();
+            Dispatcher = serviceProvider.TryGet<IDispatcherService>();
+            if (Dispatcher == null) throw new InvalidOperationException($"{nameof(DispatcherViewModel)} requires a {nameof(IDispatcherService)} in the service provider.");
         }
 
         /// <summary>
         /// Gets a dispatcher that is capable of executing code in the UI thread.
         /// </summary>
         [DataMemberIgnore]
+        [NotNull]
         public IDispatcherService Dispatcher { get; }
 
         /// <inheritdoc/>

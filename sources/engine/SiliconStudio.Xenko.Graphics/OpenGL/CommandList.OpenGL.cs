@@ -66,21 +66,23 @@ namespace SiliconStudio.Xenko.Graphics
 
         private VertexBufferView[] vertexBuffers = new VertexBufferView[8];
 
-        private Rectangle[] currentScissorRectangles = new Rectangle[MaxBoundRenderTargets];
-
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-        private float[] _currentViewportsSetBuffer = new float[4 * MaxBoundRenderTargets];
-        private int[] _currentScissorsSetBuffer = new int[4 * MaxBoundRenderTargets];
+        private readonly float[] nativeViewports = new float[4 * MaxViewportAndScissorRectangleCount];
+        private readonly int[] nativeScissorRectangles = new int[4 * MaxViewportAndScissorRectangleCount];
 #endif
 
         public static CommandList New(GraphicsDevice device)
         {
-            throw new InvalidOperationException("Can't create multiple command lists with OpenGL");
+            if (device.InternalMainCommandList != null)
+            {
+                throw new InvalidOperationException("Can't create multiple command lists with OpenGL");
+            }
+            return new CommandList(device);
         }
 
-        internal CommandList(GraphicsDevice device) : base(device)
+        private CommandList(GraphicsDevice device) : base(device)
         {
-            device.MainCommandList = this;
+            device.InternalMainCommandList = this;
 
             // Default state
             DepthStencilBoundState.DepthBufferWriteEnable = true;
@@ -598,6 +600,82 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Restore FBO and viewport
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
+            GL.Viewport((int)viewports[0].X, (int)viewports[0].Y, (int)viewports[0].Width, (int)viewports[0].Height);
+        }
+
+        internal void CopyScaler2D(Texture sourceTexture, Rectangle sourceRectangle, Rectangle destRectangle, bool needSRgbConversion = false, bool flipY = false)
+        {
+            // Use rendering
+            GL.Viewport(0, 0, sourceTexture.Description.Width, sourceTexture.Description.Height);
+
+            var sourceRegionSize = new Vector2(sourceRectangle.Width, sourceRectangle.Height);
+            var destRegionSize = new Vector2(destRectangle.Width, destRectangle.Height);
+
+            // Source
+            var sourceSize = new Vector2(sourceTexture.Width, sourceTexture.Height);
+            var sourceRegionLeftTop = new Vector2(sourceRectangle.Left, sourceRectangle.Top);
+            var sourceScale = new Vector2(sourceRegionSize.X / sourceSize.X, sourceRegionSize.Y / sourceSize.Y);
+            var sourceOffset = new Vector2(sourceRegionLeftTop.X / sourceSize.X, sourceRegionLeftTop.Y / sourceSize.Y);
+
+            // Dest
+            var destSize = new Vector2(sourceTexture.Width, sourceTexture.Height);
+            var destRegionLeftTop = new Vector2(destRectangle.X, flipY ? destRectangle.Bottom : destRectangle.Y);
+            var destScale = new Vector2(destRegionSize.X / destSize.X, destRegionSize.Y / destSize.Y);
+            var destOffset = new Vector2(destRegionLeftTop.X / destSize.X, destRegionLeftTop.Y / destSize.Y);
+
+            if (flipY)
+                destScale.Y = -destScale.Y;
+
+            var enabledColors = new bool[4];
+            GL.GetBoolean(GetPName.ColorWritemask, enabledColors);
+            var isDepthTestEnabled = GL.IsEnabled(EnableCap.DepthTest);
+            var isCullFaceEnabled = GL.IsEnabled(EnableCap.CullFace);
+            var isBlendEnabled = GL.IsEnabled(EnableCap.Blend);
+            var isStencilEnabled = GL.IsEnabled(EnableCap.StencilTest);
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+            GL.Disable(EnableCap.Blend);
+            GL.Disable(EnableCap.StencilTest);
+            GL.ColorMask(true, true, true, true);
+
+            int offsetLocation, scaleLocation;
+            var program = GraphicsDevice.GetCopyProgram(needSRgbConversion, out offsetLocation, out scaleLocation);
+
+            GL.UseProgram(program);
+
+            activeTexture = 0;
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, sourceTexture.TextureId);
+            boundShaderResourceViews[0] = null;
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+            sourceTexture.BoundSamplerState = GraphicsDevice.SamplerStates.PointClamp;
+
+            vboDirty = true;
+            enabledVertexAttribArrays |= 1 << 0;
+            GL.EnableVertexAttribArray(0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, GraphicsDevice.GetSquareBuffer().BufferId);
+            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, 0);
+            GL.Uniform4(offsetLocation, sourceOffset.X, sourceOffset.Y, destOffset.X, destOffset.Y);
+            GL.Uniform4(scaleLocation, sourceScale.X, sourceScale.Y, destScale.X, destScale.Y);
+            GL.Viewport(0, 0, sourceTexture.Width, sourceTexture.Height);
+            GL.DrawArrays(PrimitiveTypeGl.TriangleStrip, 0, 4);
+            GL.UseProgram(boundProgram);
+
+            // Restore context
+            if (isDepthTestEnabled)
+                GL.Enable(EnableCap.DepthTest);
+            if (isCullFaceEnabled)
+                GL.Enable(EnableCap.CullFace);
+            if (isBlendEnabled)
+                GL.Enable(EnableCap.Blend);
+            if (isStencilEnabled)
+                GL.Enable(EnableCap.StencilTest);
+            GL.ColorMask(enabledColors[0], enabledColors[1], enabledColors[2], enabledColors[3]);
+
+            // Restore viewport
             GL.Viewport((int)viewports[0].X, (int)viewports[0].Y, (int)viewports[0].Width, (int)viewports[0].Height);
         }
 
@@ -1382,31 +1460,15 @@ namespace SiliconStudio.Xenko.Graphics
             samplerStates[slot] = samplerState;
         }
 
-        /// <summary>
-        /// Binds a single scissor rectangle to the rasterizer stage.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="top">The top.</param>
-        /// <param name="right">The right.</param>
-        /// <param name="bottom">The bottom.</param>
-        public void SetScissorRectangles(int left, int top, int right, int bottom)
+        unsafe partial void SetScissorRectangleImpl(ref Rectangle scissorRectangle)
         {
 #if DEBUG
             GraphicsDevice.EnsureContextActive();
 #endif
-            currentScissorRectangles[0].Left = left;
-            currentScissorRectangles[0].Top = top;
-            currentScissorRectangles[0].Width = right - left;
-            currentScissorRectangles[0].Height = bottom - top;
-
-            UpdateScissor(currentScissorRectangles[0]);
+            GL.Scissor(scissorRectangle.Left, scissorRectangle.Top, scissorRectangle.Width, scissorRectangle.Height);
         }
 
-        /// <summary>
-        /// Binds a set of scissor rectangles to the rasterizer stage.
-        /// </summary>
-        /// <param name="scissorRectangles">The set of scissor rectangles to bind.</param>
-        public void SetScissorRectangles(params Rectangle[] scissorRectangles)
+        unsafe partial void SetScissorRectanglesImpl(int scissorCount, Rectangle[] scissorRectangles)
         {
 #if DEBUG
             GraphicsDevice.EnsureContextActive();
@@ -1415,26 +1477,16 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             Internal.Refactor.ThrowNotImplementedException();
 #else
-            var scissorCount = scissorRectangles.Length > currentScissorRectangles.Length ? currentScissorRectangles.Length : scissorRectangles.Length;
-
-            for (var i = 0; i < scissorCount; ++i)
-                currentScissorRectangles[i] = scissorRectangles[i];
-
             for (int i = 0; i < scissorCount; ++i)
             {
-                _currentScissorsSetBuffer[4 * i] = scissorRectangles[i].X;
-                _currentScissorsSetBuffer[4 * i + 1] = scissorRectangles[i].Y;
-                _currentScissorsSetBuffer[4 * i + 2] = scissorRectangles[i].Width;
-                _currentScissorsSetBuffer[4 * i + 3] = scissorRectangles[i].Height;
+                nativeScissorRectangles[4 * i] = scissorRectangles[i].X;
+                nativeScissorRectangles[4 * i + 1] = scissorRectangles[i].Y;
+                nativeScissorRectangles[4 * i + 2] = scissorRectangles[i].Width;
+                nativeScissorRectangles[4 * i + 3] = scissorRectangles[i].Height;
             }
 
-            GL.ScissorArray(0, scissorCount, _currentScissorsSetBuffer);
+            GL.ScissorArray(0, scissorCount, nativeScissorRectangles);
 #endif
-        }
-
-        private void UpdateScissor(Rectangle scissorRect)
-        {
-            GL.Scissor(scissorRect.Left, scissorRect.Top, scissorRect.Width, scissorRect.Height);
         }
 
         /// <summary>
@@ -1487,10 +1539,6 @@ namespace SiliconStudio.Xenko.Graphics
                 boundFBO = GraphicsDevice.FindOrCreateFBO(boundDepthStencilBuffer, boundRenderTargets, boundRenderTargetCount);
             }
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
-
-            // TODO: support multiple viewports and scissors?
-            UpdateViewport(viewports[0]);
-            UpdateScissor(currentScissorRectangles[0]);
         }
 
         public void SetPipelineState(PipelineState pipelineState)
@@ -1573,16 +1621,16 @@ namespace SiliconStudio.Xenko.Graphics
         private void UpdateViewports()
         {
             int nbViewports = viewports.Length;
-            for (int i = 0; i < nbViewports; ++i)
+            for (int i = 0; i < boundViewportCount; ++i)
             {
                 var currViewport = viewports[i];
-                _currentViewportsSetBuffer[4 * i] = currViewport.X;
-                _currentViewportsSetBuffer[4 * i + 1] = currViewport.Y;
-                _currentViewportsSetBuffer[4 * i + 2] = currViewport.Width;
-                _currentViewportsSetBuffer[4 * i + 3] = currViewport.Height;
+                nativeViewports[4 * i] = currViewport.X;
+                nativeViewports[4 * i + 1] = currViewport.Y;
+                nativeViewports[4 * i + 2] = currViewport.Width;
+                nativeViewports[4 * i + 3] = currViewport.Height;
             }
             GL.DepthRange(viewports[0].MinDepth, viewports[0].MaxDepth);
-            GL.ViewportArray(0, nbViewports, _currentViewportsSetBuffer);
+            GL.ViewportArray(0, boundViewportCount, nativeViewports);
         }
 #endif
 
@@ -1702,33 +1750,36 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 var width = region.Right - region.Left;
                 var height = region.Bottom - region.Top;
+                var depth = region.Back - region.Front;
+
+                var expectedRowPitch = width * texture.TexturePixelSize;
 
                 // determine the opengl read Unpack Alignment
                 var packAlignment = 0;
                 if ((databox.RowPitch & 1) != 0)
                 {
-                    if (databox.RowPitch == width)
+                    if (databox.RowPitch == expectedRowPitch)
                         packAlignment = 1;
                 }
                 else if ((databox.RowPitch & 2) != 0)
                 {
-                    var diff = databox.RowPitch - width;
+                    var diff = databox.RowPitch - expectedRowPitch;
                     if (diff >= 0 && diff < 2)
                         packAlignment = 2;
                 }
                 else if ((databox.RowPitch & 4) != 0)
                 {
-                    var diff = databox.RowPitch - width;
+                    var diff = databox.RowPitch - expectedRowPitch;
                     if (diff >= 0 && diff < 4)
                         packAlignment = 4;
                 }
                 else if ((databox.RowPitch & 8) != 0)
                 {
-                    var diff = databox.RowPitch - width;
+                    var diff = databox.RowPitch - expectedRowPitch;
                     if (diff >= 0 && diff < 8)
                         packAlignment = 8;
                 }
-                else if (databox.RowPitch == width)
+                else if (databox.RowPitch == expectedRowPitch)
                 {
                     packAlignment = 4;
                 }
@@ -1748,7 +1799,10 @@ namespace SiliconStudio.Xenko.Graphics
 
                 // Update the texture region
                 GL.BindTexture(texture.TextureTarget, texture.TextureId);
-                GL.TexSubImage2D((TextureTarget2d)texture.TextureTarget, subResourceIndex, region.Left, region.Top, width, height, texture.TextureFormat, texture.TextureType, databox.DataPointer);
+                if (texture.Dimension == TextureDimension.Texture3D)
+                    GL.TexSubImage3D((TextureTarget3d)texture.TextureTarget, subResourceIndex, region.Left, region.Top, region.Front, width, height, depth, texture.TextureFormat, texture.TextureType, databox.DataPointer);
+                else
+                    GL.TexSubImage2D((TextureTarget2d)texture.TextureTarget, subResourceIndex, region.Left, region.Top, width, height, texture.TextureFormat, texture.TextureType, databox.DataPointer);
                 boundShaderResourceViews[0] = null; // bound active texture 0 has changed
 
                 // reset the Unpack Alignment

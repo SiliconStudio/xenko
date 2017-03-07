@@ -184,6 +184,7 @@ namespace SiliconStudio.AssemblyProcessor
 
                 if (SerializationAssembly)
                 {
+                    processors.Add(new AssemblyScanProcessor(roslynExtraCodeProcessor.RegisterSourceCode));
                     processors.Add(new SerializationProcessor(roslynExtraCodeProcessor.RegisterSourceCode));
                 }
 

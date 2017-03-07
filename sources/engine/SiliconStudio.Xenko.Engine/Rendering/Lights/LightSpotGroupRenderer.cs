@@ -28,8 +28,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     public class LightSpotGroupRenderer : LightGroupRendererDynamic
     {
+        public override Type[] LightTypes { get; } = { typeof(LightSpot) };
+
         public override void Initialize(RenderContext context)
         {
+            base.Initialize(context);
         }
 
         public override LightShaderGroupDynamic CreateLightShaderGroup(RenderDrawContext context, ILightShadowMapShaderGroupData shadowGroup)

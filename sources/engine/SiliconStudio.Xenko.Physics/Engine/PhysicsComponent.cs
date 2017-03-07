@@ -11,7 +11,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Physics;
 using SiliconStudio.Core.MicroThreading;
-using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Physics.Engine;
 
 namespace SiliconStudio.Xenko.Engine
@@ -98,9 +97,8 @@ namespace SiliconStudio.Xenko.Engine
         /// Unchecking this will help with performance, ideally if this entity has no need to access collisions information should be set to false
         /// </userdoc>
         [Display("Collision events")]
-        [DataMember(45)]
-        [DefaultValue(true)]
-        public virtual bool ProcessCollisions { get; set; } = true;
+        [DataMemberIgnore]
+        public bool ProcessCollisions { get; set; } = false;
 
         /// <summary>
         /// Gets or sets if this element is enabled in the physics engine
@@ -371,12 +369,17 @@ namespace SiliconStudio.Xenko.Engine
             set
             {
                 ProtectedColliderShape = value;
-                if (NativeCollisionObject != null) NativeCollisionObject.CollisionShape = value.InternalShape;               
+
+                if (value == null)
+                    return;
+
+                if (NativeCollisionObject != null)
+                    NativeCollisionObject.CollisionShape = value.InternalShape;               
             }
         }
 
         [DataMemberIgnore]
-        public bool CanScaleShape { get; private set; }
+        public bool CanScaleShape { get; set; }
 
         [DataMemberIgnore]
         public Matrix PhysicsWorldTransform
@@ -415,11 +418,11 @@ namespace SiliconStudio.Xenko.Engine
         [DataMemberIgnore]
         public Entity DebugEntity { get; set; }
 
-        public void AddDebugEntity(Scene scene, bool alwaysAddOffset = false)
+        public void AddDebugEntity(Scene scene, RenderGroup renderGroup = RenderGroup.Group0, bool alwaysAddOffset = false)
         {
             if (DebugEntity != null) return;
 
-            var entity = Data?.PhysicsComponent?.DebugShapeRendering?.CreateDebugEntity(this, alwaysAddOffset);
+            var entity = Data?.PhysicsComponent?.DebugShapeRendering?.CreateDebugEntity(this, renderGroup, alwaysAddOffset);
             DebugEntity = entity;
 
             if (DebugEntity == null) return;
@@ -726,6 +729,7 @@ namespace SiliconStudio.Xenko.Engine
             if (ColliderShape != null && !ColliderShape.IsPartOfAsset)
             {
                 ColliderShape.Dispose();
+                ColliderShape = null;
             }
         }
 

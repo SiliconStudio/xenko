@@ -155,15 +155,29 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
                                     if (File.Exists(shaderSourcePath))
                                     {
-                                        // Replace path with a local path
-                                        shaderSource.Path = Path.Combine(Directory.GetCurrentDirectory(), shaderSourcePath);
-
-                                        // Optimization: It currently reads the source file twice
-                                        shaderSource.Hash = ObjectId.FromBytes(File.ReadAllBytes(shaderSourcePath));
-                                        using (var sourceStream = File.Open(shaderSourcePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                                        byte[] fileData = null;
+                                        for (int tries = 10; tries >= 0; --tries)
                                         {
-                                            using (var sr = new StreamReader(sourceStream))
-                                                shaderSource.Source = sr.ReadToEnd();
+                                            try
+                                            {
+                                                fileData = File.ReadAllBytes(shaderSourcePath);
+                                                break;
+                                            }
+                                            catch (IOException)
+                                            {
+                                                // Try again
+                                            }
+                                        }
+
+                                        if (fileData != null)
+                                        {
+                                            // Replace path with a local path
+                                            shaderSource.Path = Path.Combine(Directory.GetCurrentDirectory(), shaderSourcePath);
+                                            shaderSource.Hash = ObjectId.FromBytes(fileData);
+
+                                            // Note: we can't use Encoding.UTF8.GetString directly because there might be the UTF8 BOM at the beginning of the file
+                                            using (StreamReader reader = new StreamReader(new MemoryStream(fileData), Encoding.UTF8))
+                                                shaderSource.Source = reader.ReadToEnd();
                                         }
                                     }
                                 }
@@ -282,7 +296,21 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             if (UseFileSystem)
-                return File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            {
+                // Try several times in case of IOException
+                for (int tries = 10; tries >= 0; --tries)
+                {
+                    try
+                    {
+                        return File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    }
+                    catch (IOException)
+                    {
+                        if (tries == 0)
+                            throw;
+                    }
+                }
+            }
 #endif
 
             return fileProvider.OpenStream(path, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read);

@@ -116,6 +116,13 @@ namespace SiliconStudio.Core.Yaml
                     }
                     abstractBaseTypes.Reverse();
 
+                    // Check that all interfaces are implemented
+                    var interfaceMethods = new List<MethodInfo>();
+                    foreach (var @interface in baseType.GetInterfaces())
+                    {
+                        interfaceMethods.AddRange(@interface.GetMethods(BindingFlags.Public | BindingFlags.Instance));
+                    }
+
                     // Build list of abstract methods
                     var abstractMethods = new List<MethodInfo>();
                     foreach (var currentBaseType in abstractBaseTypes)
@@ -137,9 +144,22 @@ namespace SiliconStudio.Core.Yaml
                                         && CompareMethodSignature(abstractMethod, method))
                                     {
                                         // Found a match, let's remove it from list of method to reimplement
-                                        abstractMethods.Remove(abstractMethod);
+                                        abstractMethods.RemoveAt(index);
                                         break;
                                     }
+                                }
+                            }
+
+                            // Remove interface methods already implemented
+                            // override: check if it overrides a previously described abstract method
+                            for (int index = 0; index < interfaceMethods.Count; index++)
+                            {
+                                var interfaceMethod = interfaceMethods[index];
+                                if (interfaceMethod.Name == method.Name
+                                    && CompareMethodSignature(interfaceMethod, method))
+                                {
+                                    // Found a match, let's remove it from list of method to reimplement
+                                    interfaceMethods.RemoveAt(index--);
                                 }
                             }
                         }
@@ -147,7 +167,7 @@ namespace SiliconStudio.Core.Yaml
 
                     // Note: It seems that C# also creates a Property/Event for each override; but it doesn't seem to fail when creating the type with only non-abstract getter/setter -- so we don't recreate the property/event
                     // Implement all abstract methods
-                    foreach (var method in abstractMethods)
+                    foreach (var method in abstractMethods.Concat(interfaceMethods))
                     {
                         // Updates MethodAttributes for override method
                         var attributes = method.Attributes;

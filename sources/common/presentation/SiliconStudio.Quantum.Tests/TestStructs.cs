@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Tests
 {
@@ -129,13 +128,13 @@ namespace SiliconStudio.Quantum.Tests
             Helper.TestNonCollectionObjectNode(containerNode, container, 1);
             Helper.TestMemberNode(containerNode, memberNode, container, container.Struct, nameof(StructWithCollectionContainer.Struct), true);
             Helper.TestNonNullObjectReference(memberNode.TargetReference, container.Struct, false);
-            Helper.TestMemberNode(targetNode, structMemberNode, container.Struct, container.Struct.Strings, nameof(StructWithCollection.Strings), false);
+            Helper.TestMemberNode(targetNode, structMemberNode, container.Struct, container.Struct.Strings, nameof(StructWithCollection.Strings), true);
 
-            structMemberNode.Update("ddd", new Index(1));
+            structMemberNode.Target.Update("ddd", new Index(1));
             Assert.AreEqual("ddd", container.Struct.Strings[1]);
             Assert.AreEqual(targetNode, memberNode.Target);
             Assert.AreEqual(structMemberNode, targetNode[nameof(StructWithCollection.Strings)]);
-            Helper.TestMemberNode(targetNode, structMemberNode, container.Struct, container.Struct.Strings, nameof(StructWithCollection.Strings), false);
+            Helper.TestMemberNode(targetNode, structMemberNode, container.Struct, container.Struct.Strings, nameof(StructWithCollection.Strings), true);
         }
 
         [Test]

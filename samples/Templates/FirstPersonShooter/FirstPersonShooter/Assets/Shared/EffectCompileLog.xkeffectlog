@@ -125,10 +125,8 @@ UsedParameters:
     Lighting.DirectLightGroups:
         - !ShaderClassSource
             ClassName: LightClusteredPointGroup
-            GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -205,10 +203,8 @@ UsedParameters:
     Lighting.DirectLightGroups:
         - !ShaderClassSource
             ClassName: LightClusteredPointGroup
-            GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -1162,10 +1158,8 @@ UsedParameters:
     Lighting.DirectLightGroups:
         - !ShaderClassSource
             ClassName: LightClusteredPointGroup
-            GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -1291,10 +1285,8 @@ UsedParameters:
     Lighting.DirectLightGroups:
         - !ShaderClassSource
             ClassName: LightClusteredPointGroup
-            GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -1426,10 +1418,8 @@ UsedParameters:
     Lighting.DirectLightGroups:
         - !ShaderClassSource
             ClassName: LightClusteredPointGroup
-            GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -2019,10 +2009,8 @@ UsedParameters:
     Lighting.DirectLightGroups:
         - !ShaderClassSource
             ClassName: LightClusteredPointGroup
-            GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -2288,10 +2276,8 @@ UsedParameters:
     Lighting.DirectLightGroups:
         - !ShaderClassSource
             ClassName: LightClusteredPointGroup
-            GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -2372,10 +2358,8 @@ UsedParameters:
     Lighting.DirectLightGroups:
         - !ShaderClassSource
             ClassName: LightClusteredPointGroup
-            GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -2475,10 +2459,8 @@ UsedParameters:
     Lighting.DirectLightGroups:
         - !ShaderClassSource
             ClassName: LightClusteredPointGroup
-            GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -2568,10 +2550,8 @@ UsedParameters:
     Lighting.DirectLightGroups:
         - !ShaderClassSource
             ClassName: LightClusteredPointGroup
-            GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -2692,10 +2672,8 @@ UsedParameters:
     Lighting.DirectLightGroups:
         - !ShaderClassSource
             ClassName: LightClusteredPointGroup
-            GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -2968,10 +2946,8 @@ UsedParameters:
     Lighting.DirectLightGroups:
         - !ShaderClassSource
             ClassName: LightClusteredPointGroup
-            GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -3144,10 +3120,8 @@ UsedParameters:
     Lighting.DirectLightGroups:
         - !ShaderClassSource
             ClassName: LightClusteredPointGroup
-            GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup

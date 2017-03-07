@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
@@ -15,7 +16,7 @@ namespace SiliconStudio.Core.Collections
     /// </summary>
     /// <typeparam name="T">Type of elements of this collection </typeparam>
     [DataSerializer(typeof(ListAllSerializer<,>), Mode = DataSerializerGenericMode.TypeAndGenericArguments)]
-    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     public class OrderedCollection<T> : ICollection<T>
     {
         private readonly IComparer<T> comparer;
@@ -29,7 +30,7 @@ namespace SiliconStudio.Core.Collections
         /// </summary>
         /// <param name="comparer">The comparer providing information about order between elements.</param>
         /// <exception cref="System.ArgumentNullException">If comparer is null</exception>
-        public OrderedCollection(IComparer<T> comparer)
+        public OrderedCollection([NotNull] IComparer<T> comparer)
         {
             if (comparer == null) throw new ArgumentNullException(nameof(comparer));
             this.comparer = comparer;
@@ -41,7 +42,7 @@ namespace SiliconStudio.Core.Collections
         /// </summary>
         /// <param name="comparer">The comparer.</param>
         /// <param name="capacity">The capacity.</param>
-        public OrderedCollection(IComparer<T> comparer, int capacity) : this(comparer)
+        public OrderedCollection([NotNull] IComparer<T> comparer, int capacity) : this(comparer)
         {
             items = new T[capacity];
         }
@@ -101,7 +102,7 @@ namespace SiliconStudio.Core.Collections
         {
             if (item == null)
             {
-                for (int j = 0; j < size; j++)
+                for (var j = 0; j < size; j++)
                 {
                     if (items[j] == null)
                     {
@@ -111,7 +112,7 @@ namespace SiliconStudio.Core.Collections
                 return false;
             }
             var equalComparer = EqualityComparer<T>.Default;
-            for (int i = 0; i < size; i++)
+            for (var i = 0; i < size; i++)
             {
                 if (equalComparer.Equals(items[i], item))
                 {
@@ -133,7 +134,7 @@ namespace SiliconStudio.Core.Collections
 
         public bool Remove(T item)
         {
-            int index = IndexOf(item);
+            var index = IndexOf(item);
             if (index >= 0)
             {
                 RemoveAt(index);
@@ -207,7 +208,7 @@ namespace SiliconStudio.Core.Collections
         /// Adds the elements of the specified source to the end of <see cref="FastCollection{T}"/>.
         /// </summary>
         /// <param name="itemsArgs">The items to add to this collection.</param>
-        public void AddRange<TE>(TE itemsArgs) where TE : IEnumerable<T>
+        public void AddRange<TE>([NotNull] TE itemsArgs) where TE : IEnumerable<T>
         {
             foreach (var item in itemsArgs)
             {
@@ -230,7 +231,7 @@ namespace SiliconStudio.Core.Collections
         {
             if (items.Length < min)
             {
-                int num = (items.Length == 0) ? DefaultCapacity : (items.Length * 2);
+                var num = (items.Length == 0) ? DefaultCapacity : (items.Length * 2);
                 if (num < min)
                 {
                     num = min;

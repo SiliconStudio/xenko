@@ -249,7 +249,14 @@ namespace SiliconStudio.Assets
                 package = PreLoadPackage(logger, packagePath, false, packagesLoaded, loadParameters);
 
                 // Load all missing references/dependencies
-                LoadMissingReferences(logger, loadParameters);
+                LoadMissingDependencies(logger, loadParameters);
+
+                // Process everything except current one (it needs different load parameters)
+                var dependencyLoadParameters = loadParameters.Clone();
+                dependencyLoadParameters.GenerateNewAssetIds = false;
+                LoadMissingAssets(logger, Packages.Where(x => x != package).ToList(), dependencyLoadParameters);
+
+                LoadMissingAssets(logger, new[] { package }, loadParameters);
 
                 // Run analysis after
                 foreach (var packageToAdd in packagesLoaded)
@@ -306,9 +313,9 @@ namespace SiliconStudio.Assets
 
         /// <inheritdoc />
         /// <remarks>Looks for the asset amongst all the packages of this session.</remarks>
-        public AssetItem FindAssetFromAttachedReference(object container)
+        public AssetItem FindAssetFromProxyObject(object proxyObject)
         {
-            var reference = AttachedReferenceManager.GetAttachedReference(container);
+            var reference = AttachedReferenceManager.GetAttachedReference(proxyObject);
             return reference != null ? (FindAsset(reference.Id) ?? FindAsset(reference.Url)) : null;
         }
 
@@ -451,7 +458,7 @@ namespace SiliconStudio.Assets
         public void LoadMissingReferences(ILogger log, PackageLoadParameters loadParameters = null)
         {
             LoadMissingDependencies(log, loadParameters);
-            LoadMissingAssets(log, loadParameters);
+            LoadMissingAssets(log, Packages.ToList(), loadParameters);
         }
 
         /// <summary>
@@ -485,16 +492,16 @@ namespace SiliconStudio.Assets
         /// Make sure packages have their assets loaded.
         /// </summary>
         /// <param name="log">The log.</param>
+        /// <param name="packages">The packages to try to load missing assets from.</param>
         /// <param name="loadParametersArg">The load parameters argument.</param>
-        public void LoadMissingAssets(ILogger log, PackageLoadParameters loadParametersArg = null)
+        public void LoadMissingAssets(ILogger log, IEnumerable<Package> packages, PackageLoadParameters loadParametersArg = null)
         {
             var loadParameters = loadParametersArg ?? PackageLoadParameters.Default();
 
             var cancelToken = loadParameters.CancelToken;
 
             // Make a copy of Packages as it can be modified by PreLoadPackageDependencies
-            var previousPackages = Packages.ToList();
-            foreach (var package in previousPackages)
+            foreach (var package in packages)
             {
                 // Output the session only if there is no cancellation
                 if (cancelToken.HasValue && cancelToken.Value.IsCancellationRequested)

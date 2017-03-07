@@ -4,19 +4,19 @@ using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
-
-using SiliconStudio.Presentation.MarkupExtensions;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
     /// <summary>
     /// This converter will sum a given <see cref="Thickness"/> with a <see cref="Thickness"/> passed as parameter. You can use
-    /// the <see cref="ThicknessExtension"/> markup extension to easily pass one, with the following syntax: {sskk:Thickness (arguments)}. 
+    /// the <see cref="MarkupExtensions.ThicknessExtension"/> markup extension to easily pass one, with the following syntax: {sskk:Thickness (arguments)}. 
     /// </summary>
     [ValueConversion(typeof(Thickness), typeof(Thickness))]
     public class SumThickness : ValueConverterBase<SumThickness>
     {
         /// <inheritdoc/>
+        [NotNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (!(value is Thickness))
@@ -35,6 +35,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         }
 
         /// <inheritdoc/>
+        [NotNull]
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (!(value is Thickness))

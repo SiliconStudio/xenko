@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization;
 
@@ -18,6 +19,7 @@ namespace SiliconStudio.Core.Reflection
         private static readonly object Lock = new object();
         private static readonly Dictionary<string, HashSet<Assembly>> MapCategoryToAssemblies = new Dictionary<string, HashSet<Assembly>>();
         private static readonly Dictionary<Assembly, HashSet<string>> MapAssemblyToCategories = new Dictionary<Assembly, HashSet<string>>();
+        private static readonly Dictionary<Assembly, ScanTypes> AssemblyToScanTypes = new Dictionary<Assembly, ScanTypes>();
         private static readonly Dictionary<string, Assembly> AssemblyNameToAssembly = new Dictionary<string, Assembly>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
@@ -35,6 +37,7 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <returns>A set of all assembly registered.</returns>
         /// <exception cref="System.ArgumentNullException">categories</exception>
+        [NotNull]
         public static HashSet<Assembly> FindAll()
         {
             lock (Lock)
@@ -48,7 +51,8 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="alias"></param>
         /// <returns></returns>
-        public static Type GetTypeFromAlias(string alias)
+        [CanBeNull]
+        public static Type GetTypeFromAlias([NotNull] string alias)
         {
             // TODO: At some point we might want to reorganize AssemblyRegistry and DataSerializerFactory
             // I am not sure the list of assemblies matches between those two (some assemblies are probably not registered in AssemblyRegistry),
@@ -64,7 +68,7 @@ namespace SiliconStudio.Core.Reflection
         /// <returns>The type instance or null if not found.</returns>
         /// <seealso cref="Type.GetType(string,bool)"/>
         /// <seealso cref="Assembly.GetType(string,bool)"/>
-        public static Type GetType(string fullyQualifiedTypeName, bool throwOnError = true)
+        public static Type GetType([NotNull] string fullyQualifiedTypeName, bool throwOnError = true)
         {
             if (fullyQualifiedTypeName == null) throw new ArgumentNullException(nameof(fullyQualifiedTypeName));
             var assemblyIndex = fullyQualifiedTypeName.IndexOf(",");
@@ -93,9 +97,10 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="categories">The categories.</param>
         /// <returns>A set of assembly associated with the specified categories.</returns>
         /// <exception cref="System.ArgumentNullException">categories</exception>
-        public static HashSet<Assembly> Find(IEnumerable<string> categories)
+        [NotNull]
+        public static HashSet<Assembly> Find([NotNull] IEnumerable<string> categories)
         {
-            if (categories == null) throw new ArgumentNullException("categories");
+            if (categories == null) throw new ArgumentNullException(nameof(categories));
             var assemblies = new HashSet<Assembly>();
             lock (Lock)
             {
@@ -121,7 +126,8 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="categories">The categories.</param>
         /// <returns>A set of assemblies associated with the specified categories.</returns>
         /// <exception cref="System.ArgumentNullException">categories</exception>
-        public static HashSet<Assembly> Find(params string[] categories)
+        [NotNull]
+        public static HashSet<Assembly> Find([NotNull] params string[] categories)
         {
             return Find((IEnumerable<string>)categories);
         }
@@ -132,9 +138,10 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="assembly">The assembly.</param>
         /// <returns>A set of category associated with the specified assembly.</returns>
         /// <exception cref="System.ArgumentNullException">categories</exception>
-        public static HashSet<string> FindCategories(Assembly assembly)
+        [NotNull]
+        public static HashSet<string> FindCategories([NotNull] Assembly assembly)
         {
-            if (assembly == null) throw new ArgumentNullException("assembly");
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
             var categories = new HashSet<string>();
             lock (Lock)
             {
@@ -148,6 +155,20 @@ namespace SiliconStudio.Core.Reflection
             return categories;
         }
 
+        public static void RegisterScanTypes([NotNull] Assembly assembly, ScanTypes types)
+        {
+            if (!AssemblyToScanTypes.ContainsKey(assembly))
+                AssemblyToScanTypes.Add(assembly, types);
+        }
+
+        public static ScanTypes GetScanTypes([NotNull] Assembly assembly)
+        {
+            ScanTypes assemblyScanTypes;
+            AssemblyToScanTypes.TryGetValue(assembly, out assemblyScanTypes);
+
+            return assemblyScanTypes;
+        }
+
         /// <summary>
         /// Registers an assembly with the specified categories.
         /// </summary>
@@ -158,10 +179,10 @@ namespace SiliconStudio.Core.Reflection
         /// or
         /// categories
         /// </exception>
-        public static void Register(Assembly assembly, IEnumerable<string> categories)
+        public static void Register([NotNull] Assembly assembly, [NotNull] IEnumerable<string> categories)
         {
-            if (assembly == null) throw new ArgumentNullException("assembly");
-            if (categories == null) throw new ArgumentNullException("categories");
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+            if (categories == null) throw new ArgumentNullException(nameof(categories));
 
             HashSet<string> currentRegisteredCategories = null;
 
@@ -222,7 +243,7 @@ namespace SiliconStudio.Core.Reflection
         /// or
         /// categories
         /// </exception>
-        public static void Register(Assembly assembly, params string[] categories)
+        public static void Register([NotNull] Assembly assembly, [NotNull] params string[] categories)
         {
             Register(assembly, (IEnumerable<string>)categories);
         }
@@ -231,7 +252,7 @@ namespace SiliconStudio.Core.Reflection
         /// Unregisters the specified assembly.
         /// </summary>
         /// <param name="assembly">The assembly.</param>
-        public static void Unregister(Assembly assembly)
+        public static void Unregister([NotNull] Assembly assembly)
         {
             // TODO: Reference counting? Waiting for "plugin" branch to be merged first anyway...
             HashSet<string> categoriesFound;
@@ -269,6 +290,19 @@ namespace SiliconStudio.Core.Reflection
         private static void OnAssemblyUnregistered(Assembly assembly, HashSet<string> categories)
         {
             AssemblyUnregistered?.Invoke(null, new AssemblyRegisteredEventArgs(assembly, categories));
+        }
+
+        /// <summary>
+        /// List types that matches a given <see cref="AssemblyScanAttribute"/> for a given assembly.
+        /// </summary>
+        public class ScanTypes
+        {
+            public IReadOnlyDictionary<Type, List<Type>> Types { get; }
+
+            public ScanTypes(Dictionary<Type, List<Type>> types)
+            {
+                Types = types;
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     /// <typeparam name="T">Type of the <see cref="IGraphicsRenderer"/></typeparam>.
     [DataSerializer(typeof(ListAllSerializer<,>), Mode = DataSerializerGenericMode.TypeAndGenericArguments)]
-    public abstract class GraphicsRendererCollectionBase<T> : RendererBase, IList<T> where T : class, IGraphicsRendererCore
+    public abstract class GraphicsRendererCollectionBase<T> : RendererCoreBase, IGraphicsRenderer, IList<T> where T : class, IGraphicsRendererCore
     {
         private readonly HashSet<T> tempRenderers;
 
@@ -154,7 +154,23 @@ namespace SiliconStudio.Xenko.Rendering
             base.Unload();
         }
 
-        protected override void DrawCore(RenderDrawContext context)
+        /// <summary>
+        /// Draws this renderer with the specified context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <exception cref="System.ArgumentNullException">context</exception>
+        /// <exception cref="System.InvalidOperationException">Cannot use a different context between Load and Draw</exception>
+        public void Draw(RenderDrawContext context)
+        {
+            if (Enabled)
+            {
+                PreDrawCoreInternal(context);
+                DrawCore(context);
+                PostDrawCoreInternal(context);
+            }
+        }
+
+        protected virtual void DrawCore(RenderDrawContext context)
         {
             InitializeRenderers(context.RenderContext);
 

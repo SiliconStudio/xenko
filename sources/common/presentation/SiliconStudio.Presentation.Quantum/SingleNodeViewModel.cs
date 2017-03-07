@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Quantum;
 
@@ -15,6 +14,7 @@ namespace SiliconStudio.Presentation.Quantum
     {
         protected string[] DisplayNameDependentProperties;
         protected Func<string> DisplayNameProvider;
+        private List<DependencyPath> dependencies;
 
         static SingleNodeViewModel()
         {
@@ -42,9 +42,47 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         public CombineMode CombineMode { get; set; }
 
+        /// <summary>
+        /// The reference expansion policy chosen while generating children for this node.
+        /// </summary>
+        /// <remarks>
+        /// This can be customized by <see cref="IPropertiesProviderViewModel.ShouldConstructChildren"/>.
+        /// </remarks>
+        public ExpandReferencePolicy ExpandReferencePolicy { get; protected set; } = ExpandReferencePolicy.None;
+
+        /// <inheritdoc/>
+        public override void Destroy()
+        {
+            if (dependencies != null)
+            {
+                Owner.NodeValueChanged -= DependencyNodeValueChanged;
+                dependencies = null;
+            }
+            base.Destroy();
+        }
+
         public new void AddCommand(INodeCommandWrapper command)
         {
             base.AddCommand(command);
+        }
+
+        /// <summary>
+        /// Adds a dependency to the node represented by the given path.
+        /// </summary>
+        /// <param name="nodePath">The path to the node that should be a dependency of this node.</param>
+        /// <param name="refreshOnNestedNodeChanges">If true, this node will also be refreshed when one of the child node of the dependency node changes.</param>
+        /// <remarks>A node that is a dependency to this node will trigger a refresh of this node each time its value is modified (or the value of one of its parent).</remarks>
+        public void AddDependency(string nodePath, bool refreshOnNestedNodeChanges)
+        {
+            if (string.IsNullOrEmpty(nodePath)) throw new ArgumentNullException(nameof(nodePath));
+
+            if (dependencies == null)
+            {
+                dependencies = new List<DependencyPath>();
+                Owner.NodeValueChanged += DependencyNodeValueChanged;
+            }
+
+            dependencies.Add(new DependencyPath(nodePath, refreshOnNestedNodeChanges));
         }
 
         /// <summary>
@@ -119,6 +157,53 @@ namespace SiliconStudio.Presentation.Quantum
             }
 
             Name = EscapeName(Name);
+        }
+
+        private void DependencyNodeValueChanged(object sender, GraphViewModelNodeValueChanged e)
+        {
+            if (dependencies?.Any(x => x.ShouldRefresh(e.NodePath)) ?? false)
+            {
+                Refresh();
+            }
+        }
+
+        private struct DependencyPath
+        {
+            private readonly string path;
+            private readonly bool refreshOnNestedNodeChanges;
+
+            public DependencyPath(string path, bool refreshOnNestedNodeChanges)
+            {
+                this.path = path;
+                this.refreshOnNestedNodeChanges = refreshOnNestedNodeChanges;
+            }
+
+            public bool ShouldRefresh(string modifiedNodePath)
+            {
+                if (IsContainingPath(modifiedNodePath, path))
+                {
+                    // The node that has changed is the dependent node or one of its parent, let's refresh
+                    return true;
+                }
+                if (refreshOnNestedNodeChanges && IsContainingPath(path, modifiedNodePath))
+                {
+                    // The node that has changed is a child of the dependent node, and we asked for recursive dependencies, let's refresh
+                    return true;
+                }
+
+                return false;
+
+            }
+
+            private static bool IsContainingPath(string containerPath, string containedPath)
+            {
+                if (!containedPath.StartsWith(containerPath))
+                    return false;
+
+                // Check if the strings are actually identical, or if the next character in the contained path is a property separator ('.')
+                return containedPath.Length == containerPath.Length || containedPath[containerPath.Length] == '.';
+            }
+
         }
     }
 }

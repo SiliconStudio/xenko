@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -13,12 +14,12 @@ namespace SiliconStudio.Core.Diagnostics
     {
         private readonly PerformanceReport report;
 
-        public PerformanceCheckBlock(string text, PerformanceReport report)
+        public PerformanceCheckBlock([NotNull] string text, [NotNull] PerformanceReport report)
         {
             if (string.IsNullOrWhiteSpace(text))
                 throw new ArgumentException("Invalid 'text' argument");
             if (report == null)
-                throw new ArgumentNullException("report");
+                throw new ArgumentNullException(nameof(report));
 
             this.report = report;
             this.report.BeginMeasure(text);

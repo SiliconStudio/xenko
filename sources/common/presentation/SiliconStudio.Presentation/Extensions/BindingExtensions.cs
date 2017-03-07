@@ -3,6 +3,7 @@
 
 using System.Reflection;
 using System.Windows.Data;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Extensions
 {
@@ -15,7 +16,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// </summary>
         /// <param name="binding">The Binding to clone.</param>
         /// <returns>A clone of the given <see cref="Binding"/></returns>
-        public static Binding CloneBinding(this Binding binding)
+        public static Binding CloneBinding([NotNull] this Binding binding)
         {
             return (Binding)binding.CloneBinding(binding.Mode);
         }
@@ -25,7 +26,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="bindingBase">The BindingBase to clone.</param>
         /// <param name="mode">The BindingMode value to set for the clone.</param>
         /// <returns>A clone of the given <see cref="BindingBase"/></returns>
-        public static BindingBase CloneBinding(this BindingBase bindingBase, BindingMode mode)
+        public static BindingBase CloneBinding([NotNull] this BindingBase bindingBase, BindingMode mode)
         {
             return (BindingBase)CloneMethodInfo.Invoke(bindingBase, new object[] { mode });
         }

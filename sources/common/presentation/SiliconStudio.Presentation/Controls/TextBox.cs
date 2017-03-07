@@ -6,6 +6,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -22,7 +23,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="UseTimedValidation"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty UseTimedValidationProperty = DependencyProperty.Register("UseTimedValidation", typeof(bool), typeof(TextBox), new PropertyMetadata(false, OnUseTimedValidationPropertyChanged));
+        public static readonly DependencyProperty UseTimedValidationProperty = DependencyProperty.Register("UseTimedValidation", typeof(bool), typeof(TextBox), new PropertyMetadata(BooleanBoxes.FalseBox, OnUseTimedValidationPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="ValidationDelay"/> dependency property.
@@ -62,7 +63,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Clears the current <see cref="System.Windows.Controls.TextBox.Text"/> of a text box.
         /// </summary>
-        public static RoutedCommand ClearTextCommand { get; private set; }
+        public static RoutedCommand ClearTextCommand { get; }
         
         static TextBox()
         {
@@ -80,7 +81,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether the text should be automatically validated after a delay defined by the <see cref="ValidationDelay"/> property.
         /// </summary>
-        public bool UseTimedValidation { get { return (bool)GetValue(UseTimedValidationProperty); } set { SetValue(UseTimedValidationProperty, value); } }
+        public bool UseTimedValidation { get { return (bool)GetValue(UseTimedValidationProperty); } set { SetValue(UseTimedValidationProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets the amount of time before a validation of input text happens, in milliseconds.

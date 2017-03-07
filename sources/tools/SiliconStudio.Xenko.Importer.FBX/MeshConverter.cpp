@@ -1969,6 +1969,25 @@ public:
 		return nullptr;
 	}
 
+	double GetAnimationDuration(String^ inputFileName)
+	{
+		try
+		{
+			Initialize(inputFileName, nullptr, ImportConfiguration::ImportEntityConfig());
+
+			auto animationConverter = gcnew AnimationConverter(logger, sceneMapping);
+			auto animationData = animationConverter->ProcessAnimation(inputFilename, "");
+
+			return animationData->Duration.TotalSeconds;
+		}
+		finally
+		{
+			Destroy();
+		}
+
+		return 0;
+	}
+
 	Model^ Convert(String^ inputFilename, String^ vfsOutputFilename, Dictionary<System::String^, int>^ materialIndices)
 	{
 		try

@@ -6,7 +6,7 @@ using System.Linq;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -34,6 +34,8 @@ namespace SiliconStudio.Xenko.Rendering
         /// Index in <see cref="RenderSystem.Views"/>.
         /// </summary>
         public int Index = -1;
+
+        internal int LastFrameCollected;
 
         internal float MinimumDistance;
 
@@ -84,12 +86,20 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// The culling mask.
         /// </summary>
-        public EntityGroupMask CullingMask { get; set; } = EntityGroupMask.All;
+        public RenderGroupMask CullingMask { get; set; } = RenderGroupMask.All;
 
         /// <summary>
         /// The culling mode.
         /// </summary>
         public CameraCullingMode CullingMode { get; set; } = CameraCullingMode.Frustum;
+
+        public RenderViewFlags Flags { get; set; }
+
+        /// <summary>
+        /// The view used for lighting (useful to share lighting results for two very close views such as VR)
+        /// </summary>
+        /// <remarks>This is a temporary workaround until shadow maps have a real scope: global or view-dependent (single view or multiple views).</remarks>
+        public RenderView LightingView { get; set; }
 
         public override string ToString()
         {

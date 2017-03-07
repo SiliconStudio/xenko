@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         /// <value>A boolean to enable GraphicsDevice.SetDepthAndRenderTargets from output. Default is <c>true</c></value>
         protected bool EnableSetRenderTargets { get; set; }
-        
+
         /// <summary>
         /// Sets an input texture
         /// </summary>
@@ -161,22 +161,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
                         createdOutputRenderTargetViews[i] = outputRenderTargetView.ToTextureView(ViewType.Single, i, 0);
 
                     context.CommandList.SetRenderTargetsAndViewport(createdOutputRenderTargetViews);
-
-                    if (viewport.HasValue)
-                    {
-                        for (int i = 0; i < createdOutputRenderTargetViews.Length; i++)
-                        {
-                            context.CommandList.SetViewport(i, viewport.Value);
-                        }
-                    }
                 }
                 else
                 {
                     context.CommandList.SetRenderTargetAndViewport(null, outputRenderTargetView);
-                    if (viewport.HasValue)
-                    {
-                        context.CommandList.SetViewport(viewport.Value);
-                    }
                 }
             }
             else if (outputRenderTargetViews != null)
@@ -186,14 +174,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     context.CommandList.ResourceBarrierTransition(renderTarget, GraphicsResourceState.RenderTarget);
 
                 context.CommandList.SetRenderTargetsAndViewport(outputRenderTargetViews);
+            }
 
-                if (viewport.HasValue)
-                {
-                    for (int i = 0; i < outputRenderTargetViews.Length; i++)
-                    {
-                        context.CommandList.SetViewport(i, viewport.Value);
-                    }
-                }
+            if (viewport.HasValue)
+            {
+                context.CommandList.SetViewport(viewport.Value);
             }
         }
 

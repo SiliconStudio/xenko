@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using SiliconStudio.Core.Serialization.Serializers;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization
@@ -27,12 +27,12 @@ namespace SiliconStudio.Core.Serialization
         /// </value>
         public SerializerSelector SerializerSelector { get; set; }
 
-        public T Get<T>(PropertyKey<T> key)
+        public T Get<T>([NotNull] PropertyKey<T> key)
         {
             return Tags.Get(key);
         }
 
-        public void Set<T>(PropertyKey<T> key, T value)
+        public void Set<T>([NotNull] PropertyKey<T> key, T value)
         {
             Tags.SetObject(key, value);
         }
@@ -44,11 +44,9 @@ namespace SiliconStudio.Core.Serialization
     public class SerializerSelector
     {
         private readonly object Lock = new object();
-        private readonly bool reuseReferences;
         private readonly string[] profiles;
         private Dictionary<Type, DataSerializer> dataSerializersByType = new Dictionary<Type, DataSerializer>();
         private Dictionary<ObjectId, DataSerializer> dataSerializersByTypeId = new Dictionary<ObjectId, DataSerializer>();
-        private List<SerializerFactory> serializerFactories = new List<SerializerFactory>();
 
         /// <summary>
         /// Gets the default instance of Serializer.
@@ -61,7 +59,7 @@ namespace SiliconStudio.Core.Serialization
         public static SerializerSelector Asset { get; internal set; }
         public static SerializerSelector AssetWithReuse { get; internal set; }
 
-        public IEnumerable<string> Profiles { get { return profiles; } }
+        public IEnumerable<string> Profiles => profiles;
 
         public SerializerSelector SelectorOverride;
 
@@ -71,13 +69,13 @@ namespace SiliconStudio.Core.Serialization
         static SerializerSelector()
         {
             // Do a two step initialization to make sure field is set and accessible during construction
-            Default = new SerializerSelector(false, true, "Default");
+            Default = new SerializerSelector(false, -1, "Default");
             Default.Initialize();
 
-            Asset = new SerializerSelector(false, true, "Default", "Content");
+            Asset = new SerializerSelector(false, -1, "Default", "Content");
             Asset.Initialize();
 
-            AssetWithReuse = new SerializerSelector(true, true, "Default", "Content");
+            AssetWithReuse = new SerializerSelector(true, -1, "Default", "Content");
             AssetWithReuse.Initialize();
         }
 
@@ -86,14 +84,17 @@ namespace SiliconStudio.Core.Serialization
         /// </summary>
         /// <param name="reuseReferences">if set to <c>true</c> reuse references (allow cycles in the object graph).</param>
         /// <param name="profiles">The profiles.</param>
-        public SerializerSelector(bool reuseReferences, params string[] profiles)
+        public SerializerSelector(bool reuseReferences, bool externalIdentifiableAsGuid, params string[] profiles)
         {
-            this.reuseReferences = reuseReferences;
+            ReuseReferences = reuseReferences;
+            ExternalIdentifiableAsGuid = externalIdentifiableAsGuid;
+            if (externalIdentifiableAsGuid && !reuseReferences)
+                throw new NotImplementedException("Support of ExternalIdentifiableAsGuid without ReuseReferences is not implemented yet.");
             this.profiles = profiles;
             Initialize();
         }
 
-        public SerializerSelector(params string[] profiles) : this(false, profiles)
+        public SerializerSelector(params string[] profiles) : this(false, false, profiles)
         {
         }
 
@@ -103,10 +104,10 @@ namespace SiliconStudio.Core.Serialization
         /// </summary>
         /// <param name="profile">Name of the profile</param>
         /// <returns><c>true</c> if this instance supports the specified serialization profile</returns>
-        public bool HasProfile(string profile)
+        public bool HasProfile([NotNull] string profile)
         {
             if (profile == null) throw new ArgumentNullException(nameof(profile));
-            for (int i = 0; i < profiles.Length; i++)
+            for (var i = 0; i < profiles.Length; i++)
             {
                 if (profile == profiles[i])
                 {
@@ -116,9 +117,9 @@ namespace SiliconStudio.Core.Serialization
             return false;
         }
 
-        private SerializerSelector(bool reuseReferences, bool unusedPrivateCtor, params string[] profiles)
+        private SerializerSelector(bool reuseReferences, int unusedPrivateCtor, params string[] profiles)
         {
-            this.reuseReferences = reuseReferences;
+            this.ReuseReferences = reuseReferences;
             this.profiles = profiles;
         }
 
@@ -130,16 +131,18 @@ namespace SiliconStudio.Core.Serialization
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether serialization reuses references 
-        /// (that is, each reference gets assigned an ID and if it is serialized again, same instance will be reused).
+        /// Gets whether serialization reuses references, where each reference gets assigned an ID and if it is serialized again, same instance will be reused).
         /// </summary>
-        /// <value>
-        ///   <c>true</c> if serialization reuses references; otherwise, <c>false</c>.
-        /// </value>
-        public bool ReuseReferences { get { return reuseReferences; } }
+        public bool ReuseReferences { get; }
 
-        public List<SerializerFactory> SerializerFactories => serializerFactories;
+        /// <summary>
+        /// Gets whether <see cref="IIdentifiable"/> instances marked as external will have only their <see cref="Guid"/> stored.
+        /// </summary>
+        public bool ExternalIdentifiableAsGuid { get; }
 
+        public List<SerializerFactory> SerializerFactories { get; } = new List<SerializerFactory>();
+
+        [CanBeNull]
         public DataSerializer GetSerializer(ref ObjectId typeId)
         {
             if (invalidated)
@@ -148,7 +151,7 @@ namespace SiliconStudio.Core.Serialization
             DataSerializer dataSerializer;
             if (!dataSerializersByTypeId.TryGetValue(typeId, out dataSerializer))
             {
-                foreach (var serializerFactory in serializerFactories)
+                foreach (var serializerFactory in SerializerFactories)
                 {
                     dataSerializer = serializerFactory.GetSerializer(this, ref typeId);
                     if (dataSerializer != null)
@@ -166,7 +169,8 @@ namespace SiliconStudio.Core.Serialization
         /// </summary>
         /// <param name="type">The type that you want to (de)serialize.</param>
         /// <returns>The <see cref="DataSerializer{T}"/> for this type if it exists or can be created, otherwise null.</returns>
-        public DataSerializer GetSerializer(Type type)
+        [CanBeNull]
+        public DataSerializer GetSerializer([NotNull] Type type)
         {
             if (invalidated)
                 UpdateDataSerializers();
@@ -174,7 +178,7 @@ namespace SiliconStudio.Core.Serialization
             DataSerializer dataSerializer;
             if (!dataSerializersByType.TryGetValue(type, out dataSerializer))
             {
-                foreach (var serializerFactory in serializerFactories)
+                foreach (var serializerFactory in SerializerFactories)
                 {
                     dataSerializer = serializerFactory.GetSerializer(this, type);
                     if (dataSerializer != null)
@@ -191,7 +195,7 @@ namespace SiliconStudio.Core.Serialization
         /// Internal function, for use by <see cref="SerializerFactory"/>.
         /// </summary>
         /// <param name="dataSerializer"></param>
-        public void EnsureInitialized(DataSerializer dataSerializer)
+        public void EnsureInitialized([NotNull] DataSerializer dataSerializer)
         {
             // Allow reentrency (in case a serializer needs itself)
             if (dataSerializer.InitializeLock.IsHeldByCurrentThread)
@@ -221,7 +225,7 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
-        private static void EnsureSerializationTypeId(DataSerializer dataSerializer)
+        private static void EnsureSerializationTypeId([NotNull] DataSerializer dataSerializer)
         {
             // Ensure a serialization type ID has been generated (otherwise do so now)
             if (dataSerializer.SerializationTypeId == ObjectId.Empty)
@@ -237,6 +241,7 @@ namespace SiliconStudio.Core.Serialization
         /// </summary>
         /// <typeparam name="T">The type that you want to (de)serialize.</typeparam>
         /// <returns>The <see cref="DataSerializer{T}"/> for this type if it exists or can be created, otherwise null.</returns>
+        [CanBeNull]
         public DataSerializer<T> GetSerializer<T>()
         {
             return (DataSerializer<T>)GetSerializer(typeof(T));

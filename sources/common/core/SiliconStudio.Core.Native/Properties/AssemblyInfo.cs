@@ -11,3 +11,4 @@ using System.Runtime.CompilerServices;
 [assembly: NeutralResourcesLanguage("en")]
 
 [assembly: InternalsVisibleTo("SiliconStudio.Core")]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Native")]

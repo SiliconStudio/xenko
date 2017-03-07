@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Interop;
 
 namespace SiliconStudio.Presentation.Windows
@@ -18,7 +19,7 @@ namespace SiliconStudio.Presentation.Windows
         /// Initializes a new instance of the <see cref="WindowInfo"/> class.
         /// </summary>
         /// <param name="window">The window represented by this object.</param>
-        public WindowInfo(Window window)
+        public WindowInfo([NotNull] Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             Window = window;
@@ -101,6 +102,7 @@ namespace SiliconStudio.Presentation.Windows
         /// <summary>
         /// Gets the owner of this window.
         /// </summary>
+        [CanBeNull]
         public WindowInfo Owner
         {
             get
@@ -198,7 +200,7 @@ namespace SiliconStudio.Presentation.Windows
         /// <inheritdoc/>
         public bool Equals(WindowInfo other)
         {
-            return Equals(other.Window) && Equals(other.Hwnd);
+            return other != null && Equals(other.Window) && Equals(other.Hwnd);
         }
 
         /// <inheritdoc/>
@@ -217,7 +219,7 @@ namespace SiliconStudio.Presentation.Windows
         {
             return window != null ? new WindowInteropHelper(window).Handle : IntPtr.Zero;
         }
-
+        
         internal static Window FromHwnd(IntPtr hwnd)
         {
             return hwnd != IntPtr.Zero ? HwndSource.FromHwnd(hwnd)?.RootVisual as Window : null;

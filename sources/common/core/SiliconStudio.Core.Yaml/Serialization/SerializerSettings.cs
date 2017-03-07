@@ -318,6 +318,11 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public ISerializerFactorySelector SerializerFactorySelector { get; set; }
 
         /// <summary>
+        /// Gets a methods that will build the proper chain of serializers out of the default chain.
+        /// </summary>
+        public Action<ChainedSerializer> ChainedSerializerFactory { get; set; }
+
+        /// <summary>
         /// Register a mapping between a tag and a type.
         /// </summary>
         /// <param name="assembly">The assembly.</param>

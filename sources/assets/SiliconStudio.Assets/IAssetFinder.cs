@@ -25,11 +25,11 @@ namespace SiliconStudio.Assets
         AssetItem FindAsset([NotNull] UFile location);
 
         /// <summary>
-        /// Finds an asset from an attached reference.
+        /// Finds an asset from a proxy object.
         /// </summary>
-        /// <param name="container">The object containing the attached reference.</param>
+        /// <param name="proxyObject">The proxy object which is represent the targeted asset.</param>
         /// <returns>The corresponding <see cref="AssetItem" /> if found; otherwise, <c>null</c>.</returns>
         [CanBeNull]
-        AssetItem FindAssetFromAttachedReference([CanBeNull] object container);
+        AssetItem FindAssetFromProxyObject([CanBeNull] object proxyObject);
     }
 }

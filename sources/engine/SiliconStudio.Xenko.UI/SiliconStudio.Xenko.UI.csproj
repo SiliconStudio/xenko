@@ -119,7 +119,6 @@
     <Compile Include="Renderers\UIRenderingContext.cs" />
     <Compile Include="Renderers\RendererManager.cs" />
     <Compile Include="Rendering\UI\RenderUIElement.cs" />
-    <Compile Include="Rendering\UI\UIPipelinePlugin.cs" />
     <Compile Include="Rendering\UI\UIRenderFeature.cs" />
     <Compile Include="Rendering\UI\UIRenderFeature.Picking.cs" />
     <Compile Include="Rendering\UI\UIRenderProcessor.cs" />

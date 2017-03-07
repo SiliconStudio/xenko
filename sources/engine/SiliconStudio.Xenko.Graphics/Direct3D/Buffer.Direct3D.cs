@@ -25,15 +25,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Initializes a new instance of the <see cref="Buffer" /> class.
         /// </summary>
-        /// <param name="device">The <see cref="GraphicsDevice"/>.</param>
-        protected Buffer(GraphicsDevice device)
-            : base(device)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Buffer" /> class.
-        /// </summary>
         /// <param name="description">The description.</param>
         /// <param name="viewFlags">Type of the buffer.</param>
         /// <param name="viewFormat">The view format.</param>

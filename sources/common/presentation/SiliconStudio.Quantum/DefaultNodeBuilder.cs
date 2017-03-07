@@ -7,18 +7,18 @@ using System.Linq;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
-using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
     /// <summary>
-    /// The default <see cref="INodeBuilder"/> implementation that construct a model from a data object.
+    /// The default <see cref="INodeBuilder"/> implementation that construct a graph from a data object.
     /// </summary>
     internal class DefaultNodeBuilder : DataVisitorBase, INodeBuilder
     {
         private readonly Stack<IInitializingGraphNode> contextStack = new Stack<IInitializingGraphNode>();
-        private readonly HashSet<IContentNode> referenceContents = new HashSet<IContentNode>();
+        private readonly HashSet<IGraphNode> referenceContents = new HashSet<IGraphNode>();
+        private readonly List<Type> primitiveTypes = new List<Type>();
         private static readonly Type[] InternalPrimitiveTypes = { typeof(decimal), typeof(string), typeof(Guid) };
         private IInitializingObjectNode rootNode;
         private Guid rootGuid;
@@ -33,15 +33,10 @@ namespace SiliconStudio.Quantum
         public NodeContainer NodeContainer { get; }
         
         /// <inheritdoc/>
-        private readonly List<Type> primitiveTypes = new List<Type>();
-
-        /// <inheritdoc/>
         public ICollection<INodeCommand> AvailableCommands { get; } = new List<INodeCommand>();
 
         /// <inheritdoc/>
-        public IContentFactory ContentFactory { get; set; } = new DefaultContentFactory();
-
-        public bool DiscardUnbrowsable { get; set; } = true;
+        public INodeFactory NodeFactory { get; set; } = new DefaultNodeFactory();
 
         /// <summary>
         /// Reset the visitor in order to use it to generate another model.
@@ -76,8 +71,9 @@ namespace SiliconStudio.Quantum
             if (type == null)
                 return false;
 
-            if (type.IsNullable())
-                type = Nullable.GetUnderlyingType(type);
+            var underlyingType = Nullable.GetUnderlyingType(type);
+            if (underlyingType != null)
+                type = underlyingType;
 
             return type.IsPrimitive || type.IsEnum || primitiveTypes.Any(x => x.IsAssignableFrom(type));
         }
@@ -102,8 +98,8 @@ namespace SiliconStudio.Quantum
             if (isRootNode)
             {
                 // If we're visiting a value type as "object" we need to use a special "boxed" node.
-                var content = descriptor.Type.IsValueType ? ContentFactory.CreateBoxedContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type))
-                    : ContentFactory.CreateObjectContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type));
+                var content = descriptor.Type.IsValueType ? NodeFactory.CreateBoxedContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type))
+                    : NodeFactory.CreateObjectContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type));
 
                 currentDescriptor = content.Descriptor;
                 rootNode = (IInitializingObjectNode)content;
@@ -115,11 +111,6 @@ namespace SiliconStudio.Quantum
 
                 AvailableCommands.Where(x => x.CanAttach(currentDescriptor, null)).ForEach(rootNode.AddCommand);
 
-                if (obj == null)
-                {
-                    rootNode.Seal();
-                    return;
-                }
                 PushContextNode(rootNode);
             }
 
@@ -167,7 +158,7 @@ namespace SiliconStudio.Quantum
             // If this member should contains a reference, create it now.
             var containerNode = (IInitializingObjectNode)GetContextNode();
             var guid = Guid.NewGuid();
-            var content = (MemberContent)ContentFactory.CreateMemberContent(this, guid, containerNode, member, IsPrimitiveType(member.Type), value);
+            var content = (MemberNode)NodeFactory.CreateMemberContent(this, guid, containerNode, member, IsPrimitiveType(member.Type), value);
             containerNode.AddMember(content);
 
             if (content.IsReference)
@@ -177,7 +168,7 @@ namespace SiliconStudio.Quantum
             if (content.TargetReference == null)
             {
                 // For enumerable references, we visit the member to allow VisitCollection or VisitDictionary to enrich correctly the node.
-                Visit(content.Value);
+                Visit(content.Retrieve());
             }
             PopContextNode();
 
@@ -186,22 +177,21 @@ namespace SiliconStudio.Quantum
             content.Seal();
         }
 
-        public IReference CreateReferenceForNode(Type type, object value)
+        public IReference CreateReferenceForNode(Type type, object value, bool isMember)
         {
-            // We don't create references for primitive types
-            if (IsPrimitiveType(type))
-                return null;
-
-            // At this point it is either a struct, a reference type or a collection
+            if (isMember)
+            {
+                return !IsPrimitiveType(type) ? Reference.CreateReference(value, type, Index.Empty, true) : null;
+            }
+            
             var descriptor = TypeDescriptorFactory.Find(value?.GetType());
-            var valueType = GetElementValueType(descriptor);
+            if (descriptor is CollectionDescriptor || descriptor is DictionaryDescriptor)
+            {
+                var valueType = GetElementValueType(descriptor);
+                return !IsPrimitiveType(valueType) ? Reference.CreateReference(value, type, Index.Empty, false) : null;
+            }
 
-            // We don't create references for collection of primitive types
-            if (IsPrimitiveType(valueType))
-                return null;
-
-            // In any other case, we create a reference
-            return Reference.CreateReference(value, type, Index.Empty);
+            return null;
         }
 
         private void PushContextNode(IInitializingGraphNode node)

@@ -26,10 +26,6 @@ namespace SiliconStudio.Assets.Serializers
         /// </summary>
         /// <param name="partType">The type of asset part to generate.</param>
         /// <returns>A proxy asset part built from this instance.</returns>
-        /// <remarks>
-        /// Proxy asset parts should be resolved to the actual corresponding asset part in the <see cref="AssetComposite.FixupPartReferences"/> method.
-        /// This method is invoked at the end of the deserialization.
-        /// </remarks>
         object GenerateProxyPart(Type partType);
     }
 }

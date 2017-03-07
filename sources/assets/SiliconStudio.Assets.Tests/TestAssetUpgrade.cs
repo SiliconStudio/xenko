@@ -134,7 +134,7 @@ namespace SiliconStudio.Assets.Tests
         {
             var loadingFilePath = new PackageLoadingAssetFile(Path.Combine(DirectoryTestBase, "TestUpgrade\\Asset1.xkobj"), DirectoryTestBase);
             var outputFilePath = loadingFilePath.FilePath.FullPath;
-            AssetFileSerializer.Save(outputFilePath, asset);
+            AssetFileSerializer.Save(outputFilePath, asset, null);
 
             var logger = new LoggerResult();
             var context = new AssetMigrationContext(null, loadingFilePath.ToReference(), loadingFilePath.FilePath.ToWindowsPath(), logger);

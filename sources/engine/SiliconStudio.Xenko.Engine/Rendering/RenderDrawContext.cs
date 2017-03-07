@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -12,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         // States
         private int currentStateIndex = -1;
-        private readonly List<StateAndTargets> allocatedStates = new List<StateAndTargets>(10);
+        private readonly List<RenderTargetsState> allocatedStates = new List<RenderTargetsState>(10);
 
         private readonly Dictionary<Type, DrawEffect> sharedEffects = new Dictionary<Type, DrawEffect>();
 
@@ -64,14 +65,14 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Pushes render targets and viewport state.
         /// </summary>
-        public void PushRenderTargets()
+        public RenderTargetRestore PushRenderTargetsAndRestore()
         {
             // Check if we need to allocate a new StateAndTargets
-            StateAndTargets newState;
+            RenderTargetsState newState;
             currentStateIndex++;
             if (currentStateIndex == allocatedStates.Count)
             {
-                newState = new StateAndTargets();
+                newState = new RenderTargetsState();
                 allocatedStates.Add(newState);
             }
             else
@@ -79,6 +80,8 @@ namespace SiliconStudio.Xenko.Rendering
                 newState = allocatedStates[currentStateIndex];
             }
             newState.Capture(CommandList);
+
+            return new RenderTargetRestore(this);
         }
 
         /// <summary>
@@ -120,41 +123,56 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Holds current viewports and render targets.
         /// </summary>
-        private class StateAndTargets
+        private class RenderTargetsState
         {
             private const int MaxRenderTargetCount = 8;
+            private const int MaxViewportAndScissorRectangleCount = 16;
 
             public int RenderTargetCount;
+            public int ViewportCount;
 
-            public Viewport[] Viewports;
-            public Texture[] RenderTargets;
+            public readonly Viewport[] Viewports = new Viewport[MaxViewportAndScissorRectangleCount];
+            public readonly Texture[] RenderTargets = new Texture[MaxRenderTargetCount];
             public Texture DepthStencilBuffer;
 
             public void Capture(CommandList commandList)
             {
                 RenderTargetCount = commandList.RenderTargetCount;
-
-                // TODO GRAPHICS REFACTOR avoid unecessary reallocation if size is different
-                if (RenderTargetCount > 0 && (RenderTargets == null || RenderTargets.Length != RenderTargetCount))
-                {
-                    RenderTargets = new Texture[RenderTargetCount];
-                    Viewports = new Viewport[RenderTargetCount];
-                }
-
+                ViewportCount = commandList.ViewportCount;
                 DepthStencilBuffer = commandList.DepthStencilBuffer;
-
+                
+                // TODO: Backup scissor rectangles and restore them
+                
                 for (int i = 0; i < RenderTargetCount; i++)
                 {
-                    Viewports[i] = commandList.Viewports[i];
                     RenderTargets[i] = commandList.RenderTargets[i];
+                }
+
+                for (int i = 0; i < ViewportCount; i++)
+                {
+                    Viewports[i] = commandList.Viewports[i];
                 }
             }
 
             public void Restore(CommandList commandList)
             {
-                commandList.SetRenderTargetsAndViewport(DepthStencilBuffer, RenderTargetCount > 0 ? RenderTargets : null);
-                if (RenderTargetCount > 0)
-                    commandList.SetViewports(Viewports);
+                commandList.SetRenderTargets(DepthStencilBuffer, RenderTargetCount, RenderTargets);
+                commandList.SetViewports(ViewportCount, Viewports);
+            }
+        }
+
+        public struct RenderTargetRestore : IDisposable
+        {
+            private readonly RenderDrawContext context;
+
+            public RenderTargetRestore(RenderDrawContext context)
+            {
+                this.context = context;
+            }
+
+            public void Dispose()
+            {
+                context.PopRenderTargets();
             }
         }
     }

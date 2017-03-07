@@ -4,8 +4,9 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Interactivity;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Core;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -52,7 +53,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// Gets or sets whether to set the event as handled.
         /// </summary>
-        public bool HandleEvent { get { return (bool)GetValue(HandleEventProperty); } set { SetValue(HandleEventProperty, value); } }
+        public bool HandleEvent { get { return (bool)GetValue(HandleEventProperty); } set { SetValue(HandleEventProperty, value.Box()); } }
 
         /// <summary>
         /// Invoked when the monitored event is raised.
@@ -106,7 +107,7 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
-        private void RoutedEventHandler(object sender, RoutedEventArgs e)
+        private void RoutedEventHandler(object sender, [NotNull] RoutedEventArgs e)
         {
             if (HandleEvent)
             {

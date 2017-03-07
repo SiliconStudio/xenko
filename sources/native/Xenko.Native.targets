@@ -12,14 +12,20 @@
     <OutputObjectPath>$(MSBuildProjectDirectory)\obj\$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</OutputObjectPath>
     <OutputObjectPath Condition="'$(SiliconStudioRuntime)' != ''">$(OutputObjectPath)-$(SiliconStudioRuntime)</OutputObjectPath>
     <OutputObjectPath Condition="'$(SiliconStudioCpu)' != ''">$(OutputObjectPath)-$(SiliconStudioCpu)</OutputObjectPath>
+    
     <SiliconStudioXenkoSdkBinDir>$(XenkoDependenciesDir)\..\Bin\$(SiliconStudioBuildDirectory)</SiliconStudioXenkoSdkBinDir>
+    
     <XenkoNativeAndroidGCC>-nostdlib -ldl -lstdc++ -lc -lm</XenkoNativeAndroidGCC>
+    
     <!--Use "-v" to debug the tooling -->
     <XenkoNativeToolingDebug></XenkoNativeToolingDebug> 
+    
     <XenkoNativeClang>$(XenkoNativeToolingDebug) -Wno-ignored-attributes -Wno-delete-non-virtual-dtor -Wno-macro-redefined -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -I&quot;$(XenkoDependenciesDir)\NativePath\standard&quot;</XenkoNativeClang>
     <XenkoNativeClang Condition="'$(SiliconStudioPlatform)' == 'Linux'">$(XenkoNativeClang) -DPLATFORM_LINUX</XenkoNativeClang>
     <XenkoNativeClang Condition="'$(SiliconStudioPlatform)' == 'macOS'">$(XenkoNativeClang) -DPLATFORM_MACOS</XenkoNativeClang>
     <XenkoNativeClangCPP>-std=c++11 -fno-rtti -fno-exceptions</XenkoNativeClangCPP>
+
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
 
   <Choose>

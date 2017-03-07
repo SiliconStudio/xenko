@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -85,6 +86,7 @@ namespace SiliconStudio.Core
             }
         }
 
+        [NotNull]
         private static string GetApplicationLocalDirectory()
         {
 #if SILICONSTUDIO_PLATFORM_ANDROID
@@ -105,6 +107,7 @@ namespace SiliconStudio.Core
 #endif
         }
 
+        [NotNull]
         private static string GetApplicationRoamingDirectory()
         {
 #if SILICONSTUDIO_PLATFORM_ANDROID
@@ -125,6 +128,7 @@ namespace SiliconStudio.Core
 #endif
         }
 
+        [NotNull]
         private static string GetApplicationCacheDirectory()
         {
 #if SILICONSTUDIO_PLATFORM_ANDROID
@@ -146,11 +150,11 @@ namespace SiliconStudio.Core
             return directory;
 #endif
         }
-
+        
         private static string GetApplicationExecutablePath()
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_MONO_MOBILE || SILICONSTUDIO_PLATFORM_UNIX
-            Assembly currentAssembly = Assembly.GetEntryAssembly();
+            var currentAssembly = Assembly.GetEntryAssembly();
             if (currentAssembly == null)
             {
 #if !SILICONSTUDIO_RUNTIME_CORECLR
@@ -170,11 +174,13 @@ namespace SiliconStudio.Core
 #endif
         }
 
+        [NotNull]
         private static string GetTemporaryDirectory()
         {
             return GetApplicationTemporaryDirectory();
         }
 
+        [NotNull]
         private static string GetApplicationTemporaryDirectory()
         {
 #if SILICONSTUDIO_PLATFORM_ANDROID
@@ -188,16 +194,18 @@ namespace SiliconStudio.Core
 #endif
         }
 
+        [NotNull]
         private static string GetApplicationBinaryDirectory()
         {
             var directoryName = GetApplicationExecutablePath();
-            var result = string.IsNullOrWhiteSpace(directoryName) ? String.Empty : Path.GetDirectoryName(directoryName);
+            var result = string.IsNullOrWhiteSpace(directoryName) ? string.Empty : Path.GetDirectoryName(directoryName);
             if (result == string.Empty)
                 result = ".";
 
             return result;
         }
 
+        [NotNull]
         private static string GetApplicationDataDirectory()
         {
 #if SILICONSTUDIO_PLATFORM_ANDROID

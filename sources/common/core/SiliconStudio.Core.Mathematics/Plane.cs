@@ -83,7 +83,7 @@ namespace SiliconStudio.Core.Mathematics
         public Plane(Vector3 point, Vector3 normal)
         {
             this.Normal = normal;
-            this.D = -Vector3.Dot(normal, point);
+            this.D = Vector3.Dot(normal, point);
         }
 
         /// <summary>

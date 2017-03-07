@@ -65,5 +65,12 @@ namespace SiliconStudio.Xenko.Engine
         [DefaultValue(1.0f)]
         [DataMemberRange(0.0, 100.0, 0.01f, 1.0f)]
         public float Intensity { get; set; }
+
+        /// <summary>
+        /// The render group for this component.
+        /// </summary>
+        [DataMember(50)]
+        [DefaultValue(RenderGroup.Group0)]
+        public RenderGroup RenderGroup { get; set; }
     }
 }

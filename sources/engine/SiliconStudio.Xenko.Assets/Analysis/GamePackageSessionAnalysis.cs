@@ -69,19 +69,6 @@ namespace SiliconStudio.Xenko.Assets.Analysis
                 if (defaultScene == null)
                     defaultScene = package.Assets.FirstOrDefault(x => x.Asset is SceneAsset);
 
-                // Nothing found, let's create an empty one
-                if (defaultScene == null)
-                {
-                    log.Error(package, null, AssetMessageCode.DefaultSceneNotFound, null);
-
-                    var defaultSceneName = NamingHelper.ComputeNewName(GameSettingsAsset.DefaultSceneLocation, package.Assets, a => a.Location);
-                    var defaultSceneAsset = DefaultAssetFactory<SceneAsset>.Create();
-
-                    defaultScene = new AssetItem(defaultSceneName, defaultSceneAsset);
-                    package.Assets.Add(defaultScene);
-                    defaultScene.IsDirty = true;
-                }
-
                 // Create game settings if not done yet
                 if (gameSettingsAssetItem == null)
                 {
@@ -89,7 +76,8 @@ namespace SiliconStudio.Xenko.Assets.Analysis
 
                     var gameSettingsAsset = GameSettingsFactory.Create();
 
-                    gameSettingsAsset.DefaultScene = AttachedReferenceManager.CreateProxyObject<Scene>(defaultScene.Id, defaultScene.Location);
+                    if (defaultScene != null)
+                        gameSettingsAsset.DefaultScene = AttachedReferenceManager.CreateProxyObject<Scene>(defaultScene.Id, defaultScene.Location);
 
                     gameSettingsAssetItem = new AssetItem(GameSettingsAsset.GameSettingsLocation, gameSettingsAsset);
                     package.Assets.Add(gameSettingsAssetItem);

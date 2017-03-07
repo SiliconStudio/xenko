@@ -4,6 +4,7 @@ using System;
 using System.Reflection;
 using System.Windows.Controls;
 using System.Windows.Data;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -44,8 +45,12 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ListBoxSelectionChanged([NotNull] object sender, SelectionChangedEventArgs e)
         {
+            // Don't process events happening inside the EditableContentListBoxItem (happening when we have a ComboBox inside)
+            if (!Equals(e.OriginalSource, AssociatedObject))
+                return;
+
             var listBox = (ListBox)sender;
             if (listBox.DataContext != null && listBox.DataContext != InternalDisconnectedObject)
                 ControlSelectionChanged(e.AddedItems, e.RemovedItems);

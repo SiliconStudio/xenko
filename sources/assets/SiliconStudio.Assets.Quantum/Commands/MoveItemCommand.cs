@@ -31,14 +31,15 @@ namespace SiliconStudio.Assets.Quantum.Commands
             return collectionDescriptor != null && collectionDescriptor.HasInsert;
         }
 
-        protected override void ExecuteSync(IContentNode content, Index index, object parameter)
+        protected override void ExecuteSync(IGraphNode node, Index index, object parameter)
         {
+            var objectNode = (IObjectNode)node;
             var indices = (Tuple<int, int>)parameter;
             var sourceIndex = new Index(indices.Item1);
             var targetIndex = new Index(indices.Item2);
-            var value = content.Retrieve(sourceIndex);
-            content.Remove(value, sourceIndex);
-            content.Add(value, targetIndex);
+            var value = node.Retrieve(sourceIndex);
+            objectNode.Remove(value, sourceIndex);
+            objectNode.Add(value, targetIndex);
         }
     }
 }

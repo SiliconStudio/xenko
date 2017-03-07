@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.References
 {
@@ -38,7 +37,7 @@ namespace SiliconStudio.Quantum.References
         public IObjectNode TargetNode { get; private set; }
 
         /// <inheritdoc/>
-        public object ObjectValue => TargetNode != null ? TargetNode.Value : orphanObject;
+        public object ObjectValue => TargetNode != null ? TargetNode.Retrieve() : orphanObject;
 
         /// <summary>
         /// Gets the index of this reference in its parent collection. If the reference is not in a collection, this will return <see cref="Quantum.Index.Empty"/>.
@@ -56,16 +55,16 @@ namespace SiliconStudio.Quantum.References
             return index.IsEmpty;
         }
 
-        public void Refresh(IContentNode ownerNode, NodeContainer nodeContainer)
+        public void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer)
         {
             Refresh(ownerNode, nodeContainer, Index.Empty);
         }
 
-        internal void Refresh(IContentNode ownerNode, NodeContainer nodeContainer, Index index)
+        internal void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, Index index)
         {
             var objectValue = ownerNode.Retrieve(index);
 
-            var boxedTarget = TargetNode as BoxedContent;
+            var boxedTarget = TargetNode as BoxedNode;
             if (boxedTarget != null && objectValue?.GetType() == TargetNode.Type)
             {
                 // If we are boxing a struct, and the targeted type didn't change, we reuse the same nodes and just overwrite the struct value.
@@ -76,13 +75,13 @@ namespace SiliconStudio.Quantum.References
                     nodeContainer?.UpdateReferences(member);
                 }
             }
-            else if (TargetNode?.Value != objectValue)
+            else if (TargetNode?.Retrieve() != objectValue)
             {
                 // This call will recursively update the references.
                 var target = SetTarget(objectValue, nodeContainer);
                 if (target != null)
                 {
-                    var boxedContent = target as BoxedContent;
+                    var boxedContent = target as BoxedNode;
                     boxedContent?.SetOwnerContent(ownerNode, index);
                 }
             }
@@ -117,7 +116,7 @@ namespace SiliconStudio.Quantum.References
         /// </summary>
         /// <param name="objectValue">The value for which to set the target node.</param>
         /// <param name="nodeContainer">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
-        internal IContentNode SetTarget(object objectValue, NodeContainer nodeContainer)
+        internal IGraphNode SetTarget(object objectValue, NodeContainer nodeContainer)
         {
             if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
             var targetNode = nodeContainer.GetOrCreateNodeInternal(objectValue);
@@ -133,10 +132,12 @@ namespace SiliconStudio.Quantum.References
         {
             if (targetNode != null)
             {
-                if (targetNode.Value != null && !type.IsInstanceOfType(targetNode.Value))
+                var targetValue = targetNode.Retrieve();
+
+                if (targetValue != null && !type.IsInstanceOfType(targetValue))
                     throw new InvalidOperationException(@"The type of the retrieved node content does not match the type of this reference");
 
-                if (targetNode.Value != null && !type.IsInstanceOfType(targetNode.Value))
+                if (targetValue != null && !type.IsInstanceOfType(targetValue))
                     throw new InvalidOperationException("TargetNode type does not match the reference type.");
 
                 TargetNode = targetNode;

@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Physics
     [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<PhysicsColliderShape>))]
     [DataSerializerGlobal(typeof(CloneSerializer<PhysicsColliderShape>), Profile = "Clone")]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<PhysicsColliderShape>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<PhysicsColliderShape>), Profile = "Content")]
     public class PhysicsColliderShape : IDisposable
     {
         /// <summary>

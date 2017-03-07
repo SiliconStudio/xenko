@@ -3,7 +3,6 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Tests
 {
@@ -34,14 +33,14 @@ namespace SiliconStudio.Quantum.Tests
             var container = new ListContainer { List = { new SimpleObject(), new SimpleObject() } };
             var containerNode = nodeContainer.GetOrCreateNode(container);
             var oldList = container.List;
-            var oldItem1Node = containerNode[nameof(ListContainer.List)].IndexedTarget(new Index(0));
-            var oldItem2Node = containerNode[nameof(ListContainer.List)].IndexedTarget(new Index(1));
+            var oldItem1Node = containerNode[nameof(ListContainer.List)].Target.IndexedTarget(new Index(0));
+            var oldItem2Node = containerNode[nameof(ListContainer.List)].Target.IndexedTarget(new Index(1));
             containerNode[nameof(ListContainer.List)].Update(new List<SimpleObject> { new SimpleObject(), new SimpleObject() });
             Assert.AreNotEqual(oldList, containerNode[nameof(ListContainer.List)].Retrieve());
-            Assert.AreNotEqual(oldItem1Node, containerNode[nameof(ListContainer.List)].IndexedTarget(new Index(0)));
-            Assert.AreNotEqual(oldItem1Node.Retrieve(), containerNode[nameof(ListContainer.List)].IndexedTarget(new Index(0)).Retrieve());
-            Assert.AreNotEqual(oldItem2Node, containerNode[nameof(ListContainer.List)].IndexedTarget(new Index(1)));
-            Assert.AreNotEqual(oldItem2Node.Retrieve(), containerNode[nameof(ListContainer.List)].IndexedTarget(new Index(1)).Retrieve());
+            Assert.AreNotEqual(oldItem1Node, containerNode[nameof(ListContainer.List)].Target.IndexedTarget(new Index(0)));
+            Assert.AreNotEqual(oldItem1Node.Retrieve(), containerNode[nameof(ListContainer.List)].Target.IndexedTarget(new Index(0)).Retrieve());
+            Assert.AreNotEqual(oldItem2Node, containerNode[nameof(ListContainer.List)].Target.IndexedTarget(new Index(1)));
+            Assert.AreNotEqual(oldItem2Node.Retrieve(), containerNode[nameof(ListContainer.List)].Target.IndexedTarget(new Index(1)).Retrieve());
         }
 
         [Test]
@@ -57,14 +56,14 @@ namespace SiliconStudio.Quantum.Tests
             VerifyItem(memberNode, 2, items[0], false);
             VerifyItem(memberNode, 3, items[1], false);
 
-            memberNode.Add(items[0]);
+            memberNode.Target.Add(items[0]);
             VerifyItem(memberNode, 0, items[0], false);
             VerifyItem(memberNode, 1, items[1], false);
             VerifyItem(memberNode, 2, items[0], false);
             VerifyItem(memberNode, 3, items[1], false);
             VerifyItem(memberNode, 4, items[0], false);
 
-            memberNode.Update(items[1], new Index(2));
+            memberNode.Target.Update(items[1], new Index(2));
             VerifyItem(memberNode, 0, items[0], false);
             VerifyItem(memberNode, 1, items[1], false);
             VerifyItem(memberNode, 2, items[1], false);
@@ -85,13 +84,13 @@ namespace SiliconStudio.Quantum.Tests
             VerifyItem(memberNode, 1, items[1], false);
 
             // Add a new item
-            memberNode.Add(items[2]);
+            memberNode.Target.Add(items[2]);
             VerifyItem(memberNode, 0, items[0], false);
             VerifyItem(memberNode, 1, items[1], false);
             VerifyItem(memberNode, 2, items[2], false);
 
             // Update existing item (with a different type here)
-            memberNode.Update(items[3], new Index(2));
+            memberNode.Target.Update(items[3], new Index(2));
             VerifyItem(memberNode, 0, items[0], false);
             VerifyItem(memberNode, 1, items[1], false);
             VerifyItem(memberNode, 2, items[3], false);
@@ -111,13 +110,13 @@ namespace SiliconStudio.Quantum.Tests
             VerifyItem(memberNode, 1, 2.0f, true);
 
             // Add a new item
-            memberNode.Add(3.0f);
+            memberNode.Target.Add(3.0f);
             VerifyItem(memberNode, 0, 1.0f, true);
             VerifyItem(memberNode, 1, 2.0f, true);
             VerifyItem(memberNode, 2, 3.0f, true);
 
             // Update existing item (with a different type here)
-            memberNode.Update(4.0, new Index(2));
+            memberNode.Target.Update(4.0, new Index(2));
             VerifyItem(memberNode, 0, 1.0f, true);
             VerifyItem(memberNode, 1, 2.0f, true);
             VerifyItem(memberNode, 2, 4.0, true);
@@ -135,14 +134,14 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(values[1], container.ObjectMember);
             Assert.AreEqual(container.ObjectMember, containerNode[nameof(ListContainer.ObjectMember)].Retrieve());
             Assert.AreEqual(true, containerNode[nameof(ListContainer.ObjectMember)].IsReference);
-            Assert.NotNull(containerNode[nameof(ListContainer.ObjectMember)].Indices);
-            Assert.AreEqual(2, containerNode[nameof(ListContainer.ObjectMember)].Indices.Count());
-            Assert.AreEqual(new Index(0), containerNode[nameof(ListContainer.ObjectMember)].Indices.ToList()[0]);
-            Assert.AreEqual(new Index(1), containerNode[nameof(ListContainer.ObjectMember)].Indices.ToList()[1]);
+            Assert.NotNull(containerNode[nameof(ListContainer.ObjectMember)].Target.Indices);
+            Assert.AreEqual(2, containerNode[nameof(ListContainer.ObjectMember)].Target.Indices.Count());
+            Assert.AreEqual(new Index(0), containerNode[nameof(ListContainer.ObjectMember)].Target.Indices.ToList()[0]);
+            Assert.AreEqual(new Index(1), containerNode[nameof(ListContainer.ObjectMember)].Target.Indices.ToList()[1]);
             Assert.AreEqual(TypeDescriptorFactory.Default.Find(typeof(object)), containerNode[nameof(ListContainer.ObjectMember)].Descriptor);
             Assert.IsFalse(containerNode[nameof(ListContainer.ObjectMember)].IsPrimitive);
-            Assert.AreEqual(((IList)values[1])[0], containerNode[nameof(ListContainer.ObjectMember)].IndexedTarget(new Index(0)));
-            Assert.AreEqual(((IList)values[1])[1], containerNode[nameof(ListContainer.ObjectMember)].IndexedTarget(new Index(1)));
+            Assert.AreEqual(((IList)values[1])[0], containerNode[nameof(ListContainer.ObjectMember)].Target.IndexedTarget(new Index(0)));
+            Assert.AreEqual(((IList)values[1])[1], containerNode[nameof(ListContainer.ObjectMember)].Target.IndexedTarget(new Index(1)));
             Assert.AreEqual(typeof(object), containerNode[nameof(ListContainer.ObjectMember)].Type);
             // TODO: more things could be checked!
             containerNode[nameof(ListContainer.ObjectMember)].Update(values[2]);
@@ -152,12 +151,13 @@ namespace SiliconStudio.Quantum.Tests
 
         private static void VerifyItem(IMemberNode listMemberNode, int index, object expectedValue, bool isPrimitive)
         {
-            var enumRef = listMemberNode.ItemReferences;
+            var targetNode = listMemberNode.Target;
+            var enumRef = targetNode.ItemReferences;
             var indexValue = new Index(index);
 
             Assert.NotNull(enumRef);
-            Assert.NotNull(listMemberNode.Indices);
-            Assert.AreEqual(indexValue, listMemberNode.Indices.ToList()[index]);
+            Assert.NotNull(targetNode.Indices);
+            Assert.AreEqual(indexValue, targetNode.Indices.ToList()[index]);
             Assert.AreEqual(indexValue, enumRef.Indices.ToList()[index]);
             Assert.AreEqual(indexValue, enumRef.ToList()[index].Index);
             Assert.AreEqual(expectedValue, enumRef.ToList()[index].ObjectValue);
@@ -166,10 +166,8 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(TypeDescriptorFactory.Default.Find(expectedValue.GetType()), enumRef.ToList()[index].TargetNode.Descriptor);
             Assert.AreEqual(isPrimitive, enumRef.ToList()[index].TargetNode.IsPrimitive);
             Assert.AreEqual(false, enumRef.ToList()[index].TargetNode.IsReference);
-            Assert.Null(enumRef.ToList()[index].TargetNode.TargetReference);
-            Assert.Null(enumRef.ToList()[index].TargetNode.ItemReferences);
             Assert.AreEqual(expectedValue.GetType(), enumRef.ToList()[index].TargetNode.Type);
-            Assert.AreEqual(expectedValue, enumRef.ToList()[index].TargetNode.Value);
+            Assert.AreEqual(expectedValue, enumRef.ToList()[index].TargetNode.Retrieve());
         }
     }
 }
