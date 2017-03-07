@@ -185,6 +185,7 @@
     <Compile Include="AsyncBridgeProcessor.cs" />
     <Compile Include="CecilArraySerializerFactory.cs" />
     <Compile Include="ComplexSerializerGenerator.cs" />
+    <Compile Include="Core\NotNullAttribute.cs" />
     <Compile Include="CustomAssemblyResolver.cs" />
     <Compile Include="DataContractAliasProcessor.cs" />
     <Compile Include="DispatcherProcessor.cs" />
