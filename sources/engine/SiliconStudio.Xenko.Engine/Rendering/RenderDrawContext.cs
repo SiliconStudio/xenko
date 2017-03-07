@@ -129,25 +129,26 @@ namespace SiliconStudio.Xenko.Rendering
             private const int MaxViewportAndScissorRectangleCount = 16;
 
             public int RenderTargetCount;
-            public int ViewportCounts;
+            public int ViewportCount;
 
             public readonly Viewport[] Viewports = new Viewport[MaxViewportAndScissorRectangleCount];
-            public readonly Rectangle[] ScissorRectangles = new Rectangle[MaxViewportAndScissorRectangleCount];
             public readonly Texture[] RenderTargets = new Texture[MaxRenderTargetCount];
             public Texture DepthStencilBuffer;
 
             public void Capture(CommandList commandList)
             {
                 RenderTargetCount = commandList.RenderTargetCount;
-                ViewportCounts = commandList.ViewportCount;
+                ViewportCount = commandList.ViewportCount;
                 DepthStencilBuffer = commandList.DepthStencilBuffer;
-
+                
+                // TODO: Backup scissor rectangles and restore them
+                
                 for (int i = 0; i < RenderTargetCount; i++)
                 {
                     RenderTargets[i] = commandList.RenderTargets[i];
                 }
 
-                for (int i = 0; i < ViewportCounts; i++)
+                for (int i = 0; i < ViewportCount; i++)
                 {
                     Viewports[i] = commandList.Viewports[i];
                 }
@@ -156,7 +157,7 @@ namespace SiliconStudio.Xenko.Rendering
             public void Restore(CommandList commandList)
             {
                 commandList.SetRenderTargets(DepthStencilBuffer, RenderTargetCount, RenderTargets);
-                commandList.SetViewports(RenderTargetCount, Viewports);
+                commandList.SetViewports(ViewportCount, Viewports);
             }
         }
 
