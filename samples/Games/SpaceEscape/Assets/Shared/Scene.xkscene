@@ -1,35 +1,8 @@
 !SceneAsset
 Id: 7207a5b4-cbf4-4edc-a7fb-0dfa83e2414e
-SerializedVersion: {Xenko: 1.9.0-beta06}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: 35bdf1bb-0eaa-4c45-8b95-7e55108786aa
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            9fa6ff9bcbdd9841a7179dd73430f2d7:
-                Name: null
-                Camera: f0bb69db-f15c-4a39-b3cd-d2941fdb99ce/021212a7-5b24-41de-8e59-9e1e066ac0ed
-        ModelEffect: SpaceEscapeEffectMain
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                bc1ee29356f4e0418901609c65dc66e1: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                a39b7ab1f4e49941a6edd1c6ccebc200: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - f0bb69db-f15c-4a39-b3cd-d2941fdb99ce
@@ -183,8 +156,10 @@ Hierarchy:
                         Children: {}
                     a7121202245bde418e599e1e066ac0ed: !CameraComponent
                         Id: 021212a7-5b24-41de-8e59-9e1e066ac0ed
+                        Name: null
                         Projection: Perspective
                         VerticalFieldOfView: 72.0
                         NearClipPlane: 1.0
                         FarClipPlane: 340.0
                         AspectRatio: 0.563
+                        Slot: {Index: 0}

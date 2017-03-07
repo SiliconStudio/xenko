@@ -1,34 +1,8 @@
 !SceneAsset
 Id: d23da80d-8ef3-4400-9f16-190a9c6bd3b3
-SerializedVersion: {Xenko: 1.9.0-beta06}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: f3526002-9bc4-4ab4-819f-af3429bca2b6
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            541cc0ca79fb78439083b407b8bfd861:
-                Name: null
-                Camera: 0b04edaf-f330-4ae1-9d93-517d967fbe95/9be240a7-a303-4cc1-9aa1-0eb9365669ec
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                35a5706b7a4aa34481059405817c7391: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                5fdad645046f2d4290b2d898b5aa7d06: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - 0b04edaf-f330-4ae1-9d93-517d967fbe95
@@ -52,8 +26,10 @@ Hierarchy:
                         Children: {}
                     a740e29b03a3c14c9aa10eb9365669ec: !CameraComponent
                         Id: 9be240a7-a303-4cc1-9aa1-0eb9365669ec
+                        Name: null
                         Projection: Orthographic
                         NearClipPlane: 1.0
+                        Slot: {Index: 0}
         -   Entity:
                 Id: 2a05c636-e91f-42e6-93ed-69415d19fe2f
                 Name: Background

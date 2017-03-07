@@ -1276,13 +1276,15 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         private void RemoveUselessVariables()
         {
             var variablesUsages = MixedShader.Members.OfType<Variable>().ToDictionary(variable => variable, variable => false);
-            
+
+            // Scan cbuffer
             foreach (var constantBuffer in MixedShader.Members.OfType<ConstantBuffer>())
             {
                 foreach (var variable in constantBuffer.Members.OfType<Variable>().ToList())
                     variablesUsages.Add(variable, false);
             }
 
+            // Remove "extern" variables
             MixedShader.Members.RemoveAll(x => x is Variable && (x as Variable).Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Extern));
             
             var variableUsageVisitor = new XenkoVariableUsageVisitor(variablesUsages);
@@ -1290,6 +1292,10 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
             foreach (var variable in MixedShader.Members.OfType<Variable>().ToList())
             {
+                // Ignore variable with logical groups
+                if (variable.GetTag(XenkoTags.LogicalGroup) != null)
+                    continue;
+
                 bool used;
                 if (variablesUsages.TryGetValue(variable, out used))
                 {

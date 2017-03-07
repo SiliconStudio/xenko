@@ -1,28 +1,28 @@
 !GameSettingsAsset
 Id: ff5448d9-1102-418e-980e-a7f15a491e0c
-SerializedVersion: {Xenko: 1.6.1-alpha01}
+SerializedVersion: {Xenko: 1.9.3-alpha01}
 Tags: []
-DefaultScene: e01ad002-ab52-4d2e-bda8-ae3a441801f9/b47e4609-0125-41bd-a26e-0fdf9184327e:MainScene
+DefaultScene: b47e4609-0125-41bd-a26e-0fdf9184327e:MainScene
+GraphicsCompositor: a4115d3c-2413-4865-9972-0b01a90266d1:GraphicsCompositor
 Defaults:
     - !SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics
-        ~Id: fe786c74-69de-47ab-9ee7-026e5d690495
         DefaultBackBufferWidth: 800
         DefaultBackBufferHeight: 480
+        AdaptBackBufferToScreen: false
         DefaultGraphicsProfile: Level_10_0
         ColorSpace: Linear
         DisplayOrientation: Default
         PreferredGraphicsPlatform: Default
     - !SiliconStudio.Xenko.Assets.EditorSettings,SiliconStudio.Xenko.Assets
-        ~Id: 0aaef56f-38b4-4df4-9f51-d289e1c4c78c
         RenderingMode: HDR
     - !SiliconStudio.Xenko.Assets.Textures.TextureSettings,SiliconStudio.Xenko.Assets
-        ~Id: aca3e4fc-6676-4608-8b06-693899500426
         TextureQuality: Fast
     - !SiliconStudio.Xenko.Physics.PhysicsSettings,SiliconStudio.Xenko.Physics
-        ~Id: fc91e2b4-3443-41d8-8770-c174e521af2f
         Flags: None
         MaxSubSteps: 1
         FixedTimeStep: 0.0166666675
+    - !SiliconStudio.Xenko.Audio.AudioEngineSettings,SiliconStudio.Xenko.Audio
+        HrtfSupport: false
 Overrides: []
 PlatformFilters:
     - PowerVR SGX 54[0-9]

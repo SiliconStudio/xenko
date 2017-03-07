@@ -130,7 +130,7 @@ namespace SiliconStudio.Xenko.Engine.Design
         {
             if (cloneSerializerSelector == null)
             {
-                cloneSerializerSelector = new SerializerSelector(true, "Default", "Clone");
+                cloneSerializerSelector = new SerializerSelector(true, false, "Default", "Clone");
             }
 
             // Initialize CloneContext

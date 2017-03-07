@@ -66,14 +66,20 @@ namespace SiliconStudio.Core.Transactions
         public event EventHandler<EventArgs> Cleared;
 
         /// <inheritdoc/>
-        public ITransaction CreateTransaction()
+        public ITransaction CreateTransaction(TransactionFlags flags = TransactionFlags.None)
         {
             lock (lockObject)
             {
                 if (RollInProgress)
                     throw new TransactionException("Unable to create a transaction. A rollback or rollforward operation is in progress.");
 
-                var transaction = new Transaction(this);
+                var transaction = new Transaction(this, flags);
+                if ((flags & TransactionFlags.KeepParentsAlive) != 0)
+                {
+                    foreach (var parentTransaction in transactionsInProgress)
+                        parentTransaction.AddReference();
+                }
+
                 transactionsInProgress.Push(transaction);
                 TransactionInProgress = true;
                 return transaction;
@@ -192,6 +198,13 @@ namespace SiliconStudio.Core.Transactions
                     if (!TransactionInProgress)
                     {
                         TransactionCompleted?.Invoke(this, new TransactionEventArgs(transaction));
+                    }
+
+                    // Complete parent transactions
+                    if ((transaction.Flags & TransactionFlags.KeepParentsAlive) != 0)
+                    {
+                        foreach (var parentTransaction in transactionsInProgress.Reverse())
+                            parentTransaction.Complete();
                     }
                 }
             }

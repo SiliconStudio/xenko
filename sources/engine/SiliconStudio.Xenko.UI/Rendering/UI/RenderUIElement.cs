@@ -4,7 +4,6 @@ using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Rendering.UI
 {
-    [DefaultPipelinePlugin(typeof(UIPipelinePlugin))]
     public class RenderUIElement : RenderObject
     {
         public RenderUIElement(UIComponent uiComponent, TransformComponent transformComponent)

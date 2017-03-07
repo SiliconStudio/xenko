@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using SiliconStudio.Core.Annotations;
@@ -17,7 +18,8 @@ namespace SiliconStudio.Core.Extensions
         /// </summary>
         /// <param name="source">The IEnumerable to check.</param>
         /// <returns>Returns true if the data source is readonly, false otherwise.</returns>
-        public static bool IsReadOnly([NotNull] this IEnumerable source)
+        [Pure]
+        public static bool IsReadOnly([NoEnumeration, NotNull] this IEnumerable source)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
 
@@ -38,7 +40,7 @@ namespace SiliconStudio.Core.Extensions
         /// <typeparam name="T">Type of items provided by the enumerator.</typeparam>
         /// <param name="enumerator">Enumerator instance to iterate on.</param>
         /// <returns>Returns an enumerable that can be consume in a foreach statement.</returns>
-        [NotNull]
+        [NotNull, Pure]
         public static IEnumerable<T> Enumerate<T>([NotNull] this IEnumerator<T> enumerator)
         {
             while (enumerator.MoveNext())
@@ -51,14 +53,14 @@ namespace SiliconStudio.Core.Extensions
         /// <typeparam name="T">Type of items provided by the enumerator.</typeparam>
         /// <param name="enumerator">Enumerator instance to iterate on. (subtype is casted to T)</param>
         /// <returns>Returns a typed enumerable that can be consume in a foreach statement.</returns>
-        [NotNull]
+        [NotNull, Pure]
         public static IEnumerable<T> Enumerate<T>([NotNull] this IEnumerator enumerator)
         {
             while (enumerator.MoveNext())
                 yield return (T)enumerator.Current;
         }
 
-        [ItemNotNull, NotNull]
+        [NotNull, Pure]
         public static IEnumerable<Tuple<T1, T2>> Zip<T1, T2>([NotNull] this IEnumerable<T1> enumerable1, [NotNull] IEnumerable<T2> enumerable2)
         {
             if (enumerable1 == null) throw new ArgumentNullException(nameof(enumerable1));
@@ -92,7 +94,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">The source.</param>
         /// <param name="childrenSelector">The children selector.</param>
         /// <returns></returns>
-        [NotNull]
+        [NotNull, Pure]
         public static IEnumerable<T> SelectDeep<T>(this IEnumerable<T> source, [NotNull] Func<T, IEnumerable<T>> childrenSelector)
         {
             if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
@@ -120,7 +122,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">The root enumeration.</param>
         /// <param name="childrenSelector">A function that returns the children of an element.</param>
         /// <returns>An enumeration of all elements of source and their children in breadth-first order.</returns>
-        [NotNull]
+        [NotNull, Pure]
         public static IEnumerable<T> BreadthFirst<T>(this IEnumerable<T> source, [NotNull] Func<T, IEnumerable<T>> childrenSelector)
         {
             if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
@@ -149,12 +151,12 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">The root enumeration.</param>
         /// <param name="childrenSelector">A function that returns the children of an element.</param>
         /// <returns>An enumeration of all elements of source and their children in depth-first order.</returns>
-        [NotNull]
+        [NotNull, Pure]
         public static IEnumerable<T> DepthFirst<T>([NotNull] this IEnumerable<T> source, [NotNull] Func<T, IEnumerable<T>> childrenSelector)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
-
+            
             var nodes = new Stack<T>();
             foreach (var item in source)
             {
@@ -171,12 +173,13 @@ namespace SiliconStudio.Core.Extensions
             }
         }
 
-        [NotNull]
-        public static IEnumerable<T> Distinct<T, TKey>([NotNull] this IEnumerable<T> source, Func<T, TKey> selector)
+        [NotNull, Pure]
+        public static IEnumerable<T> Distinct<T, TKey>([NotNull] this IEnumerable<T> source, [NotNull] Func<T, TKey> selector)
         {
             return source.Distinct(new SelectorEqualityComparer<T, TKey>(selector));
         }
 
+        [Pure]
         public static bool Equals<T>(IEnumerable<T> a1, IEnumerable<T> a2, IEqualityComparer<T> comparer = null)
         {
             if (ReferenceEquals(a1, a2))
@@ -188,29 +191,30 @@ namespace SiliconStudio.Core.Extensions
             if (comparer == null)
                 comparer = EqualityComparer<T>.Default;
 
-            var e1 = a1.GetEnumerator();
-            var e2 = a2.GetEnumerator();
-
-            while (true)
+            using (var e1 = a1.GetEnumerator())
+            using (var e2 = a2.GetEnumerator())
             {
-                var move1 = e1.MoveNext();
-                var move2 = e2.MoveNext();
+                while (true)
+                {
+                    var move1 = e1.MoveNext();
+                    var move2 = e2.MoveNext();
 
-                // End of enumeration, success!
-                if (!move1 && !move2)
-                    break;
+                    // End of enumeration, success!
+                    if (!move1 && !move2)
+                        break;
 
-                // One of the IEnumerable is shorter than the other?
-                if (move1 ^ move2)
-                    return false;
+                    // One of the IEnumerable is shorter than the other?
+                    if (move1 ^ move2)
+                        return false;
 
-                if (!comparer.Equals(e1.Current, e2.Current))
-                    return false;
+                    if (!comparer.Equals(e1.Current, e2.Current))
+                        return false;
+                }
+                return true;
             }
-
-            return true;
         }
 
+        [Pure]
         public static bool SequenceEqual(this IEnumerable a1, IEnumerable a2)
         {
             if (ReferenceEquals(a1, a2))
@@ -245,6 +249,7 @@ namespace SiliconStudio.Core.Extensions
             }
         }
 
+        [Pure]
         public static bool AllEqual([NotNull] this IEnumerable<object> values, [CanBeNull] out object value)
         {
             value = null;
@@ -305,11 +310,11 @@ namespace SiliconStudio.Core.Extensions
         {
             private readonly Func<T, TKey> selector;
 
-            public SelectorEqualityComparer(Func<T, TKey> selector)
+            public SelectorEqualityComparer([NotNull] Func<T, TKey> selector)
             {
                 this.selector = selector;
             }
-
+            
             public bool Equals(T x, T y)
             {
                 var keyX = selector(x);
@@ -322,7 +327,7 @@ namespace SiliconStudio.Core.Extensions
 
                 return selector(x).Equals(selector(y));
             }
-
+            
             public int GetHashCode(T obj)
             {
                 var key = selector(obj);

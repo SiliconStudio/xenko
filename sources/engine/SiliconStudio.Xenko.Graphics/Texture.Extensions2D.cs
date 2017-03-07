@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <remarks>
         /// Each value in textureData is a pixel in the destination texture.
         /// </remarks>
-        public unsafe static Texture New2D<T>(GraphicsDevice device, int width, int height, PixelFormat format, T[] textureData, TextureFlags textureFlags = TextureFlags.ShaderResource, GraphicsResourceUsage usage = GraphicsResourceUsage.Immutable) where T : struct
+        public static unsafe Texture New2D<T>(GraphicsDevice device, int width, int height, PixelFormat format, T[] textureData, TextureFlags textureFlags = TextureFlags.ShaderResource, GraphicsResourceUsage usage = GraphicsResourceUsage.Immutable) where T : struct
         {
             return New2D(device, width, height, 1, format, new []{ GetDataBox(format, width, height, 1, textureData, (IntPtr)Interop.Fixed(textureData)) }, textureFlags, 1, usage);
         }
@@ -94,6 +94,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="textureFlags">true if the texture needs to support unordered read write.</param>
         /// <param name="arraySize">Size of the texture 2D array, default to 1.</param>
         /// <param name="usage">The usage.</param>
+        /// <param name="msaaLevel">The level of MSAA</param>
         /// <returns>A new instance of 2D <see cref="Texture" /> class.</returns>
         public static Texture New2D(
             GraphicsDevice device,
@@ -104,9 +105,10 @@ namespace SiliconStudio.Xenko.Graphics
             DataBox[] textureData,
             TextureFlags textureFlags = TextureFlags.ShaderResource,
             int arraySize = 1,
-            GraphicsResourceUsage usage = GraphicsResourceUsage.Default)
+            GraphicsResourceUsage usage = GraphicsResourceUsage.Default,
+            MSAALevel msaaLevel = MSAALevel.None)
         {
-            return new Texture(device).InitializeFrom(TextureDescription.New2D(width, height, mipCount, format, textureFlags, arraySize, usage), textureData);
+            return new Texture(device).InitializeFrom(TextureDescription.New2D(width, height, mipCount, format, textureFlags, arraySize, usage, msaaLevel), textureData);
         }
     }
 }

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.IO;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Assets
@@ -13,7 +14,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="assetItem">The asset item.</param>
         /// <returns></returns>
-        public static string GetProjectInclude(this AssetItem assetItem)
+        public static string GetProjectInclude([NotNull] this AssetItem assetItem)
         {
             var assetFullPath = assetItem.FullPath;
             var projectFullPath = assetItem.SourceProject;
@@ -25,7 +26,8 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="assetItem">The asset item.</param>
         /// <returns></returns>
-        public static UFile GetGeneratedAbsolutePath(this AssetItem assetItem)
+        [NotNull]
+        public static UFile GetGeneratedAbsolutePath([NotNull] this AssetItem assetItem)
         {
             return new UFile(new UFile(assetItem.FullPath).GetFullPathWithoutExtension() + ".cs");
         }
@@ -35,7 +37,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="assetItem">The asset item.</param>
         /// <returns></returns>
-        public static string GetGeneratedInclude(this AssetItem assetItem)
+        public static string GetGeneratedInclude([NotNull] this AssetItem assetItem)
         {
             return Path.ChangeExtension(GetProjectInclude(assetItem), ".cs");
         }

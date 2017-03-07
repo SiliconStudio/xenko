@@ -1,0 +1,68 @@
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Shadows
+{
+    /// <summary>
+    /// Selects the shadow map and computes the shadow factor.
+    /// </summary>
+    internal shader ShadowMapReceiverPointCubeMap<int TLightCount> : ShadowMapGroup<PerDraw.Lighting>, ShadowMapFilterBase<PerDraw.Lighting>, PositionStream4, ShaderBaseStream, LightStream
+    {
+        cbuffer PerDraw.Lighting
+        {
+            float4x4 WorldToShadow[TLightCount*6];
+            float DepthBiases[TLightCount];
+            float2 DepthParameters[TLightCount];
+        };
+
+        override void ComputeShadow(int lightIndex)
+        {
+            // TODO: This already gets computed for lighting, so it's calculated a second time here while it should not be
+            float3 lightPosition = streams.lightPositionWS.xyz;
+            float3 lightDelta = streams.PositionWS.xyz - lightPosition;
+            float distanceToLight = length(lightDelta);
+            float3 direction = lightDelta / distanceToLight;
+            float3 directionAbs = abs(direction);
+            
+            float longestAxis = max(directionAbs.x, max(directionAbs.y, directionAbs.z));
+
+            int faceIndex;
+            float lightSpaceZ;
+            
+            // Select the base face index for either X,Y or Z facing
+            [flatten]
+            if(directionAbs.x == longestAxis)
+            {
+                lightSpaceZ = lightDelta.x;
+                faceIndex = 2;
+            }
+            else if(directionAbs.y == longestAxis)
+            {
+                lightSpaceZ = lightDelta.y;
+                faceIndex = 4;
+            }
+            else // direction.z == longestAxis
+            {
+                lightSpaceZ = lightDelta.z;
+                faceIndex = 0;
+            }
+            
+            // Apply offset for the negative side of a direction (+1)
+            float lightSpaceZDirection = sign(lightSpaceZ);
+            faceIndex += int(-min(0.0, lightSpaceZDirection));
+
+            // Map to texture space
+            float4 projectedPosition = mul(streams.PositionWS, WorldToShadow[lightIndex*6+faceIndex]);
+            projectedPosition /= projectedPosition.w;
+
+            // Apply bias
+            distanceToLight -= DepthBiases[lightIndex];
+
+            // Scale distance to light depth buffer range 
+            float depth = (distanceToLight - DepthParameters[lightIndex].x) * DepthParameters[lightIndex].y;
+
+            // Compare distance to light to value inside of the shadow map
+            streams.shadowColor = FilterShadow(projectedPosition.xy, depth);
+        }
+    };
+}

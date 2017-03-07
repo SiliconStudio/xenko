@@ -5,6 +5,7 @@ Tags: []
 Source: ../../Resources/model/character/scene/ma02.FBX
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 RepeatMode: PlayOnce
+Type: !StandardAnimationAssetType {}
 Skeleton: bfe057df-2fd1-402a-97bc-bd16edee241a:character_00 Skeleton
 RootMotion: false
 PreviewModel: 920f4445-c00d-474f-b8c0-33b385d58b8f:character_00

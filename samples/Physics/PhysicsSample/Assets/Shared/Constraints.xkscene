@@ -1,34 +1,8 @@
 !SceneAsset
 Id: 45f5d521-b83c-4608-937d-64f93812fba7
-SerializedVersion: {Xenko: 1.9.0-beta06}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: 149f50ac-ff22-47de-9fef-74012dd59eaa
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            03853b06d0f9004aa8a225ba313818c3:
-                Name: null
-                Camera: b7690cff-f2ad-4f33-ae7e-26573f84dd7f/f78e32b9-12e9-4587-9032-34c0b683f570
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                e6ba3bc283f132429d3efc0057a55cce: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                b735c8bada0f49478d84570f20e3bf2c: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - b7690cff-f2ad-4f33-ae7e-26573f84dd7f
@@ -172,8 +146,10 @@ Hierarchy:
                         Children: {}
                     b9328ef7e9128745903234c0b683f570: !CameraComponent
                         Id: f78e32b9-12e9-4587-9032-34c0b683f570
+                        Name: null
                         Projection: Perspective
                         FarClipPlane: 100.0
+                        Slot: {Index: 0}
         -   Entity:
                 Id: e6289325-fb51-4913-84a6-96f4faa42f40
                 Name: Ambient light

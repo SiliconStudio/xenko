@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Tests
@@ -70,9 +69,9 @@ namespace SiliconStudio.Quantum.Tests
 
         public class TestLinker : GraphNodeLinker
         {
-            public Dictionary<IContentNode, IContentNode> LinkedNodes = new Dictionary<IContentNode, IContentNode>();
+            public Dictionary<IGraphNode, IGraphNode> LinkedNodes = new Dictionary<IGraphNode, IGraphNode>();
 
-            protected override void LinkNodes(IContentNode sourceNode, IContentNode targetNode)
+            protected override void LinkNodes(IGraphNode sourceNode, IGraphNode targetNode)
             {
                 LinkedNodes.Add(sourceNode, targetNode);
                 base.LinkNodes(sourceNode, targetNode);
@@ -91,9 +90,9 @@ namespace SiliconStudio.Quantum.Tests
 
             public IObjectNode CustomTarget { get; }
 
-            protected override IContentNode FindTarget(IContentNode sourceNode)
+            protected override IGraphNode FindTarget(IGraphNode sourceNode)
             {
-                if (sourceNode is ObjectContent && sourceNode.Type == typeof(SimpleClass) && sourceNode != root)
+                if (sourceNode is IObjectNode && sourceNode.Type == typeof(SimpleClass) && sourceNode != root)
                 {
                     return CustomTarget;
                 }
@@ -103,18 +102,17 @@ namespace SiliconStudio.Quantum.Tests
 
         public class CustomFindTargetReferenceLinker : TestLinker
         {
-            protected override ObjectReference FindTargetReference(IContentNode sourceNode, IContentNode targetNode, ObjectReference sourceReference)
+            public override ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
             {
                 if (sourceReference.Index.IsEmpty)
                     return base.FindTargetReference(sourceNode, targetNode, sourceReference);
 
                 var matchValue = 0;
                 if (sourceReference.TargetNode != null)
-                    matchValue = (int)sourceReference.TargetNode[nameof(SimpleClass.Member1)].Value;
+                    matchValue = (int)sourceReference.TargetNode[nameof(SimpleClass.Member1)].Retrieve();
 
-                var targetReference = targetNode.ItemReferences;
-                return targetReference?.FirstOrDefault(x => (int)x.TargetNode[nameof(SimpleClass.Member1)].Value == matchValue);
-
+                var targetReference = (targetNode as IObjectNode)?.ItemReferences;
+                return targetReference?.FirstOrDefault(x => (int)x.TargetNode[nameof(SimpleClass.Member1)].Retrieve() == matchValue);
             }
         }
 
@@ -128,7 +126,7 @@ namespace SiliconStudio.Quantum.Tests
             var target = nodeContainer.GetOrCreateNode(instance2);
             var linker = new TestLinker();
             linker.LinkGraph(source, target);
-            var expectedLinks = new Dictionary<IContentNode, IContentNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
@@ -150,41 +148,18 @@ namespace SiliconStudio.Quantum.Tests
             var target = nodeContainer.GetOrCreateNode(instance2);
             var linker = new TestLinker();
             linker.LinkGraph(source, target);
-            Index index = new Index(0);
-            IContentNode tempQualifier = source[nameof(SimpleClass.Member2)];
-            Index index1 = new Index(0);
-            IContentNode tempQualifier1 = target[nameof(SimpleClass.Member2)];
-            Index index2 = new Index(0);
-            IContentNode tempQualifier2 = source[nameof(SimpleClass.Member2)];
-            Index index3 = new Index(0);
-            IContentNode tempQualifier3 = target[nameof(SimpleClass.Member2)];
-            Index index4 = new Index(0);
-            IContentNode tempQualifier4 = source[nameof(SimpleClass.Member2)];
-            Index index5 = new Index(0);
-            IContentNode tempQualifier5 = target[nameof(SimpleClass.Member2)];
-            Index index6 = new Index(1);
-            IContentNode tempQualifier6 = source[nameof(SimpleClass.Member2)];
-            Index index7 = new Index(1);
-            IContentNode tempQualifier7 = target[nameof(SimpleClass.Member2)];
-            Index index8 = new Index(1);
-            IContentNode tempQualifier8 = source[nameof(SimpleClass.Member2)];
-            Index index9 = new Index(1);
-            IContentNode tempQualifier9 = target[nameof(SimpleClass.Member2)];
-            Index index10 = new Index(1);
-            IContentNode tempQualifier10 = source[nameof(SimpleClass.Member2)];
-            Index index11 = new Index(1);
-            IContentNode tempQualifier11 = target[nameof(SimpleClass.Member2)];
-            var expectedLinks = new Dictionary<IContentNode, IContentNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
                 { source[nameof(SimpleClass.Member2)], target[nameof(SimpleClass.Member2)] },
-                { tempQualifier.IndexedTarget(index), tempQualifier1.IndexedTarget(index1) },
-                { tempQualifier2.IndexedTarget(index2)[nameof(SimpleClass.Member1)], tempQualifier3.IndexedTarget(index3)[nameof(SimpleClass.Member1)] },
-                { tempQualifier4.IndexedTarget(index4)[nameof(SimpleClass.Member2)], tempQualifier5.IndexedTarget(index5)[nameof(SimpleClass.Member2)] },
-                { tempQualifier6.IndexedTarget(index6), tempQualifier7.IndexedTarget(index7) },
-                { tempQualifier8.IndexedTarget(index8)[nameof(SimpleClass.Member1)], tempQualifier9.IndexedTarget(index9)[nameof(SimpleClass.Member1)] },
-                { tempQualifier10.IndexedTarget(index10)[nameof(SimpleClass.Member2)], tempQualifier11.IndexedTarget(index11)[nameof(SimpleClass.Member2)] },
+                { source[nameof(SimpleClass.Member2)].Target, target[nameof(SimpleClass.Member2)].Target },
+                { source[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(0)), target[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(0)) },
+                { source[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(0))[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(0))[nameof(SimpleClass.Member1)] },
+                { source[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(0))[nameof(SimpleClass.Member2)], target[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(0))[nameof(SimpleClass.Member2)] },
+                { source[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(1)), target[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(1)) },
+                { source[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(1))[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(1))[nameof(SimpleClass.Member1)] },
+                { source[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(1))[nameof(SimpleClass.Member2)], target[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(1))[nameof(SimpleClass.Member2)] },
             };
             VerifyLinks(expectedLinks, linker);
         }
@@ -199,7 +174,7 @@ namespace SiliconStudio.Quantum.Tests
             var target = nodeContainer.GetOrCreateNode(instance2);
             var linker = new TestLinker();
             linker.LinkGraph(source, target);
-            var expectedLinks = new Dictionary<IContentNode, IContentNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
@@ -221,7 +196,7 @@ namespace SiliconStudio.Quantum.Tests
             var target = nodeContainer.GetOrCreateNode(instance2);
             var linker = new TestLinker();
             linker.LinkGraph(source, target);
-            var expectedLinks = new Dictionary<IContentNode, IContentNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source[nameof(StructClass.Member1)], target[nameof(StructClass.Member1)] },
@@ -246,7 +221,7 @@ namespace SiliconStudio.Quantum.Tests
             var target = nodeContainer.GetOrCreateNode(instance2);
             var linker = new TestLinker();
             linker.LinkGraph(source, target);
-            var expectedLinks = new Dictionary<IContentNode, IContentNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source[nameof(InterfaceMember.Member1)], target[nameof(InterfaceMember.Member1)] },
@@ -271,7 +246,7 @@ namespace SiliconStudio.Quantum.Tests
             var target = nodeContainer.GetOrCreateNode(instance2);
             var linker = new CustomFindTargetLinker(nodeContainer, source);
             linker.LinkGraph(source, target);
-            var expectedLinks = new Dictionary<IContentNode, IContentNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
@@ -294,50 +269,21 @@ namespace SiliconStudio.Quantum.Tests
             var linker = new CustomFindTargetReferenceLinker();
             linker.LinkGraph(source, target);
             // Expected links by index: 0 -> 2, 1 -> 0, 2 -> null
-            Index index = new Index(0);
-            IContentNode tempQualifier = source[nameof(SimpleClass.Member2)];
-            Index index1 = new Index(2);
-            IContentNode tempQualifier1 = target[nameof(SimpleClass.Member2)];
-            Index index2 = new Index(0);
-            IContentNode tempQualifier2 = source[nameof(SimpleClass.Member2)];
-            Index index3 = new Index(2);
-            IContentNode tempQualifier3 = target[nameof(SimpleClass.Member2)];
-            Index index4 = new Index(0);
-            IContentNode tempQualifier4 = source[nameof(SimpleClass.Member2)];
-            Index index5 = new Index(2);
-            IContentNode tempQualifier5 = target[nameof(SimpleClass.Member2)];
-            Index index6 = new Index(1);
-            IContentNode tempQualifier6 = source[nameof(SimpleClass.Member2)];
-            Index index7 = new Index(0);
-            IContentNode tempQualifier7 = target[nameof(SimpleClass.Member2)];
-            Index index8 = new Index(1);
-            IContentNode tempQualifier8 = source[nameof(SimpleClass.Member2)];
-            Index index9 = new Index(0);
-            IContentNode tempQualifier9 = target[nameof(SimpleClass.Member2)];
-            Index index10 = new Index(1);
-            IContentNode tempQualifier10 = source[nameof(SimpleClass.Member2)];
-            Index index11 = new Index(0);
-            IContentNode tempQualifier11 = target[nameof(SimpleClass.Member2)];
-            Index index12 = new Index(2);
-            IContentNode tempQualifier12 = source[nameof(SimpleClass.Member2)];
-            Index index13 = new Index(2);
-            IContentNode tempQualifier13 = source[nameof(SimpleClass.Member2)];
-            Index index14 = new Index(2);
-            IContentNode tempQualifier14 = source[nameof(SimpleClass.Member2)];
-            var expectedLinks = new Dictionary<IContentNode, IContentNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
                 { source[nameof(SimpleClass.Member2)], target[nameof(SimpleClass.Member2)] },
-                { tempQualifier.IndexedTarget(index), tempQualifier1.IndexedTarget(index1) },
-                { tempQualifier2.IndexedTarget(index2)[nameof(SimpleClass.Member1)], tempQualifier3.IndexedTarget(index3)[nameof(SimpleClass.Member1)] },
-                { tempQualifier4.IndexedTarget(index4)[nameof(SimpleClass.Member2)], tempQualifier5.IndexedTarget(index5)[nameof(SimpleClass.Member2)] },
-                { tempQualifier6.IndexedTarget(index6), tempQualifier7.IndexedTarget(index7) },
-                { tempQualifier8.IndexedTarget(index8)[nameof(SimpleClass.Member1)], tempQualifier9.IndexedTarget(index9)[nameof(SimpleClass.Member1)] },
-                { tempQualifier10.IndexedTarget(index10)[nameof(SimpleClass.Member2)], tempQualifier11.IndexedTarget(index11)[nameof(SimpleClass.Member2)] },
-                { tempQualifier12.IndexedTarget(index12), null },
-                { tempQualifier13.IndexedTarget(index13)[nameof(SimpleClass.Member1)], null },
-                { tempQualifier14.IndexedTarget(index14)[nameof(SimpleClass.Member2)], null },
+                { source[nameof(SimpleClass.Member2)].Target, target[nameof(SimpleClass.Member2)].Target },
+                { source[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(0)), target[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(2)) },
+                { source[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(0))[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(2))[nameof(SimpleClass.Member1)] },
+                { source[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(0))[nameof(SimpleClass.Member2)], target[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(2))[nameof(SimpleClass.Member2)] },
+                { source[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(1)), target[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(0)) },
+                { source[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(1))[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(0))[nameof(SimpleClass.Member1)] },
+                { source[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(1))[nameof(SimpleClass.Member2)], target[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(0))[nameof(SimpleClass.Member2)] },
+                { source[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(2)), null },
+                { source[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(2))[nameof(SimpleClass.Member1)], null },
+                { source[nameof(SimpleClass.Member2)].Target.IndexedTarget(new Index(2))[nameof(SimpleClass.Member2)], null },
             };
             VerifyLinks(expectedLinks, linker);
         }
@@ -354,7 +300,7 @@ namespace SiliconStudio.Quantum.Tests
             var target = nodeContainer.GetOrCreateNode(instance2);
             var linker = new TestLinker();
             linker.LinkGraph(source, target);
-            var expectedLinks = new Dictionary<IContentNode, IContentNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
@@ -363,12 +309,12 @@ namespace SiliconStudio.Quantum.Tests
             VerifyLinks(expectedLinks, linker);
         }
 
-        private static void VerifyLinks(Dictionary<IContentNode, IContentNode> expectedLinks, TestLinker linker)
+        private static void VerifyLinks(Dictionary<IGraphNode, IGraphNode> expectedLinks, TestLinker linker)
         {
             Assert.AreEqual(expectedLinks.Count, linker.LinkedNodes.Count);
             foreach (var link in expectedLinks)
             {
-                IContentNode actualTarget;
+                IGraphNode actualTarget;
                 Assert.True(linker.LinkedNodes.TryGetValue(link.Key, out actualTarget));
                 Assert.AreEqual(link.Value, actualTarget);
             }

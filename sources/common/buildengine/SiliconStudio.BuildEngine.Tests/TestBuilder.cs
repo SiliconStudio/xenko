@@ -8,7 +8,8 @@ using SiliconStudio.BuildEngine.Tests.Commands;
 
 namespace SiliconStudio.BuildEngine.Tests
 {
-    [TestFixture]
+    // These tests are deprecated, let's ignore them
+    [TestFixture, Ignore("BuildEngine tests are deprecated")]
     public class TestBuilder
     {
         [Test]

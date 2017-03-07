@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Shadows;
@@ -23,6 +24,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <summary>
         /// Next light renderer we can send our unprocessed lights to.
         /// </summary>
+        [DataMember]
         public LightGroupRendererBase NonShadowRenderer { get; set; }
 
         public override void Initialize(RenderContext context)

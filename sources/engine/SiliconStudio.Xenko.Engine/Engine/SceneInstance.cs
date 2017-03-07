@@ -2,30 +2,26 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine.Design;
-using SiliconStudio.Xenko.Engine.Processors;
-using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
-using SiliconStudio.Core.ReferenceCounting;
 
 namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
-    /// Manage a collection of entities within a <see cref="Scene"/>.
+    /// Manage a collection of entities within a <see cref="RootScene"/>.
     /// </summary>
     public sealed class SceneInstance : EntityManager
     {
-        private static readonly Logger Log = GlobalLogger.GetLogger("SceneInstance");
-
         /// <summary>
         /// A property key to get the current scene from the <see cref="RenderContext.Tags"/>.
         /// </summary>
@@ -42,16 +38,15 @@ namespace SiliconStudio.Xenko.Engine
         public static readonly PropertyKey<VisibilityGroup> CurrentVisibilityGroup = new PropertyKey<VisibilityGroup>("SceneInstance.CurrentVisibilityGroup", typeof(SceneInstance));
 
         private readonly Dictionary<TypeInfo, RegisteredRenderProcessors> registeredRenderProcessorTypes = new Dictionary<TypeInfo, RegisteredRenderProcessors>();
-        private Scene previousScene;
-        private Scene scene;
-        private RenderContext currentRenderContext;
+
+        private Scene rootScene;
 
         public TrackingCollection<VisibilityGroup> VisibilityGroups { get; }
 
         /// <summary>
         /// Occurs when the scene changed from a scene child component.
         /// </summary>
-        public event EventHandler<EventArgs> SceneChanged;
+        public event EventHandler<EventArgs> RootSceneChanged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityManager" /> class.
@@ -65,56 +60,61 @@ namespace SiliconStudio.Xenko.Engine
         /// Initializes a new instance of the <see cref="SceneInstance" /> class.
         /// </summary>
         /// <param name="services">The services.</param>
-        /// <param name="sceneEntityRoot">The scene entity root.</param>
-        /// <param name="enableScripting">if set to <c>true</c> [enable scripting].</param>
+        /// <param name="rootScene">The scene entity root.</param>
+        /// <param name="executionMode">The mode that determines which processors are executed.</param>
         /// <exception cref="System.ArgumentNullException">services
         /// or
-        /// sceneEntityRoot</exception>
-        public SceneInstance(IServiceRegistry services, Scene sceneEntityRoot, ExecutionMode executionMode = ExecutionMode.Runtime) : base(services)
+        /// rootScene</exception>
+        public SceneInstance(IServiceRegistry services, Scene rootScene, ExecutionMode executionMode = ExecutionMode.Runtime) : base(services)
         {
-            if (services == null) throw new ArgumentNullException("services");
+            if (services == null) throw new ArgumentNullException(nameof(services));
 
             ExecutionMode = executionMode;
             VisibilityGroups = new TrackingCollection<VisibilityGroup>();
             VisibilityGroups.CollectionChanged += VisibilityGroups_CollectionChanged;
-            Scene = sceneEntityRoot;
-            Load();
+
+            RootScene = rootScene;
         }
 
         /// <summary>
         /// Gets the scene.
         /// </summary>
         /// <value>The scene.</value>
-        public Scene Scene
+        public Scene RootScene
         {
-            get
-            {
-                return scene;
-            }
-
+            get { return rootScene; }
             set
             {
-                if (scene != value)
+                if (rootScene == value)
+                    return;
+
+                if (rootScene != null)
                 {
-                    previousScene = scene;
-                    scene = value;
+                    Remove(rootScene);
+                    RemoveRendererTypes();
                 }
+
+                if (value != null)
+                {
+                    Add(value);
+                    HandleRendererTypes();
+                }
+
+                rootScene = value;
+                OnRootSceneChanged();
             }
         }
 
         protected override void Destroy()
         {
+            RootScene = null;
+
+            // Cleaning processors should not be necessary anymore, but physics are not properly cleaned up otherwise
             Reset();
 
             // TODO: Dispose of Scene, graphics compositor...etc.
             // Currently in Destroy(), not sure if we should clear that list on Reset() as well?
             VisibilityGroups.Clear();
-
-            if (scene != null)
-            {
-                scene.ReleaseInternal();
-                scene = null;
-            }
 
             base.Destroy();
         }
@@ -126,151 +126,36 @@ namespace SiliconStudio.Xenko.Engine
         /// <returns>SiliconStudio.Xenko.Engine.SceneInstance.</returns>
         public static SceneInstance GetCurrent(RenderContext context)
         {
-            return context.Tags.GetSafe(Current);
+            return context.Tags.Get(Current);
         }
 
-        /// <summary>
-        /// Draws this scene instance with the specified context and <see cref="RenderFrame"/>.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="toFrame">To frame.</param>
-        /// <param name="compositorOverride">The compositor overload. Set this value to by-pass the default compositor of a scene.</param>
-        /// <exception cref="System.ArgumentNullException">
-        /// context
-        /// or
-        /// toFrame
-        /// </exception>
-        public void Draw(RenderDrawContext context, RenderFrame toFrame, ISceneGraphicsCompositor compositorOverride = null)
+        private void Add(Scene scene)
         {
-            if (context == null) throw new ArgumentNullException("context");
-            if (toFrame == null) throw new ArgumentNullException("toFrame");
-
-            // If no scene, then we can return immediately
-            if (Scene == null)
-            {
-                return;
-            }
-
-            var commandList = context.CommandList;
-
-            var previousRenderContext = currentRenderContext;
-            currentRenderContext = context.RenderContext;
-
-            // Update global time
-
-            // TODO GRAPHICS REFACTOR
-            //context.GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
-            //context.GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
-
-            try
-            {
-                // Always clear the state of the GraphicsDevice to make sure a scene doesn't start with a wrong setup 
-                commandList.ClearState();
-
-                // Draw the main scene using the current compositor (or the provided override)
-                var graphicsCompositor = compositorOverride ?? Scene.Settings.GraphicsCompositor;
-
-                if (graphicsCompositor != null)
-                {
-                    // Push context (pop after using)
-                    using (context.RenderContext.PushTagAndRestore(RenderFrame.Current, toFrame))
-                    using (context.RenderContext.PushTagAndRestore(SceneGraphicsLayer.Master, toFrame))
-                    using (context.RenderContext.PushTagAndRestore(Current, this))
-                    {
-                        graphicsCompositor.Draw(context);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error("An exception occurred while rendering", ex);
-            }
-            finally
-            {
-                currentRenderContext = previousRenderContext;
-            }
-        }
-
-        public VisibilityGroup GetOrCreateVisibilityGroup(RenderSystem renderSystem)
-        {
-            // Find if it exists
-            VisibilityGroup visibilityGroup = null;
-            foreach (var currentVisibilityGroup in VisibilityGroups)
-            {
-                if (currentVisibilityGroup.RenderSystem == renderSystem)
-                {
-                    visibilityGroup = currentVisibilityGroup;
-                    break;
-                }
-            }
-
-            // If first time, let's create and register it
-            if (visibilityGroup == null)
-                VisibilityGroups.Add(visibilityGroup = new VisibilityGroup(renderSystem));
-
-            return visibilityGroup;
-        }
-
-        /// <summary>
-        /// Updates this scene at the specified time.
-        /// </summary>
-        /// <param name="time">The time.</param>
-        public override void Update(GameTime time)
-        {
-            UpdateFromChild();
-            base.Update(time);
-        }
-
-        internal override void Draw(RenderContext context)
-        {
-            UpdateFromChild();
-            base.Draw(context);
-        }
-
-        private void UpdateFromChild()
-        {
-            // If this scene instance is coming from a ChildSceneComponent, check that the Scene hasn't changed
-            // If the scene has changed, we need to recreate a new SceneInstance with the new scene
-            if (previousScene != Scene)
-            {
-                Reset();
-                Load();
-            }
-        }
-
-        protected internal override void Reset()
-        {
-            if (previousScene != null)
-            {
-                previousScene.Entities.CollectionChanged -= Entities_CollectionChanged;
-            }
-            RemoveRendererTypes();
-            base.Reset();
-        }
-
-        private void Load()
-        {
-            previousScene = Scene;
-
-            OnSceneChanged();
-
-            // If Scene is null, early exit
-            if (Scene == null)
-            {
-                return;
-            }
-
-            // Add Loaded entities
-            foreach (var entity in Scene.Entities)
+            foreach (var entity in scene.Entities)
                 Add(entity);
 
             // Listen to future changes in Scene.Entities
-            Scene.Entities.CollectionChanged += Entities_CollectionChanged;
+            foreach (var childScene in scene.Children)
+                Add(childScene);
 
-            HandleRendererTypes();
+            // Listen to future changes in entities and child scenes
+            scene.Children.CollectionChanged += Children_CollectionChanged;
+            scene.Entities.CollectionChanged += Entities_CollectionChanged;
         }
 
-        private void Entities_CollectionChanged(object sender, Core.Collections.TrackingCollectionChangedEventArgs e)
+        private void Remove(Scene scene)
+        {
+            scene.Entities.CollectionChanged -= Entities_CollectionChanged;
+            scene.Children.CollectionChanged -= Children_CollectionChanged;
+
+            foreach (var childScene in scene.Children)
+                Remove(childScene);
+
+            foreach (var entity in scene.Entities)
+                Remove(entity);
+        }
+
+        private void Entities_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
@@ -279,6 +164,19 @@ namespace SiliconStudio.Xenko.Engine
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     Remove((Entity)e.Item);
+                    break;
+            }
+        }
+
+        private void Children_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    Add((Scene)e.Item);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    Remove((Scene)e.Item);
                     break;
             }
         }
@@ -318,11 +216,9 @@ namespace SiliconStudio.Xenko.Engine
                         var processor = CreateRenderProcessor(registeredRenderProcessorType.Value, visibilityGroup);
 
                         // Assume we are in middle of a compositor draw so we need to run it manually once (Update/Draw already happened)
-                        if (currentRenderContext != null)
-                        {
-                            processor.Update(currentRenderContext.Time);
-                            processor.Draw(currentRenderContext);
-                        }
+                        var renderContext = RenderContext.GetShared(Services);
+                        processor.Update(renderContext.Time);
+                        processor.Draw(renderContext);
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
@@ -383,12 +279,12 @@ namespace SiliconStudio.Xenko.Engine
             return processor;
         }
 
-        private void OnSceneChanged()
+        private void OnRootSceneChanged()
         {
-            SceneChanged?.Invoke(this, EventArgs.Empty);
+            RootSceneChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        class RegisteredRenderProcessors
+        private class RegisteredRenderProcessors
         {
             public Type Type;
             public FastListStruct<KeyValuePair<VisibilityGroup, EntityProcessor>> Instances;

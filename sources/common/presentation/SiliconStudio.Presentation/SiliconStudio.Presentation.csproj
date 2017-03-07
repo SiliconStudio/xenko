@@ -37,6 +37,7 @@
     <Compile Include="Behaviors\NumericTextBoxDragBehavior.cs" />
     <Compile Include="Behaviors\ToggleButtonPopupBehavior.cs" />
     <Compile Include="Controls\PopupModalWindow.cs" />
+    <Compile Include="Controls\TextBlockFormatting.cs" />
     <Compile Include="Core\NaturalStringComparer.cs" />
     <Compile Include="Dirtiables\AnonymousDirtyingOperation.cs" />
     <Compile Include="Dirtiables\DirtiableManager.cs" />
@@ -166,6 +167,9 @@
     <Compile Include="ValueConverters\ConverterHelper.cs" />
     <Compile Include="ValueConverters\DegreeAngleSingle.cs" />
     <Compile Include="ValueConverters\EmptyStringToBool.cs" />
+    <Compile Include="ValueConverters\ValueToUnset.cs" />
+    <Compile Include="ValueConverters\ToLower.cs" />
+    <Compile Include="ValueConverters\StringConcat.cs" />
     <Compile Include="ValueConverters\SumMultiConverter.cs" />
     <Compile Include="ValueConverters\ThicknessMultiConverter.cs" />
     <Compile Include="ValueConverters\VectorEditingModeToBoolean.cs" />
@@ -304,7 +308,6 @@
     <Compile Include="ViewModel\DispatcherViewModel.cs" />
     <Compile Include="ViewModel\EditableViewModel.cs" />
     <Compile Include="Services\IDispatcherService.cs" />
-    <Compile Include="ViewModel\LoggerResultViewModel.cs" />
     <Compile Include="ViewModel\LoggerViewModel.cs" />
     <Compile Include="ValueConverters\VisibleOrCollapsed.cs" />
     <Compile Include="ValueConverters\VisibleOrHidden.cs" />

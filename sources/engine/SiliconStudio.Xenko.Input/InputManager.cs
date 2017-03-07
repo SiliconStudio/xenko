@@ -1014,10 +1014,13 @@ namespace SiliconStudio.Xenko.Input
                             }
                             break;
                         case InputEventType.Up:
-                            activeKeys[key] = false;
-                            releasedKeysSet.Add(key);
-                            KeyEvents.Add(new KeyEvent(key, KeyEventType.Released));
-                            downKeysList.Remove(key);
+                            if (IsKeyDown(key))
+                            {
+                                activeKeys[key] = false;
+                                releasedKeysSet.Add(key);
+                                KeyEvents.Add(new KeyEvent(key, KeyEventType.Released));
+                                downKeysList.Remove(key);
+                            }
                             break;
                         default:
                             throw new NotSupportedException();

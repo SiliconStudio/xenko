@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
@@ -13,6 +14,7 @@ namespace SiliconStudio.Assets
     public class CollectionIdGenerator : DataVisitorBase
     {
         private int inNonIdentifiableType;
+        private HashSet<object> nonIdentifiableCollection;
 
         protected override bool CanVisit(object obj)
         {
@@ -37,14 +39,26 @@ namespace SiliconStudio.Assets
                     inNonIdentifiableType--;
             }
         }
-               
+
+        public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
+        {
+            if (member.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true).Any())
+            {
+                // Value types (collection that are struct) will automatically be considered as non-identifiable.
+                if (value?.GetType().IsValueType == false)
+                {
+                    nonIdentifiableCollection = nonIdentifiableCollection ?? new HashSet<object>();
+                    nonIdentifiableCollection.Add(value);
+                }
+            }
+            base.VisitObjectMember(container, containerDescriptor, member, value);
+        }
 
         public override void VisitArray(Array array, ArrayDescriptor descriptor)
         {
-            CollectionItemIdentifiers itemIds;
-            if (inNonIdentifiableType == 0 && !CollectionItemIdHelper.TryGetCollectionItemIds(array, out itemIds))
+            if (ShouldGenerateItemIdCollection(array))
             {
-                itemIds = CollectionItemIdHelper.GetCollectionItemIds(array);
+                var itemIds = CollectionItemIdHelper.GetCollectionItemIds(array);
                 for (var i = 0; i < array.Length; ++i)
                 {
                     itemIds.Add(i, ItemId.New());
@@ -55,10 +69,9 @@ namespace SiliconStudio.Assets
 
         public override void VisitCollection(IEnumerable collection, CollectionDescriptor descriptor)
         {
-            CollectionItemIdentifiers itemIds;
-            if (inNonIdentifiableType == 0 && !CollectionItemIdHelper.TryGetCollectionItemIds(collection, out itemIds))
+            if (ShouldGenerateItemIdCollection(collection))
             {
-                itemIds = CollectionItemIdHelper.GetCollectionItemIds(collection);
+                var itemIds = CollectionItemIdHelper.GetCollectionItemIds(collection);
                 var count = descriptor.GetCollectionCount(collection);
                 for (var i = 0; i < count; ++i)
                 {
@@ -70,16 +83,36 @@ namespace SiliconStudio.Assets
 
         public override void VisitDictionary(object dictionary, DictionaryDescriptor descriptor)
         {
-            CollectionItemIdentifiers itemIds;
-            if (inNonIdentifiableType == 0 && !CollectionItemIdHelper.TryGetCollectionItemIds(dictionary, out itemIds))
+            if (ShouldGenerateItemIdCollection(dictionary))
             {
-                itemIds = CollectionItemIdHelper.GetCollectionItemIds(dictionary);
+                var itemIds = CollectionItemIdHelper.GetCollectionItemIds(dictionary);
                 foreach (var element in descriptor.GetEnumerator(dictionary))
                 {
                     itemIds.Add(element.Key, ItemId.New());
                 }
             }
             base.VisitDictionary(dictionary, descriptor);
+        }
+
+        private bool ShouldGenerateItemIdCollection(object collection)
+        {
+            // Do not generate for value types (collections that are struct) or null
+            if (collection?.GetType().IsValueType != false)
+                return false;
+
+            // Do not generate if within a type that doesn't use identifiable collections
+            if (inNonIdentifiableType > 0)
+                return false;
+
+            // Do not generate if item id collection already exists
+            if (CollectionItemIdHelper.HasCollectionItemIds(collection))
+                return false;
+
+            // Do not generate if the collection has been flagged to not be identifiable
+            if (nonIdentifiableCollection?.Contains(collection) == true)
+                return false;
+
+            return true;
         }
     }
 }

@@ -568,21 +568,16 @@ namespace SiliconStudio.Core.Yaml.Serialization
         {
             routingSerializer = new RoutingSerializer(Settings.SerializerFactorySelector);
 
-            IYamlSerializable serializer = routingSerializer;
-            if (Settings.PreSerializer != null)
-            {
-                serializer = ChainedSerializer.Prepend(Settings.PreSerializer, routingSerializer);
-            }
-            serializer = ChainedSerializer.Prepend(new TagTypeSerializer(), serializer);
+            var tagTypeSerializer = new TagTypeSerializer();
+            routingSerializer.Prepend(tagTypeSerializer);
             if (Settings.EmitAlias)
             {
-                serializer = ChainedSerializer.Prepend(new AnchorSerializer(), serializer);
+                var anchorSerializer = new AnchorSerializer();
+                tagTypeSerializer.Prepend(anchorSerializer);
             }
-            if (Settings.PostSerializer != null)
-            {
-                serializer = ChainedSerializer.Prepend(Settings.PostSerializer, serializer);
-            }
-            return serializer;
+
+            Settings.ChainedSerializerFactory?.Invoke(routingSerializer.First);
+            return routingSerializer.First;
         }
 
         private ITypeDescriptorFactory CreateTypeDescriptorFactory()

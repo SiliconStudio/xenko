@@ -1,34 +1,8 @@
 !SceneAsset
 Id: 2195e36c-46ec-496b-8072-098c114f4a7f
-SerializedVersion: {Xenko: 1.9.0-beta06}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: 4b073557-2d1c-42db-b4ca-c8d80e648f92
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            b90e6cbd39ea124c97fbfca64ce486b9:
-                Name: null
-                Camera: 8be4d1c8-abc9-4afe-8117-a4489f4e88d6/4d31ee61-664a-4a90-9544-cf5405d608c8
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                a62694b0d8fcba48b8ae02ed15535949: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                4efb2aaa03ad574e8cb029397f777a2e: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - 8be4d1c8-abc9-4afe-8117-a4489f4e88d6
@@ -632,7 +606,9 @@ Hierarchy:
                         Children: {}
                     61ee314d4a66904a9544cf5405d608c8: !CameraComponent
                         Id: 4d31ee61-664a-4a90-9544-cf5405d608c8
+                        Name: null
                         Projection: Perspective
+                        Slot: {Index: 0}
         -   Entity:
                 Id: 8e06c8ea-c2ae-4c9c-8844-1c1e948c9bef
                 Name: Color Animation

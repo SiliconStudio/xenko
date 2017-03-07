@@ -3,9 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Graphics;
@@ -69,7 +72,14 @@ namespace SiliconStudio.Xenko.Rendering
         public ConcurrentCollector<FrameResourceGroupLayout> FrameLayouts { get; } = new ConcurrentCollector<FrameResourceGroupLayout>();
         public Action<RenderSystem, Effect, RenderEffectReflection> EffectCompiled;
 
+        [DataMember]
+        [Category]
+        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
+        public List<PipelineProcessor> PipelineProcessors { get; } = new List<PipelineProcessor>();
+
+        [Obsolete("TODO GFXCOMP: Replaced by PipelineProcessors")]
         public delegate void ProcessPipelineStateDelegate(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState);
+        [Obsolete("TODO GFXCOMP: Replaced by PipelineProcessors")]
         public ProcessPipelineStateDelegate PostProcessPipelineState;
 
         public int EffectDescriptorSetSlotCount => effectDescriptorSetSlots.Count;
@@ -764,7 +774,11 @@ namespace SiliconStudio.Xenko.Rendering
                         // Bind VAO
                         ProcessPipelineState(Context, renderNodeReference, ref renderNode, renderObject, pipelineState);
 
+                        // TODO GFXCOMP: Remove me (obsolete)
                         PostProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderObject, pipelineState);
+
+                        foreach (var pipelineProcessor in PipelineProcessors)
+                            pipelineProcessor.Process(renderNodeReference, ref renderNode, renderObject, pipelineState);
 
                         mutablePipelineState.Update();
                         renderEffect.PipelineState = mutablePipelineState.CurrentState;

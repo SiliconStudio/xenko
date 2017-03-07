@@ -24,10 +24,10 @@ namespace SiliconStudio.Xenko.Rendering
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                var directLightGroups = context.GetParam(LightingKeys.DirectLightGroups);
+                ShaderSourceCollection directLightGroups = context.GetParam(LightingKeys.DirectLightGroups);
                 if (directLightGroups != null)
                 {
-                    foreach(var directLightGroup in directLightGroups)
+                    foreach(ShaderSource directLightGroup in directLightGroups)
 
                     {
 
@@ -40,10 +40,10 @@ namespace SiliconStudio.Xenko.Rendering
                         }
                     }
                 }
-                var environmentLights = context.GetParam(LightingKeys.EnvironmentLights);
+                ShaderSourceCollection environmentLights = context.GetParam(LightingKeys.EnvironmentLights);
                 if (environmentLights != null)
                 {
-                    foreach(var environmentLight in environmentLights)
+                    foreach(ShaderSource environmentLight in environmentLights)
 
                     {
 
@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Rendering
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "XenkoEffectBase");
-                var extensionPixelStageSurfaceShaders = context.GetParam(MaterialKeys.PixelStageSurfaceShaders);
+                ShaderSource extensionPixelStageSurfaceShaders = context.GetParam(MaterialKeys.PixelStageSurfaceShaders);
                 if (extensionPixelStageSurfaceShaders != null)
                 {
                     context.Mixin(mixin, "MaterialSurfacePixelStageCompositor");
@@ -93,16 +93,31 @@ namespace SiliconStudio.Xenko.Rendering
                         context.Mixin(__subMixin, __mixinToCompose__);
                         context.PopComposition();
                     }
-                    var extensionPixelStageSurfaceFilter = context.GetParam(MaterialKeys.PixelStageSurfaceFilter);
+                    ShaderSource extensionPixelStageSurfaceFilter = context.GetParam(MaterialKeys.PixelStageSurfaceFilter);
                     if (extensionPixelStageSurfaceFilter != null)
                     {
                         context.Mixin(mixin, (extensionPixelStageSurfaceFilter));
+                    }
+                    if (context.ChildEffectName == "GBuffer")
+                    {
+                        context.Mixin(mixin, "GBuffer");
+                        return;
                     }
                 }
                 context.Mixin(mixin, "XenkoLighting");
                 if (context.ChildEffectName == "ShadowMapCaster")
                 {
                     context.Mixin(mixin, "ShadowMapCaster");
+                    return;
+                }
+                if (context.ChildEffectName == "ShadowMapCasterParaboloid")
+                {
+                    context.Mixin(mixin, "ShadowMapCasterParaboloid");
+                    return;
+                }
+                if (context.ChildEffectName == "ShadowMapCasterCubeMap")
+                {
+                    context.Mixin(mixin, "ShadowMapCasterCubeMap");
                     return;
                 }
             }
