@@ -33,6 +33,16 @@ namespace SiliconStudio.Xenko.Engine
 
         /// <summary>
         /// The child scene.
+        /// Initializes a new instance of the <see cref="ChildSceneComponent"/> class.
+        /// </summary>
+        /// <param name="scene">The scene.</param>
+        public ChildSceneComponent(Scene scene) : this()
+        {
+            Scene = scene;
+        }
+
+        /// <summary>
+        /// The child scene.
         /// </summary>
         /// <userdoc>The reference to the child scene. Any scene can be selected except the containing one.</userdoc>
         [DataMember(10)]
