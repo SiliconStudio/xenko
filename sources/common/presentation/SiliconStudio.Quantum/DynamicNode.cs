@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum
 {

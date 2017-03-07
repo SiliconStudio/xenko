@@ -157,6 +157,8 @@ namespace SiliconStudio.Xenko.Games
         public const int WM_SYSKEYDOWN = 0x104;
 
         public const int WM_SYSKEYUP = 0x105;
+
+        public const int PM_REMOVE = 0x0001;
     }
 }
 #endif

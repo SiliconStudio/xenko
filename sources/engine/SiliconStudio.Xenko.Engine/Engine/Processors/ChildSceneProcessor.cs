@@ -7,7 +7,7 @@ using SiliconStudio.Xenko.Rendering;
 namespace SiliconStudio.Xenko.Engine.Processors
 {
     /// <summary>
-    /// The scene child processor to handle a child scene. See remarks.
+    /// A processor to handle a child scenes.
     /// </summary>
     public sealed class ChildSceneProcessor : EntityProcessor<ChildSceneComponent>
     {
@@ -18,12 +18,12 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         protected override void OnEntityComponentAdding(Entity entity, ChildSceneComponent component, ChildSceneComponent data)
         {
-            component.UpdateScene();
+            component.NotifySceneChanged();
         }
 
         protected override void OnEntityComponentRemoved(Entity entity, ChildSceneComponent component, ChildSceneComponent data)
         {
-            component.UpdateScene();
+            component.NotifySceneChanged();
         }
     }
 }

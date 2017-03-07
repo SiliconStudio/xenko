@@ -1,5 +1,4 @@
 ﻿using SiliconStudio.Core.Annotations;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum
 {

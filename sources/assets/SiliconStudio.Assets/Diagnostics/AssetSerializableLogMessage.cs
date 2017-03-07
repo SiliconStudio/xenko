@@ -2,12 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
-using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 
-namespace SiliconStudio.Assets.CompilerApp
+namespace SiliconStudio.Assets.Diagnostics
 {
     [DataContract]
     public class AssetSerializableLogMessage : SerializableLogMessage

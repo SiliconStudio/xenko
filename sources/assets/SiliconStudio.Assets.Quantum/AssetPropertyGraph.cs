@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Assets.Quantum.Internal;
 using SiliconStudio.Assets.Quantum.Visitors;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
@@ -14,7 +15,6 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum
 {
@@ -22,6 +22,8 @@ namespace SiliconStudio.Assets.Quantum
     // ReSharper disable once RequiredBaseTypesIsNotInherited - due to a limitation on how ReSharper checks this requirement (see https://youtrack.jetbrains.com/issue/RSRP-462598)
     public class AssetPropertyGraph : IDisposable
     {
+        protected readonly AssetItem AssetItem;
+
         public struct NodeOverride
         {
             public NodeOverride(IAssetNode overriddenNode, Index overriddenIndex, OverrideTarget target)
@@ -52,8 +54,8 @@ namespace SiliconStudio.Assets.Quantum
         protected readonly Asset Asset;
         // TODO: turn back private
         internal readonly AssetToBaseNodeLinker baseLinker;
+        private readonly AssetToBaseNodeLinker baseUnlinker;
         private readonly GraphNodeChangeListener nodeListener;
-        private AssetPropertyGraph baseGraph;
         private readonly Dictionary<IAssetNode, NodeChangeHandlers> baseLinkedNodes = new Dictionary<IAssetNode, NodeChangeHandlers>();
         private IBaseToDerivedRegistry baseToDerivedRegistry;
 
@@ -61,6 +63,8 @@ namespace SiliconStudio.Assets.Quantum
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
             if (assetItem == null) throw new ArgumentNullException(nameof(assetItem));
+            if (assetItem.Asset == null) throw new ArgumentException(@"The asset in the given AssetItem is null.", nameof(assetItem));
+            AssetItem = assetItem;
             Container = container;
             AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);
             CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
@@ -75,9 +79,10 @@ namespace SiliconStudio.Assets.Quantum
             nodeListener.ItemChanged += AssetItemChanged;
 
             baseLinker = new AssetToBaseNodeLinker(this) { LinkAction = LinkBaseNode };
+            baseUnlinker = new AssetToBaseNodeLinker(this) { LinkAction = UnlinkBaseNode };
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             nodeListener.Changing -= AssetContentChanging;
             nodeListener.Changed -= AssetContentChanged;
@@ -86,14 +91,30 @@ namespace SiliconStudio.Assets.Quantum
             nodeListener.Dispose();
         }
 
+        /// <summary>
+        /// The identifier of this asset.
+        /// </summary>
+        public AssetId Id => AssetItem.Id;
+
+        /// <summary>
+        /// The root node of this asset.
+        /// </summary>
         public IAssetObjectNode RootNode { get; }
 
+        /// <summary>
+        /// The container containing all asset property graphs.
+        /// </summary>
         public AssetPropertyGraphContainer Container { get; }
 
         /// <summary>
-        /// Gets or sets whether a property is currently being updated from a change in the base of this asset.
+        /// The property graph of the archetype asset, if it has one.
         /// </summary>
-        public bool UpdatingPropertyFromBase { get; private set; }
+        public AssetPropertyGraph Archetype { get; set; }
+
+        /// <summary>
+        /// Indicates whether a property is currently being updated from a change in the base of this asset.
+        /// </summary>
+        public bool UpdatingPropertyFromBase { get; protected set; }
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
@@ -118,17 +139,28 @@ namespace SiliconStudio.Assets.Quantum
 
         private IBaseToDerivedRegistry BaseToDerivedRegistry => baseToDerivedRegistry ?? (baseToDerivedRegistry = CreateBaseToDerivedRegistry());
 
-        public void RefreshBase(AssetPropertyGraph baseAssetGraph)
+        public virtual void RefreshBase()
         {
+            if (AssetItem.Asset.Archetype != null)
+            {
+                Archetype = Container.GetGraph(AssetItem.Asset.Archetype.Id);
+                if (Archetype == null)
+                    throw new InvalidOperationException($"Unable to find the base [{AssetItem.Asset.Archetype.Location}] of asset [{AssetItem.Location}].");
+            }
+
             // Unlink previously linked nodes
             ClearAllBaseLinks();
-
-            baseGraph = baseAssetGraph;
 
             // Link nodes to the new base.
             // Note: in case of composition (prefabs, etc.), even if baseAssetGraph is null, each part (entities, etc.) will discover
             // its own base by itself via the FindTarget method.
-            LinkToBase(RootNode, baseAssetGraph?.RootNode);
+            LinkToBase(RootNode, Archetype?.RootNode);
+        }
+
+        public virtual void RefreshBase(IAssetNode node, IAssetNode baseNode)
+        {
+            UnlinkFromBase(node);
+            LinkToBase(node, baseNode);
         }
 
         public void ReconcileWithBase()
@@ -155,9 +187,12 @@ namespace SiliconStudio.Assets.Quantum
         /// </summary>
         /// <param name="rootNode">The node for which to reset overrides.</param>
         /// <param name="indexToReset">The index of the override to reset in this node, if relevant.</param>
-        public void ResetOverride(IAssetNode rootNode, Index indexToReset)
+        internal void ResetAllOverridesRecursively(IAssetNode rootNode, Index indexToReset)
         {
-            var visitor = new AssetGraphVisitorBase(this) { SkipRootNode = true };
+            if (rootNode is IAssetMemberNode && indexToReset != Index.Empty) throw new ArgumentException(@"The index must be empty when invoking this method on a member node.", nameof(indexToReset));
+
+            // We first use a visitor to reset recursively all overrides
+            var visitor = new AssetGraphVisitorBase(this);
             visitor.Visiting += (node, path) =>
             {
                 var memberNode = node as AssetMemberNode;
@@ -166,18 +201,28 @@ namespace SiliconStudio.Assets.Quantum
                 var objectNode = node as AssetObjectNode;
                 if (objectNode != null)
                 {
-                    foreach (var overrideItem in objectNode.GetOverriddenItemIndices().ToList())
+                    if (objectNode == rootNode && indexToReset != Index.Empty)
                     {
-                        objectNode.OverrideItem(false, overrideItem);
+                        // If it's the root node and an index was provided, make sure we reset only this index.
+                        objectNode.OverrideItem(false, indexToReset);
                     }
-                    foreach (var overrideKey in objectNode.GetOverriddenKeyIndices().ToList())
+                    else
                     {
-                        objectNode.OverrideKey(false, overrideKey);
+                        // Otherwise reset everything
+                        foreach (var overrideItem in objectNode.GetOverriddenItemIndices().ToList())
+                        {
+                            objectNode.OverrideItem(false, overrideItem);
+                        }
+                        foreach (var overrideKey in objectNode.GetOverriddenKeyIndices().ToList())
+                        {
+                            objectNode.OverrideKey(false, overrideKey);
+                        }
                     }
                 }
             };
             visitor.Visit(rootNode);
 
+            // Then we reconcile (recursively) with the base.
             ReconcileWithBase(rootNode);
         }
 
@@ -201,7 +246,6 @@ namespace SiliconStudio.Assets.Quantum
         /// Creates an instance of <see cref="GraphVisitorBase"/> that is suited to reconcile properties with the base.
         /// </summary>
         /// <returns>A new instance of <see cref="GraphVisitorBase"/> for reconciliation.</returns>
-        // TODO: this should be removable!
         public virtual GraphVisitorBase CreateReconcilierVisitor()
         {
             return new AssetGraphVisitorBase(this);
@@ -214,11 +258,21 @@ namespace SiliconStudio.Assets.Quantum
 
         public void PrepareForSave(ILogger logger, AssetItem assetItem)
         {
-            if (assetItem.Asset != Asset) throw new ArgumentException($@"The given {nameof(AssetItem)} does not match the asset associated with this instance", nameof(assetItem));
+            if (assetItem.Asset != Asset) throw new ArgumentException($@"The given {nameof(Assets.AssetItem)} does not match the asset associated with this instance", nameof(assetItem));
             AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);
             CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
             assetItem.YamlMetadata.AttachMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey, GenerateOverridesForSerialization(RootNode));
             assetItem.YamlMetadata.AttachMetadata(AssetObjectSerializerBackend.ObjectReferencesKey, GenerateObjectReferencesForSerialization(RootNode));
+        }
+
+        protected virtual void OnContentChanged(MemberNodeChangeEventArgs args)
+        {
+            // Do nothing by default
+        }
+
+        protected virtual void OnItemChanged(ItemChangeEventArgs args)
+        {
+            // Do nothing by default
         }
 
         [CanBeNull]
@@ -388,6 +442,8 @@ namespace SiliconStudio.Assets.Quantum
                 visitor.Visit(RootNode);
             }
 
+            RefreshBase();
+
             return clearedOverrides;
         }
 
@@ -416,6 +472,11 @@ namespace SiliconStudio.Assets.Quantum
         private void LinkToBase(IAssetNode sourceRootNode, IAssetNode targetRootNode)
         {
             baseLinker.LinkGraph(sourceRootNode, targetRootNode);
+        }
+
+        private void UnlinkFromBase(IAssetNode sourceRootNode)
+        {
+            baseUnlinker.LinkGraph(sourceRootNode, sourceRootNode.BaseNode);
         }
 
         [NotNull]
@@ -462,7 +523,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             var assetNode = (IAssetNode)currentNode;
             ((IAssetNodeInternal)assetNode).SetPropertyGraph(this);
-            ((IAssetNodeInternal)assetNode).SetBaseContent(baseNode);
+            ((IAssetNodeInternal)assetNode).SetBaseNode(baseNode);
 
             BaseToDerivedRegistry.RegisterBaseToDerived((IAssetNode)baseNode, (IAssetNode)currentNode);
 
@@ -487,6 +548,27 @@ namespace SiliconStudio.Assets.Quantum
                 }
                 baseLinkedNodes.Add(assetNode, new NodeChangeHandlers(valueChange, itemChange));
             }
+        }
+
+        private void UnlinkBaseNode(IGraphNode currentNode, IGraphNode baseNode)
+        {
+            var assetNode = (IAssetNode)currentNode;
+
+            NodeChangeHandlers linkedNode;
+            if (baseLinkedNodes.TryGetValue(assetNode, out linkedNode))
+            {
+                var member = assetNode.BaseNode as IMemberNode;
+                if (member != null)
+                {
+                    member.Changed -= linkedNode.ValueChange;
+                }
+                var objectNode = assetNode.BaseNode as IObjectNode;
+                if (objectNode != null)
+                {
+                    objectNode.ItemChanged -= linkedNode.ItemChange;
+                }
+            }
+            baseLinkedNodes.Remove(assetNode);
         }
 
         private void ClearAllBaseLinks()
@@ -523,6 +605,7 @@ namespace SiliconStudio.Assets.Quantum
             var overrideValue = node.GetContentOverride();
             // Link the node that has changed to its base.
             LinkToBase(node, (IAssetNode)node.BaseNode);
+            OnContentChanged(e);
             Changed?.Invoke(sender, new AssetMemberNodeChangeEventArgs(e, previousOverride, overrideValue, ItemId.Empty));
         }
 
@@ -582,19 +665,29 @@ namespace SiliconStudio.Assets.Quantum
             // Link the node that has changed to its base.
             // TODO: can link only the changed item instead of the whole collection
             LinkToBase(node, (IAssetNode)node.BaseNode);
-
+            OnItemChanged(e);
             ItemChanged?.Invoke(sender, new AssetItemNodeChangeEventArgs(e, previousOverride, overrideValue, itemId));
         }
 
         private void OnBaseContentChanged(INodeChangeEventArgs e, IGraphNode node)
         {
+            var assetNode = (IAssetNode)node;
+
             // Ignore base change if propagation is disabled.
             if (!Container.PropagateChangesFromBase)
                 return;
 
+            if (node.IsReference && e.OldValue != null)
+            {
+                var oldNode = (IAssetNode)Container.NodeContainer.GetNode(e.OldValue);
+                UnlinkFromBase(oldNode);
+            }
+
             UpdatingPropertyFromBase = true;
-            // TODO: we want to refresh the base only starting from the modified node!
-            RefreshBase(baseGraph);
+            var baseNode = assetNode.BaseNode;
+            if (assetNode.BaseNode == null)
+                throw new InvalidOperationException("The base is unset for the current node.");
+            RefreshBase(assetNode, (IAssetNode)baseNode);
             ReconcileWithBase((IAssetNode)node);
             UpdatingPropertyFromBase = false;
 

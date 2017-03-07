@@ -68,6 +68,8 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override bool ThumbResting => controller?.GetTouch(OpenVR.Controller.ButtonId.ButtonSteamVrTouchpad) ?? false;
 
+        public override Vector2 ThumbAxis => controller?.GetAxis() ?? Vector2.Zero;
+
         private OpenVR.Controller.ButtonId ToOpenVrButton(TouchControllerButton button)
         {
             switch (button)
@@ -78,6 +80,8 @@ namespace SiliconStudio.Xenko.VirtualReality
                     return OpenVR.Controller.ButtonId.ButtonSteamVrTrigger;
                 case TouchControllerButton.Grip:
                     return OpenVR.Controller.ButtonId.ButtonGrip;
+                case TouchControllerButton.Menu:
+                    return OpenVR.Controller.ButtonId.ButtonApplicationMenu;
                 default:
                     return OpenVR.Controller.ButtonId.ButtonMax;
             }
@@ -88,14 +92,29 @@ namespace SiliconStudio.Xenko.VirtualReality
             return controller?.GetPressDown(ToOpenVrButton(button)) ?? false;
         }
 
+        public override bool IsTouchedDown(TouchControllerButton button)
+        {
+            return controller?.GetTouchDown(ToOpenVrButton(button)) ?? false;
+        }
+
         public override bool IsPressed(TouchControllerButton button)
         {
             return controller?.GetPress(ToOpenVrButton(button)) ?? false;
         }
 
+        public override bool IsTouched(TouchControllerButton button)
+        {
+            return controller?.GetTouch(ToOpenVrButton(button)) ?? false;
+        }
+
         public override bool IsPressReleased(TouchControllerButton button)
         {
             return controller?.GetPressUp(ToOpenVrButton(button)) ?? false;
+        }
+
+        public override bool IsTouchReleased(TouchControllerButton button)
+        {
+            return controller?.GetTouchUp(ToOpenVrButton(button)) ?? false;
         }
 
         public override Vector3 Position => currentPos;

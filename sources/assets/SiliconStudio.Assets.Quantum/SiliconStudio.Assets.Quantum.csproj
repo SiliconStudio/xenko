@@ -45,9 +45,18 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssetBaseToDerivedRegistry.cs" />
+    <Compile Include="IAssetMemberNode.cs" />
+    <Compile Include="IAssetObjectNode.cs" />
+    <Compile Include="Internal\AssetBoxedNode.cs" />
     <Compile Include="AssetCompositeBaseToDerivedRegistry.cs" />
-    <Compile Include="AssetCompositeHierarchyPartVisitor.cs" />
     <Compile Include="AssetCompositeHierarchyPropertyGraph.cs" />
+    <Compile Include="Internal\AssetObjectNode.cs" />
+    <Compile Include="Internal\AssetMemberNode.cs" />
+    <Compile Include="AssetNodeFactory.cs" />
+    <Compile Include="AssetPartChangeEventArgs.cs" />
+    <Compile Include="IAssetNode.cs" />
+    <Compile Include="Internal\IAssetObjectNodeInternal.cs" />
+    <Compile Include="Internal\IAssetNodeInternal.cs" />
     <Compile Include="Visitors\AssetCollector.cs" />
     <Compile Include="Visitors\ExternalReferenceCollector.cs" />
     <Compile Include="Visitors\IdentifiableObjectVisitorBase.cs" />
@@ -57,7 +66,7 @@
     <Compile Include="AssetGraphNodeChangeListener.cs" />
     <Compile Include="AssetGraphNodeLinker.cs" />
     <Compile Include="AssetMemberNodeChangeEventArgs.cs" />
-    <Compile Include="AssetNode.cs" />
+    <Compile Include="Internal\AssetObjectNodeExtended.cs" />
     <Compile Include="AssetNodeContainer.cs" />
     <Compile Include="Visitors\AssetNodeMetadataCollectorBase.cs" />
     <Compile Include="AssetPropertyGraphContainer.cs" />

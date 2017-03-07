@@ -13,7 +13,7 @@ using EnvDTE;
 using Process = System.Diagnostics.Process;
 using Thread = System.Threading.Thread;
 
-namespace SiliconStudio.Xenko.VisualStudio.Debugging
+namespace SiliconStudio.VisualStudio.Debugging
 {
     internal class VisualStudioDebugger : IDisposable
     {

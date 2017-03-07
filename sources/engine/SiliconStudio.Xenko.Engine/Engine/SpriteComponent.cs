@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
@@ -57,12 +58,35 @@ namespace SiliconStudio.Xenko.Engine
         public SpriteType SpriteType;
 
         /// <summary>
-        /// The color to apply on the sprite.
+        /// The color shade to apply on the sprite. If you need the final color, use <see cref="ColorFinal"/> instead.
         /// </summary>
         /// <userdoc>The color to apply to the sprite.</userdoc>
         [DataMember(40)]
         [Display("Color")]
-        public Color4 Color = Color4.White;
+        public Color4 Color { get { return color; } set { color = value; colorFinal = color * intensity; colorFinal.A = color.A; } }
+
+        private Color4 color = Color4.White;
+
+        /// <summary>
+        /// The intensity by which the color is scaled. If you need the final color, use <see cref="ColorFinal"/> instead.
+        /// </summary>
+        /// <userdoc>
+        /// The intensity by which the color is scaled. Mainly used for rendering LDR sprites in in HDR scenes.
+        /// </userdoc>
+        [DataMember(42)]
+        [Display("Intensity")]
+        [DefaultValue(1f)]
+        public float Intensity { get { return intensity; } set { intensity = Math.Max(value, 0f); colorFinal = color * intensity; colorFinal.A = color.A; } }
+
+        private float intensity = 1f;
+
+        /// <summary>
+        /// The combined value of Color and Intensity
+        /// </summary>
+        [DataMemberIgnore]
+        public Color4 ColorFinal { get { return colorFinal; } }
+
+        private Color4 colorFinal = Color4.White;
 
         /// <summary>
         /// Gets or sets a value indicating whether the sprite is a pre-multiplied alpha (default is true).
