@@ -14,6 +14,7 @@ using SiliconStudio.Core.Storage;
 namespace SiliconStudio.Core.Tests
 {
     [TestFixture]
+    [ReferenceSerializer]
     [DataSerializerGlobal(typeof(ReferenceSerializer<A>), Profile = "Content")]
     [DataSerializerGlobal(typeof(ReferenceSerializer<B>), Profile = "Content")]
     [DataSerializerGlobal(typeof(ReferenceSerializer<C>), Profile = "Content")]

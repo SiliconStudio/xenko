@@ -1,4 +1,5 @@
 ﻿using System;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets
 {
@@ -6,6 +7,7 @@ namespace SiliconStudio.Assets
     /// An interface that represents an asset factory.
     /// </summary>
     /// <typeparam name="T">The type of asset this factory can create.</typeparam>
+    [AssemblyScan]
     public interface IAssetFactory<out T> where T : Asset
     {
         /// <summary>

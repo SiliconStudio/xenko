@@ -50,6 +50,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
     /// <summary>
     /// A factory of <see cref="IYamlSerializable"/>
     /// </summary>
+    [AssemblyScan]
     public interface IYamlSerializableFactory
     {
         /// <summary>

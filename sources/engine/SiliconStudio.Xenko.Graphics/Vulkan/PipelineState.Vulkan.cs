@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal PipelineState(GraphicsDevice graphicsDevice, PipelineStateDescription pipelineStateDescription) : base(graphicsDevice)
         {
-            Description = pipelineStateDescription;
+            Description = pipelineStateDescription.Clone();
             Recreate();
         }
 

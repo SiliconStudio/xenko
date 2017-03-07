@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("UIPage")]
     [ContentSerializer(typeof(DataContentSerializerWithReuse<UIPage>))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<UIPage>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<UIPage>), Profile = "Content")]
     public sealed class UIPage : ComponentBase
     {
         /// <summary>

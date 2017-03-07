@@ -7,7 +7,7 @@ using SiliconStudio.Xenko.Graphics;
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
     [DataContract]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<SpriteStudioSheet>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<SpriteStudioSheet>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<SpriteStudioSheet>))]
     public class SpriteStudioSheet
     {

@@ -7,33 +7,11 @@ using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Serialization.Contents
 {
-    public static class ReferenceSerializer
-    {
-        /// <summary>
-        /// Determines whether the type has a <see cref="ReferenceSerializer{T}"/>.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns>True if <see cref="type"/> has a <see cref="ReferenceSerializer{T}"/>, false otherwise</returns>
-        public static bool IsReferenceType(Type type)
-        {
-            // TODO: Quite inefficient, probably need an attribute
-            var serializer = SerializerSelector.AssetWithReuse.GetSerializer(type);
-            return serializer is IReferenceSerializer;
-        }
-    }
-
     /// <summary>
-    /// Used to detect whether a serializer is a reference serializer.
-    /// </summary>
-    interface IReferenceSerializer
-    {
-    }
-
-    /// <summary>0
     /// Serialize object with its underlying Id and Location, and use <see cref="ContentManager"/> to generate a separate chunk.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public sealed class ReferenceSerializer<T> : DataSerializer<T>, IReferenceSerializer where T : class
+    public sealed class ReferenceSerializer<T> : DataSerializer<T> where T : class
     {
         private IContentSerializer cachedContentSerializer;
 
