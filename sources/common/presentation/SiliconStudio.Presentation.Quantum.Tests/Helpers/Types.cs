@@ -1,4 +1,5 @@
-﻿using SiliconStudio.Core;
+﻿using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.References;
 
@@ -52,6 +53,14 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
             public string String { get; set; }
             [Display(2)]
             public ClassWithRef Ref { get; set; }
+        }
+
+        public class ClassWithCollection
+        {
+            [Display(1)]
+            public string String { get; set; }
+            [Display(2)]
+            public List<string> List { get; set; } = new List<string>();
         }
 
     }

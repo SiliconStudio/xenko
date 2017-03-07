@@ -16,6 +16,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         {
             if (factory == null) throw new ArgumentNullException(nameof(factory));
             this.container = container;
+            Type = (container.Descriptor as CollectionDescriptor)?.ElementType ?? (container.Descriptor as DictionaryDescriptor)?.ValueType;
             Index = index;
             Name = index.ToString();
             container.ItemChanging += OnItemChanging;
