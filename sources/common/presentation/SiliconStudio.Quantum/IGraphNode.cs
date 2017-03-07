@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
-using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
@@ -28,7 +27,7 @@ namespace SiliconStudio.Quantum
         Type Type { get; }
 
         /// <summary>
-        /// Gets whether this content hold a primitive type value. If so, the node owning this content should have no children and modifying its value should not trigger any node refresh.
+        /// Gets whether this node hold a primitive type value.
         /// </summary>
         /// <remarks>Types registered as primitive types in the <see cref="INodeBuilder"/> used to build this content are taken in account by this property.</remarks>
         bool IsPrimitive { get; }
@@ -39,17 +38,17 @@ namespace SiliconStudio.Quantum
         ITypeDescriptor Descriptor { get; }
 
         /// <summary>
-        /// Gets wheither this content holds a reference or is a direct value.
+        /// Gets wheither this node holds a reference or is a direct value.
         /// </summary>
         bool IsReference { get; }
 
         /// <summary>
-        /// Retrieves the value of this content.
+        /// Retrieves the value of this node.
         /// </summary>
         object Retrieve();
 
         /// <summary>
-        /// Retrieves the value of one of the item if this content, if it holds a collection.
+        /// Retrieves the value of one of the item of this node, if it holds a collection.
         /// </summary>
         /// <param name="index">The index to use to retrieve the value.</param>
         object Retrieve(Index index);

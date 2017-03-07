@@ -20,44 +20,46 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         {
             // there are some limitations to this technique:
             //  both eyes view matrices must be facing the same direction
-            //  both eyes must have the same near plane
-            //  both eyes must have equivalent left and right in absolute value
+            //  eyes don't modify input's projection's bottom and top.
 
             var commonView = context.RenderView;
             commonView.View = viewMatrices[0];
             // near and far could be overriden by the VR device. let's take them as authority (assuming both eyes equal):
-            commonView.NearClipPlane = projectionMatrices[0].M43 / projectionMatrices[0].M33;
-            commonView.FarClipPlane  = commonView.NearClipPlane * (-projectionMatrices[0].M33 / (-projectionMatrices[0].M33 - 1));
-            // We assume view matrices are similar except for a translation; we can take the average to have the "center eye" position
-            commonView.View.TranslationVector = Vector3.Lerp(commonView.View.TranslationVector, viewMatrices[1].TranslationVector, 0.5f);
-
-            // Also need to move it backward little bit
+            // refer to http://stackoverflow.com/a/12926655/893406
+            float nearLeft = projectionMatrices[0].M43 / projectionMatrices[0].M33;
+            float nearRight = projectionMatrices[1].M43 / projectionMatrices[1].M33;
+            float farLeft = nearLeft * (-projectionMatrices[0].M33 / (-projectionMatrices[0].M33 - 1));
+            float farRight = nearRight * (-projectionMatrices[1].M33 / (-projectionMatrices[1].M33 - 1));
+            // Compute left and right
+            var projectionLeftOfLeftEye = nearLeft * (projectionMatrices[0].M31 - 1.0f) / projectionMatrices[0].M11;
+            var projectionRightOfRightEye = nearRight * (projectionMatrices[1].M31 + 1.0f) / projectionMatrices[1].M11;
+            // IPD
+            float interPupillaryDistance = (viewMatrices[0].TranslationVector - viewMatrices[1].TranslationVector).Length();
+            // find the center eye position according to the scheme described here:
             // http://computergraphics.stackexchange.com/questions/1736/vr-and-frustum-culling
+            // tangent of theta, where theta is FOV/2
+            var tangentThetaLeftEye  = Math.Abs(projectionLeftOfLeftEye / nearLeft);
+            var tangentThetaRightEye = Math.Abs(projectionRightOfRightEye / nearRight);
+            var recession = interPupillaryDistance / (tangentThetaLeftEye + tangentThetaRightEye);
+            // left offset (`A` on the diagram of above link):
+            var leftOffset = tangentThetaLeftEye * recession;
+            // place the view position in between left and right:
+            commonView.View.TranslationVector = Vector3.Lerp(viewMatrices[0].TranslationVector, viewMatrices[1].TranslationVector, leftOffset / interPupillaryDistance);
+            // and move backward:
+            commonView.View.M43 -= recession;
+
+            // set clip planes to most conservative enclosing planes:
+            var oldNear = commonView.NearClipPlane;
+            commonView.NearClipPlane = Math.Min(nearRight, nearLeft) + recession;
+            commonView.FarClipPlane = Math.Max(farLeft, farRight) + recession;
 
             // Projection: Need to extend size to cover equivalent of both eyes
-            // So we cancel the left/right off-center and add it to the width to compensate
-            commonView.Projection = projectionMatrices[0];
-            // Compute left and right
-            var left0  = commonView.NearClipPlane * (projectionMatrices[0].M31 - 1.0f) / projectionMatrices[0].M11;
-            var right1 = commonView.NearClipPlane * (projectionMatrices[1].M31 + 1.0f) / projectionMatrices[1].M11;
-            commonView.Projection.M11 = 2.0f * commonView.NearClipPlane / (right1 - left0);
-            commonView.Projection.M31 = (right1 + left0) / (right1 - left0);
-            // translate the view backwards:
-            float ipd = (viewMatrices[0].TranslationVector - viewMatrices[1].TranslationVector).Length();
-            // m11 stores 1 / tan(theta)
-            var recessionFactor = (ipd / 2) * commonView.Projection.M11;
-            commonView.View.M43 -= recessionFactor;
-
-            // and now recompute the matrix entirely because we want to change the near and far planes:
-            var bottom = commonView.NearClipPlane * (commonView.Projection.M32 - 1.0f) / commonView.Projection.M22;
-            var top    = commonView.NearClipPlane * (commonView.Projection.M32 + 1.0f) / commonView.Projection.M22;
-            // new near and far:
-            var newNear = commonView.NearClipPlane + recessionFactor;
-            var newFar  = commonView.FarClipPlane + recessionFactor;
+            var bottom = context.RenderView.NearClipPlane * (context.RenderView.Projection.M32 - 1.0f) / context.RenderView.Projection.M22;
+            var top    = context.RenderView.NearClipPlane * (context.RenderView.Projection.M32 + 1.0f) / context.RenderView.Projection.M22;
             // adjust proportionally the parameters (l, r, u, b are defined at near, so we use nears ratio):
-            var nearsRatio = newNear / commonView.NearClipPlane;
+            var nearsRatio = commonView.NearClipPlane / oldNear;
             // recreation from scratch:
-            Matrix.PerspectiveOffCenterRH(left0 * nearsRatio, right1 * nearsRatio, bottom * nearsRatio, top * nearsRatio, newNear, newFar, out commonView.Projection);
+            Matrix.PerspectiveOffCenterRH(projectionLeftOfLeftEye * nearsRatio, projectionRightOfRightEye * nearsRatio, bottom * nearsRatio, top * nearsRatio, commonView.NearClipPlane, commonView.FarClipPlane, out commonView.Projection);
 
             // update the view projection:
             Matrix.Multiply(ref commonView.View, ref commonView.Projection, out commonView.ViewProjection);

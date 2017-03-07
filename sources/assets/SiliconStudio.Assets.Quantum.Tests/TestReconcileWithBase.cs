@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using NUnit.Framework;
+using SiliconStudio.Assets.Quantum.Tests.Helpers;
 using SiliconStudio.Assets.Tests.Helpers;
 using SiliconStudio.Core.Reflection;
 
@@ -11,31 +12,31 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestPrimitiveMember()
         {
-            const string primitiveMemberBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset1,SiliconStudio.Assets.Quantum.Tests
+            const string primitiveMemberBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset1,SiliconStudio.Assets.Quantum.Tests
 Id: 10000000-0000-0000-0000-000000000000
 Tags: []
 MyString: MyBaseString
 ";
-            const string primitiveMemberOverridenYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset1,SiliconStudio.Assets.Quantum.Tests
+            const string primitiveMemberOverridenYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset1,SiliconStudio.Assets.Quantum.Tests
 Id: 30000000-0000-0000-0000-000000000000
 Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 Tags: []
 MyString*: MyDerivedString
 ";
-            const string primitiveMemberToReconcileYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset1,SiliconStudio.Assets.Quantum.Tests
+            const string primitiveMemberToReconcileYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset1,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
 Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 Tags: []
 MyString: MyDerivedString
 ";
-            var context = DeriveAssetTest<Types.MyAsset1>.LoadFromYaml(primitiveMemberBaseYaml, primitiveMemberOverridenYaml);
+            var context = DeriveAssetTest<Types.MyAsset1, Types.MyAssetBasePropertyGraph>.LoadFromYaml(primitiveMemberBaseYaml, primitiveMemberOverridenYaml);
             Assert.AreEqual("MyBaseString", context.BaseAsset.MyString);
             Assert.AreEqual("MyDerivedString", context.DerivedAsset.MyString);
             context.DerivedGraph.ReconcileWithBase();
             Assert.AreEqual("MyBaseString", context.BaseAsset.MyString);
             Assert.AreEqual("MyDerivedString", context.DerivedAsset.MyString);
 
-            context = DeriveAssetTest<Types.MyAsset1>.LoadFromYaml(primitiveMemberBaseYaml, primitiveMemberToReconcileYaml);
+            context = DeriveAssetTest<Types.MyAsset1, Types.MyAssetBasePropertyGraph>.LoadFromYaml(primitiveMemberBaseYaml, primitiveMemberToReconcileYaml);
             Assert.AreEqual("MyBaseString", context.BaseAsset.MyString);
             Assert.AreEqual("MyDerivedString", context.DerivedAsset.MyString);
             context.DerivedGraph.ReconcileWithBase();
@@ -46,7 +47,7 @@ MyString: MyDerivedString
         [Test]
         public void TestCollectionMismatchItem()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 10000000-0000-0000-0000-000000000000
 Tags: []
 Struct:
@@ -55,7 +56,7 @@ MyStrings:
     0a0000000a0000000a0000000a000000: String1
     14000000140000001400000014000000: String2
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
 Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 Tags: []
@@ -65,7 +66,7 @@ MyStrings:
     0a0000000a0000000a0000000a000000*: MyDerivedString
     14000000140000001400000014000000: MyBaseString
 ";
-            var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
@@ -102,7 +103,7 @@ MyStrings:
         [Test]
         public void TestCollectionMismatchId()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 10000000-0000-0000-0000-000000000000
 Tags: []
 Struct:
@@ -111,7 +112,7 @@ MyStrings:
     0a0000000a0000000a0000000a000000: String1
     14000000140000001400000014000000: String2
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
 Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 Tags: []
@@ -121,7 +122,7 @@ MyStrings:
     1a0000001a0000001a0000001a000000: String1
     14000000140000001400000014000000: String2
 ";
-            var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
@@ -158,7 +159,7 @@ MyStrings:
         [Test]
         public void TestCollectionAddedItemInBase()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 10000000-0000-0000-0000-000000000000
 Tags: []
 Struct:
@@ -168,7 +169,7 @@ MyStrings:
     15000000150000001500000015000000: String2.5
     14000000140000001400000014000000: String2
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
 Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 Tags: []
@@ -178,7 +179,7 @@ MyStrings:
     0a0000000a0000000a0000000a000000: String1
     14000000140000001400000014000000: String2
 ";
-            var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             Assert.AreEqual(3, context.BaseAsset.MyStrings.Count);
@@ -221,7 +222,7 @@ MyStrings:
         [Test]
         public void TestCollectionRemovedItemFromBase()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 10000000-0000-0000-0000-000000000000
 Tags: []
 Struct:
@@ -230,7 +231,7 @@ MyStrings:
     0a0000000a0000000a0000000a000000: String1
     14000000140000001400000014000000: String3
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
 Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 Tags: []
@@ -241,7 +242,7 @@ MyStrings:
     24000000240000002400000024000000: String2
     14000000140000001400000014000000: String3
 ";
-            var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
@@ -280,7 +281,7 @@ MyStrings:
         [Test]
         public void TestCollectionRemovedDeletedItemFromBase()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 10000000-0000-0000-0000-000000000000
 Tags: []
 Struct:
@@ -289,7 +290,7 @@ MyStrings:
     0a0000000a0000000a0000000a000000: String1
     24000000240000002400000024000000: String3
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
 Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 Tags: []
@@ -300,7 +301,7 @@ MyStrings:
     24000000240000002400000024000000: String2
     14000000140000001400000014000000: ~(Deleted)
 ";
-            var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
@@ -338,14 +339,14 @@ MyStrings:
         [Test]
         public void TestDictionaryMismatchValue()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 10000000-0000-0000-0000-000000000000
 Tags: []
 MyDictionary:
     0a0000000a0000000a0000000a000000~Key1: String1
     14000000140000001400000014000000~Key2: String2
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
 Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 Tags: []
@@ -353,7 +354,7 @@ MyDictionary:
     0a0000000a0000000a0000000a000000*~Key1: MyDerivedString
     14000000140000001400000014000000~Key2: MyBaseString
 ";
-            var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
@@ -390,7 +391,7 @@ MyDictionary:
         [Test]
         public void TestDictionaryAddedKeyInBase()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 10000000-0000-0000-0000-000000000000
 Tags: []
 MyDictionary:
@@ -398,7 +399,7 @@ MyDictionary:
     15000000150000001500000015000000~Key2.5: String2.5
     14000000140000001400000014000000~Key2: String2
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
 Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 Tags: []
@@ -406,7 +407,7 @@ MyDictionary:
     0a0000000a0000000a0000000a000000~Key1: String1
     14000000140000001400000014000000~Key2: String2
 ";
-            var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(3, context.BaseAsset.MyDictionary.Count);
@@ -449,14 +450,14 @@ MyDictionary:
         [Test]
         public void TestDictionaryKeyCollision()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 10000000-0000-0000-0000-000000000000
 Tags: []
 MyDictionary:
     0a0000000a0000000a0000000a000000~Key1: String1
     14000000140000001400000014000000~Key2: String2
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
 Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 Tags: []
@@ -464,7 +465,7 @@ MyDictionary:
     0a0000000a0000000a0000000a000000~Key1: String1
     15000000150000001500000015000000*~Key2: String3
 ";
-            var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
@@ -502,14 +503,14 @@ MyDictionary:
         [Test]
         public void TestDictionaryRemovedItemFromBase()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 10000000-0000-0000-0000-000000000000
 Tags: []
 MyDictionary:
     0a0000000a0000000a0000000a000000~Key1: String1
     14000000140000001400000014000000~Key3: String3
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
 Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 Tags: []
@@ -518,7 +519,7 @@ MyDictionary:
     24000000240000002400000024000000~Key2: String2
     14000000140000001400000014000000~Key3: String3
 ";
-            var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
@@ -557,14 +558,14 @@ MyDictionary:
         [Test]
         public void TestDictionaryRemovedDeletedItemFromBase()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 10000000-0000-0000-0000-000000000000
 Tags: []
 MyDictionary:
     0a0000000a0000000a0000000a000000~Key1: String1
     24000000240000002400000024000000~Key3: String3
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
 Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 Tags: []
@@ -573,7 +574,7 @@ MyDictionary:
     24000000240000002400000024000000~Key3: String2
     14000000140000001400000014000000~: ~(Deleted)
 ";
-            var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
@@ -611,7 +612,7 @@ MyDictionary:
         [Test]
         public void TestDictionaryRenameItemFromBase()
         {
-            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 10000000-0000-0000-0000-000000000000
 Tags: []
 MyDictionary:
@@ -620,7 +621,7 @@ MyDictionary:
     14000000140000001400000014000000~Key3Renamed: String3
     34000000340000003400000034000000~Key4Renamed: String4
 ";
-            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 20000000-0000-0000-0000-000000000000
 Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 Tags: []
@@ -630,7 +631,7 @@ MyDictionary:
     14000000140000001400000014000000*~Key3: MyDerivedString
     34000000340000003400000034000000~Key4*: MyDerivedString
 ";
-            var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.LoadFromYaml(baseYaml, derivedYaml);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(4, context.BaseAsset.MyDictionary.Count);
