@@ -31,18 +31,19 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             float farLeft = nearLeft * (-projectionMatrices[0].M33 / (-projectionMatrices[0].M33 - 1));
             float farRight = nearRight * (-projectionMatrices[1].M33 / (-projectionMatrices[1].M33 - 1));
             // Compute left and right
-            var left0 = nearLeft * (projectionMatrices[0].M31 - 1.0f) / projectionMatrices[0].M11;
-            var right1 = nearRight * (projectionMatrices[1].M31 + 1.0f) / projectionMatrices[1].M11;
+            var projectionLeftOfLeftEye = nearLeft * (projectionMatrices[0].M31 - 1.0f) / projectionMatrices[0].M11;
+            var projectionRightOfRightEye = nearRight * (projectionMatrices[1].M31 + 1.0f) / projectionMatrices[1].M11;
             float ipd = (viewMatrices[0].TranslationVector - viewMatrices[1].TranslationVector).Length();
             // find the center eye position according to the scheme described here:
             // http://computergraphics.stackexchange.com/questions/1736/vr-and-frustum-culling
-            var tanThethaLeft  = Math.Abs(left0 / nearLeft);
-            var tanThethaRight = Math.Abs(right1 / nearRight);
-            var recession = ipd / (tanThethaLeft + tanThethaRight);
-            // left offset:
-            var A = tanThethaLeft * recession;
+            // tangent of theta, where theta is FOV/2
+            var tangentThetaLeftEye  = Math.Abs(projectionLeftOfLeftEye / nearLeft);
+            var tangentThetaRightEye = Math.Abs(projectionRightOfRightEye / nearRight);
+            var recession = ipd / (tangentThetaLeftEye + tangentThetaRightEye);
+            // left offset (`A` on the diagram of above link):
+            var leftOffset = tangentThetaLeftEye * recession;
             // place the view position in between left and right:
-            commonView.View.TranslationVector = Vector3.Lerp(viewMatrices[0].TranslationVector, viewMatrices[1].TranslationVector, A / ipd);
+            commonView.View.TranslationVector = Vector3.Lerp(viewMatrices[0].TranslationVector, viewMatrices[1].TranslationVector, leftOffset / ipd);
             // and move backward:
             commonView.View.M43 -= recession;
 
@@ -57,7 +58,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             // adjust proportionally the parameters (l, r, u, b are defined at near, so we use nears ratio):
             var nearsRatio = commonView.NearClipPlane / oldNear;
             // recreation from scratch:
-            Matrix.PerspectiveOffCenterRH(left0 * nearsRatio, right1 * nearsRatio, bottom * nearsRatio, top * nearsRatio, commonView.NearClipPlane, commonView.FarClipPlane, out commonView.Projection);
+            Matrix.PerspectiveOffCenterRH(projectionLeftOfLeftEye * nearsRatio, projectionRightOfRightEye * nearsRatio, bottom * nearsRatio, top * nearsRatio, commonView.NearClipPlane, commonView.FarClipPlane, out commonView.Projection);
 
             // update the view projection:
             Matrix.Multiply(ref commonView.View, ref commonView.Projection, out commonView.ViewProjection);
