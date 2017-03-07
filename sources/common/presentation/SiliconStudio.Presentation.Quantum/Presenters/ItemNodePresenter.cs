@@ -11,9 +11,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
     {
         private readonly IObjectNode container;
 
-        public ItemNodePresenter(INodePresenter parent, IObjectNode container, Index index)
-            : base(parent)
+        public ItemNodePresenter([NotNull] INodePresenterFactoryInternal factory, INodePresenter parent, IObjectNode container, Index index)
+            : base(factory, parent)
         {
+            if (factory == null) throw new ArgumentNullException(nameof(factory));
             this.container = container;
             Index = index;
             Name = index.ToString();
@@ -25,17 +26,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         {
             container.ItemChanging -= OnItemChanging;
             container.ItemChanged -= OnItemChanged;
-        }
-
-        private void OnItemChanging(object sender, ItemChangeEventArgs e)
-        {
-            if (IsValidChange(e))
-                ValueChanging?.Invoke(this, new ValueChangingEventArgs(e.NewValue));
-        }
-
-        private void OnItemChanged(object sender, ItemChangeEventArgs e)
-        {
-            ValueChanged?.Invoke(this, new ValueChangedEventArgs(e.OldValue));
         }
 
         public override string Name { get; }
@@ -60,11 +50,14 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override event EventHandler<ValueChangedEventArgs> ValueChanged;
 
+        protected override IObjectNode ParentingNode => container.ItemReferences != null ? container.IndexedTarget(Index) : null;
+
         public override void UpdateValue(object newValue)
         {
             try
             {
                 container.Update(newValue, Index);
+                Refresh();
             }
             catch (Exception e)
             {
@@ -80,6 +73,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 container.IndexedTarget(Index).Add(value);
+                Refresh();
             }
             catch (Exception e)
             {
@@ -95,6 +89,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 container.IndexedTarget(Index).Add(value, index);
+                Refresh();
             }
             catch (Exception e)
             {
@@ -110,6 +105,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 container.IndexedTarget(Index).Remove(value, index);
+                Refresh();
             }
             catch (Exception e)
             {
@@ -125,11 +121,23 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 container.IndexedTarget(Index).Update(newValue, index);
+                Refresh();
             }
             catch (Exception e)
             {
                 throw new NodePresenterException("An error occurred while updating an item of the node, see the inner exception for more information.", e);
             }
+        }
+
+        private void OnItemChanging(object sender, ItemChangeEventArgs e)
+        {
+            if (IsValidChange(e))
+                ValueChanging?.Invoke(this, new ValueChangingEventArgs(e.NewValue));
+        }
+
+        private void OnItemChanged(object sender, ItemChangeEventArgs e)
+        {
+            ValueChanged?.Invoke(this, new ValueChangedEventArgs(e.OldValue));
         }
 
         private bool IsValidChange([NotNull] INodeChangeEventArgs e)

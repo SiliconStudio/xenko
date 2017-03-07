@@ -1,4 +1,5 @@
-﻿using SiliconStudio.Quantum;
+﻿using SiliconStudio.Core;
+using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
@@ -39,5 +40,19 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
 
             public SimpleObject Instance { get; set; }
         }
+
+        public class SimpleType
+        {
+            public string String { get; set; }
+        }
+
+        public class ClassWithRef
+        {
+            [Display(1)]
+            public string String { get; set; }
+            [Display(2)]
+            public ClassWithRef Ref { get; set; }
+        }
+
     }
 }

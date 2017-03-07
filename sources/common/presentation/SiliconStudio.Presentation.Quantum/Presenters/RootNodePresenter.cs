@@ -11,9 +11,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
     {
         private readonly IObjectNode rootNode;
 
-        public RootNodePresenter(IObjectNode rootNode)
-            : base(null)
+        public RootNodePresenter([NotNull] INodePresenterFactoryInternal factory, IObjectNode rootNode)
+            : base(factory, null)
         {
+            if (factory == null) throw new ArgumentNullException(nameof(factory));
             this.rootNode = rootNode;
         }
 
@@ -29,6 +30,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public override event EventHandler<ValueChangingEventArgs> ValueChanging;
         public override event EventHandler<ValueChangedEventArgs> ValueChanged;
 
+        protected override IObjectNode ParentingNode => rootNode;
+
         public override void UpdateValue(object newValue)
         {
             throw new NodePresenterException($"A {nameof(RootNodePresenter)} cannot have its own value updated.");
@@ -42,6 +45,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 rootNode.Add(value);
+                Refresh();
             }
             catch (Exception e)
             {
@@ -57,6 +61,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 rootNode.Add(value, index);
+                Refresh();
             }
             catch (Exception e)
             {
@@ -72,6 +77,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 rootNode.Remove(value, index);
+                Refresh();
             }
             catch (Exception e)
             {
@@ -87,6 +93,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 rootNode.Update(newValue, index);
+                Refresh();
             }
             catch (Exception e)
             {

@@ -42,6 +42,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         void RemoveItem(object value, Index index);
 
+        // TODO: this should probably be removed, UpdateValue should be called on the corresponding child node presenter itself
         void UpdateItem(object newValue, Index index);
     }
 }

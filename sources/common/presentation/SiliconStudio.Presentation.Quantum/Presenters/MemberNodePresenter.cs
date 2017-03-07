@@ -14,9 +14,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         private readonly IMemberNode member;
         private readonly List<Attribute> memberAttributes = new List<Attribute>();
 
-        public MemberNodePresenter([NotNull] INodePresenter parent, [NotNull] IMemberNode member)
-            : base(parent)
+        public MemberNodePresenter([NotNull] INodePresenterFactoryInternal factory, [NotNull] INodePresenter parent, [NotNull] IMemberNode member)
+            : base(factory, parent)
         {
+            if (factory == null) throw new ArgumentNullException(nameof(factory));
             if (parent == null) throw new ArgumentNullException(nameof(parent));
             if (member == null) throw new ArgumentNullException(nameof(member));
             this.member = member;
@@ -67,6 +68,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public IReadOnlyList<Attribute> MemberAttributes => memberAttributes;
 
+        protected override IObjectNode ParentingNode => member.Target;
+
         public override event EventHandler<ValueChangingEventArgs> ValueChanging;
 
         public override event EventHandler<ValueChangedEventArgs> ValueChanged;
@@ -76,6 +79,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 member.Update(newValue);
+                Refresh();
             }
             catch (Exception e)
             {
@@ -91,6 +95,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 member.Target.Add(value);
+                Refresh();
             }
             catch (Exception e)
             {
@@ -106,6 +111,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 member.Target.Add(value, index);
+                Refresh();
             }
             catch (Exception e)
             {
@@ -121,6 +127,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 member.Target.Remove(value, index);
+                Refresh();
             }
             catch (Exception e)
             {
@@ -136,6 +143,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 member.Target.Update(newValue, index);
+                Refresh();
             }
             catch (Exception e)
             {

@@ -9,10 +9,13 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 {
     public abstract class NodePresenterBase : IInitializingNodePresenter
     {
+        private readonly INodePresenterFactoryInternal factory;
         private readonly List<INodePresenter> children = new List<INodePresenter>();
 
-        protected NodePresenterBase(INodePresenter parent)
+        protected NodePresenterBase([NotNull] INodePresenterFactoryInternal factory, INodePresenter parent)
         {
+            if (factory == null) throw new ArgumentNullException(nameof(factory));
+            this.factory = factory;
             Parent = parent;
         }
 
@@ -37,6 +40,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public abstract event EventHandler<ValueChangingEventArgs> ValueChanging;
         public abstract event EventHandler<ValueChangedEventArgs> ValueChanged;
 
+        protected abstract IObjectNode ParentingNode { get; }
+
         public abstract void UpdateValue(object newValue);
 
         public abstract void AddItem(object value);
@@ -47,6 +52,16 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public abstract void UpdateItem(object newValue, Index index);
 
+        protected void Refresh()
+        {
+            children.Clear();
+            var parentingNode = ParentingNode;
+            if (parentingNode != null)
+            {
+                factory.CreateChildren(this, parentingNode);
+            }            
+        }
+         
         void IInitializingNodePresenter.AddChild([NotNull] IInitializingNodePresenter child)
         {
             children.Add(child);

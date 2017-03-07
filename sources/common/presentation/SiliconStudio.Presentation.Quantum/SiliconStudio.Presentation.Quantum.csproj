@@ -27,6 +27,9 @@
     <Compile Include="Controls\AsyncContentControl.cs" />
     <Compile Include="ExpandReferencePolicy.cs" />
     <Compile Include="GraphNodeBinding.cs" />
+    <Compile Include="Presenters\INodePresenterFactory.cs" />
+    <Compile Include="Presenters\INodePresenterFactoryInternal.cs" />
+    <Compile Include="Presenters\NodePresenterFactory.cs" />
     <Compile Include="Presenters\ItemNodePresenter.cs" />
     <Compile Include="Presenters\MemberNodePresenter.cs" />
     <Compile Include="Presenters\GraphNodePresenter.cs" />
