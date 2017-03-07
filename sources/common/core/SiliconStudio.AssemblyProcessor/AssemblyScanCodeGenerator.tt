@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace SiliconStudio.Core.Serialization.AssemblyScan
 {
@@ -25,7 +26,7 @@ namespace SiliconStudio.Core.Serialization.AssemblyScan
 				scanTypes.Add(typeof(<#=scanTypeEntry.Key.ConvertCSharp(true)#>), scanTypeList);
 			}
 <# } #>
-			SiliconStudio.Core.Reflection.AssemblyRegistry.RegisterScanTypes(typeof(<#=assemblyScanClassName#>).Assembly, new SiliconStudio.Core.Reflection.AssemblyRegistry.ScanTypes(scanTypes));
+			SiliconStudio.Core.Reflection.AssemblyRegistry.RegisterScanTypes(typeof(<#=assemblyScanClassName#>).GetTypeInfo().Assembly, new SiliconStudio.Core.Reflection.AssemblyRegistry.ScanTypes(scanTypes));
 		}
 	}
 }

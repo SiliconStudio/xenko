@@ -28,10 +28,11 @@ namespace SiliconStudio.AssemblyProcessor
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("\r\nusing System;\r\nusing System.Collections.Generic;\r\n\r\nnamespace SiliconStudio.Cor" +
-                    "e.Serialization.AssemblyScan\r\n{\r\n   \tpublic static class ");
+            this.Write("\r\nusing System;\r\nusing System.Collections.Generic;\r\nusing System.Reflection;\r\n\r\nn" +
+                    "amespace SiliconStudio.Core.Serialization.AssemblyScan\r\n{\r\n   \tpublic static cla" +
+                    "ss ");
             
-            #line 12 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
+            #line 13 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(assemblyScanClassName));
             
             #line default
@@ -40,62 +41,62 @@ namespace SiliconStudio.AssemblyProcessor
                     " void Initialize()\r\n\t\t{\r\n\t\t\tvar scanTypes = new Dictionary<Type, List<Type>>();\r" +
                     "\n");
             
-            #line 18 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
+            #line 19 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
  foreach (var scanTypeEntry in scanTypes) { 
             
             #line default
             #line hidden
             this.Write("\t\t\t{\r\n\t\t\t\t// Types scanned for ");
             
-            #line 20 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
+            #line 21 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(scanTypeEntry.Key.ConvertCSharp(true)));
             
             #line default
             #line hidden
             this.Write("\r\n\t\t\t\tvar scanTypeList = new List<Type>();\r\n");
             
-            #line 22 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
+            #line 23 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
  foreach (var scanType in scanTypeEntry.Value) { 
             
             #line default
             #line hidden
             this.Write("\t\t\t\tscanTypeList.Add(typeof(");
             
-            #line 23 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
+            #line 24 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(scanType.ConvertCSharp()));
             
             #line default
             #line hidden
             this.Write("));\r\n");
             
-            #line 24 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
+            #line 25 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
  } 
             
             #line default
             #line hidden
             this.Write("\t\t\t\tscanTypes.Add(typeof(");
             
-            #line 25 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
+            #line 26 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(scanTypeEntry.Key.ConvertCSharp(true)));
             
             #line default
             #line hidden
             this.Write("), scanTypeList);\r\n\t\t\t}\r\n");
             
-            #line 27 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
+            #line 28 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
  } 
             
             #line default
             #line hidden
             this.Write("\t\t\tSiliconStudio.Core.Reflection.AssemblyRegistry.RegisterScanTypes(typeof(");
             
-            #line 28 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
+            #line 29 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\AssemblyScanCodeGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(assemblyScanClassName));
             
             #line default
             #line hidden
-            this.Write(").Assembly, new SiliconStudio.Core.Reflection.AssemblyRegistry.ScanTypes(scanType" +
-                    "s));\r\n\t\t}\r\n\t}\r\n}\r\n");
+            this.Write(").GetTypeInfo().Assembly, new SiliconStudio.Core.Reflection.AssemblyRegistry.Scan" +
+                    "Types(scanTypes));\r\n\t\t}\r\n\t}\r\n}\r\n");
             return this.GenerationEnvironment.ToString();
         }
     }
