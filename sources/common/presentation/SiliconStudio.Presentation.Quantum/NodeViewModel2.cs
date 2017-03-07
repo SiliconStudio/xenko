@@ -142,7 +142,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
         }
 
-        public virtual T TypedValue { get { return (T)NodePresenter.Value; } set { NodePresenter.Value = value; } }
+        public virtual T TypedValue { get { return (T)NodePresenter.Value; } set { NodePresenter.UpdateValue(value); } }
 
         /// <inheritdoc/>
         public sealed override object Value { get { return TypedValue; } set { TypedValue = (T)value; } }

@@ -59,9 +59,11 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public bool IsPrimitive => member.IsPrimitive;
 
+        public bool IsEnumerable => member.Target?.IsEnumerable ?? false;
+
         public Index Index => Index.Empty;
 
-        public ITypeDescriptor Descriptor { get; }
+        public ITypeDescriptor Descriptor => member.Descriptor;
 
         public int? Order { get; }
 
@@ -72,6 +74,78 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public event EventHandler<ValueChangingEventArgs> ValueChanging;
 
         public event EventHandler<ValueChangedEventArgs> ValueChanged;
+
+        public void UpdateValue(object newValue)
+        {
+            try
+            {
+                member.Update(newValue);
+            }
+            catch (Exception e)
+            {
+                throw new NodePresenterException("An error occurred while updating the value of the node, see the inner exception for more information.", e);
+            }
+        }
+
+        public void AddItem(object value)
+        {
+            if (member.Target == null || !member.Target.IsEnumerable)
+                throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(AddItem)} cannot be invoked on members that are not collection.");
+
+            try
+            {
+                member.Target.Add(value);
+            }
+            catch (Exception e)
+            {
+                throw new NodePresenterException("An error occurred while adding an item to the node, see the inner exception for more information.", e);
+            }
+        }
+
+        public void AddItem(object value, Index index)
+        {
+            if (member.Target == null || !member.Target.IsEnumerable)
+                throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(AddItem)} cannot be invoked on members that are not collection.");
+
+            try
+            {
+                member.Target.Add(value, index);
+            }
+            catch (Exception e)
+            {
+                throw new NodePresenterException("An error occurred while adding an item to the node, see the inner exception for more information.", e);
+            }
+        }
+
+        public void RemoveItem(object value, Index index)
+        {
+            if (member.Target == null || !member.Target.IsEnumerable)
+                throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(RemoveItem)} cannot be invoked on members that are not collection.");
+
+            try
+            {
+                member.Target.Remove(value, index);
+            }
+            catch (Exception e)
+            {
+                throw new NodePresenterException("An error occurred while removing an item to the node, see the inner exception for more information.", e);
+            }
+        }
+
+        public void UpdateItem(object newValue, Index index)
+        {
+            if (member.Target == null || !member.Target.IsEnumerable)
+                throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(UpdateItem)} cannot be invoked on members that are not collection.");
+
+            try
+            {
+                member.Target.Update(newValue, index);
+            }
+            catch (Exception e)
+            {
+                throw new NodePresenterException("An error occurred while updating an item of the node, see the inner exception for more information.", e);
+            }
+        }
 
         private void OnMemberChanging(object sender, MemberNodeChangeEventArgs e)
         {

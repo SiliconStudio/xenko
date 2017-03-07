@@ -20,16 +20,28 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         bool IsPrimitive { get; }
 
+        bool IsEnumerable { get; }
+
         Index Index { get; }
 
         ITypeDescriptor Descriptor { get; }
 
         int? Order { get; }
 
-        object Value { get; set; }
+        object Value { get; }
 
         event EventHandler<ValueChangingEventArgs> ValueChanging;
 
         event EventHandler<ValueChangedEventArgs> ValueChanged;
+
+        void UpdateValue(object newValue);
+
+        void AddItem(object value);
+
+        void AddItem(object value, Index index);
+
+        void RemoveItem(object value, Index index);
+
+        void UpdateItem(object newValue, Index index);
     }
 }
