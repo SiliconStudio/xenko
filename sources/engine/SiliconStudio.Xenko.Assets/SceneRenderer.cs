@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Assets
             ContentManager = new ContentManager(Services);
 
             var renderingSettings = gameSettings.Get<RenderingSettings>();
-            GraphicsDevice = GraphicsDevice.New(DeviceCreationFlags.None, new[] { renderingSettings.DefaultGraphicsProfile });
+            GraphicsDevice = GraphicsDevice.New(DeviceCreationFlags.Debug, new[] { renderingSettings.DefaultGraphicsProfile });
 
             var graphicsDeviceService = new GraphicsDeviceServiceLocal(Services, GraphicsDevice);
             EffectSystem = new EffectSystem(Services);

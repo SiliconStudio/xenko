@@ -15,14 +15,14 @@ namespace SiliconStudio.Xenko.Assets.Tests
     [TestFixture]
     public class TestPrefabAsset
     {
-        [Test]
+        [Test, Ignore("This test is obsolete, assets require a PropertyGraph to create metadata before being saved")]
         public void TestSerialization()
         {
             var originAsset = CreateOriginAsset();
 
             using (var stream = new MemoryStream())
             {
-                AssetFileSerializer.Save(stream, originAsset);
+                AssetFileSerializer.Save(stream, originAsset, null);
 
                 stream.Position = 0;
                 var serializedVersion = Encoding.UTF8.GetString(stream.ToArray());

@@ -1,7 +1,8 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Globalization;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -19,7 +20,7 @@ namespace SiliconStudio.Presentation.ValueConverters
 
             var useEquals = value.GetType().IsValueType || value is string;
             var result = useEquals ? Equals(value, parameter) : ReferenceEquals(value, parameter);
-            return result;
+            return result.Box();
         }
     }
 }

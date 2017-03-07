@@ -149,7 +149,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Removes the entity from the <see cref="EntityManager" />.
         /// It works weither entity has a parent or not.
-        /// In conjonction with <see cref="HierarchicalProcessor" />, it will remove children entities as well.
+        /// In conjonction with <see cref="HierarchicalProcessor" />, it will remove child entities as well.
         /// </summary>
         /// <param name="entity">The entity.</param>
         public void Remove(Entity entity)

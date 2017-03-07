@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Reflection;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Annotations
@@ -26,8 +27,8 @@ namespace SiliconStudio.Core.Annotations
         {
             if (factoryType == null) throw new ArgumentNullException(nameof(factoryType));
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-            if (!typeof(IObjectFactory).IsAssignableFrom(factoryType)) throw new ArgumentException($@"The given type does not implement {nameof(IObjectFactory)}/", nameof(factoryType));
-            if (factoryType.GetConstructor(Type.EmptyTypes) == null) throw new ArgumentException(@"The given type does have a public parameterless constructor.", nameof(factoryType));
+            if (!typeof(IObjectFactory).GetTypeInfo().IsAssignableFrom(factoryType.GetTypeInfo())) throw new ArgumentException($@"The given type does not implement {nameof(IObjectFactory)}/", nameof(factoryType));
+            if (factoryType.GetTypeInfo().GetConstructor(Type.EmptyTypes) == null) throw new ArgumentException(@"The given type does have a public parameterless constructor.", nameof(factoryType));
 #endif
             FactoryType = factoryType;
         }

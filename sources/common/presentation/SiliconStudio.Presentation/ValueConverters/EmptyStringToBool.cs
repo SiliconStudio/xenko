@@ -1,5 +1,9 @@
-﻿using System;
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Globalization;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -15,9 +19,10 @@ namespace SiliconStudio.Presentation.ValueConverters
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var stringValue = ConverterHelper.ConvertToString(value, culture);
-            return parameter is bool && (bool)parameter
+            var result = parameter is bool && (bool)parameter
                 ? string.IsNullOrWhiteSpace(stringValue)
                 : string.IsNullOrEmpty(stringValue);
+            return result.Box();
         }
     }
 }

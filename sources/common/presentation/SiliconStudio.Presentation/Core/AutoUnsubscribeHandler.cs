@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Core
 {
@@ -29,7 +30,8 @@ namespace SiliconStudio.Presentation.Core
         /// </summary>
         /// <param name="instance">The instance of <see cref="AutoUnsubscribeHandler{T}"/>.</param>
         /// <returns>An EventHandler that can subscribe to the event.</returns>
-        public static implicit operator EventHandler<T>(AutoUnsubscribeHandler<T> instance)
+        [NotNull]
+        public static implicit operator EventHandler<T>([NotNull] AutoUnsubscribeHandler<T> instance)
         {
             return instance.Handler;
         }

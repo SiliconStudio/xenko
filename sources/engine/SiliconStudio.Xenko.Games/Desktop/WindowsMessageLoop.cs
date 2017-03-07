@@ -24,7 +24,7 @@
 using System;
 using System.Globalization;
 using System.Windows.Forms;
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && !SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && !SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN && !SILICONSTUDIO_XENKO_GRAPHICS_API_NULL
 using SharpDX.Win32;
 #endif
 using System.Runtime.InteropServices;
@@ -150,15 +150,8 @@ namespace SiliconStudio.Xenko.Games
                     {
                         // Previous code not compatible with Application.AddMessageFilter but faster then DoEvents
                         Win32Native.NativeMessage msg;
-                        while (Win32Native.PeekMessage(out msg, IntPtr.Zero, 0, 0, 0) != 0)
+                        while (Win32Native.PeekMessage(out msg, IntPtr.Zero, 0, 0, Win32Native.PM_REMOVE) != 0)
                         {
-                            if (Win32Native.GetMessage(out msg, IntPtr.Zero, 0, 0) == -1)
-                            {
-                                throw new InvalidOperationException(String.Format(CultureInfo.InvariantCulture,
-                                    "An error happened in rendering loop while processing windows messages. Error: {0}",
-                                    Marshal.GetLastWin32Error()));
-                            }
-
                             // NCDESTROY event?
                             if (msg.msg == 130)
                             {

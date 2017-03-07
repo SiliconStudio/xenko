@@ -1261,7 +1261,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Method called by <see cref="IUIElementUpdate.Update"/>.
         /// This method can be overridden by inherited classes to perform time-based actions.
-        /// This method is not in charge to recursively call the update on children elements, this is automatically done.
+        /// This method is not in charge to recursively call the update on child elements, this is automatically done.
         /// </summary>
         /// <param name="time">The current time of the game</param>
         protected virtual void Update(GameTime time)

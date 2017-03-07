@@ -81,6 +81,9 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// <summary>
         /// Gets or sets the pivot position, that will be used as center of object.
         /// </summary>
+        /// <userdoc>
+        /// The root (pivot) of the animation will be offset by this distance.
+        /// </userdoc>
         [DataMember(10)]
         public Vector3 PivotPosition { get; set; }
 
@@ -88,7 +91,9 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// Gets or sets the scale import.
         /// </summary>
         /// <value>The scale import.</value>
-        /// <userdoc>The scale factor to apply to the imported animation.</userdoc>
+        /// <userdoc>
+        /// The scale factor to apply to the imported animation.
+        /// </userdoc>
         [DataMember(15)]
         [DefaultValue(1.0f)]
         public float ScaleImport { get; set; } = 1.0f;
@@ -97,8 +102,11 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// Gets or sets the animation repeat mode.
         /// </summary>
         /// <value>The repeat mode</value>
-        /// <userdoc>Specifies how the animation should be played. That is played once and stop, infinitely loop, etc...</userdoc>
+        /// <userdoc>
+        /// Hint for the animation engine. Can be overridden at runtime when playing the animation. If no mode is specified at runtime, the hint will be used.
+        /// </userdoc>
         [DataMember(20)]
+        [Display("Repeat mode hint")]
         public AnimationRepeatMode RepeatMode { get; set; } = AnimationRepeatMode.LoopInfinite;
 
         /// <summary>

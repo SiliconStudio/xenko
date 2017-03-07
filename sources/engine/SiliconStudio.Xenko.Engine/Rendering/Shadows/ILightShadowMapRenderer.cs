@@ -1,13 +1,17 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
+    /// <summary>
+    /// Interface to render shadows
+    /// </summary>
     public interface ILightShadowRenderer
     {
         /// <summary>
@@ -16,22 +20,30 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         /// <remarks>
         /// This method allows the implementation to prepare some internal states before being rendered.
         /// </remarks>
-        void Reset();
+        void Reset(RenderContext context);
+
+        /// <summary>
+        /// Test if this renderer can render this kind of light
+        /// </summary>
+        bool CanRenderLight(IDirectLight light);
     }
+
 
     /// <summary>
     /// Interface to render a shadow map.
     /// </summary>
     public interface ILightShadowMapRenderer : ILightShadowRenderer
     {
-        Type LightType { get; }
+        RenderStage ShadowCasterRenderStage { get; }
 
         LightShadowType GetShadowType(LightShadowMap lightShadowMap);
 
         ILightShadowMapShaderGroupData CreateShaderGroupData(LightShadowType shadowType);
 
-        void Collect(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
+        void Collect(RenderContext context, RenderView sourceView, LightShadowMapTexture lightShadowMap);
+        
+        void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, LightShadowMapTexture shadowMapTexture);
 
-        void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection);
+        LightShadowMapTexture CreateShadowMapTexture(RenderView renderView, LightComponent lightComponent, IDirectLight light, int shadowMapSize);
     }
 }

@@ -97,7 +97,7 @@ namespace JumpyJet
             var renderSystem = context.RenderSystem;
 
             // Clear
-            drawContext.CommandList.Clear(context.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            drawContext.CommandList.Clear(drawContext.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
 
             // Draw parallax background
             spriteBatch.Begin(drawContext.GraphicsContext);

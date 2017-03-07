@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Core
 {
@@ -13,17 +14,18 @@ namespace SiliconStudio.Presentation.Core
         private EventInfo eventInfo;
         private object target;
 
-        public static AnonymousEventHandler RegisterEventHandler(EventInfo eventInfo, object target, Action handler)
+        [NotNull]
+        public static AnonymousEventHandler RegisterEventHandler([NotNull] EventInfo eventInfo, object target, Action handler)
         {
-            ParameterInfo[] parameterInfos = eventInfo.EventHandlerType.GetMethod("Invoke").GetParameters();
+            var parameterInfos = eventInfo.EventHandlerType.GetMethod("Invoke").GetParameters();
 
             if (parameterInfos.Length != 2)
                 throw new ArgumentException("The given event info must have exactly two parameters.");
 
-            Type argumentType = parameterInfos.Skip(1).First().ParameterType;
-            Type type = typeof(AnonymousEventHandler<>).MakeGenericType(argumentType);
+            var argumentType = parameterInfos.Skip(1).First().ParameterType;
+            var type = typeof(AnonymousEventHandler<>).MakeGenericType(argumentType);
 
-            MethodInfo method = type.GetMethod("Handler");
+            var method = type.GetMethod("Handler");
             var anonymousHandler = (AnonymousEventHandler)Activator.CreateInstance(type);
             anonymousHandler.Action = handler;
             anonymousHandler.eventHandler = Delegate.CreateDelegate(eventInfo.EventHandlerType, anonymousHandler, method);
@@ -34,7 +36,7 @@ namespace SiliconStudio.Presentation.Core
             return anonymousHandler;
         }
 
-        public static void UnregisterEventHandler(AnonymousEventHandler handler)
+        public static void UnregisterEventHandler([NotNull] AnonymousEventHandler handler)
         {
             handler.eventInfo.RemoveEventHandler(handler.target, handler.eventHandler);
         }

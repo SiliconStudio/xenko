@@ -26,6 +26,8 @@ typedef void FILE;
 #define sprintf npSprintf
 #undef fprintf
 #define fprintf npFprintf
+#undef vsnprintf
+#define vsnprintf npVsnprintf
 
 extern FILE* npGetStderr();
 extern FILE* npGetStdin();
@@ -34,6 +36,7 @@ extern int npFflush(FILE* file);
 extern int npPrintf(const char* format, ...);
 extern int npSprintf(char* buffer, const char* format, ...);
 extern int npFprintf(FILE *stream, const char *format, ...);
+extern int npVsnprintf(char * s, size_t n, const char * format, va_list arg);
 
 #ifdef __cplusplus
 }

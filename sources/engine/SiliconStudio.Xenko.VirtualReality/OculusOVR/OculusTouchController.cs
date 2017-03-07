@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         private DeviceState currentState;
         private float currentTrigger, currentGrip, previousTrigger, previousGrip;
         private uint currentTouchesState, previousTouchesState;
+        private uint currentButtonsState, previousButtonsState;
         private Vector2 currentThumbstick;
         private const float triggerAndGripDeadzone = 0.00001f;
 
@@ -124,6 +125,8 @@ namespace SiliconStudio.Xenko.VirtualReality
             }
         }
 
+        public override Vector2 ThumbAxis => currentThumbstick;
+
         public OculusTouchController(TouchControllerHand hand)
         {
             this.hand = hand;
@@ -133,6 +136,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         internal void UpdateInputs(ref OculusOvr.InputProperties properties)
         {
             previousTouchesState = currentTouchesState;
+            previousButtonsState = currentButtonsState;
             previousTrigger = currentTrigger;
             previousGrip = currentGrip;
 
@@ -141,6 +145,7 @@ namespace SiliconStudio.Xenko.VirtualReality
                 currentTrigger = 0.0f;
                 currentGrip = 0.0f;
                 currentTouchesState = 0;
+                currentButtonsState = 0;
                 currentThumbstick = Vector2.Zero;
                 currentTrigger = 0.0f;
                 currentGrip = 0.0f;
@@ -150,6 +155,7 @@ namespace SiliconStudio.Xenko.VirtualReality
             currentTrigger = hand == TouchControllerHand.Left ? properties.IndexTriggerLeft : properties.IndexTriggerRight;
             currentGrip = hand == TouchControllerHand.Left ? properties.HandTriggerLeft : properties.HandTriggerRight;
             currentTouchesState = properties.Touches;
+            currentButtonsState = properties.Buttons;
             currentThumbstick = hand == TouchControllerHand.Left ? properties.ThumbstickLeft : properties.ThumbstickRight;
         }
 
@@ -204,6 +210,37 @@ namespace SiliconStudio.Xenko.VirtualReality
                 case TouchControllerButton.Thumbstick:
                     var thumbFlag = hand == TouchControllerHand.Left ? 0x00000400 : 0x00000004;
                     //ovrButton_RThumb
+                    return (previousButtonsState & thumbFlag) != thumbFlag && (currentButtonsState & thumbFlag) == thumbFlag;
+                case TouchControllerButton.A:
+                    //ovrButton_A
+                    return (previousButtonsState & 0x00000001) != 0x00000001 && (currentButtonsState & 0x00000001) == 0x00000001;
+                case TouchControllerButton.B:
+                    //ovrButton_B
+                    return (previousButtonsState & 0x00000002) != 0x00000002 && (currentButtonsState & 0x00000002) == 0x00000002;
+                case TouchControllerButton.X:
+                    //ovrButton_X
+                    return (previousButtonsState & 0x00000100) != 0x00000100 && (currentButtonsState & 0x00000100) == 0x00000100;
+                case TouchControllerButton.Y:
+                    //ovrButton_Y
+                    return (previousButtonsState & 0x00000200) != 0x00000200 && (currentButtonsState & 0x00000200) == 0x00000200;
+                case TouchControllerButton.Trigger:
+                    return previousTrigger <= triggerAndGripDeadzone && currentTrigger > triggerAndGripDeadzone;
+                case TouchControllerButton.Grip:
+                    return previousGrip <= triggerAndGripDeadzone && currentGrip > triggerAndGripDeadzone;
+                case TouchControllerButton.Menu:
+                    return (previousButtonsState & 0x00100000) != 0x00100000 && (currentButtonsState & 0x00100000) == 0x00100000;
+                default:
+                    return false;
+            }
+        }
+
+        public override bool IsTouchedDown(TouchControllerButton button)
+        {
+            switch (button)
+            {
+                case TouchControllerButton.Thumbstick:
+                    var thumbFlag = hand == TouchControllerHand.Left ? 0x00000400 : 0x00000004;
+                    //ovrButton_RThumb
                     return (previousTouchesState & thumbFlag) != thumbFlag && (currentTouchesState & thumbFlag) == thumbFlag;
                 case TouchControllerButton.A:
                     //ovrButton_A
@@ -221,12 +258,45 @@ namespace SiliconStudio.Xenko.VirtualReality
                     return previousTrigger <= triggerAndGripDeadzone && currentTrigger > triggerAndGripDeadzone;
                 case TouchControllerButton.Grip:
                     return previousGrip <= triggerAndGripDeadzone && currentGrip > triggerAndGripDeadzone;
+                case TouchControllerButton.Menu:
+                    return (previousTouchesState & 0x00100000) != 0x00100000 && (currentTouchesState & 0x00100000) == 0x00100000;
                 default:
                     return false;
             }
         }
 
         public override bool IsPressed(TouchControllerButton button)
+        {
+            switch (button)
+            {
+                case TouchControllerButton.Thumbstick:
+                    var thumbFlag = hand == TouchControllerHand.Left ? 0x00000400 : 0x00000004;
+                    //ovrButton_RThumb
+                    return (currentButtonsState & thumbFlag) == thumbFlag;
+                case TouchControllerButton.A:
+                    //ovrButton_A
+                    return (currentButtonsState & 0x00000001) == 0x00000001;
+                case TouchControllerButton.B:
+                    //ovrButton_B
+                    return (currentButtonsState & 0x00000002) == 0x00000002;
+                case TouchControllerButton.X:
+                    //ovrButton_X
+                    return (currentButtonsState & 0x00000100) == 0x00000100;
+                case TouchControllerButton.Y:
+                    //ovrButton_Y
+                    return (currentButtonsState & 0x00000200) == 0x00000200;
+                case TouchControllerButton.Trigger:
+                    return currentTrigger > triggerAndGripDeadzone;
+                case TouchControllerButton.Grip:
+                    return currentGrip > triggerAndGripDeadzone;
+                case TouchControllerButton.Menu:
+                    return (currentButtonsState & 0x00100000) == 0x00100000;
+                default:
+                    return false;
+            }
+        }
+
+        public override bool IsTouched(TouchControllerButton button)
         {
             switch (button)
             {
@@ -250,12 +320,45 @@ namespace SiliconStudio.Xenko.VirtualReality
                     return currentTrigger > triggerAndGripDeadzone;
                 case TouchControllerButton.Grip:
                     return currentGrip > triggerAndGripDeadzone;
+                case TouchControllerButton.Menu:
+                    return (currentTouchesState & 0x00100000) == 0x00100000;
                 default:
                     return false;
             }
         }
 
         public override bool IsPressReleased(TouchControllerButton button)
+        {
+            switch (button)
+            {
+                case TouchControllerButton.Thumbstick:
+                    var thumbFlag = hand == TouchControllerHand.Left ? 0x00000400 : 0x00000004;
+                    //ovrButton_RThumb
+                    return (previousButtonsState & thumbFlag) == thumbFlag && (currentButtonsState & thumbFlag) != thumbFlag;
+                case TouchControllerButton.A:
+                    //ovrButton_A
+                    return (previousButtonsState & 0x00000001) == 0x00000001 && (currentButtonsState & 0x00000001) != 0x00000001;
+                case TouchControllerButton.B:
+                    //ovrButton_B
+                    return (previousButtonsState & 0x00000002) == 0x00000002 && (currentButtonsState & 0x00000002) != 0x00000002;
+                case TouchControllerButton.X:
+                    //ovrButton_X
+                    return (previousButtonsState & 0x00000100) == 0x00000100 && (currentButtonsState & 0x00000100) != 0x00000100;
+                case TouchControllerButton.Y:
+                    //ovrButton_Y
+                    return (previousButtonsState & 0x00000200) == 0x00000200 && (currentButtonsState & 0x00000200) != 0x00000200;
+                case TouchControllerButton.Trigger:
+                    return previousTrigger > triggerAndGripDeadzone && currentTrigger <= triggerAndGripDeadzone;
+                case TouchControllerButton.Grip:
+                    return previousGrip > triggerAndGripDeadzone && currentGrip <= triggerAndGripDeadzone;
+                case TouchControllerButton.Menu:
+                    return (previousButtonsState & 0x00100000) == 0x00100000 && (currentButtonsState & 0x00100000) != 0x00100000;
+                default:
+                    return false;
+            }
+        }
+
+        public override bool IsTouchReleased(TouchControllerButton button)
         {
             switch (button)
             {
@@ -279,6 +382,8 @@ namespace SiliconStudio.Xenko.VirtualReality
                     return previousTrigger > triggerAndGripDeadzone && currentTrigger <= triggerAndGripDeadzone;
                 case TouchControllerButton.Grip:
                     return previousGrip > triggerAndGripDeadzone && currentGrip <= triggerAndGripDeadzone;
+                case TouchControllerButton.Menu:
+                    return (previousTouchesState & 0x00100000) == 0x00100000 && (currentTouchesState & 0x00100000) != 0x00100000;
                 default:
                     return false;
             }

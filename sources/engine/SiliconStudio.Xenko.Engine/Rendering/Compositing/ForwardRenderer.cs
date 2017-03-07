@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Lights;
@@ -11,67 +14,10 @@ using SiliconStudio.Xenko.Rendering.Images;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
-    public class DefaultRenderTargets : IColorTarget, INormalTarget, IVelocityTarget, IMultipleRenderViews
-    {
-        private readonly Texture[] allTargets = new Texture[3];
-
-        public Texture Color { get; set; }
-
-        public Texture Normal { get; set; }
-
-        public Texture Velocity { get; set; }
-
-        public Texture[] AllTargets
-        {
-            get
-            {
-                //color
-                allTargets[0] = Color;
-
-                //normals
-                if (Normal != null)
-                {
-                    allTargets[1] = Normal;
-                }
-
-                //velocity
-                if (Normal == null)
-                {
-                    allTargets[1] = Velocity;
-                }
-                else
-                {
-                    allTargets[2] = Velocity;
-                }
-
-                return allTargets;
-            }
-        }
-
-        public int NumberOfTargets
-        {
-            get
-            {
-                var n = 0;
-                if (Color != null)
-                    n++;
-                if (Normal != null)
-                    n++;
-                if (Velocity != null)
-                    n++;
-                return n;
-            }
-        }
-
-        public int Count { get; set; }
-
-        public int Index { get; set; }
-    }
-
     /// <summary>
     /// Renders your game. It should use current <see cref="RenderContext.RenderView"/> and <see cref="CameraComponentRendererExtensions.GetCurrentCamera"/>.
     /// </summary>
-    public class ForwardRenderer : SceneRendererBase, ISharedRenderer
+    public partial class ForwardRenderer : SceneRendererBase, ISharedRenderer
     {
         private IShadowMapRenderer shadowMapRenderer;
         private Texture depthStencilROCached;
@@ -85,6 +31,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         private VRDeviceSystem vrSystem;
 
         public ClearRenderer Clear { get; set; } = new ClearRenderer();
+        
+        /// <summary>
+        /// Enable Light Probe.
+        /// </summary>
+        public bool LightProbes { get; set; } = true;
 
         /// <summary>
         /// The main render stage for opaque geometry.
@@ -97,14 +48,24 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         public RenderStage TransparentRenderStage { get; set; }
 
         /// <summary>
-        /// The shadow map render stage for shadow casters. No shadows rendering will happen if null.
+        /// The shadow map render stages for shadow casters. No shadow rendering will happen if null.
         /// </summary>
-        public RenderStage ShadowMapRenderStage { get; set; }
+        public List<RenderStage> ShadowMapRenderStages { get; } = new List<RenderStage>();
+
+        /// <summary>
+        /// The G-Buffer render stage to render depth buffer and possibly some other extra info to buffers (i.e. normals)
+        /// </summary>
+        public RenderStage GBufferRenderStage { get; set; }
 
         /// <summary>
         /// The post effects renderer.
         /// </summary>
         public IPostProcessingEffects PostEffects { get; set; }
+
+        /// <summary>
+        /// Light shafts effect
+        /// </summary>
+        public LightShafts LightShafts { get; set; }
 
         /// <summary>
         /// Virtual Reality related settings
@@ -154,6 +115,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     vrSystem.RequireMirror = true;
                     vrSystem.MirrorWidth = GraphicsDevice.Presenter.BackBuffer.Width;
                     vrSystem.MirrorHeight = GraphicsDevice.Presenter.BackBuffer.Height;
+                    vrSystem.ResolutionScale = VRSettings.ResolutionScale;
 
                     vrSystem.Enabled = true; //careful this will trigger the whole chain of initialization!
                     vrSystem.Visible = true;
@@ -183,9 +145,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         protected virtual void CollectView(RenderContext context)
         {
-            // Mark this view as requiring shadows
-            shadowMapRenderer?.RenderViewsWithShadows.Add(context.RenderView);
-
             // Fill RenderStage formats and register render stages to main view
             if (OpaqueRenderStage != null)
             {
@@ -197,15 +156,24 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 context.RenderView.RenderStages.Add(TransparentRenderStage);
                 TransparentRenderStage.Output = context.RenderOutput;
             }
+
+            if (GBufferRenderStage != null && LightProbes)
+            {
+                context.RenderView.RenderStages.Add(GBufferRenderStage);
+                GBufferRenderStage.Output = new RenderOutputDescription(PixelFormat.None, context.RenderOutput.DepthStencilFormat);
+            }
         }
 
-        protected override void CollectCore(RenderContext context)
+        protected override unsafe void CollectCore(RenderContext context)
         {
             var camera = context.GetCurrentCamera();
 
             // Setup pixel formats for RenderStage
             using (context.SaveRenderOutputAndRestore())
             {
+                // Mark this view as requiring shadows
+                shadowMapRenderer?.RenderViewsWithShadows.Add(context.RenderView);
+
                 context.RenderOutput = new RenderOutputDescription(PostEffects != null ? PixelFormat.R16G16B16A16_Float : context.RenderOutput.RenderTargetFormat0, PixelFormat.D24_UNorm_S8_UInt);
 
                 if (VRSettings.Enabled && VRSettings.VRDevice != null)
@@ -220,6 +188,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     else
                     {
                         camera.ViewMatrix.Decompose(out cameraScale, out cameraRot, out cameraPos);
+                        cameraRot.Transpose();
+                        Vector3.Negate(ref cameraPos, out cameraPos);
+                        Vector3.TransformCoordinate(ref cameraPos, ref cameraRot, out cameraPos);
                     }
 
                     if (VRSettings.IgnoreCameraRotation)
@@ -227,7 +198,30 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         cameraRot = Matrix.Identity;
                     }
 
-                    var sceneInstance = context.RenderView.SceneInstance;
+                    // Compute both view and projection matrices
+                    Matrix* viewMatrices = stackalloc Matrix[2];
+                    Matrix* projectionMatrices = stackalloc Matrix[2];
+                    for (var i = 0; i < 2; ++i)
+                        VRSettings.VRDevice.ReadEyeParameters(i == 0 ? Eyes.Left : Eyes.Right, camera.NearClipPlane, camera.FarClipPlane, ref cameraPos, ref cameraRot, out viewMatrices[i], out projectionMatrices[i]);
+
+                    // if the VRDevice disagreed with the near and far plane, we must re-discover them and follow:
+                    var near = projectionMatrices[0].M43 / projectionMatrices[0].M33;
+                    var far = near * (-projectionMatrices[0].M33 / (-projectionMatrices[0].M33 - 1));
+                    if (Math.Abs(near - camera.NearClipPlane) > 1e-8f)
+                        camera.NearClipPlane = near;
+                    if (Math.Abs(near - camera.FarClipPlane) > 1e-8f)
+                        camera.FarClipPlane = far;
+
+                    // Compute a view matrix and projection matrix that cover both eyes for shadow map and culling
+                    ComputeCommonViewMatrices(context, viewMatrices, projectionMatrices);
+                    var commonView = context.RenderView;
+
+                    // Notify lighting system this view only purpose is for shared lighting, it is not being drawn directly.
+                    commonView.Flags |= RenderViewFlags.NotDrawn;
+
+                    // Collect now, and use result for both eyes
+                    CollectView(context);
+                    context.VisibilityGroup.TryCollect(commonView);
 
                     for (var i = 0; i < 2; i++)
                     {
@@ -235,11 +229,13 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         using (context.SaveViewportAndRestore())
                         {
                             context.RenderSystem.Views.Add(context.RenderView);
-                            context.RenderView.SceneInstance = sceneInstance;
+                            context.RenderView.SceneInstance = commonView.SceneInstance;
+                            context.RenderView.LightingView = commonView;
                             context.ViewportState.Viewport0 = new Viewport(0, 0, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2.0f, VRSettings.VRDevice.ActualRenderFrameSize.Height);
 
                             //change camera params for eye
-                            VRSettings.VRDevice.ReadEyeParameters(i == 0 ? Eyes.Left : Eyes.Right, camera.NearClipPlane, camera.FarClipPlane, ref cameraPos, ref cameraRot, out camera.ViewMatrix, out camera.ProjectionMatrix);
+                            camera.ViewMatrix = viewMatrices[i];
+                            camera.ProjectionMatrix = projectionMatrices[i];
                             camera.UseCustomProjectionMatrix = true;
                             camera.UseCustomViewMatrix = true;
                             camera.Update();
@@ -247,7 +243,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             //write params to view
                             SceneCameraRenderer.UpdateCameraToRenderView(context, context.RenderView, camera);
 
+                            // Copy culling results
+                            context.VisibilityGroup.Copy(commonView, context.RenderView);
+
                             CollectView(context);
+
+                            LightShafts?.Collect(context);
 
                             PostEffects?.Collect(context);
                         }
@@ -260,12 +261,28 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                     CollectView(context);
 
+                    LightShafts?.Collect(context);
+
                     PostEffects?.Collect(context);
                 }
 
-                if (ShadowMapRenderStage != null)
-                    ShadowMapRenderStage.Output = new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float);
+                // Set depth format for shadow map render stages
+                // TODO: This format should be acquired from the ShadowMapRenderer instead of being fixed here
+                foreach(var shadowMapRenderStage in ShadowMapRenderStages)
+                    shadowMapRenderStage.Output = new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float);
             }
+
+            PostEffects?.Collect(context);
+        }
+
+        protected virtual void ResolveDepthMSAA(RenderDrawContext drawContext)
+        {
+            ViewDepthStencilNoMSAA = PushScopedResource(
+                drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(ViewOutputTarget.Size.Width, ViewOutputTarget.Size.Height,
+                1, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.ShaderResource | TextureFlags.DepthStencil)));
+
+            drawContext.CommandList.CopyMultiSample(ViewDepthStencil, 0, ViewDepthStencilNoMSAA, 0, PixelFormat.R24_UNorm_X8_Typeless);
+
         }
 
         protected virtual void ResolveMSAA(RenderDrawContext drawContext)
@@ -303,12 +320,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 drawContext.CommandList.CopyMultiSample(velocityIn.Velocity, 0, velocityOut.Velocity, 0);
             }
 
-            ViewDepthStencilNoMSAA = PushScopedResource(
-                    drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(ViewOutputTarget.Size.Width, ViewOutputTarget.Size.Height,
-                        1, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.ShaderResource | TextureFlags.DepthStencil)));
-
-            drawContext.CommandList.CopyMultiSample(ViewDepthStencil, 0, ViewDepthStencilNoMSAA, 0, PixelFormat.R24_UNorm_X8_Typeless);
-
             var viewsIn = ViewTargetsComposition as IMultipleRenderViews;
             var viewsOut = ViewTargetsCompositionNoMSAA as IMultipleRenderViews;
             if (viewsIn != null && viewsOut != null)
@@ -322,35 +333,33 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         {
             var renderSystem = context.RenderSystem;
 
-            using (drawContext.PushRenderTargetsAndRestore())
+            // Z Prepass
+            var lightProbes = LightProbes && GBufferRenderStage != null;
+            if (lightProbes)
             {
-                // Render Shadow maps
-                if (ShadowMapRenderStage != null && shadowMapRenderer != null)
+                // Note: Baking lightprobe before GBuffer prepass because we are updating some cbuffer parameters needed by Opaque pass that GBuffer pass might upload early
+                PrepareLightprobeConstantBuffer(context);
+
+                // TODO: Temporarily using ShadowMap shader
+                drawContext.CommandList.BeginProfile(Color.Green, "GBuffer");
+
+                using (drawContext.PushRenderTargetsAndRestore())
                 {
-                    // Clear atlases
-                    shadowMapRenderer.PrepareAtlasAsRenderTargets(drawContext.CommandList);
+                    drawContext.CommandList.Clear(drawContext.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+                    drawContext.CommandList.SetRenderTarget(drawContext.CommandList.DepthStencilBuffer, null);
 
-                    using (drawContext.PushRenderTargetsAndRestore())
-                    {
-                        // Draw all shadow views generated for the current view
-                        foreach (var renderView in renderSystem.Views)
-                        {
-                            var shadowmapRenderView = renderView as ShadowMapRenderView;
-                            if (shadowmapRenderView != null && shadowmapRenderView.RenderView == context.RenderView)
-                            {
-                                var shadowMapRectangle = shadowmapRenderView.Rectangle;
-                                drawContext.CommandList.SetRenderTarget(shadowmapRenderView.ShadowMapTexture.Atlas.Texture, null);
-                                shadowmapRenderView.ShadowMapTexture.Atlas.MarkClearNeeded();
-                                drawContext.CommandList.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
-
-                                renderSystem.Draw(drawContext, shadowmapRenderView, ShadowMapRenderStage);
-                            }
-                        }
-                    }
-
-                    shadowMapRenderer.PrepareAtlasAsShaderResourceViews(drawContext.CommandList);
+                    // Draw [main view | z-prepass stage]
+                    renderSystem.Draw(drawContext, context.RenderView, GBufferRenderStage);
                 }
 
+                drawContext.CommandList.EndProfile();
+
+                // Bake lightprobes against Z-buffer
+                BakeLightProbes(context, drawContext);
+            }
+
+            using (drawContext.PushRenderTargetsAndRestore())
+            {
                 // Draw [main view | main stage]
                 if (OpaqueRenderStage != null)
                 {
@@ -375,16 +384,25 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     }
                 }
 
+
                 if (PostEffects != null)
                 {
                     //Make sure we run post effects without MSAA
                     var peInputTargets = ViewTargetsComposition;
                     var peInputDepth = ViewDepthStencil;
+
+                    //Shafts if we have them, with MSAA if we have it
+                    LightShafts?.Draw(drawContext, peInputTargets, peInputDepth, ViewOutputTarget);
+
+                    //Remove MSAA
                     if (actualMSAALevel != MSAALevel.None)
                     {
                         ResolveMSAA(drawContext);
+                        // If lightprobes (which need Z-Prepass) are enabled, depth is already resolved
+                        //if (!lightProbes)
+                        //    ResolveDepthMSAA(drawContext);
                         peInputTargets = ViewTargetsCompositionNoMSAA;
-                        peInputDepth = ViewDepthStencilNoMSAA;
+                        //peInputDepth = ViewDepthStencilNoMSAA;
                     }
 
                     // Run post effects
@@ -437,13 +455,13 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)))
 
                     : PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D( //msaa but no HDR, use RGB8 temp buffer
-                        TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, PixelFormat.R8G8B8A8_UNorm_SRgb,
+                        TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, currentRenderTarget.ViewFormat,
                             TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)));
                 }
 
                 //Handle Depth
                 ViewDepthStencil = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
-                        TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, PixelFormat.D24_UNorm_S8_UInt,
+                        TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, currentDepthStencil?.ViewFormat ?? PixelFormat.D24_UNorm_S8_UInt,
                             TextureFlags.ShaderResource | TextureFlags.DepthStencil, 1, GraphicsResourceUsage.Default, actualMSAALevel)));
 
             }
@@ -512,6 +530,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             using (drawContext.PushRenderTargetsAndRestore())
             {
+                // Render Shadow maps
+                shadowMapRenderer?.Draw(drawContext);
+
                 if (VRSettings.Enabled && VRSettings.VRDevice != null)
                 {
                     using (drawContext.PushRenderTargetsAndRestore())
@@ -531,7 +552,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         using (drawContext.PushRenderTargetsAndRestore())
                         {
                             drawContext.CommandList.SetViewport(new Viewport(0.0f, 0.0f, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2.0f, VRSettings.VRDevice.ActualRenderFrameSize.Height));
-                            drawContext.CommandList.SetRenderTargets(ViewDepthStencil, ViewTargetsComposition.NumberOfTargets, ViewTargetsComposition.AllTargets);
+                            drawContext.CommandList.SetRenderTargets(ViewDepthStencil, ViewTargetsComposition.RenderTargetCount, ViewTargetsComposition.RenderTargets);
 
                             var views = ViewTargetsComposition as IMultipleRenderViews;
                             if (views != null)
@@ -581,7 +602,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
-                        drawContext.CommandList.SetRenderTargetsAndViewport(ViewDepthStencil, ViewTargetsComposition.NumberOfTargets, ViewTargetsComposition.AllTargets);
+                        drawContext.CommandList.SetRenderTargetsAndViewport(ViewDepthStencil, ViewTargetsComposition.RenderTargetCount, ViewTargetsComposition.RenderTargets);
 
                         // Clear render target and depth stencil
                         Clear?.Draw(drawContext);

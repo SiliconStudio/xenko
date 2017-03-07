@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Rendering.Images
@@ -162,7 +160,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         /// <value>The color transforms.</value>
         /// <userdoc>Performs a transformation onto the image colors.</userdoc>
-        [DataMember(60)]
+        [DataMember(70)]
         [Category]
         public ColorTransformGroup ColorTransforms
         {
@@ -177,7 +175,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         /// <value>The antialiasing.</value>
         /// <userdoc>Performs anti-aliasing filtering on the image. This smoothes the jagged edges of models.</userdoc>
-        [DataMember(70)]
+        [DataMember(80)]
         [Display("Type", "Antialiasing")]
         public IScreenSpaceAntiAliasingEffect Antialiasing
         {

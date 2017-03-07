@@ -33,6 +33,8 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public Matrix PreviousCameraProjection;
 
+        public float ResolutionScale;
+
         private void OnEnabledChanged(object sender, EventArgs eventArgs)
         {
             if (Enabled && Device == null)
@@ -46,6 +48,11 @@ namespace SiliconStudio.Xenko.VirtualReality
                 {
                     switch (hmdApi)
                     {
+                        case VRApi.Dummy:
+                        {
+                            Device = new DummyDevice();
+                        }
+                            break;
                         case VRApi.Oculus:
                         {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
@@ -96,7 +103,11 @@ namespace SiliconStudio.Xenko.VirtualReality
                 }
 
                 var deviceManager = (GraphicsDeviceManager)Services.GetService(typeof(IGraphicsDeviceManager));
-                Device?.Enable(GraphicsDevice, deviceManager, RequireMirror, MirrorWidth, MirrorHeight);
+                if (Device != null)
+                {
+                    Device.RenderFrameScaling = ResolutionScale;
+                    Device.Enable(GraphicsDevice, deviceManager, RequireMirror, MirrorWidth, MirrorHeight);
+                }
             }
         }
 

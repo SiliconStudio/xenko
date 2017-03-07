@@ -89,6 +89,7 @@ RootAssets:
     - 54874636-1c97-4911-85d2-79a9054efd38:MaterialTests/Layers/MaterialLayerABB
     - 5e843c73-9bb3-4d57-a9e6-0ae0478cbb1c:MaterialTests/ComputeColors/MaterialDiffuseComputeColorFixed
     - 6a254330-7598-451f-8d7b-7671199c5e46:MaterialTests/Base/MaterialDiffuseColor
+    - 6a8212fb-d3f3-4e1d-84be-67aca35be26e:LightShafts
     - 6b2212c8-0e0c-4989-afba-a170fc4de6b6:MaterialTests/Base/MaterialDiffuseTextureOffset
     - 6e4549c1-7159-432a-ac4c-6b3cca4aad90:MaterialTests/MaterialScene
     - 7af692c0-b030-4897-a6e4-f9fa5d7b761c:MaterialTests/Layers/MaterialLayerBBB

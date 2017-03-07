@@ -14,6 +14,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.MicroThreading;
 using System.Threading;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Assets.Effect;
 using SiliconStudio.Xenko.Graphics;
@@ -158,7 +159,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
                 // Fill list of bundles
                 var bundlePacker = new BundlePacker();
-                bundlePacker.Build(builderOptions.Logger, projectSession, buildProfile, indexName, outputDirectory, builder.DisableCompressionIds);
+                bundlePacker.Build(builderOptions.Logger, projectSession, buildProfile, indexName, outputDirectory, builder.DisableCompressionIds, context.GetCompilationMode() != CompilationMode.AppStore);
 
                 return result;
             }
@@ -287,7 +288,7 @@ namespace SiliconStudio.Assets.CompilerApp
             VirtualFileSystem.CreateDirectory(VirtualFileSystem.ApplicationDatabasePath);
 
             // Open WCF channel with master builder
-            var namedPipeBinding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None) { SendTimeout = TimeSpan.FromSeconds(300.0) };
+            var namedPipeBinding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None) { SendTimeout = TimeSpan.FromSeconds(300.0), MaxReceivedMessageSize = int.MaxValue };
             var processBuilderRemote = ChannelFactory<IProcessBuilderRemote>.CreateChannel(namedPipeBinding, new EndpointAddress(builderOptions.SlavePipe));
 
             try

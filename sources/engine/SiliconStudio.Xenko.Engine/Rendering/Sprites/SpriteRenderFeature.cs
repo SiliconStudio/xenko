@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
                 var sourceRegion = sprite.Region;
                 var texture = sprite.Texture;
-                var color = spriteComp.Color;                
+                var color = spriteComp.ColorFinal;                
                 if (isPicking) // TODO move this code corresponding to picking out of the runtime code.
                 {
                     var compId = RuntimeIdHelper.ToRuntimeId(spriteComp);

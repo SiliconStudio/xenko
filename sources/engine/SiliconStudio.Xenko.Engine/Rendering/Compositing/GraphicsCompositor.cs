@@ -72,6 +72,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// </summary>
         public ISceneRenderer SingleView { get; set; }
 
+        /// <summary>
+        /// The entry point for a compositor used by the scene editor.
+        /// </summary>
+        public ISceneRenderer Editor { get; set; }
+
         /// <inheritdoc/>
         protected override void InitializeCore()
         {
@@ -192,31 +197,44 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         // TODO GFXCOMP: Move that somewhere else; or even better: starts from user gfx compositor
         [Obsolete]
-        public static GraphicsCompositor CreateDefault(bool enablePostEffects, string modelEffectName = "XenkoForwardShadingEffect", CameraComponent camera = null, Color4? clearColor = null, GraphicsProfile graphicsProfile = GraphicsProfile.Level_10_0)
+        public static GraphicsCompositor CreateDefault(bool enablePostEffects, string modelEffectName = "XenkoForwardShadingEffect", CameraComponent camera = null, Color4? clearColor = null,
+            GraphicsProfile graphicsProfile = GraphicsProfile.Level_10_0)
         {
             var opaqueRenderStage = new RenderStage("Opaque", "Main") { SortMode = new StateChangeSortMode() };
             var transparentRenderStage = new RenderStage("Transparent", "Main") { SortMode = new BackToFrontSortMode() };
             var shadowCasterRenderStage = new RenderStage("ShadowMapCaster", "ShadowMapCaster") { SortMode = new FrontToBackSortMode() };
+
+            var postProcessingEffects = enablePostEffects
+                ? new PostProcessingEffects
+                {
+                    ColorTransforms =
+                    {
+                        Transforms =
+                        {
+                            new ToneMap()
+                        },
+                    },
+                }
+                : null;
+
+            if (postProcessingEffects != null)
+            {
+                postProcessingEffects.DisableAll();
+                postProcessingEffects.ColorTransforms.Enabled = true;
+            }
 
             var singleView = new ForwardRenderer
             {
                 Clear = { Color = clearColor ?? Color.CornflowerBlue },
                 OpaqueRenderStage = opaqueRenderStage,
                 TransparentRenderStage = transparentRenderStage,
-                ShadowMapRenderStage = shadowCasterRenderStage,
-                PostEffects = enablePostEffects
-                    ? new PostProcessingEffects
-                    {
-                        ColorTransforms =
-                        {
-                            Transforms =
-                            {
-                                new ToneMap()
-                            },
-                        },
-                    }
-                    : null,
+                ShadowMapRenderStages = { shadowCasterRenderStage },
+                PostEffects = postProcessingEffects,
             };
+
+            // TODO
+            var clusteredPointSpotGroupRenderer = new LightClusteredPointSpotGroupRenderer();
+
 
             var forwardLighting = graphicsProfile >= GraphicsProfile.Level_10_0
                 ? new ForwardLightingRenderFeature
@@ -224,18 +242,24 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     LightRenderers =
                     {
                         new LightAmbientRenderer(),
-                        new LightDirectionalGroupRenderer(),
                         new LightSkyboxRenderer(),
-                        new LightClusteredPointSpotGroupRenderer(),
+                        new LightDirectionalGroupRenderer(),
+                        new LightPointGroupRenderer { NonShadowRenderer = clusteredPointSpotGroupRenderer },
+                        new LightSpotGroupRenderer { NonShadowRenderer = clusteredPointSpotGroupRenderer },
                     },
                     ShadowMapRenderer = new ShadowMapRenderer
                     {
                         Renderers =
                         {
-                            new LightDirectionalShadowMapRenderer(),
-                            new LightSpotShadowMapRenderer(),
+                            new LightDirectionalShadowMapRenderer
+                            {
+                                ShadowCasterRenderStage = shadowCasterRenderStage
+                            },
+                            new LightSpotShadowMapRenderer
+                            {
+                                ShadowCasterRenderStage = shadowCasterRenderStage
+                            }
                         },
-                        ShadowMapRenderStage = shadowCasterRenderStage,
                     },
                 }
                 : new ForwardLightingRenderFeature
@@ -270,6 +294,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             new TransformRenderFeature(),
                             new SkinningRenderFeature(),
                             new MaterialRenderFeature(),
+                            new ShadowCasterRenderFeature(),
                             forwardLighting,
                         },
                         RenderStageSelectors =
@@ -331,6 +356,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 {
                     Child = singleView,
                 },
+                Editor = singleView,
                 SingleView = singleView,
             };
         }

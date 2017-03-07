@@ -488,6 +488,11 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                         parameterTypeInfo.Type = EffectParameterType.Texture2D;
                         break;
 
+                    case "texture2dms":
+                        parameterTypeInfo.Class = EffectParameterClass.ShaderResourceView;
+                        parameterTypeInfo.Type = EffectParameterType.Texture2DMultisampled;
+                        break;                   
+
                     case "texture3d":
                         parameterTypeInfo.Class = EffectParameterClass.ShaderResourceView;
                         parameterTypeInfo.Type = EffectParameterType.Texture3D;
@@ -506,6 +511,11 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                     case "texture2darray":
                         parameterTypeInfo.Class = EffectParameterClass.ShaderResourceView;
                         parameterTypeInfo.Type = EffectParameterType.Texture2DArray;
+                        break;
+
+                    case "texture2dmsarray":
+                        parameterTypeInfo.Class = EffectParameterClass.ShaderResourceView;
+                        parameterTypeInfo.Type = EffectParameterType.Texture2DMultisampledArray;
                         break;
 
                     case "rwtexture1d":

@@ -8,7 +8,7 @@ namespace SiliconStudio.Presentation.View
     public class DefaultTemplateProvider : TemplateProviderBase
     {
         /// <inheritdoc/>
-        public override string Name { get { return "Default"; } }
+        public override string Name => "Default";
 
         /// <inheritdoc/>
         public override bool Match(object obj)

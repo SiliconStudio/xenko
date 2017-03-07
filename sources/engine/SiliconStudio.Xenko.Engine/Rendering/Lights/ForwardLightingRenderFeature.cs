@@ -40,8 +40,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public readonly Dictionary<LightComponent, LightShadowMapTexture> LightComponentsWithShadows;
 
-            public int ViewIndex;
-
             internal ObjectId ViewLayoutHash;
             internal ParameterCollectionLayout ViewParameterLayout;
             internal ParameterCollection ViewParameters = new ParameterCollection();
@@ -71,6 +69,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private readonly TrackingCollection<LightGroupRendererBase> lightRenderers = new TrackingCollection<LightGroupRendererBase>();
 
         private readonly Dictionary<RenderView, RenderViewLightData> renderViewDatas = new Dictionary<RenderView, RenderViewLightData>();
+        // Preallocted for CollectVisibleLights
+        private readonly HashSet<RenderView> processedRenderViews = new HashSet<RenderView>();
 
         private readonly FastList<RenderView> renderViews = new FastList<RenderView>();
 
@@ -83,13 +83,15 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private static readonly string[] DirectLightGroupsCompositionNames;
         private static readonly string[] EnvironmentLightGroupsCompositionNames;
 
+        private readonly HashSet<int> ignoredEffectSlots = new HashSet<int>();
+
         private RenderView currentRenderView;
 
         [DataMember]
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public TrackingCollection<LightGroupRendererBase> LightRenderers => lightRenderers;
-
+        
         [DataMember]
         public IShadowMapRenderer ShadowMapRenderer
         {
@@ -159,10 +161,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             CollectVisibleLights();
 
             // Prepare active renderers in an ordered list (by type and shadow on/off)
-            CollectActiveLightRenderers(RenderSystem.RenderContextOld);
+            CollectActiveLightRenderers(Context);
 
             // Collect shadow maps
-            ShadowMapRenderer?.Collect(RenderSystem.RenderContextOld, renderViewDatas);
+            ShadowMapRenderer?.Collect(Context, renderViewDatas);
         }
 
         /// <inheritdoc/>
@@ -177,7 +179,15 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
 
-            var shadowMapEffectSlot = ShadowMapRenderer != null ? ((RootEffectRenderFeature)RootRenderFeature).GetEffectPermutationSlot(ShadowMapRenderer.ShadowMapRenderStage) : EffectPermutationSlot.Invalid;
+            ignoredEffectSlots.Clear();
+            if (ShadowMapRenderer != null)
+            {
+                foreach (var lightShadowMapRenderer in ShadowMapRenderer.Renderers)
+                {
+                    var shadowMapEffectSlot = lightShadowMapRenderer != null ? ((RootEffectRenderFeature)RootRenderFeature).GetEffectPermutationSlot(lightShadowMapRenderer.ShadowCasterRenderStage) : EffectPermutationSlot.Invalid;
+                    ignoredEffectSlots.Add(shadowMapEffectSlot.Index);
+                }
+            }
 
             // Counter number of RenderView to process
             renderViews.Clear();
@@ -188,10 +198,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     continue;
 
                 RenderViewLightData renderViewData;
-                if (!renderViewDatas.TryGetValue(view, out renderViewData))
+                if (!renderViewDatas.TryGetValue(view.LightingView ?? view, out renderViewData))
                     continue;
 
-                renderViewData.ViewIndex = renderViews.Count;
                 renderViews.Add(view);
             }
 
@@ -213,7 +222,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     continue;
 
                 RenderViewLightData renderViewData;
-                if (!renderViewDatas.TryGetValue(view, out renderViewData))
+                if (!renderViewDatas.TryGetValue(view.LightingView ?? view, out renderViewData))
                     continue;
 
                 // Prepare shader permutations
@@ -266,8 +275,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 for (int i = 0; i < effectSlotCount; ++i)
                 {
                     // Don't apply lighting for shadow casters
-                    if (i == shadowMapEffectSlot.Index)
-                        continue;
+                    if (ignoredEffectSlots.Contains(i))
+                            continue;
 
                     var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                     var renderEffect = renderEffects[staticEffectObjectNode];
@@ -309,7 +318,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 var viewFeature = view.Features[RootRenderFeature.Index];
 
                 RenderViewLightData renderViewData;
-                if (!renderViewDatas.TryGetValue(view, out renderViewData) || viewFeature.Layouts.Count == 0)
+                if (!renderViewDatas.TryGetValue(view.LightingView ?? view, out renderViewData) || viewFeature.Layouts.Count == 0)
                     continue;
 
                 // Find a PerView layout from an effect in normal state
@@ -332,6 +341,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (firstViewLayout == null)
                     continue;
 
+                var viewIndex = renderViews.IndexOf(view);
+
                 var viewParameterLayout = renderViewData.ViewParameterLayout;
                 var viewParameters = renderViewData.ViewParameters;
                 var firstViewLighting = firstViewLayout.GetLogicalGroup(viewLightingKey);
@@ -351,11 +362,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 // Compute PerView lighting
                 foreach (var directLightGroup in ShaderPermutation.DirectLightGroups)
                 {
-                    directLightGroup.ApplyViewParameters(context, renderViewData.ViewIndex, viewParameters);
+                    directLightGroup.ApplyViewParameters(context, viewIndex, viewParameters);
                 }
                 foreach (var environmentLight in ShaderPermutation.EnvironmentLights)
                 {
-                    environmentLight.ApplyViewParameters(context, renderViewData.ViewIndex, viewParameters);
+                    environmentLight.ApplyViewParameters(context, viewIndex, viewParameters);
                 }
 
                 // Update PerView
@@ -412,11 +423,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     // Compute PerDraw lighting
                     foreach (var directLightGroup in ShaderPermutation.DirectLightGroups)
                     {
-                        directLightGroup.ApplyDrawParameters(context, renderViewData.ViewIndex, locals.DrawParameters, ref renderNode.RenderObject.BoundingBox);
+                        directLightGroup.ApplyDrawParameters(context, viewIndex, locals.DrawParameters, ref renderNode.RenderObject.BoundingBox);
                     }
                     foreach (var environmentLight in ShaderPermutation.EnvironmentLights)
                     {
-                        environmentLight.ApplyDrawParameters(context, renderViewData.ViewIndex, locals.DrawParameters, ref renderNode.RenderObject.BoundingBox);
+                        environmentLight.ApplyDrawParameters(context, viewIndex, locals.DrawParameters, ref renderNode.RenderObject.BoundingBox);
                     }
 
                     // Update resources
@@ -434,18 +445,20 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             var viewFeature = renderView.Features[RootRenderFeature.Index];
 
             RenderViewLightData renderViewData;
-            if (!renderViewDatas.TryGetValue(renderView, out renderViewData) || viewFeature.Layouts.Count == 0)
+            if (!renderViewDatas.TryGetValue(renderView.LightingView ?? renderView, out renderViewData) || viewFeature.Layouts.Count == 0)
                 return;
+
+            var viewIndex = renderViews.IndexOf(renderView);
 
             // Update PerView resources
             foreach (var directLightGroup in ShaderPermutation.DirectLightGroups)
             {
-                directLightGroup.UpdateViewResources(context, renderViewData.ViewIndex);
+                directLightGroup.UpdateViewResources(context, viewIndex);
             }
 
             foreach (var environmentLight in ShaderPermutation.EnvironmentLights)
             {
-                environmentLight.UpdateViewResources(context, renderViewData.ViewIndex);
+                environmentLight.UpdateViewResources(context, viewIndex);
             }
 
             currentRenderView = renderView;
@@ -459,13 +472,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             // Invalidate per-view data
             currentRenderView = null;
-        }
-
-        protected void RegisterLightGroupRenderer(LightGroupRendererBase renderer)
-        {
-            if (renderer == null) throw new ArgumentNullException(nameof(renderer));
-            lightRenderers.Add(renderer);
-            renderer.Initialize(Context);
         }
 
         protected override void OnRenderSystemChanged()
@@ -508,11 +514,17 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (renderView.GetType() != typeof(RenderView))
                     continue;
 
+                var lightRenderView = renderView.LightingView ?? renderView;
+
+                // Check if already processed
+                if (!processedRenderViews.Add(lightRenderView))
+                    continue;
+
                 RenderViewLightData renderViewLightData;
-                if (!renderViewDatas.TryGetValue(renderView, out renderViewLightData))
+                if (!renderViewDatas.TryGetValue(lightRenderView, out renderViewLightData))
                 {
                     renderViewLightData = new RenderViewLightData();
-                    renderViewDatas.Add(renderView, renderViewLightData);
+                    renderViewDatas.Add(lightRenderView, renderViewLightData);
                 }
                 else
                 {
@@ -523,17 +535,17 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 renderViewLightData.VisibleLights.Clear();
                 renderViewLightData.VisibleLightsWithShadows.Clear();
 
-                lightProcessor = renderView.SceneInstance.GetProcessor<LightProcessor>();
+                lightProcessor = lightRenderView.SceneInstance.GetProcessor<LightProcessor>();
 
                 // No light processors means no light in the scene, so we can early exit
                 if (lightProcessor == null)
                     continue;
 
                 // TODO GRAPHICS REFACTOR
-                var sceneCullingMask = renderView.CullingMask;
+                var sceneCullingMask = lightRenderView.CullingMask;
 
                 // 2) Cull lights with the frustum
-                var frustum = renderView.Frustum;
+                var frustum = lightRenderView.Frustum;
                 foreach (var light in lightProcessor.Lights)
                 {
                     // TODO: New mechanism for light selection (probably in ForwardLighting configuration)
@@ -577,10 +589,14 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     lightGroup.AddLight(light);
                 }
             }
+
+            processedRenderViews.Clear();
         }
 
         private static void PrepareLightGroups(RenderDrawContext context, FastList<RenderView> renderViews, RenderView renderView, RenderViewLightData renderViewData, IShadowMapRenderer shadowMapRenderer, RenderGroup group)
         {
+            var viewIndex = renderViews.IndexOf(renderView);
+
             foreach (var activeRenderer in renderViewData.ActiveRenderers)
             {
                 // Find lights
@@ -590,7 +606,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 var processLightsParameters = new LightGroupRendererBase.ProcessLightsParameters
                 {
                     Context = context,
-                    ViewIndex = renderViewData.ViewIndex,
+                    ViewIndex = viewIndex,
                     View = renderView,
                     Views = renderViews,
                     LightCollection = lightCollection,

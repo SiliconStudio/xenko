@@ -50,8 +50,4 @@ namespace SiliconStudio.Xenko.Assets
     public class DefaultVisualScriptFactory : DefaultAssetFactory<VisualScriptAsset>
     {
     }
-
-    public class DefaultGraphicsCompositorFactory : DefaultAssetFactory<GraphicsCompositorAsset>
-    {
-    }
 }

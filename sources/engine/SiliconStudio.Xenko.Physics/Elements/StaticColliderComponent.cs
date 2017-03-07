@@ -37,7 +37,8 @@ namespace SiliconStudio.Xenko.Physics
         {
             if (NativeCollisionObject == null) return;
 
-            Simulation.RemoveCollider(this);
+            if(Simulating)
+                Simulation.RemoveCollider(this);
 
             base.OnDetach();
         }

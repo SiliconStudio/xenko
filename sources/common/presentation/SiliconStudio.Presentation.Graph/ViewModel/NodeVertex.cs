@@ -2,8 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.ObjectModel;
-using GraphX;
-using SiliconStudio.Core.Mathematics;
+using GraphX.Controls;
+using GraphX.PCL.Common.Models;
 
 namespace SiliconStudio.Presentation.Graph.ViewModel
 {

@@ -11,20 +11,16 @@ RenderStages:
         Name: Opaque
         EffectSlotName: Main
         SortMode: !SortModeStateChange {}
-        Filter: null
     9105a30fee026d4893472b6aee83d035:
         Id: 0fa30591-02ee-486d-9347-2b6aee83d035
         Name: Transparent
         EffectSlotName: Main
         SortMode: !BackToFrontSortMode {}
-        Filter: null
     554e52c061404d4684dd7c4c70f70e0e:
         Id: c0524e55-4061-464d-84dd-7c4c70f70e0e
         Name: ShadowMapCaster
         EffectSlotName: ShadowMapCaster
         SortMode: !FrontToBackSortMode {}
-        Filter: null
-RenderGroups: {}
 RenderFeatures:
     d8fb80b0e7995140a46bca8dc36ee8a2: !SiliconStudio.Xenko.Rendering.MeshRenderFeature,SiliconStudio.Xenko.Engine
         RenderStageSelectors:
@@ -47,10 +43,13 @@ RenderFeatures:
             65743b4380f4cc43b2b4bdc23cd0c07c: !SiliconStudio.Xenko.Rendering.Lights.ForwardLightingRenderFeature,SiliconStudio.Xenko.Engine
                 LightRenderers:
                     7ac2775468f53c4399b2f3f6357c85c9: !SiliconStudio.Xenko.Rendering.Lights.LightAmbientRenderer,SiliconStudio.Xenko.Engine {}
-                    7b68f9cd17404a4ba9e5f7df72e3b48d: !SiliconStudio.Xenko.Rendering.Lights.LightDirectionalGroupRenderer,SiliconStudio.Xenko.Engine {}
+                    7b68f9cd17404a4ba9e5f7df72e3b48d: !SiliconStudio.Xenko.Rendering.Lights.LightDirectionalGroupRenderer,SiliconStudio.Xenko.Engine
+                        NonShadowRenderer: null
                     411fdcfb9fc388449a0443173dfa3f27: !SiliconStudio.Xenko.Rendering.Lights.LightSkyboxRenderer,SiliconStudio.Xenko.Engine {}
-                    5890e37af0e4bbc2cfdc1de648ff07d4: !SiliconStudio.Xenko.Rendering.Lights.LightPointGroupRenderer,SiliconStudio.Xenko.Engine {}
-                    2eda85523d76b3f9e1e7d3e55aab5280: !SiliconStudio.Xenko.Rendering.Lights.LightSpotGroupRenderer,SiliconStudio.Xenko.Engine {}
+                    5890e37af0e4bbc2cfdc1de648ff07d4: !SiliconStudio.Xenko.Rendering.Lights.LightPointGroupRenderer,SiliconStudio.Xenko.Engine
+                        NonShadowRenderer: null
+                    2eda85523d76b3f9e1e7d3e55aab5280: !SiliconStudio.Xenko.Rendering.Lights.LightSpotGroupRenderer,SiliconStudio.Xenko.Engine
+                        NonShadowRenderer: null
                 ShadowMapRenderer: null
     28e9bf54a5adbe063f59fb17acb2723e: !SiliconStudio.Xenko.Rendering.Sprites.SpriteRenderFeature,SiliconStudio.Xenko.Engine
         RenderStageSelectors:
@@ -87,17 +86,30 @@ SharedRenderers:
         Clear:
             Id: 4bc4b2ca-027e-4e4a-94cb-2912709bef5f
             Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
+        LightProbes: true
         OpaqueRenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
         TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
-        ShadowMapRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
+        ShadowMapRenderStages:
+            fc4d1e0de5c2b0bbc27bcf96e9a848fd: c0524e55-4061-464d-84dd-7c4c70f70e0e
+        GBufferRenderStage: null
         PostEffects: null
+        LightShafts: null
+        VRSettings:
+            Enabled: false
+            RequiredApis: {}
+            ResolutionScale: 1.0
+        MSAALevel: None
 Game*: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStudio.Xenko.Engine
-    Id: f192656f-8abd-44b0-80b4-1d3adea5bf51
+    Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
     Camera: {Index: 0}
     Child*: !JumpyJet.JumpyJetRenderer,JumpyJet.Game
-        Id: 8e5e594b-4add-4eef-a1cb-25042c9240c8
+        Id: 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
         ParallaxBackgrounds: ca9993b7-1213-4037-8a77-333f3fa2e163:ParallaxBackgrounds
         OpaqueRenderStage*: 50671147-a5c1-49d4-b4ad-3625f71439b3
         TransparentRenderStage*: 0fa30591-02ee-486d-9347-2b6aee83d035
 SingleView: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
-Editor: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+Editor*: !JumpyJet.JumpyJetRenderer,JumpyJet.Game
+    Id: 014e3f3d-bdaa-480e-b5ff-aa6691896272
+    ParallaxBackgrounds: ca9993b7-1213-4037-8a77-333f3fa2e163:ParallaxBackgrounds
+    OpaqueRenderStage*: 50671147-a5c1-49d4-b4ad-3625f71439b3
+    TransparentRenderStage*: 0fa30591-02ee-486d-9347-2b6aee83d035

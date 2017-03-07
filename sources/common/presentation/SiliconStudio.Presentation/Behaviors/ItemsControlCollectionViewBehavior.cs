@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Interactivity;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Core;
 
 namespace SiliconStudio.Presentation.Behaviors
@@ -40,7 +40,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void UpdateCollectionView()
         {
-            if (AssociatedObject != null && AssociatedObject.ItemsSource != null)
+            if (AssociatedObject?.ItemsSource != null)
             {
                 var collectionView = (CollectionView)CollectionViewSource.GetDefaultView(AssociatedObject.ItemsSource);
                 if (collectionView == null) throw new InvalidOperationException("CollectionViewSource.GetDefaultView returned null for the items source of the associated object.");
@@ -71,13 +71,13 @@ namespace SiliconStudio.Presentation.Behaviors
             UpdateCollectionView();
         }
 
-        private static void GroupingPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void GroupingPropertyNameChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (ItemsControlCollectionViewBehavior)d;
             behavior.UpdateCollectionView();
         }
 
-        private static void FilterPredicateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void FilterPredicateChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (ItemsControlCollectionViewBehavior)d;
             behavior.UpdateCollectionView();

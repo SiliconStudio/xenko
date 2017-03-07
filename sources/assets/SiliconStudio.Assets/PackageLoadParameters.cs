@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 
@@ -114,6 +115,7 @@ namespace SiliconStudio.Assets
         /// Gets or sets the generate new asset ids.
         /// </summary>
         /// <value>The generate new asset ids.</value>
+        /// <remarks>Only makes sense for <see cref="PackageSession.AddExistingPackage(UFile, ILogger, PackageLoadParameters)"/>.</remarks>
         public bool GenerateNewAssetIds { get; set; }
 
         /// <summary>

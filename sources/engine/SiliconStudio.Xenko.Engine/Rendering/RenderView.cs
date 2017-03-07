@@ -93,6 +93,14 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public CameraCullingMode CullingMode { get; set; } = CameraCullingMode.Frustum;
 
+        public RenderViewFlags Flags { get; set; }
+
+        /// <summary>
+        /// The view used for lighting (useful to share lighting results for two very close views such as VR)
+        /// </summary>
+        /// <remarks>This is a temporary workaround until shadow maps have a real scope: global or view-dependent (single view or multiple views).</remarks>
+        public RenderView LightingView { get; set; }
+
         public override string ToString()
         {
             return $"RenderView ({Features.Sum(x => x.ViewObjectNodes.Count)} objects, {Features.Sum(x => x.RenderNodes.Count)} render nodes, {RenderStages.Count} stages)";

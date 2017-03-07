@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Lights;
 
@@ -11,11 +12,15 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     {
         RenderSystem RenderSystem { get; set; }
 
-        RenderStage ShadowMapRenderStage { get; set; }
-
         HashSet<RenderView> RenderViewsWithShadows { get; }
 
+        List<ILightShadowMapRenderer> Renderers { get; }
+
+        LightShadowMapTexture FindShadowMap(RenderView renderView, LightComponent lightComponent);
+
         void Collect(RenderContext context, Dictionary<RenderView, ForwardLightingRenderFeature.RenderViewLightData> renderViewLightDatas);
+
+        void Draw(RenderDrawContext drawContext);
 
         void PrepareAtlasAsRenderTargets(CommandList commandList);
 

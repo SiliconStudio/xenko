@@ -3,7 +3,7 @@ Id: cc1bcc78-50b2-4da6-8902-f7a3ae42898b
 SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: Xenko
-    Version: 1.10.0-beta
+    Version: 1.11.0-beta
     Owners:
       - Silicon Studio
     Authors: 
@@ -44,10 +44,10 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Materials/DiffuseMaterial.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Materials/PBRMetalnessMaterial.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Materials/PBRSpecularMaterial.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Misc/DefaultGraphicsCompositor.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Misc/DefaultGraphicsCompositorLevel10.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Misc/DefaultGraphicsCompositorLevel9.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Misc/DefaultRawAsset.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Misc/DefaultSkybox.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Misc/DefaultGraphicsCompositor.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Models/DefaultModel.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Models/PrefabModel.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Models/ProceduralCapsule.xktpl
@@ -65,6 +65,7 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Physics/ColliderShapeCylinder.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Physics/ColliderShapePlane.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Physics/ColliderShapeSphere.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Physics/ColliderShapeCone.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Prefabs/DefaultPrefab.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Navigation/DefaultNavigationMesh.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scenes/DefaultScene.xktpl
