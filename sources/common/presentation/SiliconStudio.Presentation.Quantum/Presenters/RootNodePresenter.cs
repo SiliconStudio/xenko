@@ -7,41 +7,34 @@ using SiliconStudio.Quantum.Commands;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
 {
-    public class RootNodePresenter : IInitializingNodePresenter
+    public class RootNodePresenter : NodePresenterBase
     {
         private readonly IObjectNode rootNode;
-        private readonly List<INodePresenter> children = new List<INodePresenter>();
 
         public RootNodePresenter(IObjectNode rootNode)
+            : base(null)
         {
             this.rootNode = rootNode;
         }
 
-        public void Dispose()
-        {
+        public override string Name => "Root";
+        public override List<INodeCommand> Commands { get; }
+        public override Type Type => rootNode.Type;
+        public override Index Index => Index.Empty;
+        public override bool IsPrimitive => false;
+        public override bool IsEnumerable => rootNode.IsEnumerable;
+        public override ITypeDescriptor Descriptor => rootNode.Descriptor;
+        public override int? Order => null;
+        public override object Value => rootNode.Retrieve();
+        public override event EventHandler<ValueChangingEventArgs> ValueChanging;
+        public override event EventHandler<ValueChangedEventArgs> ValueChanged;
 
-        }
-
-        public string Name => "Root";
-        public INodePresenter Parent => null;
-        public IReadOnlyList<INodePresenter> Children => children;
-        public List<INodeCommand> Commands { get; }
-        public Type Type => rootNode.Type;
-        public Index Index => Index.Empty;
-        public bool IsPrimitive => false;
-        public bool IsEnumerable => rootNode.IsEnumerable;
-        public ITypeDescriptor Descriptor => rootNode.Descriptor;
-        public int? Order => null;
-        public object Value { get { return rootNode.Retrieve(); } set { throw new InvalidOperationException("A RootNodePresenter value cannot be modified"); } }
-        public event EventHandler<ValueChangingEventArgs> ValueChanging;
-        public event EventHandler<ValueChangedEventArgs> ValueChanged;
-
-        public void UpdateValue(object newValue)
+        public override void UpdateValue(object newValue)
         {
             throw new NodePresenterException($"A {nameof(RootNodePresenter)} cannot have its own value updated.");
         }
 
-        public void AddItem(object value)
+        public override void AddItem(object value)
         {
             if (!rootNode.IsEnumerable)
                 throw new NodePresenterException($"{nameof(RootNodePresenter)}.{nameof(AddItem)} cannot be invoked on objects that are not collection.");
@@ -56,7 +49,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        public void AddItem(object value, Index index)
+        public override void AddItem(object value, Index index)
         {
             if (!rootNode.IsEnumerable)
                 throw new NodePresenterException($"{nameof(RootNodePresenter)}.{nameof(AddItem)} cannot be invoked on objects that are not collection.");
@@ -71,7 +64,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        public void RemoveItem(object value, Index index)
+        public override void RemoveItem(object value, Index index)
         {
             if (!rootNode.IsEnumerable)
                 throw new NodePresenterException($"{nameof(RootNodePresenter)}.{nameof(RemoveItem)} cannot be invoked on objects that are not collection.");
@@ -86,7 +79,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        public void UpdateItem(object newValue, Index index)
+        public override void UpdateItem(object newValue, Index index)
         {
             if (!rootNode.IsEnumerable)
                 throw new NodePresenterException($"{nameof(RootNodePresenter)}.{nameof(UpdateItem)} cannot be invoked on objects that are not collection.");
@@ -99,16 +92,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             {
                 throw new NodePresenterException("An error occurred while updating an item of the node, see the inner exception for more information.", e);
             }
-        }
-
-        void IInitializingNodePresenter.AddChild([NotNull] IInitializingNodePresenter child)
-        {
-            children.Add(child);
-        }
-
-        void IInitializingNodePresenter.FinalizeInitialization()
-        {
-            children.Sort(GraphNodePresenter.CompareChildren);
         }
     }
 }

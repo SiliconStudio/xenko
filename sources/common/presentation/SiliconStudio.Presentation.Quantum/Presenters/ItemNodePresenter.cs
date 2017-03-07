@@ -7,22 +7,21 @@ using SiliconStudio.Quantum.Commands;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
 {
-    public class ItemNodePresenter : IInitializingNodePresenter
+    public class ItemNodePresenter : NodePresenterBase
     {
         private readonly IObjectNode container;
-        private readonly List<INodePresenter> children = new List<INodePresenter>();
 
         public ItemNodePresenter(INodePresenter parent, IObjectNode container, Index index)
+            : base(parent)
         {
             this.container = container;
             Index = index;
             Name = index.ToString();
-            Parent = parent;
             container.ItemChanging += OnItemChanging;
             container.ItemChanged += OnItemChanged;
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             container.ItemChanging -= OnItemChanging;
             container.ItemChanged -= OnItemChanged;
@@ -39,46 +38,29 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             ValueChanged?.Invoke(this, new ValueChangedEventArgs(e.OldValue));
         }
 
-        public string Name { get; }
+        public override string Name { get; }
 
-        public INodePresenter Parent { get; }
+        public override List<INodeCommand> Commands { get; }
 
-        public IReadOnlyList<INodePresenter> Children => children;
+        public override Index Index { get; }
 
-        public List<INodeCommand> Commands { get; }
+        public override Type Type { get; }
 
-        public Index Index { get; }
+        public override bool IsPrimitive => container.ItemReferences != null;
 
-        public Type Type { get; }
+        public override bool IsEnumerable => container.IsEnumerable;
 
-        public bool IsPrimitive => container.ItemReferences != null;
+        public override ITypeDescriptor Descriptor { get; }
 
-        public bool IsEnumerable => container.IsEnumerable;
+        public override int? Order { get; }
 
-        public ITypeDescriptor Descriptor { get; }
+        public override object Value => container.Retrieve(Index);
 
-        public int? Order { get; }
+        public override event EventHandler<ValueChangingEventArgs> ValueChanging;
 
-        public object Value { get { return container.Retrieve(Index); } set { container.Update(value, Index); } }
+        public override event EventHandler<ValueChangedEventArgs> ValueChanged;
 
-        public event EventHandler<ValueChangingEventArgs> ValueChanging;
-        public event EventHandler<ValueChangedEventArgs> ValueChanged;
-
-        private bool IsValidChange(INodeChangeEventArgs e)
-        {
-            switch (e.ChangeType)
-            {
-                case ContentChangeType.CollectionUpdate:
-                    return Equals(e.Index, Index);
-                case ContentChangeType.CollectionAdd:
-                case ContentChangeType.CollectionRemove:
-                    return true; // TODO: probably not sufficent
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        public void UpdateValue(object newValue)
+        public override void UpdateValue(object newValue)
         {
             try
             {
@@ -90,7 +72,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        public void AddItem(object value)
+        public override void AddItem(object value)
         {
             if (container.IndexedTarget(Index) == null || !container.IndexedTarget(Index).IsEnumerable)
                 throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(AddItem)} cannot be invoked on members that are not collection.");
@@ -105,7 +87,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        public void AddItem(object value, Index index)
+        public override void AddItem(object value, Index index)
         {
             if (container.IndexedTarget(Index) == null || !container.IndexedTarget(Index).IsEnumerable)
                 throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(AddItem)} cannot be invoked on members that are not collection.");
@@ -120,7 +102,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        public void RemoveItem(object value, Index index)
+        public override void RemoveItem(object value, Index index)
         {
             if (container.IndexedTarget(Index) == null || !container.IndexedTarget(Index).IsEnumerable)
                 throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(AddItem)} cannot be invoked on members that are not collection.");
@@ -135,7 +117,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        public void UpdateItem(object newValue, Index index)
+        public override void UpdateItem(object newValue, Index index)
         {
             if (container.IndexedTarget(Index) == null || !container.IndexedTarget(Index).IsEnumerable)
                 throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(AddItem)} cannot be invoked on members that are not collection.");
@@ -150,14 +132,18 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        void IInitializingNodePresenter.AddChild([NotNull] IInitializingNodePresenter child)
+        private bool IsValidChange([NotNull] INodeChangeEventArgs e)
         {
-            children.Add(child);
-        }
-
-        void IInitializingNodePresenter.FinalizeInitialization()
-        {
-            children.Sort(GraphNodePresenter.CompareChildren);
+            switch (e.ChangeType)
+            {
+                case ContentChangeType.CollectionUpdate:
+                    return Equals(e.Index, Index);
+                case ContentChangeType.CollectionAdd:
+                case ContentChangeType.CollectionRemove:
+                    return true; // TODO: probably not sufficent
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

@@ -9,18 +9,18 @@ using SiliconStudio.Quantum.Commands;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
 {
-    public class MemberNodePresenter : IInitializingNodePresenter
+    public class MemberNodePresenter : NodePresenterBase
     {
         private readonly IMemberNode member;
-        private readonly List<INodePresenter> children = new List<INodePresenter>();
         private readonly List<Attribute> memberAttributes = new List<Attribute>();
 
-        public MemberNodePresenter(INodePresenter parent, [NotNull] IMemberNode member)
+        public MemberNodePresenter([NotNull] INodePresenter parent, [NotNull] IMemberNode member)
+            : base(parent)
         {
+            if (parent == null) throw new ArgumentNullException(nameof(parent));
             if (member == null) throw new ArgumentNullException(nameof(member));
             this.member = member;
             Name = member.Name;
-            Parent = parent;
 
             memberAttributes.AddRange(TypeDescriptorFactory.Default.AttributeRegistry.GetAttributes(member.MemberDescriptor.MemberInfo));
 
@@ -41,41 +41,37 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             Order = displayAttribute?.Order ?? member.MemberDescriptor.Order;
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             member.Changing -= OnMemberChanging;
             member.Changed -= OnMemberChanged;
         }
 
-        public string Name { get; }
+        public override string Name { get; }
 
-        public INodePresenter Parent { get; }
+        public override List<INodeCommand> Commands { get; } = new List<INodeCommand>();
 
-        public IReadOnlyList<INodePresenter> Children => children;
+        public override Type Type => member.Type;
 
-        public List<INodeCommand> Commands { get; } = new List<INodeCommand>();
+        public override bool IsPrimitive => member.IsPrimitive;
 
-        public Type Type => member.Type;
+        public override bool IsEnumerable => member.Target?.IsEnumerable ?? false;
 
-        public bool IsPrimitive => member.IsPrimitive;
+        public override Index Index => Index.Empty;
 
-        public bool IsEnumerable => member.Target?.IsEnumerable ?? false;
+        public override ITypeDescriptor Descriptor => member.Descriptor;
 
-        public Index Index => Index.Empty;
+        public override int? Order { get; }
 
-        public ITypeDescriptor Descriptor => member.Descriptor;
-
-        public int? Order { get; }
-
-        public object Value { get { return member.Retrieve(); } set { member.Update(value); } }
+        public override object Value => member.Retrieve();
 
         public IReadOnlyList<Attribute> MemberAttributes => memberAttributes;
 
-        public event EventHandler<ValueChangingEventArgs> ValueChanging;
+        public override event EventHandler<ValueChangingEventArgs> ValueChanging;
 
-        public event EventHandler<ValueChangedEventArgs> ValueChanged;
+        public override event EventHandler<ValueChangedEventArgs> ValueChanged;
 
-        public void UpdateValue(object newValue)
+        public override void UpdateValue(object newValue)
         {
             try
             {
@@ -87,7 +83,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        public void AddItem(object value)
+        public override void AddItem(object value)
         {
             if (member.Target == null || !member.Target.IsEnumerable)
                 throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(AddItem)} cannot be invoked on members that are not collection.");
@@ -102,7 +98,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        public void AddItem(object value, Index index)
+        public override void AddItem(object value, Index index)
         {
             if (member.Target == null || !member.Target.IsEnumerable)
                 throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(AddItem)} cannot be invoked on members that are not collection.");
@@ -117,7 +113,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        public void RemoveItem(object value, Index index)
+        public override void RemoveItem(object value, Index index)
         {
             if (member.Target == null || !member.Target.IsEnumerable)
                 throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(RemoveItem)} cannot be invoked on members that are not collection.");
@@ -132,7 +128,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        public void UpdateItem(object newValue, Index index)
+        public override void UpdateItem(object newValue, Index index)
         {
             if (member.Target == null || !member.Target.IsEnumerable)
                 throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(UpdateItem)} cannot be invoked on members that are not collection.");
@@ -155,16 +151,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         private void OnMemberChanged(object sender, MemberNodeChangeEventArgs e)
         {
             ValueChanged?.Invoke(this, new ValueChangedEventArgs(e.OldValue));
-        }
-
-        void IInitializingNodePresenter.AddChild([NotNull] IInitializingNodePresenter child)
-        {
-            children.Add(child);
-        }
-
-        void IInitializingNodePresenter.FinalizeInitialization()
-        {
-            children.Sort(GraphNodePresenter.CompareChildren);
         }
     }
 }
