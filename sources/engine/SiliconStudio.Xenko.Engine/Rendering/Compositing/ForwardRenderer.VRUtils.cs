@@ -33,17 +33,18 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             // Compute left and right
             var projectionLeftOfLeftEye = nearLeft * (projectionMatrices[0].M31 - 1.0f) / projectionMatrices[0].M11;
             var projectionRightOfRightEye = nearRight * (projectionMatrices[1].M31 + 1.0f) / projectionMatrices[1].M11;
-            float ipd = (viewMatrices[0].TranslationVector - viewMatrices[1].TranslationVector).Length();
+            // IPD
+            float interPupillaryDistance = (viewMatrices[0].TranslationVector - viewMatrices[1].TranslationVector).Length();
             // find the center eye position according to the scheme described here:
             // http://computergraphics.stackexchange.com/questions/1736/vr-and-frustum-culling
             // tangent of theta, where theta is FOV/2
             var tangentThetaLeftEye  = Math.Abs(projectionLeftOfLeftEye / nearLeft);
             var tangentThetaRightEye = Math.Abs(projectionRightOfRightEye / nearRight);
-            var recession = ipd / (tangentThetaLeftEye + tangentThetaRightEye);
+            var recession = interPupillaryDistance / (tangentThetaLeftEye + tangentThetaRightEye);
             // left offset (`A` on the diagram of above link):
             var leftOffset = tangentThetaLeftEye * recession;
             // place the view position in between left and right:
-            commonView.View.TranslationVector = Vector3.Lerp(viewMatrices[0].TranslationVector, viewMatrices[1].TranslationVector, leftOffset / ipd);
+            commonView.View.TranslationVector = Vector3.Lerp(viewMatrices[0].TranslationVector, viewMatrices[1].TranslationVector, leftOffset / interPupillaryDistance);
             // and move backward:
             commonView.View.M43 -= recession;
 
