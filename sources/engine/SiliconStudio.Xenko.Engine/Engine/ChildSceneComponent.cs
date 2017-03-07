@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("ChildSceneComponent")]
     [Display("Child scene", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentProcessor(typeof(ChildSceneProcessor), ExecutionMode = ExecutionMode.Runtime)]
+    [DefaultEntityComponentProcessor(typeof(ChildSceneProcessor))]
     [ComponentOrder(11200)]
     public sealed class ChildSceneComponent : ActivableEntityComponent
     {
@@ -32,19 +32,9 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChildSceneComponent"/> class.
+        /// The child scene.
         /// </summary>
-        /// <param name="scene">The scene.</param>
-        public ChildSceneComponent(Scene scene)
-        {
-            Scene = scene;
-        }
-
-        /// <summary>
-        /// Gets or sets the child scene.
-        /// </summary>
-        /// <value>The scene.</value>
-        /// <userdoc>The reference to the scene to render. Any scene can be selected except the containing one.</userdoc>
+        /// <userdoc>The reference to the child scene. Any scene can be selected except the containing one.</userdoc>
         [DataMember(10)]
         public Scene Scene
         {
@@ -76,7 +66,10 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
-        public void UpdateScene()
+        /// <summary>
+        /// Notifies the component of being added to or removed from a scene.
+        /// </summary>
+        public void NotifySceneChanged()
         {
             if (scene != null)
             {
@@ -122,7 +115,10 @@ namespace SiliconStudio.Xenko.Engine
 
             public override void Process(TransformComponent transformComponent)
             {
-                Matrix.Multiply(ref transformComponent.WorldMatrix, ref childSceneComponent.Entity.Transform.WorldMatrix, out transformComponent.WorldMatrix);
+                if (childSceneComponent.Entity != null)
+                {
+                    Matrix.Multiply(ref transformComponent.WorldMatrix, ref childSceneComponent.Entity.Transform.WorldMatrix, out transformComponent.WorldMatrix);
+                }
             }
         }
     }
