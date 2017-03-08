@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
 			// Workaround for Huawei Mate 9 Pro (Mali) GLSL bug
             float w = (1.425 * WhitePoint) + 0.05f;
-            w = ((WhitePoint_id74 * w + 0.004f) / ((WhitePoint_id74 * (w + 0.55f) + 0.0491f))) - 0.0821f;
+            w = ((WhitePoint * w + 0.004f) / ((WhitePoint * (w + 0.55f) + 0.0491f))) - 0.0821f;
 
             float4 vh = float4(color.rgb, WhitePoint);
             float4 va  = (1.425 * vh) + 0.05f; // eval filmic curve
