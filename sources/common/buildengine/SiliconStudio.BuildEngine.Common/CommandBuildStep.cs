@@ -12,7 +12,7 @@ using SiliconStudio.Core.IO;
 using System.Diagnostics;
 using System.ServiceModel;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Xenko.VisualStudio.Debugging;
+using SiliconStudio.VisualStudio.Debugging;
 
 namespace SiliconStudio.BuildEngine
 {
@@ -324,7 +324,7 @@ namespace SiliconStudio.BuildEngine
                 var commandContext = new LocalCommandContext(executeContext, this, builderContext);
 
                 // Actually processing the command
-                if (Command.ShouldSpawnNewProcess() && builderContext.MaxParallelProcesses > 0)
+                if (Command.ShouldSpawnNewProcess() && builderContext.MaxParallelProcesses > 0 && builderContext.SlaveBuilderPath != null)
                 {
                     while (!builderContext.CanSpawnParallelProcess())
                     {

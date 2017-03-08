@@ -26,7 +26,7 @@ namespace SiliconStudio.Assets
     [DataSerializer(typeof(PackageVersionDataSerializer))]
     public sealed class PackageVersion : IComparable, IComparable<PackageVersion>, IEquatable<PackageVersion>
     {
-        private const RegexOptions Flags = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture;
+        private const RegexOptions Flags = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture;
         private static readonly Regex SemanticVersionRegex = new Regex(@"^(?<Version>\d+(\s*\.\s*\d+){0,3})(?<Release>-[a-z][0-9a-z-]*)?$", Flags);
         private static readonly Regex StrictSemanticVersionRegex = new Regex(@"^(?<Version>\d+(\.\d+){2})(?<Release>-[a-z][0-9a-z-]*)?$", Flags);
         private readonly string originalString;

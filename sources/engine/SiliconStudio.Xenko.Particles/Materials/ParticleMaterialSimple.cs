@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         {
             base.Setup(context);
 
-            if (particleMaterialSimpleHasChanged)
+            if (!particleMaterialSimpleHasChanged)
                 return;
             particleMaterialSimpleHasChanged = false;
 

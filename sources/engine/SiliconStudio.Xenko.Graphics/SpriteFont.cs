@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// SpriteFont to use with <see cref="SpriteBatch"/>. See <see cref="SpriteFont"/> to learn how to use it.
     /// </summary>
     [DataContract]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<SpriteFont>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<SpriteFont>), Profile = "Content")]
     public class SpriteFont : ComponentBase
     {
         public static readonly Logger Logger = GlobalLogger.GetLogger("SpriteFont");

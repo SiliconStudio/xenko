@@ -181,10 +181,18 @@
     <Compile Include="AssemblyProcessorContext.cs" />
     <Compile Include="AssemblyProcessorProgram.cs" />
     <Compile Include="AssemblyProcessorTask.cs" />
+    <Compile Include="AssemblyScanCodeGenerator.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AssemblyScanCodeGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AssemblyScanCodeGenerator.Members.cs" />
+    <Compile Include="AssemblyScanProcessor.cs" />
     <Compile Include="AssemblyVersionProcessor.cs" />
     <Compile Include="AsyncBridgeProcessor.cs" />
     <Compile Include="CecilArraySerializerFactory.cs" />
     <Compile Include="ComplexSerializerGenerator.cs" />
+    <Compile Include="Core\NotNullAttribute.cs" />
     <Compile Include="CustomAssemblyResolver.cs" />
     <Compile Include="DataContractAliasProcessor.cs" />
     <Compile Include="DispatcherProcessor.cs" />
@@ -251,6 +259,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AssemblyScanCodeGenerator.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>AssemblyScanCodeGenerator.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
