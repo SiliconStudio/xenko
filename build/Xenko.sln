@@ -249,6 +249,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.ProjectTemplating", "..\sources\tools\SiliconStudio.ProjectTemplating\SiliconStudio.ProjectTemplating.csproj", "{2E2382F7-9576-49F0-AE43-93AFD7DB2368}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Assets.Presentation", "..\sources\editor\SiliconStudio.Xenko.Assets.Presentation\SiliconStudio.Xenko.Assets.Presentation.csproj", "{550C1B7C-B7AD-46DF-ACF3-C36AEF35D5FF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EFD2472E-B0E1-442A-9057-BBEA2517064B} = {EFD2472E-B0E1-442A-9057-BBEA2517064B}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.ProjectTemplating.Tests", "..\sources\tools\SiliconStudio.ProjectTemplating.Tests\SiliconStudio.ProjectTemplating.Tests.csproj", "{862C7C39-8E2B-4F18-88E9-ACD6EDF818CD}"
 EndProject
