@@ -26,12 +26,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
             : this(SamplingPattern.Box)
         {}
 
-        public enum SamplingPattern
-        {
-            Cross9,  // tilted square gather, 9 taps, weights inverse to distance to center. (inspired by "Next Generation Post Processing in Call of Duty Advanced Warfare")
-            Box      // simple unique sampling at the center
-        };
-
         public SamplingPattern FilterPattern => EffectName == "ImageScalerEffect" ? SamplingPattern.Box : SamplingPattern.Cross9;
 
         /// <summary>

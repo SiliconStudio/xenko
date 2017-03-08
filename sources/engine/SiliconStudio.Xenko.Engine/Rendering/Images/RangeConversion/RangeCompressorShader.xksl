@@ -17,12 +17,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // tone to "non-lossy" LDR:
             float targetRange = 1.0;
             float maxComponent = max(max(color.r, color.g), color.b);
-            float3 karis = color / (1 + maxComponent / targetRange);
+            // http://graphicrants.blogspot.jp/2013/12/tone-mapping.html
+            float3 brianKarisToned = color / (1 + maxComponent / targetRange);
 
-            float3 mapped = karis;  // no gamma. because of big outlining artefact around [0-1] range objects in front of high [10-80] range emissive objects.
-            // apply gamma:
-            //float3 mapped = karis * karis;
-            //float3 mapped = pow(karis, 2.2);
+            float3 mapped = brianKarisToned;
+            // and we don't apply gamma. because of big outlining artefact around [0-1] range objects in front of high [10-80] range emissive objects.
 
             // write output for FXAA:
             return float4(mapped, perceptiveLuma);
