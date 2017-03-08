@@ -17,6 +17,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal SharpDX.Direct3D12.PipelineState CompiledState;
         internal SharpDX.Direct3D12.RootSignature RootSignature;
         internal PrimitiveTopology PrimitiveTopology;
+        internal bool HasScissorEnabled;
         internal int[] SrvBindCounts;
         internal int[] SamplerBindCounts;
 
@@ -246,6 +247,7 @@ namespace SiliconStudio.Xenko.Graphics
                 CompiledState = NativeDevice.CreateGraphicsPipelineState(nativePipelineStateDescription);
                 RootSignature = rootSignature;
                 PrimitiveTopology = (PrimitiveTopology)pipelineStateDescription.PrimitiveType;
+                HasScissorEnabled = pipelineStateDescription.RasterizerState.ScissorTestEnable;
             }
         }
 

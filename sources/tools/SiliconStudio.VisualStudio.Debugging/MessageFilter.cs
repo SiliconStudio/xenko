@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace SiliconStudio.Xenko.VisualStudio.Debugging
+namespace SiliconStudio.VisualStudio.Debugging
 {
     // Avoid COMException "Application is busy (RPC_E_CALL_REJECTED 0x80010001)"
     // https://msdn.microsoft.com/en-us/library/ms228772.aspx

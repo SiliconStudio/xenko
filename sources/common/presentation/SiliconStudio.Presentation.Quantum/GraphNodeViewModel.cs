@@ -8,7 +8,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -61,6 +60,16 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
         }
+
+        /// <summary>
+        /// A function that indicates if the given value can be accepted as new value for this node.
+        /// </summary>
+        public Func<object, bool> AcceptValueCallback { get; set; }
+
+        /// <summary>
+        /// A function that coerces the given value before setting it as new value for this node.
+        /// </summary>
+        public Func<object, object> CoerceValueCallback { get; set; }
 
         /// <summary>
         /// Create an <see cref="GraphNodeViewModel{T}"/> that matches the given content type.
@@ -272,6 +281,16 @@ namespace SiliconStudio.Presentation.Quantum
         /// <returns><c>True</c> if the value has been modified, <c>false</c> otherwise.</returns>
         protected virtual bool SetNodeValue(IGraphNode node, object newValue)
         {
+            // Check to accept the value
+            if (AcceptValueCallback?.Invoke(newValue) == false)
+                return false;
+
+            // Coerce the value if needed
+            if (CoerceValueCallback != null)
+            {
+                newValue = CoerceValueCallback?.Invoke(newValue);
+            }
+
             if (Index == Index.Empty)
             {
                 var oldValue = node.Retrieve();
@@ -576,7 +595,7 @@ namespace SiliconStudio.Presentation.Quantum
 
                 // This node can have been disposed by its parent already (if its parent is being refreshed and share the same source node)
                 // In this case, let's trigger the notifications gracefully before being discarded, but skip refresh
-                if (!IsPrimitive && !IsDestroyed && !(Value?.GetType().IsStruct() ?? false))
+                if (!IsPrimitive && !IsDestroyed)
                 {
                     Refresh();
                 }

@@ -1,5 +1,4 @@
 using System;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum
 {

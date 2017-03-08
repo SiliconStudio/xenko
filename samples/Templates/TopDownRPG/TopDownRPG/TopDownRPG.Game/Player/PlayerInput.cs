@@ -58,7 +58,7 @@ namespace TopDownRPG.Player
 
                     if (modelComponentA != null && modelComponentB != null)
                     {
-                        var materialCount = modelComponentB.Materials.Count;
+                        var materialCount = modelComponentB.Model.Materials.Count;
                         modelComponentA.Model = modelComponentB.Model;
                         modelComponentA.Materials.Clear();
                         for (int i = 0; i < materialCount; i++)

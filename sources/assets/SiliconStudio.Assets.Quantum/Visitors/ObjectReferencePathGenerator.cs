@@ -1,4 +1,5 @@
 using System;
+using SiliconStudio.Assets.Quantum.Internal;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;

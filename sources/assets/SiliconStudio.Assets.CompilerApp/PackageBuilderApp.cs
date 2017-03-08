@@ -17,6 +17,7 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.VisualStudio.Debugging;
 using SiliconStudio.Xenko.Assets.Models;
 using SiliconStudio.Xenko.Assets.SpriteFont;
 using SiliconStudio.Xenko.Graphics;
@@ -24,7 +25,6 @@ using SiliconStudio.Xenko.Particles;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 using SiliconStudio.Xenko.SpriteStudio.Offline;
-using SiliconStudio.Xenko.VisualStudio.Debugging;
 
 namespace SiliconStudio.Assets.CompilerApp
 {

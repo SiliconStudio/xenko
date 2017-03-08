@@ -47,7 +47,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml.Schemas;
 
 namespace SiliconStudio.Core.Yaml.Serialization
@@ -57,6 +59,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
     /// </summary>
     internal class YamlAssemblyRegistry : ITagTypeRegistry
     {
+        private static readonly Logger Log = GlobalLogger.GetLogger("YamlAssemblyRegistry");
+
         private readonly IYamlSchema schema;
         private readonly Dictionary<string, MappedType> tagToType;
         private readonly Dictionary<Type, string> typeToTag;
@@ -99,47 +103,42 @@ namespace SiliconStudio.Core.Yaml.Serialization
             {
                 lookupAssemblies.Add(assembly);
 
-                var types = new Type[0];
-
                 // Register all tags automatically.
-                foreach (var type in assembly.GetTypes())
+                var assemblySerializers = DataSerializerFactory.GetAssemblySerializers(assembly);
+                if (assemblySerializers != null)
                 {
-                    var attributes = attributeRegistry.GetAttributes(type);
-                    foreach (var attribute in attributes)
+                    foreach (var dataContractAlias in assemblySerializers.DataContractAliases)
                     {
-                        string name = null;
-                        bool isAlias = false;
-                        var tagAttribute = attribute as DataContractAttribute;
-                        if (!string.IsNullOrWhiteSpace(tagAttribute?.Alias))
-                        {
-                            name = tagAttribute.Alias;
-                        }
-                        else
-                        {
-                            var yamlRemap = attribute as DataAliasAttribute;
-                            if (yamlRemap != null)
-                            {
-                                name = yamlRemap.Name;
-                                isAlias = true;
-                            }
-                        }
-                        if (!string.IsNullOrEmpty(name))
-                        {
-                            RegisterTagMapping(name, type, isAlias);
-                        }
+                        RegisterTagMapping(dataContractAlias.Name, dataContractAlias.Type, dataContractAlias.IsAlias);
                     }
+                }
+                else
+                {
+                    Log.Warning($"Assembly [{assembly}] has not been processed by assembly processor with --serialization flags. [DataContract] aliases won't be available.");
+                }
+                // Automatically register YamlSerializableFactory
+                var assemblyScanTypes = AssemblyRegistry.GetScanTypes(assembly);
+                if (assemblyScanTypes != null)
+                {
+                    List<Type> types;
 
-                    // Automatically register YamlSerializableFactory
-                    if (typeof(IYamlSerializableFactory).IsAssignableFrom(type) && type.GetConstructor(types) != null)
+                    // Register serializer factories
+                    if (assemblyScanTypes.Types.TryGetValue(typeof(IYamlSerializableFactory), out types))
                     {
-                        try
+                        foreach (var type in types)
                         {
-                            SerializableFactories.Add((IYamlSerializableFactory) Activator.CreateInstance(type));
-                        }
-                        catch
-                        {
-                            // Registrying an assembly should not fail, so we are silently discarding a factory if 
-                            // we are not able to load it.
+                            if (typeof(IYamlSerializableFactory).IsAssignableFrom(type) && type.GetConstructor(Type.EmptyTypes) != null)
+                            {
+                                try
+                                {
+                                    SerializableFactories.Add((IYamlSerializableFactory)Activator.CreateInstance(type));
+                                }
+                                catch
+                                {
+                                    // Registrying an assembly should not fail, so we are silently discarding a factory if 
+                                    // we are not able to load it.
+                                }
+                            }
                         }
                     }
                 }

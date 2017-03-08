@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
 
+using System;
 using System.Reflection;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.References;
 
-namespace SiliconStudio.Quantum.Contents
+namespace SiliconStudio.Quantum
 {
     /// <summary>
     /// An implementation of <see cref="IGraphNode"/> that gives access to a member of an object.

@@ -1,12 +1,12 @@
 using System;
 using SiliconStudio.Core.Reflection;
 
-namespace SiliconStudio.Quantum.Contents
+namespace SiliconStudio.Quantum
 {
     /// <summary>
     /// A helper class containing methods to manipulate contents.
     /// </summary>
-    public static class Content
+    internal static class Content
     {
         /// <summary>
         /// Retrieves the value itself or the value of one of its item, depending on the given <see cref="Index"/>.
