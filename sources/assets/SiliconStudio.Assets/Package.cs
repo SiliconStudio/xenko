@@ -1127,6 +1127,19 @@ namespace SiliconStudio.Assets
             LoadAssemblyReferencesForPackage(log, loadParameters);
         }
 
+        /// <summary>
+        /// Restore NuGet packages of all projects in this package.
+        /// </summary>
+        /// <param name="log">The log.</param>
+        /// <param name="force">True to ignore timestamp check of project.lock.json against project.json, false to check it.</param>
+        public void RestoreNugetPackages(ILogger log, bool force)
+        {
+            foreach (var profile in Profiles)
+            {
+                VSProjectHelper.RestoreNugetPackagesNonRecursive(log, Session?.SolutionPath, force, profile.ProjectReferences.Select(projectReference => UPath.Combine(RootDirectory, projectReference.Location.GetFullDirectory()).ToWindowsPath())).Wait();
+            }
+        }
+
         private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty, out IDictionary<YamlAssetPath, OverrideType> overrides)
         {
             var loadResult = assetContent != null
