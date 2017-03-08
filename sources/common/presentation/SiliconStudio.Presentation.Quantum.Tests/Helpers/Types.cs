@@ -63,5 +63,12 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
             public List<string> List { get; set; } = new List<string>();
         }
 
+        public class ClassWithRefCollection
+        {
+            [Display(1)]
+            public string String { get; set; }
+            [Display(2)]
+            public List<SimpleType> List { get; set; } = new List<SimpleType>();
+        }
     }
 }
