@@ -1,21 +1,8 @@
 !SceneAsset
 Id: d5969c6e-1456-4aac-a656-598bf1e16c2d
-SerializedVersion: {Xenko: 1.9.0-beta06}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: c5f0fa26-3055-4ed6-96d9-d47af97d1caf
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras: {}
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers: {}
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - be0f7749-0809-4e50-931b-13570ea885ca

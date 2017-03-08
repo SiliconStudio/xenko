@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// This class is able to create constant buffers, indexelementCountrtex buffers, structured buffer, raw buffers, argument buffers.
     /// </remarks>
     [DataSerializer(typeof(BufferSerializer))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Buffer>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<Buffer>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<Buffer>))]
     public partial class Buffer : GraphicsResource
     {
@@ -340,7 +340,7 @@ namespace SiliconStudio.Xenko.Graphics
                 if (offsetInBytes > 0)
                     throw new ArgumentException("offset is only supported for textured declared with ResourceUsage.Default", "offsetInBytes");
 
-                var mappedResource = commandList.MapSubresource(this, 0, MapMode.WriteDiscard);
+                var mappedResource = commandList.MapSubresource(this, 0, Usage == GraphicsResourceUsage.Staging ? MapMode.Write : MapMode.WriteDiscard);
                 Utilities.CopyMemory(mappedResource.DataBox.DataPointer, fromData.Pointer, fromData.Size);
                 commandList.UnmapSubresource(mappedResource);
             }

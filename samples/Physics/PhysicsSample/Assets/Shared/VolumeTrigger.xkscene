@@ -1,35 +1,8 @@
 !SceneAsset
 Id: a5a4f13e-6366-43de-b071-a87c1dfff115
-SerializedVersion: {Xenko: 1.9.0-beta06}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: 5e74f5af-2766-44b5-8e0c-b362a3b3590d
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            ec851941b0720f43aec27a01790fbb53:
-                Name: null
-                Camera: 34123ad7-7f97-4c0a-b592-d844e0400f5e/b5838899-93ff-4e3e-b9ad-2bc49a8669d6
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                02b3fd354e46144e8fbf27a8e2d37865: !ClearRenderFrameRenderer
-                    Color: {R: 0.2790703, G: 0.3313535, B: 0.425249964, A: 1.0}
-                    ColorSpace: Linear
-                    Output: !CurrentRenderFrameProvider {}
-                cd65b78e6a5a6c438ca6f17cb89ffaa8: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - f230b77a-bd6f-40d2-9e98-dbba399c378e
@@ -163,8 +136,10 @@ Hierarchy:
                         Children: {}
                     998883b5ff933e4eb9ad2bc49a8669d6: !CameraComponent
                         Id: b5838899-93ff-4e3e-b9ad-2bc49a8669d6
+                        Name: null
                         Projection: Orthographic
                         OrthographicSize: 21.0
+                        Slot: {Index: 0}
         -   Entity:
                 Id: 40160bfc-cad8-4c09-806e-fc63188ab688
                 Name: NextScene

@@ -35,5 +35,10 @@ namespace SiliconStudio.Assets
         /// Generates new ids for objects that implement <see cref="IIdentifiable"/>.
         /// </summary>
         GenerateNewIdsForIdentifiableObjects = 8,
+
+        /// <summary>
+        /// Clears any external references in the cloned object
+        /// </summary>
+        ClearExternalReferences = 16,
     }
 }

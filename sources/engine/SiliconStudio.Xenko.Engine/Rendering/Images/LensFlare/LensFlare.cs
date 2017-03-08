@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             base.InitializeCore();
 
             blur = ToLoadAndUnload(new GaussianBlur());
-            flareArtifactEffect = ToLoadAndUnload(new ImageEffectShader("FlareArtifactEffect"));
+            flareArtifactEffect = ToLoadAndUnload(new ImageEffectShader("FlareArtifactEffect", true));
             flareReplicateEffect = ToLoadAndUnload(new ImageEffectShader("FlareReplicate"));
         }
 

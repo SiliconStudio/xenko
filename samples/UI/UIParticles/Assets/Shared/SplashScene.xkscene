@@ -1,47 +1,8 @@
 !SceneAsset
 Id: a8ddac34-2bf1-452c-bdf5-47e2d633e83a
-SerializedVersion: {Xenko: 1.9.0-beta06}
+SerializedVersion: {Xenko: 1.10.0-beta02}
 Tags: []
-SceneSettings:
-    Id: 8dfe4154-403a-48cb-9020-dbc029d08503
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            116548512eba084db0ec8540e2b31e4f:
-                Name: null
-                Camera: a2f71ae3-80f0-4440-8584-7b52eb7f1706/2bd7e34a-66a6-4450-8c53-3c6506594b84
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                28b1f8fbf1afe548aeeb76331193abbb: !ClearRenderFrameRenderer
-                    Color: {R: 0.11099375, G: 0.145152882, B: 0.2065, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                3fe49c99243f4442929b42d8cb1ba979: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    CullingMask: Group0, Group2, Group3, Group4, Group5, Group6, Group7, Group8, Group9, Group10, Group11, Group12, Group13, Group14, Group15, Group16, Group17, Group18, Group19, Group20, Group21, Group22, Group23, Group24, Group25, Group26, Group27, Group28, Group29, Group30, Group31
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-                fa040c599fc93d4296b47da2cbca7629: !ClearRenderFrameRenderer
-                    ClearFlags: DepthOnly
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                2c2aecbea3507b418efff3f1b5105cc1: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    CullingMask: Group1
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - 820d34a8-2971-4381-abfa-2965d94ec672
@@ -55,7 +16,6 @@ Hierarchy:
         -   Entity:
                 Id: 40e61136-2407-4b10-b5db-f6002dc4f144
                 Name: Confetti
-                Group: Group1
                 Components:
                     41575a96e881094999ff78aee26e65a5: !TransformComponent
                         Id: 965a5741-81e8-4909-99ff-78aee26e65a5
@@ -194,10 +154,10 @@ Hierarchy:
                                             ForceVortex: 1.0
                                             ForceRepulsive: -1.0
                                             ForceFixed: {X: 0.0, Y: 0.0, Z: 0.0}
+                        RenderGroup: Group1
         -   Entity:
                 Id: 53722eae-cccf-407c-8cfd-c8f3b0a3506a
                 Name: Stars
-                Group: Group1
                 Components:
                     41575a96e881094999ff78aee26e65a5: !TransformComponent
                         Id: 912cc0f2-f617-491c-bf91-66cbf2536b0d
@@ -307,10 +267,10 @@ Hierarchy:
                                             ForceVortex: 1.3
                                             ForceRepulsive: -2.0
                                             ForceFixed: {X: 0.0, Y: 0.0, Z: 0.0}
+                        RenderGroup: Group1
         -   Entity:
                 Id: 7b1c3147-a30f-4141-a89b-7a55c35c2f2b
                 Name: Hit
-                Group: Group1
                 Components:
                     41575a96e881094999ff78aee26e65a5: !TransformComponent
                         Id: 8d67b0f5-f24d-44b9-a384-6d2a5397c36b
@@ -376,6 +336,7 @@ Hierarchy:
                                             DisplayParticleScaleUniform: true
                                             RandomSize: {X: 5.0, Y: 5.0}
                                     Updaters: {}
+                        RenderGroup: Group1
         -   Entity:
                 Id: 820d34a8-2971-4381-abfa-2965d94ec672
                 Name: Splash
@@ -410,13 +371,14 @@ Hierarchy:
                         Children: {}
                     4ae3d72ba66650448c533c6506594b84: !CameraComponent
                         Id: 2bd7e34a-66a6-4450-8c53-3c6506594b84
+                        Name: null
                         Projection: Orthographic
                         OrthographicSize: 1.0
                         AspectRatio: 1.0
+                        Slot: {Index: 0}
         -   Entity:
                 Id: a81bdcc6-04fd-4666-b58f-352cadc62179
                 Name: ConfettiBig
-                Group: Group1
                 Components:
                     41575a96e881094999ff78aee26e65a5: !TransformComponent
                         Id: 3d842adf-18e7-4688-b6fd-6e9141fbe550
@@ -554,10 +516,10 @@ Hierarchy:
                                             ForceVortex: 0.0
                                             ForceRepulsive: 0.0
                                             ForceFixed: {X: 0.0, Y: -1.0, Z: 0.0}
+                        RenderGroup: Group1
         -   Entity:
                 Id: f9983d06-7e74-455c-b5a4-43161f0dd2f6
                 Name: Fire
-                Group: Group1
                 Components:
                     41575a96e881094999ff78aee26e65a5: !TransformComponent
                         Id: 5b70ec95-ed57-4467-b7f5-11802e8e8e96
@@ -636,3 +598,4 @@ Hierarchy:
                                             VelocityMin: {X: -0.5, Y: 0.5, Z: -0.5}
                                             VelocityMax: {X: 0.5, Y: 1.5, Z: 0.0}
                                     Updaters: {}
+                        RenderGroup: Group1

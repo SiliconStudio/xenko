@@ -7,14 +7,11 @@ Attributes:
         DisplacementMap: !ComputeShaderClassScalar
             MixinReference: ComputeColorWave
             Generics:
-                Frequency: !ComputeColorParameterFloat
-                    ~Id: 45c1bd8d-dc07-4130-b1fe-2e5a8ed15b87
+                8dbdc14507dc3041b1fe2e5a8ed15b87~Frequency: !ComputeColorParameterFloat
                     Value: 5.0
-                Amplitude: !ComputeColorParameterFloat
-                    ~Id: 31d822bb-1e34-4882-b64f-a8ac75b8d376
+                bb22d831341e8248b64fa8ac75b8d376~Amplitude: !ComputeColorParameterFloat
                     Value: 0.01
-                Speed: !ComputeColorParameterFloat
-                    ~Id: 127e0f1f-9a0a-4eeb-85d4-69369a3e2730
+                1f0f7e120a9aeb4e85d469369a3e2730~Speed: !ComputeColorParameterFloat
                     Value: -0.03
             CompositionNodes: {}
         Intensity: !ComputeFloat
@@ -25,14 +22,11 @@ Attributes:
         NormalMap: !ComputeShaderClassColor
             MixinReference: ComputeColorWaveNormal
             Generics:
-                Frequency: !ComputeColorParameterFloat
-                    ~Id: e052ec82-14db-4fbf-91a8-cfae6fbc0c04
+                82ec52e0db14bf4f91a8cfae6fbc0c04~Frequency: !ComputeColorParameterFloat
                     Value: 5.0
-                Amplitude: !ComputeColorParameterFloat
-                    ~Id: 78cef958-5952-41bf-9e48-8f35963e06c7
+                58f9ce785259bf419e488f35963e06c7~Amplitude: !ComputeColorParameterFloat
                     Value: 0.1
-                Speed: !ComputeColorParameterFloat
-                    ~Id: f2afb80c-c8c2-441d-896b-b1da1670b92d
+                0cb8aff2c2c81d44896bb1da1670b92d~Speed: !ComputeColorParameterFloat
                     Value: -0.03
             CompositionNodes: {}
     MicroSurface: !MaterialGlossinessMapFeature
@@ -40,7 +34,7 @@ Attributes:
             Value: 0.735426
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Texture: 3a1664c1-46f2-478c-ba5e-36c6f421acd1/73a678b3-1b69-437f-a447-29d9b473864c:water
+            Texture: 73a678b3-1b69-437f-a447-29d9b473864c:water
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
@@ -57,12 +51,9 @@ Attributes:
         Intensity: !ComputeFloat
             Value: 0.067265
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: dad87c09-d714-4713-8b97-6851b91e13ed
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: bb9ef5f9-35af-45af-a257-9ab9310da4e4
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: 067f3828-4f06-430d-a599-e19f38eeb4b7
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Audio
 {
@@ -24,7 +23,7 @@ namespace SiliconStudio.Xenko.Audio
 
         static AudioEngine()
         {
-            if (!Native.AudioLayer.Init())
+            if (!AudioLayer.Init())
             {
                 throw new Exception("Failed to initialize the audio native layer.");
             }
@@ -62,14 +61,14 @@ namespace SiliconStudio.Xenko.Audio
 
         private float masterVolume = 1.0f;
 
-        internal Native.AudioLayer.Device AudioDevice;
+        internal AudioLayer.Device AudioDevice;
 
         /// <summary>
         /// Initialize audio engine
         /// </summary>
-        internal virtual void InitializeAudioEngine()
+        internal virtual void InitializeAudioEngine(AudioLayer.DeviceFlags flags)
         {
-            AudioDevice = AudioLayer.Create(audioDevice.Name == "default" ? null : audioDevice.Name);
+            AudioDevice = AudioLayer.Create(audioDevice.Name == "default" ? null : audioDevice.Name, flags);
             if (AudioDevice.Ptr == IntPtr.Zero)
             {
                 State = AudioEngineState.Invalidated;
@@ -85,8 +84,8 @@ namespace SiliconStudio.Xenko.Audio
         {
             if (AudioDevice.Ptr != IntPtr.Zero)
             {
-                Native.AudioLayer.ListenerDestroy(DefaultListener.Listener);
-                Native.AudioLayer.Destroy(AudioDevice);
+                AudioLayer.ListenerDestroy(DefaultListener.Listener);
+                AudioLayer.Destroy(AudioDevice);
             }
         }
         

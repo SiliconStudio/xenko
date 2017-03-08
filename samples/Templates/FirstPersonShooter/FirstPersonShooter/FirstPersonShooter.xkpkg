@@ -9,7 +9,7 @@ Meta:
     RootNamespace: FirstPersonShooter
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.4-beta
+            Version: 1.10.0-alpha02
             RootAssets: []
 LocalDependencies:
     - 575b8dc7-3fad-497d-acf7-fbdfabcece80:../../Packs/VFXPackage/VFXPackage.xkpkg

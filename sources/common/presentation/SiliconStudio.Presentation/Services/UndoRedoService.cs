@@ -46,7 +46,7 @@ namespace SiliconStudio.Presentation.Services
 
         public event EventHandler<EventArgs> Cleared { add { stack.Cleared += value; } remove { stack.Cleared -= value; } }
 
-        public ITransaction CreateTransaction()
+        public ITransaction CreateTransaction(TransactionFlags flags = TransactionFlags.None)
         {
             if (UndoRedoInProgress)
             {
@@ -54,7 +54,7 @@ namespace SiliconStudio.Presentation.Services
             }
 
             transactionCompletion = new TaskCompletionSource<int>();
-            return stack.CreateTransaction();
+            return stack.CreateTransaction(flags);
         }
 
         public IEnumerable<IReadOnlyTransaction> RetrieveAllTransactions() => stack.RetrieveAllTransactions();

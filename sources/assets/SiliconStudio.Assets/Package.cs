@@ -11,6 +11,7 @@ using Microsoft.Build.Evaluation;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Assets.Templates;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
@@ -397,7 +398,7 @@ namespace SiliconStudio.Assets
             return attachedReference != null ? this.FindAsset(attachedReference) : null;
         }
 
-        internal UDirectory GetDefaultAssetFolder()
+        public UDirectory GetDefaultAssetFolder()
         {
             var sharedProfile = Profiles.FindSharedProfile();
             var folder = sharedProfile?.AssetFolders.FirstOrDefault();
@@ -542,7 +543,7 @@ namespace SiliconStudio.Assets
 
                     try
                     {
-                        AssetFileSerializer.Save(FullPath, this);
+                        AssetFileSerializer.Save(FullPath, this, null);
 
                         // Move the package if the path has changed
                         if (previousPackagePath != null && previousPackagePath != packagePath)
@@ -682,7 +683,7 @@ namespace SiliconStudio.Assets
                 }
 
                 // Inject a copy of the base into the current asset when saving
-                AssetFileSerializer.Save(assetPath, asset.Asset, log, (Dictionary<YamlAssetPath, OverrideType>)asset.Overrides);
+                AssetFileSerializer.Save((string)assetPath, (object)asset.Asset, (AttachedYamlAssetMetadata)asset.YamlMetadata, log);
 
                 // Save generated asset (if necessary)
                 var codeGeneratorAsset = asset.Asset as IProjectFileGeneratorAsset;
@@ -1069,8 +1070,8 @@ namespace SiliconStudio.Assets
                 var assetContent = assetFile.AssetContent;
 
                 bool aliasOccurred;
-                IDictionary<YamlAssetPath, OverrideType> overrides;
-                var asset = LoadAsset(context.Log, assetFullPath, assetPath.ToWindowsPath(), assetContent, out aliasOccurred, out overrides);
+                AttachedYamlAssetMetadata yamlMetadata;
+                var asset = LoadAsset(context.Log, assetFullPath, assetPath.ToWindowsPath(), assetContent, out aliasOccurred, out yamlMetadata);
 
                 // Create asset item
                 var assetItem = new AssetItem(assetPath, asset, this)
@@ -1078,8 +1079,8 @@ namespace SiliconStudio.Assets
                     IsDirty = assetContent != null || aliasOccurred,
                     SourceFolder = sourceFolder.MakeRelative(RootDirectory),
                     SourceProject = asset is IProjectAsset && assetFile.ProjectFile != null ? assetFile.ProjectFile : null,
-                    Overrides = overrides
                 };
+                yamlMetadata.CopyInto(assetItem.YamlMetadata);
 
                 // Set the modified time to the time loaded from disk
                 if (!assetItem.IsDirty)
@@ -1127,14 +1128,14 @@ namespace SiliconStudio.Assets
             LoadAssemblyReferencesForPackage(log, loadParameters);
         }
 
-        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty, out IDictionary<YamlAssetPath, OverrideType> overrides)
+        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty, out AttachedYamlAssetMetadata yamlMetadata)
         {
             var loadResult = assetContent != null
                 ? AssetFileSerializer.Load<Asset>(new MemoryStream(assetContent), assetFullPath, log)
                 : AssetFileSerializer.Load<Asset>(assetFullPath, log);
 
             assetDirty = loadResult.AliasOccurred;
-            overrides = loadResult.Overrides;
+            yamlMetadata = loadResult.YamlMetadata;
 
             // Set location on source code asset
             var sourceCodeAsset = loadResult.Asset as SourceCodeAsset;

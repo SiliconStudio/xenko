@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
@@ -16,7 +17,7 @@ namespace SiliconStudio.Assets
     [DataSerializer(typeof(BasePartDataSerializer))]
     public class BasePart
     {
-        public BasePart(AssetReference basePartAsset, Guid basePartId, Guid instanceId)
+        public BasePart([NotNull] AssetReference basePartAsset, Guid basePartId, Guid instanceId)
         {
             if (basePartAsset == null) throw new ArgumentNullException(nameof(basePartAsset));
             if (basePartId == Guid.Empty) throw new ArgumentException(nameof(basePartAsset));
@@ -35,6 +36,7 @@ namespace SiliconStudio.Assets
         [DataMember(30)]
         public Guid InstanceId { get; }
 
+        [CanBeNull]
         public IIdentifiable ResolvePart(PackageSession session)
         {
             var assetItem = session.FindAsset(BasePartAsset.Id);

@@ -12,9 +12,15 @@ namespace SiliconStudio.Xenko.Graphics
     public partial class CommandList : GraphicsResourceBase
     {
         private const int MaxRenderTargetCount = 8;
+        private const int MaxViewportAndScissorRectangleCount = 16;
         private bool viewportDirty = false;
 
-        private Viewport[] viewports = new Viewport[MaxRenderTargetCount];
+        private int boundViewportCount;
+        private readonly Viewport[] viewports = new Viewport[MaxViewportAndScissorRectangleCount];
+
+        private int boundScissorCount;
+        private readonly Rectangle[] scissors = new Rectangle[MaxViewportAndScissorRectangleCount];
+        private bool scissorsDirty = false;
 
         private Texture depthStencilBuffer;
 
@@ -26,6 +32,12 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <value>The first viewport.</value>
         public Viewport Viewport => viewports[0];
+
+        /// <summary>
+        ///     Gets the first scissor.
+        /// </summary>
+        /// <value>The first scissor.</value>
+        public Rectangle Scissor => scissors[0];
 
         /// <summary>
         ///     Gets the depth stencil buffer currently sets on this instance.
@@ -43,11 +55,13 @@ namespace SiliconStudio.Xenko.Graphics
         /// </value>
         public Texture RenderTarget => renderTargets[0];
 
-        public IReadOnlyList<Texture> RenderTargets => renderTargets;
+        public Texture[] RenderTargets => renderTargets;
 
         public int RenderTargetCount => renderTargetCount;
 
-        public IReadOnlyList<Viewport> Viewports => viewports;
+        public Viewport[] Viewports => viewports;
+        public int ViewportCount => boundViewportCount;
+
 
         /// <summary>
         /// Clears the state and restore the state of the device.
@@ -59,6 +73,11 @@ namespace SiliconStudio.Xenko.Graphics
             // Setup empty viewports
             for (int i = 0; i < viewports.Length; i++)
                 viewports[i] = new Viewport();
+
+            // Setup empty scissors
+            scissorsDirty = true;
+            for (int i = 0; i < viewports.Length; i++)
+                scissors[i] = new Rectangle();
 
             // Setup the default render target
             var deviceDepthStencilBuffer = GraphicsDevice.Presenter?.DepthStencilBuffer;
@@ -79,34 +98,38 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Sets the viewport for the first render target.
+        /// Sets a viewport.
         /// </summary>
         /// <value>The viewport.</value>
         public void SetViewport(Viewport value)
         {
-            SetViewport(0, value);
-        }
-
-        /// <summary>
-        /// Sets the viewport for the specified render target.
-        /// </summary>
-        /// <value>The viewport.</value>
-        public void SetViewport(int index, Viewport value)
-        {
-            if (viewports[index] != value)
+            viewportDirty |= boundViewportCount != 1;
+            boundViewportCount = 1;
+            if (viewports[0] != value)
             {
                 viewportDirty = true;
-                viewports[index] = value;
+                viewports[0] = value;
             }
         }
 
         /// <summary>
-        /// Sets the viewport for the specified render target.
+        /// Sets the viewports.
         /// </summary>
         /// <value>The viewport.</value>
         public void SetViewports(Viewport[] values)
         {
-            for (int i = 0; i < values.Length; i++)
+            SetViewports(values.Length, values);
+        }
+
+        /// <summary>
+        /// Sets the viewports.
+        /// </summary>
+        /// <value>The viewport.</value>
+        public void SetViewports(int viewportCount, Viewport[] values)
+        {
+            viewportDirty |= this.boundViewportCount != viewportCount;
+            boundViewportCount = viewportCount;
+            for (int i = 0; i < viewportCount; i++)
             {
                 if (viewports[i] != values[i])
                 {
@@ -114,6 +137,43 @@ namespace SiliconStudio.Xenko.Graphics
                     viewports[i] = values[i];
                 }
             }
+        }
+
+        /// <summary>
+        /// Binds a single scissor rectangle to the rasterizer stage. See <see cref="Render+states"/> to learn how to use it.
+        /// </summary>
+        /// <param name="rectangle">The scissor rectangle.</param>
+        public void SetScissorRectangle(Rectangle rectangle)
+        {
+            scissorsDirty = true;
+            boundScissorCount = 1;
+            scissors[0] = rectangle;
+            SetScissorRectangleImpl(ref rectangle);
+        }
+
+        /// <summary>
+        /// Binds a set of scissor rectangles to the rasterizer stage. See <see cref="Render+states"/> to learn how to use it.
+        /// </summary>
+        /// <param name="scissorRectangles">The set of scissor rectangles to bind.</param>
+        public void SetScissorRectangles(Rectangle[] scissorRectangles)
+        {
+            SetScissorRectangles(scissorRectangles.Length, scissorRectangles);
+        }
+
+        /// <summary>
+        /// Binds a set of scissor rectangles to the rasterizer stage. See <see cref="Render+states"/> to learn how to use it.
+        /// </summary>
+        /// <param name="scissorCount">The number of scissor rectangles to bind.</param>
+        /// <param name="scissorRectangles">The set of scissor rectangles to bind.</param>
+        public void SetScissorRectangles(int scissorCount, Rectangle[] scissorRectangles)
+        {
+            scissorsDirty = true;
+            boundScissorCount = scissorCount;
+            for (int i = 0; i < scissorCount; ++i)
+            {
+                scissors[i] = scissorRectangles[i];
+            }
+            SetScissorRectanglesImpl(scissorCount, scissorRectangles);
         }
 
         /// <summary>
@@ -137,6 +197,26 @@ namespace SiliconStudio.Xenko.Graphics
         public void SetRenderTargetsAndViewport(Texture[] renderTargetViews)
         {
             SetRenderTargetsAndViewport(null, renderTargetViews);
+        }
+
+        /// <summary>
+        /// Binds a depth-stencil buffer and a set of render targets to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
+        /// </summary>
+        /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
+        /// <param name="renderTargetViewCount">The number of render target in <paramref name="renderTargetViews"/>.</param>
+        /// <param name="renderTargetViews">A set of render target views to bind.</param>
+        /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
+        public void SetRenderTargetsAndViewport(Texture depthStencilView, int renderTargetViewCount, Texture[] renderTargetViews)
+        {
+            depthStencilBuffer = depthStencilView;
+
+            renderTargetCount = renderTargetViewCount;
+            for (int i = 0; i < renderTargetCount; i++)
+            {
+                renderTargets[i] = renderTargetViews[i];
+            }
+
+            CommonSetRenderTargetsAndViewport(depthStencilBuffer, renderTargetCount, renderTargets);
         }
 
         /// <summary>
@@ -187,7 +267,27 @@ namespace SiliconStudio.Xenko.Graphics
         {
             SetRenderTargets(null, renderTargetViews);
         }
+        
+        /// <summary>
+        /// Binds a depth-stencil buffer and a set of render targets to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
+        /// </summary>
+        /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
+        /// <param name="renderTargetViewCount">The number of render target in <paramref name="renderTargetViews"/>.</param>
+        /// <param name="renderTargetViews">A set of render target views to bind.</param>
+        /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
+        public void SetRenderTargets(Texture depthStencilView, int renderTargetViewCount, Texture[] renderTargetViews)
+        {
+            depthStencilBuffer = depthStencilView;
 
+            renderTargetCount = renderTargetViewCount;
+            for (int i = 0; i < renderTargetCount; i++)
+            {
+                renderTargets[i] = renderTargetViews[i];
+            }
+
+            SetRenderTargetsImpl(depthStencilBuffer, renderTargetCount, renderTargets);
+        }
+        
         /// <summary>
         /// Binds a depth-stencil buffer and a set of render targets to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
         /// </summary>
@@ -229,5 +329,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             SetRenderTargetsImpl(depthStencilView, currentRenderTargetCount, renderTargetViews);
         }
+
+        unsafe partial void SetScissorRectangleImpl(ref Rectangle scissorRectangle);
+        unsafe partial void SetScissorRectanglesImpl(int scissorCount, Rectangle[] scissorRectangles);
     }
 }

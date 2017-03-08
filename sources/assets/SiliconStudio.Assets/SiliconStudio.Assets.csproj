@@ -23,10 +23,6 @@
     <Reference Include="NuGet.Core">
       <HintPath>..\..\..\deps\Nuget\NuGet.core.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDiff, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\deps\SharpDiff\SharpDiff.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -47,7 +43,6 @@
     <Compile Include="Analysis\AssetAnalysis.cs" />
     <Compile Include="Analysis\AssetAnalysisParameters.cs" />
     <Compile Include="Analysis\AssetBaseAnalysis.cs" />
-    <Compile Include="Analysis\AssetCompositePartReferenceCollector.cs" />
     <Compile Include="Analysis\AssetLink.cs" />
     <Compile Include="Analysis\AssetDependencyManager.cs" />
     <Compile Include="Analysis\AssetDependencies.cs" />
@@ -65,6 +60,7 @@
     <Compile Include="AssetCollectionItemIdHelper.cs" />
     <Compile Include="AssetCompositeHierarchy.cs" />
     <Compile Include="AssetCompositeHierarchyData.cs" />
+    <Compile Include="AssetCompositeHierarchyExtensions.cs" />
     <Compile Include="AssetContentTypeAttribute.cs" />
     <Compile Include="AssetItemExtensions.cs" />
     <Compile Include="AssetLogger.cs" />
@@ -72,6 +68,7 @@
     <Compile Include="AssetTracker.cs" />
     <Compile Include="BasePart.cs" />
     <Compile Include="CollectionIdGenerator.cs" />
+    <Compile Include="Diagnostics\AssetSerializableLogMessage.cs" />
     <Compile Include="DynamicYaml\DynamicYaml.cs" />
     <Compile Include="DynamicYaml\DynamicYamlArray.cs" />
     <Compile Include="DynamicYaml\DynamicYamlEmpty.cs" />
@@ -92,14 +89,16 @@
     <Compile Include="Reflection\OverrideTarget.cs" />
     <Compile Include="Reflection\OverrideType.cs" />
     <Compile Include="Reflection\ShadowId.cs" />
-    <Compile Include="Serializers\AssetCompositeVisitorContext.cs" />
     <Compile Include="Serializers\AssetPartContainedAttribute.cs" />
-    <Compile Include="Serializers\AssetPartReferenceAttribute.cs" />
-    <Compile Include="Serializers\AssetCompositeSerializer.cs" />
+    <Compile Include="Serializers\FixupObjectReferences.cs" />
     <Compile Include="Serializers\IAssetPartReference.cs" />
     <Compile Include="Serializers\IdentifiableAssetPartReference.cs" />
     <Compile Include="Serializers\IdentifiableAssetPartReferenceSerializer.cs" />
+    <Compile Include="Serializers\IdentifiableObjectSerializer.cs" />
+    <Compile Include="Yaml\AttachedYamlAssetMetadata.cs" />
+    <Compile Include="Yaml\IYamlAssetMetadata.cs" />
     <Compile Include="Serializers\ScalarOrObjectSerializer.cs" />
+    <Compile Include="Yaml\YamlAssetMetadata.cs" />
     <Compile Include="Tracking\AssetSourceTracker.cs" />
     <Compile Include="Analysis\CommonAnalysis.cs" />
     <Compile Include="Analysis\IContentLink.cs" />
@@ -330,16 +329,6 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
       <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
       <Name>SiliconStudio.Core.Serialization</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
-      <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
-      <Name>SiliconStudio.Xenko.Graphics</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
-      <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>
-      <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

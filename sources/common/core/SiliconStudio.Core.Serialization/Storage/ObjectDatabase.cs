@@ -96,7 +96,7 @@ namespace SiliconStudio.Core.Storage
             }
         }
 
-        public void CreateBundle(ObjectId[] objectIds, string bundleName, BundleOdbBackend bundleBackend, ISet<ObjectId> disableCompressionIds, Dictionary<string, ObjectId> indexMap, IList<string> dependencies)
+        public void CreateBundle(ObjectId[] objectIds, string bundleName, BundleOdbBackend bundleBackend, ISet<ObjectId> disableCompressionIds, Dictionary<string, ObjectId> indexMap, IList<string> dependencies, bool useIncrementalBundle)
         {
             if (bundleBackend == null)
                 throw new InvalidOperationException("Can't pack files.");
@@ -107,7 +107,7 @@ namespace SiliconStudio.Core.Storage
             var packUrl = bundleBackend.BundleDirectory + bundleName + BundleOdbBackend.BundleExtension; // we don't want the pack to be compressed in the APK on android
 
             // Create pack
-            BundleOdbBackend.CreateBundle(packUrl, backendRead1, objectIds, disableCompressionIds, indexMap, dependencies);
+            BundleOdbBackend.CreateBundle(packUrl, backendRead1, objectIds, disableCompressionIds, indexMap, dependencies, useIncrementalBundle);
         }
 
         /// <summary>

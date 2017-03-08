@@ -48,8 +48,14 @@ namespace SiliconStudio.Assets.Serializers
 
         public void WriteYaml(ref ObjectContext objectContext)
         {
-            // Always write in the new format
-            scalarRedirectSerializer.WriteYaml(ref objectContext);
+            if (ShouldSerializeAsScalar(ref objectContext))
+            {
+                scalarRedirectSerializer.WriteYaml(ref objectContext);
+            }
+            else
+            {
+                ObjectSerializer.WriteYaml(ref objectContext);
+            }
         }
 
         public abstract object ConvertFrom(ref ObjectContext context, Scalar fromScalar);
@@ -62,7 +68,13 @@ namespace SiliconStudio.Assets.Serializers
             objectContext.SerializerContext.Writer.Emit(scalar);
         }
 
-        private class YamlRedirectSerializer : AssetScalarSerializerBase
+        protected virtual bool ShouldSerializeAsScalar(ref ObjectContext objectContext)
+        {
+            // Always write in the new format by default
+            return true;
+        }
+
+        internal class YamlRedirectSerializer : AssetScalarSerializerBase
         {
             private readonly ScalarOrObjectSerializer realScalarSerializer;
 

@@ -1,0 +1,73 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using SiliconStudio.Xenko.Rendering.Data;
+using SiliconStudio.Xenko.Rendering.Materials;
+
+namespace SiliconStudio.Xenko.Rendering
+{
+    partial effect XenkoLighting
+    {
+        using params LightingKeys;
+
+        // -----------------------------------------------
+        // Add light groups
+        // -----------------------------------------------
+        var directLightGroups = LightingKeys.DirectLightGroups;
+        if (directLightGroups != null)
+        {
+            foreach(var directLightGroup in directLightGroups)
+            {
+                // Use parenthesis (...) to avoid lightGroup to be interpreted as a mixin named "lightGroup"
+                mixin compose directLightGroups += (directLightGroup);
+            }
+        }
+
+        // -----------------------------------------------
+        // Add environment light groups
+        // -----------------------------------------------
+        var environmentLights = LightingKeys.EnvironmentLights;
+        if (environmentLights != null)
+        {
+            foreach(var environmentLight in environmentLights)
+            {
+                // Use parenthesis (...) to avoid lightGroup to be interpreted as a mixin named "lightGroup"
+                mixin compose environmentLights += (environmentLight);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Forward shading effect
+    /// </summary>
+    effect XenkoForwardShadingEffect
+    {
+        using params MaterialKeys;
+
+        // Derive from XenkoEffectBase
+        mixin XenkoEffectBase;
+
+        // -----------------------------------------------
+        // Mix material and lighting shading for Pixel Shader
+        // -----------------------------------------------
+        var extensionPixelStageSurfaceShaders = MaterialKeys.PixelStageSurfaceShaders;
+        if (extensionPixelStageSurfaceShaders != null)
+        {
+            mixin MaterialSurfacePixelStageCompositor;
+            mixin compose materialPixelStage = (extensionPixelStageSurfaceShaders);
+            mixin compose streamInitializerPixelStage = MaterialKeys.PixelStageStreamInitializer;
+
+            var extensionPixelStageSurfaceFilter = MaterialKeys.PixelStageSurfaceFilter;
+            if (extensionPixelStageSurfaceFilter != null)
+            {
+                mixin (extensionPixelStageSurfaceFilter);
+            }
+        }
+
+        // -----------------------------------------------
+        // Add direct and environment light groups
+        // -----------------------------------------------
+        mixin XenkoLighting;
+
+        mixin child ShadowMapCaster;
+    };
+}

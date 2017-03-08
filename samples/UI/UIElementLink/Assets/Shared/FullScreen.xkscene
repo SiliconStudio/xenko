@@ -1,34 +1,8 @@
 !SceneAsset
 Id: 67a9eb30-7686-4b8c-89c3-19f12755774e
-SerializedVersion: {Xenko: 1.9.0-beta06}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: 8dfe4154-403a-48cb-9020-dbc029d08503
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            a36901b603845145a598391b2a68c9ea:
-                Name: null
-                Camera: d9876ddf-0675-4113-8dc5-5d363fbae7f6/2f657057-5b7b-4b74-a75d-9271f7f7d086
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                727ee29bf027c14bb0b06d8ef2ba7d96: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                5ffd842d31dbbb44b106459cf1fa3820: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - 820d34a8-2971-4381-abfa-2965d94ec672
@@ -252,12 +226,14 @@ Hierarchy:
                         Children: {}
                     5770652f7b5b744ba75d9271f7f7d086: !CameraComponent
                         Id: 2f657057-5b7b-4b74-a75d-9271f7f7d086
+                        Name: null
                         Projection: Orthographic
                         VerticalFieldOfView: 60.0
                         OrthographicSize: 720.0
                         NearClipPlane: 500.0
                         FarClipPlane: 1500.0
                         AspectRatio: 1.777778
+                        Slot: {Index: 0}
         -   Entity:
                 Id: ef08d60e-261c-480b-abf4-c7b8ba929ca6
                 Name: Ball

@@ -24,7 +24,7 @@ namespace SiliconStudio.Presentation.Controls
     public class TreeView : ItemsControl
     {
         /// <summary>
-        /// The name of the ScrollViewer contained in this <see cref="TreeView"/>.
+        /// The name of the <see cref="ScrollViewer"/> contained in this <see cref="TreeView"/>.
         /// </summary>
         public const string ScrollViewerPartName = "PART_Scroller";
 
@@ -94,6 +94,7 @@ namespace SiliconStudio.Presentation.Controls
 
             KeyboardNavigation.DirectionalNavigationProperty.OverrideMetadata(typeof(TreeView), new FrameworkPropertyMetadata(KeyboardNavigationMode.Contained));
             KeyboardNavigation.TabNavigationProperty.OverrideMetadata(typeof(TreeView), new FrameworkPropertyMetadata(KeyboardNavigationMode.None));
+            VirtualizingPanel.ScrollUnitProperty.OverrideMetadata(typeof(TreeView), new FrameworkPropertyMetadata(ScrollUnit.Item));
         }
 
         /// <summary>

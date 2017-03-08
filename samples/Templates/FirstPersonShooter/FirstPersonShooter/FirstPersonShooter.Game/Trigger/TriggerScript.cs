@@ -48,7 +48,7 @@ namespace FirstPersonShooter
                     }
                     else
                     {
-                        SceneSystem.SceneInstance.Scene.Entities.Add(prefabEntity);
+                        SceneSystem.SceneInstance.RootScene.Entities.Add(prefabEntity);
                     }
                 }
 
@@ -69,7 +69,7 @@ namespace FirstPersonShooter
                     }
                     else
                     {
-                        SceneSystem.SceneInstance.Scene.Entities.Remove(clonedEntity);
+                        SceneSystem.SceneInstance.RootScene.Entities.Remove(clonedEntity);
                     }
                 }
 

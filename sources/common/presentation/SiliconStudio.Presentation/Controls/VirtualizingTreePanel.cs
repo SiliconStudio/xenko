@@ -137,6 +137,7 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
+        private const double ScrollLineDelta = 16.0;
         private readonly SizesCache cachedSizes;
         private Size extent = new Size(0, 0);
         private Size viewport = new Size(0, 0);
@@ -361,8 +362,8 @@ namespace SiliconStudio.Presentation.Controls
 
         private static double GetHeightOfHeader([NotNull] ItemsControl itemsControl)
         {
-            var border = itemsControl.Template.FindName("border", itemsControl) as Border;
-            return border?.DesiredSize.Height ?? 0.0;
+            var border = (FrameworkElement)itemsControl.Template.FindName("border", itemsControl);
+            return border.DesiredSize.Height;
         }
 
         /// <summary>
@@ -543,12 +544,33 @@ namespace SiliconStudio.Presentation.Controls
 
         private double GetScrollLineHeightY()
         {
-            return 15;
+            var itemsControl = ItemsControl.GetItemsOwner(this);
+            if (GetScrollUnit(itemsControl) == ScrollUnit.Item)
+            {
+                var treeViewItem = itemsControl as TreeViewItem;
+                var treeView = itemsControl as TreeView ?? treeViewItem?.ParentTreeView;
+                if (treeView != null)
+                {
+                    if (treeView.IsVirtualizing)
+                        return GetCachedOrEstimatedHeight(treeView, treeViewItem?.HierachyLevel ?? 0);
+
+                    if (treeViewItem != null)
+                        return GetHeightOfHeader(treeViewItem);
+
+                    if (treeView.HasItems)
+                    {
+                        var firstItem = itemsControl.ItemContainerGenerator.ContainerFromIndex(0) as TreeViewItem;
+                        if (firstItem != null)
+                            return GetHeightOfHeader(firstItem);
+                    }
+                }
+            }
+            return ScrollLineDelta;
         }
 
         private double GetScrollLineHeightX()
         {
-            return 15;
+            return ScrollLineDelta;
         }
 
         [Conditional("DEBUGVIRTUALIZATION")]
@@ -575,6 +597,7 @@ namespace SiliconStudio.Presentation.Controls
             if (treeViewItem == null) return 0;
             return treeViewItem.HierachyLevel;
         }
+
         #region IScrollInfo implementation
 
         public ScrollViewer ScrollOwner { get; set; }
@@ -617,12 +640,14 @@ namespace SiliconStudio.Presentation.Controls
 
         public void MouseWheelUp()
         {
-            SetVerticalOffset(VerticalOffset - GetScrollLineHeightY());
+            var lines = SystemParameters.WheelScrollLines;
+            SetVerticalOffset(VerticalOffset - lines * GetScrollLineHeightY());
         }
 
         public void MouseWheelDown()
         {
-            SetVerticalOffset(VerticalOffset + GetScrollLineHeightY());
+            var lines = SystemParameters.WheelScrollLines;
+            SetVerticalOffset(VerticalOffset + lines * GetScrollLineHeightY());
         }
 
         public void LineLeft()
@@ -682,12 +707,14 @@ namespace SiliconStudio.Presentation.Controls
 
         public void MouseWheelLeft()
         {
-            SetHorizontalOffset(HorizontalOffset - GetScrollLineHeightX());
+            var lines = SystemParameters.WheelScrollLines;
+            SetHorizontalOffset(HorizontalOffset - lines * GetScrollLineHeightX());
         }
 
         public void MouseWheelRight()
         {
-            SetHorizontalOffset(HorizontalOffset + GetScrollLineHeightX());
+            var lines = SystemParameters.WheelScrollLines;
+            SetHorizontalOffset(HorizontalOffset + lines * GetScrollLineHeightX());
         }
 
         public void PageLeft()

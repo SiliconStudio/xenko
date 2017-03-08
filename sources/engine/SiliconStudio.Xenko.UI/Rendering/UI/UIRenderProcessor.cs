@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 {
                     // TODO GRAPHICS REFACTOR: Proper bounding box.
                     //renderSprite.BoundingBox = new BoundingBoxExt(new Vector3(float.NegativeInfinity), new Vector3(float.PositiveInfinity));
-                    renderUIElement.RenderGroup = renderUIElement.UIComponent.Entity.Group;
+                    renderUIElement.RenderGroup = renderUIElement.UIComponent.RenderGroup;
 
                     UIRoots.Add(renderUIElement);
                 }
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
         protected override RenderUIElement GenerateComponentData(Entity entity, UIComponent component)
         {
-            return new RenderUIElement(component, entity.Transform);
+            return new RenderUIElement(component, entity.Transform) { RenderGroup = component.RenderGroup };
         }
 
         protected override bool IsAssociatedDataValid(Entity entity, UIComponent component, RenderUIElement associatedData)

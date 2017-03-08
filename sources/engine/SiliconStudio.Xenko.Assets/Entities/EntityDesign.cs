@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
@@ -14,7 +15,11 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <summary>
         /// Initializes a new instance of <see cref="EntityDesign"/>.
         /// </summary>
+        /// <remarks>
+        /// This constructor is used only for serialization.
+        /// </remarks>
         public EntityDesign()
+            // ReSharper disable once AssignNullToNotNullAttribute
             : this(null, string.Empty)
         {
         }
@@ -23,8 +28,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// Initializes a new instance of <see cref="EntityDesign"/>.
         /// </summary>
         /// <param name="entity">The entity contained in this instance.</param>
-        public EntityDesign(Entity entity)
-            : this(entity, string.Empty)
+        public EntityDesign([NotNull] Entity entity)
         {
             Entity = entity;
         }
@@ -34,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         /// <param name="entity">The entity contained in this instance.</param>
         /// <param name="folder">The folder in which this entity is contained.</param>
-        public EntityDesign(Entity entity, string folder)
+        public EntityDesign([NotNull] Entity entity, string folder)
         {
             Entity = entity;
             Folder = folder;
@@ -51,6 +55,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// The entity.
         /// </summary>
         [DataMember(10)]
+        [NotNull]
         public Entity Entity { get; set; }
 
         /// <inheritdoc/>

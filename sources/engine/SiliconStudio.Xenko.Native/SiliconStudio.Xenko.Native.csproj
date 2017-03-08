@@ -30,12 +30,9 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Audio\Celt.cs" />
     <Compile Include="DirectInput\XInputChecker.cs" />
     <Compile Include="NativeInvoke.cs" />
-    <Compile Include="Audio\AudioLayer.cs" />
     <Compile Include="Navigation\Navigation.cs" />
-    <Compile Include="OculusOVR\OculusOVR.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -66,22 +63,10 @@
     <None Include="Sprite\SpriteBatchNative.c" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Audio\OpenAL.cpp" />
-    <None Include="Audio\XAudio2.cpp" />
-    <None Include="Audio\Celt.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Audio\OpenSLES.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="OculusOVR\OculusOVR.cpp" />
     <None Include="DirectInput\XInputChecker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LinuxAllocator.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Audio\Common.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Navigation\Navigation.cpp" />
@@ -90,6 +75,9 @@
     <None Include="Navigation\NavigationBuilder.hpp" />
     <None Include="Navigation\NavigationMesh.cpp" />
     <None Include="Navigation\NavigationMesh.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Lightprobes\predicates.c" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

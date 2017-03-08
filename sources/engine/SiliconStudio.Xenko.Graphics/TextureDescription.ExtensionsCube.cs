@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private static TextureDescription NewCube(int size, PixelFormat format, TextureFlags textureFlags, int mipCount, GraphicsResourceUsage usage)
         {
-            var desc = New2D(size, size, format, textureFlags, mipCount, 6, usage);
+            var desc = New2D(size, size, format, textureFlags, mipCount, 6, usage, MSAALevel.None);
             desc.Dimension = TextureDimension.TextureCube;
             return desc;
         }

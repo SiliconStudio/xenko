@@ -44,6 +44,7 @@
 // SOFTWARE.
 
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
@@ -53,45 +54,94 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     /// </summary>
     public abstract class ChainedSerializer : IYamlSerializable
     {
-        /// <summary>
-        /// The chained serializer.
-        /// </summary>
-        private IYamlSerializable next;
+        public ChainedSerializer Prev { get; private set; }
+
+        public ChainedSerializer Next { get; private set; }
+
+        public ChainedSerializer First { get { return FindBoundary(x => x.Prev); } }
+
+        public ChainedSerializer Last { get { return FindBoundary(x => x.Next); } }
+
+        [CanBeNull]
+        public T FindPrevious<T>() where T : ChainedSerializer => FindByType<T>(x => x.Prev);
+
+        [CanBeNull]
+        public T FindNext<T>() where T : ChainedSerializer => FindByType<T>(x => x.Next);
 
         /// <summary>
-        /// Sets the serializer to chain with this instance.
+        /// Prepends the given <see cref="ChainedSerializer"/> to this serializer.
         /// </summary>
-        /// <param name="other">The serializer to chain with this instance.</param>
-        public void PrependTo(IYamlSerializable other)
+        /// <param name="previousSerializer">The serializer to prepend.</param>
+        public void Prepend([CanBeNull] ChainedSerializer previousSerializer)
         {
-            if (next != null)
-                throw new InvalidOperationException("This serializer already have a succeeding serializer");
-
-            next = other;
+            // Update current Prev if non-null to target the first of the chain we're prepending
+            Prev?.SetNext(previousSerializer?.First);
+            previousSerializer?.First.SetPrev(Prev);
+            // Set the current Prev to the given serializer
+            Prev = previousSerializer;
+            // Make sure that the link with the old Next of the given serializer is cleared
+            previousSerializer?.Next?.SetPrev(null);
+            // And set the Next of the given serializer to be this one.
+            previousSerializer?.SetNext(this);
         }
 
         /// <summary>
-        /// Sets the serializer to chain with an instance of <see cref="ChainedSerializer"/>.
+        /// Appends the given <see cref="ChainedSerializer"/> to this serializer.
         /// </summary>
-        /// <param name="chained">The chained serializer.</param>
-        /// <param name="serializer">The serializer to chain.</param>
-        /// <returns>The chained argument passed in the <paramref name="chained"/> parameter.</returns>
-        public static ChainedSerializer Prepend(ChainedSerializer chained, IYamlSerializable serializer)
+        /// <param name="nextSerializer">The serializer to append.</param>
+        public void Append([CanBeNull] ChainedSerializer nextSerializer)
         {
-            chained.PrependTo(serializer);
-            return chained;
+            // Update current Next if non-null to target the last of the chain we're appending
+            Next?.SetPrev(nextSerializer?.Last);
+            nextSerializer?.Last.SetNext(Next);
+            // Set the current Next to the given serializer
+            Next = nextSerializer;
+            // Make sure that the link with the old Prev of the given serializer is cleared
+            nextSerializer?.Prev?.SetNext(null);
+            // And set the Prev of the given serializer to be this one.
+            nextSerializer?.SetPrev(this);
         }
 
         /// <inheritdoc/>
         public virtual object ReadYaml(ref ObjectContext objectContext)
         {
-            return next.ReadYaml(ref objectContext);
+            if (Next == null) throw new InvalidOperationException("The last chained serializer is invoking non-existing next serializer");
+            return Next.ReadYaml(ref objectContext);
         }
 
         /// <inheritdoc/>
         public virtual void WriteYaml(ref ObjectContext objectContext)
         {
-            next.WriteYaml(ref objectContext);
+            if (Next == null) throw new InvalidOperationException("The last chained serializer is invoking non-existing next serializer");
+            Next.WriteYaml(ref objectContext);
         }
+
+        [NotNull]
+        private ChainedSerializer FindBoundary([NotNull] Func<ChainedSerializer, ChainedSerializer> navigate)
+        {
+            var current = this;
+            while (navigate(current) != null)
+            {
+                current = navigate(current);
+            }
+            return current;
+        }
+
+        [CanBeNull]
+        private T FindByType<T>([NotNull] Func<ChainedSerializer, ChainedSerializer> navigate) where T : ChainedSerializer
+        {
+            var current = navigate(this);
+            while (current != null)
+            {
+                var found = current as T;
+                if (found != null)
+                    return found;
+                current = navigate(current);
+            }
+            return null;
+        }
+
+        private void SetPrev(ChainedSerializer prev) => Prev = prev;
+        private void SetNext(ChainedSerializer next) => Next = next;
     }
 }

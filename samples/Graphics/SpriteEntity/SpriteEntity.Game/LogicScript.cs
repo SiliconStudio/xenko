@@ -56,7 +56,7 @@ namespace SpriteEntity
                 if (!bulletScript.IsAlive)
                 {
                     // The bullet is dead, remove it
-                    SceneSystem.SceneInstance.Scene.Entities.Remove(bullet);
+                    SceneSystem.SceneInstance.RootScene.Entities.Remove(bullet);
                     bullets.Remove(bullet);
                 }
             }
@@ -67,7 +67,7 @@ namespace SpriteEntity
             if(!IsLiveReloading)
             {
                 foreach (var bullet in bullets)
-                    SceneSystem.SceneInstance.Scene.Entities.Remove(bullet);
+                    SceneSystem.SceneInstance.RootScene.Entities.Remove(bullet);
             }
         }
 

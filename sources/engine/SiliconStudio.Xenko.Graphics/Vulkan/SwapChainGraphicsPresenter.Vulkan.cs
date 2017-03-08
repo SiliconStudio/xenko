@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -350,7 +350,7 @@ namespace SiliconStudio.Xenko.Graphics
                 ImageExtent = new Extent2D((uint)Description.BackBufferWidth, (uint)Description.BackBufferHeight),
                 ImageFormat = backBufferFormat,
                 ImageColorSpace = Description.ColorSpace == ColorSpace.Gamma ? SharpVulkan.ColorSpace.SRgbNonlinear : 0,
-                ImageUsage = ImageUsageFlags.ColorAttachment | (surfaceCapabilities.SupportedUsageFlags & ImageUsageFlags.TransferSource), // TODO VULKAN: Use off-screen buffer to emulate
+                ImageUsage = ImageUsageFlags.ColorAttachment | ImageUsageFlags.TransferDestination | (surfaceCapabilities.SupportedUsageFlags & ImageUsageFlags.TransferSource), // TODO VULKAN: Use off-screen buffer to emulate
                 PresentMode = swapChainPresentMode,
                 CompositeAlpha = CompositeAlphaFlags.Opaque,
                 MinImageCount = desiredImageCount,
