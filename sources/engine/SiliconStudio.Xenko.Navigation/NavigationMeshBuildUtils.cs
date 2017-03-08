@@ -4,10 +4,9 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Navigation;
 using SiliconStudio.Xenko.Physics;
 
-namespace SiliconStudio.Xenko.Assets.Navigation
+namespace SiliconStudio.Xenko.Navigation
 {
     public class NavigationMeshBuildUtils
     {

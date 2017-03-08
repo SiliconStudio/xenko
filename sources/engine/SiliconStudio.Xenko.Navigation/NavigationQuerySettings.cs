@@ -1,6 +1,6 @@
 ﻿using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Xenko.Engine
+namespace SiliconStudio.Xenko.Navigation
 {
     /// <summary>
     /// Provides advanced settings to be passed to navigation mesh queries

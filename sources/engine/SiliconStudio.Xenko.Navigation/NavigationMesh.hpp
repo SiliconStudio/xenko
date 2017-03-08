@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 #pragma once
-#include "../../../../deps/Recast/include/DetourNavMesh.h"
-#include "../../../../deps/Recast/include/DetourNavMeshQuery.h"
-#include "../../../../deps/NativePath/TINYSTL/unordered_set.h"
+#include "../../../deps/Recast/include/DetourNavMesh.h"
+#include "../../../deps/Recast/include/DetourNavMeshQuery.h"
+#include "../../../deps/NativePath/TINYSTL/unordered_set.h"
 
 #pragma pack(4)
 struct NavMeshPathfindQuery

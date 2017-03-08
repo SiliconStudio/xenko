@@ -1,6 +1,6 @@
 ﻿using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Xenko.Engine
+namespace SiliconStudio.Xenko.Navigation
 {
     /// <summary>
     /// Result for a raycast query on a navigation mesh

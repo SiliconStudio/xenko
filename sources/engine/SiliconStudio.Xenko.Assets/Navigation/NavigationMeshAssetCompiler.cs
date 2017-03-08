@@ -20,6 +20,7 @@ using SiliconStudio.Xenko.Assets.Physics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
+using SiliconStudio.Xenko.Navigation;
 using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Assets.Navigation
@@ -171,15 +172,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     // Turn generated data into arrays
                     Vector3[] meshVertices = sceneNavigationMeshInputBuilder.Points.ToArray();
                     int[] meshIndices = sceneNavigationMeshInputBuilder.Indices.ToArray();
-
-                    // NOTE: Reversed winding order as input to recast
-                    int numSrcTriangles = meshIndices.Length/3;
-                    for (int i = 0; i < numSrcTriangles; i++)
-                    {
-                        int j = meshIndices[i*3 + 1];
-                        meshIndices[i*3 + 1] = meshIndices[i*3 + 2];
-                        meshIndices[i*3 + 2] = j;
-                    }
                     
                     // Check if settings changed to trigger a full rebuild
                     int currentSettingsHash = asset.GetHashCode();
@@ -442,7 +434,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                 var boxDesc = (BoxColliderShapeDesc)box.Description;
                                 Matrix transform = box.PositiveCenterMatrix*entityWorldMatrix;
 
-                                var meshData = GeometricPrimitive.Cube.New(boxDesc.Size);
+                                var meshData = GeometricPrimitive.Cube.New(boxDesc.Size, toLeftHanded: true);
                                 entityNavigationMeshInputBuilder.AppendMeshData(meshData, transform);
                             }
                             else if (shapeType == typeof(SphereColliderShape))
@@ -451,7 +443,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                 var sphereDesc = (SphereColliderShapeDesc)sphere.Description;
                                 Matrix transform = sphere.PositiveCenterMatrix*entityWorldMatrix;
 
-                                var meshData = GeometricPrimitive.Sphere.New(sphereDesc.Radius);
+                                var meshData = GeometricPrimitive.Sphere.New(sphereDesc.Radius, toLeftHanded: true);
                                 entityNavigationMeshInputBuilder.AppendMeshData(meshData, transform);
                             }
                             else if (shapeType == typeof(CylinderColliderShape))
@@ -460,7 +452,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                 var cylinderDesc = (CylinderColliderShapeDesc)cylinder.Description;
                                 Matrix transform = cylinder.PositiveCenterMatrix*entityWorldMatrix;
 
-                                var meshData = GeometricPrimitive.Cylinder.New(cylinderDesc.Height, cylinderDesc.Radius);
+                                var meshData = GeometricPrimitive.Cylinder.New(cylinderDesc.Height, cylinderDesc.Radius, toLeftHanded: true);
                                 entityNavigationMeshInputBuilder.AppendMeshData(meshData, transform);
                             }
                             else if (shapeType == typeof(CapsuleColliderShape))
@@ -469,7 +461,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                 var capsuleDesc = (CapsuleColliderShapeDesc)capsule.Description;
                                 Matrix transform = capsule.PositiveCenterMatrix*entityWorldMatrix;
 
-                                var meshData = GeometricPrimitive.Capsule.New(capsuleDesc.Length, capsuleDesc.Radius);
+                                var meshData = GeometricPrimitive.Capsule.New(capsuleDesc.Length, capsuleDesc.Radius, toLeftHanded:true);
                                 entityNavigationMeshInputBuilder.AppendMeshData(meshData, transform);
                             }
                             else if (shapeType == typeof(ConeColliderShape))
@@ -478,7 +470,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                 var coneDesc = (ConeColliderShapeDesc)cone.Description;
                                 Matrix transform = cone.PositiveCenterMatrix*entityWorldMatrix;
 
-                                var meshData = GeometricPrimitive.Cone.New(coneDesc.Radius, coneDesc.Height);
+                                var meshData = GeometricPrimitive.Cone.New(coneDesc.Radius, coneDesc.Height, toLeftHanded: true);
                                 entityNavigationMeshInputBuilder.AppendMeshData(meshData, transform);
                             }
                             else if (shapeType == typeof(StaticPlaneColliderShape))
@@ -508,8 +500,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                 for (int i = 0; i < hull.Indices.Count; i += 3)
                                 {
                                     indices[i] = (int)hull.Indices[i];
-                                    indices[i+1] = (int)hull.Indices[i+1];
-                                    indices[i+2] = (int)hull.Indices[i+2];
+                                    indices[i+1] = (int)hull.Indices[i+2]; // Note: reversed winding order
+                                    indices[i+2] = (int)hull.Indices[i+1];
                                 }
 
                                 entityNavigationMeshInputBuilder.AppendArrays(hull.Points.ToArray(), indices, transform);
@@ -589,7 +581,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                         vertices[i] = new VertexPositionNormalTexture(planePoints[i] + planeOffset, Vector3.UnitY, Vector2.Zero);
                     }
 
-                    GeometricMeshData<VertexPositionNormalTexture> meshData = new GeometricMeshData<VertexPositionNormalTexture>(vertices, planeInds, false);
+                    GeometricMeshData<VertexPositionNormalTexture> meshData = new GeometricMeshData<VertexPositionNormalTexture>(vertices, planeInds, true);
                     shape.NavigationMeshInputBuilder.AppendMeshData(meshData, Matrix.Identity);
                     sceneNavigationMeshInputBuilder.AppendMeshData(meshData, Matrix.Identity);
                     // Update bounding box after plane generation

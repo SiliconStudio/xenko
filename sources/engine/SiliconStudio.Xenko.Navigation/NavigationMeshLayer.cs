@@ -6,9 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Native;
 
-namespace SiliconStudio.Xenko.Engine
+namespace SiliconStudio.Xenko.Navigation
 {
     /// <summary>
     /// Layer containing built tiles for a single <see cref="NavigationAgentSettings"/>

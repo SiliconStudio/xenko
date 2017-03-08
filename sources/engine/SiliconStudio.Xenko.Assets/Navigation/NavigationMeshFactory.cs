@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Navigation;
 using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Assets.Navigation

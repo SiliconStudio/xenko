@@ -4,7 +4,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 
-namespace SiliconStudio.Xenko.Engine
+namespace SiliconStudio.Xenko.Navigation
 {
     /// <summary>
     /// Provides settings for the navigation mesh builder to control granularity and error margins 

@@ -8,7 +8,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Serialization.Serializers;
 
-namespace SiliconStudio.Xenko.Engine
+namespace SiliconStudio.Xenko.Navigation
 {
     /// <summary>
     /// A Navigation Mesh, can be used for pathfinding.

@@ -190,6 +190,7 @@ namespace SiliconStudio.Xenko.Engine
             // Registration takes place in `Initialize'.
             Script = new ScriptSystem(Services);
             SceneSystem = new SceneSystem(Services);
+
             Audio = new AudioSystem(Services);
             gameFontSystem = new GameFontSystem(Services);
             SpriteAnimation = new SpriteAnimationSystem(Services);

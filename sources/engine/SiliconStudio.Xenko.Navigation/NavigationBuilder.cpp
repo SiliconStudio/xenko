@@ -21,15 +21,13 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 
-#include "../../../../deps/Recast/include/DetourNavMeshBuilder.h"
-#include "../XenkoNative.h"
+#include "../../../deps/Recast/include/DetourNavMeshBuilder.h"
+#include "../../../deps/NativePath/NativePath.h"
+#include "../../../deps/NativePath/NativeTime.h"
 
-#include "../../../../deps/NativePath/NativePath.h"
+#include "XenkoNative.h"
 #include "Navigation.hpp"
 #include "NavigationBuilder.hpp"
-#include "../../../../deps/NativePath/NativeTime.h"
-#include "../../../../deps/NativePath/NativePath.h"
-#include "../../../../deps/NativePath/NativePath.h"
 
 NavigationBuilder::NavigationBuilder()
 {
@@ -159,14 +157,12 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	}
 
 	// Find walkable triangles and rasterize into heightfield
-	double rasterizationTime = npSeconds();
 	memset(m_triareas, 0, numTriangles * sizeof(unsigned char));
 	rcMarkWalkableTriangles(m_context, m_buildSettings.agentMaxSlope, (float*)vertices, numVertices, indices, numTriangles, m_triareas);
 	if (!rcRasterizeTriangles(m_context, (float*)vertices, numVertices, indices, m_triareas, numTriangles, *m_solid, walkableClimb))
 	{
 		return ret;
 	}
-	rasterizationTime = npSeconds() - rasterizationTime;
 
 	// Filter walkables surfaces.
 	rcFilterLowHangingWalkableObstacles(m_context, walkableClimb, *m_solid);
@@ -176,7 +172,6 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	// Compact the heightfield so that it is faster to handle from now on.
 	// This will result more cache coherent data as well as the neighbours
 	// between walkable cells will be calculated.
-	double buildHeightFieldTime = npSeconds();
 	m_chf = rcAllocCompactHeightfield();
 	if (!m_chf)
 	{
@@ -190,7 +185,6 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	// No longer need solid heightfield after compacting it
 	rcFreeHeightField(m_solid);
 	m_solid = 0;
-	buildHeightFieldTime = npSeconds() - buildHeightFieldTime;
 
 	// Erode the walkable area by agent radius.
 	if (!rcErodeWalkableArea(m_context, walkableRadius, *m_chf))
@@ -198,7 +192,6 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 		return ret;
 	}
 
-	double regionsTime = npSeconds();
 	// Prepare for region partitioning, by calculating distance field along the walkable surface.
 	if (!rcBuildDistanceField(m_context, *m_chf))
 	{
@@ -209,11 +202,8 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	{
 		return ret;
 	}
-	regionsTime = npSeconds() - regionsTime;
-
 
 	// Create contours.
-	double contoursTime = npSeconds();
 	m_cset = rcAllocContourSet();
 	if (!m_cset)
 	{
@@ -223,10 +213,8 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	{
 		return ret;
 	}
-	contoursTime = npSeconds() - contoursTime;
 
 	// Build polygon navmesh from the contours.
-	double polyMeshTime = npSeconds();
 	m_pmesh = rcAllocPolyMesh();
 	if (!m_pmesh)
 	{
@@ -236,13 +224,11 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	{
 		return ret;
 	}
-	polyMeshTime = npSeconds() - polyMeshTime;
 
 	// Free intermediate results
 	rcFreeContourSet(m_cset);
 	m_cset = nullptr;
 
-	double detailMeshTime = npSeconds();
 	m_dmesh = rcAllocPolyMeshDetail();
 	if (!m_dmesh)
 	{
@@ -253,7 +239,6 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	{
 		return ret;
 	}
-	detailMeshTime = npSeconds() - detailMeshTime;
 
 	// Free intermediate results
 	rcFreeCompactHeightfield(m_chf);
@@ -275,10 +260,8 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	GenerateNavMeshVertices();
 	ret->navmeshVertices = m_navmeshVertices.data();
 	ret->numNavmeshVertices = m_navmeshVertices.size();
-	double createMeshTime = npSeconds();
 	if (!CreateDetourMesh())
 		return ret;
-	createMeshTime = npSeconds() - createMeshTime;
 	ret->navmeshData = m_navmeshData;
 	ret->navmeshDataLength = m_navmeshDataLength;
 	ret->success = true;

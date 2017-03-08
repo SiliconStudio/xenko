@@ -3,10 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
-using SiliconStudio.Xenko.Native;
 
-namespace SiliconStudio.Xenko.Engine.Processors
+namespace SiliconStudio.Xenko.Navigation.Processors
 {
     /// <summary>
     /// Manages the loading of the native side navigation meshes. Will only load one version of the navigation mesh if it is referenced by multiple components
@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             }
         }
 
-        protected internal override void OnSystemRemove()
+        protected override void OnSystemRemove()
         {
             // Dispose of all loaded navigation meshes
             foreach (var pair in loadedNavigationMeshes)

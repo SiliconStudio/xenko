@@ -6,7 +6,7 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Xenko.Engine
+namespace SiliconStudio.Xenko.Navigation
 {
     /// <summary>
     /// Tiles contained within <see cref="NavigationMeshLayer"/>
@@ -18,6 +18,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Vertices of the navigation mesh, used for visualization
         /// </summary>
+        // TODO this data should be obtained from the Data blob instead, since it contains the same data
         [DataMemberCustomSerializer] public Vector3[] MeshVertices;
 
         /// <summary>

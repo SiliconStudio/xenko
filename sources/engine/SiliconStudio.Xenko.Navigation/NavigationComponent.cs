@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
-using SiliconStudio.Xenko.Engine.Processors;
-using SiliconStudio.Xenko.Native;
+using SiliconStudio.Xenko.Navigation.Processors;
 
-namespace SiliconStudio.Xenko.Engine
+namespace SiliconStudio.Xenko.Navigation
 {
     /// <summary>
     /// This is used to interface with the navigation mesh. Supports FindPath and Raycast

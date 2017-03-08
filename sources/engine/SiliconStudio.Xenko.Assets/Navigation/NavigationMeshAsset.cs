@@ -12,8 +12,8 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets.Entities;
-using SiliconStudio.Xenko.Assets.Physics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Navigation;
 using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Assets.Navigation

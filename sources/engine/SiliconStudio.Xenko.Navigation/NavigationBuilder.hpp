@@ -2,8 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 #pragma once
-#include "../../../../deps/Recast/include/Recast.h"
-#include "../../../../deps/NativePath/TINYSTL/vector.h"
+#include "../../../deps/Recast/include/Recast.h"
+#include "../../../deps/NativePath/TINYSTL/vector.h"
 
 class NavigationBuilder
 {

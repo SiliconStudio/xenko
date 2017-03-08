@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#include "../XenkoNative.h"
-#include "../../../../deps/NativePath/NativePath.h"
+#include "XenkoNative.h"
+#include "../../../deps/NativePath/NativePath.h"
 #include "Navigation.hpp"
 #include "NavigationBuilder.hpp"
 #include "NavigationMesh.hpp"
