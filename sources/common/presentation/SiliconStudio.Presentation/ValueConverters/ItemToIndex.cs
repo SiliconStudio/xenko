@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Globalization;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Reflection;
+using SiliconStudio.Presentation.Core;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
