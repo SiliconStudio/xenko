@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestMultipleRenderTargets(bool rotateModel)
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5;
             this.rotateModel = rotateModel;
         }
 
