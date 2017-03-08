@@ -93,11 +93,11 @@
     <Reference Include="System.Drawing" />
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+      <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct2D1">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct2D1.dll</HintPath>
+      <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct2D1.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\..\build\packages\System.IO.Compression.4.1.0\lib\net46\System.IO.Compression.dll</HintPath>

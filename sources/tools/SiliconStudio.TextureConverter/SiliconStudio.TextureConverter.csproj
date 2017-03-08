@@ -9,16 +9,13 @@
     <RootNamespace>SiliconStudio.TextureConverter</RootNamespace>
     <AssemblyName>SiliconStudio.TextureConverter</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>
     </StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.core.interfaces">
-      <HintPath>$(SiliconStudioDependenciesDir)NUnit\addins\nunit.core.interfaces.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>
     </Reference>

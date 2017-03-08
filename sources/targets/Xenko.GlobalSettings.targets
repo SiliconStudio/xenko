@@ -1,61 +1,52 @@
-<!-- Global settings used to configure the XenkoGraphicsApi -->
+﻿<!-- Global settings used to configure the XenkoGraphicsApi -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- Default values -->
   <PropertyGroup>
-    <XenkoGraphicsApi Condition=" '$(XenkoGraphicsApi)' == ''">Direct3D11</XenkoGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi Condition=" '$(SiliconStudioXenkoGraphicsApi)' == ''">Direct3D11</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioAssemblyProcessorOptions)' == ''">$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
-  </PropertyGroup>
-
-  <!-- 
-    Global Settings per project
-  -->
-  <PropertyGroup Condition="'$(SiliconStudioBuildDirectory)' == ''">
-    <!-- Define the location where to build assemblies. -->
-    <SiliconStudioBuildDirectory>$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioBuildDirectory>
-    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioUIDir)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioUIDir)</SiliconStudioBuildDirectory>
   </PropertyGroup>
 
   <PropertyGroup>
     <XenkoDependenciesDir Condition="'$(XenkoDependenciesDir)' != '' and !HasTrailingSlash('$(XenkoDependenciesDir)')">$(XenkoDependenciesDir)\</XenkoDependenciesDir>
-    <XenkoDependenciesDir Condition="'$(XenkoDependenciesDir)' == ''">$(MSBuildThisFileDirectory)..\..\deps\</XenkoDependenciesDir>
+    <XenkoDependenciesDir Condition="'$(XenkoDependenciesDir)' == ''">$(SiliconStudioPackageXenko)\deps\</XenkoDependenciesDir>
   </PropertyGroup>
 
   <!--Import global SiliconStudio settings-->
   <Import Project="$(MSBuildThisFileDirectory)..\common\targets\SiliconStudio.GlobalSettings.targets"/>
   
   <!-- 
-    Settings XenkoGraphicsApi specific
+    Settings SiliconStudioXenkoGraphicsApi specific
   -->
-  <PropertyGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
-    <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D;SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11</XenkoGraphicsApiDefines>
+  <PropertyGroup Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' ">
+    <SiliconStudioXenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D;SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11</SiliconStudioXenkoGraphicsApiDefines>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D12' ">
-    <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D;SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12</XenkoGraphicsApiDefines>
+  <PropertyGroup Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
+    <SiliconStudioXenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D;SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12</SiliconStudioXenkoGraphicsApiDefines>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(XenkoGraphicsApi)' == 'Null' ">
-    <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_NULL</XenkoGraphicsApiDefines>
+  <PropertyGroup Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Null' ">
+    <SiliconStudioXenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_NULL</SiliconStudioXenkoGraphicsApiDefines>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(XenkoGraphicsApi)' == 'OpenGL' ">
-    <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL;SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE</XenkoGraphicsApiDefines>
+  <PropertyGroup Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'OpenGL' ">
+    <SiliconStudioXenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL;SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE</SiliconStudioXenkoGraphicsApiDefines>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(XenkoGraphicsApi)' == 'OpenGLES' ">
-    <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL;SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES</XenkoGraphicsApiDefines>
+  <PropertyGroup Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'OpenGLES' ">
+    <SiliconStudioXenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL;SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES</SiliconStudioXenkoGraphicsApiDefines>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(XenkoGraphicsApi)' == 'Vulkan' ">
-    <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN</XenkoGraphicsApiDefines>
+  <PropertyGroup Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan' ">
+    <SiliconStudioXenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN</SiliconStudioXenkoGraphicsApiDefines>
   </PropertyGroup>
   
   <!-- 
     Settings SiliconStudioPlatform specific
   -->
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
-    <XenkoGraphicsApiDefines>FRAMEWORK_SHADER_USE_SHARPDX;$(XenkoGraphicsApiDefines)</XenkoGraphicsApiDefines>
+    <SiliconStudioXenkoGraphicsApiDefines>FRAMEWORK_SHADER_USE_SHARPDX;$(SiliconStudioXenkoGraphicsApiDefines)</SiliconStudioXenkoGraphicsApiDefines>
     <FrameworkShaderUseSharpDX>true</FrameworkShaderUseSharpDX>
   </PropertyGroup>
 
@@ -83,12 +74,8 @@
   <!-- 
     Global Defines
   -->
-  <PropertyGroup Condition=" '$(Yebis)' == 'true' ">
-    <XenkoGraphicsApiDefines>$(XenkoGraphicsApiDefines);XENKO_YEBIS</XenkoGraphicsApiDefines>
-  </PropertyGroup>
-
   <PropertyGroup>
-    <XenkoGraphicsApiDefines>$(XenkoGraphicsApiDefines);SILICONSTUDIO_XENKO_EFFECT_COMPILER</XenkoGraphicsApiDefines>
+    <SiliconStudioXenkoGraphicsApiDefines>$(SiliconStudioXenkoGraphicsApiDefines);SILICONSTUDIO_XENKO_EFFECT_COMPILER</SiliconStudioXenkoGraphicsApiDefines>
     <XenkoEffectCompiler>true</XenkoEffectCompiler>
   </PropertyGroup>
 
@@ -98,18 +85,14 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefineConstants>$(DefineConstants);$(XenkoGraphicsApiDefines)</DefineConstants>
-    <SiliconStudioOutputCommonDir>$(SolutionDir)Bin\$(SiliconStudioBuildDirectory)\</SiliconStudioOutputCommonDir>
+    <DefineConstants>$(DefineConstants);$(SiliconStudioXenkoGraphicsApiDefines)</DefineConstants>
   </PropertyGroup>
   
   <!--Building Xenko SDK itself?-->
   <PropertyGroup Condition=" '$(XenkoUserBuild)' != 'true' ">
     <!--Output All files in solution\Bin directory-->
-    <OutputPath>$(SiliconStudioOutputCommonDir)</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Yebis Condition=" '$(Yebis)' == '' And '$(SiliconStudioPlatform)' == 'Windows' ">true</Yebis>
-    <Yebis Condition=" '$(Yebis)' == '' ">false</Yebis>
   </PropertyGroup>
 </Project>

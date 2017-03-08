@@ -10,7 +10,7 @@
     <RootNamespace>SiliconStudio.Xenko.Assimp</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.Assimp</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
     <SiliconStudioAssemblyProcessorOptions/>
   </PropertyGroup>
   <ItemGroup>

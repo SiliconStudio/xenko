@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <!--Import Local Pre Settings for the solution being loaded -->
+  <Import Project="..\..\targets\Xenko.PreSettings.UnitTests.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -16,6 +18,8 @@
     <SiliconStudioBuildProfile>iOS</SiliconStudioBuildProfile>
     <SiliconStudioPackageGuid>{6d251236-da95-409a-8f4b-7d42ae1fd32c}</SiliconStudioPackageGuid>
     <SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)..\..\..</SiliconStudioXenkoDir>
+    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == ''">OpenGLES</SiliconStudioXenkoGraphicsApi>
+    <SiliconStudioXenkoOutputFolder>Tests\$(SiliconStudioXenkoGraphicsApi)\$(AssemblyName)</SiliconStudioXenkoOutputFolder>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -23,15 +27,14 @@
   </PropertyGroup>
   <PropertyGroup>
     <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Particles.Tests.xkpkg</SiliconStudioCurrentPackagePath>
+    <OutputPath>..\..\..\Bin\$(SiliconStudioPlatformFullName)\$(SiliconStudioXenkoOutputFolder)</OutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(SiliconStudioPlatformFullName)-$(SiliconStudioXenkoGraphicsApi)\$(Configuration)</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
-    <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
-    <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
-    <IntermediateOutputPath>obj\iOS\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -44,9 +47,6 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
-    <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
-    <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
-    <IntermediateOutputPath>obj\iOS\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -57,9 +57,6 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
-    <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
-    <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
-    <IntermediateOutputPath>obj\iOS\Testing\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -72,9 +69,6 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
-    <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
-    <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
-    <IntermediateOutputPath>obj\iOS\AppStore\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -86,9 +80,6 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
-    <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
-    <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
-    <IntermediateOutputPath>obj\iOS\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <MtouchLink>None</MtouchLink>
@@ -97,9 +88,6 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
-    <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
-    <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
-    <IntermediateOutputPath>obj\iOS\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <MtouchLink>None</MtouchLink>
@@ -180,6 +168,10 @@
       <Project>{84deb606-77ed-49cd-9aed-d2b13c1f5a1e}</Project>
       <Name>SiliconStudio.Xenko.Input</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
+      <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
+      <Name>SiliconStudio.Xenko.Native</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Particles\SiliconStudio.Xenko.Particles.csproj">
       <Project>{f32fda80-b6dd-47a8-8681-437e2c0d3f31}</Project>
       <Name>SiliconStudio.Xenko.Particles</Name>
@@ -199,7 +191,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Compile Include="GameTest.cs" />
-    <Compile Include="Module.cs" />
     <Compile Include="ParticleForcesTest.cs" />
     <Compile Include="ParticlePoolTest.cs" />
     <Compile Include="ParticleSorterLiving.cs" />
@@ -213,6 +204,28 @@
     <Compile Include="VisualTestSpawners.cs" />
     <Compile Include="VisualTestsRibbons.cs" />
     <Compile Include="VisualTestUpdaters.cs" />
+    <None Include="GameAssets\Alphabet.xktex" />
+    <None Include="GameAssets\Assets.xkprj" />
+    <None Include="GameAssets\GameSettings.xkgamesettings" />
+    <None Include="GameAssets\Gradient.xktex" />
+    <None Include="GameAssets\GradientHorizontal.xktex" />
+    <None Include="GameAssets\GradientVertical.xktex" />
+    <None Include="GameAssets\GraphicsCompositor.xkgfxcomp" />
+    <None Include="GameAssets\MainScene.xkscene" />
+    <None Include="GameAssets\Material.xkmat" />
+    <None Include="GameAssets\ProceduralModelGround.xkpromodel" />
+    <None Include="GameAssets\Scene01.xkscene" />
+    <None Include="GameAssets\Teapot.xkpromodel" />
+    <None Include="GameAssets\uvGradient.xktex" />
+    <None Include="GameAssets\VisualTestChildren.xkscene" />
+    <None Include="GameAssets\VisualTestCurves.xkscene" />
+    <None Include="GameAssets\VisualTestGeneral.xkscene" />
+    <None Include="GameAssets\VisualTestInitializers.xkscene" />
+    <None Include="GameAssets\VisualTestMaterials.xkscene" />
+    <None Include="GameAssets\VisualTestRibbons.xkscene" />
+    <None Include="GameAssets\VisualTestSoftEdge.xkscene" />
+    <None Include="GameAssets\VisualTestSpawners.xkscene" />
+    <None Include="GameAssets\VisualTestUpdaters.xkscene" />
     <None Include="SiliconStudio.Xenko.Particles.Tests.xkpkg" />
   </ItemGroup>
   <ItemGroup>

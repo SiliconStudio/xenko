@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+    <SiliconStudioXenkoGraphicsApiDependent>true</SiliconStudioXenkoGraphicsApiDependent>
   </PropertyGroup>
   <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
@@ -14,7 +15,7 @@
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <DefineConstants>$(DefineConstants);SILICONSTUDIO_XENKO_GRAPHICS_NO_DESCRIPTOR_COPIES</DefineConstants>
   </PropertyGroup>
   <Choose>
@@ -27,43 +28,43 @@
   </Choose>
   <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets" />
   <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' Or '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
         </Reference>
         <Reference Include="SharpDX.D3DCompiler">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
         </Reference>
         <Reference Include="SharpDX.DXGI">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' ">
       <ItemGroup>
         <Reference Include="SharpDX.Direct3D11">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D12' ">
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
       <ItemGroup>
         <Reference Include="SharpDX.Direct3D12">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Vulkan' ">
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan' ">
       <Choose>
         <When Condition=" '$(SiliconStudioPlatform)' == 'Windows'">
           <ItemGroup>
@@ -87,18 +88,18 @@
   <Choose>
     <When Condition="$(SiliconStudioUI.Contains('SDL'))">
       <ItemGroup>
-        <Content Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\*SDL2*">
-          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+        <SiliconStudioContent Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\*SDL2*">
+          <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
+        </SiliconStudioContent>
       </ItemGroup>
     </When>
   </Choose>
   <ItemGroup>
-    <None Include="$(XenkoDependenciesDir)\freetype\$(SiliconStudioPlatform)\**\*.*">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    <SiliconStudioContent Include="$(XenkoDependenciesDir)\freetype\$(SiliconStudioPlatform)\**\*.*">
+      <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </SiliconStudioContent>
   </ItemGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
     <Reference Include="SharpFont">

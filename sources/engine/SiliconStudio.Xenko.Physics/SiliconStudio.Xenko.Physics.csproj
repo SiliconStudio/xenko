@@ -14,7 +14,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <XenkoBulletPlatform>Windows</XenkoBulletPlatform>
     <XenkoBulletPlatform Condition="'$(SiliconStudioPlatform)' == 'iOS'">iOS</XenkoBulletPlatform>
     <XenkoBulletSignedDir Condition="'$(SiliconStudioSign)' == 'true'">Signed\</XenkoBulletSignedDir>

@@ -24,40 +24,29 @@
     <AppxPackageName>$(AssemblyName)</AppxPackageName>
   </PropertyGroup>
   
-  <!-- Embed native libraries -->
-  <ItemGroup>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\freetype.dll" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libcore*.dll"/>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libbulletc.dll"/>
-
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libxenko*.dll"/>
-    
-    <!-- Users custom native libraries -->
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\$(SiliconStudioCPU)\*.dll" />
-  </ItemGroup>
-
-  <!-- On Windows platform automatically add the following references -->
-  <Choose>
-    <When Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
-      <ItemGroup>
-        <Content Include="@(SiliconStudioEmbeddedNativeLibrary)">
-          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-          <Visible>False</Visible>
-        </Content>
-      </ItemGroup>
-	  </When>
-  </Choose>
+  <Target Name="_SiliconStudioEmbedNativeLibraries" Condition=" '$(SiliconStudioIsExecutable)' == 'true'" AfterTargets="ResolveReferences">
+    <!-- Expand native libraries into Content items for the current CPU architecture -->
+    <ItemGroup>
+      <Content Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)$(SiliconStudioCPU)\%(Filename).dll')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)$(SiliconStudioCPU)\%(SiliconStudioEmbeddedNativeLibrary.Filename).dll')">
+        <Link>%(Filename).dll</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)$(SiliconStudioXenkoGraphicsApi)\$(SiliconStudioCPU)\%(Filename).dll')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)$(SiliconStudioXenkoGraphicsApi)\$(SiliconStudioCPU)\%(SiliconStudioEmbeddedNativeLibrary.Filename).dll')">
+        <Link>%(Filename).dll</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+  </Target>
 
   <PropertyGroup>
     <PrepareResourcesDependsOn>
-      DeployAssetsWinRT;
+      DeployAssetsUWP;
       $(PrepareResourcesDependsOn)
     </PrepareResourcesDependsOn>
   </PropertyGroup>
 
   <!-- UWP: Transform Assets into Content -->
-  <Target Name="DeployAssetsWinRT" DependsOnTargets="SiliconStudioCompileAsset" Condition="'$(SiliconStudioIsExecutable)' == 'true'">
+  <Target Name="DeployAssetsUWP" DependsOnTargets="SiliconStudioCompileAsset" Condition="'$(SiliconStudioIsExecutable)' == 'true'">
     <ItemGroup>
       <!-- Define the Assets to deploy -->
       <AssetsToDeploy Include="$(SiliconStudioCompileAssetOutputPath)\**\*.*"/>

@@ -9,7 +9,6 @@
     <RootNamespace>SiliconStudio.ExecServer</RootNamespace>
     <AssemblyName>SiliconStudio.ExecServer</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>

@@ -1,94 +1,59 @@
-<!-- Build file post-included by all Xenko projects -->
+﻿<!-- Build file post-included by all Xenko projects -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
     <SiliconStudioNETFrameworkVersion>v4.5</SiliconStudioNETFrameworkVersion>
   </PropertyGroup>
   
-  <!-- Embed native libraries -->
-  <ItemGroup>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\freetype.dll">
-	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\freetype.dll">
-	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\libcore*.dll">
-	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\libcore*.dll">
-	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\libbulletc.dll">
-	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\libbulletc.dll">
-	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\d3dcompiler_47.dll">
-	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\d3dcompiler_47.dll">
-	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\glsl_optimizer.dll">
-	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\glsl_optimizer.dll">
-	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\openvr_api.dll">
-	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\openvr_api.dll">
-	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\libxenko*.dll">
-	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\libxenko*.dll">
-	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    
-    <!-- Users custom native libraries -->
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\**\*.dll">
-      <SiliconStudioNativeCPU>%(SiliconStudioEmbeddedNativeLibrary.RecursiveDir)</SiliconStudioNativeCPU>
-    </SiliconStudioEmbeddedNativeLibrary>
-  </ItemGroup>
-
   <!-- On Windows platform automatically add the following references -->
   <Choose>
-    <When Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
+    <When Condition=" '$(SiliconStudioIsExecutable)' == 'true' And '$(SiliconStudioUnitTest)' != 'true' ">
       <ItemGroup>
         <Reference Include="SiliconStudio.Xenko.Shaders.Compiler">
-          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Shaders.Compiler.dll</HintPath>
-          <Private Condition="'$(SiliconStudioUnitTest)' == 'true'">False</Private>
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioXenkoGraphicsApi)\SiliconStudio.Xenko.Shaders.Compiler.dll</HintPath>
         </Reference>
-
-        <Content Condition="'$(SiliconStudioUnitTest)' != 'true'" Include="@(SiliconStudioEmbeddedNativeLibrary)">
-          <Link>%(SiliconStudioNativeCPU)\%(Filename)%(Extension)</Link>
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-          <Visible>False</Visible>
-        </Content>
       </ItemGroup>
-	  </When>
+    </When>
   </Choose>
-  
-  <!-- On Vulkan embed the SPIR-V shader compiler -->
-  <Target Name="EmbedShaderCompiler" BeforeTargets="SiliconStudioUpdateGraphicsPlatform" Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan'">
-    <Copy SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator.exe" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
-  </Target>
 
-  <!-- Add SDL2 if we are not using DX -->
-  <Target Name="EmbedSDL2" BeforeTargets="SiliconStudioCompileAsset" Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan' or '$(SiliconStudioXenkoGraphicsApi)' == 'OpenGL'">
-    <Copy SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\x86\SDL2.dll" DestinationFolder="$(OutputPath)\x86" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\x64\SDL2.dll" DestinationFolder="$(OutputPath)\x64" SkipUnchangedFiles="true" />
+  <!-- Extra native libraries -->
+  <ItemGroup>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\d3dcompiler_47"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\glsl_optimizer"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libxenkovr"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\openvr_api"/>
+  </ItemGroup>
+
+  <Target Name="_SiliconStudioEmbedNativeLibraries" Condition=" '$(SiliconStudioIsExecutable)' == 'true'" AfterTargets="ResolveReferences">
+    <!-- Extra native libraries -->
+    <ItemGroup Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan' or '$(SiliconStudioXenkoGraphicsApi)' == 'OpenGL'">
+      <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\SDL2"/>
+    </ItemGroup>
+
+    <!-- On Vulkan embed the SPIR-V shader compiler -->
+    <ItemGroup Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan'">
+      <Content Include="$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator.exe"/>
+    </ItemGroup>
+
+    <!-- Expand native libraries into Content items for the different supported CPU architectures -->
+    <ItemGroup>
+      <Content Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)x86\%(Filename).dll')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)x86\%(SiliconStudioEmbeddedNativeLibrary.Filename).dll')">
+        <Link>x86\%(Filename).dll</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)$(SiliconStudioXenkoGraphicsApi)\x86\%(Filename).dll')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)$(SiliconStudioXenkoGraphicsApi)\x86\%(SiliconStudioEmbeddedNativeLibrary.Filename).dll')">
+        <Link>x86\%(Filename).dll</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)x64\%(Filename).dll')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)x64\%(SiliconStudioEmbeddedNativeLibrary.Filename).dll')">
+        <Link>x64\%(Filename).dll</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)$(SiliconStudioXenkoGraphicsApi)\x64\%(Filename).dll')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)$(SiliconStudioXenkoGraphicsApi)\x64\%(SiliconStudioEmbeddedNativeLibrary.Filename).dll')">
+        <Link>x64\%(Filename).dll</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
   </Target>
   
 </Project>

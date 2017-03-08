@@ -39,7 +39,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Interactivity">
       <HintPath>$(SiliconStudioDependenciesDir)ExpressionBlendSDK\System.Windows.Interactivity.dll</HintPath>
-	</Reference
+	</Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />

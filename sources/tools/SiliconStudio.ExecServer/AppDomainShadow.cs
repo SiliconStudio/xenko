@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -385,8 +385,15 @@ namespace SiliconStudio.ExecServer
                 ApplicationBase = applicationPath,
             };
 
+            // Note: some restrictions/issues with LoaderOptimization.MultiDomain and PrivateBinPath:
+            // - Combined with shadow copying, it is quite slow (from almsot 0 to 0.8sec startup time!)
+            // - ApplicationBase must contain all assemblies that are optimized/cached (this forces us to have a different ApplicationBase, so we should never rely on it in tools)
+            // - Sometimes AssemblyResolve seems to not be fired (filed http://stackoverflow.com/questions/42581860/loaderoptimization-multidomain-causes-assemblyresolve-to-not-fire)
+            // As a result, we don't use BinProbePath and rely on ToolAssemblyResolveModuleInitializer to copy our assemblies at the top level.
+
             if (shadowCache)
             {
+                appDomainSetup.LoaderOptimization = LoaderOptimization.MultiDomain;
                 appDomainSetup.ShadowCopyFiles = "true";
                 appDomainSetup.CachePath = Path.Combine(applicationPath, CacheFolder);
             }
@@ -488,7 +495,8 @@ namespace SiliconStudio.ExecServer
 
                 currentDomain.SetData(AppDomainLogToActionKey, new Action<string, ConsoleColor>((text, color) => Logger.OnLog(text, color)));
                 var assembly = (Assembly)currentDomain.GetData(AppDomainExecServerEntryAssemblyKey);
-                AppDomain.CurrentDomain.SetData("Result", Convert.ToInt32(assembly.EntryPoint.Invoke(null, new object[] { Arguments })));
+                AppDomain.CurrentDomain.SetData("Result", currentDomain.ExecuteAssemblyByName(assembly.FullName, Arguments));
+                //AppDomain.CurrentDomain.SetData("Result", Convert.ToInt32(assembly.EntryPoint.Invoke(null, new object[] { Arguments })));
 
                 // Force a GC after the process is finished
                 GC.Collect(2, GCCollectionMode.Forced);

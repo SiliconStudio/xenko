@@ -15,7 +15,7 @@
     <AssemblyName>SiliconStudio.CoreCLRBuilder</AssemblyName>
     <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <Prefer32Bit>true</Prefer32Bit>

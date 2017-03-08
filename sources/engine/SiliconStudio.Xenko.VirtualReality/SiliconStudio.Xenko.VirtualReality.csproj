@@ -2,9 +2,10 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+    <SiliconStudioXenkoGraphicsApiDependent>true</SiliconStudioXenkoGraphicsApiDependent>
     <XenkoNativeOutputName>libxenkovr</XenkoNativeOutputName>
   </PropertyGroup>
-  <Import Project="..\..\native\Xenko.Native.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -15,7 +16,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <Choose>
@@ -52,47 +53,47 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' Or '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
           <Private>False</Private>
         </Reference>
         <Reference Include="SharpDX.D3DCompiler">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
           <Private>False</Private>
         </Reference>
         <Reference Include="SharpDX.DXGI">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
           <Private>False</Private>
         </Reference>
       </ItemGroup>
       <ItemGroup>
-        <None Include="..\..\..\deps\OpenVR\$(SiliconStudioPlatform)\**\openvr_api.*">
-          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+        <SiliconStudioContent Include="..\..\..\deps\OpenVR\$(SiliconStudioPlatform)\**\openvr_api.*">
+          <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
+        </SiliconStudioContent>
       </ItemGroup>
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' ">
       <ItemGroup>
         <Reference Include="SharpDX.Direct3D11">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
           <Private>False</Private>
         </Reference>
       </ItemGroup>
     </When>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D12' ">
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
       <ItemGroup>
         <Reference Include="SharpDX.Direct3D12">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
@@ -165,6 +166,7 @@
     <None Include="Fove\Fove.cpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <Import Project="..\..\native\Xenko.Native.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -3,31 +3,6 @@
     <SiliconStudioNETFrameworkVersion>v1.0</SiliconStudioNETFrameworkVersion>
   </PropertyGroup>
 
-  <!-- Embed native libraries -->
-  <ItemGroup>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libfreetype.a" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libcore*.a" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libbulletc.a" />
-
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libxenko*.a" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libNativePath.a" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libCelt.a" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libRecast.a" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libDetour.a" />
-    <!-- Let users add this if they want for now.
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libgvr.a" />
-    -->
-    <!-- Users custom native libraries -->
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\*.a" />
-  </ItemGroup>
-
-  <!-- strip any "lib" prefix and populate the LibraryName value -->
-  <ItemGroup>
-    <_SiliconStudioEmbeddedNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary)">
-      <LibraryName>$([System.Text.RegularExpressions.Regex]::Match('%(Filename)', `(lib)*(.+)`).get_Groups().get_Item(2).ToString())</LibraryName>
-    </_SiliconStudioEmbeddedNativeLibrary>
-  </ItemGroup>
-
   <!-- 
   *****************************************************************************************************************************
   Handle SiliconStudioEmbedNativeLibrary files
@@ -63,11 +38,28 @@
     </_CollectBundleResourcesDependsOn>
   </PropertyGroup>
 
-  <!-- Override PostSettings target CopySiliconStudioNativeLibraries. 
+  <!-- Extra native libraries -->
+  <ItemGroup>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libNativePath" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libCelt" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libRecast" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libDetour" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libxenkovr"/>
+  </ItemGroup>
+
+    <!-- Override PostSettings target CopySiliconStudioNativeLibraries. 
        Copy the libcore.a library to the project root directory for future native link. -->
-  <Target Name="CopyXenkoNativeiOsLibrary" Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
-    <!-- Xamarin iOS 7.3- (deprecated) -->
-    <Copy Condition="$(XamarinIOSMajorVersion) &lt;= 7" SourceFiles="@(ResolvedSiliconStudioEmbeddedNativeLibrary)" DestinationFiles="@(_SiliconStudioEmbeddedNativeLibrary->'$(ProjectDir)%(Filename)%(Extension)')"/>
+  <Target Name="CopyXenkoNativeiOsLibrary" Condition=" '$(SiliconStudioIsExecutable)' == 'true'" DependsOnTargets="SiliconStudioUpdateGraphicsPlatform">
+    <!-- strip any "lib" prefix and populate the LibraryName value -->
+    <ItemGroup>
+      <_SiliconStudioEmbeddedNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary->'%(Identity).a')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.Identity).a')">
+        <LibraryName>$([System.Text.RegularExpressions.Regex]::Match('%(Filename)', `(lib)*(.+)`).get_Groups().get_Item(2).ToString())</LibraryName>
+      </_SiliconStudioEmbeddedNativeLibrary>
+      <_SiliconStudioEmbeddedNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)$(SiliconStudioXenkoGraphicsApi)\%(Filename).a')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)$(SiliconStudioXenkoGraphicsApi)\%(SiliconStudioEmbeddedNativeLibrary.Filename).a')">
+        <LibraryName>$([System.Text.RegularExpressions.Regex]::Match('%(Filename)', `(lib)*(.+)`).get_Groups().get_Item(2).ToString())</LibraryName>
+      </_SiliconStudioEmbeddedNativeLibrary>
+    </ItemGroup>
+
     <!-- Xamarin iOS 8.2+
          HACK: Use LogicalName so that it is not actually inside the app bundle
     -->
@@ -92,7 +84,7 @@
         <LogicalName>..\lib%(_SiliconStudioEmbeddedNativeLibrary.LibraryName)%(_SiliconStudioEmbeddedNativeLibrary.Extension)</LogicalName>
       </None>
     </ItemGroup>
-    <Copy SessionId="$(BuildSessionId)" Condition="($(XamarinIOSMajorVersion) == 8 And $(XamarinIOSMinorVersion) >= 10) Or $(XamarinIOSMajorVersion) >= 9" SourceFiles="@(_SiliconStudioEmbeddedNativeLibrary)" DestinationFiles="@(SiliconStudioEmbeddedNativeLibrary->'$(ProjectDir)%(Filename)%(Extension)')"/>
+    <Copy SessionId="$(BuildSessionId)" Condition="($(XamarinIOSMajorVersion) == 8 And $(XamarinIOSMinorVersion) >= 10) Or $(XamarinIOSMajorVersion) >= 9" SourceFiles="@(_SiliconStudioEmbeddedNativeLibrary)" DestinationFiles="@(_SiliconStudioEmbeddedNativeLibrary->'$(ProjectDir)%(Filename)%(Extension)')"/>
   </Target>
 
   <!-- Deploy assets and native libraries (Xamarin iOS 8.2+ version) -->

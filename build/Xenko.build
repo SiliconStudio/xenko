@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
 Build file used to build Xenko and package it from the command line.
 Example of use: 
@@ -7,7 +7,7 @@ Example of use:
 <Project ToolsVersion="14.0" DefaultTarget="Help" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <XenkoRoot>$(MSBuildThisFileDirectory)..\</XenkoRoot>
-    <XenkoRootBin>$(XenkoRoot)Bin\Windows-Direct3D11\</XenkoRootBin>
+    <XenkoRootBin>$(XenkoRoot)Bin\Windows\</XenkoRootBin>
     <XenkoPackage>$(XenkoRoot)Xenko.xkpkg</XenkoPackage>
     <XenkoSolution>$(XenkoRoot)build\Xenko</XenkoSolution>
     <BuildProperties>Configuration=Release;NoWarn=1591;DeployExtension=false</BuildProperties>
@@ -69,7 +69,7 @@ Example of use:
     <Delete Files="@(FilesToDeleteVSIX)"/>
 
     <MSBuild Targets="91-VisualStudio\SiliconStudio_Xenko_VisualStudio_Package" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
-    <Exec Command='"$(NuGetPath)" pack "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package\SiliconStudio.Xenko.VisualStudio.Package.nuspec" -BasePath "$(XenkoRoot)Bin\Windows-Direct3D11"' />
+    <Exec Command='"$(NuGetPath)" pack "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package\SiliconStudio.Xenko.VisualStudio.Package.nuspec" -BasePath "$(XenkoRoot)Bin\VSIX"' />
   </Target>  
   
   <!--
@@ -149,7 +149,7 @@ Example of use:
   </Target>
   <Target Name="BuildForPackageMinimal" DependsOnTargets="PackageEnvironment;BuildWindows;BuildEditorShaders;VSIXPlugin"/>
   <Target Name="BuildForPackage" DependsOnTargets="PackageEnvironment;BuildWindows;BuildWindowsDirect3D12;BuildWindowsOpenGL;BuildWindowsOpenGLES;BuildEditorShaders;BuildAndroid;BuildiOS;BuildUWP;BuildWindowsVulkan;BuildLinux;BuildLinuxVulkan;BuildLinuxCoreCLR;BuildLinuxCoreCLRVulkan;VSIXPlugin"/>
-  <Target Name="GeneratePackage" DependsOnTargets="PackageEnvironment;PrerequisitesInstaller;Package;PackageLauncher;PackageInstaller;WritePackageVersionToFile"/>
+  <Target Name="GeneratePackage" DependsOnTargets="PackageEnvironment;PrerequisitesInstaller;PackageLauncher;Package;PackageInstaller;WritePackageVersionToFile"/>
   
   <Target Name="CopyXenkoKey">
     <Copy Condition="'$(SiliconStudioSign)' == 'true' And Exists('$(LOCALAPPDATA)\SiliconStudio\XenkoBuildKey\xenko.snk')" SourceFiles="$(LOCALAPPDATA)\SiliconStudio\XenkoBuildKey\xenko.snk" DestinationFolder="$(MSBuildThisFileDirectory)"/>
@@ -251,13 +251,56 @@ Example of use:
     <Exec ContinueOnError="true" Command="$(XenkoRoot)deps\GitLink\GitLink.exe $(XenkoRoot) -f build\Xenko.sln -u https://github.com/SiliconStudio/xenko -s releases/$(XenkoPackageVersion)" />
   </Target>
   
-  <Target Name="RunTestsWindows" DependsOnTargets="BuildWindows">
+  <Target Name="RunTestsWindows">
+    <!-- By default, enable all known categories -->
+    <PropertyGroup>
+      <SiliconStudioBuildTestCategories Condition="'$(SiliconStudioBuildTestCategories)' == ''">Simple;Game</SiliconStudioBuildTestCategories>
+    </PropertyGroup>
+    
+    <!-- Simple standalone unit tests -->
+    <ItemGroup Condition="$(SiliconStudioBuildTestCategories.Contains('Simple'))">
+      <UnitTest Include="11-CoreRuntime.Tests\SiliconStudio.Core.Tests"/>
+      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Shaders.Tests.Windows"/>
+      <UnitTest Include="31-CoreDesign.Tests\SiliconStudio.BuildEngine.Tests"/>
+      <UnitTest Include="31-CoreDesign.Tests\SiliconStudio.Core.Design.Tests"/>
+      <UnitTest Include="31-CoreDesign.Tests\SiliconStudio.Core.Yaml.Tests"/>
+      <UnitTest Include="41-Assets.Tests\SiliconStudio.Assets.Quantum.Tests"/>
+      <UnitTest Include="41-Assets.Tests\SiliconStudio.Assets.Tests"/>
+      <UnitTest Include="51-Presentation.Tests\SiliconStudio.Presentation.Quantum.Tests"/>
+      <UnitTest Include="51-Presentation.Tests\SiliconStudio.Presentation.Tests"/>
+      <UnitTest Include="51-Presentation.Tests\SiliconStudio.Quantum.Tests"/>
+      <UnitTest Include="61-Editor.Tests\SiliconStudio.Assets.Editor.Tests"/>
+      <UnitTest Include="61-Editor.Tests\SiliconStudio.Xenko.GameStudio.Tests"/>
+      <UnitTest Include="71-XenkoAssets.Tests\SiliconStudio.Xenko.Assets.Tests2"/>
+    </ItemGroup>
+
+    <!-- Unit tests that need the asset compiler -->
+    <ItemGroup Condition="$(SiliconStudioBuildTestCategories.Contains('Game'))">
+      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Audio.Tests.Windows"/>
+      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Engine.Tests.Windows"/>
+      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.10_0.Windows"/>
+      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.11_0.Windows"/>
+      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.Windows"/>
+      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Input.Tests.Windows"/>
+      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Particles.Tests.Windows"/>
+      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Physics.Tests.Windows"/>
+      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.UI.Tests.Windows"/>
+      <UnitTest Include="71-XenkoAssets.Tests\SiliconStudio.Xenko.Assets.Tests"/>
+    </ItemGroup>
+    
+    <!-- Replace . into _ (needed for .sln targets) -->
     <ItemGroup>
-      <AssembliesToTest Include="$(XenkoRootBin)SiliconStudio.*.Tests.*dll" />
-      <AssembliesToTest Include="$(XenkoRootBin)SiliconStudio.*.Tests.*exe" />
-	</ItemGroup>
+      <UnitTest Include="@(UnitTest)">
+        <TargetName>$([System.String]::Copy('%(Identity)').Replace('.','_'))</TargetName>
+      </UnitTest>
+    </ItemGroup>
+    <MSBuild Targets="@(UnitTest->'%(TargetName)')" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    <ItemGroup>
+      <AssembliesToTest Include="$(XenkoRootBin)Tests\**\SiliconStudio.*.Tests.*dll" />
+      <AssembliesToTest Include="$(XenkoRootBin)Tests\**\SiliconStudio.*.Tests.*exe" />
+    </ItemGroup>
     <Error Text="Could not find [$(NUnitConsolePath)]" Condition="!Exists('$(NUnitConsolePath)')"/>
-    <Exec IgnoreExitCode="True" Command="$(NUnitConsolePath) --process=Separate --x86 @(AssembliesToTest->'%(Filename)%(Extension)', ' ')" WorkingDirectory="$(XenkoRootBin)">
+    <Exec IgnoreExitCode="True" Command="$(NUnitConsolePath) --process=Separate --x86 @(AssembliesToTest->'Tests\%(RecursiveDir)%(Filename)%(Extension)', ' ')" WorkingDirectory="$(XenkoRootBin)">
       <Output TaskParameter="ExitCode" ItemName="exitCode" />
     </Exec>
     <Error Text="Error while running tests" Condition="@(exitCode) &lt; 0" />

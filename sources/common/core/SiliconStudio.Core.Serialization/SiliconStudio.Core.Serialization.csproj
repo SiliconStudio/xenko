@@ -12,7 +12,7 @@
     <RootNamespace>SiliconStudio.Core</RootNamespace>
     <AssemblyName>SiliconStudio.Core.Serialization</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>

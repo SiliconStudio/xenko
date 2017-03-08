@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Private", "00-Ta
 		..\sources\common\targets\SiliconStudio.UWP.CSharp.targets = ..\sources\common\targets\SiliconStudio.UWP.CSharp.targets
 		..\store.config = ..\store.config
 		..\sources\targets\Xenko.GlobalSettings.targets = ..\sources\targets\Xenko.GlobalSettings.targets
+		..\sources\targets\Xenko.InternalReferences.targets = ..\sources\targets\Xenko.InternalReferences.targets
 		..\sources\native\Xenko.Native.targets = ..\sources\native\Xenko.Native.targets
 		..\sources\targets\Xenko.PostSettings.References.targets = ..\sources\targets\Xenko.PostSettings.References.targets
 		..\sources\targets\Xenko.PostSettings.targets = ..\sources\targets\Xenko.PostSettings.targets
@@ -368,6 +369,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Build", "00-Targ
 	ProjectSection(SolutionItems) = preProject
 		SiliconStudio.GlobalSettings.Local.targets = SiliconStudio.GlobalSettings.Local.targets
 		SiliconStudio.PostSettings.Local.targets = SiliconStudio.PostSettings.Local.targets
+		SiliconStudio.PreSettings.Local.targets = SiliconStudio.PreSettings.Local.targets
 		Xenko.Android.PreSettings.Local.targets = Xenko.Android.PreSettings.Local.targets
 		Xenko.build = Xenko.build
 		Xenko.Direct3D.CoreCLR.PreSettings.Local.targets = Xenko.Direct3D.CoreCLR.PreSettings.Local.targets
@@ -407,6 +409,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Reflection", "..\sources\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj", "{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Physics.Tests.Windows", "..\sources\engine\SiliconStudio.Xenko.Physics.Tests\SiliconStudio.Xenko.Physics.Tests.Windows.csproj", "{4F0E7E04-F067-4CE8-B8C8-1105F319D123}"
+	ProjectSection(ProjectDependencies) = postProject
+		{50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698} = {50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Assets.Quantum", "..\sources\assets\SiliconStudio.Assets.Quantum\SiliconStudio.Assets.Quantum.csproj", "{1123EAAD-3FE3-4FD8-8DF6-4DDCF13EFCFB}"
 EndProject

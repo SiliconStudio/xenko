@@ -421,12 +421,12 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 bool shouldKeep = false;
 
                 // Check XenkoSupportedPlatforms
-                var xenkoBuildTagsNode = doc.XPathSelectElement("/x:Project/x:PropertyGroup/x:XenkoBuildTags", mgr);
-                if (xenkoBuildTagsNode != null)
+                var buildTagsNode = doc.XPathSelectElement("/x:Project/x:PropertyGroup/x:SiliconStudioBuildTags", mgr);
+                if (buildTagsNode != null)
                 {
-                    var xenkoBuildTags = xenkoBuildTagsNode.Value;
-                    if (xenkoBuildTags == "*" ||
-                        xenkoBuildTags.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Contains(platform))
+                    var buildTags = buildTagsNode.Value;
+                    if (buildTags == "*" ||
+                        buildTags.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Contains(platform))
                         shouldKeep = true;
                 }
 

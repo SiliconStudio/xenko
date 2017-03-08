@@ -11,7 +11,7 @@
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <RootNamespace>SiliconStudio.Xenko.UI.Tests</RootNamespace>
     <AssemblyName>SiliconStudioXenkoUITests</AssemblyName>
-    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <SiliconStudioPlatform>iOS</SiliconStudioPlatform>
     <SiliconStudioBuildProfile>iOS</SiliconStudioBuildProfile>
     <SiliconStudioPackageGuid>{b18707e8-1d26-49fc-9911-3834506d8149}</SiliconStudioPackageGuid>
@@ -179,6 +179,14 @@
       <Project>{D002FEB1-00A6-4AB1-A83F-1F253465E64D}</Project>
       <Name>SiliconStudio.Xenko.Graphics.Regression</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
+      <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
+      <Name>SiliconStudio.Xenko.Native</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Particles\SiliconStudio.Xenko.Particles.csproj">
+      <Project>{f32fda80-b6dd-47a8-8681-437e2c0d3f31}</Project>
+      <Name>SiliconStudio.Xenko.Particles</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj">
       <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
       <Name>SiliconStudio.Xenko.Physics</Name>
@@ -225,7 +233,6 @@
     <Compile Include="Layering\ToggleButtonTests.cs" />
     <Compile Include="Layering\UIElementLayeringTests.cs" />
     <Compile Include="Layering\UniformGridTests.cs" />
-    <Compile Include="Module.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="RandomExtension.cs" />
     <Compile Include="Regression\BillboardModeTests.cs" />
@@ -265,6 +272,26 @@
     <Compile Include="Regression\TransparencyTest.cs" />
     <Compile Include="Regression\UniformGridTest.cs" />
     <Compile Include="Regression\UITestGameBase.cs" />
+    <None Include="Assets\BorderButton.xktex" />
+    <None Include="Assets\BorderButtonCentered.xktex" />
+    <None Include="Assets\CourierNew12.xkfnt" />
+    <None Include="Assets\cube Model.xkm3d" />
+    <None Include="Assets\DebugSlider.xksheet" />
+    <None Include="Assets\DumbWhite.xktex" />
+    <None Include="Assets\GameSettings.xkgamesettings" />
+    <None Include="Assets\GraphicsCompositor.xkgfxcomp" />
+    <None Include="Assets\HanSans13.xkfnt" />
+    <None Include="Assets\ImageButtonNotPressed.xktex" />
+    <None Include="Assets\ImageButtonPressed.xktex" />
+    <None Include="Assets\lambert1.xkmat" />
+    <None Include="Assets\MainScene.xkscene" />
+    <None Include="Assets\MicrosoftSansSerif15.xkfnt" />
+    <None Include="Assets\RotatedImages.xksheet" />
+    <None Include="Assets\rotatedUV.xktex" />
+    <None Include="Assets\UIImages.xksheet" />
+    <None Include="Assets\Untitled.xktex" />
+    <None Include="Assets\uv.xktex" />
+    <None Include="Assets\XenkoBackground.xktex" />
     <None Include="Regression\ElementTestDesigns.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ElementTestDesigns.cs</LastGenOutput>
