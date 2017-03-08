@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public override void Process(RenderObject renderObject)
         {
-            if (((RenderGroupMask)(1U << (int)renderObject.RenderGroup) & RenderGroup) != 0)
+            if (ShadowMapRenderStage != null && ((RenderGroupMask)(1U << (int)renderObject.RenderGroup) & RenderGroup) != 0)
             {
                 var renderMesh = (RenderMesh)renderObject;
 

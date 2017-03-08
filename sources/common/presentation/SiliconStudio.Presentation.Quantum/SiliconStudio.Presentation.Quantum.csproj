@@ -38,6 +38,7 @@
     <Compile Include="NodeViewModel.cs" />
     <Compile Include="GraphViewModelConsistencyException.cs" />
     <Compile Include="GraphViewModelService.cs" />
+    <Compile Include="NodeViewModel2.cs" />
     <Compile Include="SingleNodeViewModel.cs" />
     <Compile Include="DebugExtensions.cs" />
     <Compile Include="NodeViewModelDynamicMetaObject.cs" />

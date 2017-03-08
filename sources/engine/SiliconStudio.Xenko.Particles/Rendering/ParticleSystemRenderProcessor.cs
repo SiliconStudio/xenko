@@ -29,7 +29,16 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 return;
 
             var emitters = renderParticleSystem.ParticleSystemComponent.ParticleSystem.Emitters;
-            var emitterCount = emitters.Count;
+
+            var emitterCount = 0;
+            if (renderParticleSystem.ParticleSystemComponent.ParticleSystem.Enabled)
+            {
+                foreach (var particleEmitter in emitters)
+                {
+                    if (particleEmitter.Enabled)
+                        emitterCount++;
+                }                
+            }
 
             if (emitterCount == (renderParticleSystem.Emitters?.Length ?? 0))
                 return;
@@ -46,17 +55,26 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             renderParticleSystem.Emitters = null;
 
             // Add new emitters
+            var enabledEmitterIndex = 0;
             var renderEmitters = new RenderParticleEmitter[emitterCount];
             for (int index = 0; index < emitterCount; index++)
             {
+                while (enabledEmitterIndex < emitters.Count && !emitters[enabledEmitterIndex].Enabled)
+                    enabledEmitterIndex++;
+
+                if (enabledEmitterIndex >= emitters.Count)
+                    continue;
+
                 var renderEmitter = new RenderParticleEmitter
                 {
-                    ParticleEmitter = emitters[index],
+                    ParticleEmitter = emitters[enabledEmitterIndex],
                     RenderParticleSystem = renderParticleSystem,
                 };
 
                 renderEmitters[index] = renderEmitter;
                 VisibilityGroup.RenderObjects.Add(renderEmitter);
+
+                enabledEmitterIndex++;
             }
 
             renderParticleSystem.Emitters = renderEmitters;

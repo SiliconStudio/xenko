@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
@@ -13,63 +14,6 @@ using SiliconStudio.Xenko.Rendering.Images;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
-    public class DefaultRenderTargets : IColorTarget, INormalTarget, IVelocityTarget, IMultipleRenderViews
-    {
-        private readonly Texture[] allTargets = new Texture[3];
-
-        public Texture Color { get; set; }
-
-        public Texture Normal { get; set; }
-
-        public Texture Velocity { get; set; }
-
-        public Texture[] AllTargets
-        {
-            get
-            {
-                //color
-                allTargets[0] = Color;
-
-                //normals
-                if (Normal != null)
-                {
-                    allTargets[1] = Normal;
-                }
-
-                //velocity
-                if (Normal == null)
-                {
-                    allTargets[1] = Velocity;
-                }
-                else
-                {
-                    allTargets[2] = Velocity;
-                }
-
-                return allTargets;
-            }
-        }
-
-        public int NumberOfTargets
-        {
-            get
-            {
-                var n = 0;
-                if (Color != null)
-                    n++;
-                if (Normal != null)
-                    n++;
-                if (Velocity != null)
-                    n++;
-                return n;
-            }
-        }
-
-        public int Count { get; set; }
-
-        public int Index { get; set; }
-    }
-
     /// <summary>
     /// Renders your game. It should use current <see cref="RenderContext.RenderView"/> and <see cref="CameraComponentRendererExtensions.GetCurrentCamera"/>.
     /// </summary>
@@ -201,9 +145,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         protected virtual void CollectView(RenderContext context)
         {
-            // Mark this view as requiring shadows
-            shadowMapRenderer?.RenderViewsWithShadows.Add(context.RenderView);
-
             // Fill RenderStage formats and register render stages to main view
             if (OpaqueRenderStage != null)
             {
@@ -223,13 +164,16 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             }
         }
 
-        protected override void CollectCore(RenderContext context)
+        protected override unsafe void CollectCore(RenderContext context)
         {
             var camera = context.GetCurrentCamera();
 
             // Setup pixel formats for RenderStage
             using (context.SaveRenderOutputAndRestore())
             {
+                // Mark this view as requiring shadows
+                shadowMapRenderer?.RenderViewsWithShadows.Add(context.RenderView);
+
                 context.RenderOutput = new RenderOutputDescription(PostEffects != null ? PixelFormat.R16G16B16A16_Float : context.RenderOutput.RenderTargetFormat0, PixelFormat.D24_UNorm_S8_UInt);
 
                 if (VRSettings.Enabled && VRSettings.VRDevice != null)
@@ -244,6 +188,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     else
                     {
                         camera.ViewMatrix.Decompose(out cameraScale, out cameraRot, out cameraPos);
+                        cameraRot.Transpose();
+                        Vector3.Negate(ref cameraPos, out cameraPos);
+                        Vector3.TransformCoordinate(ref cameraPos, ref cameraRot, out cameraPos);
                     }
 
                     if (VRSettings.IgnoreCameraRotation)
@@ -251,7 +198,30 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         cameraRot = Matrix.Identity;
                     }
 
-                    var sceneInstance = context.RenderView.SceneInstance;
+                    // Compute both view and projection matrices
+                    Matrix* viewMatrices = stackalloc Matrix[2];
+                    Matrix* projectionMatrices = stackalloc Matrix[2];
+                    for (var i = 0; i < 2; ++i)
+                        VRSettings.VRDevice.ReadEyeParameters(i == 0 ? Eyes.Left : Eyes.Right, camera.NearClipPlane, camera.FarClipPlane, ref cameraPos, ref cameraRot, out viewMatrices[i], out projectionMatrices[i]);
+
+                    // if the VRDevice disagreed with the near and far plane, we must re-discover them and follow:
+                    var near = projectionMatrices[0].M43 / projectionMatrices[0].M33;
+                    var far = near * (-projectionMatrices[0].M33 / (-projectionMatrices[0].M33 - 1));
+                    if (Math.Abs(near - camera.NearClipPlane) > 1e-8f)
+                        camera.NearClipPlane = near;
+                    if (Math.Abs(near - camera.FarClipPlane) > 1e-8f)
+                        camera.FarClipPlane = far;
+
+                    // Compute a view matrix and projection matrix that cover both eyes for shadow map and culling
+                    ComputeCommonViewMatrices(context, viewMatrices, projectionMatrices);
+                    var commonView = context.RenderView;
+
+                    // Notify lighting system this view only purpose is for shared lighting, it is not being drawn directly.
+                    commonView.Flags |= RenderViewFlags.NotDrawn;
+
+                    // Collect now, and use result for both eyes
+                    CollectView(context);
+                    context.VisibilityGroup.TryCollect(commonView);
 
                     for (var i = 0; i < 2; i++)
                     {
@@ -259,17 +229,22 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         using (context.SaveViewportAndRestore())
                         {
                             context.RenderSystem.Views.Add(context.RenderView);
-                            context.RenderView.SceneInstance = sceneInstance;
+                            context.RenderView.SceneInstance = commonView.SceneInstance;
+                            context.RenderView.LightingView = commonView;
                             context.ViewportState.Viewport0 = new Viewport(0, 0, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2.0f, VRSettings.VRDevice.ActualRenderFrameSize.Height);
 
                             //change camera params for eye
-                            VRSettings.VRDevice.ReadEyeParameters(i == 0 ? Eyes.Left : Eyes.Right, camera.NearClipPlane, camera.FarClipPlane, ref cameraPos, ref cameraRot, out camera.ViewMatrix, out camera.ProjectionMatrix);
+                            camera.ViewMatrix = viewMatrices[i];
+                            camera.ProjectionMatrix = projectionMatrices[i];
                             camera.UseCustomProjectionMatrix = true;
                             camera.UseCustomViewMatrix = true;
                             camera.Update();
 
                             //write params to view
                             SceneCameraRenderer.UpdateCameraToRenderView(context, context.RenderView, camera);
+
+                            // Copy culling results
+                            context.VisibilityGroup.Copy(commonView, context.RenderView);
 
                             CollectView(context);
 
@@ -385,9 +360,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             using (drawContext.PushRenderTargetsAndRestore())
             {
-                // Render Shadow maps
-                shadowMapRenderer?.Draw(drawContext);
-
                 // Draw [main view | main stage]
                 if (OpaqueRenderStage != null)
                 {
@@ -483,13 +455,13 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)))
 
                     : PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D( //msaa but no HDR, use RGB8 temp buffer
-                        TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, PixelFormat.R8G8B8A8_UNorm_SRgb,
+                        TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, currentRenderTarget.ViewFormat,
                             TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)));
                 }
 
                 //Handle Depth
                 ViewDepthStencil = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
-                        TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, PixelFormat.D24_UNorm_S8_UInt,
+                        TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, currentDepthStencil?.ViewFormat ?? PixelFormat.D24_UNorm_S8_UInt,
                             TextureFlags.ShaderResource | TextureFlags.DepthStencil, 1, GraphicsResourceUsage.Default, actualMSAALevel)));
 
             }
@@ -558,6 +530,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             using (drawContext.PushRenderTargetsAndRestore())
             {
+                // Render Shadow maps
+                shadowMapRenderer?.Draw(drawContext);
+
                 if (VRSettings.Enabled && VRSettings.VRDevice != null)
                 {
                     using (drawContext.PushRenderTargetsAndRestore())
@@ -577,7 +552,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         using (drawContext.PushRenderTargetsAndRestore())
                         {
                             drawContext.CommandList.SetViewport(new Viewport(0.0f, 0.0f, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2.0f, VRSettings.VRDevice.ActualRenderFrameSize.Height));
-                            drawContext.CommandList.SetRenderTargets(ViewDepthStencil, ViewTargetsComposition.NumberOfTargets, ViewTargetsComposition.AllTargets);
+                            drawContext.CommandList.SetRenderTargets(ViewDepthStencil, ViewTargetsComposition.RenderTargetCount, ViewTargetsComposition.RenderTargets);
 
                             var views = ViewTargetsComposition as IMultipleRenderViews;
                             if (views != null)
@@ -627,7 +602,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
-                        drawContext.CommandList.SetRenderTargetsAndViewport(ViewDepthStencil, ViewTargetsComposition.NumberOfTargets, ViewTargetsComposition.AllTargets);
+                        drawContext.CommandList.SetRenderTargetsAndViewport(ViewDepthStencil, ViewTargetsComposition.RenderTargetCount, ViewTargetsComposition.RenderTargets);
 
                         // Clear render target and depth stencil
                         Clear?.Draw(drawContext);

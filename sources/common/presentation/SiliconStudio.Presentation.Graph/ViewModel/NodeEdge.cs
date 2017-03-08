@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.ObjectModel;
-using GraphX;
+using GraphX.PCL.Common.Models;
 
 namespace SiliconStudio.Presentation.Graph.ViewModel
 {

@@ -1782,33 +1782,36 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 var width = region.Right - region.Left;
                 var height = region.Bottom - region.Top;
+                var depth = region.Back - region.Front;
+
+                var expectedRowPitch = width * texture.TexturePixelSize;
 
                 // determine the opengl read Unpack Alignment
                 var packAlignment = 0;
                 if ((databox.RowPitch & 1) != 0)
                 {
-                    if (databox.RowPitch == width)
+                    if (databox.RowPitch == expectedRowPitch)
                         packAlignment = 1;
                 }
                 else if ((databox.RowPitch & 2) != 0)
                 {
-                    var diff = databox.RowPitch - width;
+                    var diff = databox.RowPitch - expectedRowPitch;
                     if (diff >= 0 && diff < 2)
                         packAlignment = 2;
                 }
                 else if ((databox.RowPitch & 4) != 0)
                 {
-                    var diff = databox.RowPitch - width;
+                    var diff = databox.RowPitch - expectedRowPitch;
                     if (diff >= 0 && diff < 4)
                         packAlignment = 4;
                 }
                 else if ((databox.RowPitch & 8) != 0)
                 {
-                    var diff = databox.RowPitch - width;
+                    var diff = databox.RowPitch - expectedRowPitch;
                     if (diff >= 0 && diff < 8)
                         packAlignment = 8;
                 }
-                else if (databox.RowPitch == width)
+                else if (databox.RowPitch == expectedRowPitch)
                 {
                     packAlignment = 4;
                 }
@@ -1828,7 +1831,10 @@ namespace SiliconStudio.Xenko.Graphics
 
                 // Update the texture region
                 GL.BindTexture(texture.TextureTarget, texture.TextureId);
-                GL.TexSubImage2D((TextureTarget2d)texture.TextureTarget, subResourceIndex, region.Left, region.Top, width, height, texture.TextureFormat, texture.TextureType, databox.DataPointer);
+                if (texture.Dimension == TextureDimension.Texture3D)
+                    GL.TexSubImage3D((TextureTarget3d)texture.TextureTarget, subResourceIndex, region.Left, region.Top, region.Front, width, height, depth, texture.TextureFormat, texture.TextureType, databox.DataPointer);
+                else
+                    GL.TexSubImage2D((TextureTarget2d)texture.TextureTarget, subResourceIndex, region.Left, region.Top, width, height, texture.TextureFormat, texture.TextureType, databox.DataPointer);
                 boundShaderResourceViews[0] = null; // bound active texture 0 has changed
 
                 // reset the Unpack Alignment

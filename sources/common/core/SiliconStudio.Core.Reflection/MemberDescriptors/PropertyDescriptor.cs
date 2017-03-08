@@ -48,8 +48,10 @@ namespace SiliconStudio.Core.Reflection
 
         public override void Set(object thisObject, object value)
         {
-            if (HasSet)
-                setMethod.Invoke(thisObject, new[] {value});
+            if (!HasSet)
+                throw new InvalidOperationException($"The property [{Name}] of type [{DeclaringType.Name}] has no setter.");
+
+            setMethod.Invoke(thisObject, new[] {value});
         }
 
         public override IEnumerable<T> GetCustomAttributes<T>(bool inherit)

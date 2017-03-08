@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
@@ -21,6 +22,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     {
         /// <inheritdoc/>
         [DataMember(-100), Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; }
 
         public override string Name => GetType().Name;

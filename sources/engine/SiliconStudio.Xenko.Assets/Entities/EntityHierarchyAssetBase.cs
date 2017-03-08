@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
@@ -18,8 +17,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="PrefabAsset"/>)
     /// </summary>
     [DataContract]
-    [AssetPartReference(typeof(Entity), typeof(EntityComponent), ExistsTopLevel = true)]
-    [AssetPartReference(typeof(EntityComponent), ReferenceType = typeof(EntityComponentReference))]
+    //[AssetPartReference(typeof(Entity), typeof(EntityComponent), ExistsTopLevel = true)]
+    //[AssetPartReference(typeof(EntityComponent), ReferenceType = typeof(EntityComponentReference))]
     public abstract partial class EntityHierarchyAssetBase : AssetCompositeHierarchy<EntityDesign, Entity>
     {
         /// <summary>
@@ -36,7 +35,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             writer.WriteLine("*************************************");
             writer.WriteLine($"{GetType().Name}: {name}");
             writer.WriteLine("=====================================");
-            return Hierarchy?.DumpTo(writer) ?? false;
+            return Hierarchy.DumpTo(writer);
         }
 
         /// <inheritdoc/>
@@ -76,37 +75,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             var enumerator = isRecursive ? entity.Transform.Children.DepthFirst(t => t.Children) : entity.Transform.Children;
             return enumerator.Select(t => t.Entity);
-        }
-
-        /// <inheritdoc/>
-        protected override void PostClonePart([NotNull] Entity part)
-        {
-            // disconnect the cloned entity
-            part.Transform.Parent = null;
-        }
-
-        /// <inheritdoc/>
-        protected override object ResolvePartReference(object partReference)
-        {
-            var entityComponentReference = partReference as EntityComponent;
-            if (entityComponentReference != null)
-            {
-                var containingEntity = entityComponentReference.Entity;
-                if (containingEntity == null)
-                {
-                    throw new InvalidOperationException("Found a reference to a component which doesn't have any entity");
-                }
-
-                var realEntity = (Entity)base.ResolvePartReference(containingEntity);
-                if (realEntity == null)
-                    return null;
-
-                var componentId = entityComponentReference.Id;
-                var realComponent = realEntity.Components.FirstOrDefault(c => c.Id == componentId);
-                return realComponent;
-            }
-
-            return base.ResolvePartReference(partReference);
         }
     }
 }

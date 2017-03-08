@@ -8,9 +8,11 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -105,12 +107,12 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="DisplayUpDownButtons"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty DisplayUpDownButtonsProperty = DependencyProperty.Register(nameof(DisplayUpDownButtons), typeof(bool), typeof(NumericTextBox), new PropertyMetadata(true));
+        public static readonly DependencyProperty DisplayUpDownButtonsProperty = DependencyProperty.Register(nameof(DisplayUpDownButtons), typeof(bool), typeof(NumericTextBox), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Identifies the <see cref="AllowMouseDrag"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty AllowMouseDragProperty = DependencyProperty.Register(nameof(AllowMouseDrag), typeof(bool), typeof(NumericTextBox), new PropertyMetadata(true));
+        public static readonly DependencyProperty AllowMouseDragProperty = DependencyProperty.Register(nameof(AllowMouseDrag), typeof(bool), typeof(NumericTextBox), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Identifies the <see cref="MouseValidationTrigger"/> dependency property.
@@ -162,8 +164,8 @@ namespace SiliconStudio.Presentation.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NumericTextBox), new FrameworkPropertyMetadata(typeof(NumericTextBox)));
             HorizontalScrollBarVisibilityProperty.OverrideMetadata(typeof(NumericTextBox), new FrameworkPropertyMetadata(ScrollBarVisibility.Hidden, OnForbiddenPropertyChanged));
             VerticalScrollBarVisibilityProperty.OverrideMetadata(typeof(NumericTextBox), new FrameworkPropertyMetadata(ScrollBarVisibility.Hidden, OnForbiddenPropertyChanged));
-            AcceptsReturnProperty.OverrideMetadata(typeof(NumericTextBox), new FrameworkPropertyMetadata(false, OnForbiddenPropertyChanged));
-            AcceptsTabProperty.OverrideMetadata(typeof(NumericTextBox), new FrameworkPropertyMetadata(false, OnForbiddenPropertyChanged));
+            AcceptsReturnProperty.OverrideMetadata(typeof(NumericTextBox), new FrameworkPropertyMetadata(BooleanBoxes.FalseBox, OnForbiddenPropertyChanged));
+            AcceptsTabProperty.OverrideMetadata(typeof(NumericTextBox), new FrameworkPropertyMetadata(BooleanBoxes.FalseBox, OnForbiddenPropertyChanged));
 
             // Since the NumericTextBox is not focusable itself, we have to bind the commands to the inner text box of the control.
             // The handlers will then find the parent that is a NumericTextBox and process the command on this control if it is found.
@@ -228,12 +230,12 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether to display Up and Down buttons on the side of the <see cref="NumericTextBox"/>.
         /// </summary>
-        public bool DisplayUpDownButtons { get { return (bool)GetValue(DisplayUpDownButtonsProperty); } set { SetValue(DisplayUpDownButtonsProperty, value); } }
+        public bool DisplayUpDownButtons { get { return (bool)GetValue(DisplayUpDownButtonsProperty); } set { SetValue(DisplayUpDownButtonsProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets whether dragging the value of the <see cref="NumericTextBox"/> is enabled.
         /// </summary>
-        public bool AllowMouseDrag { get { return (bool)GetValue(AllowMouseDragProperty); } set { SetValue(AllowMouseDragProperty, value); } }
+        public bool AllowMouseDrag { get { return (bool)GetValue(AllowMouseDragProperty); } set { SetValue(AllowMouseDragProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets when the <see cref="NumericTextBox"/> should be validated when the user uses the mouse to change its value.
@@ -325,6 +327,7 @@ namespace SiliconStudio.Presentation.Controls
         }
 
         /// <inheritdoc/>
+        [NotNull]
         protected override string CoerceTextForValidation(string baseValue)
         {
             baseValue = base.CoerceTextForValidation(baseValue);
@@ -350,6 +353,7 @@ namespace SiliconStudio.Presentation.Controls
             return FormatValue(value);
         }
 
+        [NotNull]
         protected string FormatValue(double value)
         {
             var decimalPlaces = DecimalPlaces;
@@ -471,9 +475,9 @@ namespace SiliconStudio.Presentation.Controls
                 control.UpdateValue(MathUtil.Lerp(control.Minimum, control.Maximum, (double)e.NewValue));
         }
 
-        private static void UpdateValueCommand(object sender, Func<NumericTextBox, double> getValue, bool validate = true)
+        private static void UpdateValueCommand([NotNull] object sender, Func<NumericTextBox, double> getValue, bool validate = true)
         {
-            var control = (sender as NumericTextBox) ?? ((System.Windows.Controls.TextBox)sender).FindVisualParentOfType<NumericTextBox>();
+            var control = sender as NumericTextBox ?? ((System.Windows.Controls.TextBox)sender).FindVisualParentOfType<NumericTextBox>();
             if (control != null)
             {
                 var value = getValue(control);
@@ -484,32 +488,32 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        private static void OnLargeIncreaseCommand(object sender, ExecutedRoutedEventArgs e)
+        private static void OnLargeIncreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
             UpdateValueCommand(sender, x => x.Value + x.LargeChange);
         }
 
-        private static void OnLargeDecreaseCommand(object sender, ExecutedRoutedEventArgs e)
+        private static void OnLargeDecreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
             UpdateValueCommand(sender, x => x.Value - x.LargeChange);
         }
 
-        private static void OnSmallIncreaseCommand(object sender, ExecutedRoutedEventArgs e)
+        private static void OnSmallIncreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
             UpdateValueCommand(sender, x => x.Value + x.SmallChange);
         }
 
-        private static void OnSmallDecreaseCommand(object sender, ExecutedRoutedEventArgs e)
+        private static void OnSmallDecreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
             UpdateValueCommand(sender, x => x.Value - x.SmallChange);
         }
 
-        private static void OnResetValueCommand(object sender, ExecutedRoutedEventArgs e)
+        private static void OnResetValueCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
             UpdateValueCommand(sender, x => 0.0, false);
         }
 
-        private static void OnForbiddenPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnForbiddenPropertyChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var metadata = e.Property.GetMetadata(d);
             if (!Equals(e.NewValue, metadata.DefaultValue))

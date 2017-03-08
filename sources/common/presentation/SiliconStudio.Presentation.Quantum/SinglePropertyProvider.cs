@@ -1,5 +1,4 @@
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -9,9 +8,9 @@ namespace SiliconStudio.Presentation.Quantum
     /// </summary>
     public class SinglePropertyProvider : IPropertiesProviderViewModel
     {
-        private readonly IContentNode rootNode;
+        private readonly IObjectNode rootNode;
 
-        public SinglePropertyProvider(IContentNode rootNode)
+        public SinglePropertyProvider(IObjectNode rootNode)
         {
             this.rootNode = rootNode;
         }
@@ -21,13 +20,14 @@ namespace SiliconStudio.Presentation.Quantum
         public bool CanProvidePropertiesViewModel => true;
 
         /// <inheritdoc/>
-        public IContentNode GetRootNode() => rootNode;
+        public IObjectNode GetRootNode() => rootNode;
 
 
         /// <inheritdoc/>
-        public ExpandReferencePolicy ShouldExpandReference(IMemberNode member, ObjectReference reference) => ExpandReferencePolicy.Full;
+        public ExpandReferencePolicy ShouldConstructChildren(IGraphNode graphNode, Index index) => ExpandReferencePolicy.Full;
 
         /// <inheritdoc/>
-        public bool ShouldConstructMember(IMemberNode content, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
+        public bool ShouldConstructMember(IMemberNode member, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
+        public bool ShouldConstructItem(IObjectNode collection, Index index, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
     }
 }

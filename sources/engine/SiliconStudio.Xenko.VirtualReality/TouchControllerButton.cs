@@ -32,6 +32,11 @@
         /// Oculus: Grip
         /// Vive: Grip
         /// </summary>
-        Grip
+        Grip,
+        /// <summary>
+        /// Oculus: Left controller menu button
+        /// Vive: Both controllers menu button
+        /// </summary>
+        Menu
     }
 }

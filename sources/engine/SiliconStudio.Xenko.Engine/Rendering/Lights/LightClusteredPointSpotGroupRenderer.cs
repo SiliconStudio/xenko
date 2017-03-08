@@ -408,6 +408,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                 for (var viewIndex = 0; viewIndex < renderViewInfos.Length; viewIndex++)
                 {
+                    var renderView = renderViewInfos[viewIndex].RenderView;
+                    if ((renderView.Flags & RenderViewFlags.NotDrawn) != 0)
+                        continue;
+
                     ComputeViewParameter(viewIndex);
 
                     var renderViewInfo = renderViewInfos[viewIndex];
@@ -605,6 +609,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     float lz,          // Light z coordinate (view space)
                     float lightRadius,
                     float cameraScale, // Project scale for coordinate (_11 or _22 for x/y respectively)
+                    float cameraOffset, // Project offset for coordinate (_31 or _32 for x/y respectively)
                     ref float clipMin,
                     ref float clipMax)
             {
@@ -614,7 +619,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                 if (pz > 0.0f)
                 {
-                    float c = -nz * cameraScale / nc;
+                    float c = -nz * cameraScale / nc - cameraOffset;
+
                     if (nc > 0.0f)
                     {        // Left side boundary
                         clipMin = Math.Max(clipMin, c);
@@ -630,6 +636,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         float lz,          // Light z coordinate (view space)
                         float lightRadius,
                         float cameraScale, // Project scale for coordinate (_11 or _22 for x/y respectively)
+                        float cameraOffset, // Project offset for coordinate (_31 or _32 for x/y respectively)
                         ref float clipMin,
                         ref float clipMax)
             {
@@ -644,8 +651,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     float nx0 = (a + b) / lcSqPluslzSq;
                     float nx1 = (a - b) / lcSqPluslzSq;
 
-                    UpdateClipRegionRoot(nx0, lc, lz, lightRadius, cameraScale, ref clipMin, ref clipMax);
-                    UpdateClipRegionRoot(nx1, lc, lz, lightRadius, cameraScale, ref clipMin, ref clipMax);
+                    UpdateClipRegionRoot(nx0, lc, lz, lightRadius, cameraScale, cameraOffset, ref clipMin, ref clipMax);
+                    UpdateClipRegionRoot(nx1, lc, lz, lightRadius, cameraScale, cameraOffset, ref clipMin, ref clipMax);
                 }
             }
 
@@ -654,8 +661,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 clipMin = new Vector2(-1.0f, -1.0f);
                 clipMax = new Vector2(1.0f, 1.0f);
 
-                UpdateClipRegion(lightPosView.X, -lightPosView.Z, lightRadius, projection.M11, ref clipMin.X, ref clipMax.X);
-                UpdateClipRegion(lightPosView.Y, -lightPosView.Z, lightRadius, projection.M22, ref clipMin.Y, ref clipMax.Y);
+                UpdateClipRegion(lightPosView.X, -lightPosView.Z, lightRadius, projection.M11, projection.M31, ref clipMin.X, ref clipMax.X);
+                UpdateClipRegion(lightPosView.Y, -lightPosView.Z, lightRadius, projection.M22, projection.M32, ref clipMin.Y, ref clipMax.Y);
             }
 
             // Single linked list of lights (stored in an array)

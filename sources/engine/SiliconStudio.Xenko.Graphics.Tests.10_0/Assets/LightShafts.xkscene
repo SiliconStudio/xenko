@@ -41,13 +41,13 @@ Hierarchy:
                 Name: Cube (10)
                 Components:
                     461576b04f201ec3ea32d233f6b510cd: !TransformComponent
-                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f08
+                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f00
                         Position: {X: -2.0, Y: 6.00000048, Z: -3.88069272}
                         Rotation: {X: -0.285732538, Y: -0.252055049, Z: 0.0781762, W: 0.921256542}
                         Scale: {X: 3.0, Y: 0.2, Z: 3.0}
                         Children: {}
                     4cfc02208a5e395ecdba0fd1ef41bdaa: !ModelComponent
-                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca81b
+                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca810
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
         -   Folder: Level
@@ -56,13 +56,13 @@ Hierarchy:
                 Name: Cube (3)
                 Components:
                     461576b04f201ec3ea32d233f6b510cd: !TransformComponent
-                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f08
+                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f01
                         Position: {X: 2.0, Y: 5.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 2.0, Y: 0.2, Z: 2.0}
                         Children: {}
                     4cfc02208a5e395ecdba0fd1ef41bdaa: !ModelComponent
-                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca81b
+                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca811
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
         -   Folder: Level
@@ -102,13 +102,13 @@ Hierarchy:
                 Name: Cube (9)
                 Components:
                     461576b04f201ec3ea32d233f6b510cd: !TransformComponent
-                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f08
+                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f02
                         Position: {X: -4.091305, Y: 6.44951725, Z: 0.458579063}
                         Rotation: {X: -0.1312047, Y: -0.228972912, Z: -0.4795507, W: 0.8368918}
                         Scale: {X: 3.0, Y: 0.2, Z: 3.0}
                         Children: {}
                     4cfc02208a5e395ecdba0fd1ef41bdaa: !ModelComponent
-                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca81b
+                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca812
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
         -   Folder: Level
@@ -117,7 +117,7 @@ Hierarchy:
                 Name: Cube (14)
                 Components:
                     04141b8a48df8bd3cd68c72be75e4d3d: !TransformComponent
-                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd69
+                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd60
                         Position: {X: 9.536743E-07, Y: 0.0, Z: -30.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 100.0, Y: 0.2, Z: 40.0}
@@ -136,13 +136,13 @@ Hierarchy:
                 Name: Cube (11)
                 Components:
                     04141b8a48df8bd3cd68c72be75e4d3d: !TransformComponent
-                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd69
+                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd61
                         Position: {X: -30.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 40.0, Y: 0.2, Z: 20.0}
                         Children: {}
                     bb4149f1d93dd3545e5fd19c75641538: !ModelComponent
-                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde80
+                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde81
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
             Base:
@@ -155,13 +155,13 @@ Hierarchy:
                 Name: Cube (6)
                 Components:
                     461576b04f201ec3ea32d233f6b510cd: !TransformComponent
-                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f08
+                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f03
                         Position: {X: -1.0, Y: 5.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 2.0, Y: 0.2, Z: 2.0}
                         Children: {}
                     4cfc02208a5e395ecdba0fd1ef41bdaa: !ModelComponent
-                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca81b
+                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca813
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
         -   Folder: Level
@@ -170,13 +170,13 @@ Hierarchy:
                 Name: Cube
                 Components:
                     04141b8a48df8bd3cd68c72be75e4d3d: !TransformComponent
-                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd69
+                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd62
                         Position: {X: -0.203277349, Y: -27.5654488, Z: 0.489161}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 100.0, Y: 0.2, Z: 100.0}
                         Children: {}
                     bb4149f1d93dd3545e5fd19c75641538: !ModelComponent
-                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde80
+                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde82
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
         -   Folder: 
@@ -196,13 +196,13 @@ Hierarchy:
                 Name: Cube (14)
                 Components:
                     04141b8a48df8bd3cd68c72be75e4d3d: !TransformComponent
-                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd69
+                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd63
                         Position: {X: 9.536743E-07, Y: 0.0, Z: -30.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 100.0, Y: 0.2, Z: 40.0}
                         Children: {}
                     bb4149f1d93dd3545e5fd19c75641538: !ModelComponent
-                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde80
+                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde83
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
             Base:
@@ -215,13 +215,13 @@ Hierarchy:
                 Name: Cube (11)
                 Components:
                     04141b8a48df8bd3cd68c72be75e4d3d: !TransformComponent
-                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd69
+                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd64
                         Position: {X: -30.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 40.0, Y: 0.2, Z: 20.0}
                         Children: {}
                     bb4149f1d93dd3545e5fd19c75641538: !ModelComponent
-                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde80
+                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde84
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
             Base:
@@ -234,13 +234,13 @@ Hierarchy:
                 Name: Cube (7)
                 Components:
                     461576b04f201ec3ea32d233f6b510cd: !TransformComponent
-                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f08
+                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f04
                         Position: {X: -1.0, Y: 5.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 2.0, Y: 0.2, Z: 2.0}
                         Children: {}
                     4cfc02208a5e395ecdba0fd1ef41bdaa: !ModelComponent
-                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca81b
+                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca814
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
         -   Folder: Level
@@ -249,13 +249,13 @@ Hierarchy:
                 Name: Cube (15)
                 Components:
                     04141b8a48df8bd3cd68c72be75e4d3d: !TransformComponent
-                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd69
+                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd65
                         Position: {X: 0.0, Y: -15.0, Z: 47.7858543}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 100.0, Y: 30.0, Z: 0.2}
                         Children: {}
                     bb4149f1d93dd3545e5fd19c75641538: !ModelComponent
-                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde80
+                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde85
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
         -   Folder: Level
@@ -264,13 +264,13 @@ Hierarchy:
                 Name: Cube (8)
                 Components:
                     461576b04f201ec3ea32d233f6b510cd: !TransformComponent
-                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f08
+                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f05
                         Position: {X: 2.0, Y: 10.0, Z: -8.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 2.0, Y: 0.2, Z: 2.0}
                         Children: {}
                     4cfc02208a5e395ecdba0fd1ef41bdaa: !ModelComponent
-                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca81b
+                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca815
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
         -   Folder: Level
@@ -279,13 +279,13 @@ Hierarchy:
                 Name: Cube (13)
                 Components:
                     04141b8a48df8bd3cd68c72be75e4d3d: !TransformComponent
-                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd69
+                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd66
                         Position: {X: 9.536743E-07, Y: 0.0, Z: 29.9999981}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 100.0, Y: 0.2, Z: 40.0}
                         Children: {}
                     bb4149f1d93dd3545e5fd19c75641538: !ModelComponent
-                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde80
+                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde86
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
             Base:
@@ -304,7 +304,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     a3d25363acb5662b633fa2f202a1fbdd: !LightComponent
-                        Id: 31098483-28ce-49c4-9818-e8aa876e7936
+                        Id: 31098483-28ce-49c4-9818-e8aa876e7930
                         Type: !LightDirectional
                             Color: !ColorRgbProvider
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
@@ -346,13 +346,13 @@ Hierarchy:
                 Name: Cube (12)
                 Components:
                     04141b8a48df8bd3cd68c72be75e4d3d: !TransformComponent
-                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd69
+                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd67
                         Position: {X: 30.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 40.0, Y: 0.2, Z: 20.0}
                         Children: {}
                     bb4149f1d93dd3545e5fd19c75641538: !ModelComponent
-                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde80
+                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde87
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
             Base:
@@ -390,13 +390,13 @@ Hierarchy:
                 Name: Cube (4)
                 Components:
                     461576b04f201ec3ea32d233f6b510cd: !TransformComponent
-                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f08
+                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f06
                         Position: {X: 5.0, Y: 5.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 2.0, Y: 0.2, Z: 2.0}
                         Children: {}
                     4cfc02208a5e395ecdba0fd1ef41bdaa: !ModelComponent
-                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca81b
+                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca816
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
         -   Folder: 
@@ -405,13 +405,13 @@ Hierarchy:
                 Name: Cube (13)
                 Components:
                     04141b8a48df8bd3cd68c72be75e4d3d: !TransformComponent
-                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd69
+                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd68
                         Position: {X: 9.536743E-07, Y: 0.0, Z: 29.9999981}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 100.0, Y: 0.2, Z: 40.0}
                         Children: {}
                     bb4149f1d93dd3545e5fd19c75641538: !ModelComponent
-                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde80
+                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde88
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
             Base:
@@ -424,13 +424,13 @@ Hierarchy:
                 Name: Directional light (2)
                 Components:
                     360ec82f8c0ccda824eaa15e2daf1c7a: !TransformComponent
-                        Id: af3ecc29-e2b9-4e2f-9342-8f2eb69e846b
+                        Id: af3ecc29-e2b9-4e2f-9342-8f2eb69e846c
                         Position: {X: -7.848241, Y: 34.65651, Z: -6.13041067}
                         Rotation: {X: 0.649349332, Y: 0.09529675, Z: 0.295110643, W: -0.6943874}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     a3d25363acb5662b633fa2f202a1fbdd: !LightComponent
-                        Id: 31098483-28ce-49c4-9818-e8aa876e7936
+                        Id: 31098483-28ce-49c4-9818-e8aa876e7931
                         Enabled: false
                         Type: !LightDirectional
                             Color: !ColorRgbProvider
@@ -447,7 +447,7 @@ Hierarchy:
                                     DepthBias: 0.0015
                         Intensity: 0.5
                     57618921eb96f05fc9eb77b464c5b906: !LightShaftComponent
-                        Id: 780b7663-a294-4e8e-8c09-52c6bb41d543
+                        Id: 780b7663-a294-4e8e-8c09-52c6bb41d544
                         Enabled: false
                         ExtinctionFactor: 0.1
                         ExtinctionRatio: 10.0
@@ -464,7 +464,7 @@ Hierarchy:
                         Scale: {X: 40.0, Y: 0.2, Z: 20.0}
                         Children: {}
                     bb4149f1d93dd3545e5fd19c75641538: !ModelComponent
-                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde80
+                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde89
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
             Base:
@@ -477,13 +477,13 @@ Hierarchy:
                 Name: Cube (18)
                 Components:
                     04141b8a48df8bd3cd68c72be75e4d3d: !TransformComponent
-                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd69
+                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd6a
                         Position: {X: -47.786, Y: -15.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 0.2, Y: 30.0, Z: 100.0}
                         Children: {}
                     bb4149f1d93dd3545e5fd19c75641538: !ModelComponent
-                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde80
+                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde8a
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
         -   Folder: Level
@@ -492,13 +492,13 @@ Hierarchy:
                 Name: Cube (5)
                 Components:
                     461576b04f201ec3ea32d233f6b510cd: !TransformComponent
-                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f08
+                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f07
                         Position: {X: 5.0, Y: 5.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 2.0, Y: 0.2, Z: 2.0}
                         Children: {}
                     4cfc02208a5e395ecdba0fd1ef41bdaa: !ModelComponent
-                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca81b
+                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca817
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
         -   Folder: Level
@@ -507,13 +507,13 @@ Hierarchy:
                 Name: Model2 (2)
                 Components:
                     e3b8b04fadb40b82ad3bf379db4d857b: !TransformComponent
-                        Id: 95cf743a-5515-43ed-b57e-dd448b809e96
+                        Id: 95cf743a-5515-43ed-b57e-dd448b809e97
                         Position: {X: 1.99999762, Y: 13.0, Z: 8.999998}
                         Rotation: {X: -0.4195984, Y: 0.6935201, Z: 0.504802763, W: -0.2968857}
                         Scale: {X: 2.67771149, Y: 2.67771149, Z: 2.67771149}
                         Children: {}
                     7ed5e6e5e1e1afdb5775a3dc7e72114c: !ModelComponent
-                        Id: 88936499-c6cf-41d3-b046-78aa2611020e
+                        Id: 88936499-c6cf-41d3-b046-78aa2611020f
                         Model: 878181e4-ea39-495f-8f1d-e586e650cc82:Model2
                         Materials: {}
         -   Folder: Level
@@ -522,13 +522,13 @@ Hierarchy:
                 Name: Cube (16)
                 Components:
                     04141b8a48df8bd3cd68c72be75e4d3d: !TransformComponent
-                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd69
+                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd6b
                         Position: {X: 0.0, Y: -15.0, Z: -47.786}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 100.0, Y: 30.0, Z: 0.2}
                         Children: {}
                     bb4149f1d93dd3545e5fd19c75641538: !ModelComponent
-                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde80
+                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde8b
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
         -   Folder: 
@@ -565,7 +565,7 @@ Hierarchy:
                         Scale: {X: 2.0, Y: 0.2, Z: 2.0}
                         Children: {}
                     4cfc02208a5e395ecdba0fd1ef41bdaa: !ModelComponent
-                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca81b
+                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca818
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
         -   Folder: Level
@@ -579,10 +579,10 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 0.9068806, Y: 0.9068806, Z: 0.9068806}
                         Children:
-                            0ea653c9f4293aa6d1f2db57df57669c: 31567627-e196-4c7f-a2fc-9eebd6c9defb/3bb538d1-c12c-4352-bd55-408ce75cbd69
-                            1c4127337f9677d418105f1d8c6f6bed: 1d81d52b-8d39-413d-ad8d-2d33e36c178b/3bb538d1-c12c-4352-bd55-408ce75cbd69
+                            0ea653c9f4293aa6d1f2db57df57669c: 31567627-e196-4c7f-a2fc-9eebd6c9defb/3bb538d1-c12c-4352-bd55-408ce75cbd63
+                            1c4127337f9677d418105f1d8c6f6bed: 1d81d52b-8d39-413d-ad8d-2d33e36c178b/3bb538d1-c12c-4352-bd55-408ce75cbd61
                             4035dd511fc921fa0fe5db21bc5bb2dd: 89e9e7a7-4c0e-406c-b848-857ce9b12817/3bb538d1-c12c-4352-bd55-408ce75cbd69
-                            8fc7209de078aaa11555ff131fdb0c56: 6e1b78ba-ea4b-44cf-9cd3-da0c31c20c21/3bb538d1-c12c-4352-bd55-408ce75cbd69
+                            8fc7209de078aaa11555ff131fdb0c56: 6e1b78ba-ea4b-44cf-9cd3-da0c31c20c21/3bb538d1-c12c-4352-bd55-408ce75cbd68
         -   Folder: 
             Entity:
                 Id: e899ccad-7314-43fd-8291-777099fd4dfa
@@ -610,12 +610,12 @@ Hierarchy:
                 Name: Cube (17)
                 Components:
                     04141b8a48df8bd3cd68c72be75e4d3d: !TransformComponent
-                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd69
+                        Id: 3bb538d1-c12c-4352-bd55-408ce75cbd6c
                         Position: {X: 50.0, Y: -15.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 0.2, Y: 30.0, Z: 100.0}
                         Children: {}
                     bb4149f1d93dd3545e5fd19c75641538: !ModelComponent
-                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde80
+                        Id: 701023ba-cb77-46a8-b445-ae2f8f6fde8c
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}

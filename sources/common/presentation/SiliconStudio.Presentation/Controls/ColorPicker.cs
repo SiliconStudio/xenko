@@ -9,8 +9,9 @@ using SiliconStudio.Core.Mathematics;
 
 using System.Windows.Media.Imaging;
 using System.Windows.Input;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Extensions;
-
+using SiliconStudio.Presentation.Internal;
 using Color = SiliconStudio.Core.Mathematics.Color;
 using Point = System.Windows.Point;
 using Rectangle = System.Windows.Shapes.Rectangle;
@@ -86,7 +87,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="ShowAlpha"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ShowAlphaProperty = DependencyProperty.Register("ShowAlpha", typeof(bool), typeof(ColorPicker), new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty ShowAlphaProperty = DependencyProperty.Register("ShowAlpha", typeof(bool), typeof(ColorPicker), new FrameworkPropertyMetadata(BooleanBoxes.TrueBox, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         /// <summary>
         /// Identifies the <see cref="InputColumnWidth"/> dependency property.
@@ -147,7 +148,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether the alpha component of the color should be displayed in the color picker.
         /// </summary>
-        public bool ShowAlpha { get { return (bool)GetValue(ShowAlphaProperty); } set { SetValue(ShowAlphaProperty, value); } }
+        public bool ShowAlpha { get { return (bool)GetValue(ShowAlphaProperty); } set { SetValue(ShowAlphaProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets the length of the input column of the color picker.
@@ -229,7 +230,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         /// <param name="sender">The object where the event handler is attached.</param>
         /// <param name="e">The event data.</param>
-        private void OnColorPickerRenderSurfaceMouseDown(object sender, MouseButtonEventArgs e)
+        private void OnColorPickerRenderSurfaceMouseDown(object sender, [NotNull] MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
@@ -244,7 +245,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         /// <param name="sender">The object where the event handler is attached.</param>
         /// <param name="e">The event data.</param>
-        private void OnColorPickerRenderSurfaceMouseUp(object sender, MouseButtonEventArgs e)
+        private void OnColorPickerRenderSurfaceMouseUp(object sender, [NotNull] MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Released)
             {
@@ -259,7 +260,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         /// <param name="sender">The object where the event handler is attached.</param>
         /// <param name="e">The event data.</param>
-        private void OnColorPickerRenderSurfaceMouseMove(object sender, MouseEventArgs e)
+        private void OnColorPickerRenderSurfaceMouseMove(object sender, [NotNull] MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed && colorPickerRenderSurface.IsMouseCaptured)
             {
@@ -291,7 +292,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         /// <param name="sender">The object where the event handler is attached.</param>
         /// <param name="e">The event data.</param>
-        private void OnHuePickerRenderSurfaceMouseDown(object sender, MouseButtonEventArgs e)
+        private void OnHuePickerRenderSurfaceMouseDown(object sender, [NotNull] MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
@@ -306,7 +307,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         /// <param name="sender">The object where the event handler is attached.</param>
         /// <param name="e">The event data.</param>
-        private void OnHuePickerRenderSurfaceMouseUp(object sender, MouseButtonEventArgs e)
+        private void OnHuePickerRenderSurfaceMouseUp(object sender, [NotNull] MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Released)
             {
@@ -321,7 +322,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         /// <param name="sender">The object where the event handler is attached.</param>
         /// <param name="e">The event data.</param>
-        private void OnHuePickerRenderSurfaceMouseMove(object sender, MouseEventArgs e)
+        private void OnHuePickerRenderSurfaceMouseMove(object sender, [NotNull] MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed && huePickerRenderSurface.IsMouseCaptured)
             {
@@ -519,9 +520,8 @@ namespace SiliconStudio.Presentation.Controls
         {
             if (!suspendBindingUpdates && dependencyProperty != initializingProperty)
             {
-                BindingExpression expression = GetBindingExpression(dependencyProperty);
-                if (expression != null)
-                    expression.UpdateSource();
+                var expression = GetBindingExpression(dependencyProperty);
+                expression?.UpdateSource();
             }
         }
 
@@ -578,7 +578,8 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Coerce the value of the Color so its components are always equals to the float value of a byte divided by 255.
         /// </summary>
-        private static object CoreceColorValue(DependencyObject sender, object baseValue)
+        [NotNull]
+        private static object CoreceColorValue(DependencyObject sender, [NotNull] object baseValue)
         {
             return new Color(((Color4)baseValue).ToArray()).ToColor4();
         }
@@ -586,7 +587,8 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Coerce the value of the Hue so it is always contained in the -360, +360 interval
         /// </summary>
-        private static object CoerceHueValue(DependencyObject sender, object baseValue)
+        [NotNull]
+        private static object CoerceHueValue(DependencyObject sender, [NotNull] object baseValue)
         {
             return ((float)baseValue + 360.0f) % 360.0f;
         }
@@ -594,7 +596,8 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Coerce the saturation and brightness values so they are always contained between 0 and 100
         /// </summary>
-        private static object CoercePercentageValue(DependencyObject sender, object baseValue)
+        [NotNull]
+        private static object CoercePercentageValue(DependencyObject sender, [NotNull] object baseValue)
         {
             return MathUtil.Clamp((float)baseValue, 0.0f, 100.0f);
         }

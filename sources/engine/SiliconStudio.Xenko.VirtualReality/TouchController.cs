@@ -32,6 +32,8 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract bool ThumbResting { get; }
 
+        public abstract Vector2 ThumbAxis { get; }
+
         /// <summary>
         /// Returns true if in this frame the button switched to pressed state
         /// </summary>
@@ -52,6 +54,27 @@ namespace SiliconStudio.Xenko.VirtualReality
         /// <param name="button"></param>
         /// <returns></returns>
         public abstract bool IsPressReleased(TouchControllerButton button);
+
+        /// <summary>
+        /// Returns true if in this frame the button switched to pressed state
+        /// </summary>
+        /// <param name="button"></param>
+        /// <returns></returns>
+        public abstract bool IsTouchedDown(TouchControllerButton button);
+
+        /// <summary>
+        /// Returns true if button switched is in the pressed state
+        /// </summary>
+        /// <param name="button"></param>
+        /// <returns></returns>
+        public abstract bool IsTouched(TouchControllerButton button);
+
+        /// <summary>
+        /// Returns true if in this frame the button was released
+        /// </summary>
+        /// <param name="button"></param>
+        /// <returns></returns>
+        public abstract bool IsTouchReleased(TouchControllerButton button);
 
         public virtual void Dispose()
         {          

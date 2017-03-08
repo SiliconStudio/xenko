@@ -1,5 +1,3 @@
-#if defined(WINDOWS_DESKTOP) || !defined(__clang__)
-
 /*****************************************************************************/
 /*                                                                           */
 /*  Routines for Arbitrary Precision Floating-point Arithmetic               */
@@ -116,9 +114,8 @@
 /*****************************************************************************/
 
 #include "../XenkoNative.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include "../../../../deps/NativePath/NativePath.h"
+#include "../../../../deps/NativePath/standard/stdlib.h"
 
 /* On some machines, the exact arithmetic routines might be defeated by the  */
 /*   use of internal extended precision floating-point registers.  Sometimes */
@@ -4292,5 +4289,3 @@ REAL *pe;
 
 	return insphereadapt(pa, pb, pc, pd, pe, permanent);
 }
-
-#endif

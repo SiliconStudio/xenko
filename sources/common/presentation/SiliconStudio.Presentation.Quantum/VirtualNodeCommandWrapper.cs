@@ -6,17 +6,16 @@ using System.Threading.Tasks;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
 {
     public class VirtualNodeCommandWrapper : NodeCommandWrapperBase
     {
-        private readonly IContentNode node;
+        private readonly IGraphNode node;
         private readonly Index index;
         protected readonly GraphViewModelService Service;
 
-        public VirtualNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, IContentNode node, Index index)
+        public VirtualNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, IGraphNode node, Index index)
             : base(serviceProvider)
         {
             if (nodeCommand == null) throw new ArgumentNullException(nameof(nodeCommand));

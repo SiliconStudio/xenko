@@ -594,8 +594,8 @@ namespace SiliconStudio.Core.Reflection
         {
             public override IMemberDescriptor MemberDescriptor => null;
         }
-        
-        private sealed class ArrayPathItem : SpecialMemberPathItemBase, IEquatable<ArrayPathItem>
+
+        public sealed class ArrayPathItem : SpecialMemberPathItemBase, IEquatable<ArrayPathItem>
         {
             public readonly ArrayDescriptor Descriptor;
             public readonly int Index;

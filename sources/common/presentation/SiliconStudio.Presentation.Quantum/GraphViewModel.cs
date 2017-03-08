@@ -23,7 +23,7 @@ namespace SiliconStudio.Presentation.Quantum
     /// <param name="contentType">The type of content contained by the new <see cref="GraphNodeViewModel"/>.</param>
     /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise.</param>
     /// <returns>A new instance of <see cref="GraphNodeViewModel"/> corresponding to the given parameters.</returns>
-    public delegate GraphNodeViewModel CreateNodeDelegate(GraphViewModel viewModel, string baseName, bool isPrimitive, IContentNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index);
+    public delegate GraphNodeViewModel CreateNodeDelegate(GraphViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index);
 
     /// <summary>
     /// A factory that creates a <see cref="CombinedNodeViewModel"/> from a set of parameters.
@@ -73,7 +73,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="GraphViewModelService"/> to use for this view model.</param>
         /// <param name="propertyProvider">The object providing properties to display</param>
         /// <param name="graphNode">The root node of the view model to generate.</param>
-        private GraphViewModel(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider, IContentNode graphNode)
+        private GraphViewModel(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider, IGraphNode graphNode)
             : this(serviceProvider)
         {
             if (graphNode == null) throw new ArgumentNullException(nameof(graphNode));
@@ -84,6 +84,27 @@ namespace SiliconStudio.Presentation.Quantum
             node.FinalizeInitialization();
             node.CheckConsistency();
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphViewModel"/> class.
+        /// </summary>
+        /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="GraphViewModelService"/> to use for this view model.</param>
+        /// <param name="propertyProvider">The object providing properties to display</param>
+        /// <param name="rootNode">The root node of the view model to generate.</param>
+        //private GraphViewModel(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider, IObjectNode rootNode)
+        //    : this(serviceProvider)
+        //{
+        //    if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
+        //    PropertiesProvider = propertyProvider;
+        //    var presenterFactory = new NodePresenterFactory();
+        //    var viewModelFactory = new GraphViewModelFactory();
+        //    var node = presenterFactory.CreateNodeTree(rootNode, new GraphNodePath(rootNode));
+        //    var viewModel = viewModelFactory.CreateGraph(this, node);
+        //    //node.Initialize();
+        //    RootNode = viewModel;
+        //    //node.FinalizeInitialization();
+        //    //node.CheckConsistency();
+        //}
 
         /// <inheritdoc/>
         public override void Destroy()
@@ -223,7 +244,7 @@ namespace SiliconStudio.Presentation.Quantum
             combinedNodeChanges.Clear();
         }
 
-        private static GraphNodeViewModel DefaultCreateNode(GraphViewModel viewModel, string baseName, bool isPrimitive, IContentNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index)
+        private static GraphNodeViewModel DefaultCreateNode(GraphViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index)
         {
             return GraphNodeViewModel.Create(viewModel, baseName, isPrimitive, modelNode, graphNodePath, contentType, index);
         }

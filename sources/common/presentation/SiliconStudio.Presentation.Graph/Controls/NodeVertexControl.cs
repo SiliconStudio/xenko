@@ -12,12 +12,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Shapes;
 
-using GraphX;
-using GraphX.Models;
 using SiliconStudio.Presentation.Graph.Behaviors;
 using SiliconStudio.Presentation.Graph.ViewModel;
-using SiliconStudio.Presentation.Graph.Helper;
 using System.Windows.Media;
+using GraphX.Controls;
 using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Presentation.Graph.Controls

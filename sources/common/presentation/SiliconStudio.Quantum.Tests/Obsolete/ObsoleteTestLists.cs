@@ -1,12 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Core;
-using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Tests.Obsolete
@@ -100,23 +97,23 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
             var container = new NodeContainer();
             var model = container.GetOrCreateNode(obj);
 
-            Assert.That(model["IntList"].Value, Is.SameAs(obj.IntList));
+            Assert.That(model["IntList"].Retrieve(), Is.SameAs(obj.IntList));
             Assert.That(model["IntList"].IsReference, Is.False);
-            Assert.That(model["ClassList"].Value, Is.SameAs(obj.ClassList));
+            Assert.That(model["ClassList"].Retrieve(), Is.SameAs(obj.ClassList));
             //Assert.That(model["ClassList"].Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
-            Assert.That(model["SimpleStructList"].Value, Is.SameAs(obj.SimpleStructList));
+            Assert.That(model["SimpleStructList"].Retrieve(), Is.SameAs(obj.SimpleStructList));
             //Assert.That(model["SimpleStructList"].Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
-            Assert.That(model["NestedStructList"].Value, Is.SameAs(obj.NestedStructList));
+            Assert.That(model["NestedStructList"].Retrieve(), Is.SameAs(obj.NestedStructList));
             //Assert.That(model["NestedStructList"].Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
-            Assert.That(model["ListOfSimpleStructLists"].Value, Is.SameAs(obj.ListOfSimpleStructLists));
+            Assert.That(model["ListOfSimpleStructLists"].Retrieve(), Is.SameAs(obj.ListOfSimpleStructLists));
             //Assert.That(model["ListOfSimpleStructLists"].Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
-            foreach (var reference in model["ListOfSimpleStructLists"].ItemReferences)
+            foreach (var reference in model["ListOfSimpleStructLists"].Target.ItemReferences)
             {
                 Assert.That(reference, Is.AssignableFrom(typeof(ObjectReference)));
             }
-            Assert.That(model["ListOfNestedStructLists"].Value, Is.SameAs(obj.ListOfNestedStructLists));
+            Assert.That(model["ListOfNestedStructLists"].Retrieve(), Is.SameAs(obj.ListOfNestedStructLists));
             //Assert.That(model["ListOfNestedStructLists"].Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
-            foreach (var reference in model["ListOfNestedStructLists"].ItemReferences)
+            foreach (var reference in model["ListOfNestedStructLists"].Target.ItemReferences)
             {
                 Assert.That(reference, Is.AssignableFrom(typeof(ObjectReference)));
             }
@@ -125,22 +122,13 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
         }
 
         [Test]
-        public void TestNullLists()
-        {
-            var obj = new ClassWithNullLists();
-            var container = new NodeContainer();
-            var model = container.GetOrCreateNode(obj);
-        }
-
-        [Test]
         public void TestPrimitiveItemUpdate()
         {
             var obj = new ClassWithLists();
             var container = new NodeContainer();
             var model = container.GetOrCreateNode(obj);
-            Console.WriteLine(model.PrintHierarchy());
-            ((List<int>)model["IntList"].Value)[1] = 42;
-            ((List<int>)model["IntList"].Value).Add(26);
+            ((List<int>)model["IntList"].Retrieve())[1] = 42;
+            ((List<int>)model["IntList"].Retrieve()).Add(26);
             Assert.That(obj.IntList.Count, Is.EqualTo(4));
             Assert.That(obj.IntList[1], Is.EqualTo(42));
             Assert.That(obj.IntList[3], Is.EqualTo(26));

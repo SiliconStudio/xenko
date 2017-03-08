@@ -11,9 +11,9 @@ namespace SiliconStudio.Core.Threading
     public class Dispatcher
     {
 #if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
-        public static int MaxDregreeOfParallelism = 1;
+        public static int MaxDegreeOfParallelism = 1;
 #else
-        public static int MaxDregreeOfParallelism = Environment.ProcessorCount;
+        public static int MaxDegreeOfParallelism = Environment.ProcessorCount;
 #endif
 
         public delegate void ValueAction<T>(ref T obj);
@@ -33,7 +33,7 @@ namespace SiliconStudio.Core.Threading
                 if (count == 0)
                     return;
 
-                if (MaxDregreeOfParallelism <= 1 || count == 1)
+                if (MaxDegreeOfParallelism <= 1 || count == 1)
                 {
                     ExecuteBatch(fromInclusive, toExclusive, action);
                 }
@@ -44,12 +44,12 @@ namespace SiliconStudio.Core.Threading
 
                     try
                     {
-                        var batchCount = Math.Min(MaxDregreeOfParallelism, count);
+                        var batchCount = Math.Min(MaxDegreeOfParallelism, count);
                         var batchSize = (count + (batchCount - 1)) / batchCount;
 
                         // Kick off a worker, then perform work synchronously
                         state.AddReference();
-                        Fork(toExclusive, batchSize, MaxDregreeOfParallelism, action, state);
+                        Fork(toExclusive, batchSize, MaxDegreeOfParallelism, action, state);
 
                         // Wait for all workers to finish
                         if (state.ActiveWorkerCount != 0)
@@ -78,7 +78,7 @@ namespace SiliconStudio.Core.Threading
                 if (count == 0)
                     return;
 
-                if (MaxDregreeOfParallelism <= 1 || count == 1)
+                if (MaxDegreeOfParallelism <= 1 || count == 1)
                 {
                     ExecuteBatch(fromInclusive, toExclusive, initializeLocal, action, finalizeLocal);
                 }
@@ -89,12 +89,12 @@ namespace SiliconStudio.Core.Threading
 
                     try
                     {
-                        var batchCount = Math.Min(MaxDregreeOfParallelism, count);
+                        var batchCount = Math.Min(MaxDegreeOfParallelism, count);
                         var batchSize = (count + (batchCount - 1)) / batchCount;
 
                         // Kick off a worker, then perform work synchronously
                         state.AddReference();
-                        Fork(toExclusive, batchSize, MaxDregreeOfParallelism, initializeLocal, action, finalizeLocal, state);
+                        Fork(toExclusive, batchSize, MaxDegreeOfParallelism, initializeLocal, action, finalizeLocal, state);
 
                         // Wait for all workers to finish
                         if (state.ActiveWorkerCount != 0)
@@ -126,7 +126,7 @@ namespace SiliconStudio.Core.Threading
 
         public static void ForEach<TKey, TValue>([NotNull] Dictionary<TKey, TValue> collection, [Pooled] Action<KeyValuePair<TKey, TValue>> action)
         {
-            if (MaxDregreeOfParallelism <= 1 || collection.Count <= 1)
+            if (MaxDegreeOfParallelism <= 1 || collection.Count <= 1)
             {
                 ExecuteBatch(collection, 0, collection.Count, action);
             }
@@ -136,12 +136,12 @@ namespace SiliconStudio.Core.Threading
 
                 try
                 {
-                    var batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
+                    var batchCount = Math.Min(MaxDegreeOfParallelism, collection.Count);
                     var batchSize = (collection.Count + (batchCount - 1)) / batchCount;
 
                     // Kick off a worker, then perform work synchronously
                     state.AddReference();
-                    Fork(collection, batchSize, MaxDregreeOfParallelism, action, state);
+                    Fork(collection, batchSize, MaxDegreeOfParallelism, action, state);
 
                     // Wait for all workers to finish
                     if (state.ActiveWorkerCount != 0)
@@ -156,7 +156,7 @@ namespace SiliconStudio.Core.Threading
 
         public static void ForEach<TKey, TValue, TLocal>([NotNull] Dictionary<TKey, TValue> collection, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<KeyValuePair<TKey, TValue>, TLocal> action, [Pooled] Action<TLocal> finalizeLocal = null)
         {
-            if (MaxDregreeOfParallelism <= 1 || collection.Count <= 1)
+            if (MaxDegreeOfParallelism <= 1 || collection.Count <= 1)
             {
                 ExecuteBatch(collection, 0, collection.Count, initializeLocal, action, finalizeLocal);
             }
@@ -166,12 +166,12 @@ namespace SiliconStudio.Core.Threading
 
                 try
                 {
-                    var batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
+                    var batchCount = Math.Min(MaxDegreeOfParallelism, collection.Count);
                     var batchSize = (collection.Count + (batchCount - 1)) / batchCount;
 
                     // Kick off a worker, then perform work synchronously
                     state.AddReference();
-                    Fork(collection, batchSize, MaxDregreeOfParallelism, initializeLocal, action, finalizeLocal, state);
+                    Fork(collection, batchSize, MaxDegreeOfParallelism, initializeLocal, action, finalizeLocal, state);
 
                     // Wait for all workers to finish
                     if (state.ActiveWorkerCount != 0)
@@ -480,7 +480,7 @@ namespace SiliconStudio.Core.Threading
 
                 // Sort recursively
                 state.AddReference();
-                Sort(collection, MaxDregreeOfParallelism, comparer, state);
+                Sort(collection, MaxDegreeOfParallelism, comparer, state);
 
                 // Wait for all work to finish
                 if (state.ActiveWorkerCount != 0)
