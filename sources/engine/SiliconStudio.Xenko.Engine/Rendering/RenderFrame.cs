@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// A render frame is a container for a render target and its depth stencil buffer.
     /// </summary>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<RenderFrame>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<RenderFrame>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<RenderFrame>))]
     [DataSerializer(typeof(RenderFrameSerializer))]
     public class RenderFrame : IDisposable
