@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             inputTextures = new Texture[128];
             maxInputTextureIndex = -1;
             EnableSetRenderTargets = true;
-            SamplingPattern = supersample ? ImageScaler.SamplingPattern.Cross9 : ImageScaler.SamplingPattern.Box;
+            SamplingPattern = supersample ? SamplingPattern.Cross9 : SamplingPattern.Box;
         }
 
         /// <summary>

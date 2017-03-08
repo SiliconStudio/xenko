@@ -106,6 +106,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <userdoc>It reverses FXAA and bloom, as well as uses a richer convolution kernel during blurring.</userdoc>
         [DataMember(60)]
         [DefaultValue(true)]
+        [DisplayName("Improve stability")]
         public bool StableConvolution
         {
             get { return stableConvolution; }

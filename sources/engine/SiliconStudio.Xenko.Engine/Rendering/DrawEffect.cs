@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         [DataMemberIgnore]
-        public ImageScaler.SamplingPattern SamplingPattern { get; set; } = ImageScaler.SamplingPattern.Box;
+        public SamplingPattern SamplingPattern { get; set; } = SamplingPattern.Box;
 
         /// <summary>
         /// Gets the parameters.
@@ -88,8 +88,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         protected virtual void SetDefaultParameters()
         {
-            SamplingPattern = ImageScaler.SamplingPattern.Box;
-            ;
+            SamplingPattern = SamplingPattern.Box;
         }
 
         /// <summary>
