@@ -12,7 +12,7 @@ using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public abstract class GraphNodeViewModel : SingleNodeViewModel
+    public abstract class GraphNodeViewModel : SingleNodeViewModel, IGraphNodeViewModel
     {
         public readonly IGraphNode SourceNode;
         private readonly bool isPrimitive;

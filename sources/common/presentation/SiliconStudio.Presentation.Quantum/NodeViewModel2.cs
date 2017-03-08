@@ -1,9 +1,22 @@
 using System;
+using System.Linq;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.Quantum.Presenters;
+using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.Quantum
 {
+    [Obsolete("This interface is temporary to share properties while both GraphNodeViewModel and NodeViewModel2 exist")]
+    public interface IGraphNodeViewModel : INodeViewModel
+    {
+        int? CustomOrder { get; set; }
+
+        IMemberDescriptor GetMemberDescriptor();
+
+        void AddAssociatedData(string key, object value);
+    }
+
     public class ValueChangingEventArgs : EventArgs
     {
         private bool coerced;
@@ -34,19 +47,6 @@ namespace SiliconStudio.Presentation.Quantum
         public object OldValue { get; }
     }
 
-    public class NodeViewModel2<T> : NodeViewModel2
-    {
-        public NodeViewModel2(GraphViewModel ownerViewModel, NodeViewModel2 parent, string baseName, INodePresenter nodePresenter)
-            : base(ownerViewModel, parent, baseName, nodePresenter)
-        {
-        }
-
-        public virtual T TypedValue { get { return (T)NodePresenter.Value; } set { NodePresenter.UpdateValue(value); } }
-
-        /// <inheritdoc/>
-        public sealed override object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
-    }
-
     public class GraphViewModelFactory
     {
         public NodeViewModel2 CreateGraph(GraphViewModel owner, INodePresenter rootNode)
@@ -59,8 +59,9 @@ namespace SiliconStudio.Presentation.Quantum
         {
             var viewModelType = typeof(NodeViewModel2<>).MakeGenericType(nodePresenter.Type);
             // TODO: assert the constructor!
-            var viewModel = (NodeViewModel2)Activator.CreateInstance(viewModelType, owner, nodePresenter.Name, nodePresenter);
+            var viewModel = (NodeViewModel2)Activator.CreateInstance(viewModelType, owner, parent, nodePresenter.Name, nodePresenter);
             GenerateChildren(owner, viewModel, nodePresenter);
+            owner.GraphViewModelService?.NotifyNodeInitialized(viewModel);
             return viewModel;
         }
 
@@ -68,12 +69,25 @@ namespace SiliconStudio.Presentation.Quantum
         {
             foreach (var child in nodePresenter.Children)
             {
-                CreateNodeViewModel(owner, parent, child);
+                if (ShouldConstructViewModel(child))
+                {
+                    CreateNodeViewModel(owner, parent, child);
+                }
             }
+        }
+
+        private static bool ShouldConstructViewModel(INodePresenter nodePresenter)
+        {
+            var member = nodePresenter as MemberNodePresenter;
+            var displayAttribute = member?.MemberAttributes.OfType<DisplayAttribute>().FirstOrDefault();
+            if (displayAttribute != null && !displayAttribute.Browsable)
+                return false;
+
+            return true;
         }
     }
 
-    public abstract class NodeViewModel2 : SingleNodeViewModel
+    public abstract class NodeViewModel2 : SingleNodeViewModel, IGraphNodeViewModel
     {
         protected readonly INodePresenter NodePresenter;
         private int? customOrder;
@@ -82,7 +96,12 @@ namespace SiliconStudio.Presentation.Quantum
             : base(ownerViewModel, baseName, nodePresenter.Index)
         {
             NodePresenter = nodePresenter;
-            parent.AddChild(this);
+            var member = nodePresenter as MemberNodePresenter;
+            var displayAttribute = member?.MemberAttributes.OfType<DisplayAttribute>().FirstOrDefault();
+            if (displayAttribute != null)
+                DisplayName = displayAttribute.Name;
+
+            parent?.AddChild(this);
         }
 
         public override Type Type => NodePresenter.Type;
@@ -102,11 +121,48 @@ namespace SiliconStudio.Presentation.Quantum
         public sealed override bool HasDictionary => DictionaryDescriptor.IsDictionary(Type);
 
         [Obsolete]
-        public override bool IsPrimitive => false;
+        public override bool IsPrimitive => NodePresenter.IsPrimitive;
 
         protected override void Refresh()
         {
-            throw new NotImplementedException();
+
         }
+
+        protected virtual void SetValue(object newValue)
+        {
+            using (var transaction = ServiceProvider.TryGet<IUndoRedoService>()?.CreateTransaction())
+            {
+                NodePresenter.UpdateValue(newValue);
+                // TODO: move this in the (future) derived class
+                if (transaction != null)
+                {
+                    ServiceProvider.TryGet<IUndoRedoService>()?.SetName(transaction, $"Update property {DisplayPath}");
+                }
+            }
+        }
+
+        IMemberDescriptor IGraphNodeViewModel.GetMemberDescriptor()
+        {
+            var member = NodePresenter as MemberNodePresenter;
+            return member?.MemberDescriptor;
+        }
+    }
+
+    public class NodeViewModel2<T> : NodeViewModel2
+    {
+        public NodeViewModel2(GraphViewModel ownerViewModel, NodeViewModel2 parent, string baseName, INodePresenter nodePresenter)
+            : base(ownerViewModel, parent, baseName, nodePresenter)
+        {
+            foreach (var command in nodePresenter.Commands)
+            {
+                var commandWrapper = new NodePresenterCommandWrapper(ServiceProvider, (NodePresenterBase)nodePresenter, command);
+                AddCommand(commandWrapper);
+            }
+        }
+
+        public virtual T TypedValue { get { return (T)NodePresenter.Value; } set { SetValue(value); } }
+
+        /// <inheritdoc/>
+        public sealed override object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
     }
 }

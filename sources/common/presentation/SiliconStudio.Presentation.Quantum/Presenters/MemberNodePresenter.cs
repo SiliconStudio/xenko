@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
@@ -28,6 +29,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             member.Changing += OnMemberChanging;
             member.Changed += OnMemberChanged;
 
+
             if (member.Target != null)
             {
                 // If we have a target node, register commands attached to it. They will override the commands of the member node by name.
@@ -50,7 +52,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override string Name { get; }
 
-        public override List<INodeCommand> Commands { get; } = new List<INodeCommand>();
+        public sealed override List<INodeCommand> Commands { get; } = new List<INodeCommand>();
 
         public override Type Type => member.Type;
 
@@ -65,6 +67,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public override int? Order { get; }
 
         public override object Value => member.Retrieve();
+
+        public IMemberDescriptor MemberDescriptor => member.MemberDescriptor;
 
         public IReadOnlyList<Attribute> MemberAttributes => memberAttributes;
 
@@ -149,6 +153,11 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             {
                 throw new NodePresenterException("An error occurred while updating an item of the node, see the inner exception for more information.", e);
             }
+        }
+
+        internal override Task RunCommand(INodeCommand command, object parameter)
+        {
+            return command.Execute(member, Index.Empty, parameter);
         }
 
         private void OnMemberChanging(object sender, MemberNodeChangeEventArgs e)

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
@@ -21,6 +23,15 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             Name = index.ToString();
             container.ItemChanging += OnItemChanging;
             container.ItemChanged += OnItemChanged;
+            if (container.ItemReferences != null)
+            {
+                // If we have a target node, register commands attached to it. They will override the commands of the container node by name.
+                Commands.AddRange(container.IndexedTarget(index).Commands);
+            }
+
+            // Register commands from the container node, skipping those already registered from the target node.
+            var targetCommandNames = Commands.Select(x => x.Name).ToList();
+            Commands.AddRange(container.Commands.Where(x => !targetCommandNames.Contains(x.Name)));
         }
 
         public override void Dispose()
@@ -31,7 +42,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override string Name { get; }
 
-        public override List<INodeCommand> Commands { get; }
+        public sealed override List<INodeCommand> Commands { get; } = new List<INodeCommand>();
 
         public override Index Index { get; }
 
@@ -128,6 +139,11 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             {
                 throw new NodePresenterException("An error occurred while updating an item of the node, see the inner exception for more information.", e);
             }
+        }
+
+        internal override Task RunCommand(INodeCommand command, object parameter)
+        {
+            return command.Execute(container, Index, parameter);
         }
 
         private void OnItemChanging(object sender, ItemChangeEventArgs e)

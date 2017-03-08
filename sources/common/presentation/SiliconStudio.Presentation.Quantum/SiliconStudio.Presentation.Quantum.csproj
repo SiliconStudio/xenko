@@ -29,6 +29,7 @@
     <Compile Include="GraphNodeBinding.cs" />
     <Compile Include="Presenters\INodePresenterFactory.cs" />
     <Compile Include="Presenters\INodePresenterFactoryInternal.cs" />
+    <Compile Include="Presenters\NodePresenterCommandWrapper.cs" />
     <Compile Include="Presenters\NodePresenterFactory.cs" />
     <Compile Include="Presenters\ItemNodePresenter.cs" />
     <Compile Include="Presenters\MemberNodePresenter.cs" />

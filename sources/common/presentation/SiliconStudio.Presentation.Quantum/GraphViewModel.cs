@@ -91,20 +91,20 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="GraphViewModelService"/> to use for this view model.</param>
         /// <param name="propertyProvider">The object providing properties to display</param>
         /// <param name="rootNode">The root node of the view model to generate.</param>
-        //private GraphViewModel(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider, IObjectNode rootNode)
-        //    : this(serviceProvider)
-        //{
-        //    if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
-        //    PropertiesProvider = propertyProvider;
-        //    var presenterFactory = new NodePresenterFactory();
-        //    var viewModelFactory = new GraphViewModelFactory();
-        //    var node = presenterFactory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
-        //    var viewModel = viewModelFactory.CreateGraph(this, node);
-        //    //node.Initialize();
-        //    RootNode = viewModel;
-        //    //node.FinalizeInitialization();
-        //    //node.CheckConsistency();
-        //}
+        private GraphViewModel(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider, IObjectNode rootNode)
+            : this(serviceProvider)
+        {
+            if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
+            PropertiesProvider = propertyProvider;
+            var presenterFactory = new NodePresenterFactory();
+            var viewModelFactory = new GraphViewModelFactory();
+            var node = presenterFactory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
+            var viewModel = viewModelFactory.CreateGraph(this, node);
+            //node.Initialize();
+            RootNode = viewModel;
+            //node.FinalizeInitialization();
+            //node.CheckConsistency();
+        }
 
         /// <inheritdoc/>
         public override void Destroy()

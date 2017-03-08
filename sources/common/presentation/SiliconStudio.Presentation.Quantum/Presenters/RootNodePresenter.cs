@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
@@ -16,10 +17,11 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         {
             if (factory == null) throw new ArgumentNullException(nameof(factory));
             this.rootNode = rootNode;
+            Commands.AddRange(rootNode.Commands);
         }
 
         public override string Name => "Root";
-        public override List<INodeCommand> Commands { get; }
+        public sealed override List<INodeCommand> Commands { get; } = new List<INodeCommand>();
         public override Type Type => rootNode.Type;
         public override Index Index => Index.Empty;
         public override bool IsPrimitive => false;
@@ -99,6 +101,11 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             {
                 throw new NodePresenterException("An error occurred while updating an item of the node, see the inner exception for more information.", e);
             }
+        }
+
+        internal override Task RunCommand(INodeCommand command, object parameter)
+        {
+            return command.Execute(rootNode, Index.Empty, parameter);
         }
     }
 }
