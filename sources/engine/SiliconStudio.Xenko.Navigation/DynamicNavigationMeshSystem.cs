@@ -29,7 +29,9 @@ namespace SiliconStudio.Xenko.Navigation
         // TODO
         // TODO multiple bounding boxes + thread local
         BoundingBox globalBoundingBox = new BoundingBox(new Vector3(-20), new Vector3(20));
-        
+
+        private NavigationMeshCachedBuild currentBuild = new NavigationMeshCachedBuild();
+
         // TODO: Space partitioning
         private List<StaticColliderData> colliders = new List<StaticColliderData>();
 
@@ -56,8 +58,8 @@ namespace SiliconStudio.Xenko.Navigation
                 colliders.Remove(colliderData);
             }
         }
-
-        public NavigationMeshBuildResult BuildAsync(CancellationToken cancellationToken)
+        
+        public NavigationMeshBuildResult Build(CancellationToken cancellationToken)
         {
             var result = new NavigationMeshBuildResult();
 
@@ -91,21 +93,37 @@ namespace SiliconStudio.Xenko.Navigation
             }
 
             BuildInput(collidersLocal);
+            
+            NavigationMeshCachedBuild newBuild = new NavigationMeshCachedBuild();
 
             // Combine input and collect tiles to build
             HashSet<Point> tilesToBuild = new HashSet<Point>();
             NavigationMeshInputBuilder sceneNavigationMeshInputBuilder = new NavigationMeshInputBuilder();
-            foreach (var shape in collidersLocal)
+            foreach (var colliderData in collidersLocal)
             {
-                if (shape.Builder == null)
+                if (colliderData.InputBuilder == null)
                     continue;
 
-                // TODO incremental
-                List<Point> newTileList = NavigationMeshBuildUtils.GetOverlappingTiles(buildSettings, shape.Builder.BoundingBox);
-                foreach (Point p in newTileList)
-                    tilesToBuild.Add(p);
+                if (colliderData.Processed)
+                {
+                    MarkTiles(colliderData.InputBuilder, ref buildSettings, ref agentSettings, tilesToBuild);
+                }
 
-                sceneNavigationMeshInputBuilder.AppendOther(shape.Builder);
+                // Otherwise, skip building these tiles
+                sceneNavigationMeshInputBuilder.AppendOther(colliderData.InputBuilder);
+                newBuild.Add(colliderData.Component, colliderData.InputBuilder, colliderData.ParameterHash);
+            }
+
+            // Check for removed colliders
+            if (currentBuild != null)
+            {
+                foreach (var obj in currentBuild.Objects)
+                {
+                    if (!newBuild.Objects.ContainsKey(obj.Key))
+                    {
+                        MarkTiles(obj.Value.InputBuilder, ref buildSettings, ref agentSettings, tilesToBuild);
+                    }
+                }
             }
 
             // TODO: Generate tile local mesh input data
@@ -118,8 +136,11 @@ namespace SiliconStudio.Xenko.Navigation
             ConcurrentCollector<Tuple<Point, NavigationMeshTile>> buildTiles = new ConcurrentCollector<Tuple<Point, NavigationMeshTile>>(tilesToBuild.Count);
             Dispatcher.ForEach(tilesToBuild.ToArray(), tileCoordinate =>
             {
+                // Allow cancellation while building of tiles
                 if (cancellationToken.IsCancellationRequested)
                     return;
+
+                NavigationMeshTile meshTile = null;
 
                 unsafe
                 {
@@ -156,22 +177,19 @@ namespace SiliconStudio.Xenko.Navigation
                     Navigation.SetSettings(builder, new IntPtr(&internalBuildSettings));
                     IntPtr buildResultPtr = Navigation.Build(builder, inputVertices, inputVertices.Length, inputIndices, inputIndices.Length);
                     Navigation.GeneratedData* generatedDataPtr = (Navigation.GeneratedData*)buildResultPtr;
-                    if (generatedDataPtr->Success)
+                    if (generatedDataPtr->Success && generatedDataPtr->NavmeshDataLength > 0)
                     {
-                        // Header of the generated data
-                        Navigation.TileHeader* header = (Navigation.TileHeader*)generatedDataPtr->NavmeshData;
-
-                        NavigationMeshTile meshTile = new NavigationMeshTile();
+                        meshTile = new NavigationMeshTile();
 
                         // Copy the generated navigationMesh data
-                        meshTile.Data = new byte[generatedDataPtr->NavmeshDataLength+sizeof(long)];
+                        meshTile.Data = new byte[generatedDataPtr->NavmeshDataLength + sizeof(long)];
                         Marshal.Copy(generatedDataPtr->NavmeshData, meshTile.Data, 0, generatedDataPtr->NavmeshDataLength);
-                        
+
                         // Append time stamp
                         byte[] timeStamp = BitConverter.GetBytes(buildTimeStamp);
                         for (int i = 0; i < timeStamp.Length; i++)
                             meshTile.Data[meshTile.Data.Length - sizeof(long) + i] = timeStamp[i];
-                        
+
                         List<Vector3> outputVerts = new List<Vector3>();
                         if (generatedDataPtr->NumNavmeshVertices > 0)
                         {
@@ -184,40 +202,89 @@ namespace SiliconStudio.Xenko.Navigation
                             meshTile.MeshVertices = outputVerts.ToArray();
                         }
 
-                        buildTiles.Add(new Tuple<Point, NavigationMeshTile>(tileCoordinate, meshTile));
                     }
 
+                    buildTiles.Add(new Tuple<Point, NavigationMeshTile>(tileCoordinate, meshTile));
+
+                    // TODO pooling
                     Navigation.DestroyBuilder(builder);
                 }
             });
             if (cancellationToken.IsCancellationRequested)
                 return result;
             
-            var layer = new NavigationMeshLayer();
             result.NavigationMesh = new NavigationMesh();
-            result.NavigationMesh.LayersInternal.Add(layer);
-            result.NavigationMesh.BoundingBox = globalBoundingBox; // TODO
-            layer.BuildSettings = buildSettings;
-            // TODO multiple agent settings
-            layer.AgentSettings = agentSettings;
-            foreach (var p in buildTiles)
+
+            // TODO
+            int numLayers = 1;
+            for (int i = 0; i < numLayers; i++)
             {
-                layer.TilesInternal.Add(p.Item1, p.Item2);
+                if (currentBuild != null && currentBuild.NavigationMesh.LayersInternal.Count > i)
+                {
+                    result.NavigationMesh.LayersInternal.Add(currentBuild.NavigationMesh.LayersInternal[i]);
+                }
+                else
+                {
+                    result.NavigationMesh.LayersInternal.Add(new NavigationMeshLayer());
+                }
             }
+
+            var layer = result.NavigationMesh.LayersInternal[0];
+            {
+                layer.BuildSettings = buildSettings;
+
+                // TODO multiple agent settings
+                layer.AgentSettings = agentSettings;
+
+                // TODO
+                result.NavigationMesh.BoundingBox = globalBoundingBox;
+                
+                foreach (var p in buildTiles)
+                {
+                    if (p.Item2 == null)
+                    {
+                        // Remove a tile
+                        if (layer.TilesInternal.ContainsKey(p.Item1))
+                            layer.TilesInternal.Remove(p.Item1);
+                    }
+                    else
+                    {
+                        // Set or update tile
+                        layer.TilesInternal[p.Item1] = p.Item2;
+                    }
+                }
+            }
+
+            currentBuild.NavigationMesh = result.NavigationMesh;
+            currentBuild = newBuild;
 
             result.Success = true;
             return result;
         }
+        
+        /// <summary>
+        /// Marks updated or removed tiles for rebuild
+        /// </summary>
+        private void MarkTiles(NavigationMeshInputBuilder inputBuilder, ref NavigationMeshBuildSettings buildSettings, ref NavigationAgentSettings agentSettings, HashSet<Point> tilesToBuild)
+        {
+            // Extend bounding box for agent size
+            BoundingBox boundingBoxToCheck = inputBuilder.BoundingBox;
+            NavigationMeshBuildUtils.ExtendBoundingBox(ref boundingBoxToCheck, new Vector3(agentSettings.Radius));
+
+            // TODO incremental
+            List<Point> newTileList = NavigationMeshBuildUtils.GetOverlappingTiles(buildSettings, boundingBoxToCheck);
+            foreach (Point p in newTileList)
+                tilesToBuild.Add(p);
+        }
 
         /// <summary>
-        /// Rebuilds outdated triangle data for colliders
+        /// Rebuilds outdated triangle data for colliders and recalculates hashes
         /// </summary>
-        /// <param name="local"></param>
         private void BuildInput(StaticColliderData[] collidersLocal)
         {
             Vector3 maxSize = globalBoundingBox.Maximum - globalBoundingBox.Minimum;
             float maxDiagonal = Math.Max(maxSize.X, Math.Max(maxSize.Y, maxSize.Z));
-
+            
             // TODO for some reason this call is ambiguous when called directly with a type of List<StaticColliderData>
             Dispatcher.ForEach(collidersLocal, colliderData =>
             {
@@ -225,7 +292,19 @@ namespace SiliconStudio.Xenko.Navigation
                 TransformComponent entityTransform = entity.Transform;
                 Matrix entityWorldMatrix = entityTransform.WorldMatrix;
 
-                NavigationMeshInputBuilder entityNavigationMeshInputBuilder = colliderData.Builder = new NavigationMeshInputBuilder();
+                NavigationMeshInputBuilder entityNavigationMeshInputBuilder = colliderData.InputBuilder = new NavigationMeshInputBuilder();
+
+                colliderData.ParameterHash = NavigationMeshBuildUtils.HashEntityCollider(colliderData.Component);
+                NavigationMeshCachedBuildObject oldObject = null;
+                if (currentBuild?.Objects.TryGetValue(colliderData.Component.Id, out oldObject) ?? false)
+                {
+                    if (oldObject.ParameterHash == colliderData.ParameterHash)
+                    {
+                        colliderData.InputBuilder = oldObject.InputBuilder;
+                        colliderData.Processed = false;
+                        return;
+                    }
+                }
 
                 // Interate through all the colliders shapes while queueing all shapes in compound shapes to process those as well
                 Queue<ColliderShape> shapesToProcess = new Queue<ColliderShape>();
@@ -339,6 +418,9 @@ namespace SiliconStudio.Xenko.Navigation
                         }
                     }
                 }
+                
+                // Mark collider as processed
+                colliderData.Processed = true;
             });
         }
     }
@@ -346,8 +428,9 @@ namespace SiliconStudio.Xenko.Navigation
     public class StaticColliderData
     {
         public StaticColliderComponent Component;
-        public int LastStateHash = 0;
-        internal NavigationMeshInputBuilder Builder;
+        internal int ParameterHash = 0;
+        internal bool Processed = false;
+        internal NavigationMeshInputBuilder InputBuilder;
     }
 
     public class StaticColliderCollectorProcessor : EntityProcessor<StaticColliderComponent, StaticColliderData>
@@ -439,7 +522,14 @@ namespace SiliconStudio.Xenko.Navigation
             buildTaskCancellationTokenSource?.Cancel();
             buildTaskCancellationTokenSource = new CancellationTokenSource();
 
-            var result = Task.Run(() => builder.BuildAsync(buildTaskCancellationTokenSource.Token));
+            var result = Task.Run(() =>
+            {
+                // Only have one active build at a time
+                lock (builder)
+                {
+                    return builder.Build(buildTaskCancellationTokenSource.Token);
+                }
+            });
             await result;
 
             FinilizeRebuild(result);
