@@ -47,6 +47,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml.Schemas;
@@ -58,6 +59,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
     /// </summary>
     internal class YamlAssemblyRegistry : ITagTypeRegistry
     {
+        private static readonly Logger Log = GlobalLogger.GetLogger("YamlAssemblyRegistry");
+
         private readonly IYamlSchema schema;
         private readonly Dictionary<string, MappedType> tagToType;
         private readonly Dictionary<Type, string> typeToTag;
@@ -102,9 +105,16 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
                 // Register all tags automatically.
                 var assemblySerializers = DataSerializerFactory.GetAssemblySerializers(assembly);
-                foreach (var dataContractAlias in assemblySerializers.DataContractAliases)
+                if (assemblySerializers != null)
                 {
-                    RegisterTagMapping(dataContractAlias.Name, dataContractAlias.Type, dataContractAlias.IsAlias);
+                    foreach (var dataContractAlias in assemblySerializers.DataContractAliases)
+                    {
+                        RegisterTagMapping(dataContractAlias.Name, dataContractAlias.Type, dataContractAlias.IsAlias);
+                    }
+                }
+                else
+                {
+                    Log.Warning($"Assembly [{assembly}] has not been processed by assembly processor with --serialization flags. [DataContract] aliases won't be available.");
                 }
                 // Automatically register YamlSerializableFactory
                 var assemblyScanTypes = AssemblyRegistry.GetScanTypes(assembly);
