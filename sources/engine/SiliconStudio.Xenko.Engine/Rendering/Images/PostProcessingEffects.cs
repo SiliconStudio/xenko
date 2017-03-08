@@ -24,8 +24,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private ColorTransformGroup colorTransformsGroup;
         private IScreenSpaceAntiAliasingEffect ssaa;
 
-        private RangeCompressorEffect   rangeCompress;
-        private RangeDecompressorEffect rangeDecompress;
+        private ImageEffectShader rangeCompress;
+        private ImageEffectShader rangeDecompress;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PostProcessingEffects" /> class.
@@ -49,8 +49,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             lightStreak = new LightStreak();
             lensFlare = new LensFlare();
             ssaa = new FXAAEffect();
-            rangeCompress = new RangeCompressorEffect();
-            rangeDecompress = new RangeDecompressorEffect();
+            rangeCompress = new ImageEffectShader("RangeCompressorShader");
+            rangeDecompress = new ImageEffectShader("RangeDecompressorShader");
             colorTransformsGroup = new ColorTransformGroup();
         }
 

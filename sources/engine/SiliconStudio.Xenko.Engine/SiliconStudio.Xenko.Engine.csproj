@@ -226,31 +226,17 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\Images\RangeConversion\RangeCompressorEffect.cs" />
     <Compile Include="Rendering\Images\RangeConversion\RangeCompressorShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>RangeCompressorShader.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\Images\RangeConversion\RangeCompressorShaderEffect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>RangeCompressorShaderEffect.xkfx</DependentUpon>
-    </Compile>
-    <Compile Include="Rendering\Images\RangeConversion\RangeDecompressorEffect.cs" />
     <Compile Include="Rendering\Images\RangeConversion\RangeDecompressorShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>RangeDecompressorShader.xksl</DependentUpon>
-    </Compile>
-    <Compile Include="Rendering\Images\RangeConversion\RangeDecompressorShaderEffect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>RangeDecompressorShaderEffect.xkfx</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Compositing\SceneRendererBase.cs" />
     <Compile Include="Rendering\Images\LightShafts\PostEffectBoundingRay.cs">
@@ -337,17 +323,9 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>RangeCompressorShader.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Images\RangeConversion\RangeCompressorShaderEffect.xkfx">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>RangeCompressorShaderEffect.cs</LastGenOutput>
-    </None>
     <None Include="Rendering\Images\RangeConversion\RangeDecompressorShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>RangeDecompressorShader.cs</LastGenOutput>
-    </None>
-    <None Include="Rendering\Images\RangeConversion\RangeDecompressorShaderEffect.xkfx">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>RangeDecompressorShaderEffect.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Compositing\DefaultGraphicsCompositorLevel10.xkgfxcomp" />
     <None Include="Rendering\Compositing\DefaultGraphicsCompositorLevel9.xkgfxcomp" />
