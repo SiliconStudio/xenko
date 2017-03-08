@@ -6,7 +6,7 @@ shader SpriteSuperSampler : SpriteBase
     stage override float4 Shading()
     {
 		// "call of duty"-type of h4x4 checker box, but reduced to 9 picks instead of 13:
-		float2 jitter[] = {
+		float2 jitters[] = {
 			float2(-2.0, 0.0),
 			float2(0.0, 0.0),
 			float2(2.0, 0.0),
@@ -18,165 +18,23 @@ shader SpriteSuperSampler : SpriteBase
 			float2(0.0, -2.0)
 		};
 
-		float weightsum = 0;
-		float4 clr = 0;
+		float weightSum = 0;
+		float4 color = 0;
         float2 texCoordBackup = streams.TexCoord;
 
 		[unroll]
 		for (uint j = 0; j < 9; ++j)
 		{
-			float2 jit = jitter[j];
-			float dist = max(abs(jit.x), abs(jit.y));
+			float2 jitter = jitters[j];
+			float dist = max(abs(jitter.x), abs(jitter.y));
 			float weight = 3 - dist;
-            streams.TexCoord = texCoordBackup + jit * Texture0TexelSize;
-			clr += weight * base.Shading();  // that's Texture0.Sample(Sampler, streams.TexCoord) basically.
-			weightsum += weight;
+            streams.TexCoord = texCoordBackup + jitter * Texture0TexelSize;
+			color += weight * base.Shading();
+			weightSum += weight;
 		}
 
         streams.TexCoord = texCoordBackup;
 		
-		return clr / weightsum;
-
-		/*
-		float2 jitter[] = {
-			float2(-2.0, 0.0),
-			float2(0.0, 0.0),
-			float2(2.0, 0.0),
-			float2(-1.0, 1.0),
-			float2(1.0, 1.0),
-			float2(-1.0, -1.0),
-			float2(1.0, -1.0),
-			float2(0.0, 2.0),
-			float2(0.0, -2.0)
-		};
-
-		float weightsum = 0;
-		float4 samples[9];
-		float weights[9];
-
-		[unroll]
-		for (uint j = 0; j < 9; ++j)
-		{
-			float2 jit = jitter[j];
-			float dist = max(abs(jit.x), abs(jit.y));
-			weights[j] = 3 - dist;
-			samples[j] = Texture0.Sample(LinearSampler, streams.TexCoord + jit * Texture0TexelSize);
-			weightsum += weights[j];
-		}
-
-		// Karis average:
-		// discover max comp:
-		float maxComp = 0;
-		[unroll]
-		for (uint j = 0; j < 9; ++j)
-		{
-			maxComp = max(maxComp, max(max(samples[j].r, samples[j].g), samples[j].b));
-		}
-
-		// tone colors:
-		[unroll]
-		for (uint j = 0; j < 9; ++j)
-		{
-			samples[j] = samples[j] / (1 + maxComp);
-		}
-
-		// average with weights:
-		float4 clr = 0;
-		[unroll]
-		for (uint j = 0; j < 9; ++j)
-		{
-			clr += weights[j] * samples[j];
-		}
-		clr /= weightsum;
-		
-		// reverse tone:
-		float postMax = maxComp / (1 + maxComp);
-		clr = clr / (1 - postMax);
-
-		return clr;*/
-
-		// Karis average with 5 samples:
-
-		/*float2 jitter[] = {
-			float2(-1.0, 0.0),
-			float2(0.0, 0.0),
-			float2(1.0, 0.0),
-			float2(0.0, 1.0),
-			float2(0.0, -1.0)
-		};
-
-		float weightsum = 0;
-		float4 samples[5];
-		float weights[5];
-
-		[unroll]
-		for (uint j = 0; j < 5; ++j)
-		{
-			float2 jit = jitter[j];
-			float dist = max(abs(jit.x), abs(jit.y));
-			weights[j] = 2 - dist;
-			samples[j] = Texture0.Sample(LinearSampler, streams.TexCoord + jit * Texture0TexelSize);
-			weightsum += weights[j];
-		}
-
-		// Karis average:
-		// discover max comp:
-		float maxComp = 0;
-		[unroll]
-		for (uint j = 0; j < 5; ++j)
-		{
-			maxComp = max(maxComp, max(max(samples[j].r, samples[j].g), samples[j].b));
-		}
-
-		// tone colors:
-		[unroll]
-		for (uint j = 0; j < 5; ++j)
-		{
-			samples[j] = samples[j] / (1 + maxComp);
-		}
-
-		// average with weights:
-		float4 clr = 0;
-		[unroll]
-		for (uint j = 0; j < 5; ++j)
-		{
-			clr += weights[j] * samples[j];
-		}
-		clr /= weightsum;
-		
-		// reverse tone:
-		float postMax = maxComp / (1 + maxComp);
-		clr = clr / (1 - postMax);
-
-		return clr;*/
-
-		/*float2 jitter[] = {float2(0.8, 0.2), float2(0.2, -0.8), float2(-0.8, -0.2), float2(-0.2, 0.8),
-						   float2(0.3, 0.7), float2(0.7, -0.3), float2(-0.3, -0.7), float2(-0.7, 0.3)
-		};
-		
-		float2 offset = float2(0.0, 0.0)*Texture0TexelSize;
-		
-		// center has stronger weight
-		//float4 val = Texture0.Sample(Sampler, streams.TexCoord + float2(-0.1, 0)*Texture0TexelSize);
-		//val += Texture0.Sample(Sampler, streams.TexCoord + float2(0.1, 0)*Texture0TexelSize);
-		
-		float4 val = 2 * Texture0.Sample(Sampler, streams.TexCoord);
-		
-		int oversample = 4;  // or 8 for even more stability. but it's very hard to notice the difference.
-		float radius = 1;
-
-		[unroll]
-		for (uint j = 0; j < oversample; ++j) {
-			val += Texture0.Sample(LinearSampler, streams.TexCoord + jitter[j%8] * radius * Texture0TexelSize+offset);
-		}
-		
-		radius = 1.5;
-		
-		[unroll]
-		for (uint j = 0; j < oversample; ++j) {
-			val += Texture0.Sample(LinearSampler, streams.TexCoord + jitter[j%8] * radius * Texture0TexelSize-offset);
-		}
-		
-		return val / ((float)oversample * 2 + 2);*/
+		return color / weightSum;
     }
 };
