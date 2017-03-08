@@ -20,7 +20,7 @@ using SiliconStudio.Xenko.Rendering.Sprites;
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     [DataSerializerGlobal(typeof(ReferenceSerializer<GraphicsCompositor>), Profile = "Content")]
-    [ContentSerializer(typeof(DataContentSerializerWithReuse<GraphicsCompositor>))]
+    [ReferenceSerializer, ContentSerializer(typeof(DataContentSerializerWithReuse<GraphicsCompositor>))]
     [DataContract]
     // Needed for indirect serialization of RenderSystem.RenderStages and RenderSystem.RenderFeatures
     // TODO: we would like an attribute to specify that serializing through the interface type is fine in this case (bypass type detection)
