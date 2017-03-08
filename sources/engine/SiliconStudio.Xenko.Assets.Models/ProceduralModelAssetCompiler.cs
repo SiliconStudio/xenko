@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization;
@@ -17,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     {
         public ProceduralModelAssetCompiler()
         {
-            CompileTimeDependencyTypes.Add(typeof(MaterialAsset));
+            CompileTimeDependencyTypes.Add(typeof(MaterialAsset), BuildDependencyType.CompileAsset);
         }
 
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)

@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
@@ -19,8 +20,8 @@ namespace SiliconStudio.Xenko.Assets.Materials
     {
         public MaterialAssetCompiler()
         {
-            CompileTimeDependencyTypes.Add(typeof(TextureAsset)); //textures
-            CompileTimeDependencyTypes.Add(typeof(MaterialAsset)); //sub-materials
+            CompileTimeDependencyTypes.Add(typeof(TextureAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //textures
+            CompileTimeDependencyTypes.Add(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //sub-materials
         }
 
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)

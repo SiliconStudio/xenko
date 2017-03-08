@@ -76,7 +76,7 @@ namespace SiliconStudio.Assets.Compiler
                 foreach (var assetDependency in dependencies.LinksOut)
                 {
                     var assetType = assetDependency.Item.Asset.GetType();
-                    if (mainCompiler.CompileTimeDependencyTypes.Contains(assetType))
+                    if (mainCompiler.CompileTimeDependencyTypes.ContainsKey(assetType))
                     {
                         var result = BuildStepsQueue.CompileAndSubmit(context, compilerResult.BuildSteps, assetDependency.Item, this);
                         if (result.HasErrors)

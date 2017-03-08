@@ -6,12 +6,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
@@ -20,70 +17,23 @@ using SiliconStudio.Core.MicroThreading;
 
 namespace SiliconStudio.Assets.Analysis
 {
+    [Flags]
     public enum BuildDependencyType
     {
-        Runtime,
-        CompileAsset,
-        CompileContent
+        Runtime = 0x1,
+        CompileAsset = 0x2,
+        CompileContent = 0x4
     }
 
-    public class BuildAssetNode : IDisposable
+    public class BuildAssetNode
     {
         private static readonly AssetCompilerRegistry AssetCompilerRegistry = new AssetCompilerRegistry();
 
         private readonly BuildDependencyManager buildDependencyManager;
         private readonly AssetDependenciesCompiler assetDependenciesCompiler;
         private readonly ConcurrentDictionary<AssetId, BuildAssetNode> dependencyLinks = new ConcurrentDictionary<AssetId, BuildAssetNode>();
-        private readonly ConcurrentDictionary<AssetId, BuildAssetNode> parentLinks = new ConcurrentDictionary<AssetId, BuildAssetNode>();
-        private readonly CancellationTokenSource buildCancellationTokenSource = new CancellationTokenSource();
-        private ListBuildStep currentBuildStep;
 
         public readonly AssetItem AssetItem;
-
-        public ListBuildStep CurrentBuildStep
-        {
-            get
-            {
-                lock (this)
-                {
-                    return currentBuildStep;
-                }
-            }
-            set
-            {
-                lock (this)
-                {
-                    if (currentBuildStep != null)
-                    {
-                        buildCancellationTokenSource.Cancel();                       
-                    }
-
-                    currentBuildStep = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets a collection of dependencies of this node
-        /// </summary>
-        public ICollection<BuildAssetNode> Dependencies => dependencyLinks.Values;
-
-        public void AddDependency(AssetCompilerContext context, [NotNull] BuildAssetNode dependency)
-        {
-            if (dependencyLinks.TryAdd(dependency.AssetItem.Id, dependency))
-            {
-                dependency.Prepare(context, this);
-            }
-        }
-
-        public void RemoveDependency([NotNull] BuildAssetNode dependency)
-        {
-            BuildAssetNode link;
-            if (dependencyLinks.TryGetValue(dependency.AssetItem.Id, out link))
-            {
-                link.Dispose();
-            }
-        }
 
         public BuildDependencyType DependencyType { get; }
 
@@ -95,38 +45,8 @@ namespace SiliconStudio.Assets.Analysis
             this.assetDependenciesCompiler = assetDependenciesCompiler;         
         }
 
-        /// <summary>
-        /// Task that will receive the asset version when a build of this node has ended.
-        /// Or throw cancellation if build was interrupted
-        /// </summary>
-        public async Task<long> Build()
+        public void Analyze(AssetCompilerContext context)
         {
-            //todo lock, hmm
-            var dependencies = Dependencies.ToList();
-
-            foreach (var dependency in dependencies)
-            {
-                await dependency.Build();
-            }
-
-            var currentStep = CurrentBuildStep;
-
-            //need to add the unit itself to the builder
-            buildDependencyManager.ReadySteps.Enqueue(currentStep);
-
-            //wait for it to be built
-            await currentStep.ExecutedAsync();
-
-            return AssetItem.Version; //todo wrong version most likely
-        }
-
-        public void Prepare(AssetCompilerContext context, BuildAssetNode parent)
-        {
-            if(parent != null)
-                parentLinks.TryAdd(parent.AssetItem.Id, parent);
-
-            //process dependency discovery etc
-            //create all the necessary BuildAssetNodes if needed
             var mainCompiler = AssetCompilerRegistry.GetCompiler(AssetItem.Asset.GetType());
 
             var compilerResult = mainCompiler.Compile(context, AssetItem);
@@ -136,9 +56,6 @@ namespace SiliconStudio.Assets.Analysis
                 return;
             }
 
-            CurrentBuildStep = compilerResult.BuildSteps;
-            
-            //todo do better processing
             dependencyLinks.Clear();
 
             //run time deps
@@ -148,11 +65,11 @@ namespace SiliconStudio.Assets.Analysis
                 foreach (var assetDependency in dependencies.LinksOut)
                 {
                     var assetType = assetDependency.Item.Asset.GetType();
-                    if (mainCompiler.CompileTimeDependencyTypes.Contains(assetType))
+                    if (mainCompiler.CompileTimeDependencyTypes.ContainsKey(assetType))
                     {
-                        //todo change dependency type to proper build dependency type, as content means it will always compile which is not needed most of the time
-                        var node = new BuildAssetNode(assetDependency.Item, BuildDependencyType.CompileContent, assetDependenciesCompiler, buildDependencyManager);
-                        AddDependency(context, node);
+                        var dependencyType = mainCompiler.CompileTimeDependencyTypes[assetType];
+                        var node = buildDependencyManager.FindOrCreateNode(assetDependency.Item, dependencyType);
+                        dependencyLinks.TryAdd(assetDependency.Item.Id, node);
                     }
                 }
             }
@@ -167,27 +84,49 @@ namespace SiliconStudio.Assets.Analysis
                         var asset = AssetItem.Package.FindAsset(inputFile.Path);
                         if (asset == null) continue; //this might be an error tho...
 
-                        //todo change dependency type to proper build dependency type, as content means it will always compile which is not needed most of the time
-                        var node = new BuildAssetNode(asset, BuildDependencyType.CompileContent, assetDependenciesCompiler, buildDependencyManager);
-                        AddDependency(context, node);
+                        var dependencyType = inputFile.Type == UrlType.Content ? BuildDependencyType.CompileContent : BuildDependencyType.CompileAsset;
+                        var node = buildDependencyManager.FindOrCreateNode(asset, dependencyType);
+                        dependencyLinks.TryAdd(asset.Id, node);
                     }
                 }
             }
         }
+    }
 
-        public void Dispose()
+    public struct BuildNodeDesc
+    {
+        public AssetId AssetId;
+        public BuildDependencyType BuildDependencyType;
+
+        public override bool Equals(object obj)
         {
-            buildCancellationTokenSource.Cancel();
+            if (obj == null) return false;
+            var other = (BuildNodeDesc)obj;
+            return AssetId == other.AssetId && BuildDependencyType == other.BuildDependencyType;
+        }
 
-            foreach (var dependencyLink in dependencyLinks)
+        public override int GetHashCode()
+        {
+            unchecked
             {
-                dependencyLink.Value.Dispose();
+                var hash = (int)2166136261;
+                hash = (hash * 16777619) ^ AssetId.GetHashCode();
+                hash = (hash * 16777619) ^ BuildDependencyType.GetHashCode();
+                return hash;
             }
-            dependencyLinks.Clear();
+        }
+
+        public static bool operator ==(BuildNodeDesc x, BuildNodeDesc y)
+        {
+            return x.AssetId == y.AssetId && x.BuildDependencyType == y.BuildDependencyType;
+        }
+        public static bool operator !=(BuildNodeDesc x, BuildNodeDesc y)
+        {
+            return x.AssetId != y.AssetId || x.BuildDependencyType != y.BuildDependencyType;
         }
     }
 
-    public sealed class BuildDependencyManager : IDisposable
+    public sealed class BuildDependencyManager
     {
         private readonly AssetDependenciesCompiler assetDependenciesCompiler;
 
@@ -195,7 +134,7 @@ namespace SiliconStudio.Assets.Analysis
 
         public AnonymousBuildStepProvider StepProvider { get; private set; }
 
-        public ConcurrentDictionary<AssetId, BuildAssetNode> ConcreteNodes { get; } = new ConcurrentDictionary<AssetId, BuildAssetNode>();
+        private readonly ConcurrentDictionary<BuildNodeDesc, BuildAssetNode> nodes = new ConcurrentDictionary<BuildNodeDesc, BuildAssetNode>();
 
         internal ConcurrentQueue<BuildStep> ReadySteps { get; } = new ConcurrentQueue<BuildStep>();
 
@@ -213,63 +152,60 @@ namespace SiliconStudio.Assets.Analysis
             });
         }
 
-        public BuildAssetNode Insert(AssetItem item)
+        public BuildAssetNode FindOrCreateNode(AssetItem item, BuildDependencyType dependencyType)
         {
-            BuildAssetNode node;
-            if (!ConcreteNodes.TryGetValue(item.Id, out node))
+            var nodeDesc = new BuildNodeDesc
             {
-                //add
-                node = new BuildAssetNode(item, BuildDependencyType.Runtime, assetDependenciesCompiler, this);
-                ConcreteNodes.TryAdd(item.Id, node);
-            }
+                AssetId = item.Id,
+                BuildDependencyType = dependencyType
+            };
 
-//            scheduler.Add(async () =>
-//            {
-//                node.Prepare();
-//                await node.Build();
-//            });
+            BuildAssetNode node;
+            if (!nodes.TryGetValue(nodeDesc, out node))
+            {
+                node = new BuildAssetNode(item, dependencyType, assetDependenciesCompiler, this);
+                nodes.TryAdd(nodeDesc, node);
+            }
+            
+            return node;
+        }
+
+        public BuildAssetNode FindNode(AssetItem item, BuildDependencyType dependencyType)
+        {
+            var nodeDesc = new BuildNodeDesc
+            {
+                AssetId = item.Id,
+                BuildDependencyType = dependencyType
+            };
+
+            BuildAssetNode node;
+            if (!nodes.TryGetValue(nodeDesc, out node))
+            {
+                return null;
+            }
 
             return node;
         }
 
-//        public void Remove(AssetItem item)
-//        {
-//            BuildAssetNode node;
-//            if (ConcreteNodes.TryRemove(item.Id, out node))
-//            {
-//                node.Dispose();
-//            }
-//        }
-//
-//        public void Changed(AssetItem item)
-//        {
-//            BuildAssetNode node;
-//            if (ConcreteNodes.TryGetValue(item.Id, out node))
-//            {
-//                scheduler.Add(async () =>
-//                {
-//                    node.Prepare();
-//                    await node.Build();
-//                });
-//            }
-//            else
-//            {
-//                throw new Exception($"No asset node for {item.Location} could be found.");
-//            }
-//        }
+        public IEnumerable<BuildAssetNode> FindNodes(AssetItem item)
+        {
+            return nodes.Where(x => x.Value.AssetItem == item).Select(x => x.Value);
+        }
 
+        public void RemoveNode(BuildAssetNode node)
+        {
+            var nodeDesc = new BuildNodeDesc
+            {
+                AssetId = node.AssetItem.Id,
+                BuildDependencyType = node.DependencyType
+            };
+
+            nodes.TryRemove(nodeDesc, out node);
+        }
+       
         public void Run()
         {
             scheduler.Run();
-        }
-
-        public void Dispose()
-        {
-            foreach (var buildAssetNode in ConcreteNodes)
-            {
-                buildAssetNode.Value.Dispose();
-            }
-            ConcreteNodes.Clear();
         }
     }
 

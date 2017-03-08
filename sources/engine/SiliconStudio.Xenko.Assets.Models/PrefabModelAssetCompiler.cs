@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Extensions;
@@ -25,12 +26,12 @@ namespace SiliconStudio.Xenko.Assets.Models
     {
         public PrefabModelAssetCompiler()
         {
-            CompileTimeDependencyTypes.Add(typeof(PrefabAsset));
-            CompileTimeDependencyTypes.Add(typeof(ModelAsset));
-            CompileTimeDependencyTypes.Add(typeof(PrefabModelAsset));
-            CompileTimeDependencyTypes.Add(typeof(ProceduralModelAsset));
-            CompileTimeDependencyTypes.Add(typeof(MaterialAsset));
-            CompileTimeDependencyTypes.Add(typeof(SkeletonAsset));
+            CompileTimeDependencyTypes.Add(typeof(PrefabAsset), BuildDependencyType.CompileContent);
+            CompileTimeDependencyTypes.Add(typeof(ModelAsset), BuildDependencyType.CompileContent);
+            CompileTimeDependencyTypes.Add(typeof(PrefabModelAsset), BuildDependencyType.CompileContent);
+            CompileTimeDependencyTypes.Add(typeof(ProceduralModelAsset), BuildDependencyType.CompileContent);
+            CompileTimeDependencyTypes.Add(typeof(MaterialAsset), BuildDependencyType.CompileContent);
+            CompileTimeDependencyTypes.Add(typeof(SkeletonAsset), BuildDependencyType.CompileAsset);
         }
 
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)

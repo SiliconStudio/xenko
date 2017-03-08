@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
@@ -28,8 +29,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
     {
         public NavigationMeshAssetCompiler()
         {
-            CompileTimeDependencyTypes.Add(typeof(SceneAsset));
-            CompileTimeDependencyTypes.Add(typeof(ColliderShapeAsset));
+            CompileTimeDependencyTypes.Add(typeof(SceneAsset), BuildDependencyType.CompileAsset);
+            CompileTimeDependencyTypes.Add(typeof(ColliderShapeAsset), BuildDependencyType.CompileContent);
         }
 
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
@@ -41,7 +42,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             foreach (var dep in asset.EnumerateCompileTimeDependencies(assetItem.Package.Session))
             {
                 var colliderAssetItem = assetItem.Package.Session.FindAsset(dep.Id);
-                var colliderShapeAsset = colliderAssetItem.Asset as ColliderShapeAsset;
+                var colliderShapeAsset = colliderAssetItem?.Asset as ColliderShapeAsset;
                 if (colliderShapeAsset != null)
                 {
                     // Compile the collider assets first

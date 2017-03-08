@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
@@ -18,7 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
     {
         public SkyboxAssetCompiler()
         {
-            CompileTimeDependencyTypes.Add(typeof(TextureAsset));
+            CompileTimeDependencyTypes.Add(typeof(TextureAsset), BuildDependencyType.CompileContent);
         }
 
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)

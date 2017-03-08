@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Assets.Compiler
@@ -20,6 +21,6 @@ namespace SiliconStudio.Assets.Compiler
         /// <returns>The result of the compilation.</returns>
         AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem);
 
-        HashSet<Type> CompileTimeDependencyTypes { get; }
+        Dictionary<Type, BuildDependencyType> CompileTimeDependencyTypes { get; }
     }
 }

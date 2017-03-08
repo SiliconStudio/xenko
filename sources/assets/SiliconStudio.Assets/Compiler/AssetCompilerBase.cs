@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Core.IO;
 
@@ -39,7 +40,7 @@ namespace SiliconStudio.Assets.Compiler
             return result;
         }
 
-        public HashSet<Type> CompileTimeDependencyTypes { get; } = new HashSet<Type>();
+        public Dictionary<Type, BuildDependencyType> CompileTimeDependencyTypes { get; } = new Dictionary<Type, BuildDependencyType>();
 
         /// <summary>
         /// Compiles the asset from the specified package.

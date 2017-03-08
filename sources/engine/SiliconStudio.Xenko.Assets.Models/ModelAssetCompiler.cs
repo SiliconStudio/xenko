@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Assets.Materials;
@@ -13,8 +14,8 @@ namespace SiliconStudio.Xenko.Assets.Models
     {
         public ModelAssetCompiler()
         {
-            CompileTimeDependencyTypes.Add(typeof(SkeletonAsset));
-            CompileTimeDependencyTypes.Add(typeof(MaterialAsset));
+            CompileTimeDependencyTypes.Add(typeof(SkeletonAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+            CompileTimeDependencyTypes.Add(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
         }
 
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)

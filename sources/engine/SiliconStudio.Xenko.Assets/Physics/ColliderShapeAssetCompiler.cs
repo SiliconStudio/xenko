@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization.Contents;
 using VHACDSharp;
@@ -32,11 +33,11 @@ namespace SiliconStudio.Xenko.Assets.Physics
         {
             foreach (var type in AssetRegistry.GetAssetTypes(typeof(Model)))
             {
-                CompileTimeDependencyTypes.Add(type);
+                CompileTimeDependencyTypes.Add(type, BuildDependencyType.CompileContent);
             }
             foreach (var type in AssetRegistry.GetAssetTypes(typeof(Skeleton)))
             {
-                CompileTimeDependencyTypes.Add(type);
+                CompileTimeDependencyTypes.Add(type, BuildDependencyType.CompileContent);
             }
         }
 
