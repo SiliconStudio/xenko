@@ -25,12 +25,11 @@ namespace SiliconStudio.Xenko.Physics
         [DataMember(20)]
         public float Offset;
 
-        public int CompareTo(object obj)
+        public bool Match(object obj)
         {
             var other = obj as StaticPlaneColliderShapeDesc;
-            if (other == null) return -1;
-            if (other.Normal == Normal && Math.Abs(other.Offset - Offset) < float.Epsilon) return 0;
-            return 1;
+            if (other == null) return false;
+            return other.Normal == Normal && Math.Abs(other.Offset - Offset) < float.Epsilon;
         }
 
         public override int GetHashCode()

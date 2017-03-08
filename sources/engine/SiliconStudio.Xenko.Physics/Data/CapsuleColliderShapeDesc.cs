@@ -54,19 +54,15 @@ namespace SiliconStudio.Xenko.Physics
         [DataMember(60)]
         public Quaternion LocalRotation = Quaternion.Identity;
 
-        public int CompareTo(object obj)
+        public bool Match(object obj)
         {
             var other = obj as CapsuleColliderShapeDesc;
-            if (other == null) return -1;
-
-            if (other.Is2D == Is2D &&
-                Math.Abs(other.Length - Length) < float.Epsilon &&
-                Math.Abs(other.Radius - Radius) < float.Epsilon &&
-                other.Orientation == Orientation &&
-                other.LocalOffset == LocalOffset &&
-                other.LocalRotation == LocalRotation) return 0;
-
-            return 1;
+            return other?.Is2D == Is2D &&
+                   Math.Abs(other.Length - Length) < float.Epsilon &&
+                   Math.Abs(other.Radius - Radius) < float.Epsilon &&
+                   other.Orientation == Orientation &&
+                   other.LocalOffset == LocalOffset &&
+                   other.LocalRotation == LocalRotation;
         }
 
         public override int GetHashCode()
