@@ -1,3 +1,4 @@
+using System;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Quantum;
@@ -19,6 +20,41 @@ namespace SiliconStudio.Presentation.Quantum
             CreateMembers(parentPresenter, objectNode);
             CreateItems(parentPresenter, objectNode);
             parentPresenter.FinalizeInitialization();
+        }
+
+        [NotNull]
+        protected virtual IInitializingNodePresenter CreateRootPresenter([NotNull] IObjectNode rootNode)
+        {
+            if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
+            return new RootNodePresenter(this, rootNode);
+        }
+
+        protected virtual bool ShouldCreateMemberPresenter([NotNull] IMemberNode member)
+        {
+            if (member == null) throw new ArgumentNullException(nameof(member));
+            return true;
+        }
+
+        [NotNull]
+        protected virtual IInitializingNodePresenter CreateMember([NotNull] INodePresenter parentPresenter, [NotNull] IMemberNode member)
+        {
+            if (parentPresenter == null) throw new ArgumentNullException(nameof(parentPresenter));
+            if (member == null) throw new ArgumentNullException(nameof(member));
+            return new MemberNodePresenter(this, parentPresenter, member);
+        }
+
+        protected virtual bool ShouldCreateItemPresenter([NotNull] IObjectNode objectNode, Index item)
+        {
+            if (objectNode == null) throw new ArgumentNullException(nameof(objectNode));
+            return true;
+        }
+
+        [NotNull]
+        protected virtual IInitializingNodePresenter CreateItem([NotNull] INodePresenter containerPresenter, [NotNull] IObjectNode containerNode, Index index)
+        {
+            if (containerPresenter == null) throw new ArgumentNullException(nameof(containerPresenter));
+            if (containerNode == null) throw new ArgumentNullException(nameof(containerNode));
+            return new ItemNodePresenter(this, containerPresenter, containerNode, index);
         }
 
         private void CreateMembers(IInitializingNodePresenter parentPresenter, IObjectNode objectNode)
@@ -68,33 +104,6 @@ namespace SiliconStudio.Presentation.Quantum
                     }
                 }
             }
-        }
-
-        [NotNull]
-        protected virtual IInitializingNodePresenter CreateRootPresenter(IObjectNode rootNode)
-        {
-            return new RootNodePresenter(this, rootNode);
-        }
-
-        protected virtual bool ShouldCreateMemberPresenter(IMemberNode member)
-        {
-            return true;
-        }
-
-        protected virtual IInitializingNodePresenter CreateMember(INodePresenter parentPresenter, IMemberNode member)
-        {
-            return new MemberNodePresenter(this, parentPresenter, member);
-        }
-
-        protected virtual bool ShouldCreateItemPresenter(IObjectNode objectNode, Index item)
-        {
-            return true;
-        }
-
-        [NotNull]
-        protected virtual IInitializingNodePresenter CreateItem(INodePresenter containerPresenter, IObjectNode containerNode, Index index)
-        {
-            return new ItemNodePresenter(this, containerPresenter, containerNode, index);
         }
     }
 }

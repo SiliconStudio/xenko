@@ -10,29 +10,30 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 {
     public class RootNodePresenter : NodePresenterBase
     {
-        private readonly IObjectNode rootNode;
+        protected readonly IObjectNode RootNode;
 
-        public RootNodePresenter([NotNull] INodePresenterFactoryInternal factory, IObjectNode rootNode)
+        public RootNodePresenter([NotNull] INodePresenterFactoryInternal factory, [NotNull] IObjectNode rootNode)
             : base(factory, null)
         {
             if (factory == null) throw new ArgumentNullException(nameof(factory));
-            this.rootNode = rootNode;
+            if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
+            RootNode = rootNode;
             Commands.AddRange(rootNode.Commands);
         }
 
         public override string Name => "Root";
         public sealed override List<INodeCommand> Commands { get; } = new List<INodeCommand>();
-        public override Type Type => rootNode.Type;
+        public override Type Type => RootNode.Type;
         public override Index Index => Index.Empty;
         public override bool IsPrimitive => false;
-        public override bool IsEnumerable => rootNode.IsEnumerable;
-        public override ITypeDescriptor Descriptor => rootNode.Descriptor;
+        public override bool IsEnumerable => RootNode.IsEnumerable;
+        public override ITypeDescriptor Descriptor => RootNode.Descriptor;
         public override int? Order => null;
-        public override object Value => rootNode.Retrieve();
+        public override object Value => RootNode.Retrieve();
         public override event EventHandler<ValueChangingEventArgs> ValueChanging;
         public override event EventHandler<ValueChangedEventArgs> ValueChanged;
 
-        protected override IObjectNode ParentingNode => rootNode;
+        protected override IObjectNode ParentingNode => RootNode;
 
         public override void UpdateValue(object newValue)
         {
@@ -41,12 +42,12 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override void AddItem(object value)
         {
-            if (!rootNode.IsEnumerable)
+            if (!RootNode.IsEnumerable)
                 throw new NodePresenterException($"{nameof(RootNodePresenter)}.{nameof(AddItem)} cannot be invoked on objects that are not collection.");
 
             try
             {
-                rootNode.Add(value);
+                RootNode.Add(value);
                 Refresh();
             }
             catch (Exception e)
@@ -57,12 +58,12 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override void AddItem(object value, Index index)
         {
-            if (!rootNode.IsEnumerable)
+            if (!RootNode.IsEnumerable)
                 throw new NodePresenterException($"{nameof(RootNodePresenter)}.{nameof(AddItem)} cannot be invoked on objects that are not collection.");
 
             try
             {
-                rootNode.Add(value, index);
+                RootNode.Add(value, index);
                 Refresh();
             }
             catch (Exception e)
@@ -73,12 +74,12 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override void RemoveItem(object value, Index index)
         {
-            if (!rootNode.IsEnumerable)
+            if (!RootNode.IsEnumerable)
                 throw new NodePresenterException($"{nameof(RootNodePresenter)}.{nameof(RemoveItem)} cannot be invoked on objects that are not collection.");
 
             try
             {
-                rootNode.Remove(value, index);
+                RootNode.Remove(value, index);
                 Refresh();
             }
             catch (Exception e)
@@ -89,12 +90,12 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override void UpdateItem(object newValue, Index index)
         {
-            if (!rootNode.IsEnumerable)
+            if (!RootNode.IsEnumerable)
                 throw new NodePresenterException($"{nameof(RootNodePresenter)}.{nameof(UpdateItem)} cannot be invoked on objects that are not collection.");
 
             try
             {
-                rootNode.Update(newValue, index);
+                RootNode.Update(newValue, index);
                 Refresh();
             }
             catch (Exception e)
@@ -105,7 +106,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         internal override Task RunCommand(INodeCommand command, object parameter)
         {
-            return command.Execute(rootNode, Index.Empty, parameter);
+            return command.Execute(RootNode, Index.Empty, parameter);
         }
     }
 }

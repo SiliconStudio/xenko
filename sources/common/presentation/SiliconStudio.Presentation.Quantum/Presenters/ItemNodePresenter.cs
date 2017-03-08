@@ -11,13 +11,15 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 {
     public class ItemNodePresenter : NodePresenterBase
     {
-        private readonly IObjectNode container;
+        protected readonly IObjectNode Container;
 
-        public ItemNodePresenter([NotNull] INodePresenterFactoryInternal factory, INodePresenter parent, IObjectNode container, Index index)
+        public ItemNodePresenter([NotNull] INodePresenterFactoryInternal factory, [NotNull] INodePresenter parent, [NotNull] IObjectNode container, Index index)
             : base(factory, parent)
         {
             if (factory == null) throw new ArgumentNullException(nameof(factory));
-            this.container = container;
+            if (parent == null) throw new ArgumentNullException(nameof(parent));
+            if (container == null) throw new ArgumentNullException(nameof(container));
+            Container = container;
             Type = (container.Descriptor as CollectionDescriptor)?.ElementType ?? (container.Descriptor as DictionaryDescriptor)?.ValueType;
             Index = index;
             Name = index.ToString();
@@ -36,8 +38,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override void Dispose()
         {
-            container.ItemChanging -= OnItemChanging;
-            container.ItemChanged -= OnItemChanged;
+            Container.ItemChanging -= OnItemChanging;
+            Container.ItemChanged -= OnItemChanged;
         }
 
         public override string Name { get; }
@@ -48,27 +50,27 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override Type Type { get; }
 
-        public override bool IsPrimitive => container.ItemReferences != null;
+        public override bool IsPrimitive => Container.ItemReferences != null;
 
-        public override bool IsEnumerable => container.IsEnumerable;
+        public override bool IsEnumerable => Container.IsEnumerable;
 
         public override ITypeDescriptor Descriptor { get; }
 
         public override int? Order { get; }
 
-        public override object Value => container.Retrieve(Index);
+        public override object Value => Container.Retrieve(Index);
 
         public override event EventHandler<ValueChangingEventArgs> ValueChanging;
 
         public override event EventHandler<ValueChangedEventArgs> ValueChanged;
 
-        protected override IObjectNode ParentingNode => container.ItemReferences != null ? container.IndexedTarget(Index) : null;
+        protected override IObjectNode ParentingNode => Container.ItemReferences != null ? Container.IndexedTarget(Index) : null;
 
         public override void UpdateValue(object newValue)
         {
             try
             {
-                container.Update(newValue, Index);
+                Container.Update(newValue, Index);
                 Refresh();
             }
             catch (Exception e)
@@ -79,12 +81,12 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override void AddItem(object value)
         {
-            if (container.IndexedTarget(Index) == null || !container.IndexedTarget(Index).IsEnumerable)
+            if (Container.IndexedTarget(Index) == null || !Container.IndexedTarget(Index).IsEnumerable)
                 throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(AddItem)} cannot be invoked on members that are not collection.");
 
             try
             {
-                container.IndexedTarget(Index).Add(value);
+                Container.IndexedTarget(Index).Add(value);
                 Refresh();
             }
             catch (Exception e)
@@ -95,12 +97,12 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override void AddItem(object value, Index index)
         {
-            if (container.IndexedTarget(Index) == null || !container.IndexedTarget(Index).IsEnumerable)
+            if (Container.IndexedTarget(Index) == null || !Container.IndexedTarget(Index).IsEnumerable)
                 throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(AddItem)} cannot be invoked on members that are not collection.");
 
             try
             {
-                container.IndexedTarget(Index).Add(value, index);
+                Container.IndexedTarget(Index).Add(value, index);
                 Refresh();
             }
             catch (Exception e)
@@ -111,12 +113,12 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override void RemoveItem(object value, Index index)
         {
-            if (container.IndexedTarget(Index) == null || !container.IndexedTarget(Index).IsEnumerable)
+            if (Container.IndexedTarget(Index) == null || !Container.IndexedTarget(Index).IsEnumerable)
                 throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(AddItem)} cannot be invoked on members that are not collection.");
 
             try
             {
-                container.IndexedTarget(Index).Remove(value, index);
+                Container.IndexedTarget(Index).Remove(value, index);
                 Refresh();
             }
             catch (Exception e)
@@ -127,12 +129,12 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override void UpdateItem(object newValue, Index index)
         {
-            if (container.IndexedTarget(Index) == null || !container.IndexedTarget(Index).IsEnumerable)
+            if (Container.IndexedTarget(Index) == null || !Container.IndexedTarget(Index).IsEnumerable)
                 throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(AddItem)} cannot be invoked on members that are not collection.");
 
             try
             {
-                container.IndexedTarget(Index).Update(newValue, index);
+                Container.IndexedTarget(Index).Update(newValue, index);
                 Refresh();
             }
             catch (Exception e)
@@ -143,7 +145,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         internal override Task RunCommand(INodeCommand command, object parameter)
         {
-            return command.Execute(container, Index, parameter);
+            return command.Execute(Container, Index, parameter);
         }
 
         private void OnItemChanging(object sender, ItemChangeEventArgs e)
@@ -154,6 +156,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         private void OnItemChanged(object sender, ItemChangeEventArgs e)
         {
+            Refresh();
             ValueChanged?.Invoke(this, new ValueChangedEventArgs(e.OldValue));
         }
 
