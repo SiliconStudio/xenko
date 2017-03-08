@@ -41,6 +41,7 @@
     <Compile Include="..\SiliconStudio.Core.Serialization\IO\NativeLockFile.cs">
       <Link>Windows\NativeLockFile.cs</Link>
     </Compile>
+    <Compile Include="AbsoluteId.cs" />
     <Compile Include="Annotations\BaseTypeRequiredAttribute.cs" />
     <Compile Include="Annotations\CollectionAccessAttribute.cs" />
     <Compile Include="Annotations\MustUseReturnValueAttribute.cs" />
