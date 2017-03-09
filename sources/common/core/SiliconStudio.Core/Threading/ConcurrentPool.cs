@@ -6,8 +6,12 @@ using System.Threading;
 namespace SiliconStudio.Core.Threading
 {
     /// <summary>
-    /// A lockless, allocation-free concurrent object pool.
+    /// A concurrent object pool.
     /// </summary>
+    /// <remarks>
+    /// Circular buffer segments are used as storage. When full, new segments are added as tail. Items are only appended to the tail segment.
+    /// When the head segment is empty, it will be discarded. After stabilizing, only a single segment exists at a time, causing no further segment allocations or locking.
+    /// </remarks>
     /// <typeparam name="T">The pooled item type</typeparam>
     public class ConcurrentPool<T>
         where T : class
@@ -36,6 +40,7 @@ namespace SiliconStudio.Core.Threading
 
             /// <summary>
             /// The current number of stored items, used to check when to change head and tail segments.
+            /// When it reaches zero, the segment can be safely discarded.
             /// </summary>
             public int Count;
 
@@ -46,6 +51,10 @@ namespace SiliconStudio.Core.Threading
 
             public Segment(int size)
             {
+                // Size must be a power of two for modulo and overflow of read/write indices to behave correctly
+                if (size <= 0 || ((size & (size - 1)) != 0))
+                    throw new ArgumentOutOfRangeException(nameof(size), "Must be power of two");
+
                 Items = new T[size];
                 Mask = size - 1;
             }
@@ -102,6 +111,8 @@ namespace SiliconStudio.Core.Threading
                     // If there were any items and we could reserve one of them, move the
                     // read index forward and get the index of the item we can acquire.
                     var localLow = Interlocked.Increment(ref localHead.Low) - 1;
+
+                    // Modulo Items.Length to calculate the actual index.
                     var index = localLow & localHead.Mask;
 
                     // Take the item. Spin until the slot has been written by pending calls to Release.
@@ -133,7 +144,7 @@ namespace SiliconStudio.Core.Threading
                 {
                     lock (resizeLock)
                     {
-                        if (tail.Next == null && count == localTail.Items.Length)
+                        if (tail.Next == null && count == tail.Items.Length)
                         {
                             tail = tail.Next = new Segment(tail.Items.Length << 1);
                         }
@@ -141,11 +152,11 @@ namespace SiliconStudio.Core.Threading
                 }
                 else if (Interlocked.CompareExchange(ref localTail.Count, count + 1, count) == count)
                 {
-                    // TODO: Is it possible that we write to the head-segment after it was discarded, because it was empty at the time?
-
                     // If there was space for another item and we were able to reserve it, move the
                     // write index forward and get the index of the slot we can write into.
                     var localHigh = Interlocked.Increment(ref localTail.High) - 1;
+
+                    // Modulo Items.Length to calculate the actual index.
                     var index = localHigh & localTail.Mask;
 
                     // Write the item. Spin until the slot has been cleared by pending calls to Acquire.
