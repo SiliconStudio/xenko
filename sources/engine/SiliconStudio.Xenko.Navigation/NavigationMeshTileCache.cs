@@ -15,16 +15,14 @@ namespace SiliconStudio.Xenko.Navigation
     /// Holds the cached result of building a scene into a navigation mesh, with input vertex data to allow incremental builds.
     /// </summary>
     [DataContract]
-    internal class NavigationMeshCachedBuild
+    internal class NavigationMeshTileCache
     {
         public Dictionary<Guid, NavigationMeshCachedBuildObject> Objects =
             new Dictionary<Guid, NavigationMeshCachedBuildObject>();
-
-        public NavigationMesh NavigationMesh;
+        
+        public List<BoundingBox> BoundingBoxes = new List<BoundingBox>();
 
         public int SettingsHash = 0;
-
-        public Vector3 Offset;
 
         /// <summary>
         /// Registers a new processed object that is build into the navigation mesh

@@ -83,16 +83,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoundingBoxProcessor.cs" />
     <Compile Include="Debug.cs" />
-    <Compile Include="DynamicNavigationMeshBoundingVolume.cs" />
+    <Compile Include="NavigationMeshBoundingBox.cs" />
     <Compile Include="DynamicNavigationMeshSystem.cs" />
     <Compile Include="NativeInvoke.cs" />
     <Compile Include="NavigationAgentSettings.cs" />
     <Compile Include="NavigationComponent.cs" />
     <Compile Include="NavigationMesh.cs" />
+    <Compile Include="NavigationMeshBuilder.cs" />
+    <Compile Include="NavigationMeshBuildResult.cs" />
     <Compile Include="NavigationMeshBuildSettings.cs" />
     <Compile Include="NavigationMeshBuildUtils.cs" />
-    <Compile Include="NavigationMeshCachedBuild.cs" />
+    <Compile Include="NavigationMeshTileCache.cs" />
     <Compile Include="NavigationMeshCachedBuildObject.cs" />
     <Compile Include="NavigationMeshInputBuilder.cs" />
     <Compile Include="NavigationMeshLayer.cs" />
@@ -106,6 +109,8 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="StaticColliderData.cs" />
+    <Compile Include="StaticColliderProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SiliconStudio.Xenko.Navigation.dll.config">

@@ -246,9 +246,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     }
                 }
 
-                // Store used bounding box in navigation mesh
-                generatedNavigationMesh.BoundingBox = boundingBox;
-
                 contentManager.Save(assetUrl, generatedNavigationMesh);
                 SaveIntermediateData(intermediateDataId, currentBuild);
 

@@ -63,6 +63,33 @@ namespace SiliconStudio.Xenko.Navigation
             return boundingBox;
         }
 
+        public static void SnapBoundingBoxToCellHeight(NavigationMeshBuildSettings settings, ref BoundingBox boundingBox)
+        {
+            // Snap Y to tile height to avoid height differences between tiles
+            boundingBox.Minimum.Y = (float)Math.Floor(boundingBox.Minimum.Y / settings.CellHeight) * settings.CellHeight;
+            boundingBox.Maximum.Y = (float)Math.Ceiling(boundingBox.Maximum.Y / settings.CellHeight) * settings.CellHeight;
+        }
+
+        /// <summary>
+        /// Calculates X-Z span for a navigation mesh tile. The Y-axis will span from <see cref="float.MinValue"/> to <see cref="float.MaxValue"/>
+        /// </summary>
+        public static BoundingBox CalculateTileBoundingBox(NavigationMeshBuildSettings settings, Point tileCoord)
+        {
+            float tcs = settings.TileSize * settings.CellSize;
+            Vector2 tileMin = new Vector2(tileCoord.X * tcs, tileCoord.Y * tcs);
+            Vector2 tileMax = tileMin + new Vector2(tcs);
+
+            BoundingBox boundingBox = BoundingBox.Empty;
+            boundingBox.Minimum.X = tileMin.X;
+            boundingBox.Minimum.Z = tileMin.Y;
+            boundingBox.Maximum.X = tileMax.X;
+            boundingBox.Maximum.Z = tileMax.Y;
+            boundingBox.Minimum.Y = float.MinValue;
+            boundingBox.Maximum.Y = float.MaxValue;
+
+            return boundingBox;
+        }
+
         /// <summary>
         /// Generates a random tangent and binormal for a given normal, 
         /// usefull for creating plane vertices or orienting objects (lookat) where the rotation along the normal doesn't matter
@@ -131,6 +158,7 @@ namespace SiliconStudio.Xenko.Navigation
             int hash = 0;
             hash = (hash * 397) ^ collider.Entity.Transform.WorldMatrix.GetHashCode();
             hash = (hash * 397) ^ collider.CollisionGroup.GetHashCode();
+            hash = (hash * 397) ^ collider.Enabled.GetHashCode();
             foreach (var shape in collider.ColliderShapes)
             {
                 hash = (hash * 397) ^ shape.GetType().GetHashCode();

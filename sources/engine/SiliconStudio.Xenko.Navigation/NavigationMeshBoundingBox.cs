@@ -3,11 +3,13 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Design;
 
 namespace SiliconStudio.Xenko.Navigation
 {
     [DataContract]
-    public class DynamicNavigationMeshBoundingVolume : EntityComponent
+    [DefaultEntityComponentProcessor(typeof(BoundingBoxProcessor), ExecutionMode = ExecutionMode.All)]
+    public class NavigationMeshBoundingBox : EntityComponent
     {
     }
 }

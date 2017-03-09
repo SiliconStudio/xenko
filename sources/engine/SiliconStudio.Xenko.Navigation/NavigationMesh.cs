@@ -19,19 +19,14 @@ namespace SiliconStudio.Xenko.Navigation
     [ContentSerializer(typeof(DataContentSerializer<NavigationMesh>))]
     public class NavigationMesh
     {
-        /// <summary>
-        /// Bounding box used when building
-        /// </summary>
-        public BoundingBox BoundingBox;
+        // Stores the cached build information to allow incremental building on this navigation mesh
+        internal NavigationMeshTileCache TileCache;
 
         // Initialized build settings, only used at build time
         [DataMemberIgnore] internal NavigationMeshBuildSettings BuildSettings;
 
         // Backing value of Layers and NumLayers
         [DataMemberCustomSerializer] internal readonly List<NavigationMeshLayer> LayersInternal = new List<NavigationMeshLayer>();
-
-        // Used internally to detect tile changes
-        internal int TileHash;
         
         /// <summary>
         /// Multiple layers corresponding to multiple agent settings
@@ -95,39 +90,19 @@ namespace SiliconStudio.Xenko.Navigation
                 layer.BuildTile(inputVertices, inputIndices, boundingBox, tileCoordinate);
             }
 
-            // Update tile hash
-            UpdateTileHash();
-
             return builtTiles;
-        }
-
-        /// <summary>
-        /// Updates <see cref="TileHash"/> to be "unique" to this specific combination of navigation mesh tiles and layers
-        /// </summary>
-        internal void UpdateTileHash()
-        {
-            TileHash = 0;
-            if (Layers == null)
-                return;
-
-            foreach (NavigationMeshLayer layer in Layers)
-            {
-                foreach (var tile in layer.Tiles)
-                {
-                    TileHash = (TileHash*397) ^ tile.GetHashCode();
-                    TileHash = (TileHash*397) ^ tile.Value.GetHashCode();
-                }
-            }
         }
 
         internal class NavigationMeshSerializer : DataSerializer<NavigationMesh>
         {
             private DictionarySerializer<Point, NavigationMeshTile> tilesSerializer;
             private DataSerializer<BoundingBox> boundingBoxSerializer;
+            private DataSerializer<NavigationMeshTileCache> tileCacheSerializer;
 
             public override void Initialize(SerializerSelector serializerSelector)
             {
                 boundingBoxSerializer = MemberSerializer<BoundingBox>.Create(serializerSelector, false);
+                tileCacheSerializer = MemberSerializer<NavigationMeshTileCache>.Create(serializerSelector, false);
                 tilesSerializer = new DictionarySerializer<Point, NavigationMeshTile>();
                 tilesSerializer.Initialize(serializerSelector);
             }
@@ -148,7 +123,7 @@ namespace SiliconStudio.Xenko.Navigation
                 stream.Serialize(ref obj.BuildSettings.TileSize);
                 stream.Serialize(ref obj.BuildSettings.CellSize);
 
-                boundingBoxSerializer.Serialize(ref obj.BoundingBox, mode, stream);
+                tileCacheSerializer.Serialize(ref obj.TileCache, mode, stream);
 
                 int numLayers = obj.Layers.Count;
                 stream.Serialize(ref numLayers);
@@ -169,9 +144,6 @@ namespace SiliconStudio.Xenko.Navigation
 
                     tilesSerializer.Serialize(ref layer.TilesInternal, mode, stream);
                 }
-
-                if (mode == ArchiveMode.Deserialize)
-                    obj.UpdateTileHash();
             }
         }
     }
