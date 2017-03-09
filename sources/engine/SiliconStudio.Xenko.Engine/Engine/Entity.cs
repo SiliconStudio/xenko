@@ -95,9 +95,24 @@ namespace SiliconStudio.Xenko.Engine
         [DataMemberIgnore]
         public Scene Scene
         {
-            get { return scene; }
+            get
+            {
+                Entity root = this;
+                Entity parent;
+
+                while ((parent = root.GetParent()) != null)
+                {
+                    root = parent;
+                }
+
+                return root.scene;
+            }
+
             set
             {
+                if (this.GetParent() != null)
+                    throw new InvalidOperationException("This entity is another entities child. Detach it before changing it's scene.");
+
                 var oldScene = scene;
                 if (oldScene == value)
                     return;
