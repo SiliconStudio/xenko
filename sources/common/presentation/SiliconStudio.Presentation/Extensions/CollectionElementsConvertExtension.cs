@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 
-namespace SiliconStudio.Presentation.Core
+namespace SiliconStudio.Presentation.Extensions
 {
     public static class CollectionElementsConvertExtension
     {
