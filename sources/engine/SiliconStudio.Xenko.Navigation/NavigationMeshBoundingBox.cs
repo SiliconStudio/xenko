@@ -4,6 +4,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Navigation.Processors;
 
 namespace SiliconStudio.Xenko.Navigation
 {

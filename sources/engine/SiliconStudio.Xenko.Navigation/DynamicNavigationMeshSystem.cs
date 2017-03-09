@@ -10,6 +10,7 @@ using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Physics;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Navigation.Processors;
 
 namespace SiliconStudio.Xenko.Navigation
 {

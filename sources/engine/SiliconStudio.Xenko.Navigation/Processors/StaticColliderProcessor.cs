@@ -1,7 +1,7 @@
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Physics;
 
-namespace SiliconStudio.Xenko.Navigation
+namespace SiliconStudio.Xenko.Navigation.Processors
 {
     internal class StaticColliderProcessor : EntityProcessor<StaticColliderComponent, StaticColliderData>
     {
