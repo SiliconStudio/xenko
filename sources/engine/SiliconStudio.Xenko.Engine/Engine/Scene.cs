@@ -122,6 +122,7 @@ namespace SiliconStudio.Xenko.Engine
 
         private void AddItem(Entity item)
         {
+            // Root entity in another scene, or child of another entity
             if (item.Scene != null)
                 throw new InvalidOperationException("This entity already has a scene. Detach it first.");
 
@@ -130,7 +131,7 @@ namespace SiliconStudio.Xenko.Engine
 
         private void RemoveItem(Entity item)
         {
-            if (item.Scene != this)
+            if (item.scene != this)
                 throw new InvalidOperationException("This entity's scene is not the expected value.");
 
             item.scene = null;
