@@ -13,20 +13,26 @@ namespace SiliconStudio.Core
         /// Initializes a new instance of <see cref="AbsoluteId"/>.
         /// </summary>
         /// <param name="assetId"></param>
-        /// <param name="guid"></param>
-        /// <exception cref="ArgumentException"><paramref name="assetId"/> and <paramref name="guid"/> cannot both be empty.</exception>
-        public AbsoluteId(AssetId assetId, Guid guid)
+        /// <param name="objectId"></param>
+        /// <exception cref="ArgumentException"><paramref name="assetId"/> and <paramref name="objectId"/> cannot both be empty.</exception>
+        public AbsoluteId(AssetId assetId, Guid objectId)
         {
-            if (assetId == AssetId.Empty && guid == Guid.Empty)
-                throw new ArgumentException($"{nameof(assetId)} and {nameof(guid)} cannot both be empty.");
+            if (assetId == AssetId.Empty && objectId == Guid.Empty)
+                throw new ArgumentException($"{nameof(assetId)} and {nameof(objectId)} cannot both be empty.");
 
             AssetId = assetId;
-            Guid = guid;
+            ObjectId = objectId;
         }
 
+        /// <summary>
+        /// The identifier of the containing asset.
+        /// </summary>
         public AssetId AssetId { get; }
 
-        public Guid Guid { get; }
+        /// <summary>
+        /// The identifier of the object in the asset.
+        /// </summary>
+        public Guid ObjectId { get; }
 
         /// <inheritdoc />
         public static bool operator ==(AbsoluteId left, AbsoluteId right)
@@ -43,7 +49,7 @@ namespace SiliconStudio.Core
         /// <inheritdoc />
         public bool Equals(AbsoluteId other)
         {
-            return AssetId.Equals(other.AssetId) && Guid.Equals(other.Guid);
+            return AssetId.Equals(other.AssetId) && ObjectId.Equals(other.ObjectId);
         }
 
         /// <inheritdoc />
@@ -58,14 +64,14 @@ namespace SiliconStudio.Core
         {
             unchecked
             {
-                return (AssetId.GetHashCode() * 397) ^ Guid.GetHashCode();
+                return (AssetId.GetHashCode() * 397) ^ ObjectId.GetHashCode();
             }
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{AssetId}/{Guid}";
+            return $"{AssetId}/{ObjectId}";
         }
     }
 }
