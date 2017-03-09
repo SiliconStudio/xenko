@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             // Add navigation mesh dependencies
             foreach (var dep in asset.EnumerateCompileTimeDependencies(assetItem.Package.Session))
             {
-                var colliderAssetItem = assetItem.Package.Session.FindAsset(dep.Id);
+                var colliderAssetItem = assetItem.Package.FindAsset(dep.Id);
                 var colliderShapeAsset = colliderAssetItem?.Asset as ColliderShapeAsset;
                 if (colliderShapeAsset != null)
                 {
