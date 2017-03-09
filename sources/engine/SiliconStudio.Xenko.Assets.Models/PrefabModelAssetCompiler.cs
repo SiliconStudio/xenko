@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (PrefabModelAsset)assetItem.Asset;
-            var renderingSettings = context.GetGameSettingsAsset().Get<RenderingSettings>();
+            var renderingSettings = context.GetGameSettingsAsset().GetOrCreate<RenderingSettings>();
             result.BuildSteps = new ListBuildStep { new PrefabModelAssetCompileCommand(targetUrlInStorage, asset, assetItem, renderingSettings) };
             result.ShouldWaitForPreviousBuilds = true;
         }

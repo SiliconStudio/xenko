@@ -192,7 +192,7 @@ namespace SiliconStudio.Assets.CompilerApp
             }
 
             var settings = simplePackage.GetGameSettingsAsset();
-            var renderingSettings = settings.Get<RenderingSettings>();
+            var renderingSettings = settings.GetOrCreate<RenderingSettings>();
 
             var buildProfile = simplePackage.Profiles.FirstOrDefault(pair => pair.Name == builderOptions.BuildProfile);
             if (buildProfile == null)
