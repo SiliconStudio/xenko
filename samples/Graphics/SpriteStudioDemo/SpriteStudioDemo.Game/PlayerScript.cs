@@ -156,7 +156,7 @@ namespace SpriteStudioDemo
                     if (playingAnimation == null || playingAnimation.Name != "Attack")
                     {
                         playingAnimation = animComponent.Play("Attack");
-                        animTask = playingAnimation.Ended();
+                        animTask = animComponent.Ended(playingAnimation);
                     }
                 }
                 else
