@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Navigation
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
             if (NavigationMeshInternal == IntPtr.Zero)
-                throw new InvalidOperationException("Navigation mesh was not initialized");
+                return false;
 
             Navigation.PathFindQuery query;
             query.Source = start;
