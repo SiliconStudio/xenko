@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public EditTextTest()
         {
-            CurrentVersion = 13; // Font type, names & sizes changed slightly
+            CurrentVersion = 14; // Font type, names & sizes changed slightly
         }
 
         protected override async Task LoadContent()
