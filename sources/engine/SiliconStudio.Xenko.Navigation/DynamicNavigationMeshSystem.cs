@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Navigation
         // TODO multiple bounding boxes + thread local
         BoundingBox globalBoundingBox = new BoundingBox(new Vector3(-20), new Vector3(20));
 
-        private NavigationMeshCachedBuild currentBuild = new NavigationMeshCachedBuild();
+        private NavigationMeshCachedBuild lastBuild = null;
 
         // TODO: Space partitioning
         private List<StaticColliderData> colliders = new List<StaticColliderData>();
@@ -107,6 +107,8 @@ namespace SiliconStudio.Xenko.Navigation
                 if (colliderData.Processed)
                 {
                     MarkTiles(colliderData.InputBuilder, ref buildSettings, ref agentSettings, tilesToBuild);
+                    if(colliderData.Previous != null)
+                        MarkTiles(colliderData.Previous.InputBuilder, ref buildSettings, ref agentSettings, tilesToBuild);
                 }
 
                 // Otherwise, skip building these tiles
@@ -115,9 +117,9 @@ namespace SiliconStudio.Xenko.Navigation
             }
 
             // Check for removed colliders
-            if (currentBuild != null)
+            if (lastBuild != null)
             {
-                foreach (var obj in currentBuild.Objects)
+                foreach (var obj in lastBuild.Objects)
                 {
                     if (!newBuild.Objects.ContainsKey(obj.Key))
                     {
@@ -213,19 +215,21 @@ namespace SiliconStudio.Xenko.Navigation
             if (cancellationToken.IsCancellationRequested)
                 return result;
             
-            result.NavigationMesh = new NavigationMesh();
+            result.NavigationMesh = newBuild.NavigationMesh = new NavigationMesh();
 
             // TODO
             int numLayers = 1;
             for (int i = 0; i < numLayers; i++)
             {
-                if (currentBuild != null && currentBuild.NavigationMesh.LayersInternal.Count > i)
+                var newLayer = new NavigationMeshLayer();
+                result.NavigationMesh.LayersInternal.Add(newLayer);
+
+                // Copy tiles from previous build into new build
+                if (lastBuild != null && lastBuild.NavigationMesh.LayersInternal.Count > i)
                 {
-                    result.NavigationMesh.LayersInternal.Add(currentBuild.NavigationMesh.LayersInternal[i]);
-                }
-                else
-                {
-                    result.NavigationMesh.LayersInternal.Add(new NavigationMeshLayer());
+                    var sourceLayer = lastBuild.NavigationMesh.LayersInternal[i];
+                    foreach (var sourceTile in sourceLayer.Tiles)
+                        newLayer.TilesInternal.Add(sourceTile.Key, sourceTile.Value);
                 }
             }
 
@@ -255,8 +259,7 @@ namespace SiliconStudio.Xenko.Navigation
                 }
             }
 
-            currentBuild.NavigationMesh = result.NavigationMesh;
-            currentBuild = newBuild;
+            lastBuild = newBuild;
 
             result.Success = true;
             return result;
@@ -294,13 +297,16 @@ namespace SiliconStudio.Xenko.Navigation
 
                 NavigationMeshInputBuilder entityNavigationMeshInputBuilder = colliderData.InputBuilder = new NavigationMeshInputBuilder();
 
+                // Compute hash of collider and compare it with the previous build if there is one
                 colliderData.ParameterHash = NavigationMeshBuildUtils.HashEntityCollider(colliderData.Component);
-                NavigationMeshCachedBuildObject oldObject = null;
-                if (currentBuild?.Objects.TryGetValue(colliderData.Component.Id, out oldObject) ?? false)
+                colliderData.Previous = null;
+                if (lastBuild?.Objects.TryGetValue(colliderData.Component.Id, out colliderData.Previous) ?? false)
                 {
-                    if (oldObject.ParameterHash == colliderData.ParameterHash)
+                    if (colliderData.Previous.ParameterHash == colliderData.ParameterHash)
                     {
-                        colliderData.InputBuilder = oldObject.InputBuilder;
+                        // In this case, we don't need to recalculate the geometry for this shape, since it wasn't changed
+                        // here we take the triangle mesh from the previous build as the current
+                        colliderData.InputBuilder = colliderData.Previous.InputBuilder;
                         colliderData.Processed = false;
                         return;
                     }
@@ -431,6 +437,7 @@ namespace SiliconStudio.Xenko.Navigation
         internal int ParameterHash = 0;
         internal bool Processed = false;
         internal NavigationMeshInputBuilder InputBuilder;
+        internal NavigationMeshCachedBuildObject Previous;
     }
 
     public class StaticColliderCollectorProcessor : EntityProcessor<StaticColliderComponent, StaticColliderData>
@@ -474,7 +481,7 @@ namespace SiliconStudio.Xenko.Navigation
         private Task<NavigationMeshBuildResult> currentBuildTask;
         private CancellationTokenSource buildTaskCancellationTokenSource = null;
         private StaticColliderCollectorProcessor processor;
-
+        
         public DynamicNavigationMeshSystem(IServiceRegistry registry) : base(registry)
         {
             Enabled = true;
@@ -508,7 +515,15 @@ namespace SiliconStudio.Xenko.Navigation
 
             if (pendingRebuild)
             {
-                Rebuild();
+                Game.Script.AddTask(async () =>
+                {
+                    // TODO EntityProcessors
+                    // Currently have to wait a frame for transformations to update
+                    // for example when calling Rebuild from the event that a component was added to the scene, this component will not be in the correct location yet
+                    // since the TransformProcessor runs the next frame
+                    await Game.Script.NextFrame();
+                    await Rebuild();
+                });
                 pendingRebuild = false;
             }
         }
@@ -521,7 +536,7 @@ namespace SiliconStudio.Xenko.Navigation
             // Cancel running build, TODO check if the running build can actual satisfy the current rebuild request and don't cancel in that case
             buildTaskCancellationTokenSource?.Cancel();
             buildTaskCancellationTokenSource = new CancellationTokenSource();
-
+            
             var result = Task.Run(() =>
             {
                 // Only have one active build at a time
@@ -609,22 +624,6 @@ namespace SiliconStudio.Xenko.Navigation
             builder.Remove(data);
             pendingRebuild = true;
         }
-
-//        private void ScanInitialSceneRecursive(Scene scene)
-//        {
-//            foreach (var entity in scene.Entities)
-//            {
-//                if (entity.Get<StaticColliderComponent>())
-//                {
-//                    processor.
-//                }
-//            }
-//
-//            foreach (var childScene in scene.Children)
-//            {
-//                ScanInitialSceneRecursive(childScene);
-//            }
-//        }
 
         private void CurrentSceneInstanceOnComponentChanged(object sender, EntityComponentEventArgs entityComponentEventArgs)
         {
