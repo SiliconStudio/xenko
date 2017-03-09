@@ -1,8 +1,8 @@
 !SceneAsset
 Id: 7207a5b4-cbf4-4edc-a7fb-0dfa83e2414e
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
-Parent: null
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - f0bb69db-f15c-4a39-b3cd-d2941fdb99ce
@@ -23,7 +23,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            10823d6da78231488506771952cf3d01: 8e708cb6-dd94-4ca1-89f5-17d15dfda2ab/6d3d8210-82a7-4831-8506-771952cf3d01
+                            10823d6da78231488506771952cf3d01: ref!! 6d3d8210-82a7-4831-8506-771952cf3d01
                     41458ad07634a647a7b80f9eb9ad1b22: !AnimationComponent
                         Id: d08a4541-3476-47a6-a7b8-0f9eb9ad1b22
                         Animations:
@@ -32,10 +32,9 @@ Hierarchy:
                             b0229b5da72a214e9efb8cc658dcc84e~DodgeLeft: be1d7fd2-aee5-401f-b89d-833c53174a72:ma01
                             fcadcd94fb2bca4a9b42a86d938f171c~DodgeRight: baf0bcc6-2468-46e9-81cc-ff976395d938:ma02
                             aeaba29dd186c447aae5cc653cec9096~Slide: 6784fa36-34e7-4990-baf6-7a854e5caaa9:ma03
-                        PlayingAnimations: {}
                     6da46dd186e87048a8a27ac30c0034ea: !SpaceEscape.CharacterScript,SpaceEscape.Game
                         Id: d16da46d-e886-4870-a8a2-7ac30c0034ea
-                        CharacterShadow: 8e708cb6-dd94-4ca1-89f5-17d15dfda2ab/dd821d2d-0ed7-4ac2-8e23-6fe88911056b
+                        CharacterShadow: ref!! dd821d2d-0ed7-4ac2-8e23-6fe88911056b
                     b5a68281b53dfc4b8735831133e03931: !ModelComponent
                         Id: 8182a6b5-3db5-4bfc-8735-831133e03931
                         Model: 920f4445-c00d-474f-b8c0-33b385d58b8f:character_00
@@ -69,9 +68,9 @@ Hierarchy:
                     8b222eac394d914ea172de967e133b12: !SpaceEscape.GameScript,SpaceEscape.Game
                         Id: ac2e228b-4d39-4e91-a172-de967e133b12
                         Priority: 10
-                        CharacterScript: 23d023ae-08a0-4a2b-883b-c3a784e25e78/d16da46d-e886-4870-a8a2-7ac30c0034ea
-                        BackgroundScript: 9a768522-351d-40ab-ad6b-9ecc90f3c111/96a90126-5b00-48ef-b725-ff6116d66cf5
-                        UIScript: 68cbade9-8efc-4123-8c6c-81bf6c38059b/df4146ae-23ba-40f7-8258-46b1fe1ae97d
+                        CharacterScript: ref!! d16da46d-e886-4870-a8a2-7ac30c0034ea
+                        BackgroundScript: ref!! 96a90126-5b00-48ef-b725-ff6116d66cf5
+                        UIScript: ref!! df4146ae-23ba-40f7-8258-46b1fe1ae97d
         -   Entity:
                 Id: 68cbade9-8efc-4123-8c6c-81bf6c38059b
                 Name: UI

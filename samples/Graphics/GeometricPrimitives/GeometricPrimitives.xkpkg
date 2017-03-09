@@ -1,7 +1,6 @@
 !Package
 Id: 32bb115e-8773-42e2-9e63-77d495e70d98
-SerializedVersion: {Assets: 0.0.3}
-Tags: []
+SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: GeometricPrimitives
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.8.4-beta
+            Version: 1.11.0-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -20,7 +19,6 @@ Profiles:
             -   Path: Assets/Shared
             -   Path: GeometricPrimitives.Game/Effects
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 2f90c609-e537-4a2b-9a28-8b6814ff8f41
                 Location: GeometricPrimitives.Game/GeometricPrimitives.Game.csproj
@@ -31,8 +29,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Windows
         OutputGroupDirectories: {}
-        Properties:
-            Xenko.GraphicsPlatform: Direct3D11
         ProjectReferences:
             -   Id: e534df8b-258b-4270-b6e8-b40e3b8e7946
                 Location: GeometricPrimitives.Windows/GeometricPrimitives.Windows.csproj

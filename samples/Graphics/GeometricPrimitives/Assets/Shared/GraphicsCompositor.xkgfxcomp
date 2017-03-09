@@ -1,5 +1,5 @@
 !GraphicsCompositorAsset
-Id: 37c9d129-9559-439d-9181-6e804ff718cf
+Id: b12b1a5a-a88a-4f37-bbfd-25a831720806
 SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
 Archetype: 9af53371-51ba-49fc-b420-ee7874892e75:Compositing/DefaultGraphicsCompositorLevel9
@@ -83,7 +83,7 @@ RenderFeatures:
         PipelineProcessors: {}
 SharedRenderers:
     60459475d3a3adaf2d1ba5d99913ca75: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine
-        Id: 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+        Id: 160c53b4-b0ab-4f6d-a1dc-d54076cedd30
         Clear:
             Id: 4bc4b2ca-027e-4e4a-94cb-2912709bef5f
             Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
@@ -100,18 +100,9 @@ SharedRenderers:
             RequiredApis: {}
             ResolutionScale: 1.0
         MSAALevel: None
-Game*: !SpriteFonts.FontRenderer,SpriteFonts.Game
+Game: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
-    Background: 0d3b74fb-92c4-4c11-bfc5-6a841c4e6df4:XenkoBackground
-    StaticFont: b6582bd2-276e-4b0e-a0f1-8682e271ab59:StaticFont
-    DynamicFont: cbbbd736-43d0-490e-b3e4-28207140d6cc:DynamicFont
-    BoldFont: 4f741cf1-f3b2-4eda-837b-e29f8597c47d:BoldFont
-    ItalicFont: 5fad01ad-2649-4de9-8a81-b117e320a2ef:ItalicFont
-    AliasedFont: 5376e512-4179-43b6-9d7c-75b0a1ea6f9c:AliasedFont
-    AntialiasedFont: 5b5f75d3-4f7f-4325-b957-fd50161e104c:AntialiasedFont
-    ClearTypeFont: bdc10dde-cc94-45e6-88ee-bd5fe156f982:ClearTypeFont
-    JapaneseFont: 76871742-df92-4a25-804d-e0f4f9301c19:JapaneseFont
-    TimesNewRoman: 022190f7-e5e1-4709-97c2-c02470ebb312:TimesNewRoman
-    HeaderFont: 8a069364-f63d-4a4b-a26e-a95998344ba2:HeaderFont
-SingleView: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
-Editor: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+    Camera: {Index: 0}
+    Child: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 160c53b4-b0ab-4f6d-a1dc-d54076cedd30
+SingleView: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 160c53b4-b0ab-4f6d-a1dc-d54076cedd30
+Editor: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 160c53b4-b0ab-4f6d-a1dc-d54076cedd30

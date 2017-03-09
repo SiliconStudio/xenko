@@ -1,8 +1,8 @@
 !SceneAsset
 Id: c2262423-9422-4dd1-9fcb-ead76f9a93ba
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
-Parent: null
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - c481ec15-4e0b-4529-b351-7bbe42285fd9
@@ -124,8 +124,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            64dfeee427370b479e76f86405c2c1b5: c4272145-3143-4cd6-a973-297257db7f15/e4eedf64-3727-470b-9e76-f86405c2c1b5
-                            c899d06c2688a54f850e50a448379a99: ece16954-9211-4fa2-a645-f644bbc6e829/6cd099c8-8826-4fa5-850e-50a448379a99
+                            64dfeee427370b479e76f86405c2c1b5: ref!! e4eedf64-3727-470b-9e76-f86405c2c1b5
+                            c899d06c2688a54f850e50a448379a99: ref!! 6cd099c8-8826-4fa5-850e-50a448379a99
         -   Entity:
                 Id: 1bdeb0b9-7fef-4f96-ad85-dc7a51cf11c6
                 Name: SampleBox Model
@@ -152,8 +152,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            272d94cce63bd545bd7d65c5781a75f1: cb87f048-923c-430b-9f62-e8f27cc75b7e/cc942d27-3be6-45d5-bd7d-65c5781a75f1
-                            af53bf649adffe42962a972e78f56389: 3c0146f0-961e-4c12-bf52-9d507ac32770/64bf53af-df9a-42fe-962a-972e78f56389
+                            272d94cce63bd545bd7d65c5781a75f1: ref!! cc942d27-3be6-45d5-bd7d-65c5781a75f1
+                            af53bf649adffe42962a972e78f56389: ref!! 64bf53af-df9a-42fe-962a-972e78f56389
         -   Folder: Various
             Entity:
                 Id: 1f3c7de6-a1d2-499f-994c-e46c09358737
@@ -165,8 +165,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            0e0f1844273f9644bda5736e0bf32b8d: 32c93004-9343-4fa8-8aed-ffe5a1310172/44180f0e-3f27-4496-bda5-736e0bf32b8d
-                            228d250af6b10d4194f816f67a8afc43: 27bb72d3-a76a-407e-8cae-75241f0d3ffc/0a258d22-b1f6-410d-94f8-16f67a8afc43
+                            0e0f1844273f9644bda5736e0bf32b8d: ref!! 44180f0e-3f27-4496-bda5-736e0bf32b8d
+                            228d250af6b10d4194f816f67a8afc43: ref!! 0a258d22-b1f6-410d-94f8-16f67a8afc43
         -   Entity:
                 Id: 22766b13-2f3e-4308-aff1-8c5542eef33f
                 Name: SampleBox Model
@@ -276,8 +276,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            f0cefc196c0a284c81ebf64aa5ebb6f9: 8f89b6a1-18ef-4121-abbd-fb9e2823d9da/19fccef0-0a6c-4c28-81eb-f64aa5ebb6f9
-                            5826f737544eed4a8f2e2a072a378172: 69e6db7d-2e3f-46b2-a10d-409360ad4065/37f72658-4e54-4aed-8f2e-2a072a378172
+                            f0cefc196c0a284c81ebf64aa5ebb6f9: ref!! 19fccef0-0a6c-4c28-81eb-f64aa5ebb6f9
+                            5826f737544eed4a8f2e2a072a378172: ref!! 37f72658-4e54-4aed-8f2e-2a072a378172
         -   Entity:
                 Id: 32353827-e0b0-482e-a2e6-4d44cdb015b1
                 Name: SampleBox Model
@@ -319,8 +319,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            c3201cfc90195c40810b28accb1160cf: 1bdeb0b9-7fef-4f96-ad85-dc7a51cf11c6/fc1c20c3-1990-405c-810b-28accb1160cf
-                            0c87b88d5c620f4a8888462e0a9fec3f: 432ce6f1-45eb-4518-8067-090f0354d337/8db8870c-625c-4a0f-8888-462e0a9fec3f
+                            c3201cfc90195c40810b28accb1160cf: ref!! fc1c20c3-1990-405c-810b-28accb1160cf
+                            0c87b88d5c620f4a8888462e0a9fec3f: ref!! 8db8870c-625c-4a0f-8888-462e0a9fec3f
         -   Entity:
                 Id: 3c0146f0-961e-4c12-bf52-9d507ac32770
                 Name: ProceduralModel
@@ -392,8 +392,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            13ca78e9b59d014eb91d3c1c15ec3114: 764439a0-5d45-4015-ba5d-c7bff33dad73/e978ca13-9db5-4e01-b91d-3c1c15ec3114
-                            8d8a5cce927f0640a1462771507fd15c: 8131c62a-4adb-4622-ac57-10a818a7c8ee/ce5c8a8d-7f92-4006-a146-2771507fd15c
+                            13ca78e9b59d014eb91d3c1c15ec3114: ref!! e978ca13-9db5-4e01-b91d-3c1c15ec3114
+                            8d8a5cce927f0640a1462771507fd15c: ref!! ce5c8a8d-7f92-4006-a146-2771507fd15c
         -   Entity:
                 Id: 49aa15f6-c60b-44cb-8fa8-994e3911fe40
                 Name: ProceduralModel
@@ -420,8 +420,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            26c7b42d1d64cc488ca6a21909a9739a: 0a60c97d-bb16-4dcf-a147-f986f1d043ed/2db4c726-641d-48cc-8ca6-a21909a9739a
-                            5ca3bd4c654f134d9cc48af7e37eb92a: 49aa15f6-c60b-44cb-8fa8-994e3911fe40/4cbda35c-4f65-4d13-9cc4-8af7e37eb92a
+                            26c7b42d1d64cc488ca6a21909a9739a: ref!! 2db4c726-641d-48cc-8ca6-a21909a9739a
+                            5ca3bd4c654f134d9cc48af7e37eb92a: ref!! 4cbda35c-4f65-4d13-9cc4-8af7e37eb92a
         -   Entity:
                 Id: 59400c0f-d441-4f8c-84d3-7230e692b1e3
                 Name: ProceduralModel
@@ -463,8 +463,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            3c34df97bd74c8499ca419999f0e21d8: 3c4bfa2d-562f-40cc-9a84-320743baa72e/97df343c-74bd-49c8-9ca4-19999f0e21d8
-                            3e08933deec63c41b45d26beb31885b3: feb1d6cc-15dc-44ff-b4a6-8409cd1e17e8/3d93083e-c6ee-413c-b45d-26beb31885b3
+                            3c34df97bd74c8499ca419999f0e21d8: ref!! 97df343c-74bd-49c8-9ca4-19999f0e21d8
+                            3e08933deec63c41b45d26beb31885b3: ref!! 3d93083e-c6ee-413c-b45d-26beb31885b3
         -   Entity:
                 Id: 631ff957-92d6-4b0d-9b48-f0d5e0b1c060
                 Name: ProceduralModel
@@ -536,8 +536,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            5e84ec1114271d4cabedbe8ac01521a4: 10e90041-bf77-47fe-836b-42813cb9400f/11ec845e-2714-4c1d-abed-be8ac01521a4
-                            1bf692b6283d7547a33279946b89c854: 9df9367f-cbc3-4ced-8ebe-3bc420ebae0b/b692f61b-3d28-4775-a332-79946b89c854
+                            5e84ec1114271d4cabedbe8ac01521a4: ref!! 11ec845e-2714-4c1d-abed-be8ac01521a4
+                            1bf692b6283d7547a33279946b89c854: ref!! b692f61b-3d28-4775-a332-79946b89c854
         -   Entity:
                 Id: 742eec73-3b46-4ccb-94c0-ece98501534d
                 Name: ProceduralModel
@@ -564,8 +564,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            786b2921c6f3704695abbfb52896df84: 7970cd55-5c5b-47ef-b952-51ed30239c0a/21296b78-f3c6-4670-95ab-bfb52896df84
-                            af3a2a7093f9884d9fb2baee83db3088: b223dcf9-2cda-4105-bc36-632940805fc7/702a3aaf-f993-4d88-9fb2-baee83db3088
+                            786b2921c6f3704695abbfb52896df84: ref!! 21296b78-f3c6-4670-95ab-bfb52896df84
+                            af3a2a7093f9884d9fb2baee83db3088: ref!! 702a3aaf-f993-4d88-9fb2-baee83db3088
         -   Folder: Layered
             Entity:
                 Id: 75c30555-1ac5-4aef-9c57-4e82f4620cbd
@@ -577,8 +577,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            ecf15f7fbb4a3d47b7dd1011b2534e8e: 71051f26-b313-461e-b7e4-478581c83b45/7f5ff1ec-4abb-473d-b7dd-1011b2534e8e
-                            f3e3da6ebd819647ab1ea79647afb633: f3d37e1f-9b76-4bd1-9be3-0ef5f9b9eaae/6edae3f3-81bd-4796-ab1e-a79647afb633
+                            ecf15f7fbb4a3d47b7dd1011b2534e8e: ref!! 7f5ff1ec-4abb-473d-b7dd-1011b2534e8e
+                            f3e3da6ebd819647ab1ea79647afb633: ref!! 6edae3f3-81bd-4796-ab1e-a79647afb633
         -   Entity:
                 Id: 764439a0-5d45-4015-ba5d-c7bff33dad73
                 Name: SampleBox Model
@@ -652,8 +652,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            6cde3730c937da4582b7005d3f367ff8: 0c90be28-e0fd-40a5-83e3-f8ea75a40a3b/3037de6c-37c9-45da-82b7-005d3f367ff8
-                            71f2e5691cb12b409f8196ad17bfd1c3: 8d390636-fce4-4337-99ed-c5635fd0d711/69e5f271-b11c-402b-9f81-96ad17bfd1c3
+                            6cde3730c937da4582b7005d3f367ff8: ref!! 3037de6c-37c9-45da-82b7-005d3f367ff8
+                            71f2e5691cb12b409f8196ad17bfd1c3: ref!! 69e5f271-b11c-402b-9f81-96ad17bfd1c3
         -   Folder: Golds
             Entity:
                 Id: 84c62dff-0315-4a40-b3e1-74fb41362c4b
@@ -665,8 +665,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            6b728935302e5741a55ca99cfcc3bd26: b7a27c61-02d1-4809-8ed1-ba3b5d5517f8/3589726b-2e30-4157-a55c-a99cfcc3bd26
-                            a69105bf046f314ba82a5fef22be2e1b: e9673629-befe-4565-8f50-bd1c25b3e72a/bf0591a6-6f04-4b31-a82a-5fef22be2e1b
+                            6b728935302e5741a55ca99cfcc3bd26: ref!! 3589726b-2e30-4157-a55c-a99cfcc3bd26
+                            a69105bf046f314ba82a5fef22be2e1b: ref!! bf0591a6-6f04-4b31-a82a-5fef22be2e1b
         -   Entity:
                 Id: 89be6108-3616-4679-a9a1-18012f9dbd9c
                 Name: ProceduralModel
@@ -723,8 +723,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            03e88c260027b84b9a0a7b681139ef37: cb43ee92-1080-4502-ac04-c722b14bdc81/268ce803-2700-4bb8-9a0a-7b681139ef37
-                            9f0648f3fce125448b7850249b3e4489: 631ff957-92d6-4b0d-9b48-f0d5e0b1c060/f348069f-e1fc-4425-8b78-50249b3e4489
+                            03e88c260027b84b9a0a7b681139ef37: ref!! 268ce803-2700-4bb8-9a0a-7b681139ef37
+                            9f0648f3fce125448b7850249b3e4489: ref!! f348069f-e1fc-4425-8b78-50249b3e4489
         -   Folder: Various
             Entity:
                 Id: 96b72222-d5d1-4cb0-ad41-dcd66f9d2c79
@@ -736,8 +736,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            7353163c6dd6d0419c61df486e3f53e1: 4163da3c-46cc-41d3-839f-ef0ea4e373c4/3c165373-d66d-41d0-9c61-df486e3f53e1
-                            4d58c58a0488ef42aa178721efa5b965: 742eec73-3b46-4ccb-94c0-ece98501534d/8ac5584d-8804-42ef-aa17-8721efa5b965
+                            7353163c6dd6d0419c61df486e3f53e1: ref!! 3c165373-d66d-41d0-9c61-df486e3f53e1
+                            4d58c58a0488ef42aa178721efa5b965: ref!! 8ac5584d-8804-42ef-aa17-8721efa5b965
         -   Entity:
                 Id: 9df9367f-cbc3-4ced-8ebe-3bc420ebae0b
                 Name: ProceduralModel
@@ -779,8 +779,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            92948b344eb13a46b13c54e085ed54ce: 2a5d7361-7ad5-4142-8b2b-8a72bbcc66fc/348b9492-b14e-463a-b13c-54e085ed54ce
-                            53f677940290714aae692925cfea64f9: e4d8617d-b619-4f0b-89b3-494eff286b8c/9477f653-9002-4a71-ae69-2925cfea64f9
+                            92948b344eb13a46b13c54e085ed54ce: ref!! 348b9492-b14e-463a-b13c-54e085ed54ce
+                            53f677940290714aae692925cfea64f9: ref!! 9477f653-9002-4a71-ae69-2925cfea64f9
         -   Folder: Golds
             Entity:
                 Id: af420c47-3435-4242-9dc7-bb16d1407053
@@ -792,8 +792,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            9056bfe8951306418d5d084d53cf961e: 22766b13-2f3e-4308-aff1-8c5542eef33f/e8bf5690-1395-4106-8d5d-084d53cf961e
-                            bafae7dbd095ec49bacb0a7d5c1c10e6: 89be6108-3616-4679-a9a1-18012f9dbd9c/dbe7faba-95d0-49ec-bacb-0a7d5c1c10e6
+                            9056bfe8951306418d5d084d53cf961e: ref!! e8bf5690-1395-4106-8d5d-084d53cf961e
+                            bafae7dbd095ec49bacb0a7d5c1c10e6: ref!! dbe7faba-95d0-49ec-bacb-0a7d5c1c10e6
         -   Entity:
                 Id: b1da1c7c-de86-47a8-a856-3b553510cdf8
                 Name: SampleBox Model
@@ -850,8 +850,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            7996768aca8c9d4a914fa0493cbde5b5: 66adb3f4-e80f-493f-a029-5e734cc4846c/8a769679-8cca-4a9d-914f-a0493cbde5b5
-                            c51ae33e395e2a4ca5cd84b25ea80421: df3be1c2-a0ec-4ade-b1c6-449b1e1e06e2/3ee31ac5-5e39-4c2a-a5cd-84b25ea80421
+                            7996768aca8c9d4a914fa0493cbde5b5: ref!! 8a769679-8cca-4a9d-914f-a0493cbde5b5
+                            c51ae33e395e2a4ca5cd84b25ea80421: ref!! 3ee31ac5-5e39-4c2a-a5cd-84b25ea80421
         -   Entity:
                 Id: b7a27c61-02d1-4809-8ed1-ba3b5d5517f8
                 Name: SampleBox Model
@@ -928,8 +928,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            f9877e1f5f49ed4da5651bd9a92ce237: caf5da96-9710-41b4-9826-b44c4072bf75/1f7e87f9-495f-4ded-a565-1bd9a92ce237
-                            400116bd2ccafb4697e181caeb138828: bceafa8f-dfb7-4567-b524-1e06d5f7c36c/bd160140-ca2c-46fb-97e1-81caeb138828
+                            f9877e1f5f49ed4da5651bd9a92ce237: ref!! 1f7e87f9-495f-4ded-a565-1bd9a92ce237
+                            400116bd2ccafb4697e181caeb138828: ref!! bd160140-ca2c-46fb-97e1-81caeb138828
         -   Entity:
                 Id: c7176a61-cf0e-4a9c-96c2-e26504acedc5
                 Name: ProceduralModel
@@ -956,8 +956,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            6fc501bf78104d4cb960542a7a16036d: 2df1dd40-c381-4340-a996-071817dfc53e/bf01c56f-1078-4c4d-b960-542a7a16036d
-                            f22f5605a3da13438f39614303279cb0: 0b25e0dc-5e21-40ec-9f9d-1102b4613c4a/05562ff2-daa3-4313-8f39-614303279cb0
+                            6fc501bf78104d4cb960542a7a16036d: ref!! bf01c56f-1078-4c4d-b960-542a7a16036d
+                            f22f5605a3da13438f39614303279cb0: ref!! 05562ff2-daa3-4313-8f39-614303279cb0
         -   Entity:
                 Id: caf5da96-9710-41b4-9826-b44c4072bf75
                 Name: SampleBox Model
@@ -1038,8 +1038,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            8520abf680a3584cb75c3fde380ceb00: d4957deb-4bd4-497a-86c3-b6a15615182a/f6ab2085-a380-4c58-b75c-3fde380ceb00
-                            dd5eb21c3ea55245ad8177daeef23fb3: b51ad02e-9a7a-4f39-bd8d-a4f5b7cffd71/1cb25edd-a53e-4552-ad81-77daeef23fb3
+                            8520abf680a3584cb75c3fde380ceb00: ref!! f6ab2085-a380-4c58-b75c-3fde380ceb00
+                            dd5eb21c3ea55245ad8177daeef23fb3: ref!! 1cb25edd-a53e-4552-ad81-77daeef23fb3
         -   Entity:
                 Id: d4957deb-4bd4-497a-86c3-b6a15615182a
                 Name: SampleBox Model
@@ -1066,8 +1066,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            703f574b2f85934aafc9508ec1fe1e9a: ab17a4f1-2a07-4fcd-a3aa-ac8687dceb80/4b573f70-852f-4a93-afc9-508ec1fe1e9a
-                            0a8c440d90d5964bb58fc22ce6e0a38e: 2d582ddd-6559-4212-8632-3988f1afe02d/0d448c0a-d590-4b96-b58f-c22ce6e0a38e
+                            703f574b2f85934aafc9508ec1fe1e9a: ref!! 4b573f70-852f-4a93-afc9-508ec1fe1e9a
+                            0a8c440d90d5964bb58fc22ce6e0a38e: ref!! 0d448c0a-d590-4b96-b58f-c22ce6e0a38e
         -   Entity:
                 Id: df3be1c2-a0ec-4ade-b1c6-449b1e1e06e2
                 Name: ProceduralModel
@@ -1109,8 +1109,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            ab0739e42c723142bcb65dcdb444b830: efb6f02f-819d-4667-a2c1-a3d7ccb31190/e43907ab-722c-4231-bcb6-5dcdb444b830
-                            e3a5b0445dc2714595d09eb920556abe: 59400c0f-d441-4f8c-84d3-7230e692b1e3/44b0a5e3-c25d-4571-95d0-9eb920556abe
+                            ab0739e42c723142bcb65dcdb444b830: ref!! e43907ab-722c-4231-bcb6-5dcdb444b830
+                            e3a5b0445dc2714595d09eb920556abe: ref!! 44b0a5e3-c25d-4571-95d0-9eb920556abe
         -   Folder: Various
             Entity:
                 Id: e4069496-855e-4ead-8d99-f7b0b9581990
@@ -1122,8 +1122,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            018e83ab9dc54944a41c7e07f58f1a44: f5738400-85e6-4d43-b9e7-4c80282b37ae/ab838e01-c59d-4449-a41c-7e07f58f1a44
-                            7b852532362b824fb55ebf7e481a0b66: fd57b289-b694-47e8-99a1-5e08ce2b1521/3225857b-2b36-4f82-b55e-bf7e481a0b66
+                            018e83ab9dc54944a41c7e07f58f1a44: ref!! ab838e01-c59d-4449-a41c-7e07f58f1a44
+                            7b852532362b824fb55ebf7e481a0b66: ref!! 3225857b-2b36-4f82-b55e-bf7e481a0b66
         -   Entity:
                 Id: e41fff2c-665d-4c9a-b641-9b99e02a79b0
                 Name: ground
@@ -1209,8 +1209,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            9af097b9a1eac148afe926eedda082f6: 32353827-e0b0-482e-a2e6-4d44cdb015b1/b997f09a-eaa1-48c1-afe9-26eedda082f6
-                            28f3cbc46a34af4bb041911f5e86000f: c7176a61-cf0e-4a9c-96c2-e26504acedc5/c4cbf328-346a-4baf-b041-911f5e86000f
+                            9af097b9a1eac148afe926eedda082f6: ref!! b997f09a-eaa1-48c1-afe9-26eedda082f6
+                            28f3cbc46a34af4bb041911f5e86000f: ref!! c4cbf328-346a-4baf-b041-911f5e86000f
         -   Entity:
                 Id: f3d37e1f-9b76-4bd1-9be3-0ef5f9b9eaae
                 Name: ProceduralModel
@@ -1252,8 +1252,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            a285367010f9d845bba38dd090d02ed0: 5f383352-ab4a-40c0-85b6-16d769643320/703685a2-f910-45d8-bba3-8dd090d02ed0
-                            bae968d6af48ea48886a8d5ca7ca18e3: dfa3de16-8fc4-44a2-9aa2-a1883ee33365/d668e9ba-48af-48ea-886a-8d5ca7ca18e3
+                            a285367010f9d845bba38dd090d02ed0: ref!! 703685a2-f910-45d8-bba3-8dd090d02ed0
+                            bae968d6af48ea48886a8d5ca7ca18e3: ref!! d668e9ba-48af-48ea-886a-8d5ca7ca18e3
         -   Folder: Layered
             Entity:
                 Id: fac41a16-2d33-491b-9b7e-9f1f27f8c9db
@@ -1265,8 +1265,8 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            1397606ef66d1d4fa94fc9049bc0f960: b1da1c7c-de86-47a8-a856-3b553510cdf8/6e609713-6df6-4f1d-a94f-c9049bc0f960
-                            e928aae44699c74ab156d8793964ab27: 147c3547-06ad-41a1-b0fb-ccf983b3c97a/e4aa28e9-9946-4ac7-b156-d8793964ab27
+                            1397606ef66d1d4fa94fc9049bc0f960: ref!! 6e609713-6df6-4f1d-a94f-c9049bc0f960
+                            e928aae44699c74ab156d8793964ab27: ref!! e4aa28e9-9946-4ac7-b156-d8793964ab27
         -   Entity:
                 Id: fd57b289-b694-47e8-99a1-5e08ce2b1521
                 Name: ProceduralModel

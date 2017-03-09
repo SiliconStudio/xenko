@@ -8,5 +8,4 @@ Type: !TorusProceduralModel
     UvScale: {X: 1.0, Y: 1.0}
     LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
     MaterialInstance:
-        ~Id: a9c40534-0855-42ac-b640-7a403b4137aa
-        Material: 75ebb25b-da09-4e66-b8c7-9fe05672dea9/46859e92-96ad-4466-a0ed-a16f85780b32:Material
+        Material: 46859e92-96ad-4466-a0ed-a16f85780b32:Material

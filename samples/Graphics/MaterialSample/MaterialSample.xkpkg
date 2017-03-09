@@ -9,7 +9,7 @@ Meta:
     RootNamespace: MaterialSample
     Dependencies:
         -   Name: Xenko
-            Version: 1.10.0-alpha02
+            Version: 1.11.0-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:
