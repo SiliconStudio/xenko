@@ -129,6 +129,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 if (childSceneComponent.Entity != null)
                 {
+                    childSceneComponent.Entity.Transform.UpdateWorldMatrix();
                     Matrix.Multiply(ref transformComponent.WorldMatrix, ref childSceneComponent.Entity.Transform.WorldMatrix, out transformComponent.WorldMatrix);
                 }
             }
