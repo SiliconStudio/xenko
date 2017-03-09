@@ -6,6 +6,7 @@ using System.IO;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Compiler
 {
@@ -14,6 +15,19 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public abstract class AssetCompilerBase : IAssetCompiler
     {
+        public virtual IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        {
+            var depsEnumerator = assetItem.Asset as IAssetCompileTimeDependencies;
+            if (depsEnumerator == null) yield break;
+            foreach (var reference in depsEnumerator.EnumerateCompileTimeDependencies(assetItem.Package.Session))
+            {
+                if (reference != null)
+                {
+                    yield return new ObjectUrl(UrlType.Content, reference.Location);
+                }
+            }
+        }
+
         public AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));

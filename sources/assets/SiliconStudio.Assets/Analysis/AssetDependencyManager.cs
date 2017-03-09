@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.BuildEngine;
@@ -30,35 +31,32 @@ namespace SiliconStudio.Assets.Analysis
         private static readonly AssetCompilerRegistry AssetCompilerRegistry = new AssetCompilerRegistry();
 
         private readonly BuildDependencyManager buildDependencyManager;
-        private readonly AssetDependenciesCompiler assetDependenciesCompiler;
         private readonly ConcurrentDictionary<AssetId, BuildAssetNode> dependencyLinks = new ConcurrentDictionary<AssetId, BuildAssetNode>();
 
         public readonly AssetItem AssetItem;
 
+        public long Version { get; set; } = -1;
+
+        public Task BuildTask { get; set; }
+
+        public ICollection<BuildAssetNode> DependencyNodes => dependencyLinks.Values;
+
         public BuildDependencyType DependencyType { get; }
 
-        public BuildAssetNode(AssetItem assetItem, BuildDependencyType type, AssetDependenciesCompiler assetDependenciesCompiler, BuildDependencyManager dependencyManager)
+        public BuildAssetNode(AssetItem assetItem, BuildDependencyType type, BuildDependencyManager dependencyManager)
         {
             AssetItem = assetItem;
             DependencyType = type;
             buildDependencyManager = dependencyManager;
-            this.assetDependenciesCompiler = assetDependenciesCompiler;         
         }
 
-        public void Analyze(AssetCompilerContext context)
+        public void Analyze()
         {
             var mainCompiler = AssetCompilerRegistry.GetCompiler(AssetItem.Asset.GetType());
 
-            var compilerResult = mainCompiler.Compile(context, AssetItem);
-            if (compilerResult.HasErrors)
-            {
-                //handle errors
-                return;
-            }
-
             dependencyLinks.Clear();
 
-            //run time deps
+            //DependencyManager check
             var dependencies = AssetItem.Package.Session.DependencyManager.ComputeDependencies(AssetItem.Id, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
             if (dependencies != null)
             {
@@ -74,20 +72,17 @@ namespace SiliconStudio.Assets.Analysis
                 }
             }
 
-            //compile time
-            foreach (var commandStep in assetDependenciesCompiler.EnumerateCommandBuildSteps(compilerResult.BuildSteps))
+            //Input files required
+            foreach (var inputFile in mainCompiler.GetInputFiles(AssetItem))
             {
-                foreach (var inputFile in commandStep.Command.GetInputFiles())
+                if (inputFile.Type == UrlType.Content || inputFile.Type == UrlType.ContentLink)
                 {
-                    if (inputFile.Type == UrlType.Content || inputFile.Type == UrlType.ContentLink)
-                    {
-                        var asset = AssetItem.Package.FindAsset(inputFile.Path);
-                        if (asset == null) continue; //this might be an error tho...
+                    var asset = AssetItem.Package.Session.FindAsset(inputFile.Path); //this will search all packages
+                    if (asset == null) continue; //this might be an error tho...
 
-                        var dependencyType = inputFile.Type == UrlType.Content ? BuildDependencyType.CompileContent : BuildDependencyType.CompileAsset;
-                        var node = buildDependencyManager.FindOrCreateNode(asset, dependencyType);
-                        dependencyLinks.TryAdd(asset.Id, node);
-                    }
+                    var dependencyType = inputFile.Type == UrlType.Content ? BuildDependencyType.CompileContent : BuildDependencyType.CompileAsset;
+                    var node = buildDependencyManager.FindOrCreateNode(asset, dependencyType);
+                    dependencyLinks.TryAdd(asset.Id, node);
                 }
             }
         }
@@ -120,6 +115,7 @@ namespace SiliconStudio.Assets.Analysis
         {
             return x.AssetId == y.AssetId && x.BuildDependencyType == y.BuildDependencyType;
         }
+
         public static bool operator !=(BuildNodeDesc x, BuildNodeDesc y)
         {
             return x.AssetId != y.AssetId || x.BuildDependencyType != y.BuildDependencyType;
@@ -128,29 +124,7 @@ namespace SiliconStudio.Assets.Analysis
 
     public sealed class BuildDependencyManager
     {
-        private readonly AssetDependenciesCompiler assetDependenciesCompiler;
-
-        private readonly Scheduler scheduler = new Scheduler();
-
-        public AnonymousBuildStepProvider StepProvider { get; private set; }
-
         private readonly ConcurrentDictionary<BuildNodeDesc, BuildAssetNode> nodes = new ConcurrentDictionary<BuildNodeDesc, BuildAssetNode>();
-
-        internal ConcurrentQueue<BuildStep> ReadySteps { get; } = new ConcurrentQueue<BuildStep>();
-
-        public BuildDependencyManager(AssetDependenciesCompiler compiler)
-        {
-            assetDependenciesCompiler = compiler;
-            StepProvider = new AnonymousBuildStepProvider(x =>
-            {
-                BuildStep step;
-                if (ReadySteps.TryDequeue(out step))
-                {
-                    return step;
-                }
-                return null;
-            });
-        }
 
         public BuildAssetNode FindOrCreateNode(AssetItem item, BuildDependencyType dependencyType)
         {
@@ -163,7 +137,7 @@ namespace SiliconStudio.Assets.Analysis
             BuildAssetNode node;
             if (!nodes.TryGetValue(nodeDesc, out node))
             {
-                node = new BuildAssetNode(item, dependencyType, assetDependenciesCompiler, this);
+                node = new BuildAssetNode(item, dependencyType, this);
                 nodes.TryAdd(nodeDesc, node);
             }
             
@@ -201,11 +175,6 @@ namespace SiliconStudio.Assets.Analysis
             };
 
             nodes.TryRemove(nodeDesc, out node);
-        }
-       
-        public void Run()
-        {
-            scheduler.Run();
         }
     }
 

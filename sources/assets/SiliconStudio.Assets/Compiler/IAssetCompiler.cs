@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Compiler
 {
@@ -20,6 +21,8 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="assetItem">The asset reference.</param>
         /// <returns>The result of the compilation.</returns>
         AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem);
+
+        IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem);
 
         Dictionary<Type, BuildDependencyType> CompileTimeDependencyTypes { get; }
     }
