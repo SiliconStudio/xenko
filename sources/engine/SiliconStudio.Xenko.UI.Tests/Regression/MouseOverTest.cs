@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public MouseOverTest()
         {
-            CurrentVersion = 6;
+            CurrentVersion = 7;
         }
 
         protected override async Task LoadContent()

@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         public TesselationTest(bool isDebug)
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4;
             debug = isDebug;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
