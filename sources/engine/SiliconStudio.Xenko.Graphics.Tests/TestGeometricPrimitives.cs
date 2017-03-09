@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestGeometricPrimitives()
         {
-            CurrentVersion = 11;
+            CurrentVersion = 12;
         }
 
         protected override void RegisterTests()
