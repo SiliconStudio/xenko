@@ -31,6 +31,22 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             return file != null && File.Exists(file);
         }
 
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem item)
+        {
+            var spriteSheetAsset = (SpriteSheetAsset)item.Asset;
+            var spriteByTextures = spriteSheetAsset.Sprites.GroupBy(x => x.Source).ToArray();
+            for (int i = 0; i < spriteByTextures.Length; i++)
+            {
+                // skip the texture if the file is not valid.
+                var textureFile = spriteByTextures[i].Key;
+                if (!TextureFileIsValid(textureFile))
+                    continue;
+
+                var textureUrl = SpriteSheetAsset.BuildTextureUrl(item.Location, i);
+                yield return new ObjectUrl(UrlType.Content, textureUrl);
+            }
+        }
+
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (SpriteSheetAsset)assetItem.Asset;
@@ -56,7 +72,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     if(!TextureFileIsValid(textureFile))
                         continue;
 
-                    var textureUrl = SpriteSheetAsset.BuildTextureUrl(targetUrlInStorage, i);
+                    var textureUrl = SpriteSheetAsset.BuildTextureUrl(assetItem.Location, i);
 
                     var spriteAssetArray = spriteByTextures[i].ToArray();
                     foreach (var spriteAsset in spriteAssetArray)

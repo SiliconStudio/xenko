@@ -1,10 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets.Materials;
 using SiliconStudio.Xenko.Graphics;
 
@@ -16,6 +18,32 @@ namespace SiliconStudio.Xenko.Assets.Models
         {
             CompileTimeDependencyTypes.Add(typeof(SkeletonAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
             CompileTimeDependencyTypes.Add(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+        }
+
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        {
+            var modelAsset = (ModelAsset)assetItem.Asset;
+
+            if (modelAsset.Skeleton != null)
+            {
+                var skeleton = assetItem.Package.FindAssetFromProxyObject(modelAsset.Skeleton);
+                if (skeleton != null)
+                {
+                    yield return new ObjectUrl(UrlType.Content, skeleton.Location);
+                }
+            }
+                
+            if (modelAsset.Materials != null && modelAsset.Materials.Count > 0)
+            {
+                foreach (var assetMaterial in modelAsset.Materials)
+                {
+                    var material = assetItem.Package.FindAssetFromProxyObject(assetMaterial.MaterialInstance.Material);
+                    if (material != null)
+                    {
+                        yield return new ObjectUrl(UrlType.ContentLink, material.Location);
+                    }
+                }
+            }
         }
 
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)

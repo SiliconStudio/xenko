@@ -24,6 +24,14 @@ namespace SiliconStudio.Xenko.Assets.Materials
             CompileTimeDependencyTypes.Add(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //sub-materials
         }
 
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        {
+            foreach (var compileTimeDependency in ((MaterialAsset)assetItem.Asset).EnumerateCompileTimeDependencies(assetItem.Package.Session))
+            {
+                yield return new ObjectUrl(UrlType.ContentLink, compileTimeDependency.Location);
+            }
+        }
+
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (MaterialAsset)assetItem.Asset;

@@ -22,6 +22,16 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             CompileTimeDependencyTypes.Add(typeof(TextureAsset), BuildDependencyType.CompileContent);
         }
 
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        {
+            var skyboxAsset = (SkyboxAsset)assetItem.Asset;
+            foreach (var dependency in skyboxAsset.Model.GetDependencies())
+            {
+                // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to compute the skybox
+                yield return new ObjectUrl(UrlType.Content, SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(dependency.Location));
+            }
+        }
+
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (SkyboxAsset)assetItem.Asset;
