@@ -54,6 +54,10 @@
     <Compile Include="Analysis\AssetReferenceAnalysis.cs" />
     <Compile Include="Analysis\AssetReferenceLink.cs" />
     <Compile Include="Analysis\AssetPartsAnalysis.cs" />
+    <Compile Include="Analysis\BuildAssetNode.cs" />
+    <Compile Include="Analysis\BuildDependencyManager.cs" />
+    <Compile Include="Analysis\BuildDependencyType.cs" />
+    <Compile Include="Analysis\BuildNodeDesc.cs" />
     <Compile Include="Analysis\CollectionItemIdsAnalysis.cs" />
     <Compile Include="Analysis\IAssetDependencyManager.cs" />
     <Compile Include="Analysis\IdentifiableObjectAnalysis.cs" />
