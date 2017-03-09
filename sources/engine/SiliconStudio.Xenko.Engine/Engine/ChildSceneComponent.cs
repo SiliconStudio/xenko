@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
@@ -17,6 +18,7 @@ namespace SiliconStudio.Xenko.Engine
     [DataContract("ChildSceneComponent")]
     [Display("Child scene", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(ChildSceneProcessor))]
+    [NonInstantiable]
     [ComponentOrder(11200)]
     public sealed class ChildSceneComponent : ActivableEntityComponent
     {
