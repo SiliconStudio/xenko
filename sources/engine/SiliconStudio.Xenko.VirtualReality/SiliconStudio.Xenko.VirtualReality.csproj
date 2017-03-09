@@ -171,7 +171,7 @@
     <None Include="OculusOVR\OculusOVR.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Fove\Fove.cpp" />
+    <None Include="Fove\Fove.cpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -77,7 +77,7 @@
     <None Include="Navigation\NavigationMesh.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Lightprobes\predicates.c" />
+    <None Include="Lightprobes\predicates.c" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
