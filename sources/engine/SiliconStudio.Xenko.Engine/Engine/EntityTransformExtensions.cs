@@ -20,7 +20,8 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="parentEntity">The parent Entity.</param>
         /// <param name="childEntity">The child parent Entity.</param>
         /// <returns>The this instance.</returns>
-        /// <exception cref="ArgumentNullException">childEntity</exception>
+        /// <exception cref="NullReferenceException"><paramref name="childEntity"/> is <c>null</c></exception>
+        /// <exception cref="NullReferenceException"><paramref name="parentEntity"/> is <c>null</c></exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void AddChild([NotNull] this Entity parentEntity, [NotNull] Entity childEntity)
         {
@@ -33,7 +34,8 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         /// <param name="parentEntity">The parent Entity.</param>
         /// <param name="childEntity">The child Entity.</param>
-        /// <exception cref="ArgumentNullException">childEntity</exception>
+        /// <exception cref="NullReferenceException"><paramref name="childEntity"/> is <c>null</c></exception>
+        /// <exception cref="NullReferenceException"><paramref name="parentEntity"/> is <c>null</c></exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void RemoveChild([NotNull] this Entity parentEntity, [NotNull] Entity childEntity)
         {
@@ -46,7 +48,8 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="parentEntity">The parent entity.</param>
         /// <param name="childId">The child id of the child entity.</param>
         /// <returns>The this instance.</returns>
-        /// <exception cref="ArgumentNullException">childEntity</exception>
+        /// <exception cref="NullReferenceException"><paramref name="parentEntity"/> is <c>null</c></exception>
+        /// <exception cref="ArgumentException"><paramref name="childId"/> is <see cref="Guid.Empty"/></exception>
         public static void RemoveChild([NotNull] this Entity parentEntity, Guid childId)
         {
             if (childId == Guid.Empty) throw new ArgumentException(nameof(childId));
@@ -67,6 +70,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="parentEntity">The parent Entity.</param>
         /// <param name="index">The child index.</param>
         /// <returns></returns>
+        /// <exception cref="NullReferenceException"><paramref name="parentEntity"/> is <c>null</c></exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Entity GetChild([NotNull] this Entity parentEntity, int index)
         {
@@ -78,6 +82,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns>The parent entity, or null if it has no parent.</returns>
+        /// <exception cref="NullReferenceException"><paramref name="entity"/> is <c>null</c></exception>
         [CanBeNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Entity GetParent([NotNull] this Entity entity)
@@ -92,6 +97,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="parentEntity">The parent Entity.</param>
         /// <param name="childName">The name of the child to look for.</param>
         /// <returns>Null or the first child with the requested name.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="parentEntity"/> is <c>null</c></exception>
         [CanBeNull]
         public static Entity FindChild([NotNull] this Entity parentEntity, string childName)
         {
@@ -104,9 +110,11 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns>The root entity, or itself if it has no parent.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="entity"/> is <c>null</c></exception>
         [NotNull]
         public static Entity FindRoot([NotNull] this Entity entity)
         {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
             var root = entity;
             Entity parent;
             while ((parent = root.GetParent()) != null)
