@@ -159,6 +159,7 @@ namespace SiliconStudio.Xenko.Navigation
             hash = (hash * 397) ^ collider.Entity.Transform.WorldMatrix.GetHashCode();
             hash = (hash * 397) ^ collider.CollisionGroup.GetHashCode();
             hash = (hash * 397) ^ collider.Enabled.GetHashCode();
+            hash = (hash * 397) ^ collider.IsTrigger.GetHashCode();
             foreach (var shape in collider.ColliderShapes)
             {
                 hash = (hash * 397) ^ shape.GetType().GetHashCode();

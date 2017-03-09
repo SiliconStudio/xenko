@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 
@@ -18,14 +20,38 @@ namespace SiliconStudio.Xenko.Navigation.Processors
         /// </summary>
         private readonly Dictionary<NavigationMesh, NavigationMeshInternal> loadedNavigationMeshes = new Dictionary<NavigationMesh, NavigationMeshInternal>();
 
+        private readonly HashSet<NavigationComponent> dynamicNavigationComponents = new HashSet<NavigationComponent>();
+
+        private DynamicNavigationMeshSystem dynamicNavigationMeshSystem;
+
         public override void Update(GameTime time)
         {
+            if (dynamicNavigationMeshSystem == null)
+            {
+                var gameSystemCollection = Services.GetServiceAs<IGameSystemCollection>();
+                dynamicNavigationMeshSystem = gameSystemCollection.OfType<DynamicNavigationMeshSystem>().FirstOrDefault();
+                if (dynamicNavigationMeshSystem != null)
+                {
+                    dynamicNavigationMeshSystem.NavigationUpdated += DynamicNavigationMeshSystemOnNavigationUpdated;
+                }
+            }
+
             foreach (var p in ComponentDatas)
             {
                 // Should update selected navigation mesh?
-                if (p.Key.NavigationMesh != p.Value.LoadedNavigationMesh)
+                if (dynamicNavigationMeshSystem != null)
                 {
-                    UpdateNavigationMesh(p.Key, p.Value);
+                    if((dynamicNavigationComponents.Contains(p.Key) || p.Key.NavigationMesh == null) && dynamicNavigationMeshSystem.CurrentNavigationMesh != p.Value.LoadedNavigationMesh)
+                    {
+                        UpdateNavigationMesh(p.Key, p.Value);
+                    }
+                }
+                else
+                {
+                    if (p.Key.NavigationMesh != p.Value.LoadedNavigationMesh)
+                    {
+                        UpdateNavigationMesh(p.Key, p.Value);
+                    }
                 }
 
                 // Should update selected layer?
@@ -33,6 +59,15 @@ namespace SiliconStudio.Xenko.Navigation.Processors
                 {
                     SelectLayer(p.Key, p.Value);
                 }
+            }
+        }
+
+        private void DynamicNavigationMeshSystemOnNavigationUpdated(object sender, EventArgs eventArgs)
+        {
+            var componentsToUpdate = dynamicNavigationComponents.ToArray();
+            foreach (var component in componentsToUpdate)
+            {
+                UpdateNavigationMesh(component, ComponentDatas[component]);
             }
         }
 
@@ -78,6 +113,7 @@ namespace SiliconStudio.Xenko.Navigation.Processors
             data.NavigationMeshInternal = null;
             data.LoadedNavigationMesh = null;
             component.NavigationMeshInternal = IntPtr.Zero;
+            dynamicNavigationComponents.Remove(component);
         }
 
         private void UpdateNavigationMesh(NavigationComponent component, AssociatedData data)
@@ -85,13 +121,22 @@ namespace SiliconStudio.Xenko.Navigation.Processors
             // Remove old reference
             RemoveReference(component, data);
 
-            if (component.NavigationMesh != null)
+            NavigationMesh targetNavigationMesh = component.NavigationMesh;
+
+            // When the navigation mesh is not specified on the component, use the dynamic navigation mesh instead
+            if (targetNavigationMesh == null && dynamicNavigationMeshSystem != null)
+            {
+                targetNavigationMesh = dynamicNavigationMeshSystem.CurrentNavigationMesh;
+                dynamicNavigationComponents.Add(component);
+            }
+
+            if (targetNavigationMesh != null)
             {
                 NavigationMeshInternal navigationMeshInternal;
-                if (!loadedNavigationMeshes.TryGetValue(component.NavigationMesh, out navigationMeshInternal))
+                if (!loadedNavigationMeshes.TryGetValue(targetNavigationMesh, out navigationMeshInternal))
                 {
-                    navigationMeshInternal = new NavigationMeshInternal(component.NavigationMesh);
-                    loadedNavigationMeshes.Add(component.NavigationMesh, navigationMeshInternal);
+                    navigationMeshInternal = new NavigationMeshInternal(targetNavigationMesh);
+                    loadedNavigationMeshes.Add(targetNavigationMesh, navigationMeshInternal);
                 }
                 data.NavigationMeshInternal = navigationMeshInternal;
                 navigationMeshInternal.AddReference(component);
@@ -99,7 +144,7 @@ namespace SiliconStudio.Xenko.Navigation.Processors
                 SelectLayer(component, data);
 
                 // Mark new navigation mesh as loaded
-                data.LoadedNavigationMesh = component.NavigationMesh;
+                data.LoadedNavigationMesh = targetNavigationMesh;
             }
         }
 
