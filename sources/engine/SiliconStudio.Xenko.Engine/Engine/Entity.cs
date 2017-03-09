@@ -97,21 +97,13 @@ namespace SiliconStudio.Xenko.Engine
         {
             get
             {
-                Entity root = this;
-                Entity parent;
-
-                while ((parent = root.GetParent()) != null)
-                {
-                    root = parent;
-                }
-
-                return root.scene;
+                return this.FindRoot().scene;
             }
 
             set
             {
                 if (this.GetParent() != null)
-                    throw new InvalidOperationException("This entity is another entities child. Detach it before changing it's scene.");
+                    throw new InvalidOperationException("This entity is another entity's child. Detach it before changing its scene.");
 
                 var oldScene = scene;
                 if (oldScene == value)
