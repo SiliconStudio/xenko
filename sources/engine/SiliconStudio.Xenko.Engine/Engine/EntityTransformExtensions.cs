@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 
@@ -20,12 +21,10 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="childEntity">The child parent Entity.</param>
         /// <returns>The this instance.</returns>
         /// <exception cref="ArgumentNullException">childEntity</exception>
-        [NotNull]
-        public static Entity AddChild([NotNull] this Entity parentEntity, [NotNull] Entity childEntity)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void AddChild([NotNull] this Entity parentEntity, [NotNull] Entity childEntity)
         {
-            if (childEntity == null) throw new ArgumentNullException(nameof(childEntity));
             parentEntity.Transform.Children.Add(childEntity.Transform);
-            return parentEntity;
         }
 
         /// <summary>
@@ -35,9 +34,9 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="parentEntity">The parent Entity.</param>
         /// <param name="childEntity">The child Entity.</param>
         /// <exception cref="ArgumentNullException">childEntity</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void RemoveChild([NotNull] this Entity parentEntity, [NotNull] Entity childEntity)
         {
-            if (childEntity == null) throw new ArgumentNullException(nameof(childEntity));
             parentEntity.Transform.Children.Remove(childEntity.Transform);
         }
 
@@ -68,9 +67,9 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="parentEntity">The parent Entity.</param>
         /// <param name="index">The child index.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Entity GetChild([NotNull] this Entity parentEntity, int index)
         {
-            if (parentEntity == null) throw new ArgumentNullException(nameof(parentEntity));
             return parentEntity.Transform.Children[index].Entity;
         }
 
@@ -80,9 +79,9 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="entity">The entity.</param>
         /// <returns>The parent entity, or null if it has no parent.</returns>
         [CanBeNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Entity GetParent([NotNull] this Entity entity)
         {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
             return entity.Transform.Parent?.Entity;
         }
 
@@ -100,6 +99,11 @@ namespace SiliconStudio.Xenko.Engine
             return Utilities.IterateTree(parentEntity, entity => entity?.GetChildren()).FirstOrDefault(entity => entity != null && entity.Name == childName);
         }
 
+        /// <summary>
+        /// Returns the root of this <see cref="Entity"/>, or itself if it has no parent.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <returns>The root entity, or itself if it has no parent.</returns>
         [NotNull]
         public static Entity FindRoot([NotNull] this Entity entity)
         {
