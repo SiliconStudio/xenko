@@ -32,7 +32,7 @@ namespace SiliconStudio.Assets.Compiler
                     return finalResult;
                 }
                 finalResult.BuildSteps.Add(result.BuildSteps);
-                finalResult.BuildSteps.Add(new WaitBuildStep());
+                finalResult.BuildSteps.Add(new WaitBuildStep()); //todo use LINK
             }
 
             var mainResult = mainCompiler.Compile(context, assetItem);
