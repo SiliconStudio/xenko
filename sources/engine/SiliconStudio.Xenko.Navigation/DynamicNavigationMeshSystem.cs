@@ -10,6 +10,7 @@ using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Physics;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Navigation.Processors;
 
 namespace SiliconStudio.Xenko.Navigation
@@ -19,11 +20,30 @@ namespace SiliconStudio.Xenko.Navigation
     /// </summary>
     public class DynamicNavigationMeshSystem : GameSystem
     {
-        public bool AutoRebuild = true; // TODO turn off eventually
+        // TODO turn off eventually
+        public bool AutoRebuild = true;
+
+        /// <summary>
+        /// Collision filter that indicates which colliders are used in navmesh generation
+        /// </summary>
+        public CollisionFilterGroupFlags IncludedCollisionGroups { get; set; }
+
+        /// <summary>
+        /// Build settings used by Recast
+        /// </summary>
+        public NavigationMeshBuildSettings BuildSettings { get; set; }
+
+        /// <summary>
+        /// Settings for agents used with the dynamic navigation mesh
+        /// Every entry corresponds with a layer, which is used by <see cref="NavigationComponent.NavigationMeshLayer"/> to select one from this list
+        /// </summary>
+        public List<NavigationAgentSettings> NavigationMeshAgentSettings { get; private set; } = new List<NavigationAgentSettings>();
 
         private bool pendingRebuild = false;
 
         private SceneInstance currentSceneInstance = null;
+
+        private GameSettings currentGameSettings = null;
 
         private NavigationMeshBuilder builder = new NavigationMeshBuilder();
 
@@ -49,6 +69,14 @@ namespace SiliconStudio.Xenko.Navigation
         {
             base.Initialize();
             Game.GameSystems.CollectionChanged += GameSystemsOnCollectionChanged;
+
+            // Initial build settings
+            BuildSettings = ObjectFactoryRegistry.NewInstance<NavigationMeshBuildSettings>();
+            IncludedCollisionGroups = CollisionFilterGroupFlags.AllFilter;
+            NavigationMeshAgentSettings = new List<NavigationAgentSettings>
+            {
+                ObjectFactoryRegistry.NewInstance<NavigationAgentSettings>()
+            };
         }
 
         public override void Update(GameTime gameTime)
@@ -56,6 +84,20 @@ namespace SiliconStudio.Xenko.Navigation
             // This system should before becomming functional
             if (!Enabled)
                 return;
+
+            if (currentGameSettings != Game.Settings && Game.Settings != null)
+            {
+                // Initialize build settings from game settings
+                var navigationSettings = Game.Settings.Configurations.Get<NavigationSettings>();
+                BuildSettings = navigationSettings.BuildSettings;
+                IncludedCollisionGroups = navigationSettings.IncludedCollisionGroups;
+                NavigationMeshAgentSettings = navigationSettings.NavigationMeshAgentSettings;
+                Enabled = navigationSettings.EnableDynamicNavigationMesh;
+
+                // Queue rebuild
+                pendingRebuild = true;
+                currentGameSettings = Game.Settings;
+            }
 
             if (currentSceneInstance != Game.SceneSystem?.SceneInstance)
             {
@@ -104,7 +146,7 @@ namespace SiliconStudio.Xenko.Navigation
                 boundingBox.Entity.Transform.WorldMatrix.Decompose(out scale, out rotation, out translation);
                 boundingBoxes.Add(new BoundingBox(translation - scale, translation + scale));
             }
-            if(boundingBoxes.Count == 0)
+            if (boundingBoxes.Count == 0)
                 return new NavigationMeshBuildResult();
 
             var result = Task.Run(() =>

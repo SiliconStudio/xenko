@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Xenko.Navigation
 {
@@ -10,6 +12,7 @@ namespace SiliconStudio.Xenko.Navigation
     /// Provides settings for the navigation mesh builder to control granularity and error margins 
     /// </summary>
     [DataContract]
+    [ObjectFactory(typeof(NavigationBuildSettingsFactory))]
     public struct NavigationMeshBuildSettings
     {
         /// <summary>
@@ -88,6 +91,25 @@ namespace SiliconStudio.Xenko.Navigation
                 hashCode = (hashCode*397) ^ MaxDetailSamplingError.GetHashCode();
                 return hashCode;
             }
+        }
+    }
+    
+    public class NavigationBuildSettingsFactory : IObjectFactory
+    {
+        public object New(Type type)
+        {
+            return new NavigationMeshBuildSettings
+            {
+                CellHeight = 0.2f,
+                CellSize = 0.3f,
+                TileSize = 32,
+                MinRegionArea = 2,
+                RegionMergeArea = 20,
+                MaxEdgeLen = 12.0f,
+                MaxEdgeError = 1.3f,
+                DetailSamplingDistance = 6.0f,
+                MaxDetailSamplingError = 1.0f,
+            };
         }
     }
 }

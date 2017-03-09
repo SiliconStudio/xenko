@@ -39,6 +39,7 @@ namespace SiliconStudio.Xenko.Assets
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.6.0-beta", typeof(UpgraderPlatformsConfiguration))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.6.0-beta", "1.6.1-alpha01", typeof(UpgradeNewGameSettings))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.6.1-alpha01", "1.9.3-alpha01", typeof(UpgradeAddAudioSettings))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.3-alpha0", "1.11.0", typeof(UpgradeAddNavigationSettings))]
     public class GameSettingsAsset : Asset
     {
         private const string CurrentVersion = "1.9.3-alpha01";
@@ -259,6 +260,15 @@ namespace SiliconStudio.Xenko.Assets
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 dynamic setting = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Audio.AudioEngineSettings,SiliconStudio.Xenko.Audio" });
+                asset.Defaults.Add(setting);
+            }
+        }
+
+        internal class UpgradeAddNavigationSettings : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                dynamic setting = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Navigation.NavigationSettings,SiliconStudio.Xenko.Navigation" });
                 asset.Defaults.Add(setting);
             }
         }

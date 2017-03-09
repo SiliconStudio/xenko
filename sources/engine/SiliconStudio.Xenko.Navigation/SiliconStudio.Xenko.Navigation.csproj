@@ -83,6 +83,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NavigationSettings.cs" />
     <Compile Include="Processors\BoundingBoxProcessor.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="NavigationMeshBoundingBox.cs" />
