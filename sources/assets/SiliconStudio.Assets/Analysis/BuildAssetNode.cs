@@ -8,8 +8,6 @@ namespace SiliconStudio.Assets.Analysis
 {
     public class BuildAssetNode
     {
-        private static readonly AssetCompilerRegistry AssetCompilerRegistry = new AssetCompilerRegistry();
-
         private readonly BuildDependencyManager buildDependencyManager;
         private readonly ConcurrentDictionary<AssetId, BuildAssetNode> dependencyLinks = new ConcurrentDictionary<AssetId, BuildAssetNode>();
 
@@ -32,7 +30,8 @@ namespace SiliconStudio.Assets.Analysis
 
         public void Analyze()
         {
-            var mainCompiler = AssetCompilerRegistry.GetCompiler(AssetItem.Asset.GetType());
+            var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(AssetItem.Asset.GetType());
+            if (mainCompiler == null) return; //scripts and such don't have compiler
 
             dependencyLinks.Clear();
 

@@ -2,54 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Compiler
 {
-    public struct AssetBuildOperation : IEquatable<AssetBuildOperation>
-    {
-        public AssetBuildOperation(AssetId id, long version, int flags = 0)
-        {
-            Id = id;
-            Version = version;
-            Flags = flags;
-        }
-
-        public AssetBuildOperation(AssetItem item)
-        {
-            Id = item.Id;
-            Version = item.Version;
-            Flags = 0;
-        }
-
-        public readonly AssetId Id;
-        public readonly long Version;
-        public int Flags;
-
-        public bool Equals(AssetBuildOperation other)
-        {
-            return Id == other.Id && Version == other.Version && Flags == other.Flags;
-        }
-    }
-
-    public interface IBuildStepsQueue
-    {
-        ConcurrentDictionary<AssetBuildOperation, ListBuildStep> BuildSteps { get; }
-
-        AssetCompilerResult CompileAndSubmit(CompilerContext context, BuildStep parentStep, AssetItem assetItem, AssetDependenciesCompiler compiler);
-    }
-
-    public class BuildStepsQueue
-    {
-        public static PropertyKey<IBuildStepsQueue> PropertyKey = new PropertyKey<IBuildStepsQueue>("BuildStepsDatabase", typeof(IBuildStepsQueue));
-    }
-
     /// <summary>
     /// The base class to compile a series of <see cref="AssetItem"/>s using associated <see cref="IAssetCompiler"/>s.
     /// An item list compiler only creates the build steps required to creates some output items.
