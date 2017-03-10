@@ -207,8 +207,8 @@ namespace SiliconStudio.Xenko.VisualStudio
             foreach (System.Diagnostics.StackFrame stackFrame in new StackTrace().GetFrames())
             {
                 var method = stackFrame.GetMethod();
-                if (method.DeclaringType.FullName == "Xamarin.VisualStudio.TastyFlavoredProject" &&
-                    method.Name == "OnAfterSetStartupProjectCommandExecuted")
+                if (method.DeclaringType.FullName == "Xamarin.VisualStudio.TastyFlavoredProject" && method.Name == "OnAfterSetStartupProjectCommandExecuted" ||
+                    method.DeclaringType.FullName == "Xamarin.VisualStudio.SolutionConfigurationManager" && method.Name == "ChangePlatform")
                 {
                     UpdateConfigurationFromStartupProject();
                     return;
@@ -301,15 +301,7 @@ namespace SiliconStudio.Xenko.VisualStudio
                     var startupProjects = (object[])dte.Solution.SolutionBuild.StartupProjects;
                     if (!startupProjects.Cast<string>().Contains(project.UniqueName))
                     {
-                        try
-                        {
-                            configurationLock = true;
-                            buildManager.set_StartupProject(VsHelper.ToHierarchy(project));
-                        }
-                        finally
-                        {
-                            configurationLock = false;
-                        }
+                        buildManager.set_StartupProject(VsHelper.ToHierarchy(project));
                     }
 
                     previousProjectPlatforms[project] = context.PlatformName;
