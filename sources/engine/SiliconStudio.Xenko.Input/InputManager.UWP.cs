@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Input;
+using Windows.Gaming.Input;
 using Point = Windows.Foundation.Point;
 using WinRTPointerDeviceType = Windows.Devices.Input.PointerDeviceType;
 using WinRTPointerPoint = Windows.UI.Input.PointerPoint;
@@ -42,6 +43,8 @@ namespace SiliconStudio.Xenko.Input
         private WindowsOrientation windowsOrientation;
         // TODO: Support for MultiTouchEnabled on Windows Runtime
         public override bool MultiTouchEnabled { get { return true; } set { } }
+
+        public Gamepad DefaultGamepad { get; private set; }
 
         static InputManagerUWP()
         {
@@ -231,8 +234,70 @@ namespace SiliconStudio.Xenko.Input
             HasKeyboard = true;
             HasPointer = true;
 
-            //GamePadFactories.Add(new XInputGamePadFactory());
+            GamePadFactories.Add(new XInputGamePadFactory());
             HasMouse = new Windows.Devices.Input.MouseCapabilities().MousePresent > 0;
+
+            // Always keep one default gamepad available
+            DefaultGamepad = null;
+            Gamepad.GamepadAdded += Gamepad_GamepadAdded;
+            Gamepad.GamepadRemoved += Gamepad_GamepadRemoved;
+        }
+
+        private void Gamepad_GamepadAdded(object sender, Gamepad e)
+        {
+            if (DefaultGamepad == null)
+            {
+                DefaultGamepad = e;
+            }
+        }
+
+        public override GamePadState GetGamePad(int gamepadIndex)
+        {
+            if (gamepadIndex < 0)
+                gamepadIndex = 0;
+
+            if (gamepadIndex >= Gamepad.Gamepads.Count)
+                return new GamePadState
+                {
+                    IsConnected = false,
+                    LeftThumb = new Vector2(0, 0),
+                    RightThumb = new Vector2(0, 0),
+                    LeftTrigger = 0,
+                    RightTrigger = 0,
+                    Buttons = GamePadButton.None
+                };
+
+            var gamepad = Gamepad.Gamepads[gamepadIndex];
+            var state = gamepad.GetCurrentReading();
+
+            return new GamePadState
+            {
+                IsConnected = true,
+                LeftThumb = new Vector2((float)state.LeftThumbstickX, (float)state.LeftThumbstickY),
+                RightThumb = new Vector2((float)state.RightThumbstickX, (float)state.RightThumbstickY),
+                LeftTrigger = (float)state.LeftTrigger,
+                RightTrigger = (float)state.RightTrigger,
+                Buttons = (GamePadButton) state.Buttons
+            };
+        }
+
+        private void Gamepad_GamepadRemoved(object sender, Gamepad e)
+        {
+            if (DefaultGamepad == e)
+            {
+                DefaultGamepad = (Gamepad.Gamepads.Count > 0) ? Gamepad.Gamepads[0] : null;
+            }
+
+            if (Gamepad.Gamepads.Count == 0)
+                DefaultGamepad = null;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            var gamepadsCount = Gamepad.Gamepads.Count;
+            //var defaultGamepad = Gamepad.Gamepads[0]
         }
 
         public override void Initialize()
