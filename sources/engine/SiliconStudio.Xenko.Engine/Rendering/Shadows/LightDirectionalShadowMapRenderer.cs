@@ -236,25 +236,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                         cascadeMinBoundLS = Vector3.Min(cascadeMinBoundLS, cornerViewSpace);
                         cascadeMaxBoundLS = Vector3.Max(cascadeMaxBoundLS, cornerViewSpace);
                     }
-                    // verify that the light space is oriented in an homogeneous manner with the world space,
-                    // because later code assumes that LS is distance and orientation compatible with the worldspace.
-                    Vector4 direction4LS;
-                    Vector3.Transform(ref direction, ref lightViewMatrix, out direction4LS);
-                    Vector3 directionLS = direction4LS.XYZ();
-                    directionLS = Vector3.Subtract(directionLS, lightViewMatrix.TranslationVector);
-                    // if the light space is negative on direction, then the z axis is flipped,
-                    // min and max must be swapped since they were observed in reverse.
-                    if (directionLS.Z < 0)
-                    {
-                        Utilities.Swap(ref cascadeMaxBoundLS.Z, ref cascadeMinBoundLS.Z);
-                        cascadeMinBoundLS.Z *= -1;
-                        cascadeMaxBoundLS.Z *= -1;
-                    }
+
                     // TODO: Adjust orthoSize by taking into account filtering size
                 }
 
-                // Update the shadow camera
-                var viewMatrix = Matrix.LookAtRH(target + direction * cascadeMinBoundLS.Z, target, upDirection); // View;;
+                // Update the shadow camera. The calculation of the eye position assumes RH coordinates.
+                var viewMatrix = Matrix.LookAtRH(target - direction * cascadeMaxBoundLS.Z, target, upDirection); // View;;
                 var projectionMatrix = Matrix.OrthoOffCenterRH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, 0.0f, cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z); // Projection
                 Matrix viewProjectionMatrix;
                 Matrix.Multiply(ref viewMatrix, ref projectionMatrix, out viewProjectionMatrix);
