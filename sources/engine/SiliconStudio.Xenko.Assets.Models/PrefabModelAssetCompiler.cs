@@ -243,12 +243,10 @@ namespace SiliconStudio.Xenko.Assets.Models
                 {
                     Material = modelComponent.Materials.SafeGet(index) ?? baseInstance.Material ?? fallbackMaterial,
                     IsShadowCaster = modelComponent.IsShadowCaster,
-                    IsShadowReceiver = modelComponent.IsShadowReceiver
                 };
 
                 if (baseInstance != null)
                 {
-                    instance.IsShadowReceiver = instance.IsShadowReceiver && baseInstance.IsShadowReceiver;
                     instance.IsShadowCaster = instance.IsShadowCaster && baseInstance.IsShadowCaster;
                 }
 
