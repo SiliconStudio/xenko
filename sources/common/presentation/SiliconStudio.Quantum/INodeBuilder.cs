@@ -27,7 +27,7 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets or sets the factory that will create instances of <see cref="IGraphNode"/> for nodes.
         /// </summary>
-        IContentFactory ContentFactory { get; set; }
+        INodeFactory NodeFactory { get; set; }
 
         /// <summary>
         /// Gets the collection of available commands to attach to nodes.

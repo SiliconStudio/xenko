@@ -67,6 +67,7 @@
     <Compile Include="Serialization\AttachedReference.cs" />
     <Compile Include="Serialization\AttachedReferenceManager.cs" />
     <Compile Include="Serialization\Contents\ReferenceSerializer.cs" />
+    <Compile Include="Serialization\Contents\ReferenceSerializerAttribute.cs" />
     <Compile Include="Storage\Blob.cs" />
     <Compile Include="Storage\BlobStream.cs" />
     <Compile Include="Storage\BundleDescription.cs" />

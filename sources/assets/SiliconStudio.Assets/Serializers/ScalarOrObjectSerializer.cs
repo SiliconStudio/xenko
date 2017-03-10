@@ -74,7 +74,7 @@ namespace SiliconStudio.Assets.Serializers
             return true;
         }
 
-        private class YamlRedirectSerializer : AssetScalarSerializerBase
+        internal class YamlRedirectSerializer : AssetScalarSerializerBase
         {
             private readonly ScalarOrObjectSerializer realScalarSerializer;
 

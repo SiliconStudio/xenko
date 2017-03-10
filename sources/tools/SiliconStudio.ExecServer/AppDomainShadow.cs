@@ -32,6 +32,7 @@ namespace SiliconStudio.ExecServer
 
         private readonly string appDomainName;
 
+        private readonly string entryAssemblyPath;
         private readonly string mainAssemblyPath;
 
         private readonly bool shadowCache;
@@ -54,18 +55,20 @@ namespace SiliconStudio.ExecServer
         /// Initializes a new instance of the <see cref="AppDomainShadow" /> class.
         /// </summary>
         /// <param name="appDomainName">Name of the application domain.</param>
+        /// <param name="entryAssemblyPath">Path to the client assembly in case we need to start another instance of same process.</param>
         /// <param name="mainAssemblyPath">The main assembly path.</param>
         /// <param name="shadowCache">If [true], use shadow cache.</param>
         /// <param name="nativeDllsPathOrFolderList">An array of folders path (containing only native dlls) or directly a specific path to a dll.</param>
         /// <exception cref="System.ArgumentNullException">mainAssemblyPath</exception>
         /// <exception cref="System.InvalidOperationException">If the assembly does not exist</exception>
-        public AppDomainShadow(string appDomainName, string mainAssemblyPath, bool shadowCache, params string[] nativeDllsPathOrFolderList)
+        public AppDomainShadow(string appDomainName, string entryAssemblyPath, string mainAssemblyPath, bool shadowCache, params string[] nativeDllsPathOrFolderList)
         {
             if (mainAssemblyPath == null) throw new ArgumentNullException("mainAssemblyPath");
             if (nativeDllsPathOrFolderList == null) throw new ArgumentNullException("nativeDllsPathOrFolderList");
             if (!File.Exists(mainAssemblyPath)) throw new InvalidOperationException(string.Format("Assembly [{0}] does not exist", mainAssemblyPath));
 
             this.appDomainName = appDomainName;
+            this.entryAssemblyPath = entryAssemblyPath;
             this.mainAssemblyPath = mainAssemblyPath;
             this.nativeDllsPathOrFolderList = nativeDllsPathOrFolderList;
             this.shadowCache = shadowCache;
@@ -390,6 +393,7 @@ namespace SiliconStudio.ExecServer
 
             // Create AppDomain
             appDomain = AppDomain.CreateDomain(appDomainName, AppDomain.CurrentDomain.Evidence, appDomainSetup);
+            appDomain.SetData("RealEntryAssemblyFile", entryAssemblyPath);
 
             // Create appDomain Callback
             appDomainCallback = new AssemblyLoaderCallback(AssemblyLoaded, mainAssemblyPath);

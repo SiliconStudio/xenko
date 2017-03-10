@@ -93,14 +93,18 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         internal static void UpdateTransformations(FastCollection<TransformComponent> transformationComponents)
         {
-            Dispatcher.ForEach(transformationComponents, transformation =>
+            // TODO: Updates can currently not be parallelized, since root entities in child scenes depend on other root entities.
+            // This should be fixed by building a single transformation tree, instead of using post transform operations.
+
+            // Dispatcher.ForEach(transformationComponents, transformation =>
+            foreach (var transformation in transformationComponents)
             {
                 UpdateTransformation(transformation);
 
                 // Recurse
                 if (transformation.Children.Count > 0)
                     UpdateTransformationsRecursive(transformation.Children);
-            });
+            }
         }
 
         private static void UpdateTransformationsRecursive(FastCollection<TransformComponent> transformationComponents)

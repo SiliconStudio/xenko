@@ -42,14 +42,14 @@ namespace SiliconStudio.DataSerializers
    } #>
    	public static class <#=assemblySerializerFactoryClassName#>
 	{
-	    [SiliconStudio.Core.ModuleInitializer]
+	    [SiliconStudio.Core.ModuleInitializer(-1000)]
         internal static void Initialize()
         {
 			var assemblySerializers = new AssemblySerializers(typeof(<#=assemblySerializerFactoryClassName#>).GetTypeInfo().Assembly);
 
 			// Register data contract aliases
 <# foreach (var alias in cecilSerializerContext.DataContractAliases) { #>
-			assemblySerializers.DataContractAliases.Add(new KeyValuePair<string, Type>(@"<#= alias.Key #>", typeof(<#= alias.Value.ConvertCSharp(true) #>)));
+			assemblySerializers.DataContractAliases.Add(new AssemblySerializers.DataContractAlias(@"<#= alias.Item1 #>", typeof(<#= alias.Item2.ConvertCSharp(true) #>), <#=alias.Item3 ? "true" : "false"#>));
 <# } #>
 
 <# foreach (var referencedAssemblySerializerFactoryType in referencedAssemblySerializerFactoryTypes) { #>
