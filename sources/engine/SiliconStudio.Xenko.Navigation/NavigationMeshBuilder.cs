@@ -47,41 +47,29 @@ namespace SiliconStudio.Xenko.Navigation
             }
         }
 
-        public NavigationMeshBuildResult Build(ICollection<BoundingBox> boundingBoxes, CancellationToken cancellationToken)
+        public NavigationMeshBuildResult Build(NavigationMeshBuildSettings buildSettings, ICollection<NavigationAgentSettings> agentSettings, CollisionFilterGroupFlags includedCollisionGroups, 
+            ICollection<BoundingBox> boundingBoxes, CancellationToken cancellationToken)
         {
             var lastTileCache = lastNavigationMesh?.TileCache;
             var result = new NavigationMeshBuildResult();
 
-            // TODO Expose build settings
-            var buildSettings = new NavigationMeshBuildSettings
-            {
-                CellHeight = 0.3f,
-                CellSize = 0.16f,
-                TileSize = 32,
-                MinRegionArea = 2,
-                RegionMergeArea = 20,
-                MaxEdgeLen = 12.0f,
-                MaxEdgeError = 1.3f,
-                DetailSamplingDistance = 6.0f,
-                MaxDetailSamplingError = 1.0f,
-            };
+            if (agentSettings.Count == 0)
+                return result;
 
-            var agentSettings = new NavigationAgentSettings
-            {
-                Height = 1.0f,
-                Radius = 0.5f,
-                MaxSlope = new AngleSingle(45.0f, AngleType.Degree),
-                MaxClimb = 1.0f,
-            };
+            if (boundingBoxes.Count == 0)
+                return new NavigationMeshBuildResult();
 
-            // Copy colliders for thread access
+            // TODO layers
+            var agentSettings0 = agentSettings.First();
+
+            // Copy colliders so the collection doesn't get modified
             StaticColliderData[] collidersLocal;
             lock (colliders)
             {
                 collidersLocal = colliders.ToArray();
             }
 
-            BuildInput(collidersLocal);
+            BuildInput(collidersLocal, includedCollisionGroups);
 
             // The new navigation mesh that will be created
             result.NavigationMesh = new NavigationMesh();
@@ -99,9 +87,9 @@ namespace SiliconStudio.Xenko.Navigation
 
                 if (colliderData.Processed)
                 {
-                    MarkTiles(colliderData.InputBuilder, ref buildSettings, ref agentSettings, tilesToBuild);
+                    MarkTiles(colliderData.InputBuilder, ref buildSettings, ref agentSettings0, tilesToBuild);
                     if (colliderData.Previous != null)
-                        MarkTiles(colliderData.Previous.InputBuilder, ref buildSettings, ref agentSettings, tilesToBuild);
+                        MarkTiles(colliderData.Previous.InputBuilder, ref buildSettings, ref agentSettings0, tilesToBuild);
                 }
 
                 // Otherwise, skip building these tiles
@@ -116,7 +104,7 @@ namespace SiliconStudio.Xenko.Navigation
                 {
                     if (!newTileCache.Objects.ContainsKey(obj.Key))
                     {
-                        MarkTiles(obj.Value.InputBuilder, ref buildSettings, ref agentSettings, tilesToBuild);
+                        MarkTiles(obj.Value.InputBuilder, ref buildSettings, ref agentSettings0, tilesToBuild);
                     }
                 }
             }
@@ -165,7 +153,7 @@ namespace SiliconStudio.Xenko.Navigation
                     return;
 
                 // Builds the tile, or returns null when there is nothing generated for this tile (empty tile)
-                NavigationMeshTile meshTile = BuildTile(tileCoordinate, buildSettings, agentSettings, boundingBoxes,
+                NavigationMeshTile meshTile = BuildTile(tileCoordinate, buildSettings, agentSettings0, boundingBoxes,
                     inputVertices, inputIndices, buildTimeStamp);
 
                 // Add the result to the list of built tiles
@@ -196,7 +184,7 @@ namespace SiliconStudio.Xenko.Navigation
                 layer.BuildSettings = buildSettings;
 
                 // TODO multiple agent settings
-                layer.AgentSettings = agentSettings;
+                layer.AgentSettings = agentSettings0;
 
                 foreach (var p in builtTiles)
                 {
@@ -324,7 +312,7 @@ namespace SiliconStudio.Xenko.Navigation
         /// <summary>
         /// Rebuilds outdated triangle data for colliders and recalculates hashes storing everything in StaticColliderData
         /// </summary>
-        private void BuildInput(StaticColliderData[] collidersLocal)
+        private void BuildInput(StaticColliderData[] collidersLocal, CollisionFilterGroupFlags includedCollisionGroups)
         {
             NavigationMeshTileCache lastTileCache = lastNavigationMesh?.TileCache;
 
@@ -352,8 +340,9 @@ namespace SiliconStudio.Xenko.Navigation
                     }
                 }
 
-                // Return empty data for disabled colliders or trigger colliders
-                if (!colliderData.Component.Enabled || colliderData.Component.IsTrigger)
+                // Return empty data for disabled colliders, filtered out colliders or trigger colliders 
+                bool passesFilter = ((CollisionFilterGroupFlags)colliderData.Component.CollisionGroup & includedCollisionGroups) != 0;
+                if (!colliderData.Component.Enabled || colliderData.Component.IsTrigger || !passesFilter)
                 {
                     colliderData.Processed = true;
                     return;

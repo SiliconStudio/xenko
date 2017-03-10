@@ -37,18 +37,15 @@ namespace SiliconStudio.Xenko.Navigation
         /// Settings for agents used with the dynamic navigation mesh
         /// Every entry corresponds with a layer, which is used by <see cref="NavigationComponent.NavigationMeshLayer"/> to select one from this list
         /// </summary>
-        public List<NavigationAgentSettings> NavigationMeshAgentSettings { get; private set; } = new List<NavigationAgentSettings>();
+        public List<NavigationAgentSettings> AgentSettings { get; private set; } = new List<NavigationAgentSettings>();
 
-        private bool pendingRebuild = false;
+        private bool pendingRebuild;
 
-        private SceneInstance currentSceneInstance = null;
-
-        private GameSettings currentGameSettings = null;
+        private SceneInstance currentSceneInstance;
 
         private NavigationMeshBuilder builder = new NavigationMeshBuilder();
 
-        private Task<NavigationMeshBuildResult> currentBuildTask;
-        private CancellationTokenSource buildTaskCancellationTokenSource = null;
+        private CancellationTokenSource buildTaskCancellationTokenSource;
 
         private StaticColliderProcessor processor;
 
@@ -63,20 +60,46 @@ namespace SiliconStudio.Xenko.Navigation
         /// </summary>
         public event EventHandler NavigationUpdated;
 
-        public NavigationMesh CurrentNavigationMesh { get; private set; } = null;
+        public NavigationMesh CurrentNavigationMesh { get; private set; }
 
         public override void Initialize()
         {
             base.Initialize();
             Game.GameSystems.CollectionChanged += GameSystemsOnCollectionChanged;
 
-            // Initial build settings
-            BuildSettings = ObjectFactoryRegistry.NewInstance<NavigationMeshBuildSettings>();
-            IncludedCollisionGroups = CollisionFilterGroupFlags.AllFilter;
-            NavigationMeshAgentSettings = new List<NavigationAgentSettings>
+            if (Game.Settings != null)
             {
-                ObjectFactoryRegistry.NewInstance<NavigationAgentSettings>()
-            };
+                InitializeSettingsFromGameSettings(Game.Settings);
+            }
+            else
+            {
+                // Initial build settings
+                BuildSettings = ObjectFactoryRegistry.NewInstance<NavigationMeshBuildSettings>();
+                IncludedCollisionGroups = CollisionFilterGroupFlags.AllFilter;
+                AgentSettings = new List<NavigationAgentSettings>
+                {
+                    ObjectFactoryRegistry.NewInstance<NavigationAgentSettings>()
+                };
+            }
+        }
+
+        /// <summary>
+        /// Copies the default settings from the <see cref="GameSettings"/> for building navigation
+        /// </summary>
+        public void InitializeSettingsFromGameSettings(GameSettings gameSettings)
+        {
+            if (gameSettings == null)
+                throw new ArgumentNullException(nameof(gameSettings));
+
+            // Initialize build settings from game settings
+            var navigationSettings = gameSettings.Configurations.Get<NavigationSettings>();
+            BuildSettings = navigationSettings.BuildSettings;
+            IncludedCollisionGroups = navigationSettings.IncludedCollisionGroups;
+            AgentSettings = navigationSettings.NavigationMeshAgentSettings;
+            Enabled = navigationSettings.EnableDynamicNavigationMesh;
+
+            // Queue rebuild
+            pendingRebuild = true;
         }
 
         public override void Update(GameTime gameTime)
@@ -85,19 +108,6 @@ namespace SiliconStudio.Xenko.Navigation
             if (!Enabled)
                 return;
 
-            if (currentGameSettings != Game.Settings && Game.Settings != null)
-            {
-                // Initialize build settings from game settings
-                var navigationSettings = Game.Settings.Configurations.Get<NavigationSettings>();
-                BuildSettings = navigationSettings.BuildSettings;
-                IncludedCollisionGroups = navigationSettings.IncludedCollisionGroups;
-                NavigationMeshAgentSettings = navigationSettings.NavigationMeshAgentSettings;
-                Enabled = navigationSettings.EnableDynamicNavigationMesh;
-
-                // Queue rebuild
-                pendingRebuild = true;
-                currentGameSettings = Game.Settings;
-            }
 
             if (currentSceneInstance != Game.SceneSystem?.SceneInstance)
             {
@@ -146,15 +156,13 @@ namespace SiliconStudio.Xenko.Navigation
                 boundingBox.Entity.Transform.WorldMatrix.Decompose(out scale, out rotation, out translation);
                 boundingBoxes.Add(new BoundingBox(translation - scale, translation + scale));
             }
-            if (boundingBoxes.Count == 0)
-                return new NavigationMeshBuildResult();
 
             var result = Task.Run(() =>
             {
                 // Only have one active build at a time
                 lock (builder)
                 {
-                    return builder.Build(boundingBoxes, buildTaskCancellationTokenSource.Token);
+                    return builder.Build(BuildSettings, AgentSettings, IncludedCollisionGroups,  boundingBoxes, buildTaskCancellationTokenSource.Token);
                 }
             });
             await result;
