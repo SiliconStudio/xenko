@@ -4,16 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Settings;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Assets.Textures;
@@ -21,7 +17,6 @@ using SiliconStudio.Xenko.Data;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Physics;
 using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Assets
@@ -33,16 +28,17 @@ namespace SiliconStudio.Xenko.Assets
     [AssetDescription(FileExtensions, AlwaysMarkAsRoot = true, AllowArchetype = false)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetCompiler(typeof(GameSettingsAssetCompiler))]
+    [AssetContentType(typeof(GameSettings))]
     [Display(10000, "Game Settings")]
     [NonIdentifiableCollectionItems]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.6.0-beta", typeof(UpgraderPlatformsConfiguration))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.6.0-beta", "1.6.1-alpha01", typeof(UpgradeNewGameSettings))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.6.1-alpha01", "1.9.3-alpha01", typeof(UpgradeAddAudioSettings))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.9.3-alpha0", "1.11.0", typeof(UpgradeAddNavigationSettings))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.3-alpha01", "1.11.0", typeof(UpgradeAddNavigationSettings))]
     public class GameSettingsAsset : Asset
     {
-        private const string CurrentVersion = "1.9.3-alpha01";
+        private const string CurrentVersion = "1.11.0";
 
         /// <summary>
         /// The default file extension used by the <see cref="GameSettingsAsset"/>.
