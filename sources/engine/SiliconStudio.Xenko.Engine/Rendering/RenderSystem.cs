@@ -361,6 +361,7 @@ namespace SiliconStudio.Xenko.Rendering
                 for (int i = 0; i < renderTargetCount; ++i)
                     renderTargets[i] = renderDrawContext.CommandList.RenderTargets[i];
                 var viewport = renderDrawContext.CommandList.Viewport;
+                var scissor = renderDrawContext.CommandList.Scissor;
 
                 // Collect one command list per batch and the main one up to this point
                 if (commandLists == null || commandLists.Length < batchCount + 1)
@@ -377,6 +378,7 @@ namespace SiliconStudio.Xenko.Rendering
                     // Transfer state to all command lists
                     threadContext.CommandList.SetRenderTargets(depthStencilBuffer, renderTargetCount, renderTargets);
                     threadContext.CommandList.SetViewport(viewport);
+                    threadContext.CommandList.SetScissorRectangle(scissor);
 
                     var currentStart = batchSize * batchIndex;
                     int currentEnd;
@@ -410,6 +412,7 @@ namespace SiliconStudio.Xenko.Rendering
                 // Reapply previous state
                 renderDrawContext.CommandList.SetRenderTargets(depthStencilBuffer, renderTargetCount, renderTargets);
                 renderDrawContext.CommandList.SetViewport(viewport);
+                renderDrawContext.CommandList.SetScissorRectangle(scissor);
             }
         }
 

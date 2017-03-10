@@ -15,6 +15,7 @@ Example of use:
     <BuildProperties Condition="'$(SiliconStudioOfficialBuild)' != ''">$(BuildProperties);SiliconStudioOfficialBuild=$(SiliconStudioOfficialBuild)</BuildProperties>
     <ILRepackPath>$(XenkoRootBin)ILRepack.exe</ILRepackPath>
     <NuGetPath>$(MSBuildThisFileDirectory).nuget\NuGet.exe</NuGetPath>
+    <NUnitConsolePath>$(XenkoRoot)sources\common\deps\NUnit\nunit3-console.exe</NUnitConsolePath>
     <SiliconStudioStoreUrl Condition="'$(SiliconStudioStoreUrl)' == ''">https://store.xenko.com</SiliconStudioStoreUrl>
     <AdvancedInstallerPath Condition="'$(AdvancedInstallerPath)' == '' And Exists('$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 13.3\bin\x86\advinst.exe')">$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 13.3\bin\x86\advinst.exe</AdvancedInstallerPath>
   </PropertyGroup>
@@ -237,5 +238,18 @@ Example of use:
       <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>
     </PackageGetVersionTask>
     <Exec ContinueOnError="true" Command="$(XenkoRoot)deps\GitLink\GitLink.exe $(XenkoRoot) -f build\Xenko.sln -u https://github.com/SiliconStudio/xenko -s releases/$(XenkoPackageVersion)" />
+  </Target>
+  
+  <Target Name="RunTestsWindows">
+    <ItemGroup>
+      <AssembliesToTest Include="$(XenkoRootBin)SiliconStudio.*.Tests.*dll" />
+      <AssembliesToTest Include="$(XenkoRootBin)SiliconStudio.*.Tests.*exe" />
+	  <AssembliesToTest Remove="$(XenkoRootBin)SiliconStudio.Xenko.Code.Tests.dll" />
+	</ItemGroup>
+    <Error Text="Could not find [$(NUnitConsolePath)]" Condition="!Exists('$(NUnitConsolePath)')"/>
+    <Exec IgnoreExitCode="True" Command="$(NUnitConsolePath) --process=Separate --x86 @(AssembliesToTest->'%(Filename)%(Extension)', ' ')" WorkingDirectory="$(XenkoRootBin)">
+      <Output TaskParameter="ExitCode" ItemName="exitCode" />
+    </Exec>
+    <Error Text="Error while running tests" Condition="@(exitCode) &lt; 0" />
   </Target>
 </Project>

@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// A descriptor of a <see cref="Material"/>.
     /// </summary>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<MaterialDescriptor>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<MaterialDescriptor>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<MaterialDescriptor>))]
     [DataContract("MaterialDescriptor")]
     public class MaterialDescriptor : IMaterialDescriptor

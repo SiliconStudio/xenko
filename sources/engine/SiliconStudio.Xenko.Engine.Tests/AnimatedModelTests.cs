@@ -34,7 +34,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
             //CurrentVersion = 5; // Fix normal maps
             //CurrentVersion = 6; // Fix normal maps again
             //CurrentVersion = 7; // Noise due to changing normals from signed to unsigned
-            CurrentVersion = 8; // Changes in FBX importer (Use GetMeshEdgeIndexForPolygon() instead of GetMeshEdgeIndex() )
+            //CurrentVersion = 8; // Changes in FBX importer (Use GetMeshEdgeIndexForPolygon() instead of GetMeshEdgeIndex() )
+            CurrentVersion = 9; // MSBUild tests
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_3 };
         }
