@@ -9,6 +9,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -106,7 +107,7 @@ namespace SiliconStudio.Xenko.Assets
             }
             var settings = (T)first;
             if (settings != null) return settings;
-            settings = new T();
+            settings = ObjectFactoryRegistry.NewInstance<T>();
             Defaults.Add(settings);
             return settings;
         }
