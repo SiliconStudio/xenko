@@ -163,6 +163,8 @@ namespace SiliconStudio.BuildEngine
         /// </summary>
         private string IndexFileFullPath => indexName != null ? VirtualFileSystem.ApplicationDatabasePath + VirtualFileSystem.DirectorySeparatorChar + indexName : null;
 
+        public bool IgnorePrerequisites { get; set; }
+
         public Builder(ILogger logger, string buildPath, string buildProfile, string indexName)
         {
             if (buildPath == null) throw new ArgumentNullException(nameof(buildPath));
@@ -247,10 +249,17 @@ namespace SiliconStudio.BuildEngine
                     case UrlType.File:
                         hash = builderContext.InputHashes.ComputeFileHash(filePath);
                         break;
-                    case UrlType.ContentLink:
+                    case UrlType.ContentLink:              
                     case UrlType.Content:
-                        if (!buildTransaction.TryGetValue(filePath, out hash))
-                            Logger.Warning("Location " + filePath + " does not exist currently and is required to compute the current command hash. The build cache will not work for this command!");
+                        if (builder.IgnorePrerequisites)
+                        {
+                            hash = builderContext.InputHashes.ComputeFileHash(filePath);
+                        }
+                        else
+                        {
+                            if (!buildTransaction.TryGetValue(filePath, out hash))
+                                Logger.Warning("Location " + filePath + " does not exist currently and is required to compute the current command hash. The build cache will not work for this command!");
+                        }
                         break;
                 }
 
@@ -540,7 +549,7 @@ namespace SiliconStudio.BuildEngine
             // Reseting result map
             var inputHashes = FileVersionTracker.GetDefault();
             {
-                var builderContext = new BuilderContext(buildPath, buildProfile, inputHashes, parameters, MaxParallelProcesses, SlaveBuilderPath);
+                var builderContext = new BuilderContext(buildPath, buildProfile, inputHashes, parameters, MaxParallelProcesses, SlaveBuilderPath, IgnorePrerequisites);
 
                 resultMap = ObjectDatabase;
 
@@ -782,6 +791,9 @@ namespace SiliconStudio.BuildEngine
                     }
                     else
                     {
+                        if (IgnorePrerequisites) //workaround because editor compiles stuff in a different way, later PackageCompiler will do the same
+                            return;
+
                         // TODO: Either something is wrong, or it's because dependencies added afterwise (incremental) are not supported yet
                         Logger.Error($"BuildStep [{step}] depends on [{dependency}] but nothing that generates it could be found (or maybe incremental dependencies need to be implemented)");
                     }

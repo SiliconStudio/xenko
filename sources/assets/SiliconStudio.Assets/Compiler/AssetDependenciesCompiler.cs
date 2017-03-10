@@ -25,14 +25,17 @@ namespace SiliconStudio.Assets.Compiler
 
             foreach (var dependencyNode in assetNode.DependencyNodes)
             {
-                var result = Compile(context, dependencyNode.AssetItem);
-                if (result.HasErrors)
+                if ((dependencyNode.DependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent)
                 {
-                    finalResult.Error($"Failed to compile preview for asset {assetItem.Location}");
-                    return finalResult;
+                    var result = Prepare(context, dependencyNode.AssetItem);
+                    if (result.HasErrors)
+                    {
+                        finalResult.Error($"Failed to compile preview for asset {assetItem.Location}");
+                        return finalResult;
+                    }
+                    finalResult.BuildSteps.Add(result.BuildSteps);
+                    finalResult.BuildSteps.Add(new WaitBuildStep()); //todo use LINK, but it's not as easy, we have some read-write conflicts in the build engine
                 }
-                finalResult.BuildSteps.Add(result.BuildSteps);
-                finalResult.BuildSteps.Add(new WaitBuildStep()); //todo use LINK
             }
 
             var mainResult = mainCompiler.Prepare(context, assetItem);

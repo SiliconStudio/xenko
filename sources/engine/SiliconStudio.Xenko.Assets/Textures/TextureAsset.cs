@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [AssetFormatVersion(XenkoConfig.PackageName, TextureAssetVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(TransformSRgbToColorSpace))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
-    public sealed class TextureAsset : AssetWithSource, IAssetCompileTimeDependencies
+    public sealed class TextureAsset : AssetWithSource
     {
         private const string TextureAssetVersion = "1.4.0-beta";
 
@@ -176,15 +176,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DefaultValue(true)]
         [Display(null, "Transparency")]
         public bool PremultiplyAlpha { get; set; } = true;
-
-        public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
-        {
-            var gameSettings = session.CurrentPackage?.Assets.Find(GameSettingsAsset.GameSettingsLocation);
-            if (gameSettings != null)
-            {
-                yield return new AssetReference(gameSettings.Id, gameSettings.Location);
-            }
-        }
 
         private class TransformSRgbToColorSpace : AssetUpgraderBase
         {
