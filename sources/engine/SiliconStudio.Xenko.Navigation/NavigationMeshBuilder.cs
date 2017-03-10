@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
@@ -22,20 +24,16 @@ namespace SiliconStudio.Xenko.Navigation
 
         // TODO: Space partitioning
         private List<StaticColliderData> colliders = new List<StaticColliderData>();
+        private HashSet<Guid> registeredGuids = new HashSet<Guid>();
 
         public void Add(StaticColliderData colliderData)
         {
             lock (colliders)
             {
+                if(registeredGuids.Contains(colliderData.Component.Id))
+                    throw new InvalidOperationException("Duplicate collider added");
                 colliders.Add(colliderData);
-            }
-        }
-
-        public void Add(IEnumerable<StaticColliderData> colliderData)
-        {
-            lock (colliders)
-            {
-                colliders.AddRange(colliderData);
+                registeredGuids.Add(colliderData.Component.Id);
             }
         }
 
@@ -43,7 +41,10 @@ namespace SiliconStudio.Xenko.Navigation
         {
             lock (colliders)
             {
+                if (!registeredGuids.Contains(colliderData.Component.Id))
+                    throw new InvalidOperationException("Trying to remove unregistered collider");
                 colliders.Remove(colliderData);
+                registeredGuids.Remove(colliderData.Component.Id);
             }
         }
 
@@ -58,6 +59,15 @@ namespace SiliconStudio.Xenko.Navigation
 
             if (boundingBoxes.Count == 0)
                 return new NavigationMeshBuildResult();
+            
+            var settingsHash = agentSettings?.ComputeHash() ?? 0;
+            settingsHash = (settingsHash * 397) ^ buildSettings.GetHashCode();
+            if (lastTileCache != null && lastTileCache.SettingsHash != settingsHash)
+            {
+                // Start from scratch if settings changed
+                lastTileCache = null;
+                lastNavigationMesh = null;
+            }
 
             // TODO layers
             var agentSettings0 = agentSettings.First();
@@ -76,6 +86,7 @@ namespace SiliconStudio.Xenko.Navigation
 
             // Tile cache for this new navigation mesh
             NavigationMeshTileCache newTileCache = result.NavigationMesh.TileCache = new NavigationMeshTileCache();
+            newTileCache.SettingsHash = settingsHash;
 
             // Combine input and collect tiles to build
             HashSet<Point> tilesToBuild = new HashSet<Point>();

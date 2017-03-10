@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -20,25 +21,26 @@ namespace SiliconStudio.Xenko.Navigation
         /// <summary>
         /// If set to <c>true</c>, navigation meshes will be built at runtime. This allows for scene streaming and dynamic obstacles
         /// </summary>
+        [DataMember(0)]
         public bool EnableDynamicNavigationMesh { get; set; }
 
         /// <summary>
         /// Collision filter that indicates which colliders are used in navmesh generation
         /// </summary>
-        [DataMember(1500)]
-        public CollisionFilterGroupFlags IncludedCollisionGroups { get; set; }
+        [DataMember(10)]
+        public CollisionFilterGroupFlags IncludedCollisionGroups { get; set; } = CollisionFilterGroupFlags.AllFilter;
 
         /// <summary>
         /// Build settings used by Recast
         /// </summary>
-        [DataMember(2000)]
+        [DataMember(20)]
         public NavigationMeshBuildSettings BuildSettings { get; set; }
         
         /// <summary>
         /// Settings for agents used with the dynamic navigation mesh
         /// Every entry corresponds with a layer, which is used by <see cref="NavigationComponent.NavigationMeshLayer"/> to select one from this list
         /// </summary>
-        [DataMember(2010)]
+        [DataMember(30)]
         public List<NavigationAgentSettings> NavigationMeshAgentSettings = new List<NavigationAgentSettings>();
     }
 

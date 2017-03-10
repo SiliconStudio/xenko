@@ -20,9 +20,6 @@ namespace SiliconStudio.Xenko.Navigation
     /// </summary>
     public class DynamicNavigationMeshSystem : GameSystem
     {
-        // TODO turn off eventually
-        public bool AutoRebuild = true;
-
         /// <summary>
         /// Collision filter that indicates which colliders are used in navmesh generation
         /// </summary>
@@ -107,8 +104,7 @@ namespace SiliconStudio.Xenko.Navigation
             // This system should before becomming functional
             if (!Enabled)
                 return;
-
-
+            
             if (currentSceneInstance != Game.SceneSystem?.SceneInstance)
             {
                 // ReSharper disable once PossibleNullReferenceException
@@ -212,7 +208,9 @@ namespace SiliconStudio.Xenko.Navigation
                     processor.ColliderAdded -= ProcessorOnColliderAdded;
                     processor.ColliderRemoved -= ProcessorOnColliderRemoved;
                 }
-                currentSceneInstance.ComponentChanged -= CurrentSceneInstanceOnComponentChanged;
+
+                // Clear builder
+                builder = new NavigationMeshBuilder();
             }
 
             // Set the currect scene
@@ -221,20 +219,15 @@ namespace SiliconStudio.Xenko.Navigation
             if (currentSceneInstance != null)
             {
                 // Scan for components
-                // TODO this might not be needed
-                //ScanInitialSceneRecursive(currentSceneInstance.RootScene);
-
                 processor = new StaticColliderProcessor();
                 processor.ColliderAdded += ProcessorOnColliderAdded;
                 processor.ColliderRemoved += ProcessorOnColliderRemoved;
                 currentSceneInstance.Processors.Add(processor);
-                currentSceneInstance.ComponentChanged += CurrentSceneInstanceOnComponentChanged;
             }
         }
 
         private void ProcessorOnColliderAdded(StaticColliderComponent component, StaticColliderData data)
         {
-            // TODO: prevent locking of batched collider addition
             builder.Add(data);
             pendingRebuild = true;
         }
@@ -245,15 +238,11 @@ namespace SiliconStudio.Xenko.Navigation
             pendingRebuild = true;
         }
 
-        private void CurrentSceneInstanceOnComponentChanged(object sender, EntityComponentEventArgs entityComponentEventArgs)
-        {
-        }
-
         private void Cleanup()
         {
-            currentSceneInstance = null;
-
-            // TODO
+            UpdateScene(null);
+            
+            CurrentNavigationMesh = null;
             NavigationUpdated?.Invoke(this, null);
         }
 

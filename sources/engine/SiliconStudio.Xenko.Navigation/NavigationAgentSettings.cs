@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -19,31 +20,36 @@ namespace SiliconStudio.Xenko.Navigation
         /// <summary>
         /// Height of the actor
         /// </summary>
-        [DataMemberRange(0, float.MaxValue)] public float Height;
+        [DataMemberRange(0, float.MaxValue)]
+        public float Height;
 
         /// <summary>
         /// Radius of the actor
         /// </summary>
-        [DataMemberRange(0, float.MaxValue)] public float Radius;
+        [DataMemberRange(0, float.MaxValue)]
+        public float Radius;
 
         /// <summary>
         /// Maximum vertical distance this agent can climb
         /// </summary>
-        [Display("Maximum Climb Height")] [DataMemberRange(0, float.MaxValue)] public float MaxClimb;
+        [Display("Maximum Climb Height")]
+        [DataMemberRange(0, float.MaxValue)]
+        public float MaxClimb;
 
         /// <summary>
         /// Maximum slope angle this agent can climb (in degrees)
         /// </summary>
-        [Display("Maximum Slope")] public AngleSingle MaxSlope;
+        [Display("Maximum Slope")]
+        public AngleSingle MaxSlope;
 
         public override int GetHashCode()
         {
             unchecked
             {
                 var hashCode = Height.GetHashCode();
-                hashCode = (hashCode*397) ^ Radius.GetHashCode();
-                hashCode = (hashCode*397) ^ MaxClimb.GetHashCode();
-                hashCode = (hashCode*397) ^ MaxSlope.GetHashCode();
+                hashCode = (hashCode * 397) ^ Radius.GetHashCode();
+                hashCode = (hashCode * 397) ^ MaxClimb.GetHashCode();
+                hashCode = (hashCode * 397) ^ MaxSlope.GetHashCode();
                 return hashCode;
             }
         }

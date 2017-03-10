@@ -9,6 +9,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Yaml;
@@ -21,7 +22,7 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Assets
-{ 
+{
     /// <summary>
     /// Settings for a game with the default scene, resolution, graphics profile...
     /// </summary>
@@ -72,7 +73,7 @@ namespace SiliconStudio.Xenko.Assets
 
         [DataMember(4000)]
         [Category]
-        public List<string> PlatformFilters { get; } = new List<string>(); 
+        public List<string> PlatformFilters { get; } = new List<string>();
 
         public T GetOrCreate<T>(string profile = null) where T : Configuration, new()
         {
@@ -91,7 +92,7 @@ namespace SiliconStudio.Xenko.Assets
                             first = x;
                             break;
                         }
-                    } 
+                    }
                 }
             }
             if (first == null)
@@ -149,7 +150,8 @@ namespace SiliconStudio.Xenko.Assets
 
         internal class UpgraderPlatformsConfiguration : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
             {
                 int backBufferWidth = asset.BackBufferWidth ?? 1280;
                 asset.RemoveChild("BackBufferWidth");
@@ -212,7 +214,8 @@ namespace SiliconStudio.Xenko.Assets
 
         internal class UpgradeNewGameSettings : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
             {
                 var addRendering = true;
                 var addEditor = true;
@@ -254,7 +257,8 @@ namespace SiliconStudio.Xenko.Assets
 
         internal class UpgradeAddAudioSettings : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
             {
                 dynamic setting = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Audio.AudioEngineSettings,SiliconStudio.Xenko.Audio" });
                 asset.Defaults.Add(setting);
@@ -263,10 +267,39 @@ namespace SiliconStudio.Xenko.Assets
 
         internal class UpgradeAddNavigationSettings : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
             {
-                dynamic setting = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Navigation.NavigationSettings,SiliconStudio.Xenko.Navigation" });
-                asset.Defaults.Add(setting);
+                dynamic settings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Navigation.NavigationSettings,SiliconStudio.Xenko.Navigation" });
+
+                // Default build settings
+                dynamic buildSettings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Navigation.NavigationMeshBuildSettings,SiliconStudio.Xenko.Navigation" });
+                buildSettings.CellHeight = 0.2f;
+                buildSettings.CellSize = 0.3f;
+                buildSettings.TileSize = 32;
+                buildSettings.MinRegionArea = 2;
+                buildSettings.RegionMergeArea = 20;
+                buildSettings.MaxEdgeLen = 12.0f;
+                buildSettings.MaxEdgeError = 1.3f;
+                buildSettings.DetailSamplingDistance = 6.0f;
+                buildSettings.MaxDetailSamplingError = 1.0f;
+                settings.BuildSettings = buildSettings;
+
+                var agentSettingsNode = new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Navigation.NavigationAgentSettings,SiliconStudio.Xenko.Navigation" };
+                dynamic agentSettings = new DynamicYamlMapping(agentSettingsNode);
+                agentSettings.Height = 1.0f;
+                agentSettings.MaxClimb = 0.25f;
+                agentSettings.Radius = 0.5;
+                agentSettings.MaxSlope = new DynamicYamlMapping(new YamlMappingNode());
+                agentSettings.MaxSlope.Radians = MathUtil.DegreesToRadians(45.0f);
+
+                // Agent settings array
+                settings.NavigationMeshAgentSettings = new DynamicYamlArray(new YamlSequenceNode
+                {
+                    agentSettingsNode
+                });
+
+                asset.Defaults.Add(settings);
             }
         }
     }

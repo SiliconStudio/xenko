@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
@@ -32,11 +33,11 @@ namespace SiliconStudio.Xenko.Navigation.Processors
 
             // TODO Plugins
             // This is the same kind of entry point as used in PhysicsProcessor
-            var navigationSystem = Services.GetServiceAs<DynamicNavigationMeshSystem>();
+            var gameSystems = Services.GetServiceAs<IGameSystemCollection>();
+            var navigationSystem = gameSystems.OfType<DynamicNavigationMeshSystem>().FirstOrDefault();
             if (navigationSystem == null)
             {
                 navigationSystem = new DynamicNavigationMeshSystem(Services);
-                var gameSystems = Services.GetServiceAs<IGameSystemCollection>();
                 gameSystems.Add(navigationSystem);
             }
         }

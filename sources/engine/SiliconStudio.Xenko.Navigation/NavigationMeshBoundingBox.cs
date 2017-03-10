@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.Navigation
 {
     [DataContract]
     [DefaultEntityComponentProcessor(typeof(BoundingBoxProcessor), ExecutionMode = ExecutionMode.All)]
+    [Display("Navigation Mesh Bounding Box")]
     public class NavigationMeshBoundingBox : EntityComponent
     {
     }
