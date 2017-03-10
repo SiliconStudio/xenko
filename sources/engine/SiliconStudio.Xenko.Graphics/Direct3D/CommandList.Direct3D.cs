@@ -118,27 +118,16 @@ namespace SiliconStudio.Xenko.Graphics
             outputMerger.SetTargets(depthStencilBuffer != null ? depthStencilBuffer.NativeDepthStencilView : null, renderTargetCount, currentRenderTargetViews);
         }
 
-        /// <summary>
-        /// Binds a single scissor rectangle to the rasterizer stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="top">The top.</param>
-        /// <param name="right">The right.</param>
-        /// <param name="bottom">The bottom.</param>
-        public void SetScissorRectangles(int left, int top, int right, int bottom)
+        unsafe partial void SetScissorRectangleImpl(ref Rectangle scissorRectangle)
         {
-            NativeDeviceContext.Rasterizer.SetScissorRectangle(left, top, right, bottom);
+            NativeDeviceContext.Rasterizer.SetScissorRectangle(scissorRectangle.Left, scissorRectangle.Top, scissorRectangle.Right, scissorRectangle.Bottom);
         }
 
-        /// <summary>
-        /// Binds a set of scissor rectangles to the rasterizer stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="scissorRectangles">The set of scissor rectangles to bind.</param>
-        public unsafe void SetScissorRectangles(params Rectangle[] scissorRectangles)
+        unsafe partial void SetScissorRectanglesImpl(int scissorCount, Rectangle[] scissorRectangles)
         {
             if (scissorRectangles == null) throw new ArgumentNullException("scissorRectangles");
-            var localScissorRectangles = new RawRectangle[scissorRectangles.Length];
-            for (int i = 0; i < scissorRectangles.Length; i++)
+            var localScissorRectangles = new RawRectangle[scissorCount];
+            for (int i = 0; i < scissorCount; i++)
             {
                 localScissorRectangles[i] = new RawRectangle(scissorRectangles[i].X, scissorRectangles[i].Y, scissorRectangles[i].Right, scissorRectangles[i].Bottom);
             }

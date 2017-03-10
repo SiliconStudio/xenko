@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Navigation
     /// A Navigation Mesh, can be used for pathfinding.
     /// </summary>
     [DataContract("NavigationMesh")]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<NavigationMesh>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<NavigationMesh>), Profile = "Content")]
     [DataSerializer(typeof(NavigationMeshSerializer))]
     [ContentSerializer(typeof(DataContentSerializer<NavigationMesh>))]
     public class NavigationMesh

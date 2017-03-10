@@ -19,6 +19,7 @@ namespace SiliconStudio.Core.Reflection
         private static readonly object Lock = new object();
         private static readonly Dictionary<string, HashSet<Assembly>> MapCategoryToAssemblies = new Dictionary<string, HashSet<Assembly>>();
         private static readonly Dictionary<Assembly, HashSet<string>> MapAssemblyToCategories = new Dictionary<Assembly, HashSet<string>>();
+        private static readonly Dictionary<Assembly, ScanTypes> AssemblyToScanTypes = new Dictionary<Assembly, ScanTypes>();
         private static readonly Dictionary<string, Assembly> AssemblyNameToAssembly = new Dictionary<string, Assembly>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
@@ -154,6 +155,20 @@ namespace SiliconStudio.Core.Reflection
             return categories;
         }
 
+        public static void RegisterScanTypes([NotNull] Assembly assembly, ScanTypes types)
+        {
+            if (!AssemblyToScanTypes.ContainsKey(assembly))
+                AssemblyToScanTypes.Add(assembly, types);
+        }
+
+        public static ScanTypes GetScanTypes([NotNull] Assembly assembly)
+        {
+            ScanTypes assemblyScanTypes;
+            AssemblyToScanTypes.TryGetValue(assembly, out assemblyScanTypes);
+
+            return assemblyScanTypes;
+        }
+
         /// <summary>
         /// Registers an assembly with the specified categories.
         /// </summary>
@@ -275,6 +290,19 @@ namespace SiliconStudio.Core.Reflection
         private static void OnAssemblyUnregistered(Assembly assembly, HashSet<string> categories)
         {
             AssemblyUnregistered?.Invoke(null, new AssemblyRegisteredEventArgs(assembly, categories));
+        }
+
+        /// <summary>
+        /// List types that matches a given <see cref="AssemblyScanAttribute"/> for a given assembly.
+        /// </summary>
+        public class ScanTypes
+        {
+            public IReadOnlyDictionary<Type, List<Type>> Types { get; }
+
+            public ScanTypes(Dictionary<Type, List<Type>> types)
+            {
+                Types = types;
+            }
         }
     }
 }

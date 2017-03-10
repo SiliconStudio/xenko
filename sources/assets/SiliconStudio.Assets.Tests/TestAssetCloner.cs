@@ -31,7 +31,7 @@ namespace SiliconStudio.Assets.Tests
 
     [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<TestObjectReference>))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<TestObjectReference>), Profile = "Asset")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<TestObjectReference>), Profile = "Asset")]
     public class TestObjectReference
     {        
     }

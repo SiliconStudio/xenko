@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets
 {
     /// <summary>
     /// Imports a raw asset into the asset system.
     /// </summary>
+    [AssemblyScan]
     public interface IAssetImporter
     {
         /// <summary>

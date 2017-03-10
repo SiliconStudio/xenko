@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets
 {
@@ -11,6 +12,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     [BaseTypeRequired(typeof(PackageUpgrader))]
+    [AssemblyScan]
     public class PackageUpgraderAttribute : Attribute
     {
         private readonly PackageVersionRange packageUpdatedVersionRange;
