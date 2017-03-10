@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -224,7 +225,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     target = cascadeBoundWS.Center;
 
                     // Computes the bouding box of the frustum cascade in light space
-                    var lightViewMatrix = Matrix.LookAtLH(cascadeBoundWS.Center, cascadeBoundWS.Center + direction, upDirection);
+                    var lightViewMatrix = Matrix.LookAtRH(cascadeBoundWS.Center, cascadeBoundWS.Center + direction, upDirection);
                     cascadeMinBoundLS = new Vector3(float.MaxValue);
                     cascadeMaxBoundLS = new Vector3(-float.MaxValue);
                     for (int i = 0; i < cascadeFrustumCornersWS.Length; i++)
@@ -235,7 +236,20 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                         cascadeMinBoundLS = Vector3.Min(cascadeMinBoundLS, cornerViewSpace);
                         cascadeMaxBoundLS = Vector3.Max(cascadeMaxBoundLS, cornerViewSpace);
                     }
-
+                    // verify that the light space is oriented in an homogeneous manner with the world space,
+                    // because later code assumes that LS is distance and orientation compatible with the worldspace.
+                    Vector4 direction4LS;
+                    Vector3.Transform(ref direction, ref lightViewMatrix, out direction4LS);
+                    Vector3 directionLS = direction4LS.XYZ();
+                    directionLS = Vector3.Subtract(directionLS, lightViewMatrix.TranslationVector);
+                    // if the light space is negative on direction, then the z axis is flipped,
+                    // min and max must be swapped since they were observed in reverse.
+                    if (directionLS.Z < 0)
+                    {
+                        Utilities.Swap(ref cascadeMaxBoundLS.Z, ref cascadeMinBoundLS.Z);
+                        cascadeMinBoundLS.Z *= -1;
+                        cascadeMaxBoundLS.Z *= -1;
+                    }
                     // TODO: Adjust orthoSize by taking into account filtering size
                 }
 
