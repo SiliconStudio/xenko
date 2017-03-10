@@ -24,7 +24,6 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
 using System;
 using System.Reflection;
-using Windows.UI.Core;
 using SharpDX;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
