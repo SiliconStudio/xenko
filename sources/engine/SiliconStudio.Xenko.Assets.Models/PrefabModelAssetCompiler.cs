@@ -98,7 +98,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                             {
                                 vertexData = ((BufferData)vertexBufferRef.Data).Content;
                             }
-                            else if (!vertexBufferRef.Url.IsNullOrEmpty())
+                            else if (!string.IsNullOrEmpty(vertexBufferRef.Url))
                             {
                                 var dataAsset = manager.Load<Graphics.Buffer>(vertexBufferRef.Url);
                                 vertexData = dataAsset.GetSerializationData().Content;
@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                             {
                                 indexData = ((BufferData)indexBufferRef.Data).Content;
                             }
-                            else if (!indexBufferRef.Url.IsNullOrEmpty())
+                            else if (!string.IsNullOrEmpty(indexBufferRef.Url))
                             {
                                 var dataAsset = manager.Load<Graphics.Buffer>(indexBufferRef.Url);
                                 indexData = dataAsset.GetSerializationData().Content;
@@ -243,12 +243,10 @@ namespace SiliconStudio.Xenko.Assets.Models
                 {
                     Material = modelComponent.Materials.SafeGet(index) ?? baseInstance.Material ?? fallbackMaterial,
                     IsShadowCaster = modelComponent.IsShadowCaster,
-                    IsShadowReceiver = modelComponent.IsShadowReceiver
                 };
 
                 if (baseInstance != null)
                 {
-                    instance.IsShadowReceiver = instance.IsShadowReceiver && baseInstance.IsShadowReceiver;
                     instance.IsShadowCaster = instance.IsShadowCaster && baseInstance.IsShadowCaster;
                 }
 

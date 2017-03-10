@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
 
             //Start also adb in case of android device
             var adbPath = AndroidDeviceEnumerator.GetAdbPath();
-            if (!adbPath.IsNullOrEmpty() && AndroidDeviceEnumerator.ListAndroidDevices().Length > 0)
+            if (!string.IsNullOrEmpty(adbPath) && AndroidDeviceEnumerator.ListAndroidDevices().Length > 0)
             {
                 //clear the log first
                 ShellHelper.RunProcessAndGetOutput("cmd.exe", $"/C {adbPath} logcat -c");

@@ -279,7 +279,7 @@ namespace SiliconStudio.Core.Mathematics
         {
             return new Vector2(value.X * scale, value.Y * scale);
         }
-
+        
         /// <summary>
         /// Modulates a vector with another by performing component-wise multiplication.
         /// </summary>
@@ -327,7 +327,7 @@ namespace SiliconStudio.Core.Mathematics
         {
             return new Vector2(value.X / scale, value.Y / scale);
         }
-
+        
         /// <summary>
         /// Demodulates a vector with another by performing component-wise division.
         /// </summary>

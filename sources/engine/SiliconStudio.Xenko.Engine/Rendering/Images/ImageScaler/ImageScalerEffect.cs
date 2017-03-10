@@ -33,4 +33,22 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
     }
+    internal static partial class ShaderMixins
+    {
+        internal partial class ImageSuperSamplerScalerEffect  : IShaderMixinBuilder
+        {
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
+            {
+                context.Mixin(mixin, "ImageScalerShader");
+                context.Mixin(mixin, "SpriteSuperSampler");
+            }
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
+            {
+                ShaderMixinManager.Register("ImageSuperSamplerScalerEffect", new ImageSuperSamplerScalerEffect());
+            }
+        }
+    }
 }
