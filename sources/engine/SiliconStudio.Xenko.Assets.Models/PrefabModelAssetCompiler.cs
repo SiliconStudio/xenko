@@ -27,6 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         public PrefabModelAssetCompiler()
         {
             CompileTimeDependencyTypes.Add(typeof(PrefabAsset), BuildDependencyType.CompileContent);
+            CompileTimeDependencyTypes.Add(typeof(SceneAsset), BuildDependencyType.CompileContent);
             CompileTimeDependencyTypes.Add(typeof(ModelAsset), BuildDependencyType.CompileContent);
             CompileTimeDependencyTypes.Add(typeof(PrefabModelAsset), BuildDependencyType.CompileContent);
             CompileTimeDependencyTypes.Add(typeof(ProceduralModelAsset), BuildDependencyType.CompileContent);
