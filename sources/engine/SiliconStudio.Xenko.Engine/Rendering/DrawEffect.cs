@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         [DataMemberIgnore]
-        public SamplingPattern SamplingPattern { get; set; } = SamplingPattern.Box;
+        public SamplingPattern SamplingPattern { get; set; } = SamplingPattern.Linear;
 
         /// <summary>
         /// Gets the parameters.
@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         protected virtual void SetDefaultParameters()
         {
-            SamplingPattern = SamplingPattern.Box;
+            SamplingPattern = SamplingPattern.Linear;
         }
 
         /// <summary>

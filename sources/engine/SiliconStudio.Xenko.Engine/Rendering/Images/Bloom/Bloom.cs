@@ -103,10 +103,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Use the "stable bloom" rendering path.
         /// </summary>
-        /// <userdoc>It reverses FXAA and bloom, as well as uses a richer convolution kernel during blurring.</userdoc>
+        /// <userdoc>It reverses FXAA and bloom, as well as uses a richer convolution kernel during blurring. It helps reduce temporal shimmering.</userdoc>
         [DataMember(60)]
         [DefaultValue(true)]
-        [DisplayName("Improve stability")]
+        [Display("Expanded filtering")]
         public bool StableConvolution
         {
             get { return stableConvolution; }
