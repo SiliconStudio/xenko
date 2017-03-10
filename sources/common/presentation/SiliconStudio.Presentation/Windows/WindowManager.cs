@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Threading;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
@@ -160,6 +161,14 @@ namespace SiliconStudio.Presentation.Windows
 
             Logger.Info($"Modal window showing. ({window})");
             window.Show();
+
+            // Disable minimize on modal windows
+            var handle = new WindowInteropHelper(window).Handle;
+            if (handle != IntPtr.Zero)
+            {
+                NativeHelper.DisableMinimizeButton(handle);
+            }
+
             return windowInfo.WindowClosed.Task;
         }
 
