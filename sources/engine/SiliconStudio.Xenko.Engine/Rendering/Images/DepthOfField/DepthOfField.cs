@@ -250,7 +250,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             combineLevelsEffect = ToLoadAndUnload(new ImageEffectShader("CombineLevelsFromCoCEffect"));
             combineLevelsFrontEffect = ToLoadAndUnload(new ImageEffectShader("CombineFrontCoCEffect"));
             combineLevelsFrontEffect.BlendState = BlendStates.AlphaBlend;
-            textureScaler = ToLoadAndUnload(new ImageScaler());
+            textureScaler = ToLoadAndUnload(new ImageScaler(SamplingPattern.Expanded));
             cocMapBlur = ToLoadAndUnload(new CoCMapBlur());
             thresholdAlphaCoC = ToLoadAndUnload(new ImageEffectShader("ThresholdAlphaCoC"));
             thresholdAlphaCoCFront = ToLoadAndUnload(new ImageEffectShader("ThresholdAlphaCoCFront"));

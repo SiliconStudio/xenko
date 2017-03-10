@@ -24,6 +24,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private ColorTransformGroup colorTransformsGroup;
         private IScreenSpaceAntiAliasingEffect ssaa;
 
+        private ImageEffectShader rangeCompress;
+        private ImageEffectShader rangeDecompress;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PostProcessingEffects" /> class.
         /// </summary>
@@ -46,6 +49,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             lightStreak = new LightStreak();
             lensFlare = new LensFlare();
             ssaa = new FXAAEffect();
+            rangeCompress = new ImageEffectShader("RangeCompressorShader");
+            rangeDecompress = new ImageEffectShader("RangeDecompressorShader");
             colorTransformsGroup = new ColorTransformGroup();
         }
 
@@ -202,6 +207,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             lightStreak.Enabled = false;
             lensFlare.Enabled = false;
             ssaa.Enabled = false;
+            rangeCompress.Enabled = false;
+            rangeDecompress.Enabled = false;
             colorTransformsGroup.Enabled = false;
         }
 
@@ -227,6 +234,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             lensFlare = ToLoadAndUnload(lensFlare);
             //this can be null if no SSAA is selected in the editor
             if(ssaa != null) ssaa = ToLoadAndUnload(ssaa);
+
+            rangeCompress = ToLoadAndUnload(rangeCompress);
+            rangeDecompress = ToLoadAndUnload(rangeDecompress);
+
             colorTransformsGroup = ToLoadAndUnload(colorTransformsGroup);
         }
 
@@ -279,6 +290,43 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
             
             var currentInput = input;
+
+            var fxaa = ssaa as FXAAEffect;
+            bool aaFirst = bloom != null && bloom.StableConvolution;
+            bool needAA = fxaa != null && fxaa.Enabled;
+
+            // do AA here, first. (hybrid method from Karis2013)
+            if (aaFirst && needAA)
+            {
+                // explanation:
+                // The Karis method (Unreal Engine 4.1x), uses a hybrid pipeline to execute AA.
+                // The AA is usually done at the end of the pipeline, but we don't benefit from
+                // AA for the posteffects, which is a shame.
+                // The Karis method, executes AA at the beginning, but for AA to be correct, it must work post tonemapping,
+                // and even more in fact, in gamma space too. Plus, it waits for the alpha=luma to be a "perceptive luma" so also gamma space.
+                // in our case, working in gamma space created monstruous outlining artefacts around eggageratedely strong constrasted objects (way in hdr range).
+                // so AA works in linear space, but still with gamma luma, as a light tradeoff to supress artefacts.
+
+                // create a 16 bits target for FXAA:
+                var aaSurface = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
+
+                // render range compression & perceptual luma to alpha channel:
+                rangeCompress.SetInput(currentInput);
+                rangeCompress.SetOutput(aaSurface);
+                rangeCompress.Draw(context);
+
+                // do AA:
+                fxaa.InputLuminanceInAlpha = true;
+                ssaa.SetInput(aaSurface);
+                ssaa.SetOutput(currentInput);
+                ssaa.Draw(context);
+
+                // reverse tone LDR to HDR:
+                rangeDecompress.SetInput(currentInput);
+                rangeDecompress.SetOutput(aaSurface);
+                rangeDecompress.Draw(context);
+                currentInput = aaSurface;
+            }
 
             if (ambientOcclusion.Enabled && InputCount > 1 && GetInput(1) != null && GetInput(1).IsDepthStencil)
             {
@@ -359,15 +407,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 }
             }
 
-            var outputForLastEffectBeforeAntiAliasing = output;
-
-            if (ssaa != null && ssaa.Enabled)
-            {
-                outputForLastEffectBeforeAntiAliasing = NewScopedRenderTarget2D(output.Width, output.Height, output.Format);
-            }
+            bool aaLast = needAA && !aaFirst;
+            var toneOutput = aaLast ? NewScopedRenderTarget2D(input.Width, input.Height, input.Format) : output;
 
             // When FXAA is enabled we need to detect whether the ColorTransformGroup should output the Luminance into the alpha or not
-            var fxaa = ssaa as FXAAEffect;
             var luminanceToChannelTransform = colorTransformsGroup.PostTransforms.Get<LuminanceToChannelTransform>();
             if (fxaa != null)
             {
@@ -386,14 +429,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
             // Color transform group pass (tonemap, color grading)
-            var lastEffect = colorTransformsGroup.Enabled ? (ImageEffect)colorTransformsGroup: Scaler;
+            var lastEffect = colorTransformsGroup.Enabled ? (ImageEffect)colorTransformsGroup : Scaler;
             lastEffect.SetInput(currentInput);
-            lastEffect.SetOutput(outputForLastEffectBeforeAntiAliasing);
+            lastEffect.SetOutput(toneOutput);
             lastEffect.Draw(context);
 
-            if (ssaa != null && ssaa.Enabled)
+            // do AA here, last, if not already done.
+            if (aaLast)
             {
-                ssaa.SetInput(outputForLastEffectBeforeAntiAliasing);
+                ssaa.SetInput(toneOutput);
                 ssaa.SetOutput(output);
                 ssaa.Draw(context);
             }

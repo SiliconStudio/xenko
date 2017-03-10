@@ -119,11 +119,9 @@ namespace SiliconStudio.Xenko.Rendering
             renderMesh.Material = materialOverride ?? modelMaterialInstance?.Material ?? fallbackMaterial;
 
             renderMesh.IsShadowCaster = modelComponent.IsShadowCaster;
-            renderMesh.IsShadowReceiver = modelComponent.IsShadowReceiver;
             if (modelMaterialInstance != null)
             {
                 renderMesh.IsShadowCaster = renderMesh.IsShadowCaster && modelMaterialInstance.IsShadowCaster;
-                renderMesh.IsShadowReceiver = renderMesh.IsShadowReceiver && modelMaterialInstance.IsShadowReceiver;
             }
         }
 

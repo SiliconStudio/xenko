@@ -11,23 +11,30 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [Color]
         stage float3 ColorModulator;
 
-        stage float BrightPassThreshold = 2.0f;
+        stage float BrightPassSteepness = 2.0f;
+        stage float ThresholdOffset = 0.2f;
 
         stage override float4 Shading()
         {
-	        float3 color = Texture0.Sample(PointSampler, streams.TexCoord).rgb;
+            float3 color = Texture0.Sample(PointSampler, streams.TexCoord).rgb;
 
-	        // Calculate perceptive luminance
-	        float luminance = LuminanceUtils.Luma(color);
+            // Calculate relative luminance
+            float luminance = LuminanceUtils.Luma(color);
 
-	        // Apply threshold
-            //float middle = luminance - BrightPassThreshold;
-            //float range = 0.05f;
-            //float value = smoothstep(0, 1, saturate(middle * range));
-	        //color *= value;
-	        color *= luminance < BrightPassThreshold ? 0.0f : 1.0f;
-	
-	        return float4(color * ColorModulator, 1.0);
+            // method 1
+            // Apply threshold
+            // float middle = luminance - ThresholdOffset;
+            // float range = 0.5f;
+            // float value = smoothstep(0, 1, saturate(middle * range));
+            // color *= value;
+
+            // method 2
+            // color *= luminance < ThresholdOffset ? 0.0f : 1.0f;
+
+            // method 3
+            color *= smoothstep(0, 1, saturate(sqrt(luminance) / (BrightPassSteepness + 1) - ThresholdOffset));
+
+            return float4(color * ColorModulator, 1.0);
         }
     };
 }
