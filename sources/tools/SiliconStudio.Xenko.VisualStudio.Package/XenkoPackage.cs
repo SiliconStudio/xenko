@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.VisualStudio
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
     public sealed class XenkoPackage : Package, IOleComponent
     {
-        public const string Version = "1.4";
+        public const string Version = "2.0";
 
         private readonly Dictionary<EnvDTE.Project, string> previousProjectPlatforms = new Dictionary<EnvDTE.Project, string>();
         private EnvDTE.Project currentStartupProject;
