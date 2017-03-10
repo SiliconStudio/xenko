@@ -28,19 +28,20 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         /// <param name="name">The name.</param>
         /// <exception cref="System.ArgumentNullException">context</exception>
-        protected ImageEffect(string name)
+        protected ImageEffect(string name, bool supersample = false)
             : base(name)
         {
             inputTextures = new Texture[128];
             maxInputTextureIndex = -1;
             EnableSetRenderTargets = true;
+            SamplingPattern = supersample ? SamplingPattern.Expanded : SamplingPattern.Linear;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffect" /> class.
         /// </summary>
         protected ImageEffect()
-            : this(null)
+            : this(null, false)
         {
         }
 

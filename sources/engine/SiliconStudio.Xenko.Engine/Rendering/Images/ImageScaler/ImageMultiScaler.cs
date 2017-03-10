@@ -31,6 +31,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Initializes a new instance of the <see cref="ImageMultiScaler"/> class.
         /// </summary>
         public ImageMultiScaler()
+            : this(false)
+        {}
+
+        public ImageMultiScaler(bool useOverSampling)
+            : base(null, useOverSampling)
         {
             // We are not using the default output for render targets, so don't setup them
             EnableSetRenderTargets = false;
