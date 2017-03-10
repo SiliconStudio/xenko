@@ -11,10 +11,10 @@ using SiliconStudio.Xenko.Games;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Core;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
+//using Windows.UI.Xaml;
+//using Windows.UI.Xaml.Controls;
+//using Windows.UI.Xaml.Input;
+//using Windows.UI.Xaml.Media;
 using Windows.UI.Input;
 using Point = Windows.Foundation.Point;
 using WinRTPointerDeviceType = Windows.Devices.Input.PointerDeviceType;
@@ -243,7 +243,7 @@ namespace SiliconStudio.Xenko.Input
             switch (windowHandle.Context)
             {
                 case AppContextType.UWP:
-                    InitializeFromFrameworkElement((FrameworkElement)windowHandle.NativeWindow);
+//                    InitializeFromFrameworkElement((FrameworkElement)windowHandle.NativeWindow);
                     break;
                 default:
                     throw new ArgumentException(string.Format("WindowContext [{0}] not supported", Game.Context.ContextType));
@@ -415,58 +415,58 @@ namespace SiliconStudio.Xenko.Input
                 windowsOrientation.ReportInterval = Math.Max(DesiredSensorUpdateIntervalMs, windowsOrientation.MinimumReportInterval);
         }
 
-        private void InitializeFromFrameworkElement(FrameworkElement uiElement)
-        {
-            if (!(uiElement is Control))
-            {
-                uiElement.Loaded += uiElement_Loaded;
-                uiElement.Unloaded += uiElement_Unloaded;
+        //private void InitializeFromFrameworkElement(FrameworkElement uiElement)
+        //{
+        //    if (!(uiElement is Control))
+        //    {
+        //        uiElement.Loaded += uiElement_Loaded;
+        //        uiElement.Unloaded += uiElement_Unloaded;
 
-                uiElement_Loaded(uiElement, null); //todo verify, this fixes WIN10 issues but it's not so clear
-                //uiElement_Loaded never triggers because uiElement is already loaded but there is no way to check that unless by event...
-            }
-            else
-            {
-                uiElement.KeyDown += (_, e) => HandleKeyFrameworkElement(e, InputEventType.Down);
-                uiElement.KeyUp += (_, e) => HandleKeyFrameworkElement(e, InputEventType.Up);
-            }
+        //        uiElement_Loaded(uiElement, null); //todo verify, this fixes WIN10 issues but it's not so clear
+        //        //uiElement_Loaded never triggers because uiElement is already loaded but there is no way to check that unless by event...
+        //    }
+        //    else
+        //    {
+        //        uiElement.KeyDown += (_, e) => HandleKeyFrameworkElement(e, InputEventType.Down);
+        //        uiElement.KeyUp += (_, e) => HandleKeyFrameworkElement(e, InputEventType.Up);
+        //    }
 
-            ControlWidth = (float)uiElement.ActualWidth;
-            ControlHeight = (float)uiElement.ActualHeight;
+        //    ControlWidth = (float)uiElement.ActualWidth;
+        //    ControlHeight = (float)uiElement.ActualHeight;
 
-            uiElement.SizeChanged += (_, e) => HandleSizeChangedEvent(e.NewSize);
-            uiElement.PointerPressed += (_, e) => HandlePointerEventFrameworkElement(uiElement, e, PointerState.Down);
-            uiElement.PointerReleased += (_, e) => HandlePointerEventFrameworkElement(uiElement, e, PointerState.Up);
-            uiElement.PointerWheelChanged += (_, e) => HandlePointerEventFrameworkElement(uiElement, e, PointerState.Move);
-            uiElement.PointerMoved += (_, e) => HandlePointerEventFrameworkElement(uiElement, e, PointerState.Move);
-            uiElement.PointerExited += (_, e) => HandlePointerEventFrameworkElement(uiElement, e, PointerState.Out);
-            uiElement.PointerCanceled += (_, e) => HandlePointerEventFrameworkElement(uiElement, e, PointerState.Cancel);
-            uiElement.PointerCaptureLost += (_, e) => HandlePointerEventFrameworkElement(uiElement, e, PointerState.Cancel);
-        }
+        //    uiElement.SizeChanged += (_, e) => HandleSizeChangedEvent(e.NewSize);
+        //    uiElement.PointerPressed += (_, e) => HandlePointerEventFrameworkElement(uiElement, e, PointerState.Down);
+        //    uiElement.PointerReleased += (_, e) => HandlePointerEventFrameworkElement(uiElement, e, PointerState.Up);
+        //    uiElement.PointerWheelChanged += (_, e) => HandlePointerEventFrameworkElement(uiElement, e, PointerState.Move);
+        //    uiElement.PointerMoved += (_, e) => HandlePointerEventFrameworkElement(uiElement, e, PointerState.Move);
+        //    uiElement.PointerExited += (_, e) => HandlePointerEventFrameworkElement(uiElement, e, PointerState.Out);
+        //    uiElement.PointerCanceled += (_, e) => HandlePointerEventFrameworkElement(uiElement, e, PointerState.Cancel);
+        //    uiElement.PointerCaptureLost += (_, e) => HandlePointerEventFrameworkElement(uiElement, e, PointerState.Cancel);
+        //}
 
-        void uiElement_Loaded(object sender, RoutedEventArgs e)
-        {
-            var uiElement = (DependencyObject)sender;
+        //void uiElement_Loaded(object sender, RoutedEventArgs e)
+        //{
+        //    var uiElement = (DependencyObject)sender;
 
-            while (uiElement != null)
-            {
-                var control = uiElement as Control;
-                if (control != null && control.Focus(FocusState.Programmatic))
-                {
-                    // Get keyboard focus, and bind to this event
-                    control.KeyDown += (_, e2) => HandleKeyFrameworkElement(e2, InputEventType.Down);
-                    control.KeyUp += (_, e2) => HandleKeyFrameworkElement(e2, InputEventType.Up);
-                    break;
-                }
+        //    while (uiElement != null)
+        //    {
+        //        var control = uiElement as Control;
+        //        if (control != null && control.Focus(FocusState.Programmatic))
+        //        {
+        //            // Get keyboard focus, and bind to this event
+        //            control.KeyDown += (_, e2) => HandleKeyFrameworkElement(e2, InputEventType.Down);
+        //            control.KeyUp += (_, e2) => HandleKeyFrameworkElement(e2, InputEventType.Up);
+        //            break;
+        //        }
 
-                uiElement = VisualTreeHelper.GetParent(uiElement);
-            }
-        }
+        //        uiElement = VisualTreeHelper.GetParent(uiElement);
+        //    }
+        //}
 
-        void uiElement_Unloaded(object sender, RoutedEventArgs e)
-        {
-            // TODO: Unregister event
-        }
+        //void uiElement_Unloaded(object sender, RoutedEventArgs e)
+        //{
+        //    // TODO: Unregister event
+        //}
         
         private void InitializeFromCoreWindow(CoreWindow coreWindow)
         {
@@ -491,11 +491,11 @@ namespace SiliconStudio.Xenko.Input
             ControlHeight = (float)size.Height;
         }
 
-        private void HandleKeyFrameworkElement(KeyRoutedEventArgs args, InputEventType inputEventType)
-        {
-            if (HandleKey(args.Key, args.KeyStatus, inputEventType))
-                args.Handled = true;
-        }
+        //private void HandleKeyFrameworkElement(KeyRoutedEventArgs args, InputEventType inputEventType)
+        //{
+        //    if (HandleKey(args.Key, args.KeyStatus, inputEventType))
+        //        args.Handled = true;
+        //}
 
         private void HandleKeyCoreWindow(KeyEventArgs args, InputEventType inputEventType)
         {
@@ -506,10 +506,10 @@ namespace SiliconStudio.Xenko.Input
         private bool HandleKey(VirtualKey virtualKey, CorePhysicalKeyStatus keyStatus, InputEventType type)
         {
             // If our EditText TextBox is active, let's ignore all key events
-            if (Game.Context is GameContextUWP && ((GameContextUWP)Game.Context).EditTextBox.Parent != null)
-            {
-                return false;
-            }
+            //if (Game.Context is GameContextUWP && ((GameContextUWP)Game.Context).EditTextBox.Parent != null)
+            //{
+            //    return false;
+            //}
 
             // Remap certain keys
             switch (virtualKey)
@@ -567,12 +567,12 @@ namespace SiliconStudio.Xenko.Input
             return false;
         }
 
-        private void HandlePointerEventFrameworkElement(FrameworkElement uiElement, PointerRoutedEventArgs pointerRoutedEventArgs, PointerState pointerState)
-        {
-            HandlePointerEvent(pointerRoutedEventArgs.GetCurrentPoint(uiElement), pointerState);
+        //private void HandlePointerEventFrameworkElement(FrameworkElement uiElement, PointerRoutedEventArgs pointerRoutedEventArgs, PointerState pointerState)
+        //{
+        //    HandlePointerEvent(pointerRoutedEventArgs.GetCurrentPoint(uiElement), pointerState);
 
-            pointerRoutedEventArgs.Handled = true;
-        }
+        //    pointerRoutedEventArgs.Handled = true;
+        //}
 
         private void HandlePointerEventCoreWindow(PointerEventArgs args, PointerState pointerState)
         {
