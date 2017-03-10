@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             CompileTimeDependencyTypes.Add(typeof(SkeletonAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
         }
 
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (AnimationAsset)assetItem.Asset;
             var assetAbsolutePath = assetItem.FullPath;

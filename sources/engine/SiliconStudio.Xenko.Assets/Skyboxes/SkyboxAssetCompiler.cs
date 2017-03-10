@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             }
         }
 
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (SkyboxAsset)assetItem.Asset;
             result.BuildSteps = new ListBuildStep();

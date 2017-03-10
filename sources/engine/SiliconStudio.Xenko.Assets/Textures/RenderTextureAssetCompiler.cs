@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 {
     public class RenderTextureAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (RenderTextureAsset)assetItem.Asset;
             var colorSpace = context.GetColorSpace();

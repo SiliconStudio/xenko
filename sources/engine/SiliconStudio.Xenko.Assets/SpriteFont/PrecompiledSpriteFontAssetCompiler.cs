@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             yield return new ObjectUrl(UrlType.File, asset.FontDataFile);
         }
 
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (PrecompiledSpriteFontAsset)assetItem.Asset;
             result.BuildSteps = new AssetBuildStep(assetItem) { new PrecompiledSpriteFontCommand(targetUrlInStorage, asset, assetItem.Package) };

@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     public class SkeletonAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (SkeletonAsset)assetItem.Asset;
             var assetSource = GetAbsolutePath(assetItem, asset.Source);

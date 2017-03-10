@@ -22,6 +22,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
         {
             CompileTimeDependencyTypes.Add(typeof(TextureAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //textures
             CompileTimeDependencyTypes.Add(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //sub-materials
+            CompileTimeDependencyTypes.Add(typeof(GameSettingsAsset), BuildDependencyType.CompileAsset);
         }
 
         public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
@@ -32,7 +33,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
             }
         }
 
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (MaterialAsset)assetItem.Asset;
             result.ShouldWaitForPreviousBuilds = true;

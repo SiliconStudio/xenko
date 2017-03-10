@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Assets
 {
     public class GameSettingsAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (GameSettingsAsset)assetItem.Asset;
             // TODO: We should ignore game settings stored in dependencies

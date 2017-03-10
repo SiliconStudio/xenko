@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     internal class SpriteStudioModelAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (SpriteStudioModelAsset)assetItem.Asset;
             var gameSettingsAsset = context.GetGameSettingsAsset();

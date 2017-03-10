@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
 {
     public class SoundAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (SoundAsset)assetItem.Asset;
             result.BuildSteps = new AssetBuildStep(assetItem)

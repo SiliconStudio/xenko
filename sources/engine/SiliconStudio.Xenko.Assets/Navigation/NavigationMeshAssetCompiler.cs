@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             CompileTimeDependencyTypes.Add(typeof(ColliderShapeAsset), BuildDependencyType.CompileContent);
         }
 
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (NavigationMeshAsset)assetItem.Asset;
             result.BuildSteps = new ListBuildStep();

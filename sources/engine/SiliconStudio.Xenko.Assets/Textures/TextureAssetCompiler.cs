@@ -3,6 +3,7 @@
 
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
@@ -19,7 +20,12 @@ namespace SiliconStudio.Xenko.Assets.Textures
     /// </summary>
     public class TextureAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        public TextureAssetCompiler()
+        {
+            CompileTimeDependencyTypes.Add(typeof(GameSettingsAsset), BuildDependencyType.CompileAsset);
+        }
+
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (TextureAsset)assetItem.Asset;
             // Get absolute path of asset source on disk

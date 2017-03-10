@@ -28,7 +28,7 @@ namespace SiliconStudio.Assets.Compiler
             }
         }
 
-        public AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem)
+        public AssetCompilerResult Prepare(CompilerContext context, AssetItem assetItem)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
             if (assetItem == null) throw new ArgumentNullException(nameof(assetItem));
@@ -48,7 +48,7 @@ namespace SiliconStudio.Assets.Compiler
             // Try to compile only if we're sure that the sources exist.
             if (EnsureSourcesExist(result, assetItem))
             {
-                Compile((AssetCompilerContext)context, assetItem, assetItem.Location.GetDirectoryAndFileName(), result);
+                Prepare((AssetCompilerContext)context, assetItem, assetItem.Location.GetDirectoryAndFileName(), result);
             }
 
             return result;
@@ -63,7 +63,7 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="assetItem">The asset to compile</param>
         /// <param name="targetUrlInStorage">The absolute URL to the asset, relative to the storage.</param>
         /// <param name="result">The result where the commands and logs should be output.</param>
-        protected abstract void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result);
+        protected abstract void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result);
 
         /// <summary>
         /// Returns the absolute path on the disk of an <see cref="UFile"/> that is relative to the asset location.

@@ -79,7 +79,7 @@ namespace SiliconStudio.Assets.Compiler
             // Second we are compiling the asset (generating a build step)
             try
             {
-                var resultPerAssetType = compiler.Compile(context, assetItem);
+                var resultPerAssetType = compiler.Prepare(context, assetItem);
 
                 // Raise the AssetCompiled event.
                 AssetCompiled?.Invoke(this, new AssetCompiledArgs(assetItem, resultPerAssetType));

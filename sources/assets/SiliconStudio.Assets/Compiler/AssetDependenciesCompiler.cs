@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets.Compiler
     {
         private readonly BuildDependencyManager buildDependencyManager = new BuildDependencyManager();
 
-        public AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem)
+        public AssetCompilerResult Prepare(CompilerContext context, AssetItem assetItem)
         {
             var finalResult = new AssetCompilerResult();
 
@@ -35,7 +35,7 @@ namespace SiliconStudio.Assets.Compiler
                 finalResult.BuildSteps.Add(new WaitBuildStep()); //todo use LINK
             }
 
-            var mainResult = mainCompiler.Compile(context, assetItem);
+            var mainResult = mainCompiler.Prepare(context, assetItem);
             if (mainResult.HasErrors)
             {
                 finalResult.Error($"Failed to compile preview for asset {assetItem.Location}");

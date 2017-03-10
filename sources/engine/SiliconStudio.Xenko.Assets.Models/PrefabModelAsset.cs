@@ -79,6 +79,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                             }
                         }
                     }
+
                     // Finally return all the referenced models and materials
                     foreach (var reference in references.Values)
                     {

@@ -9,7 +9,7 @@ using SiliconStudio.Core.Diagnostics;
 namespace SiliconStudio.Assets.Compiler
 {
     /// <summary>
-    /// Result of a compilation of assets when using <see cref="IAssetCompiler.Compile"/>
+    /// Result of a compilation of assets when using <see cref="IAssetCompiler.Prepare"/>
     /// </summary>
     public class AssetCompilerResult : LoggerResult
     {
