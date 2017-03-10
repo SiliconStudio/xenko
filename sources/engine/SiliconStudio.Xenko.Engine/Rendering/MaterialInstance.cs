@@ -31,7 +31,6 @@ namespace SiliconStudio.Xenko.Rendering
         {
             Material = material;
             IsShadowCaster = true;
-            IsShadowReceiver = true;
         }
 
         /// <summary>
@@ -54,16 +53,6 @@ namespace SiliconStudio.Xenko.Rendering
         public bool IsShadowCaster { get; set; }
 
         /// <summary>
-        /// Gets or sets if this instance is receiving shadows.
-        /// </summary>
-        /// <value>A boolean indicating whether this instance is receiving shadows. Default is <c>true</c>.</value>
-        /// <userdoc>If checked, the model can be covered by the shadow of another model.</userdoc>
-        [DataMember(30)]
-        [Display("Receive Shadows?")]
-        [DefaultValue(true)]
-        public bool IsShadowReceiver { get; set; }
-
-        /// <summary>
         /// Performs an explicit conversion from <see cref="Material"/> to <see cref="MaterialInstance"/>.
         /// </summary>
         /// <param name="material">The material.</param>
@@ -79,7 +68,7 @@ namespace SiliconStudio.Xenko.Rendering
                 return false;
 
             var instance = (MaterialInstance)obj;
-            return Material == instance.Material && IsShadowCaster == instance.IsShadowCaster && IsShadowReceiver == instance.IsShadowReceiver;
+            return Material == instance.Material && IsShadowCaster == instance.IsShadowCaster;
         }
 
         public bool Equals(MaterialInstance other)
@@ -88,7 +77,7 @@ namespace SiliconStudio.Xenko.Rendering
                 return false;
             if (ReferenceEquals(this, other))
                 return true;
-            return Equals(Material, other.Material) && IsShadowCaster == other.IsShadowCaster && IsShadowReceiver == other.IsShadowReceiver;
+            return Equals(Material, other.Material) && IsShadowCaster == other.IsShadowCaster;
         }
 
         public override int GetHashCode()
@@ -97,7 +86,6 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 var hashCode = Material?.GetHashCode() ?? 0;
                 hashCode = (hashCode*397) ^ IsShadowCaster.GetHashCode();
-                hashCode = (hashCode*397) ^ IsShadowReceiver.GetHashCode();
                 return hashCode;
             }
         }
