@@ -20,11 +20,25 @@ namespace SiliconStudio.Xenko.Navigation
     /// </summary>
     public class NavigationMeshBuilder
     {
-        private NavigationMesh lastNavigationMesh = null;
+        /// <summary>
+        /// Global offset applied to all input colliders processed by this builder
+        /// </summary>
+        public Vector3 Offset = Vector3.Zero;
+
+        private NavigationMesh lastNavigationMesh;
 
         // TODO: Space partitioning
         private List<StaticColliderData> colliders = new List<StaticColliderData>();
         private HashSet<Guid> registeredGuids = new HashSet<Guid>();
+
+        /// <summary>
+        /// Initializes the builder, optionally with a previous navigation mesh
+        /// </summary>
+        /// <param name="lastNavigationMesh">The previous navigation mesh, to allow incremental builds</param>
+        public NavigationMeshBuilder(NavigationMesh lastNavigationMesh = null)
+        {
+            this.lastNavigationMesh = lastNavigationMesh;
+        }
 
         public void Add(StaticColliderData colliderData)
         {
@@ -327,12 +341,14 @@ namespace SiliconStudio.Xenko.Navigation
         {
             NavigationMeshTileCache lastTileCache = lastNavigationMesh?.TileCache;
 
+            Matrix offsetMatrix = Matrix.Translation(Offset);
+
             // TODO for some reason this call is ambiguous when called directly with a type of List<StaticColliderData>
             Dispatcher.ForEach(collidersLocal, colliderData =>
             {
                 var entity = colliderData.Component.Entity;
                 TransformComponent entityTransform = entity.Transform;
-                Matrix entityWorldMatrix = entityTransform.WorldMatrix;
+                Matrix entityWorldMatrix = entityTransform.WorldMatrix * offsetMatrix;
 
                 NavigationMeshInputBuilder entityNavigationMeshInputBuilder = colliderData.InputBuilder = new NavigationMeshInputBuilder();
 

@@ -32,20 +32,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         /// </summary>
         [DataMember(1000)]
         public Scene Scene { get; set; }
-
-        /// <summary>
-        /// The bounding box used for the navigation mesh, ignored if <see cref="AutoGenerateBoundingBox"/> is set to true
-        /// </summary>
-        [DataMember(1200)]
-        public BoundingBox BoundingBox { get; set; }
-
-        /// <summary>
-        /// Toggles automatic generation of bounding boxed, might not work well with infinite planes.
-        /// If this is enabled, the <see cref="BoundingBox"/> property is ignored
-        /// </summary>
-        [DataMember(1205)]
-        public bool AutoGenerateBoundingBox { get; set; }
-
+        
         /// <summary>
         /// Collision filter that indicates which colliders are used in navmesh generation
         /// </summary>
@@ -69,8 +56,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             unchecked
             {
                 var hashCode = NavigationMeshAgentSettings?.ComputeHash() ?? 0;
-                hashCode = (hashCode*397) ^ BoundingBox.GetHashCode();
-                hashCode = (hashCode*397) ^ AutoGenerateBoundingBox.GetHashCode();
                 hashCode = (hashCode*397) ^ (int)IncludedCollisionGroups;
                 hashCode = (hashCode*397) ^ BuildSettings.GetHashCode();
                 if (Scene != null)

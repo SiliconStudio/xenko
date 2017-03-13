@@ -22,8 +22,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             return new NavigationMeshAsset
             {
                 BuildSettings = ObjectFactoryRegistry.NewInstance<NavigationMeshBuildSettings>(),
-                BoundingBox = new BoundingBox(new Vector3(-10.0f), new Vector3(10.0f)),
-                AutoGenerateBoundingBox = true,
                 IncludedCollisionGroups = CollisionFilterGroupFlags.AllFilter,
                 NavigationMeshAgentSettings = new List<NavigationAgentSettings>
                 {
