@@ -8,6 +8,9 @@ using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Navigation
 {
+    /// <summary>
+    /// Utility function for navigation mesh building
+    /// </summary>
     public class NavigationMeshBuildUtils
     {
         /// <summary>
@@ -37,32 +40,12 @@ namespace SiliconStudio.Xenko.Navigation
             }
             return ret;
         }
-
+        
         /// <summary>
-        /// Clamps X-Z coordinates to a navigation mesh tile
+        /// Snaps a <see cref="BoundingBox"/>'s height according to the given <see cref="NavigationMeshBuildSettings"/>
         /// </summary>
-        /// <param name="settings"></param>
-        /// <param name="boundingBox"></param>
-        /// <param name="tileCoord"></param>
-        /// <returns></returns>
-        public static BoundingBox ClampBoundingBoxToTile(NavigationMeshBuildSettings settings, BoundingBox boundingBox, Point tileCoord)
-        {
-            float tcs = settings.TileSize * settings.CellSize;
-            Vector2 tileMin = new Vector2(tileCoord.X * tcs, tileCoord.Y * tcs);
-            Vector2 tileMax = tileMin + new Vector2(tcs);
-
-            boundingBox.Minimum.X = tileMin.X;
-            boundingBox.Minimum.Z = tileMin.Y;
-            boundingBox.Maximum.X = tileMax.X;
-            boundingBox.Maximum.Z = tileMax.Y;
-
-            // Snap Y to tile height to avoid height differences between tiles
-            boundingBox.Minimum.Y = (float)Math.Floor(boundingBox.Minimum.Y / settings.CellHeight) * settings.CellHeight;
-            boundingBox.Maximum.Y = (float)Math.Ceiling(boundingBox.Maximum.Y / settings.CellHeight) * settings.CellHeight;
-
-            return boundingBox;
-        }
-
+        /// <param name="settings">The build settings</param>
+        /// <param name="boundingBox">Reference to the bounding box to snap</param>
         public static void SnapBoundingBoxToCellHeight(NavigationMeshBuildSettings settings, ref BoundingBox boundingBox)
         {
             // Snap Y to tile height to avoid height differences between tiles
@@ -149,17 +132,30 @@ namespace SiliconStudio.Xenko.Navigation
         }
 
         /// <summary>
+        /// Checks if a static collider passes the given filter group
+        /// </summary>
+        /// <param name="collider">The collider to check</param>
+        /// <param name="includedCollisionGroups">The collision filter</param>
+        /// <returns><c>true</c> if the collider passes the filter, <c>false</c> otherwise</returns>
+        public static bool CheckColliderFilter(StaticColliderComponent collider, CollisionFilterGroupFlags includedCollisionGroups)
+        {
+            return ((CollisionFilterGroupFlags)collider.CollisionGroup & includedCollisionGroups) != 0;
+        }
+
+        /// <summary>
         /// Hashes and entity's transform and it's collider shape settings
         /// </summary>
-        /// <param name="collider"></param>
+        /// <param name="collider">The collider to hash</param>
+        /// <param name="includedCollisionGroups">The filter group for active collides, 
+        ///     which is used to hash if this colliders participates in the navigation mesh build</param>
         /// <returns></returns>
-        public static int HashEntityCollider(StaticColliderComponent collider)
+        public static int HashEntityCollider(StaticColliderComponent collider, CollisionFilterGroupFlags includedCollisionGroups)
         {
             int hash = 0;
             hash = (hash * 397) ^ collider.Entity.Transform.WorldMatrix.GetHashCode();
-            hash = (hash * 397) ^ collider.CollisionGroup.GetHashCode();
             hash = (hash * 397) ^ collider.Enabled.GetHashCode();
             hash = (hash * 397) ^ collider.IsTrigger.GetHashCode();
+            hash = (hash * 397) ^ CheckColliderFilter(collider, includedCollisionGroups).GetHashCode();
             foreach (var shape in collider.ColliderShapes)
             {
                 hash = (hash * 397) ^ shape.GetType().GetHashCode();

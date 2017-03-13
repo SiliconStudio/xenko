@@ -90,6 +90,7 @@ namespace SiliconStudio.Xenko.Navigation
 
             // Initialize build settings from game settings
             var navigationSettings = gameSettings.Configurations.Get<NavigationSettings>();
+
             BuildSettings = navigationSettings.BuildSettings;
             IncludedCollisionGroups = navigationSettings.IncludedCollisionGroups;
             AgentSettings = navigationSettings.NavigationMeshAgentSettings;

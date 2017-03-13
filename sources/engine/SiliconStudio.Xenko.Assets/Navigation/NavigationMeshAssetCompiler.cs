@@ -277,7 +277,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                 }
 
                                 // Hash collider for ComputeParameterHash
-                                sceneHash = (sceneHash * 397) ^ Xenko.Navigation.NavigationMeshBuildUtils.HashEntityCollider(colliderComponent);
+                                sceneHash = (sceneHash * 397) ^ Xenko.Navigation.NavigationMeshBuildUtils.HashEntityCollider(colliderComponent, asset.IncludedCollisionGroups);
                             }
                         }
                     }

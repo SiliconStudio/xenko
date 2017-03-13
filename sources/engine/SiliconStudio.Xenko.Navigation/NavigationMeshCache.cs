@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Navigation
             new Dictionary<Guid, NavigationMeshCachedObject>();
         
         public List<BoundingBox> BoundingBoxes = new List<BoundingBox>();
-
+        
         public int SettingsHash = 0;
 
         /// <summary>
@@ -40,51 +40,6 @@ namespace SiliconStudio.Xenko.Navigation
                 Planes = new List<Plane>(planes),
                 InputBuilder = data
             });
-        }
-
-
-        /// <summary>
-        /// Checks if an entity has moved in any way or it's collider settings/composition changed
-        /// </summary>
-        /// <param name="newEntity">The entity to check</param>
-        /// <returns>true if entity is new, or one of its settings changed affecting the collider's shape</returns>
-        public bool IsUpdatedOrNew(StaticColliderComponent collider)
-        {
-            var entity = collider.Entity;
-            NavigationMeshCachedObject existingObject;
-            if (Objects.TryGetValue(entity.Id, out existingObject))
-            {
-                int hash = NavigationMeshBuildUtils.HashEntityCollider(collider);
-                return (hash != existingObject.ParameterHash);
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// When called on the old build with the list of new entities it wil determine the bounding boxes 
-        /// for the areas that should be updated due to removals of colliders
-        /// </summary>
-        /// <param name="entities">The new list of entities to compare to</param>
-        /// <returns>A list of the areas that are updated due to them being removed in the input list</returns>
-        public List<BoundingBox> GetRemovedAreas(List<StaticColliderComponent> colliders)
-        {
-            List<BoundingBox> ret = new List<BoundingBox>();
-
-            HashSet<Guid> inputHashSet = new HashSet<Guid>();
-            foreach (StaticColliderComponent collider in colliders)
-            {
-                inputHashSet.Add(collider.Id);
-            }
-
-            foreach (var p in Objects)
-            {
-                if (!inputHashSet.Contains(p.Key))
-                {
-                    ret.Add(p.Value.InputBuilder.BoundingBox);
-                }
-            }
-
-            return ret;
         }
     }
 }

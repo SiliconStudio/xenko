@@ -371,7 +371,7 @@ namespace SiliconStudio.Xenko.Navigation
                 NavigationMeshInputBuilder entityNavigationMeshInputBuilder = colliderData.InputBuilder = new NavigationMeshInputBuilder();
 
                 // Compute hash of collider and compare it with the previous build if there is one
-                colliderData.ParameterHash = NavigationMeshBuildUtils.HashEntityCollider(colliderData.Component);
+                colliderData.ParameterHash = NavigationMeshBuildUtils.HashEntityCollider(colliderData.Component, includedCollisionGroups);
                 colliderData.Previous = null;
                 if (lastCache?.Objects.TryGetValue(colliderData.Component.Id, out colliderData.Previous) ?? false)
                 {
@@ -388,8 +388,8 @@ namespace SiliconStudio.Xenko.Navigation
                 }
 
                 // Return empty data for disabled colliders, filtered out colliders or trigger colliders 
-                bool passesFilter = ((CollisionFilterGroupFlags)colliderData.Component.CollisionGroup & includedCollisionGroups) != 0;
-                if (!colliderData.Component.Enabled || colliderData.Component.IsTrigger || !passesFilter)
+                if (!colliderData.Component.Enabled || colliderData.Component.IsTrigger || 
+                    !NavigationMeshBuildUtils.CheckColliderFilter(colliderData.Component, includedCollisionGroups))
                 {
                     colliderData.Processed = true;
                     return;
@@ -460,14 +460,13 @@ namespace SiliconStudio.Xenko.Navigation
                         {
                             var planeShape = (StaticPlaneColliderShape)shape;
                             var planeDesc = (StaticPlaneColliderShapeDesc)planeShape.Description;
-                            Matrix transform = planeShape.PositiveCenterMatrix * entityWorldMatrix;
+                            Matrix transform = entityWorldMatrix;
 
                             Plane plane = new Plane(planeDesc.Normal, planeDesc.Offset);
 
                             // Pre-Transform plane parameters
                             plane.Normal = Vector3.TransformNormal(planeDesc.Normal, transform);
-                            float offset = Vector3.Dot(transform.TranslationVector, planeDesc.Normal);
-                            plane.D += offset;
+                            plane.D += Vector3.Dot(transform.TranslationVector, plane.Normal);
 
                             colliderData.Planes.Add(plane);
                         }
