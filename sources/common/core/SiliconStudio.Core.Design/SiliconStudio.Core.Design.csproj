@@ -41,6 +41,7 @@
     <Compile Include="..\SiliconStudio.Core.Serialization\IO\NativeLockFile.cs">
       <Link>Windows\NativeLockFile.cs</Link>
     </Compile>
+    <Compile Include="AbsoluteId.cs" />
     <Compile Include="Annotations\BaseTypeRequiredAttribute.cs" />
     <Compile Include="Annotations\CollectionAccessAttribute.cs" />
     <Compile Include="Annotations\MustUseReturnValueAttribute.cs" />
@@ -81,6 +82,14 @@
     <Compile Include="Settings\SettingsDictionarySerializer.cs" />
     <Compile Include="Settings\SettingsEntryChangeValueOperation.cs" />
     <Compile Include="Settings\SettingsProfileSerializer.cs" />
+    <Compile Include="Threading\AsyncLock.cs" />
+    <Compile Include="Threading\IAsyncWaitQueue.cs" />
+    <Compile Include="Threading\AwaitableDisposable.cs" />
+    <Compile Include="Threading\Internal\DefaultAsyncWaitQueue.cs" />
+    <Compile Include="Threading\Internal\Dequeue.cs" />
+    <Compile Include="Threading\Internal\ExceptionHelpers.cs" />
+    <Compile Include="Threading\Internal\IdManager.cs" />
+    <Compile Include="Threading\Internal\TaskCompletionSourceExtensions.cs" />
     <Compile Include="Transactions\DiscardReason.cs" />
     <Compile Include="Transactions\IAsyncTransaction.cs" />
     <Compile Include="Transactions\IMergeableOperation.cs" />

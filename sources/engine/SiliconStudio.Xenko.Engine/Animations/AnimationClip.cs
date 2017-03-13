@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Animations
     /// </summary>
     [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<AnimationClip>))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<AnimationClip>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<AnimationClip>), Profile = "Content")]
     public sealed class AnimationClip
     {
         // If there is an evaluator, animation clip can't be changed anymore.

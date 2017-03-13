@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum

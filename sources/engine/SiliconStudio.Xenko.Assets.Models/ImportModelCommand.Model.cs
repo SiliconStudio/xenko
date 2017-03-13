@@ -115,7 +115,10 @@ namespace SiliconStudio.Xenko.Assets.Models
                 if (!MathUtil.NearEqual(ScaleImport, 1.0f))
                 {
                     var transformationMatrix = Matrix.Scaling(ScaleImport);
-                    mesh.Draw.VertexBuffers[0].TransformBuffer(ref transformationMatrix);
+                    for (int vbIdx = 0; vbIdx < mesh.Draw.VertexBuffers.Length; vbIdx++)
+                    {
+                        mesh.Draw.VertexBuffers[vbIdx].TransformBuffer(ref transformationMatrix);
+                    }
                 }
 
                 var skinning = mesh.Skinning;
@@ -162,7 +165,10 @@ namespace SiliconStudio.Xenko.Assets.Models
                 {
                     // Transform vertices
                     var transformationMatrix = CombineMatricesFromNodeIndices(hierarchyUpdater.NodeTransformations, skeletonMapping.SourceToSource[mesh.NodeIndex], mesh.NodeIndex);
-                    mesh.Draw.VertexBuffers[0].TransformBuffer(ref transformationMatrix);
+                    for (int vbIdx = 0; vbIdx < mesh.Draw.VertexBuffers.Length; vbIdx++)
+                    {
+                        mesh.Draw.VertexBuffers[vbIdx].TransformBuffer(ref transformationMatrix);
+                    }
 
                     // Check if geometry is inverted, to know if we need to reverse winding order
                     // TODO: What to do if there is no index buffer? We should create one... (not happening yet)
@@ -239,16 +245,16 @@ namespace SiliconStudio.Xenko.Assets.Models
             foreach (var mesh in model.Meshes)
             {
                 var vertexBuffers = mesh.Draw.VertexBuffers;
-                if (vertexBuffers.Length > 0)
+                for (int vbIdx = 0; vbIdx < vertexBuffers.Length; vbIdx++)
                 {
                     // Compute local mesh bounding box (no node transformation)
                     Matrix matrix = Matrix.Identity;
-                    mesh.BoundingBox = vertexBuffers[0].ComputeBounds(ref matrix, out mesh.BoundingSphere);
+                    mesh.BoundingBox = vertexBuffers[vbIdx].ComputeBounds(ref matrix, out mesh.BoundingSphere);
 
                     // Compute model bounding box (includes node transformation)
                     hierarchyUpdater.GetWorldMatrix(mesh.NodeIndex, out matrix);
                     BoundingSphere meshBoundingSphere;
-                    var meshBoundingBox = vertexBuffers[0].ComputeBounds(ref matrix, out meshBoundingSphere);
+                    var meshBoundingBox = vertexBuffers[vbIdx].ComputeBounds(ref matrix, out meshBoundingSphere);
                     BoundingBox.Merge(ref modelBoundingBox, ref meshBoundingBox, out modelBoundingBox);
                     BoundingSphere.Merge(ref modelBoundingSphere, ref meshBoundingSphere, out modelBoundingSphere);
                 }

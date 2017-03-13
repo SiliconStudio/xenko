@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Initializes a <see cref="DrawEffect"/>.
         /// </summary>
-        protected DrawEffect(String name):
+        protected DrawEffect(string name) :
             base(name)
         {
             Enabled = true;
@@ -45,6 +45,9 @@ namespace SiliconStudio.Xenko.Rendering
             Initialize(context);
         }
 
+        [DataMemberIgnore]
+        public SamplingPattern SamplingPattern { get; set; } = SamplingPattern.Linear;
+
         /// <summary>
         /// Gets the parameters.
         /// </summary>
@@ -62,10 +65,10 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 // TODO
                 // return scaler ?? (scaler = Context.GetSharedEffect<ImageScaler>());
-                if (scaler == null)
+                if (scaler == null || SamplingPattern != scaler.FilterPattern)
                 {
                     // Scaler typically get random input and output from allocator, so we delay the set of render targets to avoid potential D3D11 warnings
-                    scaler = new ImageScaler(true);
+                    scaler = new ImageScaler(SamplingPattern, true);
                     scaler.Initialize(Context);
                 }
                 return scaler;
@@ -85,6 +88,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         protected virtual void SetDefaultParameters()
         {
+            SamplingPattern = SamplingPattern.Linear;
         }
 
         /// <summary>

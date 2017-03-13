@@ -2,6 +2,6 @@
 Id: 01bd858c-372f-4873-a070-f92058833673
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
-Source: ../../../../../samples/Graphics/MaterialSample/Resources/stone4_nml.jpeg
+Source: Resources/stone4_nml.jpeg
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Hint: NormalMap

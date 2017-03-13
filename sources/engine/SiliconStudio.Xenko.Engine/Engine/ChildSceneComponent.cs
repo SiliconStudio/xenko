@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
@@ -16,7 +17,8 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("ChildSceneComponent")]
     [Display("Child scene", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentProcessor(typeof(ChildSceneProcessor), ExecutionMode = ExecutionMode.Runtime)]
+    [DefaultEntityComponentProcessor(typeof(ChildSceneProcessor))]
+    [NonInstantiable]
     [ComponentOrder(11200)]
     public sealed class ChildSceneComponent : ActivableEntityComponent
     {
@@ -32,6 +34,7 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
+        /// The child scene.
         /// Initializes a new instance of the <see cref="ChildSceneComponent"/> class.
         /// </summary>
         /// <param name="scene">The scene.</param>
@@ -41,10 +44,9 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
-        /// Gets or sets the child scene.
+        /// The child scene.
         /// </summary>
-        /// <value>The scene.</value>
-        /// <userdoc>The reference to the scene to render. Any scene can be selected except the containing one.</userdoc>
+        /// <userdoc>The reference to the child scene. Any scene can be selected except the containing one.</userdoc>
         [DataMember(10)]
         public Scene Scene
         {
@@ -76,7 +78,10 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
-        public void UpdateScene()
+        /// <summary>
+        /// Notifies the component of being added to or removed from a scene.
+        /// </summary>
+        public void NotifySceneChanged()
         {
             if (scene != null)
             {
@@ -122,7 +127,11 @@ namespace SiliconStudio.Xenko.Engine
 
             public override void Process(TransformComponent transformComponent)
             {
-                Matrix.Multiply(ref transformComponent.WorldMatrix, ref childSceneComponent.Entity.Transform.WorldMatrix, out transformComponent.WorldMatrix);
+                if (childSceneComponent.Entity != null)
+                {
+                    childSceneComponent.Entity.Transform.UpdateWorldMatrix();
+                    Matrix.Multiply(ref transformComponent.WorldMatrix, ref childSceneComponent.Entity.Transform.WorldMatrix, out transformComponent.WorldMatrix);
+                }
             }
         }
     }

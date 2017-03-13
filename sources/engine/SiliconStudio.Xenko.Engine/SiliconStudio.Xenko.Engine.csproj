@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
@@ -234,6 +234,19 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Images\ImageScaler\SamplingPattern.cs" />
+    <Compile Include="Rendering\Images\RangeConversion\RangeCompressorShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>RangeCompressorShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\RangeConversion\RangeDecompressorShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>RangeDecompressorShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Compositing\SceneRendererBase.cs" />
     <Compile Include="Rendering\Images\LightShafts\PostEffectBoundingRay.cs">
       <AutoGen>True</AutoGen>
@@ -319,6 +332,14 @@
     <None Include="Rendering\Background\BackgroundShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BackgroundShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\RangeConversion\RangeCompressorShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>RangeCompressorShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\RangeConversion\RangeDecompressorShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>RangeDecompressorShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Compositing\DefaultGraphicsCompositorLevel10.xkgfxcomp" />
     <None Include="Rendering\Compositing\DefaultGraphicsCompositorLevel9.xkgfxcomp" />
@@ -4008,6 +4029,7 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
       <Project>{FCF36D39-BFFE-4719-B245-05640EE34C5F}</Project>
       <Name>SiliconStudio.Core.Native</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>

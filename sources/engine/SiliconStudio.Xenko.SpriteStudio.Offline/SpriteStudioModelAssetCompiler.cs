@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
         {
             var asset = (SpriteStudioModelAsset)assetItem.Asset;
             var gameSettingsAsset = context.GetGameSettingsAsset();
-            var renderingSettings = gameSettingsAsset.Get<RenderingSettings>(context.Platform);
+            var renderingSettings = gameSettingsAsset.GetOrCreate<RenderingSettings>(context.Platform);
             var colorSpace = renderingSettings.ColorSpace;
 
             var cells = new List<SpriteStudioCell>();
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                         targetUrlInStorage + texIndex,
                         new TextureConvertParameters(texture, textureAsset, context.Platform,
                             context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile,
-                            gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace)));
+                            gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace)));
 
                 asset.BuildTextures.Add(targetUrlInStorage + texIndex);
 

@@ -171,10 +171,6 @@ namespace SiliconStudio.BuildEngine
             startTime = DateTime.Now;
             this.buildProfile = buildProfile;
             this.indexName = indexName;
-            var entryAssembly = Assembly.GetEntryAssembly();
-            SlaveBuilderPath = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                entryAssembly != null ? Path.GetFileName(entryAssembly.Location) : "SiliconStudio.Assets.CompilerApp.exe"); // TODO: Hardcoded value of CompilerApp
             Logger = logger;
             this.buildPath = buildPath;
             Root = new ListBuildStep();

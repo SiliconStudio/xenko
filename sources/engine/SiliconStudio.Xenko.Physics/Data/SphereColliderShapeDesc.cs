@@ -33,12 +33,10 @@ namespace SiliconStudio.Xenko.Physics
         [DataMember(30)]
         public Vector3 LocalOffset;
 
-        public int CompareTo(object obj)
+        public bool Match(object obj)
         {
             var other = obj as SphereColliderShapeDesc;
-            if (other == null) return -1;
-            if (other.Is2D == Is2D && Math.Abs(other.Radius - Radius) < float.Epsilon && other.LocalOffset == LocalOffset) return 0;
-            return 1;
+            return other?.Is2D == Is2D && Math.Abs(other.Radius - Radius) < float.Epsilon && other.LocalOffset == LocalOffset;
         }
 
         public override int GetHashCode()

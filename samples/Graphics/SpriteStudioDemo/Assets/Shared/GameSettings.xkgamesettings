@@ -1,6 +1,6 @@
 !GameSettingsAsset
 Id: 0c348282-d28d-4932-9472-0416d131c04d
-SerializedVersion: {Xenko: 1.6.1-alpha01}
+SerializedVersion: {Xenko: 1.9.3-alpha01}
 Tags: []
 DefaultScene: d23da80d-8ef3-4400-9f16-190a9c6bd3b3:SpriteEntityScene
 GraphicsCompositor: 399ae22b-f756-4f77-844d-3d5bfe4b599c:GraphicsCompositor
@@ -21,6 +21,8 @@ Defaults:
         Flags: None
         MaxSubSteps: 1
         FixedTimeStep: 0.0166666675
+    - !SiliconStudio.Xenko.Audio.AudioEngineSettings,SiliconStudio.Xenko.Audio
+        HrtfSupport: false
 Overrides: []
 PlatformFilters:
     - PowerVR SGX 54[0-9]

@@ -6,6 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets
 {
@@ -13,6 +14,7 @@ namespace SiliconStudio.Assets
     /// Base class for Asset.
     /// </summary>
     [DataContract(Inherited = true)]
+    [AssemblyScan]
     public abstract class Asset
     {
         private AssetId id;
