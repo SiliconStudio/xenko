@@ -52,6 +52,7 @@
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="Extensions\TypeDescriptorExtensions.cs" />
+    <Compile Include="IAsyncDisposable.cs" />
     <Compile Include="IDestroyable.cs" />
     <Compile Include="IO\UDirectory.cs" />
     <Compile Include="IO\UDirectorySerializer.cs" />
