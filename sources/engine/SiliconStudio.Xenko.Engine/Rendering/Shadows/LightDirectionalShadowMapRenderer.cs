@@ -97,6 +97,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             var shadowMap = base.CreateShadowMapTexture(renderView, lightComponent, light, shadowMapSize);
             shadowMap.CascadeCount = ((LightDirectionalShadowMap)light.Shadow).GetCascadeCount();
+            // Views with orthographic cameras cannot use cascades, we force it to 1 shadow map here.
+            if (renderView.Projection.M44 == 1.0f)
+            {
+                shadowMap.ShadowType &= ~(LightShadowType.CascadeMask);
+                shadowMap.ShadowType |= LightShadowType.Cascade1;
+                shadowMap.CascadeCount = (int)LightShadowMapCascadeCount.OneCascade;
+            }
             return shadowMap;
         }
 
