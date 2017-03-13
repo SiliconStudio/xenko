@@ -173,6 +173,7 @@
     <Compile Include="ValueConverters\SumMultiConverter.cs" />
     <Compile Include="ValueConverters\ThicknessMultiConverter.cs" />
     <Compile Include="ValueConverters\VectorEditingModeToBoolean.cs" />
+    <Compile Include="ValueConverters\Yield.cs" />
     <Compile Include="ViewModel\CollectionChangeOperation.cs" />
     <Compile Include="ViewModel\PropertyChangeOperation.cs" />
     <Compile Include="Windows\CheckedMessageBox.cs" />
