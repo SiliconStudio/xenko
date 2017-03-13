@@ -59,7 +59,7 @@ namespace SiliconStudio.Core
             if (inMicroThread)
             {
                 // If we already acquired the lock in this micro-thread, we're just re-entering
-                if (asyncLocks.IsValueCreated)
+                if (asyncLocks.IsValueCreated && asyncLocks.Value != null)
                 {
                     var currentLock = asyncLocks.Value;
                     currentLock.Reenter();
@@ -69,7 +69,7 @@ namespace SiliconStudio.Core
             else
             {
                 // If we already acquired the lock in this thread, we're just re-entering
-                if (syncLocks.IsValueCreated)
+                if (syncLocks.IsValueCreated && syncLocks.Value != null)
                 {
                     var currentLock = syncLocks.Value;
                     currentLock.Reenter();
@@ -116,6 +116,7 @@ namespace SiliconStudio.Core
                 --reentrancy;
                 if (reentrancy == 0)
                 {
+                    Unregister();
                     lock (MicroThreadLock.lockQueue)
                     {
                         // Remove ourself from the queue.
@@ -150,6 +151,7 @@ namespace SiliconStudio.Core
             }
 
             internal abstract void Register();
+            internal abstract void Unregister();
         }
 
         private class MicroThreadAsyncLock : MicroThreadLockBase
@@ -163,6 +165,11 @@ namespace SiliconStudio.Core
             internal override void Register()
             {
                 MicroThreadLock.asyncLocks.Value = this;
+            }
+
+            internal override void Unregister()
+            {
+                MicroThreadLock.asyncLocks.Value = null;
             }
         }
 
@@ -193,6 +200,11 @@ namespace SiliconStudio.Core
             internal override void Register()
             {
                 MicroThreadLock.syncLocks.Value = this;
+            }
+
+            internal override void Unregister()
+            {
+                MicroThreadLock.syncLocks.Value = null;
             }
         }
     }
