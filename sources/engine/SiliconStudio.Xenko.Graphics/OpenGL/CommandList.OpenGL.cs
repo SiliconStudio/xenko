@@ -1542,7 +1542,7 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.EnsureContextActive();
 #endif
             
-            Internal.Refactor.ThrowNotImplementedException();
+            //Internal.Refactor.ThrowNotImplementedException();
         }
 
         internal void SetupTargets()
