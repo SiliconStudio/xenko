@@ -13,40 +13,42 @@ namespace SiliconStudio.Assets.Compiler
     {
         private readonly BuildDependencyManager buildDependencyManager = new BuildDependencyManager();
 
-        public AssetCompilerResult Prepare(CompilerContext context, AssetItem assetItem)
+        public void Prepare(AssetCompilerResult finalResult, CompilerContext context, AssetItem assetItem, BuildStep parentBuildStep = null, BuildDependencyType dependencyType = BuildDependencyType.Runtime)
         {
-            var finalResult = new AssetCompilerResult();
+            var assetNode = buildDependencyManager.FindOrCreateNode(assetItem, dependencyType);
 
-            var assetNode = buildDependencyManager.FindOrCreateNode(assetItem, BuildDependencyType.Runtime);
             assetNode.Analyze();
 
             var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(assetItem.Asset.GetType());
-            if(mainCompiler == null) return finalResult;
-
-            foreach (var dependencyNode in assetNode.DependencyNodes)
-            {
-                if ((dependencyNode.DependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent)
-                {
-                    var result = Prepare(context, dependencyNode.AssetItem);
-                    if (result.HasErrors)
-                    {
-                        finalResult.Error($"Failed to compile preview for asset {assetItem.Location}");
-                        return finalResult;
-                    }
-                    finalResult.BuildSteps.Add(result.BuildSteps);
-                    finalResult.BuildSteps.Add(new WaitBuildStep()); //todo use LINK, but it's not as easy, we have some read-write conflicts in the build engine
-                }
-            }
+            if(mainCompiler == null) return;
 
             var mainResult = mainCompiler.Prepare(context, assetItem);
             if (mainResult.HasErrors)
             {
                 finalResult.Error($"Failed to compile preview for asset {assetItem.Location}");
-                return finalResult;
+                return;
             }
 
-            finalResult.BuildSteps.Add(mainResult.BuildSteps);
-            return finalResult;
+            if(parentBuildStep != null)
+                BuildStep.LinkBuildSteps(mainResult.BuildSteps, parentBuildStep);
+
+            foreach (var dependencyNode in assetNode.DependencyNodes)
+            {
+                Prepare(finalResult, context, dependencyNode.AssetItem, mainResult.BuildSteps, dependencyNode.DependencyType);
+                if (finalResult.HasErrors)
+                {
+                    return;
+                }
+            }
+
+            assetNode.Version = assetItem.Version;
+            assetNode.BuildTask = mainResult.BuildSteps.ExecutedAsync();
+
+            if ((dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent ||
+                (dependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime)
+            {
+                finalResult.BuildSteps.Add(mainResult.BuildSteps);
+            }
         }
     }
 }

@@ -28,10 +28,10 @@ namespace SiliconStudio.Assets.Analysis
             buildDependencyManager = dependencyManager;
         }
 
-        public void Analyze()
+        public bool Analyze()
         {
             var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(AssetItem.Asset.GetType());
-            if (mainCompiler == null) return; //scripts and such don't have compiler
+            if (mainCompiler == null) return false; //scripts and such don't have compiler
 
             dependencyLinks.Clear();
 
@@ -64,6 +64,22 @@ namespace SiliconStudio.Assets.Analysis
                     dependencyLinks.TryAdd(asset.Id, node);
                 }
             }
+
+            var needsRebuild = AssetItem.Version != Version;
+
+            if (!needsRebuild)
+            {
+                foreach (var dependencyNode in DependencyNodes)
+                {
+                    var depNeedsRebuild = dependencyNode.Analyze();
+                    if (depNeedsRebuild)
+                    {
+                        needsRebuild = true;
+                    }
+                }
+            }
+
+            return needsRebuild;
         }
     }
 }
