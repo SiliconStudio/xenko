@@ -320,7 +320,7 @@ namespace SiliconStudio.Core.Mathematics
         {
             return new Vector3(value.X * scale, value.Y * scale, value.Z * scale);
         }
-
+        
         /// <summary>
         /// Modulates a vector with another by performing component-wise multiplication.
         /// </summary>
@@ -368,7 +368,7 @@ namespace SiliconStudio.Core.Mathematics
         {
             return new Vector3(value.X / scale, value.Y / scale, value.Z / scale);
         }
-
+        
         /// <summary>
         /// Demodulates a vector with another by performing component-wise division.
         /// </summary>
@@ -863,7 +863,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="result">When the method completes, contains the vector in screen space.</param>
         public static void Project(ref Vector3 vector, float x, float y, float width, float height, float minZ, float maxZ, ref Matrix worldViewProjection, out Vector3 result)
         {
-            Vector3 v = new Vector3();
+            Vector3 v;
             TransformCoordinate(ref vector, ref worldViewProjection, out v);
 
             result = new Vector3(((1.0f + v.X) * 0.5f * width) + x, ((1.0f - v.Y) * 0.5f * height) + y, (v.Z * (maxZ - minZ)) + minZ);
@@ -903,7 +903,7 @@ namespace SiliconStudio.Core.Mathematics
         public static void Unproject(ref Vector3 vector, float x, float y, float width, float height, float minZ, float maxZ, ref Matrix worldViewProjection, out Vector3 result)
         {
             Vector3 v = new Vector3();
-            Matrix matrix = new Matrix();
+            Matrix matrix;
             Matrix.Invert(ref worldViewProjection, out matrix);
 
             v.X = (((vector.X - x) / width) * 2.0f) - 1.0f;
@@ -1160,6 +1160,20 @@ namespace SiliconStudio.Core.Mathematics
                 (vector.X * transform.M12) + (vector.Y * transform.M22) + (vector.Z * transform.M32) + transform.M42,
                 (vector.X * transform.M13) + (vector.Y * transform.M23) + (vector.Z * transform.M33) + transform.M43,
                 (vector.X * transform.M14) + (vector.Y * transform.M24) + (vector.Z * transform.M34) + transform.M44);
+        }
+
+        /// <summary>
+        /// Transforms a 3D vector by the given <see cref="SiliconStudio.Core.Mathematics.Matrix"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="SiliconStudio.Core.Mathematics.Matrix"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed <see cref="SiliconStudio.Core.Mathematics.Vector3"/>.</param>
+        public static void Transform(ref Vector3 vector, ref Matrix transform, out Vector3 result)
+        {
+            result = new Vector3(
+                (vector.X * transform.M11) + (vector.Y * transform.M21) + (vector.Z * transform.M31) + transform.M41,
+                (vector.X * transform.M12) + (vector.Y * transform.M22) + (vector.Z * transform.M32) + transform.M42,
+                (vector.X * transform.M13) + (vector.Y * transform.M23) + (vector.Z * transform.M33) + transform.M43);
         }
 
         /// <summary>

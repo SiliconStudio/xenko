@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 3724e4ed-4cb5-447d-a3ea-86ee8bfec3e5
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta02}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -23,7 +23,6 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     9b0dc84c029fed4caf8b86b095c216e6: !StaticColliderComponent
                         Id: 4cc80d9b-9f02-4ced-af8b-86b095c216e6
-                        ProcessCollisions: false
                         CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5

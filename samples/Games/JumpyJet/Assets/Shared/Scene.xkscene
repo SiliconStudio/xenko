@@ -1,8 +1,8 @@
 !SceneAsset
 Id: b07987b2-a262-45fb-9da6-ba05fc7aaf74
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
-Parent: null
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - 6ec17338-026d-4ad3-9615-4975281cf3ba
@@ -62,9 +62,9 @@ Hierarchy:
                     89578ba40f182e4eb0616ac22108e376: !JumpyJet.GameScript,JumpyJet.Game
                         Id: a48b5789-180f-4e2e-b061-6ac22108e376
                         Priority: 10
-                        UI: 47550ad3-4887-4173-95e0-d98048465edd/00fd07e9-f2a1-4bc1-84bb-467e84daeb4a
-                        Character: ca4ad047-2db2-4ab1-baca-d8c4e9a469bb/75708204-1bb2-4d09-93ae-75057e2a88b0
-                        Pipes: d87ce433-90b0-4819-8f55-9d08330b581d/71cd41a9-093c-4595-8f02-918f1c0258bd
+                        UI: ref!! 00fd07e9-f2a1-4bc1-84bb-467e84daeb4a
+                        Character: ref!! 75708204-1bb2-4d09-93ae-75057e2a88b0
+                        Pipes: ref!! 71cd41a9-093c-4595-8f02-918f1c0258bd
         -   Entity:
                 Id: ca4ad047-2db2-4ab1-baca-d8c4e9a469bb
                 Name: Character

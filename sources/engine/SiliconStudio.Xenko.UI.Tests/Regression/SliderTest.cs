@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public SliderTest()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4;
         }
 
         protected override async Task LoadContent()

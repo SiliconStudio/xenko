@@ -65,7 +65,6 @@ namespace SiliconStudio.Xenko.Engine
         {
             Model = model;
             IsShadowCaster = true;
-            IsShadowReceiver = true;
         }
 
         /// <summary>
@@ -137,16 +136,6 @@ namespace SiliconStudio.Xenko.Engine
         [DefaultValue(true)]
         [Display("Cast Shadows?")]
         public bool IsShadowCaster { get; set; }
-
-        /// <summary>
-        /// Gets or sets a boolean indicating if this model component is receiving shadows.
-        /// </summary>
-        /// <value>A boolean indicating if this model component is receiving shadows.</value>
-        /// <userdoc>If checked, the model can be covered by the shadow of another model.</userdoc>
-        [DataMember(40)]
-        [DefaultValue(true)]
-        [Display("Receive Shadows?")]
-        public bool IsShadowReceiver { get; set; }
 
         /// <summary>
         /// The render group for this component.

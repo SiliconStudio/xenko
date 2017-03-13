@@ -6,7 +6,7 @@ FontSource: !SystemFontProvider
     FontName: Arial
     Style: Regular
 FontType: !OfflineRasterizedSpriteFontType
-    Size: 37.33333
+    Size: 40.0
     CharacterSet: null
     CharacterRegions:
         97ff5e4c40f4c84eab21f068e69fdd98:
