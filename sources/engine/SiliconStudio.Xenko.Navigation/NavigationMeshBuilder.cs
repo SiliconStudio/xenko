@@ -26,8 +26,7 @@ namespace SiliconStudio.Xenko.Navigation
         public Vector3 Offset = Vector3.Zero;
 
         private NavigationMesh lastNavigationMesh;
-
-        // TODO: Space partitioning
+        
         private List<StaticColliderData> colliders = new List<StaticColliderData>();
         private HashSet<Guid> registeredGuids = new HashSet<Guid>();
 
@@ -196,8 +195,7 @@ namespace SiliconStudio.Xenko.Navigation
                 }
 
                 long buildTimeStamp = DateTime.UtcNow.Ticks;
-
-                // TODO can't use tilesToBuild directly
+                
                 ConcurrentCollector<Tuple<Point, NavigationMeshTile>> builtTiles = new ConcurrentCollector<Tuple<Point, NavigationMeshTile>>(tilesToBuild.Count);
                 Dispatcher.ForEach(tilesToBuild.ToArray(), tileCoordinate =>
                 {
@@ -522,8 +520,7 @@ namespace SiliconStudio.Xenko.Navigation
             // Extend bounding box for agent size
             BoundingBox boundingBoxToCheck = inputBuilder.BoundingBox;
             NavigationMeshBuildUtils.ExtendBoundingBox(ref boundingBoxToCheck, new Vector3(agentSettings.Radius));
-
-            // TODO incremental
+            
             List<Point> newTileList = NavigationMeshBuildUtils.GetOverlappingTiles(buildSettings, boundingBoxToCheck);
             foreach (Point p in newTileList)
             {

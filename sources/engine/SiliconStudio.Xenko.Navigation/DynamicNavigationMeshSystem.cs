@@ -202,7 +202,6 @@ namespace SiliconStudio.Xenko.Navigation
 
         private void UpdateScene(SceneInstance newSceneInstance)
         {
-            // TODO: Unload old navigation, load new navigation
             if (currentSceneInstance != null)
             {
                 if (processor != null)
@@ -226,6 +225,8 @@ namespace SiliconStudio.Xenko.Navigation
                 processor.ColliderAdded += ProcessorOnColliderAdded;
                 processor.ColliderRemoved += ProcessorOnColliderRemoved;
                 currentSceneInstance.Processors.Add(processor);
+
+                pendingRebuild = true;
             }
         }
 

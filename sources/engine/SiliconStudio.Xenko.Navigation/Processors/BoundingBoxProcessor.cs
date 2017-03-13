@@ -16,16 +16,6 @@ namespace SiliconStudio.Xenko.Navigation.Processors
         {
             return new BoundingBoxData();
         }
-        
-        protected override void OnEntityComponentAdding(Entity entity, NavigationMeshBoundingBox component, BoundingBoxData data)
-        {
-            base.OnEntityComponentAdding(entity, component, data);
-        }
-
-        protected override void OnEntityComponentRemoved(Entity entity, NavigationMeshBoundingBox component, BoundingBoxData data)
-        {
-            base.OnEntityComponentRemoved(entity, component, data);
-        }
 
         protected override void OnSystemAdd()
         {
