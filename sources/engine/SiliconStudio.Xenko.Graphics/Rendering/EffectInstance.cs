@@ -103,10 +103,5 @@ namespace SiliconStudio.Xenko.Rendering
 
             commandList.SetDescriptorSets(0, descriptorSets);
         }
-
-        public void UnApply(GraphicsContext graphicsContext)
-        {
-            graphicsContext.CommandList.UnsetDescriptorSets(0, descriptorSets);
-        }
     }
 }

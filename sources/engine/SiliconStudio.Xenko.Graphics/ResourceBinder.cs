@@ -11,12 +11,10 @@ namespace SiliconStudio.Xenko.Graphics
     struct ResourceBinder
     {
         private BindingOperation[][] descriptorSetBindings;
-        private int[] usedUavSlots;
 
         public void Compile(GraphicsDevice graphicsDevice, EffectDescriptorSetReflection descriptorSetLayouts, EffectBytecode effectBytecode)
         {
             descriptorSetBindings = new BindingOperation[descriptorSetLayouts.Layouts.Count][];
-            List<int> uavSlots = null;
             for (int setIndex = 0; setIndex < descriptorSetLayouts.Layouts.Count; setIndex++)
             {
                 var layout = descriptorSetLayouts.Layouts[setIndex].Layout;
@@ -45,20 +43,12 @@ namespace SiliconStudio.Xenko.Graphics
                                 SlotStart = resourceBinding.SlotStart,
                                 ImmutableSampler = layoutEntry.ImmutableSampler,
                             });
-
-                            if (resourceBinding.Class == EffectParameterClass.UnorderedAccessView)
-                            {
-                                if(uavSlots == null)
-                                    uavSlots = new List<int>(8);
-                                uavSlots.Add(resourceBinding.SlotStart);
-                            }
                         }
                     }
                 }
 
                 descriptorSetBindings[setIndex] = bindingOperations.Count > 0 ? bindingOperations.ToArray() : null;
             }
-            usedUavSlots = uavSlots?.ToArray();
         }
         public void BindResources(CommandList commandList, DescriptorSet[] descriptorSets)
         {
@@ -88,28 +78,18 @@ namespace SiliconStudio.Xenko.Graphics
                             }
                         case EffectParameterClass.ShaderResourceView:
                             {
+                                commandList.UnsetUnorderedAccessView(value.Value as GraphicsResource);
                                 commandList.SetShaderResourceView(bindingOperation.Stage, bindingOperation.SlotStart, (GraphicsResource)value.Value);
                                 break;
                             }
                         case EffectParameterClass.UnorderedAccessView:
                             {
-                                commandList.SetUnorderedAccessView(bindingOperation.Stage, bindingOperation.SlotStart, value.Value as GraphicsResource);
+                                commandList.SetUnorderedAccessView(bindingOperation.Stage, bindingOperation.SlotStart, (GraphicsResource)value.Value);
                                 break;
                             }
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-                }
-            }
-        }
-
-        public void UnbindResources(CommandList commandList, DescriptorSet[] descriptorSets)
-        {
-            if (usedUavSlots != null)
-            {
-                for (int i = 0; i < usedUavSlots.Length; i++)
-                {
-                    commandList.UnsetUnorderedAccessView(usedUavSlots[i]);
                 }
             }
         }
