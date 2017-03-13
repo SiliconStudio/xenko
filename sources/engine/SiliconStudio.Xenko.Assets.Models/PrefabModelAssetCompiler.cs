@@ -19,6 +19,7 @@ using SiliconStudio.Xenko.Graphics.Data;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
@@ -26,14 +27,17 @@ namespace SiliconStudio.Xenko.Assets.Models
     {
         public PrefabModelAssetCompiler()
         {
+            //The following types will never make it to the game!
             CompileTimeDependencyTypes.Add(typeof(PrefabAsset), BuildDependencyType.CompileContent);
             CompileTimeDependencyTypes.Add(typeof(SceneAsset), BuildDependencyType.CompileContent);
             CompileTimeDependencyTypes.Add(typeof(ModelAsset), BuildDependencyType.CompileContent);
             CompileTimeDependencyTypes.Add(typeof(PrefabModelAsset), BuildDependencyType.CompileContent);
             CompileTimeDependencyTypes.Add(typeof(ProceduralModelAsset), BuildDependencyType.CompileContent);
-            CompileTimeDependencyTypes.Add(typeof(MaterialAsset), BuildDependencyType.CompileContent);
-            CompileTimeDependencyTypes.Add(typeof(SkeletonAsset), BuildDependencyType.CompileAsset);
-        } 
+            CompileTimeDependencyTypes.Add(typeof(SkeletonAsset), BuildDependencyType.CompileContent);
+
+            //Material are needed both in game and in compiler
+            CompileTimeDependencyTypes.Add(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);           
+        }
 
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
@@ -51,6 +55,17 @@ namespace SiliconStudio.Xenko.Assets.Models
                 : base(url, parameters, assetItem.Package)
             {
                 this.renderingSettings = renderingSettings;
+            }
+
+            protected override void ComputeParameterHash(BinarySerializationWriter writer)
+            {
+                base.ComputeParameterHash(writer);
+
+                var prefabAsset = Package.Session.FindAsset(Parameters.Prefab.Location);
+                if (prefabAsset != null)
+                {
+                    writer.Write(prefabAsset.Version);
+                }
             }
 
             private class MeshData
@@ -98,7 +113,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                             }
                             else if (!vertexBufferRef.Url.IsNullOrEmpty())
                             {
-                                var dataAsset = manager.Load<Graphics.Buffer>(vertexBufferRef.Url);
+                                var dataAsset = manager.Load<Buffer>(vertexBufferRef.Url);
                                 vertexData = dataAsset.GetSerializationData().Content;
                             }
                             else
@@ -132,7 +147,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                             }
                             else if (!indexBufferRef.Url.IsNullOrEmpty())
                             {
-                                var dataAsset = manager.Load<Graphics.Buffer>(indexBufferRef.Url);
+                                var dataAsset = manager.Load<Buffer>(indexBufferRef.Url);
                                 indexData = dataAsset.GetSerializationData().Content;
                             }
                             else
@@ -255,7 +270,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             private static IEnumerable<T> IterateTree<T>(T root, Func<T, IEnumerable<T>> childrenF)
             {
-                var q = new List<T>() { root };
+                var q = new List<T> { root };
                 while (q.Any())
                 {
                     var c = q[0];
@@ -282,7 +297,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
                 var loadSettings = new ContentManagerLoaderSettings
                 {
-                    ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton), typeof(Material), typeof(Prefab))
+                    ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton), typeof(Material), typeof(Prefab), typeof(Scene))
                 };
 
                 IList<Entity> allEntities = new List<Entity>();
