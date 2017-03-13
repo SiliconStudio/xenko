@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Navigation
         /// </summary>
         public List<NavigationAgentSettings> AgentSettings { get; private set; } = new List<NavigationAgentSettings>();
 
-        private bool pendingRebuild;
+        private bool pendingRebuild = true;
 
         private SceneInstance currentSceneInstance;
 
@@ -57,8 +57,12 @@ namespace SiliconStudio.Xenko.Navigation
         /// </summary>
         public event EventHandler NavigationUpdated;
 
+        /// <summary>
+        /// The most recently built navigation mesh
+        /// </summary>
         public NavigationMesh CurrentNavigationMesh { get; private set; }
 
+        /// <inheritdoc />
         public override void Initialize()
         {
             base.Initialize();
@@ -95,11 +99,9 @@ namespace SiliconStudio.Xenko.Navigation
             IncludedCollisionGroups = navigationSettings.IncludedCollisionGroups;
             AgentSettings = navigationSettings.NavigationMeshAgentSettings;
             Enabled = navigationSettings.EnableDynamicNavigationMesh;
-
-            // Queue rebuild
-            pendingRebuild = true;
         }
 
+        /// <inheritdoc />
         public override void Update(GameTime gameTime)
         {
             // This system should before becomming functional
@@ -112,7 +114,7 @@ namespace SiliconStudio.Xenko.Navigation
                 UpdateScene(Game.SceneSystem.SceneInstance);
             }
 
-            if (pendingRebuild)
+            if (pendingRebuild && currentSceneInstance != null)
             {
                 Game.Script.AddTask(async () =>
                 {
@@ -252,6 +254,10 @@ namespace SiliconStudio.Xenko.Navigation
             if (!Enabled)
             {
                 Cleanup();
+            }
+            else
+            {
+                pendingRebuild = true;
             }
         }
     }

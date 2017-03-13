@@ -359,8 +359,7 @@ namespace SiliconStudio.Xenko.Navigation
             Matrix offsetMatrix = Matrix.Translation(Offset);
 
             bool clearCache = false;
-
-            // TODO for some reason this call is ambiguous when called directly with a type of List<StaticColliderData>
+            
             Dispatcher.ForEach(collidersLocal, colliderData =>
             {
                 var entity = colliderData.Component.Entity;
