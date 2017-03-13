@@ -255,9 +255,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                                 if (colliderComponent.Enabled && !colliderComponent.IsTrigger && ((int)asset.IncludedCollisionGroups & (int)colliderComponent.CollisionGroup) != 0)
                                 {
-                                    // Need to compose the shape so it can be used by the builder
-                                    colliderComponent.ComposeShape();
-
                                     // Load collider shape assets since the scene asset is being used, which does not have these loaded by default
                                     foreach (var desc in colliderComponent.ColliderShapes)
                                     {

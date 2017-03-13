@@ -114,7 +114,8 @@ namespace SiliconStudio.Xenko.Assets.Physics
             foreach (var shapeDesc in ColliderShapes.OfType<ConvexHullColliderShapeDesc>())
             {
                 var reference = AttachedReferenceManager.GetAttachedReference(shapeDesc.Model);
-                yield return new AssetReference(reference.Id, reference.Url);
+                if(reference != null)
+                    yield return new AssetReference(reference.Id, reference.Url);
             }
         }
     }

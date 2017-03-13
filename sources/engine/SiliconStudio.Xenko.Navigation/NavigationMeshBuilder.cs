@@ -386,6 +386,13 @@ namespace SiliconStudio.Xenko.Navigation
                         return;
                     }
                 }
+                
+                // Clear cache on removal of infinite planes
+                if (colliderData.Planes.Count > 0)
+                    clearCache = true;
+
+                // Clear planes
+                colliderData.Planes.Clear();
 
                 // Return empty data for disabled colliders, filtered out colliders or trigger colliders 
                 if (!colliderData.Component.Enabled || colliderData.Component.IsTrigger || 
@@ -395,12 +402,8 @@ namespace SiliconStudio.Xenko.Navigation
                     return;
                 }
 
-                // Clear cache on removal of infinite planes
-                if (colliderData.Planes.Count > 0)
-                    clearCache = true;
-
-                // Clear planes
-                colliderData.Planes.Clear();
+                // Make sure shape is up to date
+                colliderData.Component.ComposeShape();
 
                 // Interate through all the colliders shapes while queueing all shapes in compound shapes to process those as well
                 Queue<ColliderShape> shapesToProcess = new Queue<ColliderShape>();
@@ -414,7 +417,7 @@ namespace SiliconStudio.Xenko.Navigation
                         if (shapeType == typeof(BoxColliderShape))
                         {
                             var box = (BoxColliderShape)shape;
-                            var boxDesc = (BoxColliderShapeDesc)box.Description;
+                            var boxDesc = GetColliderShapeDesc<BoxColliderShapeDesc>(box.Description);
                             Matrix transform = box.PositiveCenterMatrix * entityWorldMatrix;
 
                             var meshData = GeometricPrimitive.Cube.New(boxDesc.Size, toLeftHanded: true);
@@ -423,7 +426,7 @@ namespace SiliconStudio.Xenko.Navigation
                         else if (shapeType == typeof(SphereColliderShape))
                         {
                             var sphere = (SphereColliderShape)shape;
-                            var sphereDesc = (SphereColliderShapeDesc)sphere.Description;
+                            var sphereDesc = GetColliderShapeDesc<SphereColliderShapeDesc>(sphere.Description);
                             Matrix transform = sphere.PositiveCenterMatrix * entityWorldMatrix;
 
                             var meshData = GeometricPrimitive.Sphere.New(sphereDesc.Radius, toLeftHanded: true);
@@ -432,7 +435,7 @@ namespace SiliconStudio.Xenko.Navigation
                         else if (shapeType == typeof(CylinderColliderShape))
                         {
                             var cylinder = (CylinderColliderShape)shape;
-                            var cylinderDesc = (CylinderColliderShapeDesc)cylinder.Description;
+                            var cylinderDesc = GetColliderShapeDesc<CylinderColliderShapeDesc>(cylinder.Description);
                             Matrix transform = cylinder.PositiveCenterMatrix * entityWorldMatrix;
 
                             var meshData = GeometricPrimitive.Cylinder.New(cylinderDesc.Height, cylinderDesc.Radius, toLeftHanded: true);
@@ -441,7 +444,7 @@ namespace SiliconStudio.Xenko.Navigation
                         else if (shapeType == typeof(CapsuleColliderShape))
                         {
                             var capsule = (CapsuleColliderShape)shape;
-                            var capsuleDesc = (CapsuleColliderShapeDesc)capsule.Description;
+                            var capsuleDesc = GetColliderShapeDesc<CapsuleColliderShapeDesc>(capsule.Description);
                             Matrix transform = capsule.PositiveCenterMatrix * entityWorldMatrix;
 
                             var meshData = GeometricPrimitive.Capsule.New(capsuleDesc.Length, capsuleDesc.Radius, toLeftHanded: true);
@@ -450,7 +453,7 @@ namespace SiliconStudio.Xenko.Navigation
                         else if (shapeType == typeof(ConeColliderShape))
                         {
                             var cone = (ConeColliderShape)shape;
-                            var coneDesc = (ConeColliderShapeDesc)cone.Description;
+                            var coneDesc = GetColliderShapeDesc<ConeColliderShapeDesc>(cone.Description);
                             Matrix transform = cone.PositiveCenterMatrix * entityWorldMatrix;
 
                             var meshData = GeometricPrimitive.Cone.New(coneDesc.Radius, coneDesc.Height, toLeftHanded: true);
@@ -459,7 +462,7 @@ namespace SiliconStudio.Xenko.Navigation
                         else if (shapeType == typeof(StaticPlaneColliderShape))
                         {
                             var planeShape = (StaticPlaneColliderShape)shape;
-                            var planeDesc = (StaticPlaneColliderShapeDesc)planeShape.Description;
+                            var planeDesc = GetColliderShapeDesc<StaticPlaneColliderShapeDesc>(planeShape.Description);
                             Matrix transform = entityWorldMatrix;
 
                             Plane plane = new Plane(planeDesc.Normal, planeDesc.Offset);
@@ -512,7 +515,7 @@ namespace SiliconStudio.Xenko.Navigation
                 lastNavigationMesh.Cache = null;
             }
         }
-
+        
         /// <summary>
         /// Marks tiles that should be built according to how much their geometry affects the navigation mesh and the bounding boxes specified for building
         /// </summary>
@@ -557,6 +560,17 @@ namespace SiliconStudio.Xenko.Navigation
             NavigationMeshInputBuilder inputBuilder = new NavigationMeshInputBuilder();
             inputBuilder.AppendMeshData(meshData, Matrix.Identity);
             return inputBuilder;
+        }
+        
+        private TColliderType GetColliderShapeDesc<TColliderType>(IColliderShapeDesc desc) where TColliderType : class, IColliderShapeDesc
+        {
+            var direct = desc as TColliderType;
+            if (direct != null)
+                return direct;
+            var asset = desc as ColliderShapeAssetDesc;
+            if (asset == null)
+                throw new Exception("Invalid collider shape description");
+            return asset.Shape.Descriptions.First() as TColliderType;
         }
     }
 }
