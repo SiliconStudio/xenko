@@ -332,11 +332,7 @@
     <Compile Include="Entities\SceneAssetFactories.cs" />
     <Compile Include="Rendering\GraphicsCompositorAsset.cs" />
     <Compile Include="Navigation\NavigationMeshAsset.cs" />
-    <Compile Include="Navigation\NavigationMeshCachedBuild.cs" />
-    <Compile Include="Navigation\NavigationMeshCachedBuildObject.cs" />
-    <Compile Include="Navigation\NavigationMeshBuildUtils.cs" />
     <Compile Include="Navigation\NavigationMeshFactory.cs" />
-    <Compile Include="Navigation\NavigationMeshInputBuilder.cs" />
     <Compile Include="Serializers\EntitySerializer.cs" />
     <Compile Include="Rendering\GraphicsCompositorAssetCompiler.cs" />
     <Compile Include="Scripts\Accessibility.cs" />
