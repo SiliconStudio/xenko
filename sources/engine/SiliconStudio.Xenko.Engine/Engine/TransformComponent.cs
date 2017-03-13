@@ -209,10 +209,8 @@ namespace SiliconStudio.Xenko.Engine
                 if (oldParent == value)
                     return;
 
-                if (oldParent != null)
-                    oldParent.Children.Remove(this);
-                if (value != null)
-                    value.Children.Add(this);
+                oldParent?.Children.Remove(this);
+                value?.Children.Add(this);
             }
         }
 

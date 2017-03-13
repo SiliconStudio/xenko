@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestImageEffect()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
             GraphicsDeviceManager.PreferredBackBufferWidth = 760;
             GraphicsDeviceManager.PreferredBackBufferHeight = 1016;
         }

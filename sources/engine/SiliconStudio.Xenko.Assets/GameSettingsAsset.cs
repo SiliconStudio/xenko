@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Assets
         [Category]
         public List<string> PlatformFilters { get; } = new List<string>(); 
 
-        public T Get<T>(string profile = null) where T : Configuration, new()
+        public T GetOrCreate<T>(string profile = null) where T : Configuration, new()
         {
             Configuration first = null;
             if (profile != null)
@@ -114,7 +114,7 @@ namespace SiliconStudio.Xenko.Assets
             return settings;
         }
 
-        public T Get<T>(PlatformType platform) where T : Configuration, new()
+        public T GetOrCreate<T>(PlatformType platform) where T : Configuration, new()
         {
             ConfigPlatforms configPlatform;
             switch (platform)
@@ -146,7 +146,7 @@ namespace SiliconStudio.Xenko.Assets
                 return (T)platVersion.Configuration;
             }
 
-            return Get<T>();
+            return GetOrCreate<T>();
         }
 
         internal class UpgraderPlatformsConfiguration : AssetUpgraderBase

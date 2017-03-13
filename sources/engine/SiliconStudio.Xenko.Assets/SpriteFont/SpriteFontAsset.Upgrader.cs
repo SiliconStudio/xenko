@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 var assetSource = (asset.Source != null) ? (string)asset.Source : null;
 
                 // First check if the asset has a valid source
-                if (assetSource != null && !assetSource.IsNullOrEmpty() && !assetSource.Equals("null"))
+                if (!string.IsNullOrEmpty(assetSource) && !assetSource.Equals("null"))
                 {
                     newSource.Node.Tag = "!FileFontProvider";
                     newSource.AddChild("Source", assetSource);
@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
                 // Only if the asset doesn't have a valid source can it be a system font
                 else
-                if (assetName != null && !assetName.IsNullOrEmpty() && !assetName.Equals("null"))
+                if (!string.IsNullOrEmpty(assetName) && !assetName.Equals("null"))
                 {
                     newSource.Node.Tag = "!SystemFontProvider";
                     newSource.AddChild("FontName", assetName);
