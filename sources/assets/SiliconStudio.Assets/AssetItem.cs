@@ -222,7 +222,17 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Gets the asset version incremental counter, increased everytime the asset is edited.
         /// </summary>
-        public long Version => Interlocked.Read(ref version);
+        public long Version
+        {
+            get
+            {
+                return Interlocked.Read(ref version);
+            }
+            internal set
+            {
+                Interlocked.Exchange(ref version, value);
+            }
+        } 
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is dirty. See remarks.
@@ -248,7 +258,7 @@ namespace SiliconStudio.Assets
 
                 var oldValue = isDirty;
                 isDirty = value;
-                Package?.OnAssetDirtyChanged(asset, oldValue, value);
+                Package?.OnAssetDirtyChanged(this, oldValue, value);
             }
         }
 
