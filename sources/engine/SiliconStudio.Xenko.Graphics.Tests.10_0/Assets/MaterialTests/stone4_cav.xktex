@@ -2,5 +2,5 @@
 Id: 63cb5503-4a49-4ceb-bc54-c98886a2017f
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
-Source: Resources/stone4_cav.jpeg
+Source: ../../Resources/stone4_cav.jpeg
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
