@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 SaveIntermediateData(intermediateDataId, result.NavigationMesh);
 
                 // Clear intermediate data and save to content database
-                result.NavigationMesh.TileCache = null;
+                result.NavigationMesh.Cache = null;
                 contentManager.Save(assetUrl, result.NavigationMesh);
 
                 return Task.FromResult(ResultStatus.Successful);

@@ -2,7 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Navigation
 {
@@ -10,7 +12,7 @@ namespace SiliconStudio.Xenko.Navigation
     /// Represents cached data for a static collider component on an entity
     /// </summary>
     [DataContract]
-    internal class NavigationMeshCachedBuildObject
+    internal class NavigationMeshCachedObject
     {
         /// <summary>
         /// Guid of the collider
@@ -26,5 +28,10 @@ namespace SiliconStudio.Xenko.Navigation
         /// Cached vertex data
         /// </summary>
         public NavigationMeshInputBuilder InputBuilder;
+
+        /// <summary>
+        /// List of infinite planes contained on this object
+        /// </summary>
+        public List<Plane> Planes = new List<Plane>();
     }
 }

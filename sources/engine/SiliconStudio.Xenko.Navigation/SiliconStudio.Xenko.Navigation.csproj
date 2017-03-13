@@ -96,8 +96,8 @@
     <Compile Include="NavigationMeshBuildResult.cs" />
     <Compile Include="NavigationMeshBuildSettings.cs" />
     <Compile Include="NavigationMeshBuildUtils.cs" />
-    <Compile Include="NavigationMeshTileCache.cs" />
-    <Compile Include="NavigationMeshCachedBuildObject.cs" />
+    <Compile Include="NavigationMeshCache.cs" />
+    <Compile Include="NavigationMeshCachedObject.cs" />
     <Compile Include="NavigationMeshInputBuilder.cs" />
     <Compile Include="NavigationMeshLayer.cs" />
     <Compile Include="NavigationMeshTile.cs" />

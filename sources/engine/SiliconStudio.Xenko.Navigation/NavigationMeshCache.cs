@@ -15,10 +15,10 @@ namespace SiliconStudio.Xenko.Navigation
     /// Holds the cached result of building a scene into a navigation mesh, with input vertex data to allow incremental builds.
     /// </summary>
     [DataContract]
-    internal class NavigationMeshTileCache
+    internal class NavigationMeshCache
     {
-        public Dictionary<Guid, NavigationMeshCachedBuildObject> Objects =
-            new Dictionary<Guid, NavigationMeshCachedBuildObject>();
+        public Dictionary<Guid, NavigationMeshCachedObject> Objects =
+            new Dictionary<Guid, NavigationMeshCachedObject>();
         
         public List<BoundingBox> BoundingBoxes = new List<BoundingBox>();
 
@@ -29,28 +29,15 @@ namespace SiliconStudio.Xenko.Navigation
         /// </summary>
         /// <param name="collider">The collider that was processed</param>
         /// <param name="data">The collider vertex data that is generated for this entity</param>
-        public void Add(StaticColliderComponent collider, NavigationMeshInputBuilder data)
-        {
-            Objects.Add(collider.Id, new NavigationMeshCachedBuildObject()
-            {
-                Guid = collider.Id,
-                ParameterHash = NavigationMeshBuildUtils.HashEntityCollider(collider),
-                InputBuilder = data
-            });
-        }
-
-        /// <summary>
-        /// Registers a new processed object that is build into the navigation mesh
-        /// </summary>
-        /// <param name="collider">The collider that was processed</param>
-        /// <param name="data">The collider vertex data that is generated for this entity</param>
+        /// <param name="planes">Collection of infinite planes for this colliders, these are special since their size is not known until the bounding box are known</param>
         /// <param name="entityColliderHash">The hash of the entity and collider obtained with <see cref="NavigationMeshBuildUtils.HashEntityCollider"/></param>
-        public void Add(StaticColliderComponent collider, NavigationMeshInputBuilder data, int entityColliderHash)
+        public void Add(StaticColliderComponent collider, NavigationMeshInputBuilder data, ICollection<Plane> planes, int entityColliderHash)
         {
-            Objects.Add(collider.Id, new NavigationMeshCachedBuildObject()
+            Objects.Add(collider.Id, new NavigationMeshCachedObject()
             {
                 Guid = collider.Id,
                 ParameterHash = entityColliderHash,
+                Planes = new List<Plane>(planes),
                 InputBuilder = data
             });
         }
@@ -64,7 +51,7 @@ namespace SiliconStudio.Xenko.Navigation
         public bool IsUpdatedOrNew(StaticColliderComponent collider)
         {
             var entity = collider.Entity;
-            NavigationMeshCachedBuildObject existingObject;
+            NavigationMeshCachedObject existingObject;
             if (Objects.TryGetValue(entity.Id, out existingObject))
             {
                 int hash = NavigationMeshBuildUtils.HashEntityCollider(collider);

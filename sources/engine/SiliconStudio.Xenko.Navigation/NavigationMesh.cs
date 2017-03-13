@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Navigation
     public class NavigationMesh
     {
         // Stores the cached build information to allow incremental building on this navigation mesh
-        internal NavigationMeshTileCache TileCache;
+        internal NavigationMeshCache Cache;
 
         // Initialized build settings, only used at build time
         [DataMemberIgnore] internal NavigationMeshBuildSettings BuildSettings;
@@ -96,13 +96,11 @@ namespace SiliconStudio.Xenko.Navigation
         internal class NavigationMeshSerializer : DataSerializer<NavigationMesh>
         {
             private DictionarySerializer<Point, NavigationMeshTile> tilesSerializer;
-            private DataSerializer<BoundingBox> boundingBoxSerializer;
-            private DataSerializer<NavigationMeshTileCache> tileCacheSerializer;
+            private DataSerializer<NavigationMeshCache> cacheSerializer;
 
             public override void Initialize(SerializerSelector serializerSelector)
             {
-                boundingBoxSerializer = MemberSerializer<BoundingBox>.Create(serializerSelector, false);
-                tileCacheSerializer = MemberSerializer<NavigationMeshTileCache>.Create(serializerSelector, false);
+                cacheSerializer = MemberSerializer<NavigationMeshCache>.Create(serializerSelector, false);
                 tilesSerializer = new DictionarySerializer<Point, NavigationMeshTile>();
                 tilesSerializer.Initialize(serializerSelector);
             }
@@ -123,7 +121,7 @@ namespace SiliconStudio.Xenko.Navigation
                 stream.Serialize(ref obj.BuildSettings.TileSize);
                 stream.Serialize(ref obj.BuildSettings.CellSize);
 
-                tileCacheSerializer.Serialize(ref obj.TileCache, mode, stream);
+                cacheSerializer.Serialize(ref obj.Cache, mode, stream);
 
                 int numLayers = obj.Layers.Count;
                 stream.Serialize(ref numLayers);

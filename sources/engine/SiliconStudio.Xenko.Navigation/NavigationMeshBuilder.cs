@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Navigation
         public NavigationMeshBuildResult Build(NavigationMeshBuildSettings buildSettings, ICollection<NavigationAgentSettings> agentSettings, CollisionFilterGroupFlags includedCollisionGroups, 
             ICollection<BoundingBox> boundingBoxes, CancellationToken cancellationToken)
         {
-            var lastTileCache = lastNavigationMesh?.TileCache;
+            var lastCache = lastNavigationMesh?.Cache;
             var result = new NavigationMeshBuildResult();
 
             if (agentSettings.Count == 0)
@@ -76,10 +76,9 @@ namespace SiliconStudio.Xenko.Navigation
             
             var settingsHash = agentSettings?.ComputeHash() ?? 0;
             settingsHash = (settingsHash * 397) ^ buildSettings.GetHashCode();
-            if (lastTileCache != null && lastTileCache.SettingsHash != settingsHash)
+            if (lastCache != null && lastCache.SettingsHash != settingsHash)
             {
                 // Start from scratch if settings changed
-                lastTileCache = null;
                 lastNavigationMesh = null;
             }
 
@@ -95,12 +94,22 @@ namespace SiliconStudio.Xenko.Navigation
 
             BuildInput(collidersLocal, includedCollisionGroups);
 
+            // Check if cache was cleared while building the input
+            lastCache = lastNavigationMesh?.Cache;
+
             // The new navigation mesh that will be created
             result.NavigationMesh = new NavigationMesh();
 
             // Tile cache for this new navigation mesh
-            NavigationMeshTileCache newTileCache = result.NavigationMesh.TileCache = new NavigationMeshTileCache();
-            newTileCache.SettingsHash = settingsHash;
+            NavigationMeshCache newCache = result.NavigationMesh.Cache = new NavigationMeshCache();
+            newCache.SettingsHash = settingsHash;
+
+            // Generate global bounding box for planes
+            BoundingBox globalBoundingBox = BoundingBox.Empty;
+            foreach (var boundingBox in boundingBoxes)
+            {
+                globalBoundingBox = BoundingBox.Merge(boundingBox, globalBoundingBox);
+            }
 
             // Combine input and collect tiles to build
             HashSet<Point> tilesToBuild = new HashSet<Point>();
@@ -119,15 +128,22 @@ namespace SiliconStudio.Xenko.Navigation
 
                 // Otherwise, skip building these tiles
                 sceneNavigationMeshInputBuilder.AppendOther(colliderData.InputBuilder);
-                newTileCache.Add(colliderData.Component, colliderData.InputBuilder, colliderData.ParameterHash);
+                newCache.Add(colliderData.Component, colliderData.InputBuilder, colliderData.Planes, colliderData.ParameterHash);
+
+                // Generate geometry for planes
+                foreach (var plane in colliderData.Planes)
+                {
+                    sceneNavigationMeshInputBuilder.AppendOther(BuildPlaneGeometry(plane, globalBoundingBox));
+                }
             }
 
+
             // Check for removed colliders
-            if (lastTileCache != null)
+            if (lastCache != null)
             {
-                foreach (var obj in lastTileCache.Objects)
+                foreach (var obj in lastCache.Objects)
                 {
-                    if (!newTileCache.Objects.ContainsKey(obj.Key))
+                    if (!newCache.Objects.ContainsKey(obj.Key))
                     {
                         MarkTiles(obj.Value.InputBuilder, ref buildSettings, ref agentSettings0, tilesToBuild);
                     }
@@ -137,7 +153,7 @@ namespace SiliconStudio.Xenko.Navigation
             // Calculate updated/added bounding boxes
             foreach (var boundingBox in boundingBoxes)
             {
-                if (!lastTileCache?.BoundingBoxes.Contains(boundingBox) ?? false)
+                if (!lastCache?.BoundingBoxes.Contains(boundingBox) ?? true) // In the case of no case, mark all tiles in all bounding boxes to be rebuilt
                 {
                     var tiles = NavigationMeshBuildUtils.GetOverlappingTiles(buildSettings, boundingBox);
                     foreach (var tile in tiles)
@@ -148,9 +164,9 @@ namespace SiliconStudio.Xenko.Navigation
             }
 
             // Check for removed bounding boxes
-            if (lastTileCache != null)
+            if (lastCache != null)
             {
-                foreach (var boundingBox in lastTileCache.BoundingBoxes)
+                foreach (var boundingBox in lastCache.BoundingBoxes)
                 {
                     if (!boundingBoxes.Contains(boundingBox))
                     {
@@ -228,7 +244,7 @@ namespace SiliconStudio.Xenko.Navigation
             }
 
             // Store bounding boxes in new tile cache
-            newTileCache.BoundingBoxes = new List<BoundingBox>(boundingBoxes);
+            newCache.BoundingBoxes = new List<BoundingBox>(boundingBoxes);
 
             // Update navigation mesh
             lastNavigationMesh = result.NavigationMesh;
@@ -339,9 +355,11 @@ namespace SiliconStudio.Xenko.Navigation
         /// </summary>
         private void BuildInput(StaticColliderData[] collidersLocal, CollisionFilterGroupFlags includedCollisionGroups)
         {
-            NavigationMeshTileCache lastTileCache = lastNavigationMesh?.TileCache;
+            NavigationMeshCache lastCache = lastNavigationMesh?.Cache;
 
             Matrix offsetMatrix = Matrix.Translation(Offset);
+
+            bool clearCache = false;
 
             // TODO for some reason this call is ambiguous when called directly with a type of List<StaticColliderData>
             Dispatcher.ForEach(collidersLocal, colliderData =>
@@ -355,13 +373,15 @@ namespace SiliconStudio.Xenko.Navigation
                 // Compute hash of collider and compare it with the previous build if there is one
                 colliderData.ParameterHash = NavigationMeshBuildUtils.HashEntityCollider(colliderData.Component);
                 colliderData.Previous = null;
-                if (lastTileCache?.Objects.TryGetValue(colliderData.Component.Id, out colliderData.Previous) ?? false)
+                if (lastCache?.Objects.TryGetValue(colliderData.Component.Id, out colliderData.Previous) ?? false)
                 {
                     if (colliderData.Previous.ParameterHash == colliderData.ParameterHash)
                     {
                         // In this case, we don't need to recalculate the geometry for this shape, since it wasn't changed
                         // here we take the triangle mesh from the previous build as the current
                         colliderData.InputBuilder = colliderData.Previous.InputBuilder;
+                        colliderData.Planes.Clear();
+                        colliderData.Planes.AddRange(colliderData.Previous.Planes);
                         colliderData.Processed = false;
                         return;
                     }
@@ -374,6 +394,13 @@ namespace SiliconStudio.Xenko.Navigation
                     colliderData.Processed = true;
                     return;
                 }
+
+                // Clear cache on removal of infinite planes
+                if (colliderData.Planes.Count > 0)
+                    clearCache = true;
+
+                // Clear planes
+                colliderData.Planes.Clear();
 
                 // Interate through all the colliders shapes while queueing all shapes in compound shapes to process those as well
                 Queue<ColliderShape> shapesToProcess = new Queue<ColliderShape>();
@@ -431,7 +458,18 @@ namespace SiliconStudio.Xenko.Navigation
                         }
                         else if (shapeType == typeof(StaticPlaneColliderShape))
                         {
-                            // Infinite planes are too messy, prefer usage of box colliders instead
+                            var planeShape = (StaticPlaneColliderShape)shape;
+                            var planeDesc = (StaticPlaneColliderShapeDesc)planeShape.Description;
+                            Matrix transform = planeShape.PositiveCenterMatrix * entityWorldMatrix;
+
+                            Plane plane = new Plane(planeDesc.Normal, planeDesc.Offset);
+
+                            // Pre-Transform plane parameters
+                            plane.Normal = Vector3.TransformNormal(planeDesc.Normal, transform);
+                            float offset = Vector3.Dot(transform.TranslationVector, planeDesc.Normal);
+                            plane.D += offset;
+
+                            colliderData.Planes.Add(plane);
                         }
                         else if (shapeType == typeof(ConvexHullColliderShape))
                         {
@@ -462,9 +500,18 @@ namespace SiliconStudio.Xenko.Navigation
                     }
                 }
 
+                // Clear cache on addition of infinite planes
+                if (colliderData.Planes.Count > 0)
+                    clearCache = true;
+
                 // Mark collider as processed
                 colliderData.Processed = true;
             });
+
+            if (clearCache && lastNavigationMesh != null)
+            {
+                lastNavigationMesh.Cache = null;
+            }
         }
 
         /// <summary>
@@ -482,6 +529,35 @@ namespace SiliconStudio.Xenko.Navigation
             {
                 tilesToBuild.Add(p);
             }
+        }
+
+        private NavigationMeshInputBuilder BuildPlaneGeometry(Plane plane, BoundingBox boundingBox)
+        {
+            Vector3 maxSize = boundingBox.Maximum - boundingBox.Minimum;
+            float maxDiagonal = Math.Max(maxSize.X, Math.Max(maxSize.Y, maxSize.Z));
+
+            // Generate source plane triangles
+            Vector3[] planePoints;
+            int[] planeInds;
+            NavigationMeshBuildUtils.BuildPlanePoints(ref plane, maxDiagonal, out planePoints, out planeInds);
+
+            Vector3 tangent, bitangent;
+            NavigationMeshBuildUtils.GenerateTangentBinormal(plane.Normal, out tangent, out bitangent);
+            // Calculate plane offset so that the plane always covers the whole range of the bounding box
+            Vector3 planeOffset = Vector3.Dot(boundingBox.Center, tangent) * tangent;
+            planeOffset += Vector3.Dot(boundingBox.Center, bitangent) * bitangent;
+
+            VertexPositionNormalTexture[] vertices = new VertexPositionNormalTexture[planePoints.Length];
+            for (int i = 0; i < planePoints.Length; i++)
+            {
+                vertices[i] = new VertexPositionNormalTexture(planePoints[i] + planeOffset, Vector3.UnitY, Vector2.Zero);
+            }
+
+            GeometricMeshData<VertexPositionNormalTexture> meshData = new GeometricMeshData<VertexPositionNormalTexture>(vertices, planeInds, true);
+
+            NavigationMeshInputBuilder inputBuilder = new NavigationMeshInputBuilder();
+            inputBuilder.AppendMeshData(meshData, Matrix.Identity);
+            return inputBuilder;
         }
     }
 }
