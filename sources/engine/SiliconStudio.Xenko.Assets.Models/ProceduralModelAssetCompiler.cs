@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     {
         public ProceduralModelAssetCompiler()
         {
-            CompileTimeDependencyTypes.Add(typeof(MaterialAsset), BuildDependencyType.CompileAsset);
+            CompileTimeDependencyTypes.Add(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
         }
 
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
