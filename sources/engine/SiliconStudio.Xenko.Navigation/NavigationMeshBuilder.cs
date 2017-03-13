@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Navigation
         {
             lock (colliders)
             {
-                if(registeredGuids.Contains(colliderData.Component.Id))
+                if (registeredGuids.Contains(colliderData.Component.Id))
                     throw new InvalidOperationException("Duplicate collider added");
                 colliders.Add(colliderData);
                 registeredGuids.Add(colliderData.Component.Id);
@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Navigation
             }
         }
 
-        public NavigationMeshBuildResult Build(NavigationMeshBuildSettings buildSettings, ICollection<NavigationAgentSettings> agentSettings, CollisionFilterGroupFlags includedCollisionGroups, 
+        public NavigationMeshBuildResult Build(NavigationMeshBuildSettings buildSettings, ICollection<NavigationAgentSettings> agentSettings, CollisionFilterGroupFlags includedCollisionGroups,
             ICollection<BoundingBox> boundingBoxes, CancellationToken cancellationToken)
         {
             var lastCache = lastNavigationMesh?.Cache;
@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Navigation
 
             if (boundingBoxes.Count == 0)
                 return new NavigationMeshBuildResult();
-            
+
             var settingsHash = agentSettings?.ComputeHash() ?? 0;
             settingsHash = (settingsHash * 397) ^ buildSettings.GetHashCode();
             if (lastCache != null && lastCache.SettingsHash != settingsHash)
@@ -81,9 +81,6 @@ namespace SiliconStudio.Xenko.Navigation
                 // Start from scratch if settings changed
                 lastNavigationMesh = null;
             }
-
-            // TODO layers
-            var agentSettings0 = agentSettings.First();
 
             // Copy colliders so the collection doesn't get modified
             StaticColliderData[] collidersLocal;
@@ -99,6 +96,8 @@ namespace SiliconStudio.Xenko.Navigation
 
             // The new navigation mesh that will be created
             result.NavigationMesh = new NavigationMesh();
+            result.NavigationMesh.CellSize = buildSettings.CellSize;
+            result.NavigationMesh.TileSize = buildSettings.TileSize;
 
             // Tile cache for this new navigation mesh
             NavigationMeshCache newCache = result.NavigationMesh.Cache = new NavigationMeshCache();
@@ -112,19 +111,11 @@ namespace SiliconStudio.Xenko.Navigation
             }
 
             // Combine input and collect tiles to build
-            HashSet<Point> tilesToBuild = new HashSet<Point>();
             NavigationMeshInputBuilder sceneNavigationMeshInputBuilder = new NavigationMeshInputBuilder();
             foreach (var colliderData in collidersLocal)
             {
                 if (colliderData.InputBuilder == null)
                     continue;
-
-                if (colliderData.Processed)
-                {
-                    MarkTiles(colliderData.InputBuilder, ref buildSettings, ref agentSettings0, tilesToBuild);
-                    if (colliderData.Previous != null)
-                        MarkTiles(colliderData.Previous.InputBuilder, ref buildSettings, ref agentSettings0, tilesToBuild);
-                }
 
                 // Otherwise, skip building these tiles
                 sceneNavigationMeshInputBuilder.AppendOther(colliderData.InputBuilder);
@@ -136,39 +127,49 @@ namespace SiliconStudio.Xenko.Navigation
                     sceneNavigationMeshInputBuilder.AppendOther(BuildPlaneGeometry(plane, globalBoundingBox));
                 }
             }
+            
+            // TODO: Generate tile local mesh input data
+            var inputVertices = sceneNavigationMeshInputBuilder.Points.ToArray();
+            var inputIndices = sceneNavigationMeshInputBuilder.Indices.ToArray();
 
-
-            // Check for removed colliders
-            if (lastCache != null)
+            // Enumerate over every layer, and build tiles for each of those layers using the provided agent settings
+            var agentSettingsEnumerator = agentSettings.GetEnumerator();
+            for (int layerIndex = 0; layerIndex < agentSettings.Count; layerIndex++)
             {
-                foreach (var obj in lastCache.Objects)
+                agentSettingsEnumerator.MoveNext();
+                var currentAgentSettings = agentSettingsEnumerator.Current;
+
+                HashSet<Point> tilesToBuild = new HashSet<Point>();
+
+                foreach (var colliderData in collidersLocal)
                 {
-                    if (!newCache.Objects.ContainsKey(obj.Key))
+                    if (colliderData.InputBuilder == null)
+                        continue;
+
+                    if (colliderData.Processed)
                     {
-                        MarkTiles(obj.Value.InputBuilder, ref buildSettings, ref agentSettings0, tilesToBuild);
+                        MarkTiles(colliderData.InputBuilder, ref buildSettings, ref currentAgentSettings, tilesToBuild);
+                        if (colliderData.Previous != null)
+                            MarkTiles(colliderData.Previous.InputBuilder, ref buildSettings, ref currentAgentSettings, tilesToBuild);
                     }
                 }
-            }
 
-            // Calculate updated/added bounding boxes
-            foreach (var boundingBox in boundingBoxes)
-            {
-                if (!lastCache?.BoundingBoxes.Contains(boundingBox) ?? true) // In the case of no case, mark all tiles in all bounding boxes to be rebuilt
+                // Check for removed colliders
+                if (lastCache != null)
                 {
-                    var tiles = NavigationMeshBuildUtils.GetOverlappingTiles(buildSettings, boundingBox);
-                    foreach (var tile in tiles)
+                    foreach (var obj in lastCache.Objects)
                     {
-                        tilesToBuild.Add(tile);
+                        if (!newCache.Objects.ContainsKey(obj.Key))
+                        {
+                            MarkTiles(obj.Value.InputBuilder, ref buildSettings, ref currentAgentSettings, tilesToBuild);
+                        }
                     }
                 }
-            }
 
-            // Check for removed bounding boxes
-            if (lastCache != null)
-            {
-                foreach (var boundingBox in lastCache.BoundingBoxes)
+                // Calculate updated/added bounding boxes
+                foreach (var boundingBox in boundingBoxes)
                 {
-                    if (!boundingBoxes.Contains(boundingBox))
+                    if (!lastCache?.BoundingBoxes.Contains(boundingBox) ?? true) // In the case of no case, mark all tiles in all bounding boxes to be rebuilt
                     {
                         var tiles = NavigationMeshBuildUtils.GetOverlappingTiles(buildSettings, boundingBox);
                         foreach (var tile in tiles)
@@ -177,55 +178,56 @@ namespace SiliconStudio.Xenko.Navigation
                         }
                     }
                 }
-            }
 
-            // TODO: Generate tile local mesh input data
-            var inputVertices = sceneNavigationMeshInputBuilder.Points.ToArray();
-            var inputIndices = sceneNavigationMeshInputBuilder.Indices.ToArray();
-
-            long buildTimeStamp = DateTime.UtcNow.Ticks;
-
-            // TODO can't use tilesToBuild directly
-            ConcurrentCollector<Tuple<Point, NavigationMeshTile>> builtTiles = new ConcurrentCollector<Tuple<Point, NavigationMeshTile>>(tilesToBuild.Count);
-            Dispatcher.ForEach(tilesToBuild.ToArray(), tileCoordinate =>
-            {
-                // Allow cancellation while building tiles
-                if (cancellationToken.IsCancellationRequested)
-                    return;
-
-                // Builds the tile, or returns null when there is nothing generated for this tile (empty tile)
-                NavigationMeshTile meshTile = BuildTile(tileCoordinate, buildSettings, agentSettings0, boundingBoxes,
-                    inputVertices, inputIndices, buildTimeStamp);
-
-                // Add the result to the list of built tiles
-                builtTiles.Add(new Tuple<Point, NavigationMeshTile>(tileCoordinate, meshTile));
-
-            });
-            if (cancellationToken.IsCancellationRequested)
-                return result;
-
-            // TODO
-            int numLayers = 1;
-            for (int i = 0; i < numLayers; i++)
-            {
-                var newLayer = new NavigationMeshLayer();
-                result.NavigationMesh.LayersInternal.Add(newLayer);
-
-                // Copy tiles from previous build into new build
-                if (lastNavigationMesh != null && lastNavigationMesh.LayersInternal.Count > i)
+                // Check for removed bounding boxes
+                if (lastCache != null)
                 {
-                    var sourceLayer = lastNavigationMesh.LayersInternal[i];
-                    foreach (var sourceTile in sourceLayer.Tiles)
-                        newLayer.TilesInternal.Add(sourceTile.Key, sourceTile.Value);
+                    foreach (var boundingBox in lastCache.BoundingBoxes)
+                    {
+                        if (!boundingBoxes.Contains(boundingBox))
+                        {
+                            var tiles = NavigationMeshBuildUtils.GetOverlappingTiles(buildSettings, boundingBox);
+                            foreach (var tile in tiles)
+                            {
+                                tilesToBuild.Add(tile);
+                            }
+                        }
+                    }
                 }
-            }
 
-            var layer = result.NavigationMesh.LayersInternal[0];
-            {
-                layer.BuildSettings = buildSettings;
+                long buildTimeStamp = DateTime.UtcNow.Ticks;
 
-                // TODO multiple agent settings
-                layer.AgentSettings = agentSettings0;
+                // TODO can't use tilesToBuild directly
+                ConcurrentCollector<Tuple<Point, NavigationMeshTile>> builtTiles = new ConcurrentCollector<Tuple<Point, NavigationMeshTile>>(tilesToBuild.Count);
+                Dispatcher.ForEach(tilesToBuild.ToArray(), tileCoordinate =>
+                {
+                    // Allow cancellation while building tiles
+                    if (cancellationToken.IsCancellationRequested)
+                        return;
+
+                    // Builds the tile, or returns null when there is nothing generated for this tile (empty tile)
+                    NavigationMeshTile meshTile = BuildTile(tileCoordinate, buildSettings, currentAgentSettings, boundingBoxes,
+                        inputVertices, inputIndices, buildTimeStamp);
+
+                    // Add the result to the list of built tiles
+                    builtTiles.Add(new Tuple<Point, NavigationMeshTile>(tileCoordinate, meshTile));
+                });
+                if (cancellationToken.IsCancellationRequested)
+                    return result;
+
+                // Add layer to the navigation mesh
+                var layer = new NavigationMeshLayer();
+                result.NavigationMesh.LayersInternal.Add(layer);
+
+                // Copy tiles from from the previous build into the current
+                if (lastNavigationMesh != null && lastNavigationMesh.LayersInternal.Count > layerIndex)
+                {
+                    var sourceLayer = lastNavigationMesh.LayersInternal[layerIndex];
+                    foreach (var sourceTile in sourceLayer.Tiles)
+                        layer.TilesInternal.Add(sourceTile.Key, sourceTile.Value);
+                }
+
+                // Store settings and agent settings inside of the layer
 
                 foreach (var p in builtTiles)
                 {
@@ -248,15 +250,12 @@ namespace SiliconStudio.Xenko.Navigation
 
             // Update navigation mesh
             lastNavigationMesh = result.NavigationMesh;
-
-            // TODO: Remove build settings
-            lastNavigationMesh.BuildSettings = buildSettings;
-
+            
             result.Success = true;
             return result;
         }
 
-        private NavigationMeshTile BuildTile(Point tileCoordinate, NavigationMeshBuildSettings buildSettings, NavigationAgentSettings agentSettings, 
+        private NavigationMeshTile BuildTile(Point tileCoordinate, NavigationMeshBuildSettings buildSettings, NavigationAgentSettings agentSettings,
             ICollection<BoundingBox> boundingBoxes, Vector3[] inputVertices, int[] inputIndices, long buildTimeStamp)
         {
             NavigationMeshTile meshTile = null;
@@ -386,7 +385,7 @@ namespace SiliconStudio.Xenko.Navigation
                         return;
                     }
                 }
-                
+
                 // Clear cache on removal of infinite planes
                 if (colliderData.Planes.Count > 0)
                     clearCache = true;
@@ -395,7 +394,7 @@ namespace SiliconStudio.Xenko.Navigation
                 colliderData.Planes.Clear();
 
                 // Return empty data for disabled colliders, filtered out colliders or trigger colliders 
-                if (!colliderData.Component.Enabled || colliderData.Component.IsTrigger || 
+                if (!colliderData.Component.Enabled || colliderData.Component.IsTrigger ||
                     !NavigationMeshBuildUtils.CheckColliderFilter(colliderData.Component, includedCollisionGroups))
                 {
                     colliderData.Processed = true;
@@ -515,7 +514,7 @@ namespace SiliconStudio.Xenko.Navigation
                 lastNavigationMesh.Cache = null;
             }
         }
-        
+
         /// <summary>
         /// Marks tiles that should be built according to how much their geometry affects the navigation mesh and the bounding boxes specified for building
         /// </summary>
@@ -561,7 +560,7 @@ namespace SiliconStudio.Xenko.Navigation
             inputBuilder.AppendMeshData(meshData, Matrix.Identity);
             return inputBuilder;
         }
-        
+
         private TColliderType GetColliderShapeDesc<TColliderType>(IColliderShapeDesc desc) where TColliderType : class, IColliderShapeDesc
         {
             var direct = desc as TColliderType;

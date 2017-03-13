@@ -22,12 +22,14 @@ namespace SiliconStudio.Xenko.Navigation
         // Stores the cached build information to allow incremental building on this navigation mesh
         internal NavigationMeshCache Cache;
 
-        // Initialized build settings, only used at build time
-        [DataMemberIgnore] internal NavigationMeshBuildSettings BuildSettings;
+        internal float TileSize;
+
+        internal float CellSize;
 
         // Backing value of Layers and NumLayers
-        [DataMemberCustomSerializer] internal readonly List<NavigationMeshLayer> LayersInternal = new List<NavigationMeshLayer>();
-        
+        [DataMemberCustomSerializer]
+        internal readonly List<NavigationMeshLayer> LayersInternal = new List<NavigationMeshLayer>();
+
         /// <summary>
         /// Multiple layers corresponding to multiple agent settings
         /// </summary>
@@ -37,61 +39,6 @@ namespace SiliconStudio.Xenko.Navigation
         /// Number of layers
         /// </summary>
         public int NumLayers => LayersInternal.Count;
-        
-        /// <summary>
-        /// Used to initialize the navigation mesh so it will allow building tiles
-        /// This will store the build settings and create the amount of layers corresponding to the number of NavigationAgentSettings
-        /// </summary>
-        /// <param name="buildSettings"></param>
-        /// <param name="agentSettings">Agent setting to use</param>
-        public void Initialize(NavigationMeshBuildSettings buildSettings, NavigationAgentSettings[] agentSettings)
-        {
-            BuildSettings = buildSettings;
-
-            // Remove layers that are no longer needed
-            if (LayersInternal.Count > agentSettings.Length)
-                LayersInternal.RemoveRange(agentSettings.Length, LayersInternal.Count - agentSettings.Length);
-
-            // Initialize layers
-            for (int i = 0; i < agentSettings.Length; i++)
-            {
-                NavigationMeshLayer layer;
-                if (LayersInternal.Count <= i)
-                {
-                    layer = new NavigationMeshLayer();
-                    LayersInternal.Add(layer);
-                }
-                else
-                {
-                    layer = LayersInternal[i];
-                }
-                layer.AgentSettings = agentSettings[i];
-                layer.BuildSettings = buildSettings;
-            }
-        }
-
-        /// <summary>
-        /// Build a single tile for all layers
-        /// Initialize should have been called before calling this
-        /// </summary>
-        /// <param name="inputVertices">Input vertex data for the input mesh</param>
-        /// <param name="inputIndices">Input index data for the input mesh</param>
-        /// <param name="boundingBox">Bounding box of the tile</param>
-        /// <param name="tileCoordinate">Tile coordinate to of the tile to build</param>
-        /// <returns>A list of built tiles</returns>
-        public List<NavigationMeshTile> BuildAllLayers(Vector3[] inputVertices, int[] inputIndices,
-            BoundingBox boundingBox, Point tileCoordinate)
-        {
-            List<NavigationMeshTile> builtTiles = new List<NavigationMeshTile>();
-
-            for (int i = 0; i < LayersInternal.Count; i++)
-            {
-                NavigationMeshLayer layer = Layers[i];
-                layer.BuildTile(inputVertices, inputIndices, boundingBox, tileCoordinate);
-            }
-
-            return builtTiles;
-        }
 
         internal class NavigationMeshSerializer : DataSerializer<NavigationMesh>
         {
@@ -118,8 +65,8 @@ namespace SiliconStudio.Xenko.Navigation
             public override void Serialize(ref NavigationMesh obj, ArchiveMode mode, SerializationStream stream)
             {
                 // Serialize tile size because it is needed
-                stream.Serialize(ref obj.BuildSettings.TileSize);
-                stream.Serialize(ref obj.BuildSettings.CellSize);
+                stream.Serialize(ref obj.TileSize);
+                stream.Serialize(ref obj.CellSize);
 
                 cacheSerializer.Serialize(ref obj.Cache, mode, stream);
 

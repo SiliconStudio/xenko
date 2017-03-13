@@ -180,7 +180,7 @@ namespace SiliconStudio.Xenko.Navigation.Processors
 
             public NavigationMeshInternal(NavigationMesh navigationMesh)
             {
-                cellTileSize = navigationMesh.BuildSettings.TileSize * navigationMesh.BuildSettings.CellSize;
+                cellTileSize = navigationMesh.TileSize * navigationMesh.CellSize;
                 Layers = new IntPtr[navigationMesh.NumLayers];
                 for (int i = 0; i < navigationMesh.NumLayers; i++)
                 {
