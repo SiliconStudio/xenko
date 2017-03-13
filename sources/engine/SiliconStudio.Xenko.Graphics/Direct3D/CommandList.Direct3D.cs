@@ -29,7 +29,6 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly SharpDX.Direct3D11.CommonShaderStage[] shaderStages = new SharpDX.Direct3D11.CommonShaderStage[StageCount];
         private readonly Buffer[] constantBuffers = new Buffer[StageCount * ConstantBufferCount];
         private readonly SamplerState[] samplerStates = new SamplerState[StageCount * SamplerStateCount];
-        private readonly SharpDX.Direct3D11.UnorderedAccessView[] unorderedAccessViews = new SharpDX.Direct3D11.UnorderedAccessView[UnorderedAcccesViewCount]; // Only CS
 
         private PipelineState currentPipelineState;
 
@@ -84,8 +83,6 @@ namespace SiliconStudio.Xenko.Graphics
                 samplerStates[i] = null;
             for (int i = 0; i < constantBuffers.Length; ++i)
                 constantBuffers[i] = null;
-            for (int i = 0; i < unorderedAccessViews.Length; ++i)
-                unorderedAccessViews[i] = null;
             for (int i = 0; i < currentRenderTargetViews.Length; i++)
                 currentRenderTargetViews[i] = null;
 
@@ -267,31 +264,16 @@ namespace SiliconStudio.Xenko.Graphics
                 throw new ArgumentException("Invalid stage.", "stage");
 
             var view = unorderedAccessView?.NativeUnorderedAccessView;
-            if (unorderedAccessViews[slot] != view)
-            {
-                unorderedAccessViews[slot] = view;
-                NativeDeviceContext.ComputeShader.SetUnorderedAccessView(slot, view);
-            }
+            NativeDeviceContext.ComputeShader.SetUnorderedAccessView(slot, view);
         }
 
         /// <summary>
         /// Unsets an unordered access view from the shader pipeline.
         /// </summary>
-        /// <param name="unorderedAccessView">The unordered access view.</param>
-        internal void UnsetUnorderedAccessView(GraphicsResource unorderedAccessView)
+        /// <param name="slot">The slot.</param>
+        internal void UnsetUnorderedAccessView(int slot)
         {
-            var view = unorderedAccessView?.NativeUnorderedAccessView;
-            if (view == null)
-                return;
-
-            for (int slot = 0; slot < UnorderedAcccesViewCount; slot++)
-            {
-                if (unorderedAccessViews[slot] == view)
-                {
-                    unorderedAccessViews[slot] = null;
-                    NativeDeviceContext.ComputeShader.SetUnorderedAccessView(slot, null);
-                }
-            }
+            NativeDeviceContext.ComputeShader.SetUnorderedAccessView(slot, null);
         }
 
         /// <summary>
@@ -344,6 +326,12 @@ namespace SiliconStudio.Xenko.Graphics
         {
             // Bind resources
             currentPipelineState?.ResourceBinder.BindResources(this, descriptorSets);
+        }
+
+        public void UnsetDescriptorSets(int index, DescriptorSet[] descriptorSets)
+        {
+            // Unbind resources
+            currentPipelineState?.ResourceBinder.UnbindResources(this, descriptorSets);
         }
 
         /// <inheritdoc />

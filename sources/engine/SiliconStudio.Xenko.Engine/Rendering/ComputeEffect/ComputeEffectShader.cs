@@ -110,8 +110,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
             context.CommandList.Dispatch(ThreadGroupCounts.X, ThreadGroupCounts.Y, ThreadGroupCounts.Z);
 
             // Un-apply
-            //throw new InvalidOperationException();
-            //EffectInstance.Effect.UnbindResources(GraphicsDevice);
+            EffectInstance.UnApply(context.GraphicsContext);
         }
     }
 }

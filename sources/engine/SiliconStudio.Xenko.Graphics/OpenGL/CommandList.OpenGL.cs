@@ -1535,8 +1535,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Unsets an unordered access view from the shader pipeline.
         /// </summary>
-        /// <param name="unorderedAccessView">The unordered access view.</param>
-        internal void UnsetUnorderedAccessView(GraphicsResource unorderedAccessView)
+        /// <param name="slot">The slot.</param>
+        internal void UnsetUnorderedAccessView(int slot)
         {
 #if DEBUG
             GraphicsDevice.EnsureContextActive();
