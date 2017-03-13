@@ -81,6 +81,11 @@ RenderFeatures:
                 TransparentRenderStage: ref!! 0fa30591-02ee-486d-9347-2b6aee83d035
                 EffectName: null
         PipelineProcessors: {}
+    c5a6b94b452d57606111d9c7482fe906*: !SiliconStudio.Xenko.SpriteStudio.Runtime.SpriteStudioRenderFeature,SiliconStudio.Xenko.SpriteStudio.Runtime
+        RenderStageSelectors:
+            c01afde0da346a6e9f22ac3ea860226b: !SiliconStudio.Xenko.Rendering.SimpleGroupToRenderStageSelector,SiliconStudio.Xenko.Engine
+                RenderStage: ref!! 0fa30591-02ee-486d-9347-2b6aee83d035
+                EffectName: SpriteStudio
 SharedRenderers:
     60459475d3a3adaf2d1ba5d99913ca75: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine
         Id: 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
