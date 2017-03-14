@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Games;
@@ -66,7 +67,6 @@ namespace SiliconStudio.Xenko.Navigation
         public override void Initialize()
         {
             base.Initialize();
-            Game.GameSystems.CollectionChanged += GameSystemsOnCollectionChanged;
 
             if (Game.Settings != null)
             {
@@ -178,25 +178,6 @@ namespace SiliconStudio.Xenko.Navigation
             {
                 CurrentNavigationMesh = result.NavigationMesh;
                 NavigationUpdated?.Invoke(this, null);
-            }
-            else
-            {
-                // TODO Error log
-            }
-        }
-
-        private void GameSystemsOnCollectionChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
-        {
-            // Track addition of game systems
-            var system = (GameSystemBase)trackingCollectionChangedEventArgs.Item;
-            switch (trackingCollectionChangedEventArgs.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    break;
-                default:
-                    throw new ArgumentException();
             }
         }
 
