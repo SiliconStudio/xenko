@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using SiliconStudio.Core;
@@ -61,7 +62,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        public object NodeValue { get { return Value; } set { Value = value; } }
+        public object NodeValue { get { return Value; } set { Value = TypeDescriptor.GetConverter(Type).ConvertFrom(value); } }
 
         /// <summary>
         /// A function that indicates if the given value can be accepted as new value for this node.
@@ -525,7 +526,7 @@ namespace SiliconStudio.Presentation.Quantum
             : base(ownerViewModel, baseName, isPrimitive, modelNode, graphNodePath, index)
         {
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
-            DependentProperties.Add(nameof(TypedValue), new[] { nameof(Value) });
+            DependentProperties.Add(nameof(TypedValue), new[] { nameof(Value), nameof(NodeValue) });
             var memberNode = SourceNode as IMemberNode;
             if (memberNode != null)
             {
