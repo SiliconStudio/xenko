@@ -13,6 +13,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Assets.Materials;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
@@ -21,9 +22,16 @@ namespace SiliconStudio.Xenko.Assets.Models
         public const string RefClipSuffix = "_reference_clip";
         public const string SrcClipSuffix = "_source_clip";
 
-        public AnimationAssetCompiler()
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
         {
-            CompileTimeDependencyTypes.Add(typeof(SkeletonAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SkeletonAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+
+            var compileContext = context.GetCompilationContext();
+            if (compileContext == CompilationContext.Thumbnail || compileContext == CompilationContext.Preview)
+            {
+                yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ModelAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+                yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+            }
         }
 
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)

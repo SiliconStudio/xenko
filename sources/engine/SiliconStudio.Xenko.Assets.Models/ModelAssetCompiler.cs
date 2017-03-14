@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Analysis;
@@ -14,10 +15,10 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     public class ModelAssetCompiler : AssetCompilerBase
     {
-        public ModelAssetCompiler()
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
         {
-            CompileTimeDependencyTypes.Add(typeof(SkeletonAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
-            CompileTimeDependencyTypes.Add(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SkeletonAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
         }
 
         public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)

@@ -25,18 +25,18 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     internal class PrefabModelAssetCompiler : AssetCompilerBase
     {
-        public PrefabModelAssetCompiler()
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
         {
             //The following types will never make it to the game!
-            CompileTimeDependencyTypes.Add(typeof(PrefabAsset), BuildDependencyType.CompileContent);
-            CompileTimeDependencyTypes.Add(typeof(SceneAsset), BuildDependencyType.CompileContent);
-            CompileTimeDependencyTypes.Add(typeof(ModelAsset), BuildDependencyType.CompileContent);
-            CompileTimeDependencyTypes.Add(typeof(PrefabModelAsset), BuildDependencyType.CompileContent);
-            CompileTimeDependencyTypes.Add(typeof(ProceduralModelAsset), BuildDependencyType.CompileContent);
-            CompileTimeDependencyTypes.Add(typeof(SkeletonAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(PrefabAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SceneAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ModelAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(PrefabModelAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ProceduralModelAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SkeletonAsset), BuildDependencyType.CompileContent);
 
             //Material are needed both in game and in compiler
-            CompileTimeDependencyTypes.Add(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);           
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
         }
 
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
