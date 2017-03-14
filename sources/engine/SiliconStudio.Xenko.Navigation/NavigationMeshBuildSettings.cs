@@ -47,7 +47,6 @@ namespace SiliconStudio.Xenko.Navigation
         /// Any regions with a span count smaller than this value will, if possible, 
         /// be merged with larger regions.
         /// </summary>
-        [DefaultValue(20)]
         [DataMemberRange(0, int.MaxValue)]
         public int RegionMergeArea;
 
