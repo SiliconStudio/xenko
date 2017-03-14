@@ -116,16 +116,20 @@ namespace VRSandbox.Player
                 var entityB = collision?.ColliderB?.Entity;
 
                 var otherEntity = (entityA == Entity) ? entityB : entityA;
-                if (otherEntity?.Get<RigidbodyComponent>() == null) continue;
+
+                var otherRigidBody = otherEntity?.Get<RigidbodyComponent>();
+                if (otherRigidBody == null || otherRigidBody.IsKinematic ||
+                    otherRigidBody.CollisionGroup == CollisionFilterGroups.CharacterFilter)
+                    continue;
 
                 grabbedEntity = otherEntity;
                 break;
             }
 
-            var rigidBody = grabbedEntity?.Get<RigidbodyComponent>();
-            if (rigidBody == null || rigidBody.IsKinematic)
+            if (grabbedEntity == null)
                 return;
 
+            var rigidBody = grabbedEntity?.Get<RigidbodyComponent>();
             rigidBody.IsKinematic = true;
             rigidBody.CanSleep = false;
 

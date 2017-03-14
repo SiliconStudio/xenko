@@ -7,12 +7,11 @@ Hierarchy:
     RootPartIds:
         - c4423e55-11a6-4194-9ed4-2ddbb0eb3934
         - b96e9aa1-705b-4779-a6e0-8e56c056af7e
-        - 18fb4791-b15a-47fe-b4a4-943e79270e38
-        - ad99506b-51cf-4d0a-b46b-d2f1c4985433
-        - dea24e7c-1d20-413f-a690-4e43b4c641e9
-        - e06f02bc-fdd7-48fd-ad9a-a10e31269e89
         - 32bd8142-112a-4bec-975a-12ea66364621
         - 0ce4a4d4-7909-48aa-b68e-49a3e2a153e3
+        - c0a4222a-ae01-420f-8bb5-1e82ad1cfcf3
+        - 70a0de4d-90a5-44ef-9c95-8026f69ac68b
+        - 3f24ecfd-201b-411b-b568-3c0958f2ac33
         - cc1e0f55-98be-4a00-af18-b8686aa1d4a9
         - f7f8d848-d627-4d14-a51a-eb92cec29b4f
         - 71e4f1ac-aead-48d6-a9cb-515242389d25
@@ -20,7 +19,6 @@ Hierarchy:
         - bb7b85c2-d8dc-411b-8838-5099301c65bc
         - fab8184d-3cd0-4806-9067-25daaf4757c5
         - 2d75e8d3-68be-4a02-81a6-0b8f0a055a70
-        - c0a4222a-ae01-420f-8bb5-1e82ad1cfcf3
         - 7a15f054-d098-41e5-8a13-6973cef6e2bf
         - 2a4473b4-f454-4f4d-80e6-d9f3ca9a8f54
         - c014f5b9-1dac-479c-bb8f-b612aa7e479f
@@ -36,13 +34,18 @@ Hierarchy:
         - 8c23c514-ec73-454e-8933-31ea7ed51a1f
         - 1d6a5d06-99ce-47d3-87bc-90f8f84e6f71
         - f30fd99a-65c8-4b83-91c2-2b2ccbcfe9e3
-        - 70a0de4d-90a5-44ef-9c95-8026f69ac68b
-        - 3f24ecfd-201b-411b-b568-3c0958f2ac33
         - 6c716970-225c-4418-87e6-21a9a173523b
         - 9114fa9a-8b94-4491-b43b-4d40e5cfb3f7
         - 406bc862-9436-4559-ab37-a22ae82e5c22
+        - 18fb4791-b15a-47fe-b4a4-943e79270e38
+        - ad99506b-51cf-4d0a-b46b-d2f1c4985433
+        - dea24e7c-1d20-413f-a690-4e43b4c641e9
+        - e06f02bc-fdd7-48fd-ad9a-a10e31269e89
+        - 2eca405b-4786-4e00-8488-6bf128ad9337
+        - a4d62f88-3a51-447b-a29a-0c41f2601bfe
     Parts:
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: 0376d8f6-bf7a-47e8-8d5e-57595ac6e3b0
                 Name: TableDecorationC
                 Components:
@@ -101,7 +104,8 @@ Hierarchy:
                         ControllerIndex: 0
                         DeadZone: 0.25
                         Camera: ref!! 2088ba78-bf4f-48e3-be7d-3f1bea581810
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: 145805bb-4cda-4b95-8cf2-f7b6a7ec0c78
                 Name: TableDecorationC
                 Components:
@@ -143,9 +147,10 @@ Hierarchy:
                 BasePartAsset: eaad30b5-ca83-452b-bc80-9d7ab50a94ee:TableDecorationC
                 BasePartId: 5e8e1fbe-6a65-41c7-8340-f34a8e7bce90
                 InstanceId: 2bf8b66f-716b-40e4-b4f1-7802bb9f2a18
-        -   Entity:
+        -   Folder: Room
+            Entity:
                 Id: 18fb4791-b15a-47fe-b4a4-943e79270e38
-                Name: Ground
+                Name: Floor
                 Components:
                     453b9e58a22f2646ab2524bbf72c769a: !TransformComponent
                         Id: 589e3b45-2fa2-4626-ab25-24bbf72c769a
@@ -170,7 +175,8 @@ Hierarchy:
                             8385ef48cc89cb4587a4f9b5a71ab829: !StaticPlaneColliderShapeDesc
                                 Normal: {X: 0.0, Y: 1.0, Z: 0.0}
                                 Offset: 0.0
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: 1d6a5d06-99ce-47d3-87bc-90f8f84e6f71
                 Name: TableDecorationC
                 Components:
@@ -212,7 +218,8 @@ Hierarchy:
                 BasePartAsset: eaad30b5-ca83-452b-bc80-9d7ab50a94ee:TableDecorationC
                 BasePartId: 5e8e1fbe-6a65-41c7-8340-f34a8e7bce90
                 InstanceId: c061e89d-e0d5-43a3-b682-2684afa1094a
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: 2574ca39-bdb3-4843-bc33-23437a44620d
                 Name: TableDecorationC
                 Components:
@@ -254,7 +261,8 @@ Hierarchy:
                 BasePartAsset: eaad30b5-ca83-452b-bc80-9d7ab50a94ee:TableDecorationC
                 BasePartId: 5e8e1fbe-6a65-41c7-8340-f34a8e7bce90
                 InstanceId: 9d7d57cf-6338-417f-b9a0-8b8047bbdda8
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: 2a4473b4-f454-4f4d-80e6-d9f3ca9a8f54
                 Name: TableDecorationB
                 Components:
@@ -296,7 +304,8 @@ Hierarchy:
                 BasePartAsset: ef7aa5d5-7490-4b4d-a2ff-e754522689a9:TableDecorationB
                 BasePartId: b1895088-3f0a-4d6d-8927-97d46d61b86f
                 InstanceId: c4fd1700-0f1d-4090-931e-0869c8b646af
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: 2d75e8d3-68be-4a02-81a6-0b8f0a055a70
                 Name: TableDecorationA
                 Components:
@@ -340,6 +349,34 @@ Hierarchy:
                 BasePartAsset: 608d82d1-51a6-48d3-b698-acc303fb1dba:TableDecorationA
                 BasePartId: a254238f-5eec-45c1-80b8-379dbae2f435
                 InstanceId: ac4c0510-2c1e-4346-8f78-e408c71395a5
+        -   Folder: Room
+            Entity:
+                Id: 2eca405b-4786-4e00-8488-6bf128ad9337
+                Name: Fence
+                Components:
+                    f735b06782c0841e9ece398b94edae4c: !TransformComponent
+                        Id: 3b1627c9-8798-4234-818c-4fa2b900ad07
+                        Position: {X: 0.0, Y: 0.0, Z: 5.0}
+                        Rotation: {X: 0.707106769, Y: -6.181724E-08, Z: -6.181724E-08, W: -0.707106769}
+                        Scale: {X: 5.67, Y: 1.0, Z: 2.5}
+                        Children: {}
+                    e76c617f2cdbccf72682056151413778: !ModelComponent
+                        Id: 4ce6efb3-dea6-4608-8f2b-5b231377a896
+                        Model: 89a24148-b30e-4429-a72a-ab0f6492a5b7:Models/plateC
+                        Materials: {}
+                    6d66f124ff3da9ae4d9be218ef8a004f: !StaticColliderComponent
+                        Id: e2cbf653-dbc5-4bc8-a263-ab61f05e262f
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        ColliderShapes:
+                            257c2cb71a4d950ecdb1ea600c728cd5: !StaticPlaneColliderShapeDesc
+                                Normal: {X: 0.0, Y: 1.0, Z: 0.0}
+                                Offset: 0.0
         -   Entity:
                 Id: 32bd8142-112a-4bec-975a-12ea66364621
                 Name: Table
@@ -392,15 +429,14 @@ Hierarchy:
         -   Folder: null
             Entity:
                 Id: 3f24ecfd-201b-411b-b568-3c0958f2ac33
-                Name: Point light
+                Name: Lamp
                 Components:
                     ca4ed49887d87fb261be2579c9a648ef: !TransformComponent
                         Id: 76afd149-cb08-4551-80e9-d744996ac34c
                         Position: {X: -2.75, Y: 3.0, Z: -2.75}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children:
-                            f551646b682520a34b5747b5d3e5129b: ref!! 91014cf4-bac3-4319-a0de-1ee220f08f4a
+                        Children: {}
                     ec6e4a984b51b36567abc645a7ee1f5e: !LightComponent
                         Id: c7e26e18-e300-499f-8b3e-dd928660cc2b
                         Type: !LightPoint
@@ -411,7 +447,13 @@ Hierarchy:
                                 Size: Small
                                 BiasParameters: {}
                         Intensity: 5.0
-        -   Entity:
+                    022b56f7b3282d5b1b8859258ec06f96: !ModelComponent
+                        Id: 53b5c0c8-a748-4761-9783-7e67a448fa07
+                        Model: fd3d6c5b-67a4-4128-8e51-c4878bfe54f7:Lamp model
+                        Materials: {}
+                        IsShadowCaster: false
+        -   Folder: Objects
+            Entity:
                 Id: 406bc862-9436-4559-ab37-a22ae82e5c22
                 Name: TableDecorationB
                 Components:
@@ -453,7 +495,8 @@ Hierarchy:
                 BasePartAsset: ef7aa5d5-7490-4b4d-a2ff-e754522689a9:TableDecorationB
                 BasePartId: b1895088-3f0a-4d6d-8927-97d46d61b86f
                 InstanceId: 37ccac9c-3fa7-4912-b8c1-4277de0bc122
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: 45776097-102c-4c40-a8bc-00ec94c40a5b
                 Name: TableDecorationC
                 Components:
@@ -495,22 +538,8 @@ Hierarchy:
                 BasePartAsset: eaad30b5-ca83-452b-bc80-9d7ab50a94ee:TableDecorationC
                 BasePartId: 5e8e1fbe-6a65-41c7-8340-f34a8e7bce90
                 InstanceId: be0ce3d7-e953-47ea-9e11-785a7318f5f2
-        -   Entity:
-                Id: 4d41611e-0e1b-4581-a99b-072c36df806f
-                Name: Capsule
-                Components:
-                    cd9edec3d454fe621d1507662e294f70: !TransformComponent
-                        Id: 2c52f3ab-037d-434e-8d85-97da49ffd223
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: {}
-                    41218567fc15a033abfa9a137c5ed26b: !ModelComponent
-                        Id: e2d228ef-db60-4e98-90b4-2f427886c0da
-                        Model: fd3d6c5b-67a4-4128-8e51-c4878bfe54f7:Capsule
-                        Materials: {}
-                        IsShadowCaster: false
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: 6c716970-225c-4418-87e6-21a9a173523b
                 Name: TableDecorationB
                 Components:
@@ -554,15 +583,14 @@ Hierarchy:
                 InstanceId: e6783d4c-7939-4901-8763-d1055c76799e
         -   Entity:
                 Id: 70a0de4d-90a5-44ef-9c95-8026f69ac68b
-                Name: Point light
+                Name: Lamp
                 Components:
                     ca4ed49887d87fb261be2579c9a648ef: !TransformComponent
                         Id: cdf2d3bf-58a3-46fa-a46a-493c52f30ff2
                         Position: {X: 2.75, Y: 3.0, Z: -2.75}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children:
-                            f551646b682520a34b5747b5d3e5129b: ref!! 2c52f3ab-037d-434e-8d85-97da49ffd223
+                        Children: {}
                     ec6e4a984b51b36567abc645a7ee1f5e: !LightComponent
                         Id: e2f3b229-bf9f-46e8-898a-a229b1490707
                         Type: !LightPoint
@@ -573,7 +601,13 @@ Hierarchy:
                                 Size: Small
                                 BiasParameters: {}
                         Intensity: 5.0
-        -   Entity:
+                    f4f1e01370771e69202fda990bf75cfb: !ModelComponent
+                        Id: 14b8a007-da70-4c57-8c9a-0a335061cdf2
+                        Model: fd3d6c5b-67a4-4128-8e51-c4878bfe54f7:Lamp model
+                        Materials: {}
+                        IsShadowCaster: false
+        -   Folder: Objects
+            Entity:
                 Id: 71e4f1ac-aead-48d6-a9cb-515242389d25
                 Name: TableDecorationA
                 Components:
@@ -617,7 +651,8 @@ Hierarchy:
                 BasePartAsset: 608d82d1-51a6-48d3-b698-acc303fb1dba:TableDecorationA
                 BasePartId: a254238f-5eec-45c1-80b8-379dbae2f435
                 InstanceId: a8111d4a-66a3-4613-9205-01048bbb657a
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: 7a15f054-d098-41e5-8a13-6973cef6e2bf
                 Name: TableDecorationB
                 Components:
@@ -659,7 +694,8 @@ Hierarchy:
                 BasePartAsset: ef7aa5d5-7490-4b4d-a2ff-e754522689a9:TableDecorationB
                 BasePartId: b1895088-3f0a-4d6d-8927-97d46d61b86f
                 InstanceId: 5be9520d-0e02-4010-98e3-b96cbbc0add9
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: 7b5a0f7c-3c4f-44db-adf2-2ef92b54694e
                 Name: TableDecorationC
                 Components:
@@ -701,7 +737,8 @@ Hierarchy:
                 BasePartAsset: eaad30b5-ca83-452b-bc80-9d7ab50a94ee:TableDecorationC
                 BasePartId: 5e8e1fbe-6a65-41c7-8340-f34a8e7bce90
                 InstanceId: 48ff5196-d7e3-4588-8f73-d9e4541ac470
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: 8c23c514-ec73-454e-8933-31ea7ed51a1f
                 Name: TableDecorationC
                 Components:
@@ -743,7 +780,8 @@ Hierarchy:
                 BasePartAsset: eaad30b5-ca83-452b-bc80-9d7ab50a94ee:TableDecorationC
                 BasePartId: 5e8e1fbe-6a65-41c7-8340-f34a8e7bce90
                 InstanceId: 4c864406-410b-48d5-a7e5-d29e4e5fee3a
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: 9114fa9a-8b94-4491-b43b-4d40e5cfb3f7
                 Name: TableDecorationB
                 Components:
@@ -785,7 +823,8 @@ Hierarchy:
                 BasePartAsset: ef7aa5d5-7490-4b4d-a2ff-e754522689a9:TableDecorationB
                 BasePartId: b1895088-3f0a-4d6d-8927-97d46d61b86f
                 InstanceId: 5383e350-dcab-4488-b51f-5e2ddda578ba
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: 9b1f5d3e-af6f-4735-a376-deda1b202ed3
                 Name: TableDecorationB
                 Components:
@@ -845,7 +884,36 @@ Hierarchy:
                         Id: 14b72987-3294-4293-96a5-c23408a38677
                         Animations:
                             bcf7e5a041247fa30e195038fee344ce~Grab: 50665a42-a9d7-46ef-ae7b-1d59d0dabe06:Animations/Grab_L
-        -   Entity:
+                    2353863f5ffa0172f5f0f4fb1a249660: !RigidbodyComponent
+                        Id: 4f886fb3-9847-4d2c-aa99-47bb991a8314
+                        CollisionGroup: CharacterFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 3.445
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            94c033572b27dce3473c2a4f87be89d3: !BoxColliderShapeDesc
+                                Is2D: false
+                                Size: {X: 0.1, Y: 0.1, Z: 0.03}
+                                LocalOffset: {X: 0.0, Y: 0.05, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            792680a4b4aa1ac0429543c950c2ddf4: !BoxColliderShapeDesc
+                                Is2D: false
+                                Size: {X: 0.1, Y: 0.08, Z: 0.03}
+                                LocalOffset: {X: 0.0, Y: 0.14, Z: 0.01}
+                                LocalRotation: {X: 0.258819044, Y: 0.0, Z: 0.0, W: 0.9659258}
+        -   Folder: Objects
+            Entity:
                 Id: 9c48eef9-23b6-4155-99d6-ffef2239c557
                 Name: TableDecorationC
                 Components:
@@ -888,6 +956,33 @@ Hierarchy:
                 BasePartId: 5e8e1fbe-6a65-41c7-8340-f34a8e7bce90
                 InstanceId: 59b3e10b-a4f2-48be-8eaf-3da3709e1de4
         -   Entity:
+                Id: a4d62f88-3a51-447b-a29a-0c41f2601bfe
+                Name: standCurved
+                Components:
+                    39e1ca886163209f37f650cf8e055621: !TransformComponent
+                        Id: bfd031cb-01d3-4424-8429-84dad2ded275
+                        Position: {X: 3.5, Y: 0.0, Z: -3.5}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
+                    dfd26debf55383ea21a341ba286ccef8: !ModelComponent
+                        Id: 362a18cd-29a5-455a-b114-b5108a68f485
+                        Model: 5c759e03-f13d-4962-b8f2-4ff82e154629:Models/standCurved
+                        Materials: {}
+                    9fd5f1c7d72139a583a596cd8c092608: !StaticColliderComponent
+                        Id: 4d405784-5371-4788-a666-f0551c5452f5
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        ColliderShapes:
+                            7efaf14bf413ac9896886a4bbd592906: !ColliderShapeAssetDesc
+                                Shape: 7d081988-3699-4ccc-8bc2-c31b37b172d4:ColliderHull
+        -   Folder: Objects
+            Entity:
                 Id: ab0e7d34-ab98-45cd-a439-6fa806fa3591
                 Name: TableDecorationA
                 Components:
@@ -931,10 +1026,10 @@ Hierarchy:
                 BasePartAsset: 608d82d1-51a6-48d3-b698-acc303fb1dba:TableDecorationA
                 BasePartId: a254238f-5eec-45c1-80b8-379dbae2f435
                 InstanceId: 0a1a5657-3db3-4736-beb5-7e6e81b544e6
-        -   Folder: null
+        -   Folder: Room
             Entity:
                 Id: ad99506b-51cf-4d0a-b46b-d2f1c4985433
-                Name: Ground
+                Name: Left wall
                 Components:
                     453b9e58a22f2646ab2524bbf72c769a: !TransformComponent
                         Id: 001c7fb4-4eb1-4d03-911b-032b37a50c3c
@@ -973,7 +1068,8 @@ Hierarchy:
                         Id: 2d9f69f5-c3e3-45d2-9a1d-f113615eb440
                         Skybox: fe8d8410-ca6c-482b-a82b-208d0f3219ed:Skybox
                         Intensity: 3.0
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: bb7b85c2-d8dc-411b-8838-5099301c65bc
                 Name: TableDecorationA
                 Components:
@@ -1053,8 +1149,9 @@ Hierarchy:
                             667fe67841c1f84d9d879b99972fd80e: !SphereColliderShapeDesc
                                 Is2D: false
                                 Radius: 0.02
-                                LocalOffset: {X: 0.05, Y: 0.0, Z: -0.07}
-        -   Entity:
+                                LocalOffset: {X: 0.05, Y: 0.0, Z: -0.08}
+        -   Folder: Objects
+            Entity:
                 Id: c014f5b9-1dac-479c-bb8f-b612aa7e479f
                 Name: TableDecorationB
                 Components:
@@ -1129,6 +1226,34 @@ Hierarchy:
                         Id: f6375732-4218-490f-917f-1b78776d12fa
                         Animations:
                             b2c017c5bedab7cb305bd775da58d480~Grab: ca81cac9-4c73-4489-a045-1a792b1ad2cd:Animations/Grab_R
+                    614334a9c99f238912f32f1158767067: !RigidbodyComponent
+                        Id: 24915d35-6a7e-4a99-917c-39cad079177e
+                        CollisionGroup: CharacterFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 3.445
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            60f676c039b4fe70f5e8a81529b2e908: !BoxColliderShapeDesc
+                                Is2D: false
+                                Size: {X: 0.1, Y: 0.1, Z: 0.03}
+                                LocalOffset: {X: 0.0, Y: 0.05, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            3fe3a5cf4af37dc2d29929a61c2c445a: !BoxColliderShapeDesc
+                                Is2D: false
+                                Size: {X: 0.1, Y: 0.08, Z: 0.03}
+                                LocalOffset: {X: 0.0, Y: 0.14, Z: 0.01}
+                                LocalRotation: {X: 0.258819044, Y: 0.0, Z: 0.0, W: 0.9659258}
         -   Entity:
                 Id: c4423e55-11a6-4194-9ed4-2ddbb0eb3934
                 Name: Directional light
@@ -1136,7 +1261,7 @@ Hierarchy:
                     3cc7a287f3e46d449ef24e0a98f68f7e: !TransformComponent
                         Id: 87a2c73c-e4f3-446d-9ef2-4e0a98f68f7e
                         Position: {X: 0.0, Y: 5.0, Z: 0.0}
-                        Rotation: {X: -0.5540323, Y: 0.212012157, Z: 0.1484525, W: 0.7912401}
+                        Rotation: {X: -0.83499527, Y: 0.2547446, Z: 0.0457438156, W: 0.485587955}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     4daf73dc1f7cb844aae9ccf2921cd1f6: !LightComponent
@@ -1156,7 +1281,8 @@ Hierarchy:
                                 BiasParameters:
                                     DepthBias: 0.001
                         Intensity: 1.5
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: cc1e0f55-98be-4a00-af18-b8686aa1d4a9
                 Name: TableDecorationA
                 Components:
@@ -1200,7 +1326,8 @@ Hierarchy:
                 BasePartAsset: 608d82d1-51a6-48d3-b698-acc303fb1dba:TableDecorationA
                 BasePartId: a254238f-5eec-45c1-80b8-379dbae2f435
                 InstanceId: e73e9d8f-ae70-4d6e-839d-fe08deed91b6
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: d0138b28-c425-495e-823a-6b949042872b
                 Name: TableDecorationB
                 Components:
@@ -1280,11 +1407,11 @@ Hierarchy:
                             210c95318f936d4299948bf2cd438643: !SphereColliderShapeDesc
                                 Is2D: false
                                 Radius: 0.02
-                                LocalOffset: {X: -0.05, Y: 0.0, Z: -0.07}
-        -   Folder: null
+                                LocalOffset: {X: -0.05, Y: 0.0, Z: -0.08}
+        -   Folder: Room
             Entity:
                 Id: dea24e7c-1d20-413f-a690-4e43b4c641e9
-                Name: Ground
+                Name: Front wall
                 Components:
                     453b9e58a22f2646ab2524bbf72c769a: !TransformComponent
                         Id: fb2fb520-fc3d-4908-9f87-9b02934f4d33
@@ -1309,10 +1436,10 @@ Hierarchy:
                             8385ef48cc89cb4587a4f9b5a71ab829: !StaticPlaneColliderShapeDesc
                                 Normal: {X: 0.0, Y: 1.0, Z: 0.0}
                                 Offset: 0.0
-        -   Folder: null
+        -   Folder: Room
             Entity:
                 Id: e06f02bc-fdd7-48fd-ad9a-a10e31269e89
-                Name: Ground
+                Name: Right wall
                 Components:
                     453b9e58a22f2646ab2524bbf72c769a: !TransformComponent
                         Id: 0825e162-8407-4669-9833-d5933b0dfe44
@@ -1337,7 +1464,8 @@ Hierarchy:
                             8385ef48cc89cb4587a4f9b5a71ab829: !StaticPlaneColliderShapeDesc
                                 Normal: {X: 0.0, Y: 1.0, Z: 0.0}
                                 Offset: 0.0
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: efc0a1ba-fb3a-426c-adb3-f874e9f81594
                 Name: TableDecorationC
                 Components:
@@ -1379,22 +1507,8 @@ Hierarchy:
                 BasePartAsset: eaad30b5-ca83-452b-bc80-9d7ab50a94ee:TableDecorationC
                 BasePartId: 5e8e1fbe-6a65-41c7-8340-f34a8e7bce90
                 InstanceId: da1dad10-f84c-4525-a9da-e35f3ae018be
-        -   Entity:
-                Id: f2ab59e6-d207-4bcf-972f-e24f6a4958d2
-                Name: Capsule
-                Components:
-                    cd9edec3d454fe621d1507662e294f70: !TransformComponent
-                        Id: 91014cf4-bac3-4319-a0de-1ee220f08f4a
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: {}
-                    41218567fc15a033abfa9a137c5ed26b: !ModelComponent
-                        Id: 9d99a88d-e437-43d7-bc6b-0a170ccd7f6a
-                        Model: fd3d6c5b-67a4-4128-8e51-c4878bfe54f7:Capsule
-                        Materials: {}
-                        IsShadowCaster: false
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: f30fd99a-65c8-4b83-91c2-2b2ccbcfe9e3
                 Name: TableDecorationC
                 Components:
@@ -1436,7 +1550,8 @@ Hierarchy:
                 BasePartAsset: eaad30b5-ca83-452b-bc80-9d7ab50a94ee:TableDecorationC
                 BasePartId: 5e8e1fbe-6a65-41c7-8340-f34a8e7bce90
                 InstanceId: 496e3941-7ce1-4feb-973f-1a9f5cc95475
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: f7f8d848-d627-4d14-a51a-eb92cec29b4f
                 Name: TableDecorationA
                 Components:
@@ -1480,7 +1595,8 @@ Hierarchy:
                 BasePartAsset: 608d82d1-51a6-48d3-b698-acc303fb1dba:TableDecorationA
                 BasePartId: a254238f-5eec-45c1-80b8-379dbae2f435
                 InstanceId: b82518fe-02bd-474f-8a3e-42eb07805c21
-        -   Entity:
+        -   Folder: Objects
+            Entity:
                 Id: fab8184d-3cd0-4806-9067-25daaf4757c5
                 Name: TableDecorationA
                 Components:
