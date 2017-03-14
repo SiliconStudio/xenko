@@ -111,7 +111,7 @@ namespace SiliconStudio.Core.TypeConverters
 
         /// <inheritdoc/>
 		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
-		{
+        {
             if (value is Color)
             {
                 var color = (Color)value;
@@ -124,8 +124,12 @@ namespace SiliconStudio.Core.TypeConverters
             }
 
             var str = value as string;
-            var colorValue = ColorExtensions.StringToRgba(str);
-            return new Color4(colorValue);
+            if (str != null)
+            {
+                var colorValue = ColorExtensions.StringToRgba(str);
+                return new Color4(colorValue);
+            }
+            return base.ConvertFrom(context, culture, value);
         }
 
         /// <inheritdoc/>

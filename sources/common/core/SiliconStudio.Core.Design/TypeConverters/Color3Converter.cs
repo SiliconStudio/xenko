@@ -75,8 +75,12 @@ namespace SiliconStudio.Core.TypeConverters
             }
 
             var str = value as string;
-            var colorValue = ColorExtensions.StringToRgba(str);
-            return new Color3(colorValue);
+            if (str != null)
+            {
+                var colorValue = ColorExtensions.StringToRgba(str);
+                return new Color3(colorValue);
+            }
+            return base.ConvertFrom(context, culture, value);
         }
 
         /// <inheritdoc/>
