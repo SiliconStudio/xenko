@@ -4081,11 +4081,6 @@
       <Name>SiliconStudio.Xenko.Native</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
-      <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
-      <Name>SiliconStudio.Xenko.Native</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
       <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
       <Name>SiliconStudio.Xenko.Shaders</Name>
