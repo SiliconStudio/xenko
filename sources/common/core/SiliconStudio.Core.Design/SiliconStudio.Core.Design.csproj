@@ -61,6 +61,7 @@
     <Compile Include="IO\UPath.cs" />
     <Compile Include="IO\UPathType.cs" />
     <Compile Include="IO\UPathTypeConverter.cs" />
+    <Compile Include="ISyncLockable.cs" />
     <Compile Include="MicroThreadLock.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="NamespaceDoc.cs" />
