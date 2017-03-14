@@ -29,15 +29,15 @@ namespace SiliconStudio.Xenko.Assets.Physics
             NativeLibrary.PreloadLibrary("VHACD.dll");
         }
 
-        public ColliderShapeAssetCompiler()
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
         {
             foreach (var type in AssetRegistry.GetAssetTypes(typeof(Model)))
             {
-                CompileTimeDependencyTypes.Add(type, BuildDependencyType.CompileContent);
+                yield return new KeyValuePair<Type, BuildDependencyType>(type, BuildDependencyType.CompileContent);
             }
             foreach (var type in AssetRegistry.GetAssetTypes(typeof(Skeleton)))
             {
-                CompileTimeDependencyTypes.Add(type, BuildDependencyType.CompileContent);
+                yield return new KeyValuePair<Type, BuildDependencyType>(type, BuildDependencyType.CompileContent);
             }
         }
 

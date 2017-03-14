@@ -12,6 +12,17 @@ namespace SiliconStudio.Xenko.Assets
     public static class AssetCompilerContextExtensions
     {
         private static readonly PropertyKey<GameSettingsAsset> GameSettingsAssetKey = new PropertyKey<GameSettingsAsset>("GameSettingsAsset", typeof(AssetCompilerContextExtensions));
+        private static readonly PropertyKey<CompilationContext> CompilationContextKey = new PropertyKey<CompilationContext>("CompilationContext", typeof(AssetCompilerContextExtensions));
+
+        public static void SetCompilationContext(this AssetCompilerContext context, CompilationContext compilationContext)
+        {
+            context.Properties.Set(CompilationContextKey, compilationContext);
+        }
+
+        public static CompilationContext GetCompilationContext(this AssetCompilerContext context)
+        {
+            return context.Properties.Get(CompilationContextKey);
+        }
 
         public static GameSettingsAsset GetGameSettingsAsset(this AssetCompilerContext context)
         {

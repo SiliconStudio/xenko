@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
@@ -18,11 +19,11 @@ namespace SiliconStudio.Xenko.Assets.Materials
 {
     internal class MaterialAssetCompiler : AssetCompilerBase
     {
-        public MaterialAssetCompiler()
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
         {
-            CompileTimeDependencyTypes.Add(typeof(TextureAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //textures
-            CompileTimeDependencyTypes.Add(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //sub-materials
-            CompileTimeDependencyTypes.Add(typeof(GameSettingsAsset), BuildDependencyType.CompileAsset);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //sub-materials
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(GameSettingsAsset), BuildDependencyType.CompileAsset);
         }
 
         public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)

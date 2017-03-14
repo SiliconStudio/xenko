@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
@@ -17,9 +18,9 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
     internal class SkyboxAssetCompiler : AssetCompilerBase
     {
-        public SkyboxAssetCompiler()
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
         {
-            CompileTimeDependencyTypes.Add(typeof(TextureAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.CompileContent);
         }
 
         public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)

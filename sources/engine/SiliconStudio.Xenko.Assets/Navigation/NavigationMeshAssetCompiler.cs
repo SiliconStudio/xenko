@@ -26,11 +26,11 @@ using SiliconStudio.Xenko.Physics;
 namespace SiliconStudio.Xenko.Assets.Navigation
 {
     class NavigationMeshAssetCompiler : AssetCompilerBase
-    {
-        public NavigationMeshAssetCompiler()
+    { 
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
         {
-            CompileTimeDependencyTypes.Add(typeof(SceneAsset), BuildDependencyType.CompileAsset);
-            CompileTimeDependencyTypes.Add(typeof(ColliderShapeAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SceneAsset), BuildDependencyType.CompileAsset);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ColliderShapeAsset), BuildDependencyType.CompileContent);
         }
 
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
