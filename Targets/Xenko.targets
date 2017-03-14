@@ -108,6 +108,9 @@
         <Reference Include="SiliconStudio.Xenko.Physics">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Physics.dll</HintPath>
         </Reference>
+        <Reference Include="SiliconStudio.Xenko.Navigation">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Navigation.dll</HintPath>
+        </Reference>
         <Reference Include="SiliconStudio.Xenko.SpriteStudio.Runtime">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.SpriteStudio.Runtime.dll</HintPath>
         </Reference>
