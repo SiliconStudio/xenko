@@ -29,7 +29,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.11.0.2")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.11.0-beta01")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public static readonly string DefaultGraphicsCompositorLevel9Url = "Compositing/DefaultGraphicsCompositorLevel9";
@@ -375,12 +375,11 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
-            if (dependency.Version.MinVersion < new PackageVersion("1.11.0.2"))
+            if (dependency.Version.MinVersion < new PackageVersion("1.11.0-beta01"))
             {
-                PhysicalizeNavigationMeshBoundingBoxUpgrader upgrader = new PhysicalizeNavigationMeshBoundingBoxUpgrader();
                 var navigationMeshAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xknavmesh");
                 var scenes = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkscene");
-                upgrader.Run(navigationMeshAssets, scenes);
+                UpgradeNavigationBoundingBox(navigationMeshAssets, scenes);
             }
 
             return true;
@@ -621,70 +620,67 @@ namespace SiliconStudio.Xenko.Assets
                 return base.VisitIdentifierName(node);
             }
         }
-
-        private class PhysicalizeNavigationMeshBoundingBoxUpgrader
+        
+        private void UpgradeNavigationBoundingBox(IEnumerable<PackageLoadingAssetFile> navigationMeshes, IEnumerable<PackageLoadingAssetFile> scenes)
         {
-            public void Run(IEnumerable<PackageLoadingAssetFile> navigationMeshes, IEnumerable<PackageLoadingAssetFile> scenes)
+            foreach (var navigationMesh in navigationMeshes)
             {
-                foreach (var navigationMesh in navigationMeshes)
+                using (var navmeshYamlAsset = navigationMesh.AsYamlAsset())
                 {
-                    using (var navmeshYamlAsset = navigationMesh.AsYamlAsset())
+                    var navmeshAsset = navmeshYamlAsset.DynamicRootNode;
+                    var sceneId = (string)navmeshAsset.Scene;
+                    var sceneName = sceneId.Split(':').Last();
+                    var matchingScene = scenes.Where(x => x.AssetLocation == sceneName).FirstOrDefault();
+                    if (matchingScene != null)
                     {
-                        var navmeshAsset = navmeshYamlAsset.DynamicRootNode;
-                        var sceneId = (string)navmeshAsset.Scene;
-                        var sceneName = sceneId.Split(':').Last();
-                        var matchingScene = scenes.Where(x => x.AssetLocation == sceneName).FirstOrDefault();
-                        if (matchingScene != null)
-                        {
-                            var boundingBox = navmeshAsset.BoundingBox;
-                            var boundingBoxMin = new Vector3((float)boundingBox.Minimum.X, (float)boundingBox.Minimum.Y, (float)boundingBox.Minimum.Z);
-                            var boundingBoxMax = new Vector3((float)boundingBox.Maximum.X, (float)boundingBox.Maximum.Y, (float)boundingBox.Maximum.Z);
-                            var boundingBoxScale = (boundingBoxMax - boundingBoxMin) * 0.5f;
-                            var boundingBoxCenter = boundingBoxScale + boundingBoxMin;
+                        var boundingBox = navmeshAsset.BoundingBox;
+                        var boundingBoxMin = new Vector3((float)boundingBox.Minimum.X, (float)boundingBox.Minimum.Y, (float)boundingBox.Minimum.Z);
+                        var boundingBoxMax = new Vector3((float)boundingBox.Maximum.X, (float)boundingBox.Maximum.Y, (float)boundingBox.Maximum.Z);
+                        var boundingBoxScale = (boundingBoxMax - boundingBoxMin) * 0.5f;
+                        var boundingBoxCenter = boundingBoxScale + boundingBoxMin;
                             
-                            using (var matchingSceneYamlAsset = matchingScene.AsYamlAsset())
-                            {
-                                var sceneAsset = matchingSceneYamlAsset.DynamicRootNode;
-                                var parts = (DynamicYamlArray)sceneAsset.Hierarchy.Parts;
-                                var rootParts = (DynamicYamlArray)sceneAsset.Hierarchy.RootPartIds;
-                                dynamic newEntity = new DynamicYamlMapping(new YamlMappingNode());
-                                newEntity.Id = Guid.NewGuid().ToString();
-                                newEntity.Name = "Navigation bounding box";
+                        using (var matchingSceneYamlAsset = matchingScene.AsYamlAsset())
+                        {
+                            var sceneAsset = matchingSceneYamlAsset.DynamicRootNode;
+                            var parts = (DynamicYamlArray)sceneAsset.Hierarchy.Parts;
+                            var rootParts = (DynamicYamlArray)sceneAsset.Hierarchy.RootPartIds;
+                            dynamic newEntity = new DynamicYamlMapping(new YamlMappingNode());
+                            newEntity.Id = Guid.NewGuid().ToString();
+                            newEntity.Name = "Navigation bounding box";
                                 
-                                var components = new DynamicYamlMapping(new YamlMappingNode());
+                            var components = new DynamicYamlMapping(new YamlMappingNode());
 
-                                // Transform component
-                                dynamic transformComponent = new DynamicYamlMapping(new YamlMappingNode());
-                                transformComponent.Node.Tag = "!TransformComponent";
-                                transformComponent.Id = Guid.NewGuid().ToString();
-                                transformComponent.Position = new DynamicYamlMapping(new YamlMappingNode
-                                {
-                                    { "X", $"{boundingBoxCenter.X}" }, { "Y", $"{boundingBoxCenter.Y}" }, { "Z", $"{boundingBoxCenter.Z}" }
-                                });
-                                transformComponent.Rotation = new DynamicYamlMapping(new YamlMappingNode
-                                {
-                                    { "X", "0.0" }, { "Y", "0.0"}, { "Z", "0.0" }, { "W", "0.0" }
-                                });
-                                transformComponent.Scale = new DynamicYamlMapping(new YamlMappingNode
-                                {
-                                    { "X", $"{boundingBoxScale.X}" }, { "Y", $"{boundingBoxScale.Y}" }, { "Z", $"{boundingBoxScale.Z}" }
-                                });
-                                transformComponent.Children = new DynamicYamlMapping(new YamlMappingNode());
-                                components.AddChild(Guid.NewGuid().ToString("N"), transformComponent);
+                            // Transform component
+                            dynamic transformComponent = new DynamicYamlMapping(new YamlMappingNode());
+                            transformComponent.Node.Tag = "!TransformComponent";
+                            transformComponent.Id = Guid.NewGuid().ToString();
+                            transformComponent.Position = new DynamicYamlMapping(new YamlMappingNode
+                            {
+                                { "X", $"{boundingBoxCenter.X}" }, { "Y", $"{boundingBoxCenter.Y}" }, { "Z", $"{boundingBoxCenter.Z}" }
+                            });
+                            transformComponent.Rotation = new DynamicYamlMapping(new YamlMappingNode
+                            {
+                                { "X", "0.0" }, { "Y", "0.0"}, { "Z", "0.0" }, { "W", "0.0" }
+                            });
+                            transformComponent.Scale = new DynamicYamlMapping(new YamlMappingNode
+                            {
+                                { "X", $"{boundingBoxScale.X}" }, { "Y", $"{boundingBoxScale.Y}" }, { "Z", $"{boundingBoxScale.Z}" }
+                            });
+                            transformComponent.Children = new DynamicYamlMapping(new YamlMappingNode());
+                            components.AddChild(Guid.NewGuid().ToString("N"), transformComponent);
 
-                                // Bounding box component
-                                dynamic boxComponent = new DynamicYamlMapping(new YamlMappingNode());
-                                boxComponent.Id = Guid.NewGuid().ToString();
-                                boxComponent.Node.Tag = "!SiliconStudio.Xenko.Navigation.NavigationBoundingBox,SiliconStudio.Xenko.Navigation";
-                                components.AddChild(Guid.NewGuid().ToString("N"), boxComponent);
+                            // Bounding box component
+                            dynamic boxComponent = new DynamicYamlMapping(new YamlMappingNode());
+                            boxComponent.Id = Guid.NewGuid().ToString();
+                            boxComponent.Node.Tag = "!SiliconStudio.Xenko.Navigation.NavigationBoundingBox,SiliconStudio.Xenko.Navigation";
+                            components.AddChild(Guid.NewGuid().ToString("N"), boxComponent);
 
-                                newEntity.Components = components;
+                            newEntity.Components = components;
 
-                                dynamic part = new DynamicYamlMapping(new YamlMappingNode());
-                                part.Entity = newEntity;
-                                parts.Add(part);
-                                rootParts.Add((string)newEntity.Id);
-                            }
+                            dynamic part = new DynamicYamlMapping(new YamlMappingNode());
+                            part.Entity = newEntity;
+                            parts.Add(part);
+                            rootParts.Add((string)newEntity.Id);
                         }
                     }
                 }
