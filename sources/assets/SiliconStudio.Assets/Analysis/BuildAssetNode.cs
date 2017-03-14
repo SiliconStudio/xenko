@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core.Serialization.Contents;
@@ -28,10 +29,10 @@ namespace SiliconStudio.Assets.Analysis
             buildDependencyManager = dependencyManager;
         }
 
-        public bool Analyze()
+        public void Analyze(AssetCompilerContext context)
         {
             var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(AssetItem.Asset.GetType());
-            if (mainCompiler == null) return false; //scripts and such don't have compiler
+            if (mainCompiler == null) return; //scripts and such don't have compiler
 
             dependencyLinks.Clear();
 
@@ -42,9 +43,9 @@ namespace SiliconStudio.Assets.Analysis
                 foreach (var assetDependency in dependencies.LinksOut)
                 {
                     var assetType = assetDependency.Item.Asset.GetType();
-                    if (mainCompiler.CompileTimeDependencyTypes.ContainsKey(assetType))
+                    foreach (var inputType in mainCompiler.GetInputTypes(context, assetDependency.Item).Where(x => x.Key == assetType))
                     {
-                        var dependencyType = mainCompiler.CompileTimeDependencyTypes[assetType];
+                        var dependencyType = inputType.Value;
                         var node = buildDependencyManager.FindOrCreateNode(assetDependency.Item, dependencyType);
                         dependencyLinks.TryAdd(assetDependency.Item.Id, node);
                     }
@@ -64,22 +65,6 @@ namespace SiliconStudio.Assets.Analysis
                     dependencyLinks.TryAdd(asset.Id, node);
                 }
             }
-
-            var needsRebuild = AssetItem.Version != Version;
-
-            if (!needsRebuild)
-            {
-                foreach (var dependencyNode in DependencyNodes)
-                {
-                    var depNeedsRebuild = dependencyNode.Analyze();
-                    if (depNeedsRebuild)
-                    {
-                        needsRebuild = true;
-                    }
-                }
-            }
-
-            return needsRebuild;
         }
     }
 }

@@ -41,7 +41,7 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="context">The context source.</param>
         /// <param name="assetItems">The list of items to compile</param>
         /// <param name="compilationResult">The current compilation result, containing the build steps and the logging</param>
-        protected void Compile(CompilerContext context, IEnumerable<AssetItem> assetItems, AssetCompilerResult compilationResult)
+        protected void Compile(AssetCompilerContext context, IEnumerable<AssetItem> assetItems, AssetCompilerResult compilationResult)
         {
             foreach (var assetItem in assetItems)
             {
@@ -57,7 +57,7 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="context">The context.</param>
         /// <param name="compilationResult">The compilation result.</param>
         /// <param name="assetItem">The asset item.</param>
-        public ListBuildStep CompileItem(CompilerContext context, AssetCompilerResult compilationResult, AssetItem assetItem)
+        public ListBuildStep CompileItem(AssetCompilerContext context, AssetCompilerResult compilationResult, AssetItem assetItem)
         {
             // First try to find an asset compiler for this particular asset.
             IAssetCompiler compiler;

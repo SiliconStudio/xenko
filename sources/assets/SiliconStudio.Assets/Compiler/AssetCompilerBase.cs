@@ -28,7 +28,12 @@ namespace SiliconStudio.Assets.Compiler
             }
         }
 
-        public AssetCompilerResult Prepare(CompilerContext context, AssetItem assetItem)
+        public virtual IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        {
+            yield break;
+        }
+
+        public AssetCompilerResult Prepare(AssetCompilerContext context, AssetItem assetItem)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
             if (assetItem == null) throw new ArgumentNullException(nameof(assetItem));
@@ -53,8 +58,6 @@ namespace SiliconStudio.Assets.Compiler
 
             return result;
         }
-
-        public Dictionary<Type, BuildDependencyType> CompileTimeDependencyTypes { get; } = new Dictionary<Type, BuildDependencyType>();
 
         /// <summary>
         /// Compiles the asset from the specified package.

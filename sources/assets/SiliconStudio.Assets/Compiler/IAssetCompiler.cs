@@ -20,10 +20,10 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="context"></param>
         /// <param name="assetItem">The asset reference.</param>
         /// <returns>The result of the compilation.</returns>
-        AssetCompilerResult Prepare(CompilerContext context, AssetItem assetItem);
+        AssetCompilerResult Prepare(AssetCompilerContext context, AssetItem assetItem);
 
         IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem);
 
-        Dictionary<Type, BuildDependencyType> CompileTimeDependencyTypes { get; }
+        IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem);
     }
 }
