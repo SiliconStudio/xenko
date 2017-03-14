@@ -56,10 +56,10 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Core.TypeConverters
 {
-	/// <summary>
-	/// Defines a type converter for <see cref="Color"/>.
-	/// </summary>
-	public class ColorConverter : BaseConverter
+    /// <summary>
+    /// Defines a type converter for <see cref="Color"/>.
+    /// </summary>
+    public class ColorConverter : BaseConverter
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ColorConverter"/> class.
@@ -94,8 +94,7 @@ namespace SiliconStudio.Core.TypeConverters
 		/// </exception>
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
-			if (destinationType == null)
-				throw new ArgumentNullException("destinationType");
+			if (destinationType == null) throw new ArgumentNullException(nameof(destinationType));
 
 			if (value is Color)
 			{
@@ -105,7 +104,14 @@ namespace SiliconStudio.Core.TypeConverters
 			    {
                     return color.ToString();
 			    }
-
+			    if (destinationType == typeof(Color3))
+			    {
+                    return color.ToColor3();
+			    }
+			    if (destinationType == typeof(Color4))
+			    {
+                    return color.ToColor4();
+			    }
 			    if (destinationType == typeof(InstanceDescriptor))
 				{
 					var constructor = typeof(Color).GetConstructor(MathUtil.Array(typeof(byte), 4));
@@ -117,39 +123,35 @@ namespace SiliconStudio.Core.TypeConverters
 			return base.ConvertTo(context, culture, value, destinationType);
 		}
 
-		/// <summary>
-		/// Converts the given object to the type of this converter, using the specified context and culture information.
-		/// </summary>
-		/// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
-		/// <param name="culture">The <see cref="T:System.Globalization.CultureInfo"/> to use as the current culture.</param>
-		/// <param name="value">The <see cref="T:System.Object"/> to convert.</param>
-		/// <returns>
-		/// An <see cref="T:System.Object"/> that represents the converted value.
-		/// </returns>
-		/// <exception cref="T:System.NotSupportedException">
-		/// The conversion cannot be performed.
-		/// </exception>
-		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
-		{
-            var str = value as string;
-            if (string.IsNullOrEmpty(str))
-                return null;
+        /// <summary>
+        /// Converts the given object to the type of this converter, using the specified context and culture information.
+        /// </summary>
+        /// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
+        /// <param name="culture">The <see cref="T:System.Globalization.CultureInfo"/> to use as the current culture.</param>
+        /// <param name="value">The <see cref="T:System.Object"/> to convert.</param>
+        /// <returns>
+        /// An <see cref="T:System.Object"/> that represents the converted value.
+        /// </returns>
+        /// <exception cref="T:System.NotSupportedException">
+        /// The conversion cannot be performed.
+        /// </exception>
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        {
+            if (value is Color3)
+            {
+                var color = (Color3)value;
+                return (Color)color;
+            }
+            if (value is Color4)
+            {
+                var color = (Color4)value;
+                return (Color)color;
+            }
 
-		    if (str.StartsWith("#"))
-		    {
-		        uint colorValue;
-                if (uint.TryParse(str.Substring(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out colorValue))
-                {
-                    if (str.Length == 7) // #RRGGBB
-                    {
-                        colorValue = colorValue | 0x000000FF;
-                    }
-                    return Color.FromAbgr(colorValue);
-                }
-		        return null;
-		    }
-		    return ConvertFromString<Color, byte>(context, culture, value);
-		}
+            var str = value as string;
+            var colorValue = ColorExtensions.StringToRgba(str);
+            return Color.FromRgba(colorValue);
+        }
 
 		/// <summary>
 		/// Creates an instance of the type that this <see cref="T:System.ComponentModel.TypeConverter"/> is associated with, using the specified context, given a set of property values for the object.
@@ -161,10 +163,8 @@ namespace SiliconStudio.Core.TypeConverters
 		/// </returns>
 		public override object CreateInstance(ITypeDescriptorContext context, IDictionary propertyValues)
 		{
-			if (propertyValues == null)
-				throw new ArgumentNullException("propertyValues");
-
-			return new Color((byte)propertyValues["R"], (byte)propertyValues["G"], (byte)propertyValues["B"], (byte)propertyValues["A"]);
+			if (propertyValues == null) throw new ArgumentNullException(nameof(propertyValues));
+			return new Color((byte)propertyValues[nameof(Color.R)], (byte)propertyValues[nameof(Color.G)], (byte)propertyValues[nameof(Color.B)], (byte)propertyValues[nameof(Color.A)]);
 		}
 	}
 }
