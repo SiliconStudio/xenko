@@ -908,7 +908,7 @@ Hierarchy:
                                     Updaters: {}
                     69d5626be3c4c96d000fa99d86f0c399: !Player.TeleportController,VRSandbox.Game
                         Id: 1ac508d8-5402-448e-b03f-8d55cbdd6cfb
-                        Player: ref!! 0ce4a4d4-7909-48aa-b68e-49a3e2a153e3
+                        Player: ref!! c0a4222a-ae01-420f-8bb5-1e82ad1cfcf3
                         Pointer: ref!! 46cc9a24-9515-40c7-8f9c-34f548e1d965
                         Target: ref!! ab60ebf1-b8dc-4c15-8b09-7438d18de7f6
                         Arc: ref!! f3ab7339-758c-4b12-9ff5-b1ab4403452f
