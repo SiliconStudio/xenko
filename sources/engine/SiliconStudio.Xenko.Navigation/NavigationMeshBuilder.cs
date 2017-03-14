@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
@@ -24,6 +25,11 @@ namespace SiliconStudio.Xenko.Navigation
         /// Global offset applied to all input colliders processed by this builder
         /// </summary>
         public Vector3 Offset = Vector3.Zero;
+
+        /// <summary>
+        /// The logger to send additional information to
+        /// </summary>
+        public Logger Logger;
 
         private NavigationMesh lastNavigationMesh;
         
@@ -68,10 +74,16 @@ namespace SiliconStudio.Xenko.Navigation
             var result = new NavigationMeshBuildResult();
 
             if (agentSettings.Count == 0)
+            {
+                Logger.Error("No agent settings found");
                 return result;
+            }
 
             if (boundingBoxes.Count == 0)
+            {
+                Logger.Error("No bounding boxes found");
                 return new NavigationMeshBuildResult();
+            }
 
             var settingsHash = agentSettings?.ComputeHash() ?? 0;
             settingsHash = (settingsHash * 397) ^ buildSettings.GetHashCode();
@@ -79,6 +91,7 @@ namespace SiliconStudio.Xenko.Navigation
             {
                 // Start from scratch if settings changed
                 lastNavigationMesh = null;
+                Logger.Info("Build settings changed, doing a full rebuild");
             }
 
             // Copy colliders so the collection doesn't get modified
@@ -210,8 +223,12 @@ namespace SiliconStudio.Xenko.Navigation
                     // Add the result to the list of built tiles
                     builtTiles.Add(new Tuple<Point, NavigationMeshTile>(tileCoordinate, meshTile));
                 });
+
                 if (cancellationToken.IsCancellationRequested)
+                {
+                    Logger.Warning("Operation cancelled");
                     return result;
+                }
 
                 // Add layer to the navigation mesh
                 var layer = new NavigationMeshLayer();
