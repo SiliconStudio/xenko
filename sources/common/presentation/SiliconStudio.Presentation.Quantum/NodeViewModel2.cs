@@ -51,15 +51,19 @@ namespace SiliconStudio.Presentation.Quantum
     {
         public NodeViewModel2 CreateGraph(GraphViewModel owner, INodePresenter rootNode)
         {
-            var rootViewModelNode = CreateNodeViewModel(owner, null, rootNode);
+            var rootViewModelNode = CreateNodeViewModel(owner, null, rootNode, true);
             return rootViewModelNode;
         }
 
-        protected NodeViewModel2 CreateNodeViewModel(GraphViewModel owner, NodeViewModel2 parent, INodePresenter nodePresenter)
+        protected NodeViewModel2 CreateNodeViewModel(GraphViewModel owner, NodeViewModel2 parent, INodePresenter nodePresenter, bool isRootNode = false)
         {
             var viewModelType = typeof(NodeViewModel2<>).MakeGenericType(nodePresenter.Type);
             // TODO: assert the constructor!
             var viewModel = (NodeViewModel2)Activator.CreateInstance(viewModelType, owner, parent, nodePresenter.Name, nodePresenter);
+            if (isRootNode)
+            {
+                owner.RootNode = viewModel;
+            }
             GenerateChildren(owner, viewModel, nodePresenter);
             owner.GraphViewModelService?.NotifyNodeInitialized(viewModel);
             return viewModel;

@@ -98,11 +98,7 @@ namespace SiliconStudio.Presentation.Quantum
             PropertiesProvider = propertyProvider;
             var viewModelFactory = new GraphViewModelFactory();
             var node = GraphViewModelService.NodePresenterFactory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
-            var viewModel = viewModelFactory.CreateGraph(this, node);
-            //node.Initialize();
-            RootNode = viewModel;
-            //node.FinalizeInitialization();
-            //node.CheckConsistency();
+            viewModelFactory.CreateGraph(this, node);
         }
 
         /// <inheritdoc/>
@@ -163,7 +159,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the root node of this <see cref="GraphViewModel"/>.
         /// </summary>
-        public INodeViewModel RootNode { get { return rootNode; } private set { SetValue(ref rootNode, value); } }
+        public INodeViewModel RootNode { get { return rootNode; } internal set { SetValue(ref rootNode, value); } }
         
         /// <summary>
         /// Gets or sets a function that will generate a message for the action stack when combined nodes are modified. The function will receive
