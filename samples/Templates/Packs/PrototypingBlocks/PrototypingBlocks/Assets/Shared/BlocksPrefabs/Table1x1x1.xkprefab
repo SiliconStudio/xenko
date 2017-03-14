@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 4cc0c9b8-9f5c-4302-96a5-30d85ad9180e
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta02}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -24,7 +24,6 @@ Hierarchy:
                     d5323b00a362314f8b4b66ccb85a7088: !StaticColliderComponent
                         Id: 003b32d5-62a3-4f31-8b4b-66ccb85a7088
                         CollisionGroup: StaticFilter
-                        ProcessCollisions: false
                         CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5

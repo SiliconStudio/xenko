@@ -68,7 +68,6 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         case EffectParameterClass.ConstantBuffer:
                             {
-                                //commandList.SetConstantBuffer(bindingOperation.Stage, bindingOperation.SlotStart, (Buffer)value.Value);
                                 commandList.SetConstantBuffer(bindingOperation.Stage, bindingOperation.SlotStart, (Buffer)value.Value);
                                 break;
                             }
@@ -79,6 +78,7 @@ namespace SiliconStudio.Xenko.Graphics
                             }
                         case EffectParameterClass.ShaderResourceView:
                             {
+                                commandList.UnsetUnorderedAccessView(value.Value as GraphicsResource);
                                 commandList.SetShaderResourceView(bindingOperation.Stage, bindingOperation.SlotStart, (GraphicsResource)value.Value);
                                 break;
                             }

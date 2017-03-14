@@ -181,12 +181,12 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public sealed override bool HasDictionary => DictionaryDescriptor.IsDictionary(Type);
 
-        // The previous way to compute HasList and HasDictionary was quite complex, but let's keep it here for history. 
+        // The previous way to compute HasList and HasDictionary was quite complex, but let's keep it here for history.
         // To distinguish between lists and items of a list (which have the same TargetNode if the items are primitive types), we check whether the TargetNode is
-        // the same of the one of its parent. If so, we're likely in an item of a list of primitive objects. 
+        // the same of the one of its parent. If so, we're likely in an item of a list of primitive objects.
         //public sealed override bool HasList => (targetNode.Descriptor is CollectionDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Value != targetNode.Value))) || (targetNode.ShouldProcessReference && targetNode.Reference is ReferenceEnumerable);
         // To distinguish between dictionaries and items of a dictionary (which have the same TargetNode if the value type is a primitive type), we check whether the TargetNode is
-        // the same of the one of its parent. If so, we're likely in an item of a dictionary of primitive objects. 
+        // the same of the one of its parent. If so, we're likely in an item of a dictionary of primitive objects.
         //public sealed override bool HasDictionary => (targetNode.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Value != targetNode.Value))) || (targetNode.ShouldProcessReference && targetNode.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Reference).IsDictionary);
 
         internal Guid ModelGuid => SourceNode.Guid;
@@ -248,7 +248,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             base.ClearCommands();
         }
-        
+
         /// <summary>
         /// Retrieves the path of the target node if the source node content holds a reference or a sequence of references, or the source node path otherwise.
         /// </summary>
@@ -287,9 +287,10 @@ namespace SiliconStudio.Presentation.Quantum
                 return false;
 
             // Coerce the value if needed
-            if (CoerceValueCallback != null)
+            var coerceCallback = CoerceValueCallback;
+            if (coerceCallback != null)
             {
-                newValue = CoerceValueCallback?.Invoke(newValue);
+                newValue = coerceCallback.Invoke(newValue);
             }
 
             if (Index == Index.Empty)
@@ -370,7 +371,7 @@ namespace SiliconStudio.Presentation.Quantum
                 // Case 1: the target is a collection of non-primitive values
                 // We create one node per item of the collection, we will check later if the reference should be expanded.
                 foreach (var reference in referenceEnumerable)
-                {                    
+                {
                     if (Owner.PropertiesProvider.ShouldConstructItem(objectNode, reference.Index, ExpandReferencePolicy))
                     {
                         // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
@@ -424,7 +425,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected override void Refresh()
         {
             //if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
-            
+
             OnPropertyChanging(nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary));
 
             // Clean the current node so it can be re-initialized (associatedData are overwritten in Initialize)

@@ -450,7 +450,7 @@ namespace SiliconStudio.Core.Mathematics
             Multiply(ref left, ref right, out result);
             return result;
         }
-
+        
         /// <summary>
         /// Reverses the direction of a given quaternion.
         /// </summary>

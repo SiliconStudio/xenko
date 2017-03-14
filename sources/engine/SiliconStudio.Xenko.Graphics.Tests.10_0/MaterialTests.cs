@@ -34,7 +34,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             //CurrentVersion = 2;
             //CurrentVersion = 3; // Fix normal maps
             //CurrentVersion = 4; // Fix normal maps again
-            CurrentVersion = 5; // Noise due to changing normals from signed to unsigned
+            //CurrentVersion = 5; // Noise due to changing normals from signed to unsigned
+            CurrentVersion = 6; // MSBUild tests
             this.createMaterial = createMaterial;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
         }
