@@ -681,6 +681,19 @@ namespace SiliconStudio.Xenko.Assets
                             part.Entity = newEntity;
                             parts.Add(part);
                             rootParts.Add((string)newEntity.Id);
+
+                            // Currently need to sort children by Id
+                            List<YamlNode> partsList = (List<YamlNode>)parts.Node.Children;
+                            var entityKey = new YamlScalarNode("Entity");
+                            var idKey = new YamlScalarNode("Id");
+                            partsList.Sort((x,y) =>
+                            {
+                                var entityA = (YamlMappingNode)((YamlMappingNode)x).Children[entityKey];
+                                var entityB = (YamlMappingNode)((YamlMappingNode)y).Children[entityKey];
+                                var guidA =  new Guid(((YamlScalarNode)entityA.Children[idKey]).Value);
+                                var guidB = new Guid(((YamlScalarNode)entityB.Children[idKey]).Value);
+                                return guidA.CompareTo(guidB);
+                            });
                         }
                     }
                 }
