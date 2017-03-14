@@ -75,13 +75,13 @@ namespace SiliconStudio.Xenko.Navigation
 
             if (agentSettings.Count == 0)
             {
-                Logger.Error("No agent settings found");
+                Logger?.Error("No agent settings found");
                 return result;
             }
 
             if (boundingBoxes.Count == 0)
             {
-                Logger.Error("No bounding boxes found");
+                Logger?.Error("No bounding boxes found");
                 return new NavigationMeshBuildResult();
             }
 
@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Navigation
             {
                 // Start from scratch if settings changed
                 lastNavigationMesh = null;
-                Logger.Info("Build settings changed, doing a full rebuild");
+                Logger?.Info("Build settings changed, doing a full rebuild");
             }
 
             // Copy colliders so the collection doesn't get modified
@@ -226,7 +226,7 @@ namespace SiliconStudio.Xenko.Navigation
 
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    Logger.Warning("Operation cancelled");
+                    Logger?.Warning("Operation cancelled");
                     return result;
                 }
 

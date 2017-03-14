@@ -113,7 +113,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 lastNavigationMesh = LoadIntermediateData(intermediateDataId);
                 var navigationMeshBuilder = new NavigationMeshBuilder(lastNavigationMesh);
                 navigationMeshBuilder.Offset = sceneOffset;
-                
+                navigationMeshBuilder.Logger = commandContext.Logger;
+
                 foreach (var colliderData in staticColliderDatas)
                     navigationMeshBuilder.Add(colliderData);
                 
