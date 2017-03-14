@@ -7,6 +7,10 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Assets.Audio;
+using SiliconStudio.Xenko.Assets.Materials;
+using SiliconStudio.Xenko.Assets.Sprite;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
@@ -24,7 +28,15 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 {
                     yield return new KeyValuePair<Type, BuildDependencyType>(type, BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //for models
                 }
+                foreach (var type in AssetRegistry.GetAssetTypes(typeof(AnimationClip)))
+                {
+                    yield return new KeyValuePair<Type, BuildDependencyType>(type, BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //for models
+                }
                 yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //for particle components!
+                yield return new KeyValuePair<Type, BuildDependencyType>(typeof(PrefabAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //nested prefabs!
+                yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //material overrides!
+                yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SpriteSheetAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //material overrides!
+                yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SoundAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //?
             }
         }
 

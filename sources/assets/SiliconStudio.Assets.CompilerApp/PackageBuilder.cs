@@ -319,7 +319,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
                     // Run command
                     var inputHashes = FileVersionTracker.GetDefault();
-                    var builderContext = new BuilderContext(buildPath, buildProfile, inputHashes, parameters, 0, null, false);
+                    var builderContext = new BuilderContext(buildPath, buildProfile, inputHashes, parameters, 0, null);
 
                     var commandContext = new RemoteCommandContext(processBuilderRemote, command, builderContext, logger);
                     MicrothreadLocalDatabases.MountDatabase(commandContext.GetOutputObjectsGroups());

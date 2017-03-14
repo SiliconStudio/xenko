@@ -1,14 +1,26 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using System.Collections.Generic;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Assets.Sprite;
+using SiliconStudio.Xenko.Assets.SpriteFont;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
     public sealed class UILibraryAssetCompiler : UIAssetCompilerBase<UILibraryAsset>
     {
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        {
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SpriteFontAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SpriteSheetAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+        }
+
         protected override UIConvertCommand Create(string url, UILibraryAsset parameters, Package package)
         {
             return new UILibraryCommand(url, parameters, package);

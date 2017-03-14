@@ -23,11 +23,9 @@ namespace SiliconStudio.BuildEngine
 
         public int MaxParallelProcesses { get; }
 
-        public bool IgnorePrerequisites { get; }
-
         private int spawnedProcessCount;
 
-        public BuilderContext(string buildPath, string buildProfile, FileVersionTracker inputHashes, BuildParameterCollection parameters, int maxParallelProcess, string slaveBuilderPath, bool ignorePrerequisites)
+        public BuilderContext(string buildPath, string buildProfile, FileVersionTracker inputHashes, BuildParameterCollection parameters, int maxParallelProcess, string slaveBuilderPath)
         {
             BuildPath = buildPath;
             BuildProfile = buildProfile;
@@ -35,7 +33,6 @@ namespace SiliconStudio.BuildEngine
             Parameters = parameters;
             SlaveBuilderPath = slaveBuilderPath;
             MaxParallelProcesses = maxParallelProcess;
-            IgnorePrerequisites = ignorePrerequisites;
         }
 
         public bool CanSpawnParallelProcess()
