@@ -4743,3 +4743,11 @@ UsedParameters:
         - !ShaderClassSource
             ClassName: LightProbeShader
             GenericArguments: [3]
+---
+!EffectCompileRequest
+EffectName: ParticleEffect
+UsedParameters:
+    ParticleBase.UsesSoftEdge: 0
+    ParticleBase.BaseColor: !ShaderClassSource
+        ClassName: ComputeColorConstantColorLink
+        GenericArguments: [ParticleBase.EmissiveValue]

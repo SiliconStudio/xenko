@@ -110,6 +110,7 @@
     <Compile Include="Core\Utils.cs" />
     <Compile Include="Player\HandController.cs" />
     <Compile Include="Player\PlayerInput.cs" />
+    <Compile Include="Player\TeleportController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

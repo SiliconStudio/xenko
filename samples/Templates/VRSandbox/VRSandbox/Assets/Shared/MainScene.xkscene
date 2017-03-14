@@ -43,6 +43,7 @@ Hierarchy:
         - e06f02bc-fdd7-48fd-ad9a-a10e31269e89
         - 2eca405b-4786-4e00-8488-6bf128ad9337
         - a4d62f88-3a51-447b-a29a-0c41f2601bfe
+        - ab60ebf1-b8dc-4c15-8b09-7438d18de7f6
     Parts:
         -   Folder: Objects
             Entity:
@@ -538,6 +539,16 @@ Hierarchy:
                 BasePartAsset: eaad30b5-ca83-452b-bc80-9d7ab50a94ee:TableDecorationC
                 BasePartId: 5e8e1fbe-6a65-41c7-8340-f34a8e7bce90
                 InstanceId: be0ce3d7-e953-47ea-9e11-785a7318f5f2
+        -   Entity:
+                Id: 46cc9a24-9515-40c7-8f9c-34f548e1d965
+                Name: Pointer
+                Components:
+                    dfff3f5ad13c229766408633e951c17c: !TransformComponent
+                        Id: 9005fb90-097a-4587-b5ae-2011cdaffbf2
+                        Position: {X: 0.0, Y: 0.0, Z: -5.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
         -   Folder: Objects
             Entity:
                 Id: 6c716970-225c-4418-87e6-21a9a173523b
@@ -780,6 +791,128 @@ Hierarchy:
                 BasePartAsset: eaad30b5-ca83-452b-bc80-9d7ab50a94ee:TableDecorationC
                 BasePartId: 5e8e1fbe-6a65-41c7-8340-f34a8e7bce90
                 InstanceId: 4c864406-410b-48d5-a7e5-d29e4e5fee3a
+        -   Entity:
+                Id: 8d66f165-c8ce-480b-90d9-883de8023b6d
+                Name: Teleport arc
+                Components:
+                    044f2fb607702a3a2ddc37874fa71f83: !TransformComponent
+                        Id: e5e9fb5e-9012-4145-82e2-f2c06eb93736
+                        Position: {X: 0.0, Y: 0.0281806011, Z: -0.0114648789}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children:
+                            1238ba891c72b8f79d1bd4a49c42bd01: ref!! 9005fb90-097a-4587-b5ae-2011cdaffbf2
+                    1e1d92d491f803590c652f693760d0ec: !ParticleSystemComponent
+                        Id: f3ab7339-758c-4b12-9ff5-b1ab4403452f
+                        Enabled: false
+                        Control:
+                            ResetSeconds: 5.0
+                            Control: Play
+                        Color: {R: 0.0125000477, G: 1.0, B: 0.0, A: 1.0}
+                        Speed: 1.0
+                        ParticleSystem:
+                            Settings: {}
+                            BoundingShape: null
+                            Emitters:
+                                b00a97adb90dcc35b6d04b077561802a:
+                                    MaxParticlesOverride: 50
+                                    ParticleLifetime: {X: 0.01, Y: 0.01}
+                                    SortingPolicy: ByOrder
+                                    ShapeBuilder: !ShapeBuilderRibbon
+                                        SmoothingPolicy: Fast
+                                        Segments: 3
+                                        TextureCoordinatePolicy: AsIs
+                                        TexCoordsFactor: 0.0
+                                        UVRotate:
+                                            FlipX: false
+                                            FlipY: false
+                                            UVClockwise: Degree0
+                                    Material: !ParticleMaterialComputeColor
+                                        ComputeColor: !ComputeTextureColor
+                                            FallbackValue:
+                                                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+                                            Scale: {X: 1.0, Y: 1.0}
+                                            Offset: {X: 0.0, Y: 0.0}
+                                            Swizzle: null
+                                        UVBuilder: null
+                                        ForceTexCoords: false
+                                    Spawners:
+                                        1d412a5c802225984bc5fb917b6dceb1: !SpawnerPerFrame
+                                            LoopCondition: Looping
+                                            Delay: {X: 0.0, Y: 0.0}
+                                            Duration: {X: 1.0, Y: 1.0}
+                                            SpawnCount: 50.0
+                                            Framerate: 60.0
+                                    Initializers:
+                                        57e03470097e08bbc69c9188121ccb4d: !InitialSpawnOrder
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
+                                        097e6ade9c064b13b35b8954f8591bc8: !InitialSizeSeed
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
+                                            RandomSize: {X: 0.01, Y: 0.01}
+                                        9892c8f663458b214fc625aceb063ae1: !InitialPositionArc
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: false
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticleRotation: true
+                                            DisplayParticlePosition: false
+                                            Target: ref!! 54b917fe-c2d5-43ef-892a-218f693c9cd7
+                                            DisplayParticleScaleUniform: false
+                                            DisplayParticleScale: false
+                                            FallbackTarget: {X: 0.0, Y: 0.0, Z: -1.0}
+                                            ArcHeight: 1.5
+                                            Sequential: true
+                                            FixedLength: 50
+                                            PositionMin: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            PositionMax: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            SeedOffset: 0
+                                        7233a7b7f6177f994d5fce9f7ceb0fa2: !InitialDirectionSeed
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
+                                            DirectionMin: {X: 1.0, Y: 0.0, Z: 0.0}
+                                            DirectionMax: {X: 1.0, Y: 0.0, Z: 0.0}
+                                    Updaters: {}
+                    69d5626be3c4c96d000fa99d86f0c399: !Player.TeleportController,VRSandbox.Game
+                        Id: 1ac508d8-5402-448e-b03f-8d55cbdd6cfb
+                        Player: ref!! 0ce4a4d4-7909-48aa-b68e-49a3e2a153e3
+                        Pointer: ref!! 46cc9a24-9515-40c7-8f9c-34f548e1d965
+                        Target: ref!! ab60ebf1-b8dc-4c15-8b09-7438d18de7f6
+                        Arc: ref!! f3ab7339-758c-4b12-9ff5-b1ab4403452f
+                        Constraints: {X: -4.5, Y: -4.5, Width: 9.0, Height: 9.0}
         -   Folder: Objects
             Entity:
                 Id: 9114fa9a-8b94-4491-b43b-4d40e5cfb3f7
@@ -1026,6 +1159,21 @@ Hierarchy:
                 BasePartAsset: 608d82d1-51a6-48d3-b698-acc303fb1dba:TableDecorationA
                 BasePartId: a254238f-5eec-45c1-80b8-379dbae2f435
                 InstanceId: 0a1a5657-3db3-4736-beb5-7e6e81b544e6
+        -   Entity:
+                Id: ab60ebf1-b8dc-4c15-8b09-7438d18de7f6
+                Name: Teleport target
+                Components:
+                    f0c8949bbcdae93773ef6b897efc90bc: !TransformComponent
+                        Id: 54b917fe-c2d5-43ef-892a-218f693c9cd7
+                        Position: {X: 0.0, Y: 0.1, Z: 0.606}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
+                    f705b042fe742acc8c9457e1576277e0: !ModelComponent
+                        Id: 82e06f33-3d08-49bf-ae42-1acbfacfd9e3
+                        Enabled: false
+                        Model: 6e183d09-6745-45d1-980e-dcae98b9b671:Torus
+                        Materials: {}
         -   Folder: Room
             Entity:
                 Id: ad99506b-51cf-4d0a-b46b-d2f1c4985433
@@ -1380,6 +1528,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
                             a933ef21b221dc4049a3ff38657d1a7a: ref!! 34a38895-019c-45ba-95ce-ad6591dbb570
+                            3e4f69d6ffdf021ff35c0ef3f7f95fbc: ref!! e5e9fb5e-9012-4145-82e2-f2c06eb93736
                     e0bf39cf089a694b8c7d653b465bab62: !VRSandbox.Player.HandController,VRSandbox.Game
                         Id: cf39bfe0-9a08-4b69-8c7d-653b465bab62
                         Head: ref!! c0a4222a-ae01-420f-8bb5-1e82ad1cfcf3
