@@ -19,8 +19,8 @@ Defaults:
         TextureQuality: Fast
     - !SiliconStudio.Xenko.Physics.PhysicsSettings,SiliconStudio.Xenko.Physics
         Flags: None
-        MaxSubSteps: 1
-        FixedTimeStep: 0.0166666675
+        MaxSubSteps: 3
+        FixedTimeStep: 0.011111
     - !SiliconStudio.Xenko.Audio.AudioEngineSettings,SiliconStudio.Xenko.Audio
         HrtfSupport: false
 Overrides: []
