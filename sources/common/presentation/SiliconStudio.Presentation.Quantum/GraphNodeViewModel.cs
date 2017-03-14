@@ -61,6 +61,8 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
+        public object NodeValue { get { return Value; } set { Value = value; } }
+
         /// <summary>
         /// A function that indicates if the given value can be accepted as new value for this node.
         /// </summary>
