@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Navigation
     /// </summary>
     [DataContract]
     [ObjectFactory(typeof(NavigationAgentSettingsFactory))]
-    public struct NavigationAgentSettings
+    public class NavigationAgentSettings
     {
         /// <summary>
         /// Height of the actor
