@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Events;
-using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Navigation;
 using SiliconStudio.Xenko.Physics;
 using TopDownRPG.Core;
 
@@ -95,7 +95,7 @@ namespace TopDownRPG.Player
 
             // Get the navigation component on the same entity as this script
             navigation = Entity.Get<NavigationComponent>();
-            if (navigation?.NavigationMesh == null) throw new ArgumentException("Please add a NavigationComponent to the entity containing PlayerController with the correct navigation mesh!");
+            if (navigation == null) throw new ArgumentException("Please add a NavigationComponent to the entity containing PlayerController with the correct navigation mesh!");
 
             // Will search for an CharacterComponent within the same entity as this script
             character = Entity.Get<CharacterComponent>();
@@ -175,6 +175,9 @@ namespace TopDownRPG.Player
                     {
                         waypointIndex++;
                     }
+                    
+                    // Add destination point
+                    pathToDestination.Add(destination);
 
                     // If this path still contains more points, set the player to running
                     if (!ReachedDestination)
@@ -217,12 +220,9 @@ namespace TopDownRPG.Player
                         advance = true;
                     }
                 }
-                else
+                if (length < DestinationThreshold) // Check distance to final point
                 {
-                    if (length < DestinationThreshold) // Check distance to final point
-                    {
-                        advance = true;
-                    }
+                    advance = true;
                 }
 
                 // Advance waypoint?
