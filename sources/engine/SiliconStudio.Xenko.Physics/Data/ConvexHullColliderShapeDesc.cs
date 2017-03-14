@@ -109,25 +109,25 @@ namespace SiliconStudio.Xenko.Physics
         [Display(Browsable = false)]
         public float Threshold = 0.01f;
 
-        public int CompareTo(object obj)
+        public bool Match(object obj)
         {
             var other = obj as ConvexHullColliderShapeDesc;
-            if (other == null) return -1;
+            if (other == null)
+                return false;
 
-            if (other.LocalOffset != LocalOffset || other.LocalRotation != LocalRotation) return 1;
+            if (other.LocalOffset != LocalOffset || other.LocalRotation != LocalRotation)
+                return false;
 
-            if (other.Model == Model &&
-                other.SimpleWrap == SimpleWrap &&
-                other.Scaling == Scaling &&
-                other.Depth == Depth &&
-                other.PosSampling == PosSampling &&
-                other.AngleSampling == AngleSampling &&
-                other.PosRefine == PosRefine &&
-                other.AngleRefine == AngleRefine &&
-                Math.Abs(other.Alpha - Alpha) < float.Epsilon &&
-                Math.Abs(other.Threshold - Threshold) < float.Epsilon) return 0;
-
-            return 1;
+            return other.Model == Model &&
+                   other.SimpleWrap == SimpleWrap &&
+                   other.Scaling == Scaling &&
+                   other.Depth == Depth &&
+                   other.PosSampling == PosSampling &&
+                   other.AngleSampling == AngleSampling &&
+                   other.PosRefine == PosRefine &&
+                   other.AngleRefine == AngleRefine &&
+                   Math.Abs(other.Alpha - Alpha) < float.Epsilon &&
+                   Math.Abs(other.Threshold - Threshold) < float.Epsilon;
         }
         
         public override int GetHashCode()

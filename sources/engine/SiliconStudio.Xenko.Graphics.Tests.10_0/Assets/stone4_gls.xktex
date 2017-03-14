@@ -2,6 +2,6 @@
 Id: 4eb3a576-7008-4698-ac61-993272362567
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
-Source: ../../../../samples/Graphics/MaterialSample/Resources/stone4_gls.jpeg
+Source: ../Resources/stone4_gls.jpeg
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Format: Color32Bits
