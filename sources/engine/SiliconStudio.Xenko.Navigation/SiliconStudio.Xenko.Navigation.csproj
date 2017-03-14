@@ -86,7 +86,7 @@
     <Compile Include="NavigationSettings.cs" />
     <Compile Include="Processors\BoundingBoxProcessor.cs" />
     <Compile Include="Debug.cs" />
-    <Compile Include="NavigationMeshBoundingBox.cs" />
+    <Compile Include="NavigationBoundingBox.cs" />
     <Compile Include="DynamicNavigationMeshSystem.cs" />
     <Compile Include="NativeInvoke.cs" />
     <Compile Include="NavigationAgentSettings.cs" />

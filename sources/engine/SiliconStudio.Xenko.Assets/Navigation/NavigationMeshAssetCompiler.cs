@@ -223,7 +223,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                         foreach (var entity in sceneEntities)
                         {
                             // Collect bounding box entities
-                            NavigationMeshBoundingBox boundingBoxComponent = entity.Get<NavigationMeshBoundingBox>();
+                            NavigationBoundingBox boundingBoxComponent = entity.Get<NavigationBoundingBox>();
                             // Collect static collider entities
                             StaticColliderComponent colliderComponent = entity.Get<StaticColliderComponent>();
 

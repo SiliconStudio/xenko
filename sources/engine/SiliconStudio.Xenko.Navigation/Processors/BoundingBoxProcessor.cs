@@ -6,13 +6,13 @@ using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Navigation.Processors
 {
-    internal class BoundingBoxProcessor : EntityProcessor<NavigationMeshBoundingBox, BoundingBoxProcessor.BoundingBoxData>
+    internal class BoundingBoxProcessor : EntityProcessor<NavigationBoundingBox, BoundingBoxProcessor.BoundingBoxData>
     {
-        public delegate void CollectionChangedEventHandler(NavigationMeshBoundingBox component);
+        public delegate void CollectionChangedEventHandler(NavigationBoundingBox component);
         
-        public ICollection<NavigationMeshBoundingBox> BoundingBoxes => ComponentDatas.Keys;
+        public ICollection<NavigationBoundingBox> BoundingBoxes => ComponentDatas.Keys;
         
-        protected override BoundingBoxData GenerateComponentData(Entity entity, NavigationMeshBoundingBox component)
+        protected override BoundingBoxData GenerateComponentData(Entity entity, NavigationBoundingBox component)
         {
             return new BoundingBoxData();
         }
