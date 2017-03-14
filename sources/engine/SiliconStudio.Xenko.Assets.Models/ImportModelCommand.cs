@@ -190,8 +190,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             var material1 = model.Materials.GetItemOrNull(baseMesh.MaterialIndex);
             var material2 = model.Materials.GetItemOrNull(newMesh.MaterialIndex);
 
-            return material1 == material2 || (material1 != null && material2 != null && material1.IsShadowCaster == material2.IsShadowCaster &&
-                material1.IsShadowReceiver == material2.IsShadowReceiver);
+            return material1 == material2 || (material1 != null && material2 != null && material1.IsShadowCaster == material2.IsShadowCaster);
         }
 
         /// <summary>

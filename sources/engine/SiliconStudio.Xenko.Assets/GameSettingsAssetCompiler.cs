@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Assets
                 result.Configurations.PlatformFilters = Parameters.PlatformFilters;
 
                 //make sure we modify platform specific files to set the wanted orientation
-                SetPlatformOrientation(Package, platform, Parameters.Get<RenderingSettings>().DisplayOrientation);
+                SetPlatformOrientation(package, platform, Parameters.GetOrCreate<RenderingSettings>().DisplayOrientation);
 
                 var assetManager = new ContentManager();
                 assetManager.Save(Url, result);

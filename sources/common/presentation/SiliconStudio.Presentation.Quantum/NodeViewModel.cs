@@ -445,15 +445,37 @@ namespace SiliconStudio.Presentation.Quantum
                 initializingChildren.Remove(node);
             }
         }
-        
-        protected void AddCommand(INodeCommandWrapper command)
+
+        /// <summary>
+        /// Adds the provided <paramref name="command"/> to this node.
+        /// </summary>
+        /// <param name="command">The command to add.</param>
+        protected void AddCommand([NotNull] INodeCommandWrapper command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
+
             OnPropertyChanging($"{GraphViewModel.HasCommandPrefix}{command.Name}");
             OnPropertyChanging(command.Name);
             commands.Add(command);
             OnPropertyChanged(command.Name);
             OnPropertyChanged($"{GraphViewModel.HasCommandPrefix}{command.Name}");
+        }
+
+        /// <summary>
+        /// Removes the provided <paramref name="command"/> from this node, if it exists.
+        /// </summary>
+        /// <param name="command">The command to remove.</param>
+        /// <returns><c>true</c> if the command was sucessfully removed; otherwise, <c>false</c>.</returns>
+        protected bool RemoveCommand([NotNull] INodeCommandWrapper command)
+        {
+            if (command == null) throw new ArgumentNullException(nameof(command));
+
+            OnPropertyChanging($"{GraphViewModel.HasCommandPrefix}{command.Name}");
+            OnPropertyChanging(command.Name);
+            var removed = commands.Remove(command);
+            OnPropertyChanged(command.Name);
+            OnPropertyChanged($"{GraphViewModel.HasCommandPrefix}{command.Name}");
+            return removed;
         }
 
         protected void ClearCommands()

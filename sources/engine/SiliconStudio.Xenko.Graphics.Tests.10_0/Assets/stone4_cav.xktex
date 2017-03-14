@@ -2,6 +2,6 @@
 Id: a3a0e6a1-2498-4a7e-a674-1c0bf1166035
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
-Source: ../../../../samples/Graphics/MaterialSample/Resources/stone4_cav.jpeg
+Source: ../Resources/stone4_cav.jpeg
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Format: Color32Bits

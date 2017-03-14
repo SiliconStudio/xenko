@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         {
             var asset = (SpriteSheetAsset)assetItem.Asset;
             var gameSettingsAsset = context.GetGameSettingsAsset();
-            var renderingSettings = gameSettingsAsset.Get<RenderingSettings>(context.Platform);
+            var renderingSettings = gameSettingsAsset.GetOrCreate<RenderingSettings>(context.Platform);
 
             result.BuildSteps = new ListBuildStep();
             
@@ -97,7 +97,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     var assetSource = UPath.Combine(assetDirectory, spriteAssetArray[0].Source);
 
                     // add the texture build command.
-                    var textureConvertParameters = new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
+                    var textureConvertParameters = new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);
                     var textureConvertCommand = new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureConvertParameters, assetItem.Package);
                     result.BuildSteps.Add(new AssetBuildStep(new AssetItem(textureUrl, textureAsset))
                     {
@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
 
             if (!result.HasErrors)
             {
-                var parameters = new SpriteSheetParameters(asset, imageToTextureUrl, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
+                var parameters = new SpriteSheetParameters(asset, imageToTextureUrl, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);
                 result.BuildSteps.Add(new AssetBuildStep(assetItem) { new SpriteSheetCommand(targetUrlInStorage, parameters, assetItem.Package) });
             }
         }

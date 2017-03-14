@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             var assetSource = UPath.Combine(assetDirectory, asset.Source);
 
             var gameSettingsAsset = context.GetGameSettingsAsset();
-            var renderingSettings = gameSettingsAsset.Get<RenderingSettings>();
+            var renderingSettings = gameSettingsAsset.GetOrCreate<RenderingSettings>();
             var allow32BitIndex = renderingSettings.DefaultGraphicsProfile >= GraphicsProfile.Level_9_2;
             var maxInputSlots = renderingSettings.DefaultGraphicsProfile >= GraphicsProfile.Level_10_1 ? 32 : 16;
             var allowUnsignedBlendIndices = context.GetGraphicsPlatform(assetItem.Package) != GraphicsPlatform.OpenGLES;

@@ -402,7 +402,7 @@ namespace SiliconStudio.Core.Mathematics
         {
             return new Vector4(value.X / scale, value.Y / scale, value.Z / scale, value.W / scale);
         }
-
+        
         /// <summary>
         /// Demodulates a vector with another by performing component-wise division.
         /// </summary>
