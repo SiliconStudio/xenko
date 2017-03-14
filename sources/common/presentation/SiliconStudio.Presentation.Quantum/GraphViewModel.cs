@@ -96,7 +96,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
             PropertiesProvider = propertyProvider;
-            var viewModelFactory = new GraphViewModelFactory();
+            var viewModelFactory = new NodeViewModelFactory();
             var node = GraphViewModelService.NodePresenterFactory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
             viewModelFactory.CreateGraph(this, node);
         }

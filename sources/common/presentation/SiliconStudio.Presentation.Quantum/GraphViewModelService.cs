@@ -24,14 +24,17 @@ namespace SiliconStudio.Presentation.Quantum
 
         public INodePresenterFactory NodePresenterFactory { get; set; }
 
+        public INodeViewModelFactory NodeViewModelFactory { get; set; }
         /// <summary>
         /// Gets or sets the graph node factory.
         /// </summary>
+        [Obsolete]
         public CreateNodeDelegate GraphNodeViewModelFactory { get; set; }
 
         /// <summary>
         /// Gets or sets the combined node factory.
         /// </summary>
+        [Obsolete]
         public CreateCombinedNodeDelegate CombinedNodeViewModelFactory { get; set; }
 
         /// <summary>

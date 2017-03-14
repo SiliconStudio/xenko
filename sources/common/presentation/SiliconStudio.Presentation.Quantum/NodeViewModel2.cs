@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
@@ -47,8 +48,18 @@ namespace SiliconStudio.Presentation.Quantum
         public object OldValue { get; }
     }
 
-    public class GraphViewModelFactory
+    public interface INodeViewModelFactory
     {
+        NodeViewModel2 CreateGraph(GraphViewModel owner, IEnumerable<INodePresenter> rootNodes);
+    }
+
+    public class NodeViewModelFactory : INodeViewModelFactory
+    {
+        public NodeViewModel2 CreateGraph(GraphViewModel owner, IEnumerable<INodePresenter> rootNodes)
+        {
+            throw new NotImplementedException();
+        }
+
         public NodeViewModel2 CreateGraph(GraphViewModel owner, INodePresenter rootNode)
         {
             var rootViewModelNode = CreateNodeViewModel(owner, null, rootNode, true);
@@ -132,7 +143,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         }
 
-        protected virtual void SetValue(object newValue)
+        protected virtual void SetNodeValue(object newValue)
         {
             using (var transaction = ServiceProvider.TryGet<IUndoRedoService>()?.CreateTransaction())
             {
@@ -164,7 +175,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        public virtual T TypedValue { get { return (T)NodePresenter.Value; } set { SetValue(value); } }
+        public virtual T TypedValue { get { return (T)NodePresenter.Value; } set { SetNodeValue(value); } }
 
         /// <inheritdoc/>
         public sealed override object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
