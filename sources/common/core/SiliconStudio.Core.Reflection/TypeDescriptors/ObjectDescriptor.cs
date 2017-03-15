@@ -324,7 +324,7 @@ namespace SiliconStudio.Core.Reflection
             {
                 object defaultValue = defaultValueAttribute.Value;
                 Type defaultType = defaultValue?.GetType();
-                if (defaultType.IsNumeric() && defaultType != memberType)
+                if (defaultType != null && defaultType.IsNumeric() && defaultType != memberType)
                 {
                     try
                     {

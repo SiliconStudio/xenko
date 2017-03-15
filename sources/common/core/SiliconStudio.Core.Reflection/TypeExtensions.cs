@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -9,15 +10,15 @@ namespace SiliconStudio.Core.Reflection
     {
         private static readonly Dictionary<Type, bool> AnonymousTypes = new Dictionary<Type, bool>();
 
-        public static bool HasInterface(this Type type, Type lookInterfaceType)
+        public static bool HasInterface([NotNull] this Type type, Type lookInterfaceType)
         {
+            if (type == null) throw new ArgumentNullException(nameof(type));
             return type.GetInterface(lookInterfaceType) != null;
         }
 
         public static Type GetInterface(this Type type, Type lookInterfaceType)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
+            if (type == null) throw new ArgumentNullException(nameof(type));
             if (lookInterfaceType == null)
                 throw new ArgumentNullException(nameof(lookInterfaceType));
 
@@ -48,8 +49,9 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="type">The type for which to get the default value.</param>
         /// <returns>The default value of this type.</returns>
-        public static object Default(this Type type)
+        public static object Default([NotNull] this Type type)
         {
+            if (type == null) throw new ArgumentNullException(nameof(type));
             return type.IsValueType ? Activator.CreateInstance(type) : null;
         }
 
@@ -58,10 +60,9 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns><c>true</c> if the specified type is anonymous; otherwise, <c>false</c>.</returns>
-        public static bool IsAnonymous(this Type type)
+        public static bool IsAnonymous([NotNull] this Type type)
         {
-            if (type == null)
-                return false;
+            if (type == null) throw new ArgumentNullException(nameof(type));
 
             lock (AnonymousTypes)
             {
@@ -83,11 +84,12 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>True if object is a numeric value.</returns>
-        public static bool IsNumeric(this Type type)
+        public static bool IsNumeric([NotNull] this Type type)
         {
-            return type != null && (type == typeof(sbyte) || type == typeof(short) || type == typeof(int) || type == typeof(long) ||
-                                    type == typeof(byte) || type == typeof(ushort) || type == typeof(uint) || type == typeof(ulong) ||
-                                    type == typeof(float) || type == typeof(double) || type == typeof(decimal));
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            return type == typeof(sbyte) || type == typeof(short) || type == typeof(int) || type == typeof(long) ||
+                   type == typeof(byte) || type == typeof(ushort) || type == typeof(uint) || type == typeof(ulong) ||
+                   type == typeof(float) || type == typeof(double) || type == typeof(decimal);
         }
 
         /// <summary>
@@ -95,9 +97,10 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns><c>true</c> if the specified type is nullable; otherwise, <c>false</c>.</returns>
-        public static bool IsNullable(this Type type)
+        public static bool IsNullable([NotNull] this Type type)
         {
-            return type != null && Nullable.GetUnderlyingType(type) != null;
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            return Nullable.GetUnderlyingType(type) != null;
         }
 
         /// <summary>
@@ -105,9 +108,10 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="type">The <see cref="Type"/> to be analyzed.</param>
         /// <returns><c>True</c> if the specified <paramref name="type"/> is a non-primitive struct type; otehrwise <c>False</c>.</returns>
-        public static bool IsStruct(this Type type)
+        public static bool IsStruct([NotNull] this Type type)
         {
-            return type != null && type.GetTypeInfo().IsValueType && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            return type.GetTypeInfo().IsValueType && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;
         }
         
         /// <summary>
@@ -115,10 +119,9 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static bool IsPureValueType(this Type type)
+        public static bool IsPureValueType([NotNull] this Type type)
         {
-            if (type == null)
-                return false;
+            if (type == null) throw new ArgumentNullException(nameof(type));
             if (type == typeof(IntPtr))
                 return false;
             if (type.IsPrimitive)
