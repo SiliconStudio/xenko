@@ -266,11 +266,6 @@ namespace SiliconStudio.Xenko.Engine
             {
                 transformOperation.Process(this);
             }
-
-            if (WorldMatrix == Matrix.Zero)
-            {
-                
-            }
         }
 
         private void AddItem(TransformComponent item)
