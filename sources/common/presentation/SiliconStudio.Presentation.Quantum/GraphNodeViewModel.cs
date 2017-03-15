@@ -223,7 +223,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
 
             var modelContentValue = GetNodeValue();
-            if (!Equals(modelContentValue, Value))
+            if (!Equals(modelContentValue, InternalNodeValue))
             {
                 // TODO: I had this exception with a property that is returning a new IEnumerable each time - we should have a way to notice this, maybe by correctly transfering and checking the IsReadOnly property
                 //throw new GraphViewModelConsistencyException(this, "The value of this node does not match the value of its source node content.");
@@ -524,7 +524,7 @@ namespace SiliconStudio.Presentation.Quantum
             : base(ownerViewModel, baseName, isPrimitive, modelNode, graphNodePath, index)
         {
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
-            DependentProperties.Add(nameof(Value), new[] { nameof(NodeValue) });
+            DependentProperties.Add(nameof(InternalNodeValue), new[] { nameof(NodeValue) });
             var memberNode = SourceNode as IMemberNode;
             if (memberNode != null)
             {
@@ -549,7 +549,7 @@ namespace SiliconStudio.Presentation.Quantum
         public override Type Type => typeof(T);
 
         /// <inheritdoc/>
-        public sealed override object Value { get { return GetNodeValue(); } set { AssertInit(); SetNodeValue(SourceNode, value); } }
+        protected internal sealed override object InternalNodeValue { get { return GetNodeValue(); } set { AssertInit(); SetNodeValue(SourceNode, value); } }
 
         /// <inheritdoc/>
         public override void Destroy()
@@ -580,7 +580,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (IsValidChange(e))
             {
                 ((NodeViewModel)Parent)?.NotifyPropertyChanging(Name);
-                OnPropertyChanging(nameof(Value));
+                OnPropertyChanging(nameof(InternalNodeValue));
             }
         }
 
@@ -597,7 +597,7 @@ namespace SiliconStudio.Presentation.Quantum
                     Refresh();
                 }
 
-                OnPropertyChanged(nameof(Value));
+                OnPropertyChanged(nameof(InternalNodeValue));
                 OnValueChanged();
                 Owner.NotifyNodeChanged(Path);
             }

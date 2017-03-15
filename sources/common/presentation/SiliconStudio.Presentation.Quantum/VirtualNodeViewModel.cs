@@ -93,20 +93,20 @@ namespace SiliconStudio.Presentation.Quantum
         protected virtual void SetNodeValue(object value)
         {
             updatingValue = true;
-            SetValue(() => Setter(value), nameof(VirtualNodeViewModel<object>.Value));
+            SetValue(() => Setter(value), nameof(VirtualNodeViewModel<object>.InternalNodeValue));
             updatingValue = false;
         }
 
         private void ContentChanging(object sender, INodeChangeEventArgs e)
         {
             if (!updatingValue)
-                OnPropertyChanging(nameof(VirtualNodeViewModel<object>.Value));
+                OnPropertyChanging(nameof(VirtualNodeViewModel<object>.InternalNodeValue));
         }
 
         private void ContentChanged(object sender, INodeChangeEventArgs e)
         {
             if (!updatingValue)
-                OnPropertyChanged(nameof(VirtualNodeViewModel<object>.Value));
+                OnPropertyChanged(nameof(VirtualNodeViewModel<object>.InternalNodeValue));
         }
     }
 
@@ -115,13 +115,13 @@ namespace SiliconStudio.Presentation.Quantum
         public VirtualNodeViewModel(GraphViewModel owner, string name, bool isPrimitive, int? order, Index index, Func<object> getter, Action<object> setter)
             : base(owner, name, isPrimitive, order, index, getter, setter)
         {
-            DependentProperties.Add(nameof(Value), new[] { nameof(NodeValue) });
+            DependentProperties.Add(nameof(InternalNodeValue), new[] { nameof(NodeValue) });
         }
 
         /// <inheritdoc/>
         public override Type Type => typeof(T);
 
         /// <inheritdoc/>
-        public sealed override object Value { get { return Getter(); } set { SetNodeValue(value); } }
+        protected internal sealed override object InternalNodeValue { get { return Getter(); } set { SetNodeValue(value); } }
     }
 }

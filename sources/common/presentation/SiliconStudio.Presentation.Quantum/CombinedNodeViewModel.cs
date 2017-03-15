@@ -32,7 +32,7 @@ namespace SiliconStudio.Presentation.Quantum
             : base(ownerViewModel, index)
         {
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
-            DependentProperties.Add(nameof(Value), new[] { nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary) });
+            DependentProperties.Add(nameof(InternalNodeValue), new[] { nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary) });
             this.combinedNodes = new List<SingleNodeViewModel>(combinedNodes);
             Name = name;
             DisplayName = this.combinedNodes.First().DisplayName;
@@ -66,8 +66,8 @@ namespace SiliconStudio.Presentation.Quantum
                 if (memberInfo == null)
                     memberInfo = node.MemberInfo;
 
-                combinedNodeInitialValues.Add(node.Value);
-                distinctCombinedNodeInitialValues.Add(node.Value);
+                combinedNodeInitialValues.Add(node.InternalNodeValue);
+                distinctCombinedNodeInitialValues.Add(node.InternalNodeValue);
             }
             IsReadOnly = isReadOnly;
             IsVisible = isVisible;
@@ -76,7 +76,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 using (Owner.BeginCombinedAction(Owner.FormatCombinedUpdateMessage(this, null), Path))
                 {
-                    CombinedNodes.Zip(combinedNodeInitialValues).ForEach(x => x.Item1.Value = x.Item2);
+                    CombinedNodes.Zip(combinedNodeInitialValues).ForEach(x => x.Item1.InternalNodeValue = x.Item2);
                     Refresh();
                 }
             });
@@ -354,11 +354,11 @@ namespace SiliconStudio.Presentation.Quantum
                     if (!child.Type.IsValueType && child.Type != typeof(string))
                         return null;
 
-                    var list = allChildNodes.FirstOrDefault(x => Equals(x.Key, child.Value) && !usedSlots.Contains(x.Value)).Value;
+                    var list = allChildNodes.FirstOrDefault(x => Equals(x.Key, child.InternalNodeValue) && !usedSlots.Contains(x.Value)).Value;
                     if (list == null)
                     {
                         list = new List<SingleNodeViewModel>();
-                        allChildNodes.Add(new KeyValuePair<object, List<SingleNodeViewModel>>(child.Value, list));
+                        allChildNodes.Add(new KeyValuePair<object, List<SingleNodeViewModel>>(child.InternalNodeValue, list));
                     }
                     list.Add(child);
                     usedSlots.Add(list);
@@ -371,9 +371,9 @@ namespace SiliconStudio.Presentation.Quantum
         private bool ComputeHasMultipleValues()
         {
             if (IsPrimitive)
-                return CombinedNodes.Any(x => !Equals(x.Value, CombinedNodes.First().Value));
+                return CombinedNodes.Any(x => !Equals(x.InternalNodeValue, CombinedNodes.First().InternalNodeValue));
 
-            return !AreAllValuesOfTheSameType(CombinedNodes.Select(x => x.Value));
+            return !AreAllValuesOfTheSameType(CombinedNodes.Select(x => x.InternalNodeValue));
         }
 
         private bool ComputeHasMultipleInitialValues()
@@ -431,7 +431,7 @@ namespace SiliconStudio.Presentation.Quantum
         public CombinedNodeViewModel(GraphViewModel ownerViewModel, string name, IEnumerable<SingleNodeViewModel> combinedNodes, Index index)
             : base(ownerViewModel, name, combinedNodes, index)
         {
-            DependentProperties.Add(nameof(Value), new[] { nameof(NodeValue) });
+            DependentProperties.Add(nameof(InternalNodeValue), new[] { nameof(NodeValue) });
             foreach (var node in CombinedNodes)
             {
                 node.ValueChanged += CombinedNodeValueChanged;
@@ -472,20 +472,20 @@ namespace SiliconStudio.Presentation.Quantum
         public override Type Type => typeof(T);
 
         /// <inheritdoc/>
-        public sealed override object Value
+        protected internal sealed override object InternalNodeValue
         {
             get
             {
-                return HasMultipleValues ? default(T) : (T)CombinedNodes.First().Value;
+                return HasMultipleValues ? default(T) : (T)CombinedNodes.First().InternalNodeValue;
             }
             set
             {
                 var displayName = Owner.FormatCombinedUpdateMessage(this, value);
                 using (Owner.BeginCombinedAction(displayName, Path))
                 {
-                    OnPropertyChanging(nameof(Value));
-                    CombinedNodes.ForEach(x => x.Value = value);
-                    OnPropertyChanged(nameof(Value));
+                    OnPropertyChanging(nameof(InternalNodeValue));
+                    CombinedNodes.ForEach(x => x.InternalNodeValue = value);
+                    OnPropertyChanged(nameof(InternalNodeValue));
                 }
             }
         }

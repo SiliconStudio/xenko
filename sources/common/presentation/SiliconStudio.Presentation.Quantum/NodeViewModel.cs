@@ -87,7 +87,7 @@ namespace SiliconStudio.Presentation.Quantum
         public INodeViewModel Root { get { INodeViewModel root = this; while (root.Parent != null) root = root.Parent; return root; } }
 
         /// <summary>
-        /// Gets the expected type of <see cref="Value"/>.
+        /// Gets the expected type of <see cref="InternalNodeValue"/>.
         /// </summary>
         public abstract Type Type { get; }
 
@@ -109,10 +109,10 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets or sets the value.
         /// </summary>
-        public abstract object Value { get; set; }
+        protected internal abstract object InternalNodeValue { get; set; }
 
         /// <inheritdoc/>
-        public object NodeValue { get { return Value; } set { Value = ConvertValue(value); } }
+        public object NodeValue { get { return InternalNodeValue; } set { InternalNodeValue = ConvertValue(value); } }
 
         /// <summary>
         /// Gets or sets the index of this node, relative to its parent node when its contains a collection. Can be null of this node is not in a collection.
@@ -207,7 +207,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{Name}: [{Value}]";
+            return $"{Name}: [{InternalNodeValue}]";
         }
 
         public void AddAssociatedData(string key, object value)
