@@ -31,7 +31,6 @@ namespace SiliconStudio.Presentation.Quantum
         private bool isReadOnly;
         private string displayName;
         private int visibleChildrenCount;
-        private object value;
         private List<INodeViewModel> initializingChildren = new List<INodeViewModel>();
 
         static NodeViewModel()
@@ -41,11 +40,12 @@ namespace SiliconStudio.Presentation.Quantum
             ReservedNames.Add("Type");
         }
 
-        protected NodeViewModel(GraphViewModel ownerViewModel, Index index)
+        protected NodeViewModel(GraphViewModel ownerViewModel, Type type, Index index)
             : base(ownerViewModel.ServiceProvider)
         {
             DependentProperties.Add(nameof(Path), new[] { nameof(DisplayPath) });
             Owner = ownerViewModel;
+            Type = type;
             Index = index;
             IsVisible = true;
             IsReadOnly = false;
@@ -55,6 +55,11 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets the <see cref="GraphViewModel"/> that owns this node.
         /// </summary>
         public GraphViewModel Owner { get; }
+
+        /// <summary>
+        /// Gets the expected type of <see cref="NodeValue"/>.
+        /// </summary>
+        public Type Type { get; }
 
         /// <summary>
         /// Gets or sets the name of this node. Note that the name can be used to access this node from its parent using a dynamic object.
@@ -85,11 +90,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets the root of this node.
         /// </summary>
         public INodeViewModel Root { get { INodeViewModel root = this; while (root.Parent != null) root = root.Parent; return root; } }
-
-        /// <summary>
-        /// Gets the expected type of <see cref="InternalNodeValue"/>.
-        /// </summary>
-        public abstract Type Type { get; }
 
         /// <summary>
         /// Gets whether this node contains a primitive value. A primitive value has no children node and does not need to refresh its hierarchy when its value is modified.

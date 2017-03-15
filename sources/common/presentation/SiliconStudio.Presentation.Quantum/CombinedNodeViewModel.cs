@@ -12,13 +12,14 @@ using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public abstract class CombinedNodeViewModel : NodeViewModel
+    public class CombinedNodeViewModel : NodeViewModel
     {
         private readonly List<SingleNodeViewModel> combinedNodes;
         private readonly List<object> combinedNodeInitialValues;
         private readonly HashSet<object> distinctCombinedNodeInitialValues;
         private readonly int? order;
         private readonly MemberInfo memberInfo;
+        private bool refreshQueued;
 
         protected static readonly HashSet<CombinedNodeViewModel> ChangedNodes = new HashSet<CombinedNodeViewModel>();
         protected static bool ChangeInProgress;
@@ -28,11 +29,11 @@ namespace SiliconStudio.Presentation.Quantum
             typeof(CombinedNodeViewModel).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
         }
 
-        protected CombinedNodeViewModel(GraphViewModel ownerViewModel, string name, IEnumerable<SingleNodeViewModel> combinedNodes, Index index)
-            : base(ownerViewModel, index)
+        protected internal CombinedNodeViewModel(GraphViewModel ownerViewModel, Type type, string name, IEnumerable<SingleNodeViewModel> combinedNodes, Index index)
+            : base(ownerViewModel, type, index)
         {
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
-            DependentProperties.Add(nameof(InternalNodeValue), new[] { nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary) });
+            DependentProperties.Add(nameof(InternalNodeValue), new[] { nameof(NodeValue), nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary) });
             this.combinedNodes = new List<SingleNodeViewModel>(combinedNodes);
             Name = name;
             DisplayName = this.combinedNodes.First().DisplayName;
@@ -80,6 +81,11 @@ namespace SiliconStudio.Presentation.Quantum
                     Refresh();
                 }
             });
+
+            foreach (var node in CombinedNodes)
+            {
+                node.ValueChanged += CombinedNodeValueChanged;
+            }
         }
 
         internal void Initialize()
@@ -140,12 +146,6 @@ namespace SiliconStudio.Presentation.Quantum
             FinalizeInitialization();
 
             CheckDynamicMemberConsistency();
-        }
-
-        internal static CombinedNodeViewModel Create(GraphViewModel ownerViewModel, string name, Type contentType, IEnumerable<SingleNodeViewModel> combinedNodes, Index index)
-        {
-            var node = (CombinedNodeViewModel)Activator.CreateInstance(typeof(CombinedNodeViewModel<>).MakeGenericType(contentType), ownerViewModel, name, combinedNodes, index);
-            return node;
         }
 
         /// <inheritdoc/>
@@ -239,6 +239,25 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
             return true;
+        }
+
+        /// <inheritdoc/>
+        protected internal sealed override object InternalNodeValue
+        {
+            get
+            {
+                return HasMultipleValues ? Type.Default() : CombinedNodes.First().InternalNodeValue;
+            }
+            set
+            {
+                var displayName = Owner.FormatCombinedUpdateMessage(this, value);
+                using (Owner.BeginCombinedAction(displayName, Path))
+                {
+                    OnPropertyChanging(nameof(InternalNodeValue));
+                    CombinedNodes.ForEach(x => x.InternalNodeValue = value);
+                    OnPropertyChanged(nameof(InternalNodeValue));
+                }
+            }
         }
 
         private void GenerateChildren(IEnumerable<KeyValuePair<string, List<SingleNodeViewModel>>> commonChildren)
@@ -422,21 +441,6 @@ namespace SiliconStudio.Presentation.Quantum
             }
             return true;
         }
-    }
-
-    public class CombinedNodeViewModel<T> : CombinedNodeViewModel
-    {
-        private bool refreshQueued;
-
-        public CombinedNodeViewModel(GraphViewModel ownerViewModel, string name, IEnumerable<SingleNodeViewModel> combinedNodes, Index index)
-            : base(ownerViewModel, name, combinedNodes, index)
-        {
-            DependentProperties.Add(nameof(InternalNodeValue), new[] { nameof(NodeValue) });
-            foreach (var node in CombinedNodes)
-            {
-                node.ValueChanged += CombinedNodeValueChanged;
-            }
-        }
 
         private void CombinedNodeValueChanged(object sender, EventArgs e)
         {
@@ -465,28 +469,6 @@ namespace SiliconStudio.Presentation.Quantum
             finally
             {
                 refreshQueued = false;
-            }
-        }
-
-        /// <inheritdoc/>
-        public override Type Type => typeof(T);
-
-        /// <inheritdoc/>
-        protected internal sealed override object InternalNodeValue
-        {
-            get
-            {
-                return HasMultipleValues ? default(T) : (T)CombinedNodes.First().InternalNodeValue;
-            }
-            set
-            {
-                var displayName = Owner.FormatCombinedUpdateMessage(this, value);
-                using (Owner.BeginCombinedAction(displayName, Path))
-                {
-                    OnPropertyChanging(nameof(InternalNodeValue));
-                    CombinedNodes.ForEach(x => x.InternalNodeValue = value);
-                    OnPropertyChanged(nameof(InternalNodeValue));
-                }
             }
         }
     }

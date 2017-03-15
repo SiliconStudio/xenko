@@ -12,7 +12,7 @@ using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public abstract class GraphNodeViewModel : SingleNodeViewModel
+    public class GraphNodeViewModel : SingleNodeViewModel
     {
         public readonly IGraphNode SourceNode;
         private readonly bool isPrimitive;
@@ -33,9 +33,11 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="sourceNode">The model node bound to the new <see cref="GraphNodeViewModel"/>.</param>
         /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given <see cref="sourceNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
-        protected GraphNodeViewModel(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode sourceNode, GraphNodePath graphNodePath, Index index)
-            : base(ownerViewModel, baseName, index)
+        protected internal GraphNodeViewModel(GraphViewModel ownerViewModel, Type type, string baseName, bool isPrimitive, IGraphNode sourceNode, GraphNodePath graphNodePath, Index index)
+            : base(ownerViewModel, type, baseName, index)
         {
+            DependentProperties.Add(nameof(InternalNodeValue), new[] { nameof(NodeValue) });
+
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
             if (baseName == null && index == null)
                 throw new ArgumentException("baseName and index can't be both null.");
@@ -60,6 +62,49 @@ namespace SiliconStudio.Presentation.Quantum
                     IsReadOnly = !memberDescriptor.HasSet;
                 }
             }
+
+            var memberNode = SourceNode as IMemberNode;
+            if (memberNode != null)
+            {
+                memberNode.Changing += ContentChanging;
+                memberNode.Changed += ContentChanged;
+                var targetNode = GetTargetNode(memberNode, Index.Empty) as IObjectNode;
+                if (targetNode != null)
+                {
+                    targetNode.ItemChanging += ContentChanging;
+                    targetNode.ItemChanged += ContentChanged;
+                }
+            }
+            var objectNode = SourceNode as IObjectNode;
+            if (objectNode != null)
+            {
+                objectNode.ItemChanging += ContentChanging;
+                objectNode.ItemChanged += ContentChanged;
+            }
+        }
+
+        /// <inheritdoc/>
+        public override void Destroy()
+        {
+            var memberNode = SourceNode as IMemberNode;
+            if (memberNode != null)
+            {
+                memberNode.Changing -= ContentChanging;
+                memberNode.Changed -= ContentChanged;
+                var targetNode = GetTargetNode(memberNode, Index.Empty) as IObjectNode;
+                if (targetNode != null)
+                {
+                    targetNode.ItemChanging -= ContentChanging;
+                    targetNode.ItemChanged -= ContentChanged;
+                }
+            }
+            var objectNode = SourceNode as IObjectNode;
+            if (objectNode != null)
+            {
+                objectNode.ItemChanging -= ContentChanging;
+                objectNode.ItemChanged -= ContentChanged;
+            }
+            base.Destroy();
         }
 
         /// <summary>
@@ -71,23 +116,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// A function that coerces the given value before setting it as new value for this node.
         /// </summary>
         public Func<object, object> CoerceValueCallback { get; set; }
-
-        /// <summary>
-        /// Create an <see cref="GraphNodeViewModel{T}"/> that matches the given content type.
-        /// </summary>
-        /// <param name="ownerViewModel">The <see cref="GraphViewModel"/> that owns the new <see cref="GraphNodeViewModel"/>.</param>
-        /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
-        /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
-        /// <param name="sourceNode">The model node bound to the new <see cref="GraphNodeViewModel"/>.</param>
-        /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given node.</param>
-        /// <param name="contentType">The type of content contained by the new <see cref="GraphNodeViewModel"/>.</param>
-        /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
-        /// <returns>A new instance of <see cref="GraphNodeViewModel{T}"/> instanced with the given content type as generic argument.</returns>
-        internal static GraphNodeViewModel Create(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode sourceNode, GraphNodePath graphNodePath, Type contentType, Index index)
-        {
-            var node = (GraphNodeViewModel)Activator.CreateInstance(typeof(GraphNodeViewModel<>).MakeGenericType(contentType), ownerViewModel, baseName, isPrimitive, sourceNode, graphNodePath, index);
-            return node;
-        }
 
         /// <summary>
         /// Initializes this node. This method is called right after construction of the node, and after <see cref="NodeViewModel.AddChild"/> as been called on its parent if this node has a parent.
@@ -180,6 +208,9 @@ namespace SiliconStudio.Presentation.Quantum
 
         /// <inheritdoc/>
         public sealed override bool HasDictionary => DictionaryDescriptor.IsDictionary(Type);
+
+        /// <inheritdoc/>
+        protected internal sealed override object InternalNodeValue { get { return GetNodeValue(); } set { AssertInit(); SetNodeValue(SourceNode, value); } }
 
         // The previous way to compute HasList and HasDictionary was quite complex, but let's keep it here for history.
         // To distinguish between lists and items of a list (which have the same TargetNode if the items are primitive types), we check whether the TargetNode is
@@ -506,73 +537,6 @@ namespace SiliconStudio.Presentation.Quantum
             }
 
             return targetPath;
-        }
-    }
-
-    public class GraphNodeViewModel<T> : GraphNodeViewModel
-    {
-        /// <summary>
-        /// Construct a new <see cref="GraphNodeViewModel"/>.
-        /// </summary>
-        /// <param name="ownerViewModel">The <see cref="GraphViewModel"/> that owns the new <see cref="GraphNodeViewModel"/>.</param>
-        /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
-        /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
-        /// <param name="modelNode">The model node bound to the new <see cref="GraphNodeViewModel"/>.</param>
-        /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given <see cref="modelNode"/>.</param>
-        /// <param name="index">The index of this content in the model node, when this node represent an item of a collection.<see cref="Index.Empty"/> must be passed otherwise</param>
-        public GraphNodeViewModel(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Index index)
-            : base(ownerViewModel, baseName, isPrimitive, modelNode, graphNodePath, index)
-        {
-            // ReSharper disable once DoNotCallOverridableMethodsInConstructor
-            DependentProperties.Add(nameof(InternalNodeValue), new[] { nameof(NodeValue) });
-            var memberNode = SourceNode as IMemberNode;
-            if (memberNode != null)
-            {
-                memberNode.Changing += ContentChanging;
-                memberNode.Changed += ContentChanged;
-                var targetNode = GetTargetNode(memberNode, Index.Empty) as IObjectNode;
-                if (targetNode != null)
-                {
-                    targetNode.ItemChanging += ContentChanging;
-                    targetNode.ItemChanged += ContentChanged;
-                }
-            }
-            var objectNode = SourceNode as IObjectNode;
-            if (objectNode != null)
-            {
-                objectNode.ItemChanging += ContentChanging;
-                objectNode.ItemChanged += ContentChanged;
-            }
-        }
-
-        /// <inheritdoc/>
-        public override Type Type => typeof(T);
-
-        /// <inheritdoc/>
-        protected internal sealed override object InternalNodeValue { get { return GetNodeValue(); } set { AssertInit(); SetNodeValue(SourceNode, value); } }
-
-        /// <inheritdoc/>
-        public override void Destroy()
-        {
-            var memberNode = SourceNode as IMemberNode;
-            if (memberNode != null)
-            {
-                memberNode.Changing -= ContentChanging;
-                memberNode.Changed -= ContentChanged;
-                var targetNode = GetTargetNode(memberNode, Index.Empty) as IObjectNode;
-                if (targetNode != null)
-                {
-                    targetNode.ItemChanging -= ContentChanging;
-                    targetNode.ItemChanged -= ContentChanged;
-                }
-            }
-            var objectNode = SourceNode as IObjectNode;
-            if (objectNode != null)
-            {
-                objectNode.ItemChanging -= ContentChanging;
-                objectNode.ItemChanged -= ContentChanged;
-            }
-            base.Destroy();
         }
 
         private void ContentChanging(object sender, INodeChangeEventArgs e)

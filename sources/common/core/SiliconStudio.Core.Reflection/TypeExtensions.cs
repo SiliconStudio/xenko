@@ -44,6 +44,16 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
+        /// Gets the default value of this type.
+        /// </summary>
+        /// <param name="type">The type for which to get the default value.</param>
+        /// <returns>The default value of this type.</returns>
+        public static object Default(this Type type)
+        {
+            return type.IsValueType ? Activator.CreateInstance(type) : null;
+        }
+
+        /// <summary>
         /// Determines whether the specified type is an anonymous type.
         /// </summary>
         /// <param name="type">The type.</param>

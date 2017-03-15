@@ -6,7 +6,7 @@ using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public abstract class VirtualNodeViewModel : SingleNodeViewModel
+    public class VirtualNodeViewModel : SingleNodeViewModel
     {
         protected readonly Func<object> Getter;
         protected readonly Action<object> Setter;
@@ -19,8 +19,8 @@ namespace SiliconStudio.Presentation.Quantum
             typeof(VirtualNodeViewModel).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
         }
 
-        protected VirtualNodeViewModel(GraphViewModel owner, string name, bool isPrimitive, int? order, Index index, Func<object> getter, Action<object> setter)
-            : base(owner, name, index)
+        protected internal VirtualNodeViewModel(GraphViewModel owner, Type type, string name, bool isPrimitive, int? order, Index index, Func<object> getter, Action<object> setter)
+            : base(owner, type, name, index)
         {
             if (getter == null) throw new ArgumentNullException(nameof(getter));
             Getter = getter;
@@ -49,6 +49,9 @@ namespace SiliconStudio.Presentation.Quantum
         public override bool HasDictionary => typeof(IDictionary).IsAssignableFrom(Type);
 
         public override bool IsPrimitive { get; }
+
+        /// <inheritdoc/>
+        protected internal sealed override object InternalNodeValue { get { return Getter(); } set { SetNodeValue(value); } }
 
         /// <summary>
         /// Clears the list of children from this <see cref="VirtualNodeViewModel"/>.
@@ -93,35 +96,20 @@ namespace SiliconStudio.Presentation.Quantum
         protected virtual void SetNodeValue(object value)
         {
             updatingValue = true;
-            SetValue(() => Setter(value), nameof(VirtualNodeViewModel<object>.InternalNodeValue));
+            SetValue(() => Setter(value), nameof(InternalNodeValue));
             updatingValue = false;
         }
 
         private void ContentChanging(object sender, INodeChangeEventArgs e)
         {
             if (!updatingValue)
-                OnPropertyChanging(nameof(VirtualNodeViewModel<object>.InternalNodeValue));
+                OnPropertyChanging(nameof(InternalNodeValue));
         }
 
         private void ContentChanged(object sender, INodeChangeEventArgs e)
         {
             if (!updatingValue)
-                OnPropertyChanged(nameof(VirtualNodeViewModel<object>.InternalNodeValue));
+                OnPropertyChanged(nameof(InternalNodeValue));
         }
-    }
-
-    public class VirtualNodeViewModel<T> : VirtualNodeViewModel
-    {
-        public VirtualNodeViewModel(GraphViewModel owner, string name, bool isPrimitive, int? order, Index index, Func<object> getter, Action<object> setter)
-            : base(owner, name, isPrimitive, order, index, getter, setter)
-        {
-            DependentProperties.Add(nameof(InternalNodeValue), new[] { nameof(NodeValue) });
-        }
-
-        /// <inheritdoc/>
-        public override Type Type => typeof(T);
-
-        /// <inheritdoc/>
-        protected internal sealed override object InternalNodeValue { get { return Getter(); } set { SetNodeValue(value); } }
     }
 }
