@@ -254,11 +254,22 @@ namespace SiliconStudio.Xenko.Engine
             else
             {
                 WorldMatrix = LocalMatrix;
+
+                var scene = Entity?.Scene;
+                if (scene != null)
+                {
+                    Matrix.Multiply(ref WorldMatrix, ref scene.WorldMatrix, out WorldMatrix);
+                }
             }
 
             foreach (var transformOperation in PostOperations)
             {
                 transformOperation.Process(this);
+            }
+
+            if (WorldMatrix == Matrix.Zero)
+            {
+                
             }
         }
 
