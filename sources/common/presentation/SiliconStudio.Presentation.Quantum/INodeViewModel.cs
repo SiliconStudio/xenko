@@ -65,9 +65,9 @@ namespace SiliconStudio.Presentation.Quantum
         bool IsReadOnly { get; set; }
         
         /// <summary>
-        /// Gets or sets the value.
+        /// Gets or sets the value of the node.
         /// </summary>
-        object Value { get; set; }
+        object NodeValue { get; set; }
 
         /// <summary>
         /// Gets or sets the index of this node, relative to its parent node when its contains a collection.

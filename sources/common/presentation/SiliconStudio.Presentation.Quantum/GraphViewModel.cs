@@ -241,12 +241,14 @@ namespace SiliconStudio.Presentation.Quantum
 
         private static GraphNodeViewModel DefaultCreateNode(GraphViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index)
         {
-            return GraphNodeViewModel.Create(viewModel, baseName, isPrimitive, modelNode, graphNodePath, contentType, index);
+            var node = new GraphNodeViewModel(viewModel, contentType, baseName, isPrimitive, modelNode, graphNodePath, index);
+            return node;
         }
 
         private static CombinedNodeViewModel DefaultCreateCombinedNode(GraphViewModel ownerViewModel, string baseName, Type contentType, IEnumerable<SingleNodeViewModel> combinedNodes, Index index)
         {
-            return CombinedNodeViewModel.Create(ownerViewModel, baseName, contentType, combinedNodes, index);
+            var node = new CombinedNodeViewModel(ownerViewModel, contentType, baseName, combinedNodes, index);
+            return node;
         }
     }
 }
