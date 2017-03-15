@@ -6,11 +6,14 @@ using System.Collections.Specialized;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Engine
 {
+    public class ChildSceneComponent { }
+
     /// <summary>
     /// A scene.
     /// </summary>
@@ -42,7 +45,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// The parent scene.
         /// </summary>
-        //[DataMemberIgnore]
+        [DataMemberIgnore]
         public Scene Parent
         {
             get { return parent; }
@@ -60,7 +63,6 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// The entities.
         /// </summary>
-        //[DataMemberIgnore]
         public TrackingCollection<Entity> Entities { get; }
 
         /// <summary>
@@ -68,6 +70,44 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         [DataMemberIgnore]
         public TrackingCollection<Scene> Children { get; }
+
+        /// <summary>
+        /// The relative position of all entities of the scene to it's parent scene.
+        /// </summary>
+        public Vector3 Offset;
+
+        /// <summary>
+        /// The relative transfrom of all entities of the scene to the root scene.
+        /// </summary>
+        /// <remarks>This field is overwritten by the transform processor each frame.</remarks>
+        public Matrix WorldMatrix;
+
+        /// <summary>
+        /// Updates the world transform of the scene.
+        /// </summary>
+        public void UpdateWorldMatrix()
+        {
+            UpdateWorldMatrixInternal(true);
+        }
+
+        internal void UpdateWorldMatrixInternal(bool isRecursive)
+        {
+            if (parent != null)
+            {
+                if (isRecursive)
+                {
+                    parent.UpdateWorldMatrixInternal(true);
+                }
+
+                WorldMatrix = parent.WorldMatrix;
+            }
+            else
+            {
+                WorldMatrix = Matrix.Identity;
+            }
+
+            WorldMatrix.TranslationVector += Offset;
+        }
 
         public override string ToString()
         {
