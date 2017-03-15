@@ -41,6 +41,7 @@
     <Compile Include="..\SiliconStudio.Core.Serialization\IO\NativeLockFile.cs">
       <Link>Windows\NativeLockFile.cs</Link>
     </Compile>
+    <Compile Include="AbsoluteId.cs" />
     <Compile Include="Annotations\BaseTypeRequiredAttribute.cs" />
     <Compile Include="Annotations\CollectionAccessAttribute.cs" />
     <Compile Include="Annotations\MustUseReturnValueAttribute.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="Extensions\TypeDescriptorExtensions.cs" />
+    <Compile Include="IAsyncDisposable.cs" />
     <Compile Include="IDestroyable.cs" />
     <Compile Include="IO\UDirectory.cs" />
     <Compile Include="IO\UDirectorySerializer.cs" />
@@ -60,6 +62,8 @@
     <Compile Include="IO\UPath.cs" />
     <Compile Include="IO\UPathType.cs" />
     <Compile Include="IO\UPathTypeConverter.cs" />
+    <Compile Include="ISyncLockable.cs" />
+    <Compile Include="MicroThreadLock.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="NamingHelper.cs" />
@@ -161,6 +165,11 @@
     <ProjectReference Include="..\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
+      <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
+      <Name>SiliconStudio.Core.MicroThreading</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">

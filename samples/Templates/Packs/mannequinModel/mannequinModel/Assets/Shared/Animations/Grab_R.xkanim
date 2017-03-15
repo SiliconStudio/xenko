@@ -8,7 +8,7 @@ ClipDuration:
     StartAnimationTime: 0:00:00:00.0000000
     EndAnimationTime: 0:00:30:00.0000000
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
-RepeatMode: LoopInfinite
+RepeatMode: PlayOnceHold
 Type: !StandardAnimationAssetType {}
 Skeleton: 81c9644d-cf07-4cfe-a3dd-5836202ba647:Models/HandModelRight Skeleton
 RootMotion: false

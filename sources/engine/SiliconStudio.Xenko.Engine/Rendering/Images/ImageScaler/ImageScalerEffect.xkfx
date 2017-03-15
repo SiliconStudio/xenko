@@ -9,4 +9,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {
         mixin ImageScalerShader;
     };
+
+    effect ImageSuperSamplerScalerEffect
+    {
+        mixin ImageScalerShader;
+        mixin SpriteSuperSampler;
+    };
 }

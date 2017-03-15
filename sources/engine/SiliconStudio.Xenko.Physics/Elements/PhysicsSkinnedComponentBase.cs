@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Physics
 
         protected void SetupBoneLink()
         {
-            if (NodeName.IsNullOrEmpty() || Data.ModelComponent?.Skeleton == null) return;
+            if (string.IsNullOrEmpty(NodeName) || Data.ModelComponent?.Skeleton == null) return;
 
             if (!Data.BoneMatricesUpdated)
             {

@@ -85,6 +85,7 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Physics/DebugShapesRender.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Prefabs/PrefabInstance.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Utility/GameProfiler.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Utility/SceneStreaming.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/RuntimeRasterizedSpriteFont.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SignedDistanceFieldSpriteFont.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SpriteSheetSprites.xktpl
@@ -121,5 +122,6 @@ TemplateFolders:
         - samples\Templates\FirstPersonShooter\FirstPersonShooter\FirstPersonShooter.xktpl
         - samples\Templates\ThirdPersonPlatformer\ThirdPersonPlatformer\ThirdPersonPlatformer.xktpl
         - samples\Templates\TopDownRPG\TopDownRPG\TopDownRPG.xktpl
+        - samples\Templates\VRSandbox\VRSandbox\VRSandbox.xktpl
 RootAssets:
     - c90f3988-0544-4cbe-993f-13af7d9c23c6:XenkoDefaultFont
