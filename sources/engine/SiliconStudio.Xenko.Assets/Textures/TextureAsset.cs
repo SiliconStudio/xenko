@@ -154,11 +154,17 @@ namespace SiliconStudio.Xenko.Assets.Textures
                 {
                     dynamic textureType = asset.Type = new DynamicYamlMapping(new YamlMappingNode());
                     textureType.Node.Tag = "!ColorTextureType";
-                    textureType.UseSRgbSampling = (asset.ColorSpace != "Gamma"); // This is correct. It converts some legacy code with ambiguous meaning.
-                    textureType.ColorKeyEnabled = asset.ColorKeyEnabled;
-                    textureType.ColorKeyColor = asset.ColorKeyColor;
-                    textureType.Alpha = asset.Alpha;
-                    textureType.PremultiplyAlpha = asset.PremultiplyAlpha;
+
+                    if (asset.ContainsChild("ColorSpace"))
+                        textureType.UseSRgbSampling = (asset.ColorSpace != "Gamma"); // This is correct. It converts some legacy code with ambiguous meaning.
+                    if (asset.ContainsChild("ColorKeyEnabled"))
+                        textureType.ColorKeyEnabled = asset.ColorKeyEnabled;
+                    if (asset.ContainsChild("ColorKeyColor"))
+                        textureType.ColorKeyColor = asset.ColorKeyColor;
+                    if (asset.ContainsChild("Alpha"))
+                        textureType.Alpha = asset.Alpha;
+                    if (asset.ContainsChild("PremultiplyAlpha"))
+                        textureType.PremultiplyAlpha = asset.PremultiplyAlpha;
                 }
 
                 asset.RemoveChild("ColorSpace");
