@@ -70,6 +70,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         [DataMember(10)]
         [Display(Browsable = false)]
+        [NonIdentifiableCollectionItems]
         [NotNull]
         public List<AssetId> ChildrenIds { get; } = new List<AssetId>();
 
