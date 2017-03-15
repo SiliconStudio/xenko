@@ -76,7 +76,7 @@ namespace Player
             arcInitializer.ArcHeight = distance * 0.25f;
 
             // Turn the arc on and off
-            var isOn = (vrController.IsPressed(TouchControllerButton.A));
+            var isOn = (vrController.IsPressed(TouchControllerButton.A) || (vrController.IsPressed(TouchControllerButton.Thumbstick)));
             Arc.Enabled = isOn;
             Target.Get<ModelComponent>().Enabled = isOn;
 
