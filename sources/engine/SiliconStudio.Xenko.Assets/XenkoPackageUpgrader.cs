@@ -28,7 +28,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.11.0-beta")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.11.1.0")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public static readonly string DefaultGraphicsCompositorLevel9Url = "Compositing/DefaultGraphicsCompositorLevel9";
@@ -374,6 +374,11 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
+            if (dependency.Version.MinVersion < new PackageVersion("1.11.1.0"))
+            {
+                ConvertNormalMapsInvertY(assetFiles);
+            }
+
             return true;
         }
 
@@ -643,6 +648,68 @@ namespace SiliconStudio.Xenko.Assets
                     asset.RemoveChild("Type");
 
                     asset.AddChild("Type", newType);
+                }
+            }
+        }
+
+        private void ConvertNormalMapsInvertY(IList<PackageLoadingAssetFile> assetFiles)
+        {
+            var materialAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkmat").ToList();
+            var textureAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xktex").ToList();
+
+            foreach (var materialFile in materialAssets)
+            {
+                if (!IsYamlAsset(materialFile))
+                    continue;
+
+                // This upgrader will also mark every yaml asset as dirty. We want to re-save everything with the new serialization system
+                using (var yamlAsset = materialFile.AsYamlAsset())
+                {
+                    dynamic asset = yamlAsset.DynamicRootNode;
+
+                    var assetTag = asset.Node.Tag;
+                    if (assetTag != "!MaterialAsset")
+                        continue;
+
+                    if (asset.Attributes.Surface == null)
+                        continue;
+
+                    var surface = asset.Attributes.Surface;
+                    var materialTag = surface.Node.Tag;
+                    if (materialTag != "!MaterialNormalMapFeature")
+                        continue;
+
+                    var invertY = (asset.Attributes.Surface.InvertY == null || asset.Attributes.Surface.InvertY == "true");
+                    if (invertY)
+                        continue; // This is the default value for normal map textures, so no need to change it
+
+                    // TODO Find all referenced files
+                    if (asset.Attributes.Surface.NormalMap == null || asset.Attributes.Surface.NormalMap.Node.Tag != "!ComputeTextureColor")
+                        continue;
+
+                    dynamic texture = asset.Attributes.Surface.NormalMap.Texture;
+                    var textureId = (string)texture.Node.Value;
+
+                    foreach (var textureFile in textureAssets)
+                    {
+                        if (!IsYamlAsset(textureFile))
+                            continue;
+
+                        using (var yamlAssetTex = textureFile.AsYamlAsset())
+                        {
+                            dynamic assetTex = yamlAssetTex.DynamicRootNode;
+
+                            var assetTagTex = assetTex.Node.Tag;
+                            if (assetTagTex != "!Texture")
+                                continue;
+
+                            var assetIdTex = (string)assetTex.Id;
+                            if (!textureId.Contains(assetIdTex))
+                                continue;
+
+                            assetTex["InvertY"] = false;
+                        }
+                    }
                 }
             }
         }

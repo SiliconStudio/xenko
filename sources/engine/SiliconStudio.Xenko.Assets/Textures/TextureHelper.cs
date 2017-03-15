@@ -40,6 +40,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
             public TextureHint TextureHint;
 
+            public bool InvertY;
+
             public bool GenerateMipmaps;
 
             public bool PremultiplyAlpha;
@@ -62,18 +64,18 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
                 // Compute SRgb usage
                 // If Texture is in auto mode, use the global settings, else use the settings overridden by the texture asset. 
-                IsSRgb = textureParameters.Texture.ColorSpace.ToColorSpace(textureParameters.ColorSpace, asset.Hint) == ColorSpace.Linear;
-
+                IsSRgb = textureParameters.Texture.Type.IsSRgb(textureParameters.ColorSpace);
                 DesiredSize = new Size2((int)asset.Width, (int)asset.Height);
                 IsSizeInPercentage = asset.IsSizeInPercentage;
                 DesiredFormat = asset.Format;
-                DesiredAlpha = asset.Alpha;
-                TextureHint = asset.Hint;
+                DesiredAlpha = asset.Type.Alpha;
+                TextureHint = asset.Type.Hint;
+                InvertY = (asset.Type.Hint == TextureHint.NormalMap) ? ((NormapMapTextureType)asset.Type).InvertY : false;
                 GenerateMipmaps = asset.GenerateMipmaps;
-                if (asset.Alpha != AlphaFormat.None)
-                    PremultiplyAlpha = asset.PremultiplyAlpha;
-                ColorKeyColor  = asset.ColorKeyColor;
-                ColorKeyEnabled = asset.ColorKeyEnabled;
+                if (asset.Type.Alpha != AlphaFormat.None)
+                    PremultiplyAlpha = asset.Type.PremultiplyAlpha;
+                ColorKeyColor  = asset.Type.ColorKeyColor;
+                ColorKeyEnabled = asset.Type.ColorKeyEnabled;
                 TextureQuality = textureParameters.TextureQuality;
                 GraphicsPlatform = textureParameters.GraphicsPlatform;
                 GraphicsProfile = textureParameters.GraphicsProfile;
@@ -86,7 +88,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
                 // Compute SRgb usage
                 // If Texture is in auto mode, use the global settings, else use the settings overridden by the texture asset. 
-                IsSRgb = asset.ColorSpace.ToColorSpace(spriteSheetParameters.ColorSpace, TextureHint.Color) == ColorSpace.Linear;
+                IsSRgb = asset.IsSRGBTexture(spriteSheetParameters.ColorSpace);
 
                 DesiredSize = new Size2(100, 100);
                 IsSizeInPercentage = true;
@@ -420,6 +422,11 @@ namespace SiliconStudio.Xenko.Assets.Textures
             if (parameters.TextureHint == TextureHint.Color && parameters.IsSRgb && (texImage.Format == PixelFormat.R8_UNorm || texImage.Format == PixelFormat.A8_UNorm))
             {
                 textureTool.Convert(texImage, PixelFormat.R8G8B8A8_UNorm_SRgb);
+            }
+
+            if (parameters.TextureHint == TextureHint.NormalMap && parameters.InvertY)
+            {
+                textureTool.InvertY(texImage);
             }
 
             if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
