@@ -188,6 +188,8 @@ namespace SiliconStudio.Xenko.Graphics
                     // Copy memory
                     if (description.Format == PixelFormat.R8G8B8A8_UNorm || description.Format == PixelFormat.R8G8B8A8_UNorm_SRgb)
                         CopyMemoryBGRA(bitmapData.Scan0, pixelBuffers[0].DataPointer, pixelBuffers[0].BufferStride);
+                    else if (description.Format == PixelFormat.R16G16B16A16_UNorm || description.Format == PixelFormat.R16G16B16A16_Float)
+                        CopyMemoryRGBA16(bitmapData.Scan0, pixelBuffers[0].DataPointer, bitmapData.Stride);
                     else if (description.Format == PixelFormat.B8G8R8A8_UNorm || description.Format == PixelFormat.B8G8R8A8_UNorm_SRgb)
                         Utilities.CopyMemory(bitmapData.Scan0, pixelBuffers[0].DataPointer, pixelBuffers[0].BufferStride);
                     else

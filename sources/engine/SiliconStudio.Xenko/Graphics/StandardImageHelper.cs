@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -23,6 +24,23 @@ namespace SiliconStudio.Xenko.Graphics
                 // BGRA => RGBA
                 value = (value & 0xFF000000) | ((value & 0xFF0000) >> 16) | (value & 0x00FF00) | ((value & 0x0000FF) << 16);
                 *destPtr++ = value;
+            }
+        }
+
+        static unsafe void CopyMemoryRGBA16(IntPtr dest, IntPtr src, int sizeInBytesToCopy)
+        {
+            if (sizeInBytesToCopy % 4 != 0)
+                throw new ArgumentException("Should be a multiple of 4.", nameof(sizeInBytesToCopy));
+
+            var bufferSize = sizeInBytesToCopy / 4;
+            var srcPtr = (Half4*)src;
+            var destPtr = (int*)dest;
+            for (int i = 0; i < bufferSize; i++)
+            {
+                var value = *srcPtr++;
+                var rgba16 = (Vector4)value;
+                var rgba8 = new Color(rgba16);
+                *destPtr++ = rgba8.ToArgb();
             }
         }
 
