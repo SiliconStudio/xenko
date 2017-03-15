@@ -31,6 +31,7 @@ namespace SiliconStudio.Presentation.Quantum
         private bool isReadOnly;
         private string displayName;
         private int visibleChildrenCount;
+        private object value;
         private List<INodeViewModel> initializingChildren = new List<INodeViewModel>();
 
         static NodeViewModel()

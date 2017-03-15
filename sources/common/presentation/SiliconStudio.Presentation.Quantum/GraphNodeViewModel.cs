@@ -524,7 +524,7 @@ namespace SiliconStudio.Presentation.Quantum
             : base(ownerViewModel, baseName, isPrimitive, modelNode, graphNodePath, index)
         {
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
-            DependentProperties.Add(nameof(TypedValue), new[] { nameof(Value), nameof(NodeValue) });
+            DependentProperties.Add(nameof(Value), new[] { nameof(NodeValue) });
             var memberNode = SourceNode as IMemberNode;
             if (memberNode != null)
             {
@@ -545,16 +545,11 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        /// <summary>
-        /// Gets or sets the value of this node through a correctly typed property, which is more adapted to binding.
-        /// </summary>
-        public virtual T TypedValue { get { return (T)GetNodeValue(); } set { AssertInit(); SetNodeValue(SourceNode, value); } }
-
         /// <inheritdoc/>
         public override Type Type => typeof(T);
 
         /// <inheritdoc/>
-        public sealed override object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
+        public sealed override object Value { get { return GetNodeValue(); } set { AssertInit(); SetNodeValue(SourceNode, value); } }
 
         /// <inheritdoc/>
         public override void Destroy()
@@ -585,7 +580,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (IsValidChange(e))
             {
                 ((NodeViewModel)Parent)?.NotifyPropertyChanging(Name);
-                OnPropertyChanging(nameof(TypedValue));
+                OnPropertyChanging(nameof(Value));
             }
         }
 
@@ -602,7 +597,7 @@ namespace SiliconStudio.Presentation.Quantum
                     Refresh();
                 }
 
-                OnPropertyChanged(nameof(TypedValue));
+                OnPropertyChanged(nameof(Value));
                 OnValueChanged();
                 Owner.NotifyNodeChanged(Path);
             }

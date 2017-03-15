@@ -90,23 +90,23 @@ namespace SiliconStudio.Presentation.Quantum
             // TODO: what do we want to do for virtual nodes? They are constructed completely externally...
         }
 
-        protected virtual void SetTypedValue(object value)
+        protected virtual void SetNodeValue(object value)
         {
             updatingValue = true;
-            SetValue(() => Setter(value), nameof(VirtualNodeViewModel<object>.TypedValue));
+            SetValue(() => Setter(value), nameof(VirtualNodeViewModel<object>.Value));
             updatingValue = false;
         }
 
         private void ContentChanging(object sender, INodeChangeEventArgs e)
         {
             if (!updatingValue)
-                OnPropertyChanging(nameof(VirtualNodeViewModel<object>.TypedValue));
+                OnPropertyChanging(nameof(VirtualNodeViewModel<object>.Value));
         }
 
         private void ContentChanged(object sender, INodeChangeEventArgs e)
         {
             if (!updatingValue)
-                OnPropertyChanged(nameof(VirtualNodeViewModel<object>.TypedValue));
+                OnPropertyChanged(nameof(VirtualNodeViewModel<object>.Value));
         }
     }
 
@@ -115,18 +115,13 @@ namespace SiliconStudio.Presentation.Quantum
         public VirtualNodeViewModel(GraphViewModel owner, string name, bool isPrimitive, int? order, Index index, Func<object> getter, Action<object> setter)
             : base(owner, name, isPrimitive, order, index, getter, setter)
         {
-            DependentProperties.Add(nameof(TypedValue), new[] { nameof(Value) });
+            DependentProperties.Add(nameof(Value), new[] { nameof(NodeValue) });
         }
-
-        /// <summary>
-        /// Gets or sets the value of this node through a correctly typed property, which is more adapted to binding.
-        /// </summary>
-        public T TypedValue { get { return (T)Getter(); } set { SetTypedValue(value); } }
 
         /// <inheritdoc/>
         public override Type Type => typeof(T);
 
         /// <inheritdoc/>
-        public sealed override object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
+        public sealed override object Value { get { return Getter(); } set { SetNodeValue(value); } }
     }
 }

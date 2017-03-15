@@ -431,7 +431,7 @@ namespace SiliconStudio.Presentation.Quantum
         public CombinedNodeViewModel(GraphViewModel ownerViewModel, string name, IEnumerable<SingleNodeViewModel> combinedNodes, Index index)
             : base(ownerViewModel, name, combinedNodes, index)
         {
-            DependentProperties.Add(nameof(TypedValue), new[] { nameof(Value) });
+            DependentProperties.Add(nameof(Value), new[] { nameof(NodeValue) });
             foreach (var node in CombinedNodes)
             {
                 node.ValueChanged += CombinedNodeValueChanged;
@@ -468,10 +468,11 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        /// <summary>
-        /// Gets or sets the value of this node through a correctly typed property, which is more adapted to binding.
-        /// </summary>
-        public T TypedValue
+        /// <inheritdoc/>
+        public override Type Type => typeof(T);
+
+        /// <inheritdoc/>
+        public sealed override object Value
         {
             get
             {
@@ -482,17 +483,11 @@ namespace SiliconStudio.Presentation.Quantum
                 var displayName = Owner.FormatCombinedUpdateMessage(this, value);
                 using (Owner.BeginCombinedAction(displayName, Path))
                 {
-                    OnPropertyChanging(nameof(TypedValue));
+                    OnPropertyChanging(nameof(Value));
                     CombinedNodes.ForEach(x => x.Value = value);
-                    OnPropertyChanged(nameof(TypedValue));
+                    OnPropertyChanged(nameof(Value));
                 }
             }
         }
-
-        /// <inheritdoc/>
-        public override Type Type => typeof(T);
-
-        /// <inheritdoc/>
-        public sealed override object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
     }
 }
