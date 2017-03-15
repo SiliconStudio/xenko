@@ -6,7 +6,6 @@ using System.Collections.Specialized;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
@@ -43,7 +42,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// The parent scene.
         /// </summary>
-        [DataMemberIgnore]
+        //[DataMemberIgnore]
         public Scene Parent
         {
             get { return parent; }
@@ -61,6 +60,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// The entities.
         /// </summary>
+        //[DataMemberIgnore]
         public TrackingCollection<Entity> Entities { get; }
 
         /// <summary>
