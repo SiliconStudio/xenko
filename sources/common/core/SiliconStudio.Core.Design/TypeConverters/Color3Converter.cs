@@ -18,12 +18,11 @@ namespace SiliconStudio.Core.TypeConverters
         public Color3Converter()
         {
             var type = typeof(Color3);
-            Properties = new PropertyDescriptorCollection(new [] 
+            Properties = new PropertyDescriptorCollection(new PropertyDescriptor[] 
             { 
-                new FieldPropertyDescriptor(type.GetField("R")), 
-                new FieldPropertyDescriptor(type.GetField("G")),
-                new FieldPropertyDescriptor(type.GetField("B")),
-                new FieldPropertyDescriptor(type.GetField("A"))
+                new FieldPropertyDescriptor(type.GetField(nameof(Color3.R))), 
+                new FieldPropertyDescriptor(type.GetField(nameof(Color3.G))),
+                new FieldPropertyDescriptor(type.GetField(nameof(Color3.B)))
             });
         }
 

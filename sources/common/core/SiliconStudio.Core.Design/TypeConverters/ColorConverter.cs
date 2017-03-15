@@ -67,12 +67,12 @@ namespace SiliconStudio.Core.TypeConverters
 		public ColorConverter()
 		{
 			var type = typeof(Color);
-			Properties = new PropertyDescriptorCollection(new[] 
-            { 
-                new FieldPropertyDescriptor(type.GetField("R")), 
-                new FieldPropertyDescriptor(type.GetField("G")),
-                new FieldPropertyDescriptor(type.GetField("B")),
-                new FieldPropertyDescriptor(type.GetField("A"))
+			Properties = new PropertyDescriptorCollection(new PropertyDescriptor[] 
+            {
+                new FieldPropertyDescriptor(type.GetField(nameof(Color.R))),
+                new FieldPropertyDescriptor(type.GetField(nameof(Color.G))),
+                new FieldPropertyDescriptor(type.GetField(nameof(Color.B))),
+                new FieldPropertyDescriptor(type.GetField(nameof(Color.A)))
             });
 		}
 
