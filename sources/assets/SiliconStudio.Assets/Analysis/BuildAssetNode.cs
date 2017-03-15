@@ -1,8 +1,10 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Assets.Compiler;
+using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Analysis
@@ -14,9 +16,22 @@ namespace SiliconStudio.Assets.Analysis
 
         public readonly AssetItem AssetItem;
 
-        public long Version { get; set; } = -1;
+        private long version;
 
-        public Task BuildTask { get; set; }
+        /// <summary>
+        /// Gets the asset version incremental counter, increased everytime the asset is edited.
+        /// </summary>
+        public long Version
+        {
+            get
+            {
+                return Interlocked.Read(ref version);
+            }
+            set
+            {
+                Interlocked.Exchange(ref version, value);
+            }
+        }
 
         public ICollection<BuildAssetNode> DependencyNodes => dependencyLinks.Values;
 
