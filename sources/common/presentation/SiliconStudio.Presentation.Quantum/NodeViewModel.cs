@@ -111,7 +111,7 @@ namespace SiliconStudio.Presentation.Quantum
         public abstract object Value { get; set; }
 
         /// <inheritdoc/>
-        public object NodeValue { get { return Value; } set { Value = Type.IsInstanceOfType(value) ? value : TypeDescriptor.GetConverter(Type).ConvertFrom(value); } }
+        public object NodeValue { get { return Value; } set { Value = ConvertValue(value); } }
 
         /// <summary>
         /// Gets or sets the index of this node, relative to its parent node when its contains a collection. Can be null of this node is not in a collection.
@@ -606,6 +606,23 @@ namespace SiliconStudio.Presentation.Quantum
 
             // Otherwise, the first child would be the one who have an order value.
             return a.Order == null ? 1 : -1;
+        }
+
+        private object ConvertValue(object value)
+        {
+            if (Type.IsInstanceOfType(value))
+                return value;
+
+            if (value is IConvertible)
+            {
+                var typeCode = Type.GetTypeCode(Type);
+                if (typeCode != TypeCode.Empty && typeCode != TypeCode.Object)
+                {
+                    return Convert.ChangeType(value, Type);
+                }
+            }
+
+            return TypeDescriptor.GetConverter(Type).ConvertFrom(value);
         }
     }
 }
