@@ -115,6 +115,22 @@ namespace SiliconStudio.Core
             }
         }
 
+        /// <summary>
+        /// Gets the display name of the given type. The display name is the name of the type, or, if the <see cref="DisplayAttribute"/> is
+        /// applied on the type, value of the <see cref="DisplayAttribute.Name"/> property.
+        /// </summary>
+        /// <param name="type">The type for which to get the display name.</param>
+        /// <returns>A string representing the display name of the type.</returns>
+        [Obsolete("Display attribute should be retrieved via an AttributeRegistry.")]
+        public static string GetDisplayName(Type type)
+        {
+            if (type == null)
+                return null;
+
+            return GetDisplay(type)?.Name ?? type.Name;
+        }
+
+
         [Obsolete("Display attribute should be retrieved via an AttributeRegistry.")]
         public static int? GetOrder([NotNull] MemberInfo memberInfo)
         {
