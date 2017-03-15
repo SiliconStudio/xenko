@@ -123,8 +123,11 @@ namespace SiliconStudio.Core
         /// <returns>A string representing the display name of the type.</returns>
         [NotNull]
         [Obsolete("Display attribute should be retrieved via an AttributeRegistry.")]
-        public static string GetDisplayName([NotNull] Type type)
+        public static string GetDisplayName(Type type)
         {
+            if (type == null)
+                return string.Empty;
+
             if (type == null) throw new ArgumentNullException(nameof(type));
             return GetDisplay(type)?.Name ?? type.Name;
         }
