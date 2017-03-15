@@ -72,12 +72,12 @@ namespace SiliconStudio.Xenko.Engine
         public TrackingCollection<Scene> Children { get; }
 
         /// <summary>
-        /// The relative position of all entities of the scene to it's parent scene.
+        /// An offset applied to all entities of the scene relative to it's parent scene.
         /// </summary>
         public Vector3 Offset;
 
         /// <summary>
-        /// The relative transfrom of all entities of the scene to the root scene.
+        /// The absolute transform applied to all entities of the scene.
         /// </summary>
         /// <remarks>This field is overwritten by the transform processor each frame.</remarks>
         public Matrix WorldMatrix;
