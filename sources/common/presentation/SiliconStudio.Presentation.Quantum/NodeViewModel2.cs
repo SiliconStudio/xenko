@@ -68,9 +68,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         protected NodeViewModel2 CreateNodeViewModel(GraphViewModel owner, NodeViewModel2 parent, INodePresenter nodePresenter, bool isRootNode = false)
         {
-            var viewModelType = typeof(NodeViewModel2<>).MakeGenericType(nodePresenter.Type);
-            // TODO: assert the constructor!
-            var viewModel = (NodeViewModel2)Activator.CreateInstance(viewModelType, owner, parent, nodePresenter.Name, nodePresenter);
+            var viewModel = new NodeViewModel2(owner, parent, nodePresenter.Name, nodePresenter);
             if (isRootNode)
             {
                 owner.RootNode = viewModel;
@@ -102,13 +100,13 @@ namespace SiliconStudio.Presentation.Quantum
         }
     }
 
-    public abstract class NodeViewModel2 : SingleNodeViewModel, IGraphNodeViewModel
+    public class NodeViewModel2 : SingleNodeViewModel, IGraphNodeViewModel
     {
         protected readonly INodePresenter NodePresenter;
         private int? customOrder;
 
-        protected NodeViewModel2(GraphViewModel ownerViewModel, NodeViewModel2 parent, string baseName, INodePresenter nodePresenter)
-            : base(ownerViewModel, baseName, nodePresenter.Index)
+        protected internal NodeViewModel2(GraphViewModel ownerViewModel, NodeViewModel2 parent, string baseName, INodePresenter nodePresenter)
+            : base(ownerViewModel, nodePresenter.Type, baseName, nodePresenter.Index)
         {
             NodePresenter = nodePresenter;
             var member = nodePresenter as MemberNodePresenter;
@@ -118,8 +116,6 @@ namespace SiliconStudio.Presentation.Quantum
 
             parent?.AddChild(this);
         }
-
-        public override Type Type => NodePresenter.Type;
 
         /// <summary>
         /// Gets or sets a custom value for the <see cref="Order"/> of this node.
@@ -134,6 +130,8 @@ namespace SiliconStudio.Presentation.Quantum
 
         /// <inheritdoc/>
         public sealed override bool HasDictionary => DictionaryDescriptor.IsDictionary(Type);
+
+        protected internal override object InternalNodeValue { get { return NodePresenter.Value; } set { SetNodeValue(value); } }
 
         [Obsolete]
         public override bool IsPrimitive => NodePresenter.IsPrimitive;
@@ -161,23 +159,5 @@ namespace SiliconStudio.Presentation.Quantum
             var member = NodePresenter as MemberNodePresenter;
             return member?.MemberDescriptor;
         }
-    }
-
-    public class NodeViewModel2<T> : NodeViewModel2
-    {
-        public NodeViewModel2(GraphViewModel ownerViewModel, NodeViewModel2 parent, string baseName, INodePresenter nodePresenter)
-            : base(ownerViewModel, parent, baseName, nodePresenter)
-        {
-            foreach (var command in nodePresenter.Commands)
-            {
-                var commandWrapper = new NodePresenterCommandWrapper(ServiceProvider, (NodePresenterBase)nodePresenter, command);
-                AddCommand(commandWrapper);
-            }
-        }
-
-        public virtual T TypedValue { get { return (T)NodePresenter.Value; } set { SetNodeValue(value); } }
-
-        /// <inheritdoc/>
-        public sealed override object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
     }
 }
