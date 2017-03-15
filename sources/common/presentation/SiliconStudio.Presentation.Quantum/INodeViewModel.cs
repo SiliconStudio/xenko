@@ -70,6 +70,11 @@ namespace SiliconStudio.Presentation.Quantum
         object Value { get; set; }
 
         /// <summary>
+        /// Gets or sets the value of the node.
+        /// </summary>
+        object NodeValue { get; set; }
+
+        /// <summary>
         /// Gets or sets the index of this node, relative to its parent node when its contains a collection.
         /// Can be <see cref="SiliconStudio.Quantum.Index.Empty"/> if this node is not in a collection.
         /// </summary>

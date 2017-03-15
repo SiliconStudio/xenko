@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
@@ -108,6 +109,9 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets or sets the value.
         /// </summary>
         public abstract object Value { get; set; }
+
+        /// <inheritdoc/>
+        public object NodeValue { get { return Value; } set { Value = Type.IsInstanceOfType(value) ? value : TypeDescriptor.GetConverter(Type).ConvertFrom(value); } }
 
         /// <summary>
         /// Gets or sets the index of this node, relative to its parent node when its contains a collection. Can be null of this node is not in a collection.
