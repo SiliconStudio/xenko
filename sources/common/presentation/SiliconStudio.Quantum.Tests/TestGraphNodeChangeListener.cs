@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Tests
 {
@@ -136,10 +135,10 @@ namespace SiliconStudio.Quantum.Tests
             var listener = new GraphNodeChangeListener(rootNode);
             var targetNode = rootNode[nameof(ComplexClass.Member4)].Target;
             var node = targetNode[nameof(Struct.Member1)];
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member4)].Target[nameof(Struct.Member1)], ContentChangeType.ValueChange, Index.Empty, obj[0], obj[1], x => x.Update(obj[1], Index.Empty));
+            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member4)].Target[nameof(Struct.Member1)], ContentChangeType.ValueChange, Index.Empty, obj[0], obj[1], x => x.Update(obj[1]));
             Assert.AreEqual(targetNode, rootNode[nameof(ComplexClass.Member4)].Target);
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member4)].Target[nameof(Struct.Member1)]);
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member4)].Target[nameof(Struct.Member1)], ContentChangeType.ValueChange, Index.Empty, obj[1], obj[2], x => x.Update(obj[2], Index.Empty));
+            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member4)].Target[nameof(Struct.Member1)], ContentChangeType.ValueChange, Index.Empty, obj[1], obj[2], x => x.Update(obj[2]));
             Assert.AreEqual(targetNode, rootNode[nameof(ComplexClass.Member4)].Target);
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member4)].Target[nameof(Struct.Member1)]);
         }
@@ -160,7 +159,7 @@ namespace SiliconStudio.Quantum.Tests
             TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member5)], ContentChangeType.ValueChange, Index.Empty, obj[1], obj[2], x => x.Update(obj[2]));
             Assert.AreEqual("cc", node.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member5)]);
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member5)], ContentChangeType.CollectionUpdate, new Index(0), "cc", "dd", x => x.Update("dd", new Index(0)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member5)].Target, ContentChangeType.CollectionUpdate, new Index(0), "cc", "dd", x => x.Update("dd", new Index(0)));
             Assert.AreEqual("dd", node.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member5)]);
         }
@@ -175,10 +174,10 @@ namespace SiliconStudio.Quantum.Tests
             var listener = new GraphNodeChangeListener(rootNode);
             var node = rootNode[nameof(ComplexClass.Member5)];
             Assert.AreEqual(obj[0], node.Retrieve(new Index(0)));
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member5)], ContentChangeType.CollectionUpdate, new Index(0), obj[0], obj[1], x => x.Update(obj[1], new Index(0)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member5)].Target, ContentChangeType.CollectionUpdate, new Index(0), obj[0], obj[1], x => x.Update(obj[1], new Index(0)));
             Assert.AreEqual(obj[1], node.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member5)]);
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member5)], ContentChangeType.CollectionUpdate, new Index(0), obj[1], obj[2], x => x.Update(obj[2], new Index(0)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member5)].Target, ContentChangeType.CollectionUpdate, new Index(0), obj[1], obj[2], x => x.Update(obj[2], new Index(0)));
             Assert.AreEqual(obj[2], node.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member5)]);
         }
@@ -193,10 +192,10 @@ namespace SiliconStudio.Quantum.Tests
             var listener = new GraphNodeChangeListener(rootNode);
             var node = rootNode[nameof(ComplexClass.Member5)];
             Assert.AreEqual(obj[0], node.Retrieve(new Index(0)));
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member5)], ContentChangeType.CollectionAdd, new Index(1), null, obj[1], x => x.Add(obj[1], new Index(1)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member5)].Target, ContentChangeType.CollectionAdd, new Index(1), null, obj[1], x => x.Add(obj[1], new Index(1)));
             Assert.AreEqual(obj[1], node.Retrieve(new Index(1)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member5)]);
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member5)], ContentChangeType.CollectionAdd, new Index(2), null, obj[2], x => x.Add(obj[2], new Index(2)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member5)].Target, ContentChangeType.CollectionAdd, new Index(2), null, obj[2], x => x.Add(obj[2], new Index(2)));
             Assert.AreEqual(obj[2], node.Retrieve(new Index(2)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member5)]);
         }
@@ -213,11 +212,11 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(obj[0], node.Retrieve(new Index(0)));
             Assert.AreEqual(obj[1], node.Retrieve(new Index(1)));
             Assert.AreEqual(obj[2], node.Retrieve(new Index(2)));
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member5)], ContentChangeType.CollectionRemove, new Index(1), obj[1], null, x => x.Remove(obj[1], new Index(1)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member5)].Target, ContentChangeType.CollectionRemove, new Index(1), obj[1], null, x => x.Remove(obj[1], new Index(1)));
             Assert.AreEqual(obj[0], node.Retrieve(new Index(0)));
             Assert.AreEqual(obj[2], node.Retrieve(new Index(1)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member5)]);
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member5)], ContentChangeType.CollectionRemove, new Index(1), obj[2], null, x => x.Remove(obj[2], new Index(1)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member5)].Target, ContentChangeType.CollectionRemove, new Index(1), obj[2], null, x => x.Remove(obj[2], new Index(1)));
             Assert.AreEqual(obj[0], node.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member5)]);
         }
@@ -239,7 +238,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(obj[2][0], node.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member6)]);
             var newItem = new SimpleClass();
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member6)], ContentChangeType.CollectionUpdate, new Index(0), obj[2][0], newItem, x => x.Update(newItem, new Index(0)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member6)].Target, ContentChangeType.CollectionUpdate, new Index(0), obj[2][0], newItem, x => x.Update(newItem, new Index(0)));
             Assert.AreEqual(newItem, node.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member6)]);
         }
@@ -254,10 +253,10 @@ namespace SiliconStudio.Quantum.Tests
             var listener = new GraphNodeChangeListener(rootNode);
             var node = rootNode[nameof(ComplexClass.Member6)];
             Assert.AreEqual(obj[0], node.Retrieve(new Index(0)));
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member6)], ContentChangeType.CollectionUpdate, new Index(0), obj[0], obj[1], x => x.Update(obj[1], new Index(0)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member6)].Target, ContentChangeType.CollectionUpdate, new Index(0), obj[0], obj[1], x => x.Update(obj[1], new Index(0)));
             Assert.AreEqual(obj[1], node.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member6)]);
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member6)], ContentChangeType.CollectionUpdate, new Index(0), obj[1], obj[2], x => x.Update(obj[2], new Index(0)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member6)].Target, ContentChangeType.CollectionUpdate, new Index(0), obj[1], obj[2], x => x.Update(obj[2], new Index(0)));
             Assert.AreEqual(obj[2], node.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member6)]);
         }
@@ -272,10 +271,10 @@ namespace SiliconStudio.Quantum.Tests
             var listener = new GraphNodeChangeListener(rootNode);
             var node = rootNode[nameof(ComplexClass.Member6)];
             Assert.AreEqual(obj[0], node.Retrieve(new Index(0)));
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member6)], ContentChangeType.CollectionAdd, new Index(1), null, obj[1], x => x.Add(obj[1], new Index(1)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member6)].Target, ContentChangeType.CollectionAdd, new Index(1), null, obj[1], x => x.Add(obj[1], new Index(1)));
             Assert.AreEqual(obj[1], node.Retrieve(new Index(1)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member6)]);
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member6)], ContentChangeType.CollectionAdd, new Index(2), null, obj[2], x => x.Add(obj[2], new Index(2)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member6)].Target, ContentChangeType.CollectionAdd, new Index(2), null, obj[2], x => x.Add(obj[2], new Index(2)));
             Assert.AreEqual(obj[2], node.Retrieve(new Index(2)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member6)]);
         }
@@ -292,11 +291,11 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(obj[0], node.Retrieve(new Index(0)));
             Assert.AreEqual(obj[1], node.Retrieve(new Index(1)));
             Assert.AreEqual(obj[2], node.Retrieve(new Index(2)));
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member6)], ContentChangeType.CollectionRemove, new Index(1), obj[1], null, x => x.Remove(obj[1], new Index(1)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member6)].Target, ContentChangeType.CollectionRemove, new Index(1), obj[1], null, x => x.Remove(obj[1], new Index(1)));
             Assert.AreEqual(obj[0], node.Retrieve(new Index(0)));
             Assert.AreEqual(obj[2], node.Retrieve(new Index(1)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member6)]);
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member6)], ContentChangeType.CollectionRemove, new Index(1), obj[2], null, x => x.Remove(obj[2], new Index(1)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member6)].Target, ContentChangeType.CollectionRemove, new Index(1), obj[2], null, x => x.Remove(obj[2], new Index(1)));
             Assert.AreEqual(obj[0], node.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member6)]);
         }
@@ -310,14 +309,14 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
             Index index = new Index(1);
-            var node = rootNode[nameof(ComplexClass.Member6)].IndexedTarget(index)[nameof(SimpleClass.Member1)];
+            var node = rootNode[nameof(ComplexClass.Member6)].Target.IndexedTarget(index)[nameof(SimpleClass.Member1)];
             Assert.AreEqual(obj[0], node.Retrieve());
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member6)].IndexedTarget(index)[nameof(SimpleClass.Member1)], ContentChangeType.ValueChange, Index.Empty, obj[0], obj[1], x => x.Update(obj[1], Index.Empty));
+            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member6)].Target.IndexedTarget(index)[nameof(SimpleClass.Member1)], ContentChangeType.ValueChange, Index.Empty, obj[0], obj[1], x => x.Update(obj[1]));
             Assert.AreEqual(obj[1], node.Retrieve());
-            Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member6)].IndexedTarget(index)[nameof(SimpleClass.Member1)]);
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member6)].IndexedTarget(index)[nameof(SimpleClass.Member1)], ContentChangeType.ValueChange, Index.Empty, obj[1], obj[2], x => x.Update(obj[2], Index.Empty));
+            Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member6)].Target.IndexedTarget(index)[nameof(SimpleClass.Member1)]);
+            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member6)].Target.IndexedTarget(index)[nameof(SimpleClass.Member1)], ContentChangeType.ValueChange, Index.Empty, obj[1], obj[2], x => x.Update(obj[2]));
             Assert.AreEqual(obj[2], node.Retrieve());
-            Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member6)].IndexedTarget(index)[nameof(SimpleClass.Member1)]);
+            Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member6)].Target.IndexedTarget(index)[nameof(SimpleClass.Member1)]);
         }
 
         [Test]
@@ -337,11 +336,11 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(obj[2][0], node.Retrieve(new Index(0)));
             var newItem = new Struct();
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)]);
-            var itemNode = rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(0));
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member7)], ContentChangeType.CollectionUpdate, new Index(0), obj[2][0], newItem, x => x.Update(newItem, new Index(0)));
+            var itemNode = rootNode[nameof(ComplexClass.Member7)].Target.IndexedTarget(new Index(0));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member7)].Target, ContentChangeType.CollectionUpdate, new Index(0), obj[2][0], newItem, x => x.Update(newItem, new Index(0)));
             Assert.AreEqual(newItem, node.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)]);
-            Assert.AreEqual(itemNode, rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(0)));
+            Assert.AreEqual(itemNode, rootNode[nameof(ComplexClass.Member7)].Target.IndexedTarget(new Index(0)));
         }
 
         [Test]
@@ -353,18 +352,18 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
             var node = rootNode[nameof(ComplexClass.Member7)];
-            var itemNode = rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(0));
+            var itemNode = rootNode[nameof(ComplexClass.Member7)].Target.IndexedTarget(new Index(0));
             Assert.AreEqual(obj[0], node.Retrieve(new Index(0)));
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member7)], ContentChangeType.CollectionUpdate, new Index(0), obj[0], obj[1], x => x.Update(obj[1], new Index(0)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member7)].Target, ContentChangeType.CollectionUpdate, new Index(0), obj[0], obj[1], x => x.Update(obj[1], new Index(0)));
             Assert.AreEqual(obj[1], node.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)]);
             // TODO: would be nice to be able to keep the same boxed node!
-            Assert.AreEqual(itemNode, rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(0)));
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member7)], ContentChangeType.CollectionUpdate, new Index(0), obj[1], obj[2], x => x.Update(obj[2], new Index(0)));
+            Assert.AreEqual(itemNode, rootNode[nameof(ComplexClass.Member7)].Target.IndexedTarget(new Index(0)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member7)].Target, ContentChangeType.CollectionUpdate, new Index(0), obj[1], obj[2], x => x.Update(obj[2], new Index(0)));
             Assert.AreEqual(obj[2], node.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)]);
             // TODO: would be nice to be able to keep the same boxed node!
-            Assert.AreEqual(itemNode, rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(0)));
+            Assert.AreEqual(itemNode, rootNode[nameof(ComplexClass.Member7)].Target.IndexedTarget(new Index(0)));
         }
 
         [Test]
@@ -377,10 +376,10 @@ namespace SiliconStudio.Quantum.Tests
             var listener = new GraphNodeChangeListener(rootNode);
             var node = rootNode[nameof(ComplexClass.Member7)];
             Assert.AreEqual(obj[0], node.Retrieve(new Index(0)));
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member7)], ContentChangeType.CollectionAdd, new Index(1), null, obj[1], x => x.Add(obj[1], new Index(1)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member7)].Target, ContentChangeType.CollectionAdd, new Index(1), null, obj[1], x => x.Add(obj[1], new Index(1)));
             Assert.AreEqual(obj[1], node.Retrieve(new Index(1)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)]);
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member7)], ContentChangeType.CollectionAdd, new Index(2), null, obj[2], x => x.Add(obj[2], new Index(2)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member7)].Target, ContentChangeType.CollectionAdd, new Index(2), null, obj[2], x => x.Add(obj[2], new Index(2)));
             Assert.AreEqual(obj[2], node.Retrieve(new Index(2)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)]);
         }
@@ -397,11 +396,11 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(obj[0], node.Retrieve(new Index(0)));
             Assert.AreEqual(obj[1], node.Retrieve(new Index(1)));
             Assert.AreEqual(obj[2], node.Retrieve(new Index(2)));
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member7)], ContentChangeType.CollectionRemove, new Index(1), obj[1], null, x => x.Remove(obj[1], new Index(1)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member7)].Target, ContentChangeType.CollectionRemove, new Index(1), obj[1], null, x => x.Remove(obj[1], new Index(1)));
             Assert.AreEqual(obj[0], node.Retrieve(new Index(0)));
             Assert.AreEqual(obj[2], node.Retrieve(new Index(1)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)]);
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member7)], ContentChangeType.CollectionRemove, new Index(1), obj[2], null, x => x.Remove(obj[2], new Index(1)));
+            TestItemChange(listener, () => rootNode[nameof(ComplexClass.Member7)].Target, ContentChangeType.CollectionRemove, new Index(1), obj[2], null, x => x.Remove(obj[2], new Index(1)));
             Assert.AreEqual(obj[0], node.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)]);
         }
@@ -415,14 +414,14 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
             Index index = new Index(1);
-            var node = rootNode[nameof(ComplexClass.Member7)].IndexedTarget(index)[nameof(SimpleClass.Member1)];
+            var node = rootNode[nameof(ComplexClass.Member7)].Target.IndexedTarget(index)[nameof(SimpleClass.Member1)];
             Assert.AreEqual(obj[0], node.Retrieve());
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member7)].IndexedTarget(index)[nameof(SimpleClass.Member1)], ContentChangeType.ValueChange, Index.Empty, obj[0], obj[1], x => x.Update(obj[1], Index.Empty));
+            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member7)].Target.IndexedTarget(index)[nameof(SimpleClass.Member1)], ContentChangeType.ValueChange, Index.Empty, obj[0], obj[1], x => x.Update(obj[1]));
             Assert.AreEqual(obj[1], node.Retrieve());
-            Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(1))[nameof(SimpleClass.Member1)]);
-            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member7)].IndexedTarget(index)[nameof(SimpleClass.Member1)], ContentChangeType.ValueChange, Index.Empty, obj[1], obj[2], x => x.Update(obj[2], Index.Empty));
+            Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)].Target.IndexedTarget(new Index(1))[nameof(SimpleClass.Member1)]);
+            TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member7)].Target.IndexedTarget(index)[nameof(SimpleClass.Member1)], ContentChangeType.ValueChange, Index.Empty, obj[1], obj[2], x => x.Update(obj[2]));
             Assert.AreEqual(obj[2], node.Retrieve());
-            Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(1))[nameof(SimpleClass.Member1)]);
+            Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)].Target.IndexedTarget(new Index(1))[nameof(SimpleClass.Member1)]);
         }
 
         [Test]
@@ -453,22 +452,22 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(3, changedCount);
         }
 
-        private static void VerifyListenerEvent(MemberNodeChangeEventArgs e, IContentNode contentOwner, ContentChangeType type, Index index, object oldValue, object newValue, bool changeApplied)
+        private static void VerifyListenerEvent(INodeChangeEventArgs e, IGraphNode nodeOwner, ContentChangeType type, Index index, object oldValue, object newValue, bool changeApplied)
         {
             Assert.NotNull(e);
-            Assert.NotNull(contentOwner);
+            Assert.NotNull(nodeOwner);
             Assert.AreEqual(type, e.ChangeType);
-            Assert.AreEqual(contentOwner, e.Member);
+            Assert.AreEqual(nodeOwner, e.Node);
             Assert.AreEqual(index, e.Index);
             Assert.AreEqual(newValue, e.NewValue);
             Assert.AreEqual(oldValue, e.OldValue);
             if (type == ContentChangeType.ValueChange)
             {
-                Assert.AreEqual(changeApplied ? newValue : oldValue, contentOwner.Retrieve(index));
+                Assert.AreEqual(changeApplied ? newValue : oldValue, nodeOwner.Retrieve(index));
             }
         }
 
-        private static void TestContentChange([NotNull] GraphNodeChangeListener listener, [NotNull] Func<IContentNode> fetchNode, ContentChangeType type, Index index, object oldValue, object newValue, [NotNull] Action<IContentNode> change)
+        private static void TestContentChange([NotNull] GraphNodeChangeListener listener, [NotNull] Func<IMemberNode> fetchNode, ContentChangeType type, Index index, object oldValue, object newValue, [NotNull] Action<IMemberNode> change)
         {
             var i = 0;
             var contentOwner = fetchNode();
@@ -480,6 +479,20 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(2, i);
             listener.Changing -= changing;
             listener.Changed -= changed;
+        }
+
+        private static void TestItemChange([NotNull] GraphNodeChangeListener listener, [NotNull] Func<IObjectNode> fetchNode, ContentChangeType type, Index index, object oldValue, object newValue, [NotNull] Action<IObjectNode> change)
+        {
+            var i = 0;
+            var contentOwner = fetchNode();
+            var changing = new EventHandler<ItemChangeEventArgs>((sender, e) => { Assert.AreEqual(0, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, false); ++i; });
+            var changed = new EventHandler<ItemChangeEventArgs>((sender, e) => { Assert.AreEqual(1, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, true); ++i; });
+            listener.ItemChanging += changing;
+            listener.ItemChanged += changed;
+            change(contentOwner);
+            Assert.AreEqual(2, i);
+            listener.ItemChanging -= changing;
+            listener.ItemChanged -= changed;
         }
     }
 }

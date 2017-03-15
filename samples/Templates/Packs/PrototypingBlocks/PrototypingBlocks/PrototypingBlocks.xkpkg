@@ -1,7 +1,6 @@
 !Package
 Id: c9b4f26a-e7ba-4201-a6e0-0c0eedfe9de2
 SerializedVersion: {Assets: 0.0.4}
-Tags: []
 Meta:
     Name: PrototypingBlocks
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.11.0-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:

@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Quantum.Commands
@@ -30,5 +34,12 @@ namespace SiliconStudio.Assets.Quantum.Commands
 
         /// <inheritdoc/>
         public override bool IsMatchingValue(object value) => value?.GetType() == Type;
+
+        public static IEnumerable<AbstractNodeType> GetInheritedInstantiableTypes(Type type)
+        {
+            return type.GetInheritedInstantiableTypes().Where(x => Attribute.GetCustomAttribute(x, typeof(NonInstantiableAttribute)) == null).Select(x => new AbstractNodeType(x));
+        }
+
+        public override string ToString() => DisplayValue;
     }
 }

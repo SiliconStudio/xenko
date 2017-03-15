@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 8a4fed52-02c4-46fa-9f41-bee3decdc3d1
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.10.0-beta02}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -104,7 +104,7 @@ Hierarchy:
                                             ScaleUniform: 1.0
                                             DisplayParticleRotation: true
                                             DisplayParticlePosition: false
-                                            Target: 6e00cd87-867f-4039-ae08-a2fcfdcf6e89/e97c6f33-1882-4429-8239-55cce7f2b5ee
+                                            Target: ref!! e97c6f33-1882-4429-8239-55cce7f2b5ee
                                             DisplayParticleScaleUniform: false
                                             DisplayParticleScale: false
                                             FallbackTarget: {X: 0.0, Y: 0.0, Z: -1.0}
@@ -316,7 +316,7 @@ Hierarchy:
                                             ScaleUniform: 1.0
                                             DisplayParticleRotation: true
                                             DisplayParticlePosition: false
-                                            Target: 6e00cd87-867f-4039-ae08-a2fcfdcf6e89/e97c6f33-1882-4429-8239-55cce7f2b5ee
+                                            Target: ref!! e97c6f33-1882-4429-8239-55cce7f2b5ee
                                             DisplayParticleScaleUniform: false
                                             DisplayParticleScale: false
                                             FallbackTarget: {X: 0.0, Y: 0.0, Z: -1.0}

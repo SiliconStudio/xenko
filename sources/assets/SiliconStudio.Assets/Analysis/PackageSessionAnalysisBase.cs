@@ -3,12 +3,14 @@
 using System;
 
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Analysis
 {
     /// <summary>
     /// Base class for all <see cref="Session"/> and <see cref="Asset"/> integrity analysis.
     /// </summary>
+    [AssemblyScan]
     public abstract class PackageSessionAnalysisBase
     {
         private PackageSession packageSession;

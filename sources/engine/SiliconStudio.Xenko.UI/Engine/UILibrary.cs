@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("UIlibrary")]
     [ContentSerializer(typeof(DataContentSerializerWithReuse<UILibrary>))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<UILibrary>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<UILibrary>), Profile = "Content")]
     public class UILibrary : ComponentBase
     {
         public UILibrary()

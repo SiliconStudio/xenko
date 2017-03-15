@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace SiliconStudio.Assets.Templates
 {
@@ -22,7 +22,14 @@ namespace SiliconStudio.Assets.Templates
             parameters.Session.UpdateAssemblyReferences(parameters.Logger);
             parameters.Logger.Verbose("Game assemblies compiled...");
 
-            return AfterSave(parameters).Result;
+            result = AfterSave(parameters).Result;
+
+            // Restore NuGet packages for every project not processed yet (esp. Windows/UWP ones)
+            parameters.Logger.Verbose("Restoring NuGet packages...");
+            foreach (var package in parameters.Session.Packages)
+                package.RestoreNugetPackages(parameters.Logger, false);
+
+            return result;
         }
 
         /// <summary>

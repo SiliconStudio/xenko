@@ -390,7 +390,6 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Assert.AreEqual(0, entityManager.Processors.Count);
             Assert.AreEqual(0, transformProcessor.TransformationRoots.Count);
             Assert.Null(transformProcessor.EntityManager);
-            Assert.Null(entity.Owner);
         }
 
         public static void Main()

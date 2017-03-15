@@ -1,34 +1,8 @@
 !SceneAsset
 Id: 4b722b46-48b5-4585-9f5e-f9a590faf4eb
-SerializedVersion: {Xenko: 1.9.0-beta06}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: a9a91884-0d85-41c1-a47d-b050debd3121
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            b7e44bafbf88f24db428da9ef5493b8e:
-                Name: null
-                Camera: 0aa895fb-6425-436b-b4ae-964210c3ada6/d8d38afa-0110-4116-a878-70e266cd78ea
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                e7e85eb503d3e6468ba1bfe30323c544: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                b259157d2d1eb2408b6e22c029c1c8de: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - 0aa895fb-6425-436b-b4ae-964210c3ada6
@@ -52,7 +26,9 @@ Hierarchy:
                         Children: {}
                     fa8ad3d810011641a87870e266cd78ea: !CameraComponent
                         Id: d8d38afa-0110-4116-a878-70e266cd78ea
+                        Name: null
                         Projection: Perspective
+                        Slot: {Index: 0}
         -   Entity:
                 Id: 4855a6ef-94da-4170-abb8-e8c421efa246
                 Name: Background
@@ -160,13 +136,13 @@ Hierarchy:
                 Name: ConeEmitter15
                 Components:
                     6616c310ab84ae408593833e427b2fcf: !TransformComponent
-                        Id: 10c31666-84ab-40ae-8593-833e427b2fcf
+                        Id: 37cd728a-c869-4a13-91e4-316cf2627ab7
                         Position: {X: -1.0, Y: 0.0, Z: -0.5}
                         Rotation: {X: -0.06540313, Y: 0.0, Z: 0.0, W: 0.997858942}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     390c3c1f9d57024f9a57900e4013141c: !ParticleSystemComponent
-                        Id: 1f3c0c39-579d-4f02-9a57-900e4013141c
+                        Id: d1278b7e-78af-43ac-adb8-c92c8b863fa6
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -283,13 +259,13 @@ Hierarchy:
                 Name: ConeEmitter45
                 Components:
                     6616c310ab84ae408593833e427b2fcf: !TransformComponent
-                        Id: 10c31666-84ab-40ae-8593-833e427b2fcf
+                        Id: b6ff5fe3-915b-48b5-9c43-3335af998f88
                         Position: {X: 1.0, Y: -1.4987803E-08, Z: -0.5}
                         Rotation: {X: -0.555570245, Y: 0.0, Z: 0.0, W: 0.8314696}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     390c3c1f9d57024f9a57900e4013141c: !ParticleSystemComponent
-                        Id: 1f3c0c39-579d-4f02-9a57-900e4013141c
+                        Id: 08e981c3-17cc-48a8-9fde-4354489b8dda
                         Control:
                             ResetSeconds: 5.0
                             Control: Play

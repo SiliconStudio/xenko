@@ -49,11 +49,11 @@ namespace SiliconStudio.Xenko.Physics.Tests
 
                 await game.Script.NextFrame();
                 await game.Script.NextFrame();
-                var simulation = game.SceneSystem.SceneInstance.Scene.Entities.First(ent => ent.Name == "Simulation").Get<StaticColliderComponent>().Simulation;
+                var simulation = game.SceneSystem.SceneInstance.RootScene.Entities.First(ent => ent.Name == "Simulation").Get<StaticColliderComponent>().Simulation;
 
                 HitResult hit;
 
-                var cube = game.SceneSystem.SceneInstance.Scene.Entities.First(ent => ent.Name == "CubePrefab1");
+                var cube = game.SceneSystem.SceneInstance.RootScene.Entities.First(ent => ent.Name == "CubePrefab1");
 
                 hit = simulation.Raycast((cube.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, 0.55f, 0.0f), cube.Transform.Position + new Vector3(0.0f, 0.55f, 0.0f));
                 Assert.IsFalse(hit.Succeeded);
@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Physics.Tests
                 Assert.AreEqual(-Vector3.UnitZ, hit.Normal);
                 Assert.AreEqual(hit.Point, cube.Transform.Position + new Vector3(-0.5f, 0.0f, -0.5f));
 
-                var cylinder = game.SceneSystem.SceneInstance.Scene.Entities.First(ent => ent.Name == "CylinderPrefab1");
+                var cylinder = game.SceneSystem.SceneInstance.RootScene.Entities.First(ent => ent.Name == "CylinderPrefab1");
 
                 hit = simulation.Raycast((cylinder.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, 0.55f, 0.0f), cylinder.Transform.Position + new Vector3(0.0f, 0.55f, 0.0f));
                 Assert.IsFalse(hit.Succeeded);
@@ -113,7 +113,7 @@ namespace SiliconStudio.Xenko.Physics.Tests
                 Assert.AreEqual(0.0f, (new Vector3(-0.984617054f, -0.00194378383f, -0.174715757f) - hit.Normal).Length(), 0.001f);
                 Assert.AreEqual(0.0f, (new Vector3(1.67587972f, 0, -7.049135f) - hit.Point).Length(), 0.001f);
 
-                var capsule = game.SceneSystem.SceneInstance.Scene.Entities.First(ent => ent.Name == "CapsulePrefab1");
+                var capsule = game.SceneSystem.SceneInstance.RootScene.Entities.First(ent => ent.Name == "CapsulePrefab1");
 
                 hit = simulation.Raycast((capsule.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, 0.65f, 0.0f), capsule.Transform.Position + new Vector3(0.0f, 0.65f, 0.0f));
                 Assert.IsFalse(hit.Succeeded);
@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Physics.Tests
                 Assert.AreEqual(0.0f, (new Vector3(-0.9830295f, -0.0126968855f, -0.1830078f) - hit.Normal).Length(), 0.001f);
                 Assert.AreEqual(0.0f, (new Vector3(-0.35f, 0.99999994f, -7.049801f) - hit.Point).Length(), 0.001f);
 
-                var cone = game.SceneSystem.SceneInstance.Scene.Entities.First(ent => ent.Name == "ConePrefab1");
+                var cone = game.SceneSystem.SceneInstance.RootScene.Entities.First(ent => ent.Name == "ConePrefab1");
 
                 hit = simulation.Raycast((cone.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, 0.55f, 0.0f), cone.Transform.Position + new Vector3(0.0f, 0.55f, 0.0f));
                 Assert.IsFalse(hit.Succeeded);
@@ -173,7 +173,7 @@ namespace SiliconStudio.Xenko.Physics.Tests
                 Assert.AreEqual(0.0f, (new Vector3(-0.8664652f, 0.4454676f, -0.2253817f) - hit.Normal).Length(), 0.001f);
                 Assert.AreEqual(0.0f, (new Vector3(0.7f, 0, -12.02208f) - hit.Point).Length(), 0.001f);
 
-                var compound1 = game.SceneSystem.SceneInstance.Scene.Entities.First(ent => ent.Name == "Compound1");
+                var compound1 = game.SceneSystem.SceneInstance.RootScene.Entities.First(ent => ent.Name == "Compound1");
 
                 hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, 1.55f, 0.0f), compound1.Transform.Position + new Vector3(0.0f, 1.55f, 0.0f));
                 Assert.IsFalse(hit.Succeeded);

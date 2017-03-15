@@ -1,34 +1,8 @@
 !SceneAsset
 Id: 86fed268-baa8-4929-9eba-4d14cf3a0e68
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: 309ba45b-9be7-4963-bafd-4dcc6de36659
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            188765d9ab18944d841381bceb866072:
-                Name: null
-                Camera: d296aa0e-cd27-4f65-936f-dfba810e1ef2/7b8dae54-4ed8-4d4f-b279-6f323fdf0b14
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                d22f71be12fbbc4391870df7ec521122: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                6d6feec694a7ab4eb267e97bd04541ab: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - d296aa0e-cd27-4f65-936f-dfba810e1ef2
@@ -116,15 +90,15 @@ Hierarchy:
                 Name: crate
                 Components:
                     41f03e2e802fb24d95a774c7f12119bd: !TransformComponent
-                        Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                        Id: e6f2eeb6-656f-48a9-9d9b-1a4aea0a10c7
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     4084aa5894db3744b91eaee2c10b59d9: !PhysicsSample.ImpulseOnSpaceScript,PhysicsSample.Game
-                        Id: 58aa8440-db94-4437-b91e-aee2c10b59d9
+                        Id: 8263102d-3009-4988-99ce-880a3a2ee555
                     b8c6c588b5610144adb1357b024c4015: !RigidbodyComponent
-                        Id: 88c5c6b8-61b5-4401-adb1-357b024c4015
+                        Id: 1e45b40e-8099-4aee-a4a0-f3b820bbf42c
                         CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
@@ -143,7 +117,7 @@ Hierarchy:
                             7d102f94372bb148b1442fd78041aa91: !ColliderShapeAssetDesc
                                 Shape: cfd030c9-44df-401e-a192-32278a642f8b:ColliderShapes/crate_cs
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
-                        Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
+                        Id: 9e984391-02ba-454b-b1bc-ca4b3ae4ce77
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
                         Materials: {}
             Base:
@@ -155,15 +129,15 @@ Hierarchy:
                 Name: crate
                 Components:
                     41f03e2e802fb24d95a774c7f12119bd: !TransformComponent
-                        Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                        Id: bb92c642-cc1f-4824-b2d0-ea4f1f2fd7c3
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     4084aa5894db3744b91eaee2c10b59d9: !PhysicsSample.ImpulseOnSpaceScript,PhysicsSample.Game
-                        Id: 58aa8440-db94-4437-b91e-aee2c10b59d9
+                        Id: 9043b91f-b0a8-46af-a8d2-f432c4953d51
                     b8c6c588b5610144adb1357b024c4015: !RigidbodyComponent
-                        Id: 88c5c6b8-61b5-4401-adb1-357b024c4015
+                        Id: 0e92f43f-0c7b-4f16-8b11-f9caae68a013
                         CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
@@ -182,7 +156,7 @@ Hierarchy:
                             7d102f94372bb148b1442fd78041aa91: !ColliderShapeAssetDesc
                                 Shape: cfd030c9-44df-401e-a192-32278a642f8b:ColliderShapes/crate_cs
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
-                        Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
+                        Id: 82d2e014-7f68-457e-be33-ec8980d8562e
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
                         Materials: {}
             Base:
@@ -232,7 +206,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 8d8f7cdf-a2d1-4832-8ab8-3245792e20d5/2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                            41f03e2e802fb24d95a774c7f12119bd: 8d8f7cdf-a2d1-4832-8ab8-3245792e20d5/e6f2eeb6-656f-48a9-9d9b-1a4aea0a10c7
         -   Entity:
                 Id: bfe4e7b3-64c6-44e0-b2fd-df843f48075b
                 Name: NextScene
@@ -267,7 +241,9 @@ Hierarchy:
                         Id: 8341119c-188a-44c1-bf8c-4361e2b0e4fb
                     54ae8d7bd84e4f4db2796f323fdf0b14: !CameraComponent
                         Id: 7b8dae54-4ed8-4d4f-b279-6f323fdf0b14
+                        Name: null
                         Projection: Perspective
+                        Slot: {Index: 0}
         -   Entity:
                 Id: ef7d2057-b70a-4f12-af97-1ac2d8736797
                 Name: Ambient light
@@ -294,4 +270,4 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 95664a00-cbe6-40d4-b536-9d0bf74af845/2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                            41f03e2e802fb24d95a774c7f12119bd: 95664a00-cbe6-40d4-b536-9d0bf74af845/bb92c642-cc1f-4824-b2d0-ea4f1f2fd7c3

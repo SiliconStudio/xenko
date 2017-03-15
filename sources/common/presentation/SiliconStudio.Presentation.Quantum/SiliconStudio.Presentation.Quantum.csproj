@@ -38,12 +38,14 @@
     <Compile Include="NodeViewModel.cs" />
     <Compile Include="GraphViewModelConsistencyException.cs" />
     <Compile Include="GraphViewModelService.cs" />
+    <Compile Include="NodeViewModel2.cs" />
     <Compile Include="SingleNodeViewModel.cs" />
     <Compile Include="DebugExtensions.cs" />
     <Compile Include="NodeViewModelDynamicMetaObject.cs" />
     <Compile Include="GraphViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ModelNodeCommandWrapper.cs" />
+    <Compile Include="SinglePropertyProvider.cs" />
     <Compile Include="View\NodeViewModelTemplateProvider.cs" />
     <Compile Include="View\RangedValueTemplateProvider.cs" />
     <Compile Include="View\TypeMatchTemplateProvider.cs" />

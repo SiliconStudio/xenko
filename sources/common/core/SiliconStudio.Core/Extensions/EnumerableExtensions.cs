@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core.Annotations;
@@ -17,6 +18,7 @@ namespace SiliconStudio.Core.Extensions
         /// </summary>
         /// <param name="source">The source sequence.</param>
         /// <returns>Returns true if the sequence is null or empty, false if it is not null and contains at least one element.</returns>
+        [Pure]
         public static bool IsNullOrEmpty(this IEnumerable source)
         {
             if (source == null)
@@ -27,18 +29,6 @@ namespace SiliconStudio.Core.Extensions
                 throw new ArgumentException("Invalid 'source' IEnumerable.");
 
             return enumerator.MoveNext() == false;
-        }
-
-        /// <summary>
-        /// Indicates whether the specified string is null or an empty string.
-        /// </summary>
-        /// <param name="value">The string to test.</param>
-        /// <returns><c>true</c> if the value parameter is null or an empty string (""); otherwise, <c>false</c>.</returns>
-        [Obsolete("Use string.IsNullOrEmpty() instead")]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNullOrEmpty(this string value)
-        {
-            return string.IsNullOrEmpty(value);
         }
 
         /// <summary>
@@ -75,6 +65,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">Input enumerable to work on.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The index of the first element matching.</returns>
+        [Pure]
         public static int IndexOf<T>([NotNull] this IEnumerable<T> source, [NotNull] Func<T, bool> predicate)
         {
             var index = 0;
@@ -94,6 +85,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">Input enumerable to work on.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The index of the last element matching.</returns>
+        [Pure]
         public static int LastIndexOf<T>([NotNull] this IEnumerable<T> source, [NotNull] Func<T, bool> predicate)
         {
             var list = source as IList<T>;
@@ -124,7 +116,7 @@ namespace SiliconStudio.Core.Extensions
         /// <typeparam name="T">Generic type parameter.</typeparam>
         /// <param name="source">Input enumerable to work on.</param>
         /// <returns>An enumeration of all items in <paramref name="source"/> that are not <c>null</c>.</returns>
-        [ItemNotNull, NotNull]
+        [ItemNotNull, NotNull, Pure]
         public static IEnumerable<T> NotNull<T>([NotNull] this IEnumerable<T> source) where T : class
         {
             return source.Where(x => x != null);
@@ -136,7 +128,7 @@ namespace SiliconStudio.Core.Extensions
         /// <typeparam name="T"></typeparam>
         /// <param name="list">The linked list.</param>
         /// <returns>An enumeration of the linked list nodes.</returns>
-        [ItemNotNull, NotNull]
+        [ItemNotNull, NotNull, Pure]
         internal static IEnumerable<LinkedListNode<T>> EnumerateNodes<T>([NotNull] this LinkedList<T> list)
         {
             var node = list.First;

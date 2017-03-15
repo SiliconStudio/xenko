@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Quantum;
@@ -46,7 +47,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// The reference expansion policy chosen while generating children for this node.
         /// </summary>
         /// <remarks>
-        /// This can be customized by <see cref="IPropertiesProviderViewModel.ShouldExpandReference"/>.
+        /// This can be customized by <see cref="IPropertiesProviderViewModel.ShouldConstructChildren"/>.
         /// </remarks>
         public ExpandReferencePolicy ExpandReferencePolicy { get; protected set; } = ExpandReferencePolicy.None;
 
@@ -61,9 +62,16 @@ namespace SiliconStudio.Presentation.Quantum
             base.Destroy();
         }
 
-        public new void AddCommand(INodeCommandWrapper command)
+        /// <inheritdoc cref="NodeViewModel.AddCommand"/>
+        public new void AddCommand([NotNull] INodeCommandWrapper command)
         {
             base.AddCommand(command);
+        }
+
+        /// <inheritdoc cref="NodeViewModel.RemoveCommand"/>
+        public new bool RemoveCommand([NotNull] INodeCommandWrapper command)
+        {
+            return base.RemoveCommand(command);
         }
 
         /// <summary>

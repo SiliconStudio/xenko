@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -53,7 +55,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// Gets or sets whether to set the event as handled.
         /// </summary>
-        public bool HandleEvent { get { return (bool)GetValue(HandleEventProperty); } set { SetValue(HandleEventProperty, value); } }
+        public bool HandleEvent { get { return (bool)GetValue(HandleEventProperty); } set { SetValue(HandleEventProperty, value.Box()); } }
 
         public ModifierKeys? Modifiers { get { return (ModifierKeys?)GetValue(ModifiersProperty); } set { SetValue(ModifiersProperty, value); } }
 
@@ -76,7 +78,7 @@ namespace SiliconStudio.Presentation.Behaviors
             base.OnAttached();
         }
 
-        private static void EventTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void EventTypeChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (OnMouseEventBehavior)d;
             if (behavior.AssociatedObject == null)
@@ -186,7 +188,7 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
-        private void MouseButtonHandler(object sender, MouseButtonEventArgs e)
+        private void MouseButtonHandler(object sender, [NotNull] MouseButtonEventArgs e)
         {
             if (!AreModifiersValid())
                 return;
@@ -194,7 +196,7 @@ namespace SiliconStudio.Presentation.Behaviors
             MouseMoveHandler(sender, e);
         }
 
-        private void MouseMoveHandler(object sender, MouseEventArgs e)
+        private void MouseMoveHandler(object sender, [NotNull] MouseEventArgs e)
         {
             if (!AreModifiersValid())
                 return;

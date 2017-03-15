@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Rendering
                     renderMesh.World = nodeTransformations[nodeIndex].WorldMatrix;
                     renderMesh.IsScalingNegative = nodeTransformations[nodeIndex].IsScalingNegative;
                     renderMesh.BoundingBox = new BoundingBoxExt(meshInfo.BoundingBox);
-                    renderMesh.RenderGroup = modelComponent.Entity.Group;
+                    renderMesh.RenderGroup = modelComponent.RenderGroup;
                     renderMesh.BlendMatrices = meshInfo.BlendMatrices;
                 }
             }
@@ -119,11 +119,9 @@ namespace SiliconStudio.Xenko.Rendering
             renderMesh.Material = materialOverride ?? modelMaterialInstance?.Material ?? fallbackMaterial;
 
             renderMesh.IsShadowCaster = modelComponent.IsShadowCaster;
-            renderMesh.IsShadowReceiver = modelComponent.IsShadowReceiver;
             if (modelMaterialInstance != null)
             {
                 renderMesh.IsShadowCaster = renderMesh.IsShadowCaster && modelMaterialInstance.IsShadowCaster;
-                renderMesh.IsShadowReceiver = renderMesh.IsShadowReceiver && modelMaterialInstance.IsShadowReceiver;
             }
         }
 
@@ -171,6 +169,9 @@ namespace SiliconStudio.Xenko.Rendering
 
             renderModel.Model = model;
             renderModel.Meshes = renderMeshes;
+
+            // Update before first add so that RenderGroup is properly set
+            UpdateRenderModel(renderModel);
 
             // Update and register with render system
             lock (VisibilityGroup.RenderObjects)

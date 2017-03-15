@@ -29,12 +29,9 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly SharpDX.Direct3D11.CommonShaderStage[] shaderStages = new SharpDX.Direct3D11.CommonShaderStage[StageCount];
         private readonly Buffer[] constantBuffers = new Buffer[StageCount * ConstantBufferCount];
         private readonly SamplerState[] samplerStates = new SamplerState[StageCount * SamplerStateCount];
-        private readonly GraphicsResourceBase[] unorderedAccessViews = new GraphicsResourceBase[UnorderedAcccesViewCount]; // Only CS
+        private readonly SharpDX.Direct3D11.UnorderedAccessView[] unorderedAccessViews = new SharpDX.Direct3D11.UnorderedAccessView[UnorderedAcccesViewCount]; // Only CS
 
-        private PipelineState newPipelineState;
         private PipelineState currentPipelineState;
-
-        private DescriptorSet[] currentDescriptorSets = new DescriptorSet[32];
 
         public static CommandList New(GraphicsDevice device)
         {
@@ -94,7 +91,6 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Since nothing can be drawn in default state, no need to set anything (another SetPipelineState should happen before)
             currentPipelineState = GraphicsDevice.DefaultPipelineState;
-            newPipelineState = GraphicsDevice.DefaultPipelineState;
         }
 
         /// <summary>
@@ -122,27 +118,16 @@ namespace SiliconStudio.Xenko.Graphics
             outputMerger.SetTargets(depthStencilBuffer != null ? depthStencilBuffer.NativeDepthStencilView : null, renderTargetCount, currentRenderTargetViews);
         }
 
-        /// <summary>
-        /// Binds a single scissor rectangle to the rasterizer stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="top">The top.</param>
-        /// <param name="right">The right.</param>
-        /// <param name="bottom">The bottom.</param>
-        public void SetScissorRectangles(int left, int top, int right, int bottom)
+        unsafe partial void SetScissorRectangleImpl(ref Rectangle scissorRectangle)
         {
-            NativeDeviceContext.Rasterizer.SetScissorRectangle(left, top, right, bottom);
+            NativeDeviceContext.Rasterizer.SetScissorRectangle(scissorRectangle.Left, scissorRectangle.Top, scissorRectangle.Right, scissorRectangle.Bottom);
         }
 
-        /// <summary>
-        /// Binds a set of scissor rectangles to the rasterizer stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="scissorRectangles">The set of scissor rectangles to bind.</param>
-        public unsafe void SetScissorRectangles(params Rectangle[] scissorRectangles)
+        unsafe partial void SetScissorRectanglesImpl(int scissorCount, Rectangle[] scissorRectangles)
         {
             if (scissorRectangles == null) throw new ArgumentNullException("scissorRectangles");
-            var localScissorRectangles = new RawRectangle[scissorRectangles.Length];
-            for (int i = 0; i < scissorRectangles.Length; i++)
+            var localScissorRectangles = new RawRectangle[scissorCount];
+            for (int i = 0; i < scissorCount; i++)
             {
                 localScissorRectangles[i] = new RawRectangle(scissorRectangles[i].X, scissorRectangles[i].Y, scissorRectangles[i].Right, scissorRectangles[i].Bottom);
             }
@@ -185,19 +170,6 @@ namespace SiliconStudio.Xenko.Graphics
             fixed (Viewport* viewportsPtr = viewports)
             {
                 nativeDeviceContext.Rasterizer.SetViewports((RawViewportF*)viewportsPtr, renderTargetCount > 0 ? renderTargetCount : 1);
-            }
-        }
-
-        /// <summary>
-        ///     Unsets the read/write buffers.
-        /// </summary>
-        public void UnsetReadWriteBuffers()
-        {
-            // TODO: This should be done automatically on SetPipelineState
-            // TODO optimize it using SetUnorderedAccessViews
-            for (int i = 0; i < UnorderedAcccesViewCount; i++)
-            {
-                SetUnorderedAccessView(ShaderStage.Compute, i, null);
             }
         }
 
@@ -294,7 +266,32 @@ namespace SiliconStudio.Xenko.Graphics
             if (stage != ShaderStage.Compute)
                 throw new ArgumentException("Invalid stage.", "stage");
 
-            NativeDeviceContext.ComputeShader.SetUnorderedAccessView(slot, unorderedAccessView != null ? unorderedAccessView.NativeUnorderedAccessView : null);
+            var view = unorderedAccessView?.NativeUnorderedAccessView;
+            if (unorderedAccessViews[slot] != view)
+            {
+                unorderedAccessViews[slot] = view;
+                NativeDeviceContext.ComputeShader.SetUnorderedAccessView(slot, view);
+            }
+        }
+
+        /// <summary>
+        /// Unsets an unordered access view from the shader pipeline.
+        /// </summary>
+        /// <param name="unorderedAccessView">The unordered access view.</param>
+        internal void UnsetUnorderedAccessView(GraphicsResource unorderedAccessView)
+        {
+            var view = unorderedAccessView?.NativeUnorderedAccessView;
+            if (view == null)
+                return;
+
+            for (int slot = 0; slot < UnorderedAcccesViewCount; slot++)
+            {
+                if (unorderedAccessViews[slot] == view)
+                {
+                    unorderedAccessViews[slot] = null;
+                    NativeDeviceContext.ComputeShader.SetUnorderedAccessView(slot, null);
+                }
+            }
         }
 
         /// <summary>
@@ -303,17 +300,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.InvalidOperationException">Cannot GraphicsDevice.Draw*() without an effect being previously applied with Effect.Apply() method</exception>
         private void PrepareDraw()
         {
-            // Pipeline state
-            if (newPipelineState != currentPipelineState)
-            {
-                newPipelineState.Apply(this, currentPipelineState);
-                currentPipelineState = newPipelineState;
-            }
-
-            // Resources
-            if (newPipelineState != null)
-                newPipelineState.ResourceBinder.BindResources(this, currentDescriptorSets);
-
             SetViewportImpl();
         }
 
@@ -329,7 +315,14 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void SetPipelineState(PipelineState pipelineState)
         {
-            newPipelineState = pipelineState ?? GraphicsDevice.DefaultPipelineState;
+            var newPipelineState = pipelineState ?? GraphicsDevice.DefaultPipelineState;
+
+            // Pipeline state
+            if (newPipelineState != currentPipelineState)
+            {
+                newPipelineState.Apply(this, currentPipelineState);
+                currentPipelineState = newPipelineState;
+            }
         }
 
         public void SetVertexBuffer(int index, Buffer buffer, int offset, int stride)
@@ -349,10 +342,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)
         {
-            for (int i = 0; i < descriptorSets.Length; ++i)
-            {
-                currentDescriptorSets[index++] = descriptorSets[i];
-            }
+            // Bind resources
+            currentPipelineState?.ResourceBinder.BindResources(this, descriptorSets);
         }
 
         /// <inheritdoc />

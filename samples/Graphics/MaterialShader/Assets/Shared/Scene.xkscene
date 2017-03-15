@@ -1,46 +1,9 @@
 !SceneAsset
 Id: 877bd450-9cd3-48ce-b612-97e7545a5e1f
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
-SceneSettings:
-    ~Id: a70f50d2-a025-4d1d-bcd8-2fb7e6f2da4e
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: 8c733a11-277a-47e3-a744-0b7b40dae334
-        Cameras:
-            -   ~Id: ce2d6f96-7dd9-411b-8e79-a3e3f6766eb6
-                Name: null
-                Camera:
-                    Entity: {Id: 359ed8d5-5381-47fc-9448-6c3c724eb457}
-                    Id: 5f0d9012-a52c-4f41-b199-b7d537e8e864
-        Layers: []
-        Master:
-            ~Id: 9815de2c-7fe9-4534-a927-9d897e8811e7
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                - !ClearRenderFrameRenderer
-                    ~Id: 16d6bea3-43f6-438f-b8a9-f78866bed185
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                - !SceneCameraRenderer
-                    ~Id: 62b976f4-6d20-4c93-8988-047b03bed4dd
-                    Mode: !CameraRendererModeForward
-                        ~Id: 97f18d5c-3028-4e11-be79-b3dfb7db9be1
-                    Camera:
-                        ~Id: 34619d3e-2d15-4361-a35e-6e284af0384b
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        ~Id: 1e88db38-d023-41a7-9cb2-6e3595b289ef
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: 658e41c9-fca6-438a-9abf-9e5494d8d41e
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    ~Id: 23c9251d-d48d-4f06-9ac0-7b36922e7426
     RootPartIds:
         - 359ed8d5-5381-47fc-9448-6c3c724eb457
         - 1066a3c5-dc72-4ca6-b58d-066dd7a658d0
@@ -51,67 +14,62 @@ Hierarchy:
                 Id: 1066a3c5-dc72-4ca6-b58d-066dd7a658d0
                 Name: Plane
                 Components:
-                    - !TransformComponent
-                        ~Id: ebd8782a-1d95-47e5-a1b9-5bedb572d459
+                    2a78d8eb951de547a1b95bedb572d459: !TransformComponent
+                        Id: ebd8782a-1d95-47e5-a1b9-5bedb572d459
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
-                    - !ModelComponent
-                        ~Id: 2d9cc866-e74a-4f26-9509-6afa3168164b
-                        Model: dbb6e118-a1ec-4c34-9aa0-6d95f721ec1d/fc976b30-8fd5-4b7c-bb45-c1acc1e3f508:PlaneModel
-                        Materials:
-                            - null
+                        Children: {}
+                    66c89c2d4ae7264f95096afa3168164b: !ModelComponent
+                        Id: 2d9cc866-e74a-4f26-9509-6afa3168164b
+                        Model: fc976b30-8fd5-4b7c-bb45-c1acc1e3f508:PlaneModel
+                        Materials: {}
         -   Entity:
                 Id: 359ed8d5-5381-47fc-9448-6c3c724eb457
                 Name: Camera
                 Components:
-                    - !TransformComponent
-                        ~Id: de755686-2bcc-4935-8a08-aa9df0682cec
+                    865675decc2b35498a08aa9df0682cec: !TransformComponent
+                        Id: de755686-2bcc-4935-8a08-aa9df0682cec
                         Position: {X: 1.0, Y: 0.5, Z: 1.0}
-                        Rotation: {W: 0.9098437, X: -0.16043, Y: 0.376869619, Z: 0.06645229}
+                        Rotation: {X: -0.16043, Y: 0.376869619, Z: 0.06645229, W: 0.9098437}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
-                    - !CameraComponent
-                        ~Id: 5f0d9012-a52c-4f41-b199-b7d537e8e864
+                        Children: {}
+                    12900d5f2ca5414fb199b7d537e8e864: !CameraComponent
+                        Id: 5f0d9012-a52c-4f41-b199-b7d537e8e864
+                        Name: null
                         Projection: Perspective
                         FarClipPlane: 100.0
+                        Slot: {Index: 0}
         -   Entity:
                 Id: 3eeb85ab-5668-4772-b4b5-ff0a50dd70f5
                 Name: Directional light
                 Components:
-                    - !TransformComponent
-                        ~Id: 5398be82-6b67-42e3-8778-fc3ef78ad295
+                    82be9853676be3428778fc3ef78ad295: !TransformComponent
+                        Id: 5398be82-6b67-42e3-8778-fc3ef78ad295
                         Position: {X: -0.3915618, Y: 0.712286949, Z: 0.487137645}
-                        Rotation: {W: -0.3000324, X: 0.0451833233, Y: 0.911823, Z: 0.276618749}
+                        Rotation: {X: 0.0451833233, Y: 0.911823, Z: 0.276618749, W: -0.3000324}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
-                    - !LightComponent
-                        ~Id: b6b0ae4f-8f11-4f06-84b2-6bfa82460c93
+                        Children: {}
+                    4faeb0b6118f064f84b26bfa82460c93: !LightComponent
+                        Id: b6b0ae4f-8f11-4f06-84b2-6bfa82460c93
                         Type: !LightDirectional
-                            ~Id: d8727490-aab8-429e-a0a7-50ea0654fd5a
                             Color: !ColorRgbProvider
-                                ~Id: 02eca82f-a3c5-4a10-91f5-4bec08dd15be
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
                             Shadow:
-                                ~Id: c5c0413d-776a-4c17-92bd-f355dd642c1e
                                 Size: Large
-                                DepthRange:
-                                    ~Id: 527b0d5f-ad38-4647-af5d-eba4021ef0d7
-                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic
-                                    ~Id: 0dd4e8d4-c1f1-4055-a162-15d91e40f3fc
-                                BiasParameters:
-                                    ~Id: b734fe66-6eec-4a4f-a6d8-47c11881f9f9
+                                DepthRange: {}
+                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic {}
+                                BiasParameters: {}
         -   Entity:
                 Id: d62e02cb-f3fc-43ae-b6aa-07eccae98182
                 Name: Background
                 Components:
-                    - !TransformComponent
-                        ~Id: 22c99657-3d40-4e47-9169-ce8b9c507f89
+                    5796c922403d474e9169ce8b9c507f89: !TransformComponent
+                        Id: 22c99657-3d40-4e47-9169-ce8b9c507f89
                         Position: {X: 0.588626, Y: 0.161487773, Z: -1.1080513}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
-                    - !BackgroundComponent
-                        ~Id: 33b6226e-2c64-45a0-9f17-9d5b5257d74e
-                        Texture: 2a429421-5026-4b22-b645-2093a2fa7cfa/f48790de-bd5a-4f83-a71b-a6a559dcb698:XenkoBackground
+                        Children: {}
+                    6e22b633642ca0459f179d5b5257d74e: !BackgroundComponent
+                        Id: 33b6226e-2c64-45a0-9f17-9d5b5257d74e
+                        Texture: f48790de-bd5a-4f83-a71b-a6a559dcb698:XenkoBackground

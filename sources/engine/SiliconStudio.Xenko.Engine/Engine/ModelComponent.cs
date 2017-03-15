@@ -65,7 +65,6 @@ namespace SiliconStudio.Xenko.Engine
         {
             Model = model;
             IsShadowCaster = true;
-            IsShadowReceiver = true;
         }
 
         /// <summary>
@@ -139,14 +138,11 @@ namespace SiliconStudio.Xenko.Engine
         public bool IsShadowCaster { get; set; }
 
         /// <summary>
-        /// Gets or sets a boolean indicating if this model component is receiving shadows.
+        /// The render group for this component.
         /// </summary>
-        /// <value>A boolean indicating if this model component is receiving shadows.</value>
-        /// <userdoc>If checked, the model can be covered by the shadow of another model.</userdoc>
-        [DataMember(40)]
-        [DefaultValue(true)]
-        [Display("Receive Shadows?")]
-        public bool IsShadowReceiver { get; set; }
+        [DataMember(50)]
+        [DefaultValue(RenderGroup.Group0)]
+        public RenderGroup RenderGroup { get; set; }
 
         /// <summary>
         /// Gets the bounding box in world space.

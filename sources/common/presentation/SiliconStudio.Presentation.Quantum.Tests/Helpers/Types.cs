@@ -7,22 +7,23 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
     {
         public class TestPropertiesProvider : IPropertiesProviderViewModel
         {
-            private readonly IContentNode rootNode;
+            private readonly IObjectNode rootNode;
 
-            public TestPropertiesProvider(IContentNode rootNode)
+            public TestPropertiesProvider(IObjectNode rootNode)
             {
                 this.rootNode = rootNode;
             }
             public bool CanProvidePropertiesViewModel => true;
 
-            public IContentNode GetRootNode()
+            public IObjectNode GetRootNode()
             {
                 return rootNode;
             }
 
-            public ExpandReferencePolicy ShouldExpandReference(IMemberNode member, ObjectReference reference) => ExpandReferencePolicy.Full;
+            public ExpandReferencePolicy ShouldConstructChildren(IGraphNode graphNode, Index index) => ExpandReferencePolicy.Full;
 
-            public bool ShouldConstructMember(IMemberNode content, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
+            public bool ShouldConstructMember(IMemberNode member, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
+            public bool ShouldConstructItem(IObjectNode collection, Index index, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
         }
 
         public class SimpleObject

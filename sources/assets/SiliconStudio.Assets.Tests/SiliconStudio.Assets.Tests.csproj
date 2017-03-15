@@ -29,7 +29,7 @@
     </Reference>
     <Reference Include="nunit.core.interfaces, Version=2.6.0.12051, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.core.interfaces.dll</HintPath>
+      <HintPath>$(SiliconStudioDependenciesDir)NUnit\addins\nunit.core.interfaces.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>
@@ -42,6 +42,8 @@
       <Link>TestMemberPathBase.cs</Link>
     </Compile>
     <Compile Include="CustomParameterCollection.cs" />
+    <Compile Include="Helpers\GuidGenerator.cs" />
+    <Compile Include="Helpers\IdentifierGenerator.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="PropertyKeySerializerTest.cs" />
     <Compile Include="TestAssetCloner.cs" />
@@ -63,6 +65,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestPathSelector.cs" />
     <Compile Include="TestTemplateManager.cs" />
+    <Compile Include="Yaml\TestObjectReferenceSerialization.cs" />
     <Compile Include="Yaml\TestUnloadable.cs" />
     <Compile Include="Yaml\TestCollectionIdsSerialization.cs" />
   </ItemGroup>

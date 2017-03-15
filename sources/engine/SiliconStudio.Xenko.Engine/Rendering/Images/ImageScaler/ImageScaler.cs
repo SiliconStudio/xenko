@@ -16,10 +16,17 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageScaler"/> class.
         /// </summary>
-        public ImageScaler()
+        /// <param name="samplingPattern">9 taps multi-sampler (Expanded) or 1-tap Point sampling (Linear)</param>
+        public ImageScaler(SamplingPattern samplingPattern, bool delaySetRenderTargets = false) : base(null, delaySetRenderTargets)
         {
-            EffectName = "ImageScalerEffect";
+            EffectName = samplingPattern == SamplingPattern.Expanded ? "ImageSuperSamplerScalerEffect" : "ImageScalerEffect";
         }
+
+        public ImageScaler()
+            : this(SamplingPattern.Linear)
+        {}
+
+        public SamplingPattern FilterPattern => EffectName == "ImageScalerEffect" ? SamplingPattern.Linear : SamplingPattern.Expanded;
 
         /// <summary>
         /// Gets or sets the color multiplier. Default is <see cref="SiliconStudio.Core.Mathematics.Color.White"/>

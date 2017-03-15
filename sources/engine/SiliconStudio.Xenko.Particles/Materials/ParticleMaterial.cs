@@ -76,6 +76,14 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
         /// <summary>
+        /// Forces the material update, potentionally recreating the effect
+        /// </summary>
+        public virtual void ForceUpdate()
+        {
+
+        }
+
+        /// <summary>
         /// Setup the pipeline state object.
         /// </summary>
         /// <param name="renderContext"></param>

@@ -122,7 +122,7 @@ namespace SiliconStudio.AssemblyProcessor
 
             // Make sure it is called at module startup
             var moduleInitializerAttribute = siliconStudioCoreModule.GetType("SiliconStudio.Core.ModuleInitializerAttribute");
-            var ctorMethod = moduleInitializerAttribute.GetConstructors().Single(x => !x.IsStatic);
+            var ctorMethod = moduleInitializerAttribute.GetConstructors().Single(x => !x.IsStatic && !x.HasParameters);
             pclVisitor.VisitMethod(ctorMethod);
             mainPrepareMethod.CustomAttributes.Add(new CustomAttribute(context.Assembly.MainModule.ImportReference(ctorMethod)));
 

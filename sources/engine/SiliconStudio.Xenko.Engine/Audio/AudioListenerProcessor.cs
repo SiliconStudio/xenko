@@ -90,12 +90,12 @@ namespace SiliconStudio.Xenko.Audio
                     continue;
 
                 var listener = listenerData.Listener;
-                var worldMatrix = listenerData.Entity.Transform.WorldMatrix;
-                var newPosition = worldMatrix.TranslationVector;
+                listener.WorldTransform = listenerData.Entity.Transform.WorldMatrix;
+                var newPosition = listener.WorldTransform.TranslationVector;
                 listener.Velocity = newPosition - listener.Position; // estimate velocity from last and new position
                 listener.Position = newPosition;
-                listener.Forward = Vector3.Normalize((Vector3)worldMatrix.Row3);
-                listener.Up = Vector3.Normalize((Vector3)worldMatrix.Row2);
+                listener.Forward = Vector3.Normalize((Vector3)listener.WorldTransform.Row3);
+                listener.Up = Vector3.Normalize((Vector3)listener.WorldTransform.Row2);
 
                 listener.Update();
             }

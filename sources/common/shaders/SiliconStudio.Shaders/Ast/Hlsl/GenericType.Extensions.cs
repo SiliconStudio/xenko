@@ -12,7 +12,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
             // TODO cache generic instance that are using predefined hlsl types
             var newType = genericTemplateType.DeepClone();
 
-            var genericParameters = ((IGenerics)genericTemplateType).GenericParameters;
+            var genericParameters = ((IGenerics)newType).GenericParameters;
             var genericArguments = ((IGenerics)newType).GenericArguments;
             var genericInstanceParameters = genericType.Parameters;
 

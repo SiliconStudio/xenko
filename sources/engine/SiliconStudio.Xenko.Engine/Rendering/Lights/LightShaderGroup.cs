@@ -70,6 +70,15 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         public virtual void ApplyDrawParameters(RenderDrawContext context, int viewIndex, ParameterCollection parameters, ref BoundingBoxExt boundingBox)
         {
         }
+
+        /// <summary>
+        /// Prepares PerView lighting parameters.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="viewIndex"></param>
+        public virtual void UpdateViewResources(RenderDrawContext context, int viewIndex)
+        {
+        }
     }
 
     public struct LightDynamicEntry

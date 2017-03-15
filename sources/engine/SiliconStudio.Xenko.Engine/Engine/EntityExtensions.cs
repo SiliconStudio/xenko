@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Gets the children of this entity.
         /// </summary>
         /// <param name="entity">The entity</param>
-        /// <returns>An iteration on the children entity</returns>
+        /// <returns>An iteration on the child entity</returns>
         public static IEnumerable<Entity> GetChildren(this Entity entity)
         {
             var transformationComponent = entity.Transform;

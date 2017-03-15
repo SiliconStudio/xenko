@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// A sheet (group) of sprites.
     /// </summary>
     [DataContract]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<SpriteSheet>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<SpriteSheet>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<SpriteSheet>))]
     public class SpriteSheet
     {

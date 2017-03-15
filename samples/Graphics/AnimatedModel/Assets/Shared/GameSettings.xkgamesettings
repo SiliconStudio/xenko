@@ -1,8 +1,9 @@
 !GameSettingsAsset
 Id: 139fbe2e-f80a-4334-a64b-5a9d10e643c7
-SerializedVersion: {Xenko: 1.6.1-alpha01}
+SerializedVersion: {Xenko: 1.9.3-alpha01}
 Tags: []
 DefaultScene: 84efeed8-fdd2-4e9b-9cfb-d4ea3e5aa6aa:Scene
+GraphicsCompositor: 832f0013-9afb-42ad-a8c5-601efec9d95d:GraphicsCompositor
 Defaults:
     - !SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics
         DefaultBackBufferWidth: 640
@@ -20,6 +21,8 @@ Defaults:
         Flags: None
         MaxSubSteps: 1
         FixedTimeStep: 0.0166666675
+    - !SiliconStudio.Xenko.Audio.AudioEngineSettings,SiliconStudio.Xenko.Audio
+        HrtfSupport: false
 Overrides: []
 PlatformFilters:
     - PowerVR SGX 54[0-9]

@@ -27,9 +27,10 @@ namespace SiliconStudio.Assets.CompilerApp
         /// <param name="indexName">Name of the index file.</param>
         /// <param name="outputDirectory">The output directory.</param>
         /// <param name="disableCompressionIds">The object id that should be kept uncompressed in the bundle (everything else will be compressed using LZ4).</param>
+        /// <param name="useIncrementalBundles">Specifies if incremental bundles should be used, or writing a complete new one.</param>
         /// <exception cref="System.InvalidOperationException">
         /// </exception>
-        public void Build(Logger logger, PackageSession packageSession, PackageProfile profile, string indexName, string outputDirectory, ISet<ObjectId> disableCompressionIds)
+        public void Build(Logger logger, PackageSession packageSession, PackageProfile profile, string indexName, string outputDirectory, ISet<ObjectId> disableCompressionIds, bool useIncrementalBundles)
         {
             if (logger == null) throw new ArgumentNullException("logger");
             if (packageSession == null) throw new ArgumentNullException("packageSession");
@@ -240,7 +241,7 @@ namespace SiliconStudio.Assets.CompilerApp
                                 bundleBackend = outputBundleBackend;
                             }
 
-                            objDatabase.CreateBundle(bundle.ObjectIds.ToArray(), bundle.Name, bundleBackend, disableCompressionIds, bundle.IndexMap, dependencies);
+                            objDatabase.CreateBundle(bundle.ObjectIds.ToArray(), bundle.Name, bundleBackend, disableCompressionIds, bundle.IndexMap, dependencies, useIncrementalBundles);
                         }
 
                         // Dispose VFS created for groups

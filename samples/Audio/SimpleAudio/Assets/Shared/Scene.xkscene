@@ -1,34 +1,8 @@
 !SceneAsset
 Id: 5f4a3789-b182-4b32-9088-acbf9e13edb5
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
-SceneSettings:
-    Id: df51691c-bfdf-40f2-859c-c41a1396724a
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            fdbe3601ec5a5442a2dec152f3d3f10e:
-                Name: null
-                Camera: 970d3c33-9819-4206-a101-d81f9259477f/bdf6144e-9398-4baa-9a86-07bd2e81c981
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                211fa7fde5e21c48bb479c3450246993: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                7fbbdfc8f663864b8a7a8475e56c5bd3: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - 970d3c33-9819-4206-a101-d81f9259477f
@@ -47,8 +21,10 @@ Hierarchy:
                         Children: {}
                     4e14f6bd9893aa4b9a8607bd2e81c981: !CameraComponent
                         Id: bdf6144e-9398-4baa-9a86-07bd2e81c981
+                        Name: null
                         Projection: Orthographic
                         FarClipPlane: 10.0
+                        Slot: {Index: 0}
         -   Entity:
                 Id: dececd10-b6ea-46fa-8129-c8683f4a6974
                 Name: SoundScript

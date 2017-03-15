@@ -787,9 +787,15 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         private void CheckNameConflict(VariableReferenceExpression variableReferenceExpression)
         {
             var name = variableReferenceExpression.Name.Text;
+
+            // First, check in the local virtual table (which we assume is resolved first)
+            var varCount = analyzedModuleMixin.LocalVirtualTable.Variables.Count(x => x.Variable.Name.Text == name);
+            if (varCount == 1)
+                return;
+
             // NOTE: a VariableReferenceExpression means that we are in the context of the currently analyzed mixin
             // we need to check that a variable does not appear twice
-            var varCount = analyzedModuleMixin.VirtualTable.Variables.Count(x => x.Variable.Name.Text == name);
+            varCount = analyzedModuleMixin.VirtualTable.Variables.Count(x => x.Variable.Name.Text == name);
 
             if (varCount > 1)
                 Error(XenkoMessageCode.ErrorVariableNameAmbiguity, variableReferenceExpression.Span, variableReferenceExpression, analyzedModuleMixin.MixinName);

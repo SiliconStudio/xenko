@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Assets.Quantum
 {
     public class AssetPropertyGraphContainer
     {
-        private readonly PackageSession session;
         private readonly Dictionary<AssetId, AssetPropertyGraph> registeredGraphs = new Dictionary<AssetId, AssetPropertyGraph>();
 
-        public AssetPropertyGraphContainer(PackageSession session, AssetNodeContainer nodeContainer)
+        public AssetPropertyGraphContainer(AssetNodeContainer nodeContainer)
         {
-            this.session = session;
             NodeContainer = nodeContainer;
         }
 
@@ -20,17 +19,18 @@ namespace SiliconStudio.Assets.Quantum
 
         public bool PropagateChangesFromBase { get; set; } = true;
 
-        public AssetPropertyGraph InitializeAsset(AssetItem assetItem, ILogger logger)
+        public AssetPropertyGraph InitializeAsset([NotNull] AssetItem assetItem, ILogger logger)
         {
             // SourceCodeAssets have no property
             if (assetItem.Asset is SourceCodeAsset)
                 return null;
 
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(this, assetItem, logger);
-            RegisterGraph(assetItem.Id, graph);
+            RegisterGraph(graph);
             return graph;
         }
 
+        [CanBeNull]
         public AssetPropertyGraph GetGraph(AssetId assetId)
         {
             AssetPropertyGraph graph;
@@ -38,19 +38,14 @@ namespace SiliconStudio.Assets.Quantum
             return graph;
         }
 
-        public void RegisterGraph(AssetId assetId, AssetPropertyGraph graph)
+        public void RegisterGraph(AssetPropertyGraph graph)
         {
-            registeredGraphs.Add(assetId, graph);
+            registeredGraphs.Add(graph.Id, graph);
         }
 
         public bool UnregisterGraph(AssetId assetId)
         {
             return registeredGraphs.Remove(assetId);
-        }
-
-        public AssetItem GetAssetById(AssetId assetId)
-        {
-            return session.FindAsset(assetId);
         }
     }
 }

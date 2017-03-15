@@ -15,7 +15,7 @@ using SiliconStudio.Xenko.Rendering.Tessellation;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         public TesselationTest(bool isDebug)
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4;
             debug = isDebug;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
@@ -125,8 +125,10 @@ namespace SiliconStudio.Xenko.Engine.Tests
             FrameGameSystem.Draw(() => ChangeMaterial(1)).TakeScreenshot();
         }
 
-        protected override void PostCameraRendererDraw(RenderDrawContext context, RenderFrame frame)
+        protected override void Draw(GameTime gameTime)
         {
+            base.Draw(gameTime);
+
             if (!debug)
                 return;
 

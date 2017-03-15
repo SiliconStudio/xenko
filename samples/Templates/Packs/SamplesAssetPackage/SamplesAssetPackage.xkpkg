@@ -1,7 +1,6 @@
 !Package
 Id: bdd7a38f-3ff5-4279-b7b7-27a4c677f4d7
 SerializedVersion: {Assets: 0.0.4}
-Tags: []
 Meta:
     Name: SamplesAssetPackage
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.11.0-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:

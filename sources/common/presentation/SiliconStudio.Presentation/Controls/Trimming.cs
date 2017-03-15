@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -38,7 +39,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         /// <param name="target">The target <see cref="DependencyObject"/>.</param>
         /// <returns>The value of the <see cref="TextTrimming"/> dependency property.</returns>
-        public static TextTrimming GetTextTrimming(DependencyObject target)
+        public static TextTrimming GetTextTrimming([NotNull] DependencyObject target)
         {
             return (TextTrimming)target.GetValue(TextTrimmingProperty);
         }
@@ -48,7 +49,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         /// <param name="target">The target <see cref="DependencyObject"/>.</param>
         /// <param name="value">The value to set.</param>
-        public static void SetTextTrimming(DependencyObject target, TextTrimming value)
+        public static void SetTextTrimming([NotNull] DependencyObject target, TextTrimming value)
         {
             target.SetValue(TextTrimmingProperty, value);
         }
@@ -58,7 +59,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         /// <param name="target">The target <see cref="DependencyObject"/>.</param>
         /// <returns>The value of the <see cref="TrimmingSource"/> dependency property.</returns>
-        public static TrimmingSource GetTrimmingSource(DependencyObject target)
+        public static TrimmingSource GetTrimmingSource([NotNull] DependencyObject target)
         {
             return (TrimmingSource)target.GetValue(TrimmingSourceProperty);
         }
@@ -68,7 +69,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         /// <param name="target">The target <see cref="DependencyObject"/>.</param>
         /// <param name="value">The value to set.</param>
-        public static void SetTrimmingSource(DependencyObject target, TrimmingSource value)
+        public static void SetTrimmingSource([NotNull] DependencyObject target, TrimmingSource value)
         {
             target.SetValue(TrimmingSourceProperty, value);
         }
@@ -78,7 +79,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         /// <param name="target">The target <see cref="DependencyObject"/>.</param>
         /// <returns>The value of the <see cref="WordSeparators"/> dependency property.</returns>
-        public static string GetWordSeparators(DependencyObject target)
+        public static string GetWordSeparators([NotNull] DependencyObject target)
         {
             return (string)target.GetValue(WordSeparatorsProperty);
         }
@@ -88,16 +89,16 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         /// <param name="target">The target <see cref="DependencyObject"/>.</param>
         /// <param name="value">The value to set.</param>
-        public static void SetWordSeparators(DependencyObject target, string value)
+        public static void SetWordSeparators([NotNull] DependencyObject target, string value)
         {
             target.SetValue(WordSeparatorsProperty, value);
         }
 
-        public static string ProcessTrimming(Control control, string text, double availableWidth)
+        public static string ProcessTrimming([NotNull] Control control, string text, double availableWidth)
         {
-            TextTrimming trimming = GetTextTrimming(control);
-            TrimmingSource source = GetTrimmingSource(control);
-            string wordSeparators = GetWordSeparators(control);
+            var trimming = GetTextTrimming(control);
+            var source = GetTrimmingSource(control);
+            var wordSeparators = GetWordSeparators(control);
             return ProcessTrimming(control, text, availableWidth, trimming, source, wordSeparators);
         }
 
@@ -133,7 +134,7 @@ namespace SiliconStudio.Presentation.Controls
                     throw new ArgumentException("Invalid 'TextTrimming' argument.");
             }
 
-            bool firstWord = true;
+            var firstWord = true;
             
             switch (source)
             {
@@ -142,7 +143,7 @@ namespace SiliconStudio.Presentation.Controls
                     var currentWidth = GetTextWidth(control, Ellipsis, trimming);
 
                     var ending = new StringBuilder();
-                    for (int i = words.Count - 1; i >= 0; --i)
+                    for (var i = words.Count - 1; i >= 0; --i)
                     {
                         var test = currentWidth + sizes[i];
 
@@ -160,7 +161,7 @@ namespace SiliconStudio.Presentation.Controls
                         firstWord = false;
                     }
 
-                    return string.Format("{0}{1}", Ellipsis, ending);
+                    return $"{Ellipsis}{ending}";
                 }
                 case TrimmingSource.Middle:
                 {
@@ -196,7 +197,7 @@ namespace SiliconStudio.Presentation.Controls
                     var currentWidth = GetTextWidth(control, Ellipsis, trimming);
 
                     var begin = new StringBuilder();
-                    for (int i = 0; i < words.Count; ++i)
+                    for (var i = 0; i < words.Count; ++i)
                     {
                         var test = currentWidth + sizes[i];
 
@@ -215,20 +216,20 @@ namespace SiliconStudio.Presentation.Controls
                         firstWord = false;
                     }
 
-                    return string.Format("{0}{1}", begin, Ellipsis);
+                    return $"{begin}{Ellipsis}";
                 }
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        private static double GetTextWidth(Control control, string text, TextTrimming trimming)
+        private static double GetTextWidth([NotNull] Control control, [NotNull] string text, TextTrimming trimming)
         {
             double[] dummy;
             return GetTextWidth(control, text, trimming, out dummy);
         }
 
-        private static double GetTextWidth(Control control, string text, TextTrimming trimming, out double[] sizes)
+        private static double GetTextWidth([NotNull] Control control, [NotNull] string text, TextTrimming trimming, [NotNull] out double[] sizes)
         {
             var wordSeparators = GetWordSeparators(control);
 
@@ -236,7 +237,7 @@ namespace SiliconStudio.Presentation.Controls
             var totalWidth = 0.0;
             // We use a period to ensure space characters will have their actual size used.
             var period = new FormattedText(".", CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeface, control.FontSize, Brushes.Black);
-            double periodWidth = period.Width;
+            var periodWidth = period.Width;
 
             switch (trimming)
             {
@@ -244,9 +245,9 @@ namespace SiliconStudio.Presentation.Controls
                     sizes = new double[text.Length];
                     for (var i = 0; i < text.Length; i++)
                     {
-                        string token = text[i].ToString(CultureInfo.CurrentUICulture) + ".";
+                        var token = text[i].ToString(CultureInfo.CurrentUICulture) + ".";
                         var formattedText = new FormattedText(token, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeface, control.FontSize, Brushes.Black);
-                        double width = formattedText.Width - periodWidth;
+                        var width = formattedText.Width - periodWidth;
                         sizes[i] = width;
                         totalWidth += width;
                     }
@@ -256,24 +257,25 @@ namespace SiliconStudio.Presentation.Controls
                     sizes = new double[words.Count];
                     for (var i = 0; i < words.Count; i++)
                     {
-                        string token = words[i] + ".";
+                        var token = words[i] + ".";
                         var formattedText = new FormattedText(token, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeface, control.FontSize, Brushes.Black);
-                        double width = formattedText.Width - periodWidth;
+                        var width = formattedText.Width - periodWidth;
                         sizes[i] = width;
                         totalWidth += width;
                     }
                     return totalWidth;
                 default:
-                    throw new ArgumentOutOfRangeException("trimming");
+                    throw new ArgumentOutOfRangeException(nameof(trimming));
             }
         }
 
-        private static List<string> SplitWords(string text, string wordSeparators)
+        [NotNull]
+        private static List<string> SplitWords([NotNull] string text, string wordSeparators)
         {
             var words = new List<string>();
 
             var sb = new StringBuilder();
-            foreach (char c in text)
+            foreach (var c in text)
             {
                 if (wordSeparators.Contains(c))
                 {

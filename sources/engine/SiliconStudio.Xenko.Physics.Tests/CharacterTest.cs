@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Physics.Tests
                 await game.Script.NextFrame();
                 await game.Script.NextFrame();
 
-                var character = game.SceneSystem.SceneInstance.Scene.Entities.First(ent => ent.Name == "Character");
+                var character = game.SceneSystem.SceneInstance.RootScene.Entities.First(ent => ent.Name == "Character");
                 var controller = character.Get<CharacterComponent>();
                 var simulation = controller.Simulation;
 
@@ -110,7 +110,8 @@ namespace SiliconStudio.Xenko.Physics.Tests
 
                 Assert.AreEqual(currentPos, character.Transform.Position);
 
-                var collider = game.SceneSystem.SceneInstance.Scene.Entities.First(ent => ent.Name == "Collider").Get<StaticColliderComponent>();
+                var collider = game.SceneSystem.SceneInstance.RootScene.Entities.First(ent => ent.Name == "Collider").Get<StaticColliderComponent>();
+                collider.ProcessCollisions = true;
 
                 game.Script.AddTask(async () =>
                 {

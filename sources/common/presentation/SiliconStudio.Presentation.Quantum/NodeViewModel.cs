@@ -45,7 +45,6 @@ namespace SiliconStudio.Presentation.Quantum
             DependentProperties.Add(nameof(Path), new[] { nameof(DisplayPath) });
             Owner = ownerViewModel;
             Index = index;
-            Guid = Guid.NewGuid();
             IsVisible = true;
             IsReadOnly = false;
         }
@@ -114,11 +113,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets or sets the index of this node, relative to its parent node when its contains a collection. Can be null of this node is not in a collection.
         /// </summary>
         public Index Index { get; }
-
-        /// <summary>
-        /// Gets a unique identifier for this node view model.
-        /// </summary>
-        public Guid Guid { get; }
 
         /// <summary>
         /// Gets the list of children nodes.
@@ -451,15 +445,37 @@ namespace SiliconStudio.Presentation.Quantum
                 initializingChildren.Remove(node);
             }
         }
-        
-        protected void AddCommand(INodeCommandWrapper command)
+
+        /// <summary>
+        /// Adds the provided <paramref name="command"/> to this node.
+        /// </summary>
+        /// <param name="command">The command to add.</param>
+        protected void AddCommand([NotNull] INodeCommandWrapper command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
+
             OnPropertyChanging($"{GraphViewModel.HasCommandPrefix}{command.Name}");
             OnPropertyChanging(command.Name);
             commands.Add(command);
             OnPropertyChanged(command.Name);
             OnPropertyChanged($"{GraphViewModel.HasCommandPrefix}{command.Name}");
+        }
+
+        /// <summary>
+        /// Removes the provided <paramref name="command"/> from this node, if it exists.
+        /// </summary>
+        /// <param name="command">The command to remove.</param>
+        /// <returns><c>true</c> if the command was sucessfully removed; otherwise, <c>false</c>.</returns>
+        protected bool RemoveCommand([NotNull] INodeCommandWrapper command)
+        {
+            if (command == null) throw new ArgumentNullException(nameof(command));
+
+            OnPropertyChanging($"{GraphViewModel.HasCommandPrefix}{command.Name}");
+            OnPropertyChanging(command.Name);
+            var removed = commands.Remove(command);
+            OnPropertyChanged(command.Name);
+            OnPropertyChanged($"{GraphViewModel.HasCommandPrefix}{command.Name}");
+            return removed;
         }
 
         protected void ClearCommands()

@@ -58,7 +58,7 @@ namespace SiliconStudio.Presentation.Collections
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        [NotNull, Pure]
+        [NotNull]
         public IList ToIList()
         {
             return new NonGenericObservableListWrapper<T>(this);
@@ -69,7 +69,6 @@ namespace SiliconStudio.Presentation.Collections
         {
             return list.GetEnumerator();
         }
-
         [Pure]
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -82,7 +81,7 @@ namespace SiliconStudio.Presentation.Collections
             Insert(Count, item);
         }
 
-        public void AddRange([NotNull] IEnumerable<T> items)
+        public void AddRange(IEnumerable<T> items)
         {
             var itemList = items.ToList();
             if (itemList.Count > 0)
@@ -190,7 +189,7 @@ namespace SiliconStudio.Presentation.Collections
             }
         }
 
-        protected void OnPropertyChanged(PropertyChangedEventArgs arg)
+        protected void OnPropertyChanged([NotNull] PropertyChangedEventArgs arg)
         {
             PropertyChanged?.Invoke(this, arg);
         }

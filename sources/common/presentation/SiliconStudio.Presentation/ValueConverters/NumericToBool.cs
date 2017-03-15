@@ -1,7 +1,8 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Globalization;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -14,15 +15,18 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is sbyte) return ((sbyte)value) != 0;
-            if (value is short) return ((short)value) != 0;
-            if (value is int) return ((int)value) != 0;
-            if (value is long) return ((long)value) != 0;
-            if (value is byte) return ((byte)value) != 0;
-            if (value is ushort) return ((ushort)value) != 0;
-            if (value is uint) return ((uint)value) != 0;
-            if (value is ulong) return ((ulong)value) != 0;
-            throw new ArgumentException("value is not a numeric type");
+            bool result;
+            if (value is sbyte) result = (sbyte)value != 0;
+            else if (value is short) result = (short)value != 0;
+            else if (value is int) result = (int)value != 0;
+            else if (value is long) result = (long)value != 0;
+            else if (value is byte) result = (byte)value != 0;
+            else if (value is ushort) result = (ushort)value != 0;
+            else if (value is uint) result = (uint)value != 0;
+            else if (value is ulong) result = (ulong)value != 0;
+            else
+                throw new ArgumentException($"{nameof(value)} is not a numeric type");
+            return result.Box();
         }
     }
 }

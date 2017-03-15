@@ -19,7 +19,7 @@ namespace SiliconStudio.Assets.Serializers
 
         public override bool CanVisit(Type type)
         {
-            return ReferenceSerializer.IsReferenceType(type);
+            return AssetRegistry.IsContentType(type);
         }
 
         public override object ConvertFrom(ref ObjectContext context, Scalar fromScalar)

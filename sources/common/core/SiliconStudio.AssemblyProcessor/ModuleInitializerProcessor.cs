@@ -15,22 +15,27 @@ namespace SiliconStudio.AssemblyProcessor
         public bool Process(AssemblyProcessorContext context)
         {
             var assembly = context.Assembly;
-            var moduleInitializers = new List<MethodReference>();
+            var moduleInitializers = new List<KeyValuePair<int, MethodReference>>();
 
             // Generate a module initializer for all types, including nested types
             foreach (var type in assembly.EnumerateTypes())
             {
                 foreach (var method in type.Methods)
                 {
-                    if (method.CustomAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.ModuleInitializerAttribute"))
+                    var moduleInitializerAttribute = method.CustomAttributes.FirstOrDefault(x => x.AttributeType.FullName == "SiliconStudio.Core.ModuleInitializerAttribute");
+                    if (moduleInitializerAttribute != null)
                     {
-                        moduleInitializers.Add(method);
+                        var order = moduleInitializerAttribute.HasConstructorArguments ? (int)moduleInitializerAttribute.ConstructorArguments[0].Value : 0;
+                        moduleInitializers.Add(new KeyValuePair<int, MethodReference>(order, method));
                     }
                 }
             }
 
             if (moduleInitializers.Count == 0)
                 return false;
+
+            // Sort by Order property
+            moduleInitializers = moduleInitializers.OrderBy(x => x.Key).ToList();
 
             // Get or create module static constructor
             Instruction returnInstruction;
@@ -47,7 +52,7 @@ namespace SiliconStudio.AssemblyProcessor
             staticConstructor.Body.SimplifyMacros();
             foreach (var moduleInitializer in moduleInitializers)
             {
-                il.Append(Instruction.Create(OpCodes.Call, moduleInitializer));
+                il.Append(Instruction.Create(OpCodes.Call, moduleInitializer.Value));
             }
             il.Append(newReturnInstruction);
             staticConstructor.Body.OptimizeMacros();

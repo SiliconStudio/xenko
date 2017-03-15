@@ -30,11 +30,7 @@ namespace SiliconStudio.Xenko.Engine
     public sealed class Entity : ComponentBase, IEnumerable<EntityComponent>, IIdentifiable
     {
         internal TransformComponent transform;
-
-        /// <summary>
-        /// Internal owner of this entity
-        /// </summary>
-        internal IEntityComponentNotify Owner;
+        internal Scene scene;
 
         /// <summary>
         /// Create a new <see cref="Entity"/> instance.
@@ -74,7 +70,6 @@ namespace SiliconStudio.Xenko.Engine
         private Entity(string name, bool notUsed) : base(name)
         {
             Components = new EntityComponentCollection(this);
-            Group = EntityGroup.Group0;
         }
 
         [DataMember(-10), Display(Browsable = false)]
@@ -95,19 +90,42 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
+        /// The parent scene.
+        /// </summary>
+        [DataMemberIgnore]
+        public Scene Scene
+        {
+            get
+            {
+                return this.FindRoot().scene;
+            }
+
+            set
+            {
+                if (this.GetParent() != null)
+                    throw new InvalidOperationException("This entity is another entity's child. Detach it before changing its scene.");
+
+                var oldScene = scene;
+                if (oldScene == value)
+                    return;
+
+                oldScene?.Entities.Remove(this);
+                value?.Entities.Add(this);
+            }
+        }
+
+        /// <summary>
+        /// The entity manager which processes this entity.
+        /// </summary>
+        [DataMemberIgnore]
+        public EntityManager EntityManager { get; internal set; }
+
+        /// <summary>
         /// Gets or sets the <see cref="Transform"/> associated to this entity.
         /// Added for convenience over usual Get/Set method.
         /// </summary>
         [DataMemberIgnore]
         public TransformComponent Transform => transform;
-
-        /// <summary>
-        /// Gets or sets the group of this entity.
-        /// </summary>
-        /// <value>The group.</value>
-        [DataMember(10)]
-        [DefaultValue(EntityGroup.Group0)]
-        public EntityGroup Group { get; set; }
 
         /// <summary>
         /// The components stored in this entity.
@@ -216,7 +234,7 @@ namespace SiliconStudio.Xenko.Engine
         internal void OnComponentChanged(int index, EntityComponent oldComponent, EntityComponent newComponent)
         {
             // Don't use events but directly call the Owner
-            Owner?.OnComponentChanged(this, index, oldComponent, newComponent);
+            EntityManager?.NotifyComponentChanged(this, index, oldComponent, newComponent);
         }
 
         public override string ToString()
@@ -285,7 +303,6 @@ namespace SiliconStudio.Xenko.Engine
         {
             private DataSerializer<Guid> guidSerializer;
             private DataSerializer<string> stringSerializer;
-            private DataSerializer<EntityGroup> entityGroupSerializer;
             private DataSerializer<EntityComponentCollection> componentCollectionSerializer;
 
             /// <inheritdoc/>
@@ -293,7 +310,6 @@ namespace SiliconStudio.Xenko.Engine
             {
                 guidSerializer = MemberSerializer<Guid>.Create(serializerSelector);
                 stringSerializer = MemberSerializer<string>.Create(serializerSelector);
-                entityGroupSerializer = MemberSerializer<EntityGroup>.Create(serializerSelector);
                 componentCollectionSerializer = MemberSerializer<EntityComponentCollection>.Create(serializerSelector);
             }
 
@@ -323,11 +339,6 @@ namespace SiliconStudio.Xenko.Engine
                 var name = obj.Name;
                 stringSerializer.Serialize(ref name, mode, stream);
                 obj.Name = name;
-
-                // EntityGroup
-                var group = obj.Group;
-                entityGroupSerializer.Serialize(ref group, mode, stream);
-                obj.Group = group;
 
                 // Components
                 var collection = obj.Components;
