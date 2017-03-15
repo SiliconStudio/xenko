@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -84,97 +81,23 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
-        /// Determines whether the specified type is nullable <see cref="Nullable{T}.Nullable{T}"/>.
+        /// Determines whether the specified type is a <see cref="Nullable{T}"/>.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns><c>true</c> if the specified type is nullable; otherwise, <c>false</c>.</returns>
         public static bool IsNullable(this Type type)
         {
-            return Nullable.GetUnderlyingType(type) != null;
+            return type != null && Nullable.GetUnderlyingType(type) != null;
         }
 
         /// <summary>
         /// Indicates whether the specified <paramref name="type"/> is a non-primitive struct type.
         /// </summary>
-        /// <param name="type">The <see cref="Type.Type"/> to be analyzed.</param>
+        /// <param name="type">The <see cref="Type"/> to be analyzed.</param>
         /// <returns><c>True</c> if the specified <paramref name="type"/> is a non-primitive struct type; otehrwise <c>False</c>.</returns>
         public static bool IsStruct(this Type type)
         {
             return type != null && type.GetTypeInfo().IsValueType && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;
-        }
-
-        /// <summary>
-        /// Casts boxed numeric value to double
-        /// </summary>
-        /// <param name="obj">boxed numeric value</param>
-        /// <returns>Numeric value in double. Double.Nan if obj is not a numeric value.</returns>
-        internal static double CastToDouble(object obj)
-        {
-            var result = Double.NaN;
-            var type = obj?.GetType();
-            if (type == typeof(sbyte))
-                result = (sbyte)obj;
-            if (type == typeof(byte))
-                result = (byte)obj;
-            if (type == typeof(short))
-                result = (short)obj;
-            if (type == typeof(ushort))
-                result = (ushort)obj;
-            if (type == typeof(int))
-                result = (int)obj;
-            if (type == typeof(uint))
-                result = (uint)obj;
-            if (type == typeof(long))
-                result = (long)obj;
-            if (type == typeof(ulong))
-                result = (ulong)obj;
-            if (type == typeof(float))
-                result = (float)obj;
-            if (type == typeof(double))
-                result = (double)obj;
-            if (type == typeof(decimal))
-                result = (double)(decimal)obj;
-            return result;
-        }
-        /// <summary>
-        /// Casts an object to a specified numeric type.
-        /// </summary>
-        /// <param name="obj">Any object</param>
-        /// <param name="type">Numric type</param>
-        /// <returns>Numeric value or null if the object is not a numeric value.</returns>
-        public static object CastToNumericType(this Type type, object obj)
-        {
-            var doubleValue = CastToDouble(obj);
-            if (Double.IsNaN(doubleValue))
-                return null;
-
-            if (obj is decimal && type == typeof(decimal))
-                return obj; // do not convert into double
-
-            object result = null;
-            if (type == typeof(sbyte))
-                result = (sbyte)doubleValue;
-            if (type == typeof(byte))
-                result = (byte)doubleValue;
-            if (type == typeof(short))
-                result = (short)doubleValue;
-            if (type == typeof(ushort))
-                result = (ushort)doubleValue;
-            if (type == typeof(int))
-                result = (int)doubleValue;
-            if (type == typeof(uint))
-                result = (uint)doubleValue;
-            if (type == typeof(long))
-                result = (long)doubleValue;
-            if (type == typeof(ulong))
-                result = (ulong)doubleValue;
-            if (type == typeof(float))
-                result = (float)doubleValue;
-            if (type == typeof(double))
-                result = doubleValue;
-            if (type == typeof(decimal))
-                result = (decimal)doubleValue;
-            return result;
         }
         
         /// <summary>

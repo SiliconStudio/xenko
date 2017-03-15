@@ -155,7 +155,6 @@
     <Compile Include="Tokens\Token.cs" />
     <Compile Include="Tokens\Value.cs" />
     <Compile Include="Tokens\VersionDirective.cs" />
-    <Compile Include="TypeExtensions.cs" />
     <Compile Include="Version.cs" />
     <Compile Include="YamlException.cs" />
   </ItemGroup>

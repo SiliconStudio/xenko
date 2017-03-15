@@ -325,7 +325,15 @@ namespace SiliconStudio.Core.Reflection
                 object defaultValue = defaultValueAttribute.Value;
                 Type defaultType = defaultValue?.GetType();
                 if (defaultType.IsNumeric() && defaultType != memberType)
-                    defaultValue = memberType.CastToNumericType(defaultValue);
+                {
+                    try
+                    {
+                        defaultValue = Convert.ChangeType(defaultValue, memberType);
+                    }
+                    catch (InvalidCastException)
+                    {
+                    }
+                }
                 member.ShouldSerialize = obj => !Equals(defaultValue, member.Get(obj));
             }
 

@@ -74,8 +74,6 @@
     <Compile Include="Reflection\IDataVisitor.cs" />
     <Compile Include="Reflection\ShadowObject.cs" />
     <Compile Include="Reflection\ShadowObjectPropertyKey.cs" />
-    <Compile Include="Reflection\ThisDescriptor.cs" />
-    <Compile Include="Reflection\TypeExtensions.cs" />
     <Compile Include="Reflection\VisitorContext.cs" />
     <Compile Include="Settings\ChangesValidatedEventArgs.cs" />
     <Compile Include="Settings\FileModifiedEventArgs.cs" />
