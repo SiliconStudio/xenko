@@ -282,6 +282,20 @@ namespace SiliconStudio.Core.Mathematics
         /// Converts the color into a packed integer.
         /// </summary>
         /// <returns>A packed integer containing all four color components.</returns>
+        public int ToArgb()
+        {
+            int value = A;
+            value |= R << 8;
+            value |= G << 16;
+            value |= B << 24;
+
+            return value;
+        }
+
+        /// <summary>
+        /// Converts the color into a packed integer.
+        /// </summary>
+        /// <returns>A packed integer containing all four color components.</returns>
         public int ToAbgr()
         {
             int value = A;
