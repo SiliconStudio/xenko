@@ -99,6 +99,8 @@ namespace SiliconStudio.Xenko.Navigation
             IncludedCollisionGroups = navigationSettings.IncludedCollisionGroups;
             AgentSettings = navigationSettings.NavigationMeshAgentSettings;
             Enabled = navigationSettings.EnableDynamicNavigationMesh;
+
+            pendingRebuild = true;
         }
 
         /// <inheritdoc />
