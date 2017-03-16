@@ -7,5 +7,6 @@ namespace SiliconStudio.Xenko.Rendering.Background
     {
         public Texture Texture;
         public float Intensity;
+        public Quaternion Rotation;
     }
 }

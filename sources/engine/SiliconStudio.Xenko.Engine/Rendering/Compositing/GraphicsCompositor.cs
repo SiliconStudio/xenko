@@ -329,17 +329,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             }
                         },
                     },
-                    new SkyboxRenderFeature
-                    {
-                        RenderStageSelectors =
-                        {
-                            new SimpleGroupToRenderStageSelector
-                            {
-                                RenderStage = opaqueRenderStage,
-                                EffectName = "SkyboxEffect",
-                            }
-                        },
-                    },
                     new BackgroundRenderFeature
                     {
                         RenderStageSelectors =
