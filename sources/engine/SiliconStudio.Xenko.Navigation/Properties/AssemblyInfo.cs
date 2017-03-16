@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -21,7 +21,4 @@ using System.Runtime.InteropServices;
 
 #pragma warning disable 436 // SiliconStudio.PublicKeys is defined in multiple assemblies
 
-// Make internals Xenko visible to Xenko assemblies
 [assembly: InternalsVisibleTo("SiliconStudio.Xenko.Assets" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Assets.Presentation" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Xenko.GameStudio.Plugin" + SiliconStudio.PublicKeys.Default)]
