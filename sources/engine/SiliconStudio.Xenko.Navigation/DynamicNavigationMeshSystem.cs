@@ -37,6 +37,11 @@ namespace SiliconStudio.Xenko.Navigation
         /// </summary>
         public List<NavigationAgentSettings> AgentSettings { get; private set; } = new List<NavigationAgentSettings>();
 
+        /// <summary>
+        /// If <c>true</c>, this will automatically rebuild on addition/removal of static collider components
+        /// </summary>
+        public bool AutomaticRebuild { get; set; } = true;
+
         private bool pendingRebuild = true;
 
         private SceneInstance currentSceneInstance;
@@ -100,6 +105,7 @@ namespace SiliconStudio.Xenko.Navigation
             AgentSettings = navigationSettings.NavigationMeshAgentSettings;
             Enabled = navigationSettings.EnableDynamicNavigationMesh;
 
+            
             pendingRebuild = true;
         }
 
@@ -216,13 +222,19 @@ namespace SiliconStudio.Xenko.Navigation
         private void ProcessorOnColliderAdded(StaticColliderComponent component, StaticColliderData data)
         {
             builder.Add(data);
-            pendingRebuild = true;
+            if (AutomaticRebuild)
+            {
+                pendingRebuild = true;
+            }
         }
 
         private void ProcessorOnColliderRemoved(StaticColliderComponent component, StaticColliderData data)
         {
             builder.Remove(data);
-            pendingRebuild = true;
+            if (AutomaticRebuild)
+            {
+                pendingRebuild = true;
+            }
         }
 
         private void Cleanup()
