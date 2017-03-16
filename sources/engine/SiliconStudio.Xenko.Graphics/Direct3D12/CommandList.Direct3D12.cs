@@ -423,7 +423,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <inheritdoc />
         public void Dispatch(int threadCountX, int threadCountY, int threadCountZ)
         {
-            throw new NotImplementedException();
+            PrepareDraw();
+
+            currentCommandList.NativeCommandList.Dispatch(threadCountX, threadCountY, threadCountZ);
         }
 
         /// <summary>
@@ -599,6 +601,11 @@ namespace SiliconStudio.Xenko.Graphics
         public void ClearReadWrite(Buffer buffer, Vector4 value)
         {
             throw new NotImplementedException();
+
+            /*if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+            if (buffer.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", nameof(buffer));
+
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewFloat(buffer., *(RawVector4*)&value);*/
         }
 
         /// <summary>
@@ -611,6 +618,11 @@ namespace SiliconStudio.Xenko.Graphics
         public void ClearReadWrite(Buffer buffer, Int4 value)
         {
             throw new NotImplementedException();
+
+            /*if (buffer == null) throw new ArgumentNullException("buffer");
+            if (buffer.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", "buffer");
+
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewUint(buffer.NativeUnorderedAccessView, *(RawInt4*)&value);*/
         }
 
         /// <summary>
@@ -623,6 +635,11 @@ namespace SiliconStudio.Xenko.Graphics
         public void ClearReadWrite(Buffer buffer, UInt4 value)
         {
             throw new NotImplementedException();
+
+            /*if (buffer == null) throw new ArgumentNullException("buffer");
+            if (buffer.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", "buffer");
+
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewUint(buffer.NativeUnorderedAccessView, *(RawInt4*)&value);*/
         }
 
         /// <summary>
@@ -635,6 +652,11 @@ namespace SiliconStudio.Xenko.Graphics
         public void ClearReadWrite(Texture texture, Vector4 value)
         {
             throw new NotImplementedException();
+
+            /*if (texture == null) throw new ArgumentNullException(nameof(texture));
+            if (texture.IsUnorderedAccess == false) throw new ArgumentException("Expecting texture supporting UAV", nameof(texture));
+
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewFloat(texture.ParentResource, texture.NativeUnorderedAccessView, *(RawVector4*)&value);*/
         }
 
         /// <summary>
@@ -647,6 +669,11 @@ namespace SiliconStudio.Xenko.Graphics
         public void ClearReadWrite(Texture texture, Int4 value)
         {
             throw new NotImplementedException();
+
+            /*if (texture == null) throw new ArgumentNullException(nameof(texture));
+            if (texture.IsUnorderedAccess == false) throw new ArgumentException("Expecting texture supporting UAV", nameof(texture));
+
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewUint(texture.NativeUnorderedAccessView, *(RawInt4*)&value);*/
         }
 
         /// <summary>
@@ -659,6 +686,11 @@ namespace SiliconStudio.Xenko.Graphics
         public void ClearReadWrite(Texture texture, UInt4 value)
         {
             throw new NotImplementedException();
+
+            /*if (texture == null) throw new ArgumentNullException(nameof(texture));
+            if (texture.IsUnorderedAccess == false) throw new ArgumentException("Expecting texture supporting UAV", nameof(texture));
+
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewUint(texture.NativeUnorderedAccessView, *(RawInt4*)&value);*/
         }
 
         public void Copy(GraphicsResource source, GraphicsResource destination)
@@ -762,7 +794,10 @@ namespace SiliconStudio.Xenko.Graphics
         /// <inheritdoc />
         public void CopyCount(Buffer sourceBuffer, Buffer destBuffer, int offsetInBytes)
         {
-            throw new NotImplementedException();
+            if (sourceBuffer == null) throw new ArgumentNullException(nameof(sourceBuffer));
+            if (destBuffer == null) throw new ArgumentNullException(nameof(destBuffer));
+
+            currentCommandList.NativeCommandList.CopyBufferRegion(destBuffer.NativeResource, offsetInBytes, sourceBuffer.NativeResource, 0, 4);
         }
 
         internal void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox)
