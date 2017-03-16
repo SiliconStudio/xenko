@@ -68,7 +68,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
             private int sceneHash = 0;
             private SceneAsset clonedSceneAsset;
-            private Vector3 sceneOffset;
             private bool sceneCloned = false; // Used so that the scene is only cloned once when ComputeParameterHash or DoCommand is called
 
             // Automatically calculated bounding box
@@ -98,8 +97,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 EnsureClonedSceneAndHash();
                 writer.Write(sceneHash);
-                writer.Write(sceneOffset);
-                writer.Write(1);
             }
             
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -212,7 +209,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                         // Turn the entire entity hierarchy into a single list
                         var sceneEntities = clonedSceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
-                        sceneOffset = clonedSceneAsset.Offset;
 
                         sceneHash = 0;
                         foreach (var entity in sceneEntities)
@@ -234,7 +230,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                 Quaternion rotation;
                                 Vector3 translation;
                                 boundingBoxComponent.Entity.Transform.WorldMatrix.Decompose(out scale, out rotation, out translation);
-                                translation += sceneOffset;
                                 var boundingBox = new BoundingBox(translation - scale, translation + scale);
                                 boundingBoxes.Add(boundingBox);
 
