@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+    <XenkoNativeOutputName>libcore</XenkoNativeOutputName>
   </PropertyGroup>
   <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
   <PropertyGroup>
@@ -86,6 +87,10 @@
     <Compile Include="Diagnostics\ProfilingCustomValue.cs" />
     <Compile Include="DisplayAttribute.cs" />
     <Compile Include="DisposeBase.cs" />
+    <Compile Include="Native\lz4\NativeLZ4Base.cs" />
+    <Compile Include="Native\NativeInvoke.cs" />
+    <Compile Include="Native\NativeLibrary.cs" />
+    <Compile Include="Native\NativeLibraryInternal.cs" />
     <Compile Include="PropertyContainerClass.cs" />
     <Compile Include="Reflection\AssemblyScanAttribute.cs" />
     <Compile Include="Reflection\TypeHelper.cs" />
@@ -103,6 +108,7 @@
     <Compile Include="Serialization\SerializerFactory.cs" />
     <Compile Include="Serialization\Serializers\HashSetSerializer.cs" />
     <Compile Include="Storage\ObjectIdSimpleBuilder.cs" />
+    <Compile Include="Native\SuppressUnmanagedCodeSecurityAttribute.cs" />
     <Compile Include="ThreadHelper.UWP.cs" />
     <Compile Include="Collections\PriorityNodeQueue.cs" />
     <Compile Include="DataMemberCustomSerializerAttribute.cs" />
@@ -307,18 +313,21 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TupleSerializer.cs</LastGenOutput>
     </None>
+    <None Include="SiliconStudio.Core.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Native\lz4\lz4.c" />
+    <None Include="Native\lz4\lz4.h" />
+    <None Include="Native\lz4\lz4hc.c" />
+    <None Include="Native\lz4\lz4hc.h" />
+    <None Include="Native\CoreNative.c" />
+    <None Include="Native\CoreNative.h" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
-      <Project>{fcf36d39-bffe-4719-b245-05640ee34c5f}</Project>
-      <Name>SiliconStudio.Core.Native</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <Import Project="..\..\..\native\Xenko.Native.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

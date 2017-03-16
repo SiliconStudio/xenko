@@ -36,7 +36,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Native\NativeLibraryInternal.cs">
+    <Compile Include="..\..\common\core\SiliconStudio.Core\Native\NativeLibraryInternal.cs">
       <Link>NativeLibraryInternal.cs</Link>
     </Compile>
     <Compile Include="AppDomainShadow.cs" />
