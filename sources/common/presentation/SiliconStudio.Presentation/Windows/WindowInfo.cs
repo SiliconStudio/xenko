@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
@@ -14,6 +15,14 @@ namespace SiliconStudio.Presentation.Windows
     {
         private IntPtr hwnd;
         private bool isShown;
+        private static readonly FieldInfo ShowingAsDialogField;
+
+        static WindowInfo()
+        {
+            ShowingAsDialogField = typeof(Window).GetField("_showingAsDialog", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (ShowingAsDialogField == null)
+                throw new NotSupportedException("_showingAsDialog in the Window class. This program is running on an unidentified version of the .NET Framework.");
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowInfo"/> class.
@@ -110,8 +119,10 @@ namespace SiliconStudio.Presentation.Windows
                 if (!IsShown)
                     return null;
 
-                if (Window != null)
+                if (Window?.Owner != null)
+                {
                     return WindowManager.Find(ToHwnd(Window.Owner));
+                }
 
                 var owner = HwndHelper.GetOwner(Hwnd);
                 return owner != IntPtr.Zero ? (WindowManager.Find(owner) ?? new WindowInfo(owner)) : null;
@@ -121,17 +132,19 @@ namespace SiliconStudio.Presentation.Windows
                 if (value == Owner)
                     return;
 
-                //if (Window == null)
-                //    throw new NotSupportedException("Cannot change the owner of this window because it is not a WPF window.");
-
-                //if (value != null && value.Window == null)
-                //    throw new NotSupportedException("Cannot change the owner of this window because the new owner is not a WPF window.");
-
-                //if (ReferenceEquals(value?.Window, Window))
-                //    throw new NotSupportedException("Cannot set a window to be its own owner.");
-
                 if (Window != null)
                 {
+                    var showingAsDialog = (bool)ShowingAsDialogField.GetValue(Window);
+                    if (showingAsDialog)
+                    {
+                        // This is a workaround in case we are reparenting a window that was displayed using Window.ShowDialog().
+                        // In this case, a private boolean field throws an exception if the owner of the window is changed.
+                        // The reason seems to be because they didn't implement the logic of reparenting modal dialogs, which is
+                        // what we are trying to implement here. Changing the Owner is a valid change if Window.Show() was used
+                        // instead, so we assume this is a "safe hack".
+                        ShowingAsDialogField.SetValue(Window, false);
+                    }
+
                     if (value?.Window == null)
                     {
                         Window.Owner = null;
@@ -144,10 +157,14 @@ namespace SiliconStudio.Presentation.Windows
                     {
                         Window.Owner = value.Window;
                     }
+                    if (showingAsDialog)
+                    {
+                        ShowingAsDialogField.SetValue(Window, true);
+                    }
                 }
                 else
                 {
-                    HwndHelper.SetOwner(Hwnd, value.Hwnd);
+                    HwndHelper.SetOwner(Hwnd, value?.Hwnd ?? IntPtr.Zero);
                 }
 
                 //Window.Owner = value?.Window;

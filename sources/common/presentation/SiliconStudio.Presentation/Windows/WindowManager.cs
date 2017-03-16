@@ -331,6 +331,7 @@ namespace SiliconStudio.Presentation.Windows
                         }
                         if (parentModal != null)
                         {
+                            windowInfo.Owner = parentModal;
                             parentModal.IsDisabled = true;
                         }
                         Logger.Info($"Modal window shown. (with WindowManager) ({hwnd})");
