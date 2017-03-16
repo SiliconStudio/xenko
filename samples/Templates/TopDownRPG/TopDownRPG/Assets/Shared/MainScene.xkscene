@@ -151,6 +151,7 @@ Hierarchy:
         - ae721985-2505-45fa-af6d-729b29b69e02
         - 065a4aa8-69ec-47d8-b561-6a5847944f26
         - 0ddffa94-dc32-47b1-9642-fc445f7db9c3
+        - 9ef82a24-a434-40fd-af85-b11ce435056e
     Parts:
         -   Entity:
                 Id: 0012425a-8167-4220-b4f9-5a50ab7c9538
@@ -4742,6 +4743,18 @@ Hierarchy:
                 BasePartAsset: faca3ec7-598e-40b0-bdd4-7a6dfd9635b0:BlocksPrefabs/GridBase10x10
                 BasePartId: b045349c-565e-4488-9130-a795b0e3b229
                 InstanceId: 3ce85919-14d2-4ddf-afbc-e17118d4ab2e
+        -   Entity:
+                Id: 9ef82a24-a434-40fd-af85-b11ce435056e
+                Name: Navigation bounding box
+                Components:
+                    39598ca3a41a497f8b6148c6c8beffe9: !TransformComponent
+                        Id: a473d97d-7bcc-4902-a042-6012bdc05d67
+                        Position: {X: 3.20658875, Y: 5.10262966, Z: -2.41467643}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+                        Scale: {X: 29.16354, Y: 8.066681, Z: 24.0779552}
+                        Children: {}
+                    9312aa7d30704776a89716db77301170: !SiliconStudio.Xenko.Navigation.NavigationBoundingBox,SiliconStudio.Xenko.Navigation
+                        Id: 5aee0fb9-14be-450d-8b68-afa26e9ad0c0
         -   Folder: Platform/Walls
             Entity:
                 Id: 9f2a86db-7783-4434-8e09-848b569c6269
@@ -6565,14 +6578,15 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
-                    f3528110a40fa04c919f2305da2d77e2: !SkyboxComponent
-                        Id: 108152f3-0fa4-4ca0-919f-2305da2d77e2
-                        Skybox: b63b5ab8-3600-4675-8b3f-8b5636350572:Skybox
-                        Intensity: 3.0
                     197b9ba9a8d24847a1b8d7261d35f329: !LightComponent
                         Id: a99b7b19-d2a8-4748-a1b8-d7261d35f329
-                        Type: !LightSkybox {}
-                        Intensity: 0.5
+                        Type: !LightSkybox
+                            Skybox: b63b5ab8-3600-4675-8b3f-8b5636350572:Skybox
+                        Intensity: 1.5
+                    00000000000000000000000000000000: !BackgroundComponent
+                        Id: 0be3bf7e-5325-4db7-b961-a15425c6f778
+                        Texture: cf628a7c-f4ca-4fc7-aa7d-27882f030380:Skybox Texture
+                        Intensity: 3.0
         -   Folder: Platform/Walls
             Entity:
                 Id: e2049576-c2ae-4965-9774-bf6c7267d3c1
