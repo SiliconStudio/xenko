@@ -16,7 +16,7 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    public static partial class BackgroundEffectKeys
+    public static partial class BackgroundShaderKeys
     {
         public static readonly ValueParameterKey<float> Intensity = ParameterKeys.NewValue<float>();
     }
