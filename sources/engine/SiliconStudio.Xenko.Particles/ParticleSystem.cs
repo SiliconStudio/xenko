@@ -65,8 +65,14 @@ namespace SiliconStudio.Xenko.Particles
         {
             foreach (var particleEmitter in Emitters)
             {
+                if (!particleEmitter.Enabled)
+                    continue;
+
                 foreach (var initializer in particleEmitter.Initializers)
                 {
+                    if (!initializer.Enabled)
+                        continue;
+
                     if (initializer.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale))
                     {
                         // Convert to world space if local
@@ -79,6 +85,9 @@ namespace SiliconStudio.Xenko.Particles
 
                 foreach (var updater in particleEmitter.Updaters)
                 {
+                    if (!updater.Enabled)
+                        continue;
+
                     if (updater.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale))
                     {
                         // Convert to world space if local
