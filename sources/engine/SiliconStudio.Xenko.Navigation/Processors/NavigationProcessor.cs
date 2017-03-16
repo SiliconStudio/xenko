@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 
@@ -128,6 +129,16 @@ namespace SiliconStudio.Xenko.Navigation.Processors
             {
                 targetNavigationMesh = dynamicNavigationMeshSystem.CurrentNavigationMesh;
                 dynamicNavigationComponents.Add(component);
+            }
+
+            if (component.NavigationMesh != null)
+            {
+                // Store scene offset of entity in the component, which will make all the queries local to the baked navigation mesh (for baked navigation only)
+                component.SceneOffset = component.Entity.Scene.Offset;
+            }
+            else
+            {
+                component.SceneOffset = Vector3.Zero;
             }
 
             if (targetNavigationMesh != null)

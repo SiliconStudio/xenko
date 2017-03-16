@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -22,6 +22,8 @@ namespace SiliconStudio.Xenko.Navigation
     {
         [DataMemberIgnore] internal IntPtr NavigationMeshInternal;
         
+        [DataMemberIgnore] internal Vector3 SceneOffset;
+
         /// <summary>
         /// The navigation mesh which is being used
         /// </summary>
@@ -85,8 +87,8 @@ namespace SiliconStudio.Xenko.Navigation
                 return false;
 
             Navigation.PathFindQuery query;
-            query.Source = start;
-            query.Target = end;
+            query.Source = start - SceneOffset;
+            query.Target = end - SceneOffset;
             query.MaxPathPoints = querySettings.MaxPathPoints;
             query.FindNearestPolyExtent = querySettings.FindNearestPolyExtent;
             Navigation.PathFindResult queryResult;
@@ -103,7 +105,7 @@ namespace SiliconStudio.Xenko.Navigation
             Vector3* points = (Vector3*)queryResult.PathPoints;
             for (int i = 0; i < queryResult.NumPathPoints; i++)
             {
-                path.Add(points[i]);
+                path.Add(points[i] + SceneOffset);
             }
             return true;
         }
@@ -155,8 +157,8 @@ namespace SiliconStudio.Xenko.Navigation
                 return result;
 
             Navigation.RaycastQuery query;
-            query.Source = start;
-            query.Target = end;
+            query.Source = start - SceneOffset;
+            query.Target = end - SceneOffset;
             query.MaxPathPoints = querySettings.MaxPathPoints;
             query.FindNearestPolyExtent = querySettings.FindNearestPolyExtent;
             Navigation.RaycastResult queryResult;
@@ -165,7 +167,7 @@ namespace SiliconStudio.Xenko.Navigation
                 return result;
 
             result.Hit = true;
-            result.Position = queryResult.Position;
+            result.Position = queryResult.Position + SceneOffset;
             result.Normal = queryResult.Normal;
             return result;
         }

@@ -541,7 +541,7 @@ namespace SiliconStudio.Xenko.Navigation
 
             if (clearCache && lastNavigationMesh != null)
             {
-                lastNavigationMesh.Cache = null;
+                lastNavigationMesh = null;
             }
         }
 
