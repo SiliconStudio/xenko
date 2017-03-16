@@ -201,15 +201,9 @@ namespace SiliconStudio.Presentation.Tests
             return loggerResult;
         }
 
-        public static WindowManager InitWindowManager(Dispatcher dispatcher)
+        public static IDisposable InitWindowManager(Dispatcher dispatcher, out LoggerResult loggerResult)
         {
-            LoggerResult loggerResult;
-            return InitWindowManager(dispatcher, out loggerResult);
-        }
-
-        public static WindowManager InitWindowManager(Dispatcher dispatcher, out LoggerResult loggerResult)
-        {
-            var manager = new WindowManager(dispatcher);
+            var manager = new WindowManagerWrapper(dispatcher);
             loggerResult = CreateLoggerResult(WindowManager.Logger);
             return manager;
         }
@@ -261,6 +255,23 @@ namespace SiliconStudio.Presentation.Tests
             Assert.AreEqual(false, window.IsDisabled);
             Assert.AreEqual(false, window.IsShown);
             Assert.AreEqual(true, window.WindowClosed.Task.IsCompleted);
+        }
+
+        private class WindowManagerWrapper : IDisposable
+        {
+            private readonly WindowManager manager;
+            private readonly Dispatcher localDispatcher;
+
+            public WindowManagerWrapper(Dispatcher dispatcher)
+            {
+                localDispatcher = Dispatcher.CurrentDispatcher;
+                manager = localDispatcher.Invoke(() => new WindowManager(dispatcher));
+            }
+
+            public void Dispose()
+            {
+                localDispatcher.Invoke(() => manager.Dispose());
+            }
         }
     }
 }

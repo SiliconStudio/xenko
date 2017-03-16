@@ -90,13 +90,13 @@ namespace SiliconStudio.Presentation.Windows
 
             hook = IntPtr.Zero;
             winEventProc = null;
-            initialized = false;
             dispatcher = null;
             MainWindow = null;
             AllWindowsList.Clear();
             ModalWindowsList.Clear();
 
             Logger.Info($"{nameof(WindowManager)} disposed");
+            initialized = false;
         }
 
         public static void ShowMainWindow([NotNull] Window window)
