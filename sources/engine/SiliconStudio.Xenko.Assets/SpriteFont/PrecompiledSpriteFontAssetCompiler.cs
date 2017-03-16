@@ -26,7 +26,13 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (PrecompiledSpriteFontAsset)assetItem.Asset;
-            result.BuildSteps = new AssetBuildStep(assetItem) { new PrecompiledSpriteFontCommand(targetUrlInStorage, asset, assetItem.Package) };
+            result.BuildSteps = new AssetBuildStep(assetItem)
+            {
+                new PrecompiledSpriteFontCommand(targetUrlInStorage, asset, assetItem.Package)
+                {
+                    InputFilesGetter = () => GetInputFiles(assetItem)
+        }
+            };
         }
 
         internal class PrecompiledSpriteFontCommand : AssetCommand<PrecompiledSpriteFontAsset>
@@ -34,11 +40,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             public PrecompiledSpriteFontCommand(string url, PrecompiledSpriteFontAsset description, Package package)
                 : base(url, description, package)
             {
-            }
-
-            protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
-            {
-                yield return new ObjectUrl(UrlType.File, Parameters.FontDataFile);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)

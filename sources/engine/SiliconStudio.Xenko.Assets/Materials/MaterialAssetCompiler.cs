@@ -38,14 +38,20 @@ namespace SiliconStudio.Xenko.Assets.Materials
         {
             var asset = (MaterialAsset)assetItem.Asset;
             result.ShouldWaitForPreviousBuilds = true;
-            result.BuildSteps = new AssetBuildStep(assetItem) { new MaterialCompileCommand(targetUrlInStorage, assetItem, asset, context) };
+            result.BuildSteps = new AssetBuildStep(assetItem)
+            {
+                new MaterialCompileCommand(targetUrlInStorage, assetItem, asset, context)
+                {
+                    InputFilesGetter = () => GetInputFiles(assetItem)
+                }
+            };
         }
 
         private class MaterialCompileCommand : AssetCommand<MaterialAsset>
         {
             private readonly AssetItem assetItem;
 
-            private ColorSpace colorSpace;
+            private readonly ColorSpace colorSpace;
 
             private UFile assetUrl;
 
@@ -55,15 +61,6 @@ namespace SiliconStudio.Xenko.Assets.Materials
                 this.assetItem = assetItem;
                 colorSpace = context.GetColorSpace();
                 assetUrl = new UFile(url);
-            }
-
-            protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
-            {
-                // TODO: Add textures when we will bake them
-                foreach (var compileTimeDependency in ((MaterialAsset)assetItem.Asset).EnumerateCompileTimeDependencies(Package.Session))
-                {
-                    yield return new ObjectUrl(UrlType.ContentLink, compileTimeDependency.Location);
-                }
             }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)

@@ -45,6 +45,10 @@ namespace SiliconStudio.Xenko.Assets.Models
                     }
                 }
             }
+
+            var assetDirectory = assetItem.FullPath.GetParent();
+            var assetSource = UPath.Combine(assetDirectory, modelAsset.Source);
+            yield return new ObjectUrl(UrlType.File, assetSource);
         }
 
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
@@ -73,6 +77,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 return;
             }
 
+            importModelCommand.InputFilesGetter = () => GetInputFiles(assetItem);
             importModelCommand.Mode = ImportModelCommand.ExportMode.Model;
             importModelCommand.SourcePath = assetSource;
             importModelCommand.Location = targetUrlInStorage;

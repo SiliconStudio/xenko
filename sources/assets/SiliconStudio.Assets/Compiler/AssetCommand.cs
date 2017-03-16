@@ -33,6 +33,7 @@ namespace SiliconStudio.Assets.Compiler
         {
             Parameters = parameters;
             Package = package;
+            InputFilesGetter = GetInputFilesImpl;
         }
 
         public T Parameters { get; set; }
@@ -89,7 +90,7 @@ namespace SiliconStudio.Assets.Compiler
             return Parameters.ToString();
         }
 
-        protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
+        private IEnumerable<ObjectUrl> GetInputFilesImpl()
         {
             var depsEnumerator = Parameters as IAssetCompileTimeDependencies;
             if (depsEnumerator == null) yield break;

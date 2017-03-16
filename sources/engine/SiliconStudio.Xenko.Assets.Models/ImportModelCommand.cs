@@ -139,27 +139,6 @@ namespace SiliconStudio.Xenko.Assets.Models
             writer.SerializeExtended(this, ArchiveMode.Serialize);
         }
 
-        protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
-        {
-            // Skeleton is a compile time dependency
-            if (SkeletonUrl != null)
-                yield return new ObjectUrl(UrlType.Content, SkeletonUrl);
-
-            if (Materials != null && Materials.Count > 0)
-            {
-                foreach (var assetMaterial in Materials)
-                {
-                    var material = Package.FindAssetFromProxyObject(assetMaterial.MaterialInstance.Material);
-                    if (material != null)
-                    {
-                        yield return new ObjectUrl(UrlType.ContentLink, material.Location);
-                    }
-                }
-            }
-
-            yield return new ObjectUrl(UrlType.File, SourcePath);
-        }
-
         /// <summary>
         /// Compares the parameters of the two meshes.
         /// </summary>

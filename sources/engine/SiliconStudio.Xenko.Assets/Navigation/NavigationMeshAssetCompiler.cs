@@ -564,8 +564,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                     // Pre-Transform plane parameters
                     plane.Normal = Vector3.TransformNormal(plane.Normal, shape.Transform);
-                    float offset = Vector3.Dot(shape.Transform.TranslationVector, plane.Normal);
-                    plane.D += offset;
+                    float offsetf = Vector3.Dot(shape.Transform.TranslationVector, plane.Normal);
+                    plane.D += offsetf;
 
                     // Generate source plane triangles
                     Vector3[] planePoints;

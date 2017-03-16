@@ -31,22 +31,6 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             return file != null && File.Exists(file);
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem item)
-        {
-            var spriteSheetAsset = (SpriteSheetAsset)item.Asset;
-            var spriteByTextures = spriteSheetAsset.Sprites.GroupBy(x => x.Source).ToArray();
-            for (int i = 0; i < spriteByTextures.Length; i++)
-            {
-                // skip the texture if the file is not valid.
-                var textureFile = spriteByTextures[i].Key;
-                if (!TextureFileIsValid(textureFile))
-                    continue;
-
-                var textureUrl = SpriteSheetAsset.BuildTextureUrl(item.Location, i);
-                yield return new ObjectUrl(UrlType.Content, textureUrl);
-            }
-        }
-
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (SpriteSheetAsset)assetItem.Asset;
@@ -108,8 +92,13 @@ namespace SiliconStudio.Xenko.Assets.Sprite
 
             if (!result.HasErrors)
             {
+                result.BuildSteps.Add(new WaitBuildStep());
+
                 var parameters = new SpriteSheetParameters(asset, imageToTextureUrl, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);
-                result.BuildSteps.Add(new AssetBuildStep(assetItem) { new SpriteSheetCommand(targetUrlInStorage, parameters, assetItem.Package) });
+                result.BuildSteps.Add(new AssetBuildStep(assetItem)
+                {
+                    new SpriteSheetCommand(targetUrlInStorage, parameters, assetItem.Package)
+                });
             }
         }
 
@@ -121,16 +110,6 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             public SpriteSheetCommand(string url, SpriteSheetParameters parameters, Package package)
                 : base(url, parameters, package)
             {
-            }
-
-            /// <inheritdoc/>
-            protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
-            {
-                foreach (var dependency in Parameters.ImageToTextureUrl)
-                {
-                    // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to create the spritesheet
-                    yield return new ObjectUrl(UrlType.Content, dependency.Value);
-                }
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)

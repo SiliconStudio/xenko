@@ -48,9 +48,10 @@ namespace SiliconStudio.Xenko.Assets.Textures
             public TextureConvertCommand(string url, TextureConvertParameters description, Package package)
                 : base(url, description, package)
             {
+                InputFilesGetter = GetInputFilesImpl;
             }
 
-            protected override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFilesImpl()
+            private IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
                 // TODO dependency not working
                 yield return new ObjectUrl(UrlType.File, Parameters.SourcePathFromDisk);

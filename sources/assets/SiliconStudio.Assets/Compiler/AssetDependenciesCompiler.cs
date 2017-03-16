@@ -58,7 +58,6 @@ namespace SiliconStudio.Assets.Compiler
             }
 
             assetNode.Version = assetItem.Version;
-            assetNode.BuildTask = buildStep.ExecutedAsync();
 
             if ((dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent ||
                 (dependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime)

@@ -89,7 +89,13 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     assetClone.FontSource = asset.FontSource;
                     fontTypeStatic.CharacterSet = !string.IsNullOrEmpty(fontTypeStatic.CharacterSet) ? UPath.Combine(assetDirectory, fontTypeStatic.CharacterSet): null;
 
-                    result.BuildSteps = new AssetBuildStep(assetItem) { new OfflineRasterizedFontCommand(targetUrlInStorage, assetClone, colorSpace, assetItem.Package) };
+                    result.BuildSteps = new AssetBuildStep(assetItem)
+                    {
+                        new OfflineRasterizedFontCommand(targetUrlInStorage, assetClone, colorSpace, assetItem.Package)
+                        {
+                            InputFilesGetter = () => GetInputFiles(assetItem)
+                        }
+                    };
                 }
         }
 
@@ -101,16 +107,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 : base(url, description, package)
             {
                 this.colorspace = colorspace;
-            }
-
-            protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
-            {
-                var fontTypeStatic = Parameters.FontType as OfflineRasterizedSpriteFontType;
-                if (fontTypeStatic == null)
-                    throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
-
-                if (File.Exists(fontTypeStatic.CharacterSet))
-                    yield return new ObjectUrl(UrlType.File, fontTypeStatic.CharacterSet);
             }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
@@ -157,16 +153,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             public SignedDistanceFieldFontCommand(string url, SpriteFontAsset description, Package package)
                 : base(url, description, package)
             {
-            }
-
-            protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
-            {
-                var fontTypeSdf = Parameters.FontType as SignedDistanceFieldSpriteFontType;
-                if (fontTypeSdf == null)
-                    throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
-
-                if (File.Exists(fontTypeSdf.CharacterSet))
-                    yield return new ObjectUrl(UrlType.File, fontTypeSdf.CharacterSet);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
