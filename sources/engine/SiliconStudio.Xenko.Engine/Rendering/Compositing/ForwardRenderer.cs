@@ -19,6 +19,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     /// </summary>
     public partial class ForwardRenderer : SceneRendererBase, ISharedRenderer
     {
+        // TODO: should we use GraphicsDeviceManager.PreferredBackBufferFormat?
+        public const PixelFormat DepthBufferFormat = PixelFormat.D24_UNorm_S8_UInt;
+
         private IShadowMapRenderer shadowMapRenderer;
         private Texture depthStencilROCached;
         private MSAALevel actualMSAALevel = MSAALevel.None;
@@ -101,7 +104,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             if (MSAALevel != MSAALevel.None)
             {
                 actualMSAALevel = (MSAALevel)Math.Min((int)MSAALevel, (int)GraphicsDevice.Features[PixelFormat.R16G16B16A16_Float].MSAALevelMax);
-                actualMSAALevel = (MSAALevel)Math.Min((int)actualMSAALevel, (int)GraphicsDevice.Features[PixelFormat.D24_UNorm_S8_UInt].MSAALevelMax);
+                actualMSAALevel = (MSAALevel)Math.Min((int)actualMSAALevel, (int)GraphicsDevice.Features[DepthBufferFormat].MSAALevelMax);
             }
 
             var camera = Context.GetCurrentCamera();
@@ -174,7 +177,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 // Mark this view as requiring shadows
                 shadowMapRenderer?.RenderViewsWithShadows.Add(context.RenderView);
 
-                context.RenderOutput = new RenderOutputDescription(PostEffects != null ? PixelFormat.R16G16B16A16_Float : context.RenderOutput.RenderTargetFormat0, PixelFormat.D24_UNorm_S8_UInt);
+                context.RenderOutput = new RenderOutputDescription(PostEffects != null ? PixelFormat.R16G16B16A16_Float : context.RenderOutput.RenderTargetFormat0, DepthBufferFormat);
 
                 if (VRSettings.Enabled && VRSettings.VRDevice != null)
                 {
@@ -279,10 +282,21 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         {
             ViewDepthStencilNoMSAA = PushScopedResource(
                 drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(ViewOutputTarget.Size.Width, ViewOutputTarget.Size.Height,
-                1, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.ShaderResource | TextureFlags.DepthStencil)));
+                1, DepthBufferFormat, TextureFlags.ShaderResource | TextureFlags.DepthStencil)));
 
-            drawContext.CommandList.CopyMultiSample(ViewDepthStencil, 0, ViewDepthStencilNoMSAA, 0, PixelFormat.R24_UNorm_X8_Typeless);
+            drawContext.CommandList.CopyMultiSample(ViewDepthStencil, 0, ViewDepthStencilNoMSAA, 0, DepthBufferFormat);
+        }
 
+        protected virtual void ResolveMSAA(RenderDrawContext drawContext, Texture input, Texture output)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (input.Format != output.Format)
+                throw new ArgumentException("In order to resolve MSAA both input and output textures must be the same format.");
+
+            drawContext.CommandList.CopyMultiSample(input, 0, output, 0);
         }
 
         protected virtual void ResolveMSAA(RenderDrawContext drawContext)
@@ -291,33 +305,33 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             var colorOut = ViewTargetsCompositionNoMSAA as IColorTarget;
             if (colorIn != null && colorOut != null)
             {
-                colorOut.Color = PushScopedResource(
-                    drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(ViewOutputTarget.Size.Width, ViewOutputTarget.Size.Height,
-                        1, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
+                var input = colorIn.Color;
+                var output = colorOut.Color = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(
+                            input.Size.Width, input.Size.Height, 1, input.Format, TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
 
-                drawContext.CommandList.CopyMultiSample(colorIn.Color, 0, colorOut.Color, 0);
+                ResolveMSAA(drawContext, input, output);
             }
 
             var normalsIn = ViewTargetsComposition as INormalTarget;
             var normalsOut = ViewTargetsCompositionNoMSAA as INormalTarget;
             if (normalsIn != null && normalsOut != null && PostEffects.RequiresNormalBuffer)
             {
-                normalsOut.Normal = PushScopedResource(
-                    drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(ViewOutputTarget.Size.Width, ViewOutputTarget.Size.Height,
-                        1, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
+                var input = normalsIn.Normal;
+                var output = normalsOut.Normal = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(
+                            input.Size.Width, input.Size.Height, 1, input.Format, TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
 
-                drawContext.CommandList.CopyMultiSample(normalsIn.Normal, 0, normalsOut.Normal, 0);
+                ResolveMSAA(drawContext, input, output);
             }
 
             var velocityIn = ViewTargetsComposition as IVelocityTarget;
             var velocityOut = ViewTargetsCompositionNoMSAA as IVelocityTarget;
             if (velocityIn != null && velocityOut != null && PostEffects.RequiresVelocityBuffer)
             {
-                velocityOut.Velocity = PushScopedResource(
-                    drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(ViewOutputTarget.Size.Width, ViewOutputTarget.Size.Height,
-                        1, PixelFormat.R16G16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
+                var input = velocityIn.Velocity;
+                var output = velocityOut.Velocity = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(
+                            input.Size.Width, input.Size.Height, 1, input.Format, TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
 
-                drawContext.CommandList.CopyMultiSample(velocityIn.Velocity, 0, velocityOut.Velocity, 0);
+                ResolveMSAA(drawContext, input, output);
             }
 
             var viewsIn = ViewTargetsComposition as IMultipleRenderViews;
@@ -384,26 +398,28 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     }
                 }
 
-
                 if (PostEffects != null)
                 {
                     //Make sure we run post effects without MSAA
                     var peInputTargets = ViewTargetsComposition;
                     var peInputDepth = ViewDepthStencil;
 
-                    //Shafts if we have them, with MSAA if we have it
-                    LightShafts?.Draw(drawContext, peInputTargets, peInputDepth, ViewOutputTarget);
-
-                    //Remove MSAA
+                    // Resolve MSAA targets
                     if (actualMSAALevel != MSAALevel.None)
                     {
-                        ResolveMSAA(drawContext);
                         // If lightprobes (which need Z-Prepass) are enabled, depth is already resolved
                         //if (!lightProbes)
-                        //    ResolveDepthMSAA(drawContext);
+                        // TODO: is that comment above true? i don't know lightprobes rendering stuff
+
+                        ResolveDepthMSAA(drawContext);
+                        ResolveMSAA(drawContext);
+
                         peInputTargets = ViewTargetsCompositionNoMSAA;
-                        //peInputDepth = ViewDepthStencilNoMSAA;
+                        peInputDepth = ViewDepthStencilNoMSAA;
                     }
+
+                    //Shafts if we have them
+                    LightShafts?.Draw(drawContext, peInputTargets, peInputDepth, ViewOutputTarget);
 
                     // Run post effects
                     PostEffects.Draw(drawContext, peInputTargets, peInputDepth, ViewOutputTarget);
@@ -461,7 +477,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                 //Handle Depth
                 ViewDepthStencil = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
-                        TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, currentDepthStencil?.ViewFormat ?? PixelFormat.D24_UNorm_S8_UInt,
+                        TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, currentDepthStencil?.ViewFormat ?? DepthBufferFormat,
                             TextureFlags.ShaderResource | TextureFlags.DepthStencil, 1, GraphicsResourceUsage.Default, actualMSAALevel)));
 
             }
@@ -492,7 +508,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 if (currentDepthStencil == null)
                 {
                     currentDepthStencil = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
-                        TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, PixelFormat.D24_UNorm_S8_UInt,
+                        TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, DepthBufferFormat,
                             TextureFlags.ShaderResource | TextureFlags.DepthStencil)));
                 }
 
