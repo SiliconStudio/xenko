@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
@@ -20,7 +21,7 @@ namespace SiliconStudio.Assets.Quantum.Commands
         public Type Type { get; }
 
         /// <inheritdoc/>
-        public override string DisplayValue => Type.GetDisplayName();
+        public override string DisplayValue => DisplayAttribute.GetDisplayName(Type);
 
         /// <inheritdoc/>
         public override object GenerateValue(object currentValue)

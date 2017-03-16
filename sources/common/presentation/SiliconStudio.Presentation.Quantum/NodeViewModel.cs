@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
@@ -39,11 +40,12 @@ namespace SiliconStudio.Presentation.Quantum
             ReservedNames.Add("Type");
         }
 
-        protected NodeViewModel(GraphViewModel ownerViewModel, Index index)
+        protected NodeViewModel(GraphViewModel ownerViewModel, Type type, Index index)
             : base(ownerViewModel.ServiceProvider)
         {
             DependentProperties.Add(nameof(Path), new[] { nameof(DisplayPath) });
             Owner = ownerViewModel;
+            Type = type;
             Index = index;
             IsVisible = true;
             IsReadOnly = false;
@@ -53,6 +55,11 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets the <see cref="GraphViewModel"/> that owns this node.
         /// </summary>
         public GraphViewModel Owner { get; }
+
+        /// <summary>
+        /// Gets the expected type of <see cref="NodeValue"/>.
+        /// </summary>
+        public Type Type { get; }
 
         /// <summary>
         /// Gets or sets the name of this node. Note that the name can be used to access this node from its parent using a dynamic object.
@@ -85,11 +92,6 @@ namespace SiliconStudio.Presentation.Quantum
         public INodeViewModel Root { get { INodeViewModel root = this; while (root.Parent != null) root = root.Parent; return root; } }
 
         /// <summary>
-        /// Gets the expected type of <see cref="Value"/>.
-        /// </summary>
-        public abstract Type Type { get; }
-
-        /// <summary>
         /// Gets whether this node contains a primitive value. A primitive value has no children node and does not need to refresh its hierarchy when its value is modified.
         /// </summary>
         public abstract bool IsPrimitive { get; }
@@ -107,7 +109,10 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets or sets the value.
         /// </summary>
-        public abstract object Value { get; set; }
+        protected internal abstract object InternalNodeValue { get; set; }
+
+        /// <inheritdoc/>
+        public object NodeValue { get { return InternalNodeValue; } set { InternalNodeValue = ConvertValue(value); } }
 
         /// <summary>
         /// Gets or sets the index of this node, relative to its parent node when its contains a collection. Can be null of this node is not in a collection.
@@ -202,7 +207,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{Name}: [{Value}]";
+            return $"{Name}: [{InternalNodeValue}]";
         }
 
         public void AddAssociatedData(string key, object value)
@@ -602,6 +607,23 @@ namespace SiliconStudio.Presentation.Quantum
 
             // Otherwise, the first child would be the one who have an order value.
             return a.Order == null ? 1 : -1;
+        }
+
+        private object ConvertValue(object value)
+        {
+            if (Type.IsInstanceOfType(value))
+                return value;
+
+            if (value is IConvertible)
+            {
+                var typeCode = Type.GetTypeCode(Type);
+                if (typeCode != TypeCode.Empty && typeCode != TypeCode.Object)
+                {
+                    return Convert.ChangeType(value, Type);
+                }
+            }
+
+            return TypeDescriptor.GetConverter(Type).ConvertFrom(value);
         }
     }
 }
