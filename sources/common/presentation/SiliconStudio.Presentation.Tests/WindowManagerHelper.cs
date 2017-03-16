@@ -37,6 +37,16 @@ namespace SiliconStudio.Presentation.Tests
             return tcs.Task;
         }
 
+        public static void ShutdownUIThread(Dispatcher dispatcher)
+        {
+            // Wait a bit to make sure everything window-related has been executed before shutting down
+            Thread.Sleep(100);
+            Thread thread = null;
+            dispatcher.Invoke(() => thread = Thread.CurrentThread);
+            dispatcher.InvokeShutdown();
+            thread.Join();
+        }
+
         public static async Task TaskWithTimeout(Task task)
         {
             await Task.WhenAny(task, Timeout);

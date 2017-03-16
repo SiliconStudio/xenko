@@ -43,7 +43,7 @@ namespace SiliconStudio.Presentation.Tests
             using (WindowManagerHelper.InitWindowManager(dispatcher, out loggerResult))
             {
             }
-            dispatcher.InvokeShutdown();
+            WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
         [Test, RequiresSTA]
@@ -73,7 +73,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
-            dispatcher.InvokeShutdown();
+            WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
         [Test, RequiresSTA]
@@ -122,7 +122,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
-            dispatcher.InvokeShutdown();
+            WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
         [Test, RequiresSTA]
@@ -163,7 +163,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
-            dispatcher.InvokeShutdown();
+            WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
         [Test, RequiresSTA]
@@ -185,7 +185,7 @@ namespace SiliconStudio.Presentation.Tests
                 Assert.Throws<InvalidOperationException>(() => dispatcher.Invoke(() => WindowManager.ShowModal(modalWindow)));
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
-            dispatcher.InvokeShutdown();
+            WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
         [Test, RequiresSTA]
@@ -261,7 +261,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
-            dispatcher.InvokeShutdown();
+            WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
         [Test, RequiresSTA]
@@ -337,7 +337,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
-            dispatcher.InvokeShutdown();
+            WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
         [Test, RequiresSTA]
@@ -413,7 +413,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
-            dispatcher.InvokeShutdown();
+            WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
         [Test, RequiresSTA]
@@ -467,7 +467,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
-            dispatcher.InvokeShutdown();
+            WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
         [Test, RequiresSTA]
@@ -542,7 +542,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
-            dispatcher.InvokeShutdown();
+            WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
         [Test, RequiresSTA]
@@ -617,7 +617,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
-            dispatcher.InvokeShutdown();
+            WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
         [Test, RequiresSTA]
@@ -692,7 +692,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
-            dispatcher.InvokeShutdown();
+            WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
         [Test, RequiresSTA]
@@ -730,7 +730,7 @@ namespace SiliconStudio.Presentation.Tests
                 dispatcher.Invoke(() => modalWindow2.Close());
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
-            dispatcher.InvokeShutdown();
+            WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
         [Test, RequiresSTA]
@@ -776,7 +776,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
-            dispatcher.InvokeShutdown();
+            WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
     }
 }
