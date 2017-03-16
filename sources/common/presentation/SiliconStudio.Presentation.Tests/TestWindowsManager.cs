@@ -46,7 +46,7 @@ namespace SiliconStudio.Presentation.Tests
             WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
-        [Test, RequiresSTA]
+        [Test]
         public async Task TestOpenCloseWindow()
         {
             LoggerResult loggerResult;
@@ -76,7 +76,7 @@ namespace SiliconStudio.Presentation.Tests
             WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
-        [Test, RequiresSTA]
+        [Test]
         public async Task TestMainWindowThenModalBox()
         {
             LoggerResult loggerResult;
@@ -125,7 +125,7 @@ namespace SiliconStudio.Presentation.Tests
             WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
-        [Test, RequiresSTA]
+        [Test]
         public async Task TestMainWindowThenStandaloneModalBox()
         {
             LoggerResult loggerResult;
@@ -174,7 +174,7 @@ namespace SiliconStudio.Presentation.Tests
             WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
-        [Test, RequiresSTA]
+        [Test]
         public async Task TestMainWindowThenModalBoxCloseMain()
         {
             LoggerResult loggerResult;
@@ -215,7 +215,7 @@ namespace SiliconStudio.Presentation.Tests
             WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
-        [Test, RequiresSTA]
+        [Test]
         public async Task TestSameModalTwice()
         {
             LoggerResult loggerResult;
@@ -237,7 +237,7 @@ namespace SiliconStudio.Presentation.Tests
             WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
-        [Test, RequiresSTA]
+        [Test]
         public async Task TestMainWindowThenTwoModalBoxes()
         {
             LoggerResult loggerResult;
@@ -313,7 +313,7 @@ namespace SiliconStudio.Presentation.Tests
             WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
-        [Test, RequiresSTA]
+        [Test]
         public async Task TestMainWindowThenTwoModalBoxesReverseClose()
         {
             LoggerResult loggerResult;
@@ -389,7 +389,7 @@ namespace SiliconStudio.Presentation.Tests
             WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
-        [Test, RequiresSTA]
+        [Test]
         public async Task TestMainWindowThenModalBoxThenBackgroundModal()
         {
             LoggerResult loggerResult;
@@ -465,7 +465,7 @@ namespace SiliconStudio.Presentation.Tests
             WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
-        [Test, RequiresSTA]
+        [Test]
         public async Task TestMainWindowThenMessageBox()
         {
             LoggerResult loggerResult;
@@ -519,7 +519,7 @@ namespace SiliconStudio.Presentation.Tests
             WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
-        [Test, RequiresSTA]
+        [Test]
         public async Task TestMainWindowThenModalBoxThenMessageBox()
         {
             LoggerResult loggerResult;
@@ -594,7 +594,7 @@ namespace SiliconStudio.Presentation.Tests
             WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
-        [Test, RequiresSTA]
+        [Test]
         public async Task TestMainWindowThenMessageBoxThenBackgroundModalBox()
         {
             LoggerResult loggerResult;
@@ -669,7 +669,7 @@ namespace SiliconStudio.Presentation.Tests
             WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
-        [Test, RequiresSTA]
+        [Test]
         public async Task TestMainWindowThenMessageBoxThenBackgroundModalBoxReverseClose()
         {
             LoggerResult loggerResult;
@@ -744,7 +744,7 @@ namespace SiliconStudio.Presentation.Tests
             WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
-        [Test, RequiresSTA]
+        [Test]
         public async Task TestModalBoxThenCloseThenModalBox()
         {
             LoggerResult loggerResult;
@@ -782,7 +782,7 @@ namespace SiliconStudio.Presentation.Tests
             WindowManagerHelper.ShutdownUIThread(dispatcher);
         }
 
-        [Test, RequiresSTA]
+        [Test]
         public async Task TestMainWindowThenModalBoxClosedBeforeShown()
         {
             LoggerResult loggerResult;
