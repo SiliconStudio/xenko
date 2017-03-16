@@ -166,7 +166,7 @@ namespace SiliconStudio.Presentation.Quantum
             Owner.GraphViewModelService?.NotifyNodeInitialized(this);
         }
 
-        public GraphNodePath SourceNodePath { get; }
+        protected GraphNodePath SourceNodePath { get; }
 
         /// <inheritdoc/>
         public override int? Order
