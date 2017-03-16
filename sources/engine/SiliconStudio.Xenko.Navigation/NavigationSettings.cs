@@ -3,16 +3,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Data;
 using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Navigation
 {
+    /// <summary>
+    /// Settings for the dynamic navigation mesh builder (<see cref="DynamicNavigationMeshSystem"/>)
+    /// </summary>
     [DataContract]
     [Display("Navigation Settings")]
     [ObjectFactory(typeof(NavigationSettingsFactory))]

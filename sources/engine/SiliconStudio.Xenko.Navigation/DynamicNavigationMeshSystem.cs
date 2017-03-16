@@ -1,11 +1,11 @@
-﻿using System;
+﻿// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Games;

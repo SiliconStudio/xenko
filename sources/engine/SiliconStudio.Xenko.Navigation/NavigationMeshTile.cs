@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
@@ -25,11 +25,6 @@ namespace SiliconStudio.Xenko.Navigation
         /// Binary data of the built navigation mesh tile
         /// </summary>
         [DataMemberCustomSerializer] public byte[] Data;
-
-        public override int GetHashCode()
-        {
-            return MeshVertices?.ComputeHash() ?? 0;
-        }
 
         /// <summary>
         /// Serializes individually build tiles inside navigation meshes

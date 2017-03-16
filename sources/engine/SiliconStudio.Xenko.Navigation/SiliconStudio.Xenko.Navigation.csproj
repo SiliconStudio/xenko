@@ -85,7 +85,6 @@
   <ItemGroup>
     <Compile Include="NavigationSettings.cs" />
     <Compile Include="Processors\BoundingBoxProcessor.cs" />
-    <Compile Include="Debug.cs" />
     <Compile Include="NavigationBoundingBox.cs" />
     <Compile Include="DynamicNavigationMeshSystem.cs" />
     <Compile Include="NativeInvoke.cs" />
@@ -128,7 +127,6 @@
     <Content Include="NavigationBuilder.hpp" />
     <Content Include="NavigationMesh.cpp" />
     <Content Include="NavigationMesh.hpp" />
-    <Content Include="XenkoNative.h" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

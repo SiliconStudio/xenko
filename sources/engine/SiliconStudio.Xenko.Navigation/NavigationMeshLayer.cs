@@ -1,10 +1,7 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Navigation

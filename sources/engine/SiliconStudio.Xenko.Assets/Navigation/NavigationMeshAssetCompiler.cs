@@ -1,9 +1,8 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -18,9 +17,6 @@ using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Assets.Physics;
-using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
 using SiliconStudio.Xenko.Navigation;
 using SiliconStudio.Xenko.Physics;
 
@@ -112,7 +108,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 lastNavigationMesh = LoadIntermediateData(intermediateDataId);
                 var navigationMeshBuilder = new NavigationMeshBuilder(lastNavigationMesh);
-                navigationMeshBuilder.Offset = sceneOffset;
                 navigationMeshBuilder.Logger = commandContext.Logger;
 
                 foreach (var colliderData in staticColliderDatas)

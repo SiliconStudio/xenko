@@ -1,12 +1,10 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Navigation;
 using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Navigation
@@ -17,11 +15,20 @@ namespace SiliconStudio.Xenko.Navigation
     [DataContract]
     internal class NavigationMeshCache
     {
+        /// <summary>
+        /// State of static colliders by their component Id that was used for building
+        /// </summary>
         public Dictionary<Guid, NavigationMeshCachedObject> Objects =
             new Dictionary<Guid, NavigationMeshCachedObject>();
         
+        /// <summary>
+        /// The bounding boxes used for build
+        /// </summary>
         public List<BoundingBox> BoundingBoxes = new List<BoundingBox>();
         
+        /// <summary>
+        /// Hash for the building settings used
+        /// </summary>
         public int SettingsHash = 0;
 
         /// <summary>

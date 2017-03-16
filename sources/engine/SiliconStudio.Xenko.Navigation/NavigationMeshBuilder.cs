@@ -1,3 +1,6 @@
+// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +9,6 @@ using System.Threading;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
@@ -22,11 +24,6 @@ namespace SiliconStudio.Xenko.Navigation
     public class NavigationMeshBuilder
     {
         /// <summary>
-        /// Global offset applied to all input colliders processed by this builder
-        /// </summary>
-        public Vector3 Offset = Vector3.Zero;
-
-        /// <summary>
         /// The logger to send additional information to
         /// </summary>
         public Logger Logger;
@@ -37,7 +34,7 @@ namespace SiliconStudio.Xenko.Navigation
         private HashSet<Guid> registeredGuids = new HashSet<Guid>();
 
         /// <summary>
-        /// Initializes the builder, optionally with a previous navigation mesh
+        /// Initializes the builder, optionally with a previous navigation mesh when building incrementally
         /// </summary>
         /// <param name="lastNavigationMesh">The previous navigation mesh, to allow incremental builds</param>
         public NavigationMeshBuilder(NavigationMesh lastNavigationMesh = null)
@@ -45,6 +42,14 @@ namespace SiliconStudio.Xenko.Navigation
             this.lastNavigationMesh = lastNavigationMesh;
         }
 
+        /// <summary>
+        /// Adds information about a collider to this builder
+        /// </summary>
+        /// <remarks>
+        /// You can only register a single <see cref="StaticColliderComponent"/> once
+        /// </remarks>
+        /// <exception cref="InvalidOperationException">When trying to register collider data with the same <see cref="StaticColliderComponent"/> twice</exception>
+        /// <param name="colliderData">A collider data object to add</param>
         public void Add(StaticColliderData colliderData)
         {
             lock (colliders)
@@ -56,6 +61,10 @@ namespace SiliconStudio.Xenko.Navigation
             }
         }
 
+        /// <summary>
+        /// Removes a specific collider from the builder
+        /// </summary>
+        /// <param name="colliderData">The collider data object to remove</param>
         public void Remove(StaticColliderData colliderData)
         {
             lock (colliders)
@@ -67,6 +76,15 @@ namespace SiliconStudio.Xenko.Navigation
             }
         }
 
+        /// <summary>
+        /// Performs the build of a navigation mesh
+        /// </summary>
+        /// <param name="buildSettings">The build settings to pass to recast</param>
+        /// <param name="agentSettings">A collection of agent settings to use, this will generate a layer in the navigation mesh for every agent settings in this collection (in the same order)</param>
+        /// <param name="includedCollisionGroups">The collision groups that will affect which colliders are considered solid</param>
+        /// <param name="boundingBoxes">A collection of bounding boxes to use as the region for which to generate navigation mesh tiles</param>
+        /// <param name="cancellationToken">A cancellation token to interrupt the build process</param>
+        /// <returns>The build result</returns>
         public NavigationMeshBuildResult Build(NavigationMeshBuildSettings buildSettings, ICollection<NavigationAgentSettings> agentSettings, CollisionFilterGroupFlags includedCollisionGroups,
             ICollection<BoundingBox> boundingBoxes, CancellationToken cancellationToken)
         {
@@ -370,16 +388,14 @@ namespace SiliconStudio.Xenko.Navigation
         private void BuildInput(StaticColliderData[] collidersLocal, CollisionFilterGroupFlags includedCollisionGroups)
         {
             NavigationMeshCache lastCache = lastNavigationMesh?.Cache;
-
-            Matrix offsetMatrix = Matrix.Translation(Offset);
-
+            
             bool clearCache = false;
             
             Dispatcher.ForEach(collidersLocal, colliderData =>
             {
                 var entity = colliderData.Component.Entity;
                 TransformComponent entityTransform = entity.Transform;
-                Matrix entityWorldMatrix = entityTransform.WorldMatrix * offsetMatrix;
+                Matrix entityWorldMatrix = entityTransform.WorldMatrix;
 
                 NavigationMeshInputBuilder entityNavigationMeshInputBuilder = colliderData.InputBuilder = new NavigationMeshInputBuilder();
 
@@ -545,6 +561,9 @@ namespace SiliconStudio.Xenko.Navigation
             }
         }
 
+        /// <summary>
+        /// Generates triangles for an infinite plane that will completely intersect the given bounding box
+        /// </summary>
         private NavigationMeshInputBuilder BuildPlaneGeometry(Plane plane, BoundingBox boundingBox)
         {
             Vector3 maxSize = boundingBox.Maximum - boundingBox.Minimum;
@@ -574,6 +593,9 @@ namespace SiliconStudio.Xenko.Navigation
             return inputBuilder;
         }
 
+        /// <summary>
+        /// Extract the collider shape description in the case of it being either an inline shape or an asset as shape
+        /// </summary>
         private TColliderType GetColliderShapeDesc<TColliderType>(IColliderShapeDesc desc) where TColliderType : class, IColliderShapeDesc
         {
             var direct = desc as TColliderType;

@@ -12,7 +12,7 @@ using SiliconStudio.Xenko.Navigation.Processors;
 namespace SiliconStudio.Xenko.Navigation
 {
     /// <summary>
-    /// This is used to interface with the navigation mesh. Supports FindPath and Raycast
+    /// This is used to interface with the navigation mesh. Supports TryFindPath and Raycast
     /// </summary>
     [DataContract("NavigationComponent")]
     [Display("Navigation", Expand = ExpandRule.Once)]

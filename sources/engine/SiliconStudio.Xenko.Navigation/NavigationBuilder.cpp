@@ -25,7 +25,7 @@
 #include "../../../deps/NativePath/NativePath.h"
 #include "../../../deps/NativePath/NativeTime.h"
 
-#include "XenkoNative.h"
+#include "../SiliconStudio.Xenko.Native/XenkoNative.h"
 #include "Navigation.hpp"
 #include "NavigationBuilder.hpp"
 
