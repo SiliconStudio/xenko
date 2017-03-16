@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -29,7 +29,7 @@ using SiliconStudio.Xenko.Rendering.Skyboxes;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.11.0-beta01")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.11.1.1")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public static readonly string DefaultGraphicsCompositorLevel9Url = "Compositing/DefaultGraphicsCompositorLevel9";
@@ -124,8 +124,7 @@ namespace SiliconStudio.Xenko.Assets
                         skeletonAssetYaml.DynamicRootNode.ScaleImport = modelAsset.DynamicRootNode.ScaleImport;
 
                         // Update model to point to this skeleton
-                        modelAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAssetYaml.DynamicRootNode.Id),
-                            skeletonAsset.AssetLocation.MakeRelative(modelAsset.Asset.AssetLocation.GetParent()));
+                        modelAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAssetYaml.DynamicRootNode.Id), skeletonAsset.AssetLocation.MakeRelative(modelAsset.Asset.AssetLocation.GetParent()));
                         modelToSkeletonMapping.Add(modelAsset, skeletonAssetYaml);
                     }
 
@@ -139,10 +138,8 @@ namespace SiliconStudio.Xenko.Assets
                     var modelAsset = animToModelEntry.Value;
 
                     var skeletonAsset = modelToSkeletonMapping[modelAsset];
-                    animationAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAsset.DynamicRootNode.Id),
-                        skeletonAsset.Asset.AssetLocation.MakeRelative(animationAsset.Asset.AssetLocation.GetParent()));
-                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference(AssetId.Parse((string)modelAsset.DynamicRootNode.Id),
-                        modelAsset.Asset.AssetLocation.MakeRelative(animationAsset.Asset.AssetLocation.GetParent()));
+                    animationAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetLocation.MakeRelative(animationAsset.Asset.AssetLocation.GetParent()));
+                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference(AssetId.Parse((string)modelAsset.DynamicRootNode.Id), modelAsset.Asset.AssetLocation.MakeRelative(animationAsset.Asset.AssetLocation.GetParent()));
                 }
 
                 // Remove Nodes from models
@@ -224,7 +221,7 @@ namespace SiliconStudio.Xenko.Assets
                         {
                             assetYaml.RootNode.Tag = "!Sound";
                             assetYaml.DynamicRootNode.Spatialized = false;
-                            assetYaml.DynamicRootNode.StreamFromDisk = true;
+                            assetYaml.DynamicRootNode.StreamFromDisk = true;  
                         }
                         else
                         {
@@ -358,9 +355,7 @@ namespace SiliconStudio.Xenko.Assets
                         var graphicsCompositorAssetId = AssetId.New();
                         var graphicsCompositorAsset = new PackageLoadingAssetFile(dependentPackage, "GraphicsCompositor.xkgfxcomp", null)
                         {
-                            AssetContent =
-                                System.Text.Encoding.UTF8.GetBytes(
-                                    $"!GraphicsCompositorAsset\r\nId: {graphicsCompositorAssetId}\r\nSerializedVersion: {{Xenko: 1.10.0-beta01}}\r\nArchetype: {defaultGraphicsCompositor.ToReference()}"),
+                            AssetContent = System.Text.Encoding.UTF8.GetBytes($"!GraphicsCompositorAsset\r\nId: {graphicsCompositorAssetId}\r\nSerializedVersion: {{Xenko: 1.10.0-beta01}}\r\nArchetype: {defaultGraphicsCompositor.ToReference()}"),
                         };
 
                         assetFiles.Add(graphicsCompositorAsset);
@@ -380,8 +375,13 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
+            if (dependency.Version.MinVersion < new PackageVersion("1.11.1.0"))
+            {
+                ConvertNormalMapsInvertY(assetFiles);
+            }
+
             // Skybox/Background separation
-            if (dependency.Version.MinVersion < new PackageVersion("1.11.0-beta01"))
+            if (dependency.Version.MinVersion < new PackageVersion("1.11.1.1"))
             {
                 SplitSkyboxLightingUpgrader upgrader = new SplitSkyboxLightingUpgrader();
                 foreach (var skyboxAsset in assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xksky"))
@@ -396,6 +396,7 @@ namespace SiliconStudio.Xenko.Assets
                     }
                 }
             }
+
 
             return true;
         }
@@ -413,8 +414,7 @@ namespace SiliconStudio.Xenko.Assets
         }
 
         /// <inheritdoc/>
-        public override bool UpgradeAfterAssetsLoaded(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage,
-            PackageVersionRange dependencyVersionBeforeUpdate)
+        public override bool UpgradeAfterAssetsLoaded(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, PackageVersionRange dependencyVersionBeforeUpdate)
         {
             if (dependencyVersionBeforeUpdate.MinVersion < new PackageVersion("1.3.0-alpha02"))
             {
@@ -460,8 +460,7 @@ namespace SiliconStudio.Xenko.Assets
             if (dependentPackage == null) throw new ArgumentNullException(nameof(dependentPackage));
             if (codeUpgrader == null) throw new ArgumentNullException(nameof(codeUpgrader));
 
-            var csharpWorkspaceAssemblies = new[]
-                { Assembly.Load("Microsoft.CodeAnalysis.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.CSharp.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.Workspaces.Desktop") };
+            var csharpWorkspaceAssemblies = new[] { Assembly.Load("Microsoft.CodeAnalysis.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.CSharp.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.Workspaces.Desktop") };
             var workspace = MSBuildWorkspace.Create(ImmutableDictionary<string, string>.Empty, MefHostServices.Create(csharpWorkspaceAssemblies));
 
             var tasks = dependentPackage.Profiles
@@ -502,7 +501,6 @@ namespace SiliconStudio.Xenko.Assets
             var serializer = AssetFileSerializer.FindSerializer(assetFileExtension);
             return serializer is YamlAssetSerializer;
         }
-
         /// <summary>
         /// Base interface for code upgrading
         /// </summary>
@@ -880,6 +878,68 @@ namespace SiliconStudio.Xenko.Assets
                     asset.RemoveChild("Type");
 
                     asset.AddChild("Type", newType);
+                }
+            }
+        }
+
+        private void ConvertNormalMapsInvertY(IList<PackageLoadingAssetFile> assetFiles)
+        {
+            var materialAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkmat").ToList();
+            var textureAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xktex").ToList();
+
+            foreach (var materialFile in materialAssets)
+            {
+                if (!IsYamlAsset(materialFile))
+                    continue;
+
+                // This upgrader will also mark every yaml asset as dirty. We want to re-save everything with the new serialization system
+                using (var yamlAsset = materialFile.AsYamlAsset())
+                {
+                    dynamic asset = yamlAsset.DynamicRootNode;
+
+                    var assetTag = asset.Node.Tag;
+                    if (assetTag != "!MaterialAsset")
+                        continue;
+
+                    if (asset.Attributes.Surface == null)
+                        continue;
+
+                    var surface = asset.Attributes.Surface;
+                    var materialTag = surface.Node.Tag;
+                    if (materialTag != "!MaterialNormalMapFeature")
+                        continue;
+
+                    var invertY = (asset.Attributes.Surface.InvertY == null || asset.Attributes.Surface.InvertY == "true");
+                    if (invertY)
+                        continue; // This is the default value for normal map textures, so no need to change it
+
+                    // TODO Find all referenced files
+                    if (asset.Attributes.Surface.NormalMap == null || asset.Attributes.Surface.NormalMap.Node.Tag != "!ComputeTextureColor")
+                        continue;
+
+                    dynamic texture = asset.Attributes.Surface.NormalMap.Texture;
+                    var textureId = (string)texture.Node.Value;
+
+                    foreach (var textureFile in textureAssets)
+                    {
+                        if (!IsYamlAsset(textureFile))
+                            continue;
+
+                        using (var yamlAssetTex = textureFile.AsYamlAsset())
+                        {
+                            dynamic assetTex = yamlAssetTex.DynamicRootNode;
+
+                            var assetTagTex = assetTex.Node.Tag;
+                            if (assetTagTex != "!Texture")
+                                continue;
+
+                            var assetIdTex = (string)assetTex.Id;
+                            if (!textureId.Contains(assetIdTex))
+                                continue;
+
+                            assetTex["InvertY"] = false;
+                        }
+                    }
                 }
             }
         }

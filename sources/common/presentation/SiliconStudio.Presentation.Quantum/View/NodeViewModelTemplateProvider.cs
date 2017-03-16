@@ -35,7 +35,7 @@ namespace SiliconStudio.Presentation.Quantum.View
         /// <returns><c>true</c> if the node matches the given type, <c>false</c> otherwise.</returns>
         protected static bool MatchType(INodeViewModel node, Type type)
         {
-            return type.IsAssignableFrom(node.Type) || type.IsInstanceOfType(node.Value);
+            return type.IsAssignableFrom(node.Type) || type.IsInstanceOfType(node.NodeValue);
         }
     }
 }

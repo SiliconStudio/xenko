@@ -724,6 +724,15 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Convert this color to an equivalent <see cref="Color4"/> with an opaque alpha.
+        /// </summary>
+        /// <returns>An equivalent <see cref="Color4"/> with an opaque alpha.</returns>
+        public Color4 ToColor4()
+        {
+            return new Color4(R, G, B, 1.0f);
+        }
+
+        /// <summary>
         /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="format">The format.</param>

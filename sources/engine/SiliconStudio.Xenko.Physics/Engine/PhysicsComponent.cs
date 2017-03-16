@@ -535,17 +535,7 @@ namespace SiliconStudio.Xenko.Engine
             var scaling = Matrix.Scaling(scale);
             Matrix.Multiply(ref scaling, ref physicsTransform, out entity.Transform.WorldMatrix);
 
-            if (entity.Transform.Parent == null)
-            {
-                entity.Transform.LocalMatrix = entity.Transform.WorldMatrix;
-            }
-            else
-            {
-                //We are not root so we need to derive the local matrix as well
-                var inverseParent = entity.Transform.Parent.WorldMatrix;
-                inverseParent.Invert();
-                Matrix.Multiply(ref entity.Transform.WorldMatrix, ref inverseParent, out entity.Transform.LocalMatrix);
-            }
+            entity.Transform.UpdateLocalFromWorld();
 
             Quaternion rotQuat;
             entity.Transform.LocalMatrix.Decompose(out scale, out rotQuat, out translation);
