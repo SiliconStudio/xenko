@@ -12,10 +12,8 @@ namespace SiliconStudio.Core.Mathematics
     [DataContract("Color")]
     [DataStyle(DataStyle.Compact)]
     [StructLayout(LayoutKind.Sequential, Size = 4)]
-    public partial struct Color : IEquatable<Color>, IFormattable
+    public partial struct Color : IEquatable<Color>
     {
-        private const string ToStringFormat = "A:{0} R:{1} G:{2} B:{3}";
-
         /// <summary>
         /// The red component of the color.
         /// </summary>
@@ -1060,51 +1058,7 @@ namespace SiliconStudio.Core.Mathematics
         /// </returns>
         public override string ToString()
         {
-            return ToString(CultureInfo.CurrentCulture);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents this instance.
-        /// </summary>
-        /// <param name="format">The format to apply to each channel element (byte).</param>
-        /// <returns>
-        /// A <see cref="string"/> that represents this instance.
-        /// </returns>
-        public string ToString(string format)
-        {
-            return ToString(format, CultureInfo.CurrentCulture);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents this instance.
-        /// </summary>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>
-        /// A <see cref="string"/> that represents this instance.
-        /// </returns>
-        public string ToString(IFormatProvider formatProvider)
-        {
-            return string.Format(formatProvider, ToStringFormat, A, R, G, B);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents this instance.
-        /// </summary>
-        /// <param name="format">The format to apply to each channel element (byte).</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>
-        /// A <see cref="string"/> that represents this instance.
-        /// </returns>
-        public string ToString(string format, IFormatProvider formatProvider)
-        {
-            if (format == null)
-                return ToString(formatProvider);
-
-            return string.Format(formatProvider, ToStringFormat,
-                                 A.ToString(format, formatProvider),
-                                 R.ToString(format, formatProvider),
-                                 G.ToString(format, formatProvider),
-                                 B.ToString(format, formatProvider));
+            return ColorExtensions.RgbaToString(ToRgba());
         }
 
         /// <summary>

@@ -33,7 +33,6 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
         /// <value>The size x.</value>
         /// <userdoc>The size of plane along the X/Y axis</userdoc>
         [DataMember(10)]
-        [DefaultValue(1.0f)]
         [Display("Size")]
         public Vector2 Size { get; set; }
 
@@ -43,7 +42,6 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
         /// <value>The tessellation x.</value>
         /// <userdoc>The tessellation of the plane along the X/Y axis. That is the number polygons the plane is made of.</userdoc>
         [DataMember(20)]
-        [DefaultValue(1)]
         [Display("Tessellation")]
         public Int2 Tessellation { get; set; }
         
@@ -61,7 +59,7 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
         /// </summary>
         /// <userdoc>Check this combo box to generate a back face to the plane</userdoc>
         [DataMember(50)]
-        [DefaultValue(1.0f)]
+        [DefaultValue(false)]
         [Display("Back Face")]
         public bool GenerateBackFace { get; set; }
 

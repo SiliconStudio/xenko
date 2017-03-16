@@ -72,12 +72,12 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
-            nameNode.Value = "NewValue";
+            nameNode.InternalNodeValue = "NewValue";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
-            nameNode.Value = "NewValue2";
+            nameNode.InternalNodeValue = "NewValue2";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);
@@ -98,12 +98,12 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
-            instanceNode.Value = new Types.SimpleObject { Name = "NewValue" };
+            instanceNode.InternalNodeValue = new Types.SimpleObject { Name = "NewValue" };
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
-            instanceNode.Value = new Types.SimpleObject { Name = "NewValue2" };
+            instanceNode.InternalNodeValue = new Types.SimpleObject { Name = "NewValue2" };
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);
@@ -124,12 +124,12 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
-            instanceNode.Value = new Types.SimpleObject { Name = "NewValue" };
+            instanceNode.InternalNodeValue = new Types.SimpleObject { Name = "NewValue" };
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
-            instanceNode.Value = new Types.SimpleObject { Name = "NewValue2" };
+            instanceNode.InternalNodeValue = new Types.SimpleObject { Name = "NewValue2" };
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);
@@ -150,12 +150,12 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
-            nameNode.Value = "NewValue";
+            nameNode.InternalNodeValue = "NewValue";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
-            nameNode.Value = "NewValue2";
+            nameNode.InternalNodeValue = "NewValue2";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);
@@ -177,23 +177,23 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
-            nameNode.Value = "NewValue";
+            nameNode.InternalNodeValue = "NewValue";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
-            instanceNode.Value = new Types.SimpleObject { Name = "NewValue2" };
+            instanceNode.InternalNodeValue = new Types.SimpleObject { Name = "NewValue2" };
             nameNode = viewModel.RootNode.GetChild(Instance).GetChild(Name);
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);
 
-            nameNode.Value = "NewValue3";
+            nameNode.InternalNodeValue = "NewValue3";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue3", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(3, titleNode.AssociatedData[UpdateCountKey]);
 
-            instanceNode.Value = new Types.SimpleObject { Name = "NewValue4" };
+            instanceNode.InternalNodeValue = new Types.SimpleObject { Name = "NewValue4" };
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue4", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(4, titleNode.AssociatedData[UpdateCountKey]);
@@ -215,22 +215,22 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
-            namNode.Value = "NewValue";
+            namNode.InternalNodeValue = "NewValue";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
-            nameNode.Value = "NewValue2";
+            nameNode.InternalNodeValue = "NewValue2";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
-            namNode.Value = "NewValue3";
+            namNode.InternalNodeValue = "NewValue3";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
-            nameNode.Value = "NewValue4";
+            nameNode.InternalNodeValue = "NewValue4";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue4", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);

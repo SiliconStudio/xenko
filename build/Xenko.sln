@@ -228,7 +228,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.UI.Test
 		{50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698} = {50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.GameStudio.Plugin", "..\sources\editor\SiliconStudio.Xenko.GameStudio.Plugin\SiliconStudio.Xenko.GameStudio.Plugin.csproj", "{16E02D45-5530-4617-97DC-BC3BDF77DE2C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Editor", "..\sources\editor\SiliconStudio.Xenko.Editor\SiliconStudio.Xenko.Editor.csproj", "{16E02D45-5530-4617-97DC-BC3BDF77DE2C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{73AA8A18-15C4-405B-BBF4-5D41C1CE44AD} = {73AA8A18-15C4-405B-BBF4-5D41C1CE44AD}
 	EndProjectSection

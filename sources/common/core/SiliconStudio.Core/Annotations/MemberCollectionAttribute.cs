@@ -8,7 +8,7 @@ namespace SiliconStudio.Core.Annotations
     /// <summary>
     /// This attributes provides additional information on a member collection.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Class)]
     public sealed class MemberCollectionAttribute : Attribute
     {
         /// <summary>

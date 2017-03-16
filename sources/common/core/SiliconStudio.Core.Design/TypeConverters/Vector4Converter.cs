@@ -68,11 +68,11 @@ namespace SiliconStudio.Core.TypeConverters
         {
             var type = typeof(Vector4);
             Properties = new PropertyDescriptorCollection(new PropertyDescriptor[] 
-            { 
-                new FieldPropertyDescriptor(type.GetField("X")), 
-                new FieldPropertyDescriptor(type.GetField("Y")),
-                new FieldPropertyDescriptor(type.GetField("Z")),
-                new FieldPropertyDescriptor(type.GetField("W"))
+            {
+                new FieldPropertyDescriptor(type.GetField(nameof(Vector4.X))),
+                new FieldPropertyDescriptor(type.GetField(nameof(Vector4.Y))),
+                new FieldPropertyDescriptor(type.GetField(nameof(Vector4.Z))),
+                new FieldPropertyDescriptor(type.GetField(nameof(Vector4.W)))
             });
         }
 
@@ -94,8 +94,7 @@ namespace SiliconStudio.Core.TypeConverters
         /// </exception>
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
-            if (destinationType == null)
-                throw new ArgumentNullException("destinationType");
+            if (destinationType == null) throw new ArgumentNullException(nameof(destinationType));
 
             if (value is Vector4)
             {
@@ -142,10 +141,8 @@ namespace SiliconStudio.Core.TypeConverters
         /// </returns>
         public override object CreateInstance(ITypeDescriptorContext context, IDictionary propertyValues)
         {
-            if (propertyValues == null)
-                throw new ArgumentNullException("propertyValues");
-
-            return new Vector4((float)propertyValues["X"], (float)propertyValues["Y"], (float)propertyValues["Z"], (float)propertyValues["W"]);
+            if (propertyValues == null) throw new ArgumentNullException(nameof(propertyValues));
+            return new Vector4((float)propertyValues[nameof(Vector4.X)], (float)propertyValues[nameof(Vector4.Y)], (float)propertyValues[nameof(Vector4.Z)], (float)propertyValues[nameof(Vector4.W)]);
         }
     }
 }

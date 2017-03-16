@@ -40,7 +40,7 @@ namespace SiliconStudio.Presentation.Quantum
             builder.Append(": [");
             builder.Append(node.Type.Name);
             builder.Append("] = ");
-            builder.Append(node.Value?.ToString().Replace(Environment.NewLine, " ") ?? "(null)");
+            builder.Append(node.NodeValue?.ToString().Replace(Environment.NewLine, " ") ?? "(null)");
 
             if (node.Commands.Any())
             {

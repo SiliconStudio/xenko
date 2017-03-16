@@ -1,0 +1,11 @@
+!TemplateSample
+Id: 91366B3A-915A-46B7-88C8-0439B0F3E5F5
+Name: Virtual Reality
+Scope: Session
+Description: A virtual reality game template.
+FullDescription: This template creates a virtual reality game, where the player is seated in front of a desk with interactive objects. Left and right hand controllers are also supported.
+Group: Templates
+Icon: ../../.xktpl/Icon2VR.png
+DefaultOutputName: VRSandbox
+Screenshots:
+    - .xktpl/screenshot_small.jpg
