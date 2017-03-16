@@ -29,7 +29,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             member.Changing += OnMemberChanging;
             member.Changed += OnMemberChanged;
 
-
             if (member.Target != null)
             {
                 // If we have a target node, register commands attached to it. They will override the commands of the member node by name.

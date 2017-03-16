@@ -213,16 +213,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         protected internal sealed override object InternalNodeValue { get { return GetNodeValue(); } set { AssertInit(); SetNodeValue(SourceNode, value); } }
 
-        // The previous way to compute HasList and HasDictionary was quite complex, but let's keep it here for history.
-        // To distinguish between lists and items of a list (which have the same TargetNode if the items are primitive types), we check whether the TargetNode is
-        // the same of the one of its parent. If so, we're likely in an item of a list of primitive objects.
-        //public sealed override bool HasList => (targetNode.Descriptor is CollectionDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Value != targetNode.Value))) || (targetNode.ShouldProcessReference && targetNode.Reference is ReferenceEnumerable);
-        // To distinguish between dictionaries and items of a dictionary (which have the same TargetNode if the value type is a primitive type), we check whether the TargetNode is
-        // the same of the one of its parent. If so, we're likely in an item of a dictionary of primitive objects.
-        //public sealed override bool HasDictionary => (targetNode.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Value != targetNode.Value))) || (targetNode.ShouldProcessReference && targetNode.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Reference).IsDictionary);
-
-        internal Guid ModelGuid => SourceNode.Guid;
-
         // TODO: If possible, make this private, it's not a good thing to expose
         public IMemberDescriptor GetMemberDescriptor()
         {
