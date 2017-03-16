@@ -41,7 +41,7 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="context">The context source.</param>
         /// <param name="assetItems">The list of items to compile</param>
         /// <param name="compilationResult">The current compilation result, containing the build steps and the logging</param>
-        protected void Compile(AssetCompilerContext context, IEnumerable<AssetItem> assetItems, AssetCompilerResult compilationResult)
+        protected void Prepare(AssetCompilerContext context, IEnumerable<AssetItem> assetItems, AssetCompilerResult compilationResult)
         {
             foreach (var assetItem in assetItems)
             {

@@ -107,7 +107,7 @@ namespace SiliconStudio.Assets.Compiler
                 var result = new AssetCompilerResult();
 
                 // generate the build steps required to build the assets via base class
-                Compile(context, assets, result);
+                Prepare(context, assets, result);
 
                 return result;
             }
