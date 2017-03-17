@@ -378,12 +378,6 @@ Hierarchy:
                         Id: d3e3b5c5-6901-455b-af30-7c670504b87e
                         Type: !LightSkybox {}
                         Intensity: 0.1
-                    df4643ae1fc6e97bdef0c4bc3eae44d2: !SpriteComponent
-                        Id: 40087a3b-c7b7-448a-baee-fbef208190e8
-                        SpriteProvider: !SpriteFromTexture
-                            Texture: 10360b72-66be-48f0-b0e9-a013a352ee95:skybox_texture_ldr
-                            Center: {X: 0.0, Y: 0.0}
-                        Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
         -   Folder: Level
             Entity:
                 Id: 6df18ec9-95cc-4a39-967e-dd42f9026345
@@ -558,14 +552,14 @@ Hierarchy:
                 Id: d8fd6a70-e5df-4a33-a6a4-6fed4b82a220
                 Name: Cube (2)
                 Components:
-                    461576b04f201ec3ea32d233f6b510cd: !TransformComponent
-                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f08
+                    461576b04f201ec3ea32d233f6b510ce: !TransformComponent
+                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f09
                         Position: {X: -0.144419432, Y: 2.60336542, Z: -7.07169247}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 2.0, Y: 0.2, Z: 2.0}
                         Children: {}
-                    4cfc02208a5e395ecdba0fd1ef41bdaa: !ModelComponent
-                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca818
+                    4cfc02208a5e395ecdba0fd1ef41bdaf: !ModelComponent
+                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca819
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
         -   Folder: Level
