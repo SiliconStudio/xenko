@@ -732,11 +732,10 @@ namespace SiliconStudio.Xenko.Assets
         private class SplitSkyboxLightingUpgrader
         {
             private readonly Dictionary<string, SkyboxAssetInfo> skyboxAssetInfos = new Dictionary<string, SkyboxAssetInfo>();
-
+            
             public void UpgradeAsset(dynamic asset)
             {
-                var hierarchy = asset.Hierarchy;
-                var parts = (DynamicYamlArray)hierarchy.Parts;
+                var parts = GetPartsArray(asset);
                 foreach (dynamic part in parts)
                 {
                     var entity = part.Entity;
@@ -801,13 +800,12 @@ namespace SiliconStudio.Xenko.Assets
                         
                         if (skyboxAssetInfo.IsBackground)
                         {
-                            string newId = Guid.NewGuid().ToString();
                             var backgroundComponentNode = new YamlMappingNode();
                             backgroundComponentNode.Tag = "!BackgroundComponent";
                             backgroundComponentNode.Add("Texture", skyboxAssetInfo.TextureReference);
                             if (skyboxInfo.Component.Intensity != null)
                                 backgroundComponentNode.Add("Intensity", (string)skyboxInfo.Component.Intensity);
-                            AddComponent(components, backgroundComponentNode, newId);
+                            AddComponent(components, backgroundComponentNode, Guid.NewGuid());
                         }
                     }
 
@@ -861,19 +859,20 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
-            private void AddComponent(dynamic componentsNode, YamlMappingNode node, string id)
+            private void AddComponent(dynamic componentsNode, YamlMappingNode node, Guid id)
             {
                 try
                 {
                     // New format (1.9)
                     DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
-                    mapping.AddChild(new YamlScalarNode(id), node);
+                    mapping.AddChild(new YamlScalarNode(Guid.NewGuid().ToString("N")), node);
+                    node.Add("Id", id.ToString("D"));
                 }
                 catch (Exception)
                 {
                     // Old format (<= 1.8)
                     DynamicYamlArray array = (DynamicYamlArray)componentsNode;
-                    node.Add("~Id", id); // TODO
+                    node.Add("~Id", id.ToString("D")); // TODO
                     array.Add(node);
                 }
             }
@@ -899,6 +898,14 @@ namespace SiliconStudio.Xenko.Assets
                         }
                     }
                 }
+            }
+
+            private DynamicYamlArray GetPartsArray(dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                if (hierarchy.Parts != null)
+                    return (DynamicYamlArray)hierarchy.Parts; // > 1.6.0
+                return (DynamicYamlArray)hierarchy.Entities; // <= 1.6.0
             }
 
             /// <returns>A tuple of (tag, id, component node)</returns>

@@ -127,7 +127,7 @@ namespace SiliconStudio.Core
             if (type == null)
                 return null;
 
-            return GetDisplay(type)?.Name ?? type.Name;
+            return GetDisplay(type.GetTypeInfo())?.Name ?? type.Name;
         }
 
 
