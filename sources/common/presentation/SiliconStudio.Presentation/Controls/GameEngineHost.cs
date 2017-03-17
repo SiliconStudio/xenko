@@ -180,13 +180,11 @@ namespace SiliconStudio.Presentation.Controls
                     var parentElement = parent as FrameworkElement;
                     if (parentElement != null)
                     {
-                        if (!parentElement.IsLoaded || parentElement.Visibility != Visibility.Visible)
+                        if (!parentElement.IsLoaded || !parentElement.IsVisible)
                             shouldShow = false;
                     }
 
                     parent = VisualTreeHelper.GetParent(root) as Visual;
-                    if (parent == null)
-                        break;
                 }
 
                 if (root == null)
