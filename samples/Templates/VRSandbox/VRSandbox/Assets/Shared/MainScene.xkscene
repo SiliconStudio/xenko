@@ -2,6 +2,7 @@
 Id: 11913d23-3ce0-4773-88a4-227aa4d933e7
 SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
+ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
@@ -1212,9 +1213,9 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
-                    f5699f2de3c3d2459a1df113615eb440: !SkyboxComponent
-                        Id: 2d9f69f5-c3e3-45d2-9a1d-f113615eb440
-                        Skybox: fe8d8410-ca6c-482b-a82b-208d0f3219ed:Skybox
+                    00000000000000000000000000000000: !BackgroundComponent
+                        Id: 7e7fd412-49d2-4f00-8ca1-c1ec66f0f0b6
+                        Texture: 4665d5a3-268f-41af-8f4a-8614949f1257:Skybox Texture
                         Intensity: 3.0
         -   Folder: Objects
             Entity:
