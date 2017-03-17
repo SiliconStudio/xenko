@@ -33,6 +33,11 @@ namespace SiliconStudio.Assets.Compiler
             yield break;
         }
 
+        public virtual IEnumerable<Type> GetTypesToFilterOut(AssetCompilerContext context, AssetItem assetItem)
+        {
+            yield break;
+        }
+
         public AssetCompilerResult Prepare(AssetCompilerContext context, AssetItem assetItem)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));

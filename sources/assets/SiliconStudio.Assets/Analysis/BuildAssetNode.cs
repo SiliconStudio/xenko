@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -44,10 +45,15 @@ namespace SiliconStudio.Assets.Analysis
             buildDependencyManager = dependencyManager;
         }
 
-        public void Analyze(AssetCompilerContext context)
+        public void Analyze(AssetCompilerContext context, HashSet<Type> typesToFilterOut)
         {
             var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(AssetItem.Asset.GetType());
             if (mainCompiler == null) return; //scripts and such don't have compiler
+
+            foreach (var type in mainCompiler.GetTypesToFilterOut(context, AssetItem))
+            {
+                typesToFilterOut.Add(type);
+            }
 
             dependencyLinks.Clear();
 
@@ -58,11 +64,14 @@ namespace SiliconStudio.Assets.Analysis
                 foreach (var assetDependency in dependencies.LinksOut)
                 {
                     var assetType = assetDependency.Item.Asset.GetType();
-                    foreach (var inputType in mainCompiler.GetInputTypes(context, assetDependency.Item).Where(x => x.Key == assetType))
+                    if (!typesToFilterOut.Contains(assetType))
                     {
-                        var dependencyType = inputType.Value;
-                        var node = buildDependencyManager.FindOrCreateNode(assetDependency.Item, dependencyType);
-                        dependencyLinks.TryAdd(assetDependency.Item.Id, node);
+                        foreach (var inputType in mainCompiler.GetInputTypes(context, assetDependency.Item).Where(x => x.Key == assetType))
+                        {
+                            var dependencyType = inputType.Value;
+                            var node = buildDependencyManager.FindOrCreateNode(assetDependency.Item, dependencyType);
+                            dependencyLinks.TryAdd(assetDependency.Item.Id, node);
+                        }
                     }
                 }
             }
@@ -74,10 +83,12 @@ namespace SiliconStudio.Assets.Analysis
                 {
                     var asset = AssetItem.Package.Session.FindAsset(inputFile.Path); //this will search all packages
                     if (asset == null) continue; //this might be an error tho...
-
-                    var dependencyType = inputFile.Type == UrlType.Content ? BuildDependencyType.CompileContent : BuildDependencyType.CompileAsset;
-                    var node = buildDependencyManager.FindOrCreateNode(asset, dependencyType);
-                    dependencyLinks.TryAdd(asset.Id, node);
+                    if (!typesToFilterOut.Contains(asset.GetType()))
+                    {
+                        var dependencyType = inputFile.Type == UrlType.Content ? BuildDependencyType.CompileContent : BuildDependencyType.CompileAsset;
+                        var node = buildDependencyManager.FindOrCreateNode(asset, dependencyType);
+                        dependencyLinks.TryAdd(asset.Id, node);
+                    }
                 }
             }
         }

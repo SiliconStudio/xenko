@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.BuildEngine;
@@ -14,21 +15,21 @@ namespace SiliconStudio.Assets.Compiler
     {
         private readonly BuildDependencyManager buildDependencyManager = new BuildDependencyManager();
 
-        public void Prepare(Dictionary<AssetId, BuildStep> addedBuildSteps, AssetCompilerResult finalResult, AssetCompilerContext context, List<AssetItem> assetItems, BuildStep parentBuildStep = null,
+        public void Prepare(Dictionary<AssetId, BuildStep> addedBuildSteps, AssetCompilerResult finalResult, AssetCompilerContext context, List<AssetItem> assetItems, HashSet<Type> filterOutTypes, BuildStep parentBuildStep = null,
             BuildDependencyType dependencyType = BuildDependencyType.Runtime)
         {
             foreach (var assetItem in assetItems)
             {
-                Prepare(addedBuildSteps, finalResult, context, assetItem, parentBuildStep, dependencyType);
+                Prepare(addedBuildSteps, finalResult, context, assetItem, filterOutTypes, parentBuildStep, dependencyType);
             }
         }
 
-        public void Prepare(Dictionary<AssetId, BuildStep> addedBuildSteps, AssetCompilerResult finalResult, AssetCompilerContext context, AssetItem assetItem, BuildStep parentBuildStep = null, 
+        public void Prepare(Dictionary<AssetId, BuildStep> addedBuildSteps, AssetCompilerResult finalResult, AssetCompilerContext context, AssetItem assetItem, HashSet<Type> filterOutTypes, BuildStep parentBuildStep = null, 
             BuildDependencyType dependencyType = BuildDependencyType.Runtime)
         {
             var assetNode = buildDependencyManager.FindOrCreateNode(assetItem, dependencyType);
 
-            assetNode.Analyze(context);
+            assetNode.Analyze(context, filterOutTypes);
 
             BuildStep buildStep;
             var inCache = true;
@@ -50,10 +51,14 @@ namespace SiliconStudio.Assets.Compiler
 
             foreach (var dependencyNode in assetNode.DependencyNodes)
             {
-                Prepare(addedBuildSteps, finalResult, context, dependencyNode.AssetItem, buildStep, dependencyNode.DependencyType);
-                if (finalResult.HasErrors)
+                if ((dependencyNode.DependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent ||
+                    (dependencyNode.DependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime)
                 {
-                    return;
+                    Prepare(addedBuildSteps, finalResult, context, dependencyNode.AssetItem, filterOutTypes, buildStep, dependencyNode.DependencyType);
+                    if (finalResult.HasErrors)
+                    {
+                        return;
+                    }
                 }
             }
 

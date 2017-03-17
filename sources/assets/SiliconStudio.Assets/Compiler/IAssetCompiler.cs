@@ -25,5 +25,7 @@ namespace SiliconStudio.Assets.Compiler
         IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem);
 
         IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem);
+
+        IEnumerable<Type> GetTypesToFilterOut(AssetCompilerContext context, AssetItem assetItem);
     }
 }
