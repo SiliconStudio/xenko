@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     public partial class ForwardRenderer : SceneRendererBase, ISharedRenderer
     {
         // TODO: should we use GraphicsDeviceManager.PreferredBackBufferFormat?
-        public const PixelFormat DepthBufferFormat = PixelFormat.R24_UNorm_X8_Typeless;
+        public const PixelFormat DepthBufferFormat = PixelFormat.D24_UNorm_S8_UInt;
 
         private IShadowMapRenderer shadowMapRenderer;
         private Texture depthStencilROCached;
@@ -34,11 +34,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         private VRDeviceSystem vrSystem;
 
         public ClearRenderer Clear { get; set; } = new ClearRenderer();
-
-        /// <summary>
-        /// MSAA Resolver is used to resolve multi-sampled render targets into normal render targets
-        /// </summary>
-        public MSAAResolver MSAAResolver { get; set; } = new MSAAResolver();
 
         /// <summary>
         /// Enable Light Probe.
@@ -84,6 +79,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// The level of multi-sampling
         /// </summary>
         public MSAALevel MSAALevel { get; set; } = MSAALevel.None;
+
+        /// <summary>
+        /// MSAA Resolver is used to resolve multi-sampled render targets into normal render targets
+        /// </summary>
+        public MSAAResolver MSAAResolver { get; } = new MSAAResolver();
 
         /// <summary>
         /// If true, depth buffer generated during <see cref="OpaqueRenderStage"/> will be available as a shader resource named DepthBase.DepthStencil during <see cref="TransparentRenderStage"/>.
@@ -291,20 +291,25 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 case PixelFormat.R16_Typeless:
                 case PixelFormat.D16_UNorm:
-                    result = PixelFormat.R16_Typeless;
+                    result = PixelFormat.R16_Float;
                     break;
                 case PixelFormat.R32_Typeless:
                 case PixelFormat.D32_Float:
-                    result = PixelFormat.R32_Typeless;
+                    result = PixelFormat.R32_Float;
                     break;
+                
+                // Note: for those formats we lose stencil buffer information during MSAA -> non-MSAA conversion
                 case PixelFormat.R24G8_Typeless:
                 case PixelFormat.D24_UNorm_S8_UInt:
-                    result = PixelFormat.R24_UNorm_X8_Typeless;
+                case PixelFormat.R24_UNorm_X8_Typeless:
+                    result = PixelFormat.R32_Float;
                     break;
                 case PixelFormat.R32G8X24_Typeless:
                 case PixelFormat.D32_Float_S8X24_UInt:
-                    result = PixelFormat.R32_Float_X8X24_Typeless;
+                case PixelFormat.R32_Float_X8X24_Typeless:
+                    result = PixelFormat.R32_Float;
                     break;
+
                 default:
                     throw new NotSupportedException($"Unsupported depth format [{format}]");
             }
