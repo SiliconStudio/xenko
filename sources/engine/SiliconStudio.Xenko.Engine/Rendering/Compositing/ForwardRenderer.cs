@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     public partial class ForwardRenderer : SceneRendererBase, ISharedRenderer
     {
         // TODO: should we use GraphicsDeviceManager.PreferredBackBufferFormat?
-        public const PixelFormat DepthBufferFormat = PixelFormat.D24_UNorm_S8_UInt;
+        public const PixelFormat DepthBufferFormat = PixelFormat.R24_UNorm_X8_Typeless;
 
         private IShadowMapRenderer shadowMapRenderer;
         private Texture depthStencilROCached;
@@ -34,7 +34,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         private VRDeviceSystem vrSystem;
 
         public ClearRenderer Clear { get; set; } = new ClearRenderer();
-        
+
+        /// <summary>
+        /// MSAA Resolver is used to resolve multi-sampled render targets into normal render targets
+        /// </summary>
+        public MSAAResolver MSAAResolver { get; set; } = new MSAAResolver();
+
         /// <summary>
         /// Enable Light Probe.
         /// </summary>
@@ -278,25 +283,64 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             PostEffects?.Collect(context);
         }
 
+        protected static PixelFormat GetNonMSAADepthFormat(PixelFormat format)
+        {
+            PixelFormat result;
+
+            switch (format)
+            {
+                case PixelFormat.R16_Typeless:
+                case PixelFormat.D16_UNorm:
+                    result = PixelFormat.R16_Typeless;
+                    break;
+                case PixelFormat.R32_Typeless:
+                case PixelFormat.D32_Float:
+                    result = PixelFormat.R32_Typeless;
+                    break;
+                case PixelFormat.R24G8_Typeless:
+                case PixelFormat.D24_UNorm_S8_UInt:
+                    result = PixelFormat.R24_UNorm_X8_Typeless;
+                    break;
+                case PixelFormat.R32G8X24_Typeless:
+                case PixelFormat.D32_Float_S8X24_UInt:
+                    result = PixelFormat.R32_Float_X8X24_Typeless;
+                    break;
+                default:
+                    throw new NotSupportedException($"Unsupported depth format [{format}]");
+            }
+
+            return result;
+        }
+
         protected virtual void ResolveDepthMSAA(RenderDrawContext drawContext)
         {
-            ViewDepthStencilNoMSAA = PushScopedResource(
-                drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(ViewOutputTarget.Size.Width, ViewOutputTarget.Size.Height,
-                1, DepthBufferFormat, TextureFlags.ShaderResource | TextureFlags.DepthStencil)));
-
-            drawContext.CommandList.CopyMultiSample(ViewDepthStencil, 0, ViewDepthStencilNoMSAA, 0, DepthBufferFormat);
+            ViewDepthStencilNoMSAA = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(
+                ViewDepthStencil.ViewWidth, ViewDepthStencil.ViewHeight, 1, GetNonMSAADepthFormat(ViewDepthStencil.Format), TextureFlags.RenderTarget | TextureFlags.ShaderResource)));
+            
+            if (MSAAResolver != null && MSAAResolver.Enabled)
+            {
+                MSAAResolver.SetInput(ViewDepthStencil);
+                MSAAResolver.SetOutput(ViewDepthStencilNoMSAA);
+                MSAAResolver.Draw(drawContext);
+            }
+            else
+            {
+                drawContext.CommandList.CopyMultiSample(ViewDepthStencil, 0, ViewDepthStencilNoMSAA, 0);
+            }
         }
 
         protected virtual void ResolveMSAA(RenderDrawContext drawContext, Texture input, Texture output)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
-            if (input.Format != output.Format)
-                throw new ArgumentException("In order to resolve MSAA both input and output textures must be the same format.");
-
-            drawContext.CommandList.CopyMultiSample(input, 0, output, 0);
+            if (MSAAResolver != null && MSAAResolver.Enabled)
+            {
+                MSAAResolver.SetInput(input);
+                MSAAResolver.SetOutput(output);
+                MSAAResolver.Draw(drawContext);
+            }
+            else
+            {
+                drawContext.CommandList.CopyMultiSample(ViewDepthStencil, 0, ViewDepthStencilNoMSAA, 0);
+            }
         }
 
         protected virtual void ResolveMSAA(RenderDrawContext drawContext)
@@ -307,7 +351,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 var input = colorIn.Color;
                 var output = colorOut.Color = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(
-                            input.Size.Width, input.Size.Height, 1, input.Format, TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
+                            input.ViewWidth, input.ViewHeight, 1, input.Format, TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
 
                 ResolveMSAA(drawContext, input, output);
             }
@@ -318,7 +362,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 var input = normalsIn.Normal;
                 var output = normalsOut.Normal = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(
-                            input.Size.Width, input.Size.Height, 1, input.Format, TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
+                            input.ViewWidth, input.ViewHeight, 1, input.Format, TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
 
                 ResolveMSAA(drawContext, input, output);
             }
@@ -329,7 +373,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 var input = velocityIn.Velocity;
                 var output = velocityOut.Velocity = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(
-                            input.Size.Width, input.Size.Height, 1, input.Format, TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
+                            input.ViewWidth, input.ViewHeight, 1, input.Format, TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
 
                 ResolveMSAA(drawContext, input, output);
             }
@@ -340,6 +384,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 viewsOut.Count = viewsIn.Count;
                 viewsOut.Index = viewsIn.Index;
+
+                // TODO: resolve msaa?
             }
         }
 
@@ -409,7 +455,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     {
                         // If lightprobes (which need Z-Prepass) are enabled, depth is already resolved
                         //if (!lightProbes)
-                        // TODO: is that comment above true? i don't know lightprobes rendering stuff
+                        // TODO: is that comment above true? i don't know lightprobes rendering stuff but if it does it should override ResolveDepthMSAA? maybe some redesign...
 
                         ResolveDepthMSAA(drawContext);
                         ResolveMSAA(drawContext);
