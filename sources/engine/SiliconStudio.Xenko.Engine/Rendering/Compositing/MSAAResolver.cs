@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             /// <summary>
             /// Smoothstep function filter.
             /// </summary>
-            Smoothstep = 5,
+            SmoothStep = 5,
 
             /// <summary>
             /// B-Spline filter.
@@ -72,19 +72,19 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         }
 
         /// <summary>
-        /// MSAA resolve filter type
+        /// MSAA resolve filter type.
         /// </summary>
         [DataMember(10)]
         [DefaultValue(FilterTypes.BSpline)]
         public FilterTypes FilterType { get; set; }
 
         /// <summary>
-        /// MSAA resolve filter diameter value
+        /// MSAA resolve filter radius value.
         /// </summary>
         [DataMember(20)]
-        [DefaultValue(2.0f)]
-        [DataMemberRange(1.0, 6.0, 0.01, 0.1)]
-        public float FilterDiameter { get; set; }
+        [DefaultValue(1.0f)]
+        [DataMemberRange(0.5, 3.0, 0.01, 0.1)]
+        public float FilterRadius { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MSAAResolver"/> class.
@@ -105,7 +105,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             msaaResolver = new ImageEffectShader(msaaResolverShaderName);
 
             FilterType = FilterTypes.BSpline;
-            FilterDiameter = 2.0f;
+            FilterRadius = 1.0f;
         }
 
         protected override void InitializeCore()
@@ -131,7 +131,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             // TextureSizeLess1 = TextureSize - 1
             msaaResolver.Parameters.Set(MSAAResolverShaderKeys.SvPosUnpack, new Vector4(0.5f * inputSize.Width, -0.5f * inputSize.Height, 0.5f * inputSize.Width, 0.5f * inputSize.Height));
             msaaResolver.Parameters.Set(MSAAResolverShaderKeys.TextureSizeLess1, new Vector2(inputSize.Width - 1.0f, inputSize.Height - 1.0f));
-            msaaResolver.Parameters.Set(MSAAResolverParams.ResolveFilterDiameter, FilterDiameter);
+            msaaResolver.Parameters.Set(MSAAResolverParams.ResolveFilterDiameter, FilterRadius * 2.0f);
 
             // Check if it's a depth buffer
             if (input.IsDepthStencil)
