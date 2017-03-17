@@ -117,10 +117,10 @@ namespace SiliconStudio.BuildEngine
             var status = ResultStatus.NotProcessed;
             // if any external input has changed since the last execution (or if we don't have a successful execution in cache, trigger the command
             CommandResultEntry matchingResult = null;
+            ObjectId commandHash;
 
             try
-            {
-                ObjectId commandHash;
+            {               
                 {
                     // try to retrieve result from one of the object store
                     commandHash = Command.ComputeCommandHash(executeContext);
@@ -211,8 +211,13 @@ namespace SiliconStudio.BuildEngine
                     status = ResultStatus.NotTriggeredWasSuccessful;
                     RegisterCommandResult(commandResultEntries, matchingResult, status);
                 }
-            }
 
+                Debug.WriteLine($"Skipped: {Command.Title} {commandHash}");
+            }
+            else
+            {
+                Debug.WriteLine($"Executed: {Command.Title} {commandHash}");
+            }
 
             return status;
         }

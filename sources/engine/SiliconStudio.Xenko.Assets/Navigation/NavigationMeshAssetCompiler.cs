@@ -33,32 +33,54 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ColliderShapeAsset), BuildDependencyType.CompileContent);
         }
 
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        {
+            var asset = (NavigationMeshAsset)assetItem.Asset;
+            if (asset.Scene != null)
+            {
+                string sceneUrl = AttachedReferenceManager.GetUrl(asset.Scene);
+                var sceneAsset = (SceneAsset)assetItem.Package.Session.FindAsset(sceneUrl)?.Asset;
+                if(sceneAsset == null)
+                    yield break;
+
+                var sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
+
+                foreach (var entity in sceneEntities)
+                {
+                    var collider = entity.Get<StaticColliderComponent>();
+
+                    // Only process enabled colliders
+                    bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & asset.IncludedCollisionGroups) != 0 && collider.Enabled;
+                    if (colliderEnabled) // Removed or disabled
+                    {
+                        foreach (var desc in collider.ColliderShapes)
+                        {
+                            var shapeAssetDesc = desc as ColliderShapeAssetDesc;
+                            if (shapeAssetDesc?.Shape != null)
+                            {
+                                var assetReference = AttachedReferenceManager.GetAttachedReference(shapeAssetDesc.Shape);
+                                if (assetReference != null)
+                                {
+                                    yield return new ObjectUrl(UrlType.Content, assetReference.Url);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (NavigationMeshAsset)assetItem.Asset;
-            result.BuildSteps = new ListBuildStep();
-
-            // Add navigation mesh dependencies
-            foreach (var dep in asset.EnumerateCompileTimeDependencies(assetItem.Package.Session))
-            {
-                var colliderAssetItem = assetItem.Package.FindAsset(dep.Id);
-                var colliderShapeAsset = colliderAssetItem?.Asset as ColliderShapeAsset;
-                if (colliderShapeAsset != null)
-                {
-                    // Compile the collider assets first
-                    result.BuildSteps.Add(new AssetBuildStep(colliderAssetItem)
-                    {
-                        new ColliderShapeAssetCompiler.ColliderShapeCombineCommand(colliderAssetItem.Location, colliderShapeAsset, assetItem.Package)
-                    });
-                }
-            }
-
-            result.BuildSteps.Add(new WaitBuildStep());
 
             // Compile the navigation mesh itself
             result.BuildSteps.Add(new AssetBuildStep(assetItem)
             {
                 new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context)
+                {
+                    InputFilesGetter = () => GetInputFiles(assetItem)
+                }
             });
         }
 

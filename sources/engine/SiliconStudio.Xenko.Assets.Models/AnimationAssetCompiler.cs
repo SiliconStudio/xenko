@@ -34,6 +34,20 @@ namespace SiliconStudio.Xenko.Assets.Models
             }
         }
 
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        {
+            var animAsset = (AnimationAsset)assetItem.Asset;
+
+            if (animAsset.Skeleton != null)
+            {
+                var skeleton = assetItem.Package.FindAssetFromProxyObject(animAsset.Skeleton);
+                if (skeleton != null)
+                {
+                    yield return new ObjectUrl(UrlType.Content, skeleton.Location);
+                }
+            }
+        }
+
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (AnimationAsset)assetItem.Asset;
@@ -56,6 +70,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 return;
             }
 
+            sourceBuildStep.InputFilesGetter = () => GetInputFiles(assetItem);
             sourceBuildStep.Mode = ImportModelCommand.ExportMode.Animation;
             sourceBuildStep.SourcePath = assetSource;
             sourceBuildStep.Location = targetUrlInStorage;

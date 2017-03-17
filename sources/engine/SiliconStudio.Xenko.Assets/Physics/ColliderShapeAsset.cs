@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
     [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(Box2DRemovalUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     [Display("Collider Shape")]
-    public class ColliderShapeAsset : Asset, IAssetCompileTimeDependencies
+    public class ColliderShapeAsset : Asset
     {
         public const string FileExtension = ".xkphy;pdxphy";
 
@@ -106,15 +106,6 @@ namespace SiliconStudio.Xenko.Assets.Physics
                     shape.Size.Y = shape.Size.Y;
                     shape.Size.Z = 0.01f;
                 }
-            }
-        }
-
-        public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
-        {
-            foreach (var shapeDesc in ColliderShapes.OfType<ConvexHullColliderShapeDesc>())
-            {
-                var reference = AttachedReferenceManager.GetAttachedReference(shapeDesc.Model);
-                yield return new AssetReference(reference.Id, reference.Url);
             }
         }
     }

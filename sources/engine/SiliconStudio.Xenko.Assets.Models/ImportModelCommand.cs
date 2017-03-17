@@ -136,6 +136,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         {
             base.ComputeParameterHash(writer);
 
+            //this serialized the parameters of the command
             writer.SerializeExtended(this, ArchiveMode.Serialize);
         }
 

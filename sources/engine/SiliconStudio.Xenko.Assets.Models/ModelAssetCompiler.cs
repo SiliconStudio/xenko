@@ -33,19 +33,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                     yield return new ObjectUrl(UrlType.Content, skeleton.Location);
                 }
             }
-                
-            if (modelAsset.Materials != null && modelAsset.Materials.Count > 0)
-            {
-                foreach (var assetMaterial in modelAsset.Materials)
-                {
-                    var material = assetItem.Package.FindAssetFromProxyObject(assetMaterial.MaterialInstance.Material);
-                    if (material != null)
-                    {
-                        yield return new ObjectUrl(UrlType.ContentLink, material.Location);
-                    }
-                }
-            }
-
+            
             var assetDirectory = assetItem.FullPath.GetParent();
             var assetSource = UPath.Combine(assetDirectory, modelAsset.Source);
             yield return new ObjectUrl(UrlType.File, assetSource);

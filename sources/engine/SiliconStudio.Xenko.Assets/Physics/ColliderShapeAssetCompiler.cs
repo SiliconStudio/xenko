@@ -15,8 +15,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Analysis;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Assets.Textures;
 using VHACDSharp;
 using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
@@ -41,12 +41,33 @@ namespace SiliconStudio.Xenko.Assets.Physics
             }
         }
 
+        public override IEnumerable<Type> GetTypesToFilterOut(AssetCompilerContext context, AssetItem assetItem)
+        {
+            foreach(var type in AssetRegistry.GetAssetTypes(typeof(Material)))
+            {
+                yield return type;
+            }
+            yield return typeof(TextureAsset);
+        }
+
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        {
+            var asset = (ColliderShapeAsset)assetItem.Asset;
+            foreach (var convexHullDesc in
+                (from shape in asset.ColliderShapes let type = shape.GetType() where type == typeof(ConvexHullColliderShapeDesc) select shape)
+                    .Cast<ConvexHullColliderShapeDesc>())
+            {
+                var url = AttachedReferenceManager.GetUrl(convexHullDesc.Model);
+                yield return new ObjectUrl(UrlType.Content, url);
+            }
+        }
+
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (ColliderShapeAsset)assetItem.Asset;
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new ColliderShapeCombineCommand(targetUrlInStorage, asset, assetItem.Package),
+                new ColliderShapeCombineCommand(targetUrlInStorage, asset, assetItem.Package)
             };
 
             result.ShouldWaitForPreviousBuilds = asset.ColliderShapes.Any(shape => shape != null && shape.GetType() == typeof(ConvexHullColliderShapeDesc));

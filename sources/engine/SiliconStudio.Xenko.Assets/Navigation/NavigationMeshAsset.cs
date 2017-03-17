@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
     [AssetContentType(typeof(NavigationMesh))]
     [Display("Navigation Mesh")]
     [AssetCompiler(typeof(NavigationMeshAssetCompiler))]
-    public class NavigationMeshAsset : Asset, IAssetCompileTimeDependencies
+    public class NavigationMeshAsset : Asset
     {
         public const string FileExtension = ".xknavmesh";
 
@@ -76,47 +76,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 if (Scene != null)
                     hashCode = (hashCode*397) ^ Scene.Name.GetHashCode();
                 return hashCode;
-            }
-        }
-
-        public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
-        {
-            if (Scene != null)
-            {
-                var reference = AttachedReferenceManager.GetAttachedReference(Scene);
-                var sceneAsset = (SceneAsset)session.FindAsset(reference.Url)?.Asset;
-
-                var referencedColliderShapes = new HashSet<AssetId>();
-
-                // Find collider assets to reference
-                if (sceneAsset != null)
-                {
-                    List<Entity> sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
-                    foreach (var entity in sceneEntities)
-                    {
-                        StaticColliderComponent collider = entity.Get<StaticColliderComponent>();
-                        bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & IncludedCollisionGroups) != 0 && collider.Enabled;
-                        if (colliderEnabled)
-                        {
-                            var assetShapes = collider.ColliderShapes.OfType<ColliderShapeAssetDesc>();
-                            foreach (var assetShape in assetShapes)
-                            {
-                                if (assetShape.Shape == null)
-                                    continue;
-
-                                // Reference all asset collider shapes
-                                reference = AttachedReferenceManager.GetAttachedReference(assetShape.Shape);
-
-                                // Only need to reference each shape once
-                                if (referencedColliderShapes.Contains(reference.Id))
-                                    continue;
-
-                                yield return new AssetReference(reference.Id, reference.Url);
-                                referencedColliderShapes.Add(reference.Id);
-                            }
-                        }
-                    }
-                }
             }
         }
     }
