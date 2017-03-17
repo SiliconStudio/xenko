@@ -78,6 +78,8 @@ namespace SiliconStudio.Presentation.Windows
             }
         }
 
+        public bool IsBlocking { get; internal set; }
+
         /// <summary>
         /// Gets whether the corresponding window is currently modal.
         /// </summary>
@@ -89,6 +91,9 @@ namespace SiliconStudio.Presentation.Windows
         {
             get
             {
+                if (IsBlocking)
+                    return false;
+
                 if (Hwnd == IntPtr.Zero)
                     return false;
 
