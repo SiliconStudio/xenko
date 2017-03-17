@@ -1,6 +1,4 @@
 using System;
-using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using SiliconStudio.Core.Annotations;
@@ -15,14 +13,6 @@ namespace SiliconStudio.Presentation.Windows
     {
         private IntPtr hwnd;
         private bool isShown;
-        private static readonly FieldInfo ShowingAsDialogField;
-
-        static WindowInfo()
-        {
-            ShowingAsDialogField = typeof(Window).GetField("_showingAsDialog", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (ShowingAsDialogField == null)
-                throw new NotSupportedException("_showingAsDialog in the Window class. This program is running on an unidentified version of the .NET Framework.");
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowInfo"/> class.
@@ -78,6 +68,9 @@ namespace SiliconStudio.Presentation.Windows
             }
         }
 
+        /// <summary>
+        /// Gets whether the corresponding window is a blocking window.
+        /// </summary>
         public bool IsBlocking { get; internal set; }
 
         /// <summary>
@@ -109,11 +102,6 @@ namespace SiliconStudio.Presentation.Windows
         }
 
         /// <summary>
-        /// Gets whether the corresponding window is currently visible
-        /// </summary>
-        public bool IsVisible => HwndHelper.HasStyleFlag(Hwnd, NativeHelper.WS_VISIBLE);
-
-        /// <summary>
         /// Gets the owner of this window.
         /// </summary>
         [CanBeNull]
@@ -139,17 +127,6 @@ namespace SiliconStudio.Presentation.Windows
 
                 if (Window != null)
                 {
-                    var showingAsDialog = (bool)ShowingAsDialogField.GetValue(Window);
-                    if (showingAsDialog)
-                    {
-                        // This is a workaround in case we are reparenting a window that was displayed using Window.ShowDialog().
-                        // In this case, a private boolean field throws an exception if the owner of the window is changed.
-                        // The reason seems to be because they didn't implement the logic of reparenting modal dialogs, which is
-                        // what we are trying to implement here. Changing the Owner is a valid change if Window.Show() was used
-                        // instead, so we assume this is a "safe hack".
-                        ShowingAsDialogField.SetValue(Window, false);
-                    }
-
                     if (value?.Window == null)
                     {
                         Window.Owner = null;
@@ -162,25 +139,13 @@ namespace SiliconStudio.Presentation.Windows
                     {
                         Window.Owner = value.Window;
                     }
-                    if (showingAsDialog)
-                    {
-                        ShowingAsDialogField.SetValue(Window, true);
-                    }
                 }
                 else
                 {
                     HwndHelper.SetOwner(Hwnd, value?.Hwnd ?? IntPtr.Zero);
                 }
-
-                //Window.Owner = value?.Window;
-
-                //// This code does not work unfortunately.
-                //var ownerHwnd = value?.Hwnd ?? IntPtr.Zero;
-                //HwndHelper.SetOwner(Hwnd, ownerHwnd);
             }
         }
-
-        internal TaskCompletionSource<int> WindowClosed { get; } = new TaskCompletionSource<int>();
 
         /// <inheritdoc/>
         public override bool Equals(object obj)

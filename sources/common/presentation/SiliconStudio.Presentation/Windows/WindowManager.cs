@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Presentation.Extensions;
 using SiliconStudio.Presentation.Interop;
-using SiliconStudio.Presentation.View;
 
 namespace SiliconStudio.Presentation.Windows
 {
     /// <summary>
-    /// A singleton class to manage the windows of an application and their relation to each other.
+    /// A singleton class to manage the windows of an application and their relation to each other. It introduces the concept of blocking window,
+    /// which can block the main window of the application but does not interact with modal windows.
     /// </summary>
     public class WindowManager : IDisposable
     {
@@ -65,27 +64,22 @@ namespace SiliconStudio.Presentation.Windows
         public static Logger Logger { get; } = GlobalLogger.GetLogger(nameof(WindowManager));
 #endif
 
+        /// <summary>
+        /// Gets the current main window.
+        /// </summary>
         public static WindowInfo MainWindow { get; private set; }
 
+        /// <summary>
+        /// Gets the collection of currently visible modal windows.
+        /// </summary>
         public static IReadOnlyList<WindowInfo> ModalWindows => ModalWindowsList;
 
+        /// <summary>
+        /// Gets the collection of currently visible blocking windows.
+        /// </summary>
         public static IReadOnlyList<WindowInfo> BlockingWindows => BlockingWindowsList;
 
-        /// <summary>
-        /// Raised when the main window has changed.
-        /// </summary>
-        public static event EventHandler<WindowManagerEventArgs> MainWindowChanged;
-
-        /// <summary>
-        /// Raised when a modal window is opened.
-        /// </summary>
-        public static event EventHandler<WindowManagerEventArgs> ModalWindowOpened;
-
-        /// <summary>
-        /// Raised when a modal window is closed.
-        /// </summary>
-        public static event EventHandler<WindowManagerEventArgs> ModalWindowClosed;
-
+        /// <inheritdoc/>
         public void Dispose()
         {
             if (!NativeHelper.UnhookWinEvent(hook))
@@ -103,10 +97,13 @@ namespace SiliconStudio.Presentation.Windows
             initialized = false;
         }
 
+        /// <summary>
+        /// Shows the given window as the main window of the application. It is mandatory to use this method for the main window to use features of the <see cref="WindowManager"/>.
+        /// </summary>
+        /// <param name="window">The main window to show.</param>
         public static void ShowMainWindow([NotNull] Window window)
         {
-            if (window == null)
-                throw new ArgumentNullException(nameof(window));
+            if (window == null) throw new ArgumentNullException(nameof(window));
             CheckDispatcher();
 
             if (MainWindow != null)
@@ -122,30 +119,14 @@ namespace SiliconStudio.Presentation.Windows
 
             window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             window.Show();
-            window.Closed += OnMainWindowClosed;
         }
 
-        private static void OnMainWindowClosed(object sender, EventArgs e)
-        {
-            if (!ReferenceEquals(sender, MainWindow.Window))
-                throw new InvalidOperationException("Unexpected main window closing.");
-
-            Logger.Info($"Main window closed. ({MainWindow.Window})");
-            MainWindow = null;
-        }
-
-        [Obsolete]
-        public static Task ShowModal([NotNull] Window window, WindowOwner windowOwner = WindowOwner.LastModal, WindowInitialPosition position = WindowInitialPosition.CenterOwner)
-        {
-            if (windowOwner == WindowOwner.LastModal)
-                window.ShowDialog();
-            else
-                throw new NotImplementedException();
-
-            return Task.CompletedTask;
-        }
-
-        public static void ShowBlockingWindow(Window window)
+        /// <summary>
+        /// Shows the given window as blocking window. A blocking window will always block the main window of the application, even if shown before it, but does not
+        /// affect modal windows. However it can still be blocked by them..
+        /// </summary>
+        /// <param name="window">The blocking window to show.</param>
+        public static void ShowBlockingWindow([NotNull] Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             CheckDispatcher();
@@ -154,19 +135,16 @@ namespace SiliconStudio.Presentation.Windows
             if (BlockingWindowsList.Contains(windowInfo))
                 throw new InvalidOperationException("This window has already been shown as blocking.");
 
-            var owner = FindNextOwner(WindowOwner.MainWindow);
-
-            window.Owner = owner?.Window;
-            SetStartupLocation(window, owner, WindowInitialPosition.CenterOwner);
+            window.Owner = MainWindow?.Window;
+            window.WindowStartupLocation = MainWindow != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
 
             // Set the owner now so the window can be recognized as modal when shown
-            if (owner != null)
+            if (MainWindow != null)
             {
-                owner.IsDisabled = true;
+                MainWindow.IsDisabled = true;
             }
 
             AllWindowsList.Add(windowInfo);
-
             BlockingWindowsList.Add(windowInfo);
 
             // Update the hwnd on load in case the window is closed before being shown
@@ -178,31 +156,17 @@ namespace SiliconStudio.Presentation.Windows
             window.Show();
         }
 
-        public static void SetStartupLocation([NotNull] Window window, WindowInfo owner, WindowInitialPosition position)
+        /// <summary>
+        /// Displays the given window at the mouse cursor position when <see cref="Window.Show"/> will be called.
+        /// </summary>
+        /// <param name="window">The window to place at cursor position.</param>
+        /// <remarks>This method must be called before <see cref="Window.Show"/>.</remarks>
+        public static void ShowAtCursorPosition([NotNull] Window window)
         {
-            switch (position)
-            {
-                case WindowInitialPosition.CenterOwner:
-                    window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
-                    break;
-                case WindowInitialPosition.CenterScreen:
-                    window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                    break;
-                case WindowInitialPosition.MouseCursor:
-                    window.WindowStartupLocation = WindowStartupLocation.Manual;
-                    window.Loaded += PositionWindowToMouseCursor;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(position), position, null);
-            }
-        }
-
-        public static void ShowAtCursorPosition(Window window)
-        {
+            if (window == null) throw new ArgumentNullException(nameof(window));
             window.WindowStartupLocation = WindowStartupLocation.Manual;
             window.Loaded += PositionWindowToMouseCursor;
         }
-
 
         private static void PositionWindowToMouseCursor(object sender, RoutedEventArgs e)
         {
@@ -228,20 +192,6 @@ namespace SiliconStudio.Presentation.Windows
         {
             if (MainWindow != null && MainWindow.Hwnd != IntPtr.Zero)
                 NativeHelper.SetActiveWindow(MainWindow.Hwnd);
-        }
-
-        private static WindowInfo FindNextOwner(WindowOwner owner)
-        {
-            switch (owner)
-            {
-                case WindowOwner.LastModal:
-                    // Skip non-visible window, they might be in the process of being closed.
-                    return ModalWindows.FirstOrDefault(x => x.Hwnd == IntPtr.Zero || x.IsVisible) ?? MainWindow;
-                case WindowOwner.MainWindow:
-                    return MainWindow;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(owner), owner, null);
-            }
         }
 
         private static void CheckDispatcher()
@@ -298,6 +248,7 @@ namespace SiliconStudio.Presentation.Windows
 
                 if (Debugger.IsAttached)
                 {
+                    // Some external processes might attach a window to ours, we want to discard them.
                     foreach (var debugWindowTypeName in DebugWindowTypeNames)
                     {
                         if (windowInfo.Window?.GetType().FullName.StartsWith(debugWindowTypeName) ?? false)
@@ -314,63 +265,36 @@ namespace SiliconStudio.Presentation.Windows
 
             if (windowInfo == MainWindow)
             {
-                Logger.Info("Main window shown.");
-                MainWindowChanged?.Invoke(null, new WindowManagerEventArgs(MainWindow));
+                Logger.Info($"Main window ({hwnd}) shown.");
                 foreach (var blockingWindow in BlockingWindowsList)
                 {
+                    Logger.Debug($"Setting owner of exiting blocking window {blockingWindow.Hwnd} to be the main window ({hwnd}).");
                     blockingWindow.Owner = MainWindow;
                 }
                 if (ModalWindowsList.Count > 0 || BlockingWindowsList.Count > 0)
                 {
+                    Logger.Verbose($"Main window ({MainWindow.Hwnd}) disabled because a modal or blocking window is already visible.");
                     MainWindow.IsDisabled = true;
                 }
             }
             else if (windowInfo.IsBlocking)
             {
+                Logger.Info($"Blocking window ({hwnd}) shown.");
                 if (MainWindow != null && MainWindow.IsShown)
                 {
+                    Logger.Verbose($"Main window ({MainWindow.Hwnd}) disabled by new blocking window.");
                     MainWindow.IsDisabled = true;
                 }
                 if (ModalWindowsList.Count > 0)
                 {
+                    Logger.Verbose($"Blocking window ({hwnd}) disabled because a modal is already visible.");
                     windowInfo.IsDisabled = true;
                 }
             }
             else if (windowInfo.IsModal)
             {
-                // If this window has not been shown using a WindowManager method, add it as a top-level modal window
-                //if (!ModalWindows.Any(x => x.Equals(windowInfo)))
-                {
-                    //var lastModal = ModalWindows.LastOrDefault() ?? MainWindow;
-                    //if (lastModal != null)
-                    //{
-                    //    //windowInfo.Owner = lastModal;
-                    //    //lastModal.IsDisabled = true;
-                    //}
-                    ModalWindowsList.Add(windowInfo);
-                    Logger.Info($"Modal window shown. (standalone) ({hwnd})");
-                }
-                //else
-                //{
-                //    var index = ModalWindowsList.IndexOf(windowInfo);
-                //    var childModal = index < ModalWindows.Count - 1 ? ModalWindows[index + 1] : null;
-                //    var parentModal = index > 0 ? ModalWindows[index - 1] : MainWindow;
-                //    if (childModal != null)
-                //    {
-                //        childModal.Owner = windowInfo;
-                //        windowInfo.IsDisabled = true;
-                //        // We're placing another window on top of us, let's activate it so it comes to the foreground!
-                //        if (childModal.Hwnd != IntPtr.Zero)
-                //            NativeHelper.SetActiveWindow(childModal.Hwnd);
-                //    }
-                //    if (parentModal != null)
-                //    {
-                //        windowInfo.Owner = parentModal;
-                //        parentModal.IsDisabled = true;
-                //    }
-                //    Logger.Info($"Modal window shown. (with WindowManager) ({hwnd})");
-                //}
-                ModalWindowOpened?.Invoke(null, new WindowManagerEventArgs(windowInfo));
+                Logger.Info($"Modal window ({hwnd}) shown.");
+                ModalWindowsList.Add(windowInfo);
             }
         }
 
@@ -387,59 +311,48 @@ namespace SiliconStudio.Presentation.Windows
             }
 
             windowInfo.IsShown = false;
-            windowInfo.WindowClosed.TrySetResult(0);
             AllWindowsList.Remove(windowInfo);
 
             if (MainWindow != null && MainWindow.Equals(windowInfo))
             {
-                Logger.Info($"Main window closed. ({hwnd})");
+                Logger.Info($"Main window ({hwnd}) closed.");
                 MainWindow = null;
-                MainWindowChanged?.Invoke(null, new WindowManagerEventArgs(MainWindow));
             }
             else if (windowInfo.IsBlocking)
             {
+                Logger.Info($"Blocking window ({hwnd}) closed.");
                 var index = BlockingWindowsList.IndexOf(windowInfo);
                 if (index < 0)
                     throw new InvalidOperationException("An unregistered blocking window has been closed.");
                 BlockingWindowsList.RemoveAt(index);
                 if (MainWindow != null && MainWindow.IsShown && BlockingWindowsList.Count == 0 && ModalWindows.Count == 0)
                 {
+                    Logger.Verbose($"Main window ({MainWindow.Hwnd}) enabled because no more modal nor blocking windows are visible.");
                     MainWindow.IsDisabled = false;
                 }
             }
             else
             {
+                // Note: We cannot check windowInfo.IsModal anymore at that point because the window is closed.
                 var index = ModalWindowsList.IndexOf(windowInfo);
                 if (index >= 0)
                 {
-                    //var childModal = index < ModalWindows.Count - 1 ? ModalWindows[index + 1] : null;
-                    //var parentModal = index > 0 ? ModalWindows[index - 1] : MainWindow;
-                    //if (childModal != null)
-                    //{
-                    //    childModal.Owner = parentModal;
-                    //    if (parentModal != null)
-                    //        parentModal.IsDisabled = true;
-                    //}
-                    //else if (parentModal != null)
-                    //{
-                    //    parentModal.IsDisabled = false;
-                    //}
-                    ModalWindowClosed?.Invoke(null, new WindowManagerEventArgs(windowInfo));
+                    Logger.Info($"Modal window ({hwnd}) closed.");
                     ModalWindowsList.RemoveAt(index);
 
                     if (ModalWindowsList.Count == 0)
                     {
                         foreach (var blockingWindow in BlockingWindowsList)
                         {
+                            Logger.Verbose($"Blocking window ({blockingWindow.Hwnd}) enabled because no more modal windows are visible.");
                             blockingWindow.IsDisabled = false;
                         }
                         if (MainWindow != null && MainWindow.IsShown && BlockingWindowsList.Count == 0 && ModalWindows.Count == 0)
                         {
+                            Logger.Verbose($"Main window ({MainWindow.Hwnd}) enabled because no more modal nor blocking windows are visible.");
                             MainWindow.IsDisabled = false;
                         }
                     }
-
-                    Logger.Info($"Modal window closed. ({hwnd})");
                 }
             }
             ActivateMainWindow();
