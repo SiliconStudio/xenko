@@ -180,7 +180,7 @@ Example of use:
   </Target>
 
   <Target Name="BuildWindowsDirect3D11CoreCLR" DependsOnTargets="CopyXenkoKey">
-    <MSBuild Targets="Build" Projects="$(XenkoSolution).CoreCLR.sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).Direct3D.CoreCLR.sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
   </Target>
 
   <Target Name="BuildAndroid" DependsOnTargets="CopyXenkoKey">
