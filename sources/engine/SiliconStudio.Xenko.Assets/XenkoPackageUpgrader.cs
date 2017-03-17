@@ -711,13 +711,12 @@ namespace SiliconStudio.Xenko.Assets
                         
                         if (skyboxAssetInfo.IsBackground)
                         {
-                            string newId = Guid.NewGuid().ToString();
                             var backgroundComponentNode = new YamlMappingNode();
                             backgroundComponentNode.Tag = "!BackgroundComponent";
                             backgroundComponentNode.Add("Texture", skyboxAssetInfo.TextureReference);
                             if (skyboxInfo.Component.Intensity != null)
                                 backgroundComponentNode.Add("Intensity", (string)skyboxInfo.Component.Intensity);
-                            AddComponent(components, backgroundComponentNode, newId);
+                            AddComponent(components, backgroundComponentNode, Guid.NewGuid());
                         }
                     }
 
@@ -771,19 +770,20 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
-            private void AddComponent(dynamic componentsNode, YamlMappingNode node, string id)
+            private void AddComponent(dynamic componentsNode, YamlMappingNode node, Guid id)
             {
                 try
                 {
                     // New format (1.9)
                     DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
-                    mapping.AddChild(new YamlScalarNode(id), node);
+                    mapping.AddChild(new YamlScalarNode(Guid.NewGuid().ToString("N")), node);
+                    node.Add("Id", id.ToString("D"));
                 }
                 catch (Exception)
                 {
                     // Old format (<= 1.8)
                     DynamicYamlArray array = (DynamicYamlArray)componentsNode;
-                    node.Add("~Id", id); // TODO
+                    node.Add("~Id", id.ToString("D")); // TODO
                     array.Add(node);
                 }
             }
