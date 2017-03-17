@@ -6,6 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     params MSAAResolverParams
     {
         int MSAASamples;
+        int ResolveFilterType;
         float ResolveFilterDiameter;
     }
 
@@ -13,6 +14,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     {
         using params MSAAResolverParams;
                 
-        mixin MSAAResolverShader<MSAAResolverParams.MSAASamples, MSAAResolverParams.ResolveFilterDiameter>;
+        mixin MSAAResolverShader<MSAAResolverParams.MSAASamples, MSAAResolverParams.ResolveFilterType, MSAAResolverParams.ResolveFilterDiameter>;
     };
 }

@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     [DataContract]public partial class MSAAResolverParams : ShaderMixinParameters
     {
         public static readonly PermutationParameterKey<int> MSAASamples = ParameterKeys.NewPermutation<int>();
+        public static readonly PermutationParameterKey<int> ResolveFilterType = ParameterKeys.NewPermutation<int>();
         public static readonly PermutationParameterKey<float> ResolveFilterDiameter = ParameterKeys.NewPermutation<float>();
     };
     internal static partial class ShaderMixins
@@ -27,7 +28,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "MSAAResolverShader", context.GetParam(MSAAResolverParams.MSAASamples), context.GetParam(MSAAResolverParams.ResolveFilterDiameter));
+                context.Mixin(mixin, "MSAAResolverShader", context.GetParam(MSAAResolverParams.MSAASamples), context.GetParam(MSAAResolverParams.ResolveFilterType), context.GetParam(MSAAResolverParams.ResolveFilterDiameter));
             }
 
             [ModuleInitializer]

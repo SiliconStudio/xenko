@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -13,6 +14,77 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     public class MSAAResolver : ImageEffect
     {
         private readonly ImageEffectShader msaaResolver;
+
+        /// <summary>
+        /// MSAA resolve shader modes.
+        /// </summary>
+        public enum FilterTypes
+        {
+            /// <summary>
+            /// Default filter
+            /// </summary>
+            Default = 0,
+
+            /// <summary>
+            /// Box filter.
+            /// </summary>
+            Box = 1,
+
+            /// <summary>
+            /// Triangle filter.
+            /// </summary>
+            Triangle = 2,
+
+            /// <summary>
+            /// Gaussian filter.
+            /// </summary>
+            Gaussian = 3,
+
+            /// <summary>
+            /// Blackman Harris filter.
+            /// </summary>
+            BlackmanHarris = 4,
+
+            /// <summary>
+            /// Smoothstep function filter.
+            /// </summary>
+            Smoothstep = 5,
+
+            /// <summary>
+            /// B-Spline filter.
+            /// </summary>
+            BSpline = 6,
+
+            /// <summary>
+            /// Catmull Rom filter.
+            /// </summary>
+            CatmullRom = 7,
+
+            /// <summary>
+            /// Mitchell filter.
+            /// </summary>
+            Mitchell = 8,
+
+            /// <summary>
+            /// Sinus function filter.
+            /// </summary>
+            Sinc = 9,
+        }
+
+        /// <summary>
+        /// MSAA resolve filter type
+        /// </summary>
+        [DataMember(10)]
+        [DefaultValue(FilterTypes.BSpline)]
+        public FilterTypes FilterType { get; set; }
+
+        /// <summary>
+        /// MSAA resolve filter diameter value
+        /// </summary>
+        [DataMember(20)]
+        [DefaultValue(2.0f)]
+        [DataMemberRange(1.0, 6.0, 0.01, 0.1)]
+        public float FilterDiameter { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MSAAResolver"/> class.
@@ -31,6 +103,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         {
             if (msaaResolverShaderName == null) throw new ArgumentNullException(nameof(msaaResolverShaderName));
             msaaResolver = new ImageEffectShader(msaaResolverShaderName);
+
+            FilterType = FilterTypes.BSpline;
+            FilterDiameter = 2.0f;
         }
 
         protected override void InitializeCore()
@@ -39,20 +114,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             ToLoadAndUnload(msaaResolver);
         }
 
-        protected override void SetDefaultParameters()
-        {
-            ResolveFilterDiameter = 2.0f;
-
-            base.SetDefaultParameters();
-        }
-
-        /// <summary>
-        /// MSAA resolve filter diameter value
-        /// </summary>
-        [DataMember]
-        [DataMemberRange(1.0, 6.0, 0.01, 0.1)]
-        public float ResolveFilterDiameter { get; set; } = 2.0f;
-        
         protected override void DrawCore(RenderDrawContext drawContext)
         {
             var input = GetInput(0);
@@ -65,7 +126,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             // Prepare
             var inputSize = input.Size;
             msaaResolver.Parameters.Set(MSAAResolverShaderKeys.TextureSize, new Vector2(inputSize.Width, inputSize.Height));
-            msaaResolver.Parameters.Set(MSAAResolverParams.ResolveFilterDiameter, ResolveFilterDiameter);
+            msaaResolver.Parameters.Set(MSAAResolverParams.ResolveFilterDiameter, FilterDiameter);
 
             // Check if it's a depth buffer
             if (input.IsDepthStencil)
@@ -76,14 +137,17 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 msaaResolver.SetOutput(output);
                 msaaResolver.Draw(drawContext);
             }
+            else if (FilterType == FilterTypes.Default)
+            {
+                // Resolve using in-build API function
+                drawContext.CommandList.CopyMultiSample(input, 0, output, 0);
+            }
             else
             {
-                // Resolve using in-build API
-                //drawContext.CommandList.CopyMultiSample(input, 0, output, 0);
-
                 // Resolve using custom pixel shader
                 msaaResolver.Parameters.Set(MSAAResolverShaderKeys.InputTexture, input);
                 msaaResolver.Parameters.Set(MSAAResolverParams.MSAASamples, (int)input.MultiSampleLevel);
+                msaaResolver.Parameters.Set(MSAAResolverParams.ResolveFilterType, (int)FilterType);
                 msaaResolver.SetOutput(output);
                 msaaResolver.Draw(drawContext);
             }
