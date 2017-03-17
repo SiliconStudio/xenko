@@ -40,10 +40,10 @@ namespace SiliconStudio.Presentation.Controls
                 titleBar.Visibility = Visibility.Collapsed;
         }
 
-        public override async Task<DialogResult> ShowModal()
+        public override Task<DialogResult> ShowModal()
         {
-            await WindowManager.ShowModal(this, WindowOwner.LastModal, WindowInitialPosition.MouseCursor);
-            return Result;
+            WindowManager.ShowAtCursorPosition(this);
+            return base.ShowModal();
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
