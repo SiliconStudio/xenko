@@ -10,7 +10,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     {
         // Reference: https://github.com/TheRealMJP/MSAAFilter
 
-        stage float2 TextureSize;
+        stage float4 SvPosUnpack;
+        stage float2 TextureSizeLess1;
 		stage Texture2DMS<float4> InputTexture;
 
         // Supported filter types (note: this must match C# source)
@@ -143,14 +144,13 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 		// 1:-1 to 0:TextureSize
         uint2 ClipPosToUvPos(float2 clipPos)
         {
-            // TODO: pack TextureSize to float4 to faster conversion
-            return uint2(mad(clipPos, float2(0.5, -0.5) * TextureSize, float2(0.5, 0.5) * TextureSize));
+            return (uint2)mad(clipPos, SvPosUnpack.xy, SvPosUnpack.zw);
         }
 
         override stage float4 Shading()
         {
             float4 output = 0;
-			float2 pixelPos = ClipPosToUvPos(streams.Position.xy);
+			uint2 pixelPos = ClipPosToUvPos(streams.Position.xy);
 
             // Special case for single sample resolving
             if(MSAASamples == 1)
@@ -171,7 +171,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 				    {
 					    float2 sampleOffset = float2(x, y);
 					    float2 samplePos = pixelPos + sampleOffset;
-					    samplePos = clamp(samplePos, 0, TextureSize - 1.0f);
+					    samplePos = clamp(samplePos, 0, TextureSizeLess1);
 
 					    [unroll]
 					    for(uint subSampleIdx = 0; subSampleIdx < MSAASamples; subSampleIdx++)

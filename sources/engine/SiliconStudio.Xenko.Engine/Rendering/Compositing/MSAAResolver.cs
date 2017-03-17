@@ -127,7 +127,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             // Prepare
             var inputSize = input.Size;
-            msaaResolver.Parameters.Set(MSAAResolverShaderKeys.TextureSize, new Vector2(inputSize.Width, inputSize.Height));
+            // SvPosUnpack = float4(float2(0.5, -0.5) * TextureSize, float2(0.5, 0.5) * TextureSize))
+            // TextureSizeLess1 = TextureSize - 1
+            msaaResolver.Parameters.Set(MSAAResolverShaderKeys.SvPosUnpack, new Vector4(0.5f * inputSize.Width, -0.5f * inputSize.Height, 0.5f * inputSize.Width, 0.5f * inputSize.Height));
+            msaaResolver.Parameters.Set(MSAAResolverShaderKeys.TextureSizeLess1, new Vector2(inputSize.Width - 1.0f, inputSize.Height - 1.0f));
             msaaResolver.Parameters.Set(MSAAResolverParams.ResolveFilterDiameter, FilterDiameter);
 
             // Check if it's a depth buffer

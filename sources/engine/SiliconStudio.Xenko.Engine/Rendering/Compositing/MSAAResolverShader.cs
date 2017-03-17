@@ -18,7 +18,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     internal static partial class MSAAResolverShaderKeys
     {
-        public static readonly ValueParameterKey<Vector2> TextureSize = ParameterKeys.NewValue<Vector2>();
+        public static readonly ValueParameterKey<Vector4> SvPosUnpack = ParameterKeys.NewValue<Vector4>();
+        public static readonly ValueParameterKey<Vector2> TextureSizeLess1 = ParameterKeys.NewValue<Vector2>();
         public static readonly ObjectParameterKey<Texture> InputTexture = ParameterKeys.NewObject<Texture>();
     }
 }
