@@ -643,11 +643,10 @@ namespace SiliconStudio.Xenko.Assets
         private class SplitSkyboxLightingUpgrader
         {
             private readonly Dictionary<string, SkyboxAssetInfo> skyboxAssetInfos = new Dictionary<string, SkyboxAssetInfo>();
-
+            
             public void UpgradeAsset(dynamic asset)
             {
-                var hierarchy = asset.Hierarchy;
-                var parts = (DynamicYamlArray)hierarchy.Parts;
+                var parts = GetPartsArray(asset);
                 foreach (dynamic part in parts)
                 {
                     var entity = part.Entity;
@@ -810,6 +809,14 @@ namespace SiliconStudio.Xenko.Assets
                         }
                     }
                 }
+            }
+
+            private DynamicYamlArray GetPartsArray(dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                if (hierarchy.Parts != null)
+                    return (DynamicYamlArray)hierarchy.Parts; // > 1.6.0
+                return (DynamicYamlArray)hierarchy.Entities; // <= 1.6.0
             }
 
             /// <returns>A tuple of (tag, id, component node)</returns>
