@@ -42,9 +42,6 @@ namespace SiliconStudio.Quantum
         public abstract bool IsReference { get; }
 
         /// <inheritdoc/>
-        public string DisplayName { get; set; }
-
-        /// <inheritdoc/>
         public Guid Guid { get; }
 
         /// <inheritdoc/>

@@ -52,10 +52,5 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="index">The index to use to retrieve the value.</param>
         object Retrieve(Index index);
-
-        /// <summary>
-        /// Name to display for the outgoing pin in the node graph. Can be null.
-        /// </summary>
-        string DisplayName { get; }
     }
 }
