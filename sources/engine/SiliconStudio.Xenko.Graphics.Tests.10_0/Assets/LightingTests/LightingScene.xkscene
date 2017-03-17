@@ -1,8 +1,9 @@
 !SceneAsset
 Id: 413fc3cf-56da-4cfd-ba3f-370f6a1f4b87
-SerializedVersion: {Xenko: 1.10.0-beta02}
+SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
-Parent: null
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - 121144a7-d914-42cf-851e-3aac370c336f
@@ -95,7 +96,6 @@ Hierarchy:
                             Shadow:
                                 Size: Small
                                 BiasParameters: {}
-                                Type: CubeMap
         -   Entity:
                 Id: 40b50304-4226-47bf-8ea6-2fa899574180
                 Name: Cube (2)
@@ -287,11 +287,11 @@ Hierarchy:
                     2dac5cd3e8a15243886ec4fb9acaec3c: !LightComponent
                         Id: d35cac2d-a1e8-4352-886e-c4fb9acaec3c
                         Enabled: false
-                        Type: !LightSkybox {}
-                    8f05d38639efca4e8cceb35a3125d933: !SkyboxComponent
-                        Id: 86d3058f-ef39-4eca-8cce-b35a3125d933
-                        Enabled: false
-                        Skybox: bf8844a5-1ce4-402f-a538-b8a7edb40fcf:Skybox
+                        Type: !LightSkybox
+                            Skybox: bf8844a5-1ce4-402f-a538-b8a7edb40fcf:Skybox
+                    02b5489ec76549be8c3404f69c1b7417: !BackgroundComponent
+                        Id: 2e96ab05-744e-4d49-83f7-e41a6dcaa596
+                        Texture: 10360b72-66be-48f0-b0e9-a013a352ee95:skybox_texture_ldr
         -   Entity:
                 Id: d6126c1f-087c-4cbe-892c-f28f634ee998
                 Name: SpotLightShadow
@@ -349,8 +349,8 @@ Hierarchy:
                     2dac5cd3e8a15243886ec4fb9acaec38: !LightComponent
                         Id: d35cac2d-a1e8-4352-886e-c4fb9acaec3a
                         Enabled: false
-                        Type: !LightSkybox {}
-                    8f05d38639efca4e8cceb35a3125d938: !SkyboxComponent
-                        Id: 86d3058f-ef39-4eca-8cce-b35a3125d93a
-                        Enabled: false
-                        Skybox: bf8844a5-1ce4-402f-a538-b8a7edb40fcf:Skybox
+                        Type: !LightSkybox
+                            Skybox: bf8844a5-1ce4-402f-a538-b8a7edb40fcf:Skybox
+                    3fe14e26de06469eb122b8281eb4f59e: !BackgroundComponent
+                        Id: 8594837c-cfae-43a5-b999-936a2b6cf70a
+                        Texture: 10360b72-66be-48f0-b0e9-a013a352ee95:skybox_texture_ldr

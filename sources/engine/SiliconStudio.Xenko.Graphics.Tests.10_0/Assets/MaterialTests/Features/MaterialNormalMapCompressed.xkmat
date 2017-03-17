@@ -12,7 +12,6 @@ Attributes:
             Offset: {X: 0.0, Y: 0.0}
             Swizzle: null
         IsXYNormal: true
-        InvertY: false
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
             Texture: e8a73264-e909-4e38-943e-b8b5c7b6950a:MaterialTests/stone4_dif
