@@ -251,11 +251,12 @@ Example of use:
     <Exec ContinueOnError="true" Command="$(XenkoRoot)deps\GitLink\GitLink.exe $(XenkoRoot) -f build\Xenko.sln -u https://github.com/SiliconStudio/xenko -s releases/$(XenkoPackageVersion)" />
   </Target>
   
-  <Target Name="RunTestsWindows">
+  <Target Name="RunTestsWindows"/>
+
+  <Target Name="RunTestsWindowsGraphicsDependent">
     <ItemGroup>
       <AssembliesToTest Include="$(XenkoRootBin)SiliconStudio.*.Tests.*dll" />
       <AssembliesToTest Include="$(XenkoRootBin)SiliconStudio.*.Tests.*exe" />
-	  <AssembliesToTest Remove="$(XenkoRootBin)SiliconStudio.Xenko.Code.Tests.dll" />
 	</ItemGroup>
     <Error Text="Could not find [$(NUnitConsolePath)]" Condition="!Exists('$(NUnitConsolePath)')"/>
     <Exec IgnoreExitCode="True" Command="$(NUnitConsolePath) --process=Separate --x86 @(AssembliesToTest->'%(Filename)%(Extension)', ' ')" WorkingDirectory="$(XenkoRootBin)">
