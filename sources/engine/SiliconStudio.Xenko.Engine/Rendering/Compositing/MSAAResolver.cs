@@ -122,6 +122,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 throw new ArgumentNullException(nameof(input));
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
+            if (!input.IsMultiSample)
+                throw new ArgumentOutOfRangeException(nameof(input), "Source texture is not a MSAA texture.");
 
             // Prepare
             var inputSize = input.Size;

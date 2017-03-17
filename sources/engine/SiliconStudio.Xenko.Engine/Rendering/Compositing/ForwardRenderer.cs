@@ -321,17 +321,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         {
             ViewDepthStencilNoMSAA = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(
                 ViewDepthStencil.ViewWidth, ViewDepthStencil.ViewHeight, 1, GetNonMSAADepthFormat(ViewDepthStencil.Format), TextureFlags.RenderTarget | TextureFlags.ShaderResource)));
-            
-            if (MSAAResolver != null && MSAAResolver.Enabled)
-            {
-                MSAAResolver.SetInput(ViewDepthStencil);
-                MSAAResolver.SetOutput(ViewDepthStencilNoMSAA);
-                MSAAResolver.Draw(drawContext);
-            }
-            else
-            {
-                drawContext.CommandList.CopyMultiSample(ViewDepthStencil, 0, ViewDepthStencilNoMSAA, 0);
-            }
+
+            ResolveMSAA(drawContext, ViewDepthStencil, ViewDepthStencilNoMSAA);
         }
 
         protected virtual void ResolveMSAA(RenderDrawContext drawContext, Texture input, Texture output)
@@ -344,7 +335,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             }
             else
             {
-                drawContext.CommandList.CopyMultiSample(ViewDepthStencil, 0, ViewDepthStencilNoMSAA, 0);
+                drawContext.CommandList.CopyMultiSample(input, 0, output, 0);
             }
         }
 
