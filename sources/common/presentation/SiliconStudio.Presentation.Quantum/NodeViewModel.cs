@@ -119,6 +119,8 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         public Index Index { get; }
 
+        public bool HasIndex => Index != Index.Empty;
+
         /// <summary>
         /// Gets the list of children nodes.
         /// </summary>
