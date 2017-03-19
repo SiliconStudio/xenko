@@ -15,10 +15,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         bool CanAttach([NotNull] INodePresenter nodePresenter);
 
-        Task<object> PreExecute([NotNull] IEnumerable<INodePresenter> nodePresenters);
+        Task<object> PreExecute([NotNull] IEnumerable<INodePresenter> nodePresenters, object parameter);
 
         Task Execute([NotNull] INodePresenter nodePresenter, object parameter, object preExecuteResult);
 
-        Task PostExecute([NotNull] IEnumerable<INodePresenter> nodePresenters);
+        Task PostExecute([NotNull] IEnumerable<INodePresenter> nodePresenters, object parameter);
     }
 }
