@@ -12,10 +12,6 @@ namespace SiliconStudio.Assets.Quantum
     {
         public AssetNodeContainer()
         {
-            NodeBuilder.AvailableCommands.Add(new AddPrimitiveKeyCommand());
-            NodeBuilder.AvailableCommands.Add(new RemoveItemCommand());
-            NodeBuilder.AvailableCommands.Add(new MoveItemCommand());
-            NodeBuilder.AvailableCommands.Add(new RenameStringKeyCommand());
             NodeBuilder.RegisterPrimitiveType(typeof(IReference));
             NodeBuilder.RegisterPrimitiveType(typeof(PropertyKey));
             NodeBuilder.RegisterPrimitiveType(typeof(TimeSpan));

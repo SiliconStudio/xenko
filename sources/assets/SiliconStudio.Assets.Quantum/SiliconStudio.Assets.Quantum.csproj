@@ -78,10 +78,6 @@
     <Compile Include="Commands\AbstractNodeEntry.cs" />
     <Compile Include="Commands\AbstractNodeType.cs" />
     <Compile Include="Commands\AbstractNodeValue.cs" />
-    <Compile Include="Commands\AddPrimitiveKeyCommand.cs" />
-    <Compile Include="Commands\MoveItemCommand.cs" />
-    <Compile Include="Commands\RemoveItemCommand.cs" />
-    <Compile Include="Commands\RenameStringKeyCommand.cs" />
     <Compile Include="IBaseToDerivedRegistry.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="NodesToOwnerPartVisitor.cs" />
