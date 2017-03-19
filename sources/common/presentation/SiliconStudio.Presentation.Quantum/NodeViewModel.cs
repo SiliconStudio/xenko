@@ -117,6 +117,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets or sets the index of this node, relative to its parent node when its contains a collection. Can be null of this node is not in a collection.
         /// </summary>
+        [Obsolete]
         public Index Index { get; }
 
         public bool HasIndex => Index != Index.Empty;

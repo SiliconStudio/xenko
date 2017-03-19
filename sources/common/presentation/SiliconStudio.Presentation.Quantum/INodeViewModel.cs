@@ -73,6 +73,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets or sets the index of this node, relative to its parent node when its contains a collection.
         /// Can be <see cref="SiliconStudio.Quantum.Index.Empty"/> if this node is not in a collection.
         /// </summary>
+        [Obsolete]
         Index Index { get; }
 
         /// <summary>
