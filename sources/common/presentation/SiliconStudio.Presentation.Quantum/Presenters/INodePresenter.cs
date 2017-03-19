@@ -10,6 +10,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
     {
         string Name { get; }
 
+        INodePresenter Root { get; }
+
         INodePresenter Parent { get; }
 
         IReadOnlyList<INodePresenter> Children { get; }

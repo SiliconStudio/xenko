@@ -25,6 +25,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             // Do nothing by default
         }
 
+        public INodePresenter Root => Parent?.Root ?? Parent ?? this;
+
         public INodePresenter Parent { get; }
 
         public IReadOnlyList<INodePresenter> Children => children;
