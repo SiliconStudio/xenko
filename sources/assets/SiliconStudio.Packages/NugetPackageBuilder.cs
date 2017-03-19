@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using NuGet;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Packages
@@ -188,7 +189,7 @@ namespace SiliconStudio.Packages
         /// <param name="files">The files to include to the builder.</param>
         public void PopulateFiles(UDirectory rootDirectory, List<ManifestFile> files)
         {
-            ((PackageBuilder)Builder).PopulateFiles(rootDirectory, ToManifsetFiles(files));
+            ((PackageBuilder)Builder).PopulateFiles(rootDirectory, ToManifestFiles(files));
         }
 
         /// <summary>
@@ -196,7 +197,8 @@ namespace SiliconStudio.Packages
         /// </summary>
         /// <param name="list">The list to convert.</param>
         /// <returns>A new list of <see cref="NuGet.ManifestFile"/></returns>
-        public static IEnumerable<NuGet.ManifestFile> ToManifsetFiles(IEnumerable<ManifestFile> list)
+        [NotNull]
+        public static IEnumerable<NuGet.ManifestFile> ToManifestFiles(IEnumerable<ManifestFile> list)
         {
             var res = new List<NuGet.ManifestFile>();
             foreach (var entry in list)
