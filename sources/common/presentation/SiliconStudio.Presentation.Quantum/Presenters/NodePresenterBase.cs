@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
@@ -10,6 +11,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
     {
         private readonly INodePresenterFactoryInternal factory;
         private readonly List<INodePresenter> children = new List<INodePresenter>();
+        private readonly PropertyContainer attachedProperties;
 
         protected NodePresenterBase([NotNull] INodePresenterFactoryInternal factory, INodePresenter parent)
         {
@@ -36,6 +38,9 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public abstract ITypeDescriptor Descriptor { get; }
         public abstract int? Order { get; }
         public abstract object Value { get; }
+        public virtual string CombineKey => Name;
+        public PropertyContainer AttachedProperties { get; } = new PropertyContainer();
+
         public abstract event EventHandler<ValueChangingEventArgs> ValueChanging;
         public abstract event EventHandler<ValueChangedEventArgs> ValueChanged;
 

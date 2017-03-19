@@ -6,6 +6,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
@@ -67,23 +68,23 @@ namespace SiliconStudio.Presentation.Quantum
             Logger = GlobalLogger.GetLogger(DefaultLoggerName);
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GraphViewModel"/> class.
-        /// </summary>
-        /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="GraphViewModelService"/> to use for this view model.</param>
-        /// <param name="propertyProvider">The object providing properties to display</param>
-        /// <param name="graphNode">The root node of the view model to generate.</param>
-        private GraphViewModel(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider, IGraphNode graphNode)
-            : this(serviceProvider)
-        {
-            if (graphNode == null) throw new ArgumentNullException(nameof(graphNode));
-            PropertiesProvider = propertyProvider;
-            var node = GraphViewModelService.GraphNodeViewModelFactory(this, "Root", graphNode.IsPrimitive, graphNode, new GraphNodePath(graphNode), graphNode.Type, Index.Empty);
-            RootNode = node;
-            node.Initialize();
-            node.FinalizeInitialization();
-            node.CheckConsistency();
-        }
+        ///// <summary>
+        ///// Initializes a new instance of the <see cref="GraphViewModel"/> class.
+        ///// </summary>
+        ///// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="GraphViewModelService"/> to use for this view model.</param>
+        ///// <param name="propertyProvider">The object providing properties to display</param>
+        ///// <param name="graphNode">The root node of the view model to generate.</param>
+        //private GraphViewModel(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider, IGraphNode graphNode)
+        //    : this(serviceProvider)
+        //{
+        //    if (graphNode == null) throw new ArgumentNullException(nameof(graphNode));
+        //    PropertiesProvider = propertyProvider;
+        //    var node = GraphViewModelService.GraphNodeViewModelFactory(this, "Root", graphNode.IsPrimitive, graphNode, new GraphNodePath(graphNode), graphNode.Type, Index.Empty);
+        //    RootNode = node;
+        //    node.Initialize();
+        //    node.FinalizeInitialization();
+        //    node.CheckConsistency();
+        //}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphViewModel"/> class.
@@ -91,14 +92,19 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="GraphViewModelService"/> to use for this view model.</param>
         /// <param name="propertyProvider">The object providing properties to display</param>
         /// <param name="rootNode">The root node of the view model to generate.</param>
-        private GraphViewModel(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider, IObjectNode rootNode)
+        private GraphViewModel(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider, Type type, IEnumerable<IObjectNode> rootNodes)
             : this(serviceProvider)
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
             PropertiesProvider = propertyProvider;
             var viewModelFactory = new NodeViewModelFactory();
-            var node = GraphViewModelService.NodePresenterFactory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
-            viewModelFactory.CreateGraph(this, node);
+            var rootNodePresenters = new List<INodePresenter>();
+            foreach (var root in rootNodes)
+            {
+                var node = GraphViewModelService.NodePresenterFactory.CreateNodeHierarchy(root, new GraphNodePath(root));
+                rootNodePresenters.Add(node);
+            }
+            viewModelFactory.CreateGraph(this, type, rootNodePresenters);
         }
 
         /// <inheritdoc/>
@@ -120,7 +126,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (rootNode == null)
                 return null;
 
-            return new GraphViewModel(serviceProvider, propertyProvider, rootNode);
+            return new GraphViewModel(serviceProvider, propertyProvider, rootNode.Type, rootNode.Yield());
         }
 
         public static GraphViewModel CombineViewModels(IViewModelServiceProvider serviceProvider, IReadOnlyCollection<GraphViewModel> viewModels)

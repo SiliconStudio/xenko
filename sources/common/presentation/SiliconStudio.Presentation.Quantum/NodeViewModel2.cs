@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Presentation.Services;
+using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -50,75 +52,107 @@ namespace SiliconStudio.Presentation.Quantum
 
     public interface INodeViewModelFactory
     {
-        NodeViewModel2 CreateGraph(GraphViewModel owner, IEnumerable<INodePresenter> rootNodes);
+        NodeViewModel2 CreateGraph([NotNull] GraphViewModel owner, [NotNull] Type rootType, [NotNull] IEnumerable<INodePresenter> rootNodes);
     }
 
     public class NodeViewModelFactory : INodeViewModelFactory
     {
-        public NodeViewModel2 CreateGraph(GraphViewModel owner, IEnumerable<INodePresenter> rootNodes)
+        public NodeViewModel2 CreateGraph(GraphViewModel owner, Type rootType, IEnumerable<INodePresenter> rootNodes)
         {
-            throw new NotImplementedException();
-        }
-
-        public NodeViewModel2 CreateGraph(GraphViewModel owner, INodePresenter rootNode)
-        {
-            var rootViewModelNode = CreateNodeViewModel(owner, null, rootNode, true);
+            var rootViewModelNode = CreateNodeViewModel(owner, null, rootType, rootNodes.ToList(), true);
             return rootViewModelNode;
         }
 
-        protected NodeViewModel2 CreateNodeViewModel(GraphViewModel owner, NodeViewModel2 parent, INodePresenter nodePresenter, bool isRootNode = false)
+        protected NodeViewModel2 CreateNodeViewModel(GraphViewModel owner, NodeViewModel2 parent, Type nodeType, List<INodePresenter> nodePresenters, bool isRootNode = false)
         {
-            var viewModel = new NodeViewModel2(owner, parent, nodePresenter.Name, nodePresenter);
+            // TODO: properly compute the name
+            var viewModel = new NodeViewModel2(owner, parent, nodePresenters.First().Name, nodeType, nodePresenters);
             if (isRootNode)
             {
                 owner.RootNode = viewModel;
             }
-            GenerateChildren(owner, viewModel, nodePresenter);
+            GenerateChildren(owner, viewModel, nodePresenters);
 
-            foreach (var command in nodePresenter.Commands)
+            foreach (var nodePresenter in nodePresenters)
             {
-                var commandWrapper = new NodePresenterCommandWrapper(viewModel.ServiceProvider, nodePresenter, command);
-                viewModel.AddCommand(commandWrapper);
+                foreach (var command in nodePresenter.Commands)
+                {
+                    // TODO: review algorithm and properly implement CombineMode
+                    if (viewModel.Commands.Cast<NodePresenterCommandWrapper>().All(x => x.Command != command))
+                    {
+                        var commandWrapper = new NodePresenterCommandWrapper(viewModel.ServiceProvider, nodePresenter, command);
+                        viewModel.AddCommand(commandWrapper);
+                    }
+                }
             }
 
             owner.GraphViewModelService?.NotifyNodeInitialized(viewModel);
             return viewModel;
         }
 
-        private void GenerateChildren(GraphViewModel owner, NodeViewModel2 parent, INodePresenter nodePresenter)
+        protected virtual IEnumerable<List<INodePresenter>> CombineChildren(List<INodePresenter> nodePresenters)
         {
-            foreach (var child in nodePresenter.Children)
+            var dictionary = new Dictionary<string, List<INodePresenter>>();
+            foreach (var nodePresenter in nodePresenters)
+            {
+                foreach (var child in nodePresenter.Children)
+                {
+                    List<INodePresenter> presenters;
+                    // TODO: properly implement CombineKey
+                    if (!dictionary.TryGetValue(child.CombineKey, out presenters))
+                    {
+                        presenters = new List<INodePresenter>();
+                        dictionary.Add(child.CombineKey, presenters);
+                    }
+                    presenters.Add(child);
+                }
+            }
+            return dictionary.Values.Where(x => x.Count == nodePresenters.Count);
+        }
+
+        private void GenerateChildren(GraphViewModel owner, NodeViewModel2 parent, List<INodePresenter> nodePresenters)
+        {
+            foreach (var child in CombineChildren(nodePresenters))
             {
                 if (ShouldConstructViewModel(child))
                 {
-                    CreateNodeViewModel(owner, parent, child);
+                    // TODO: properly compute the type
+                    CreateNodeViewModel(owner, parent, child.First().Type, child);
                 }
             }
         }
 
-        private static bool ShouldConstructViewModel(INodePresenter nodePresenter)
+        private static bool ShouldConstructViewModel(List<INodePresenter> nodePresenters)
         {
-            var member = nodePresenter as MemberNodePresenter;
-            var displayAttribute = member?.MemberAttributes.OfType<DisplayAttribute>().FirstOrDefault();
-            if (displayAttribute != null && !displayAttribute.Browsable)
-                return false;
-
+            foreach (var nodePresenter in nodePresenters)
+            {
+                var member = nodePresenter as MemberNodePresenter;
+                var displayAttribute = member?.MemberAttributes.OfType<DisplayAttribute>().FirstOrDefault();
+                if (displayAttribute != null && !displayAttribute.Browsable)
+                    return false;
+            }
             return true;
         }
     }
 
     public class NodeViewModel2 : SingleNodeViewModel, IGraphNodeViewModel
     {
+        private readonly List<INodePresenter> nodePresenters;
+
         private int? customOrder;
 
-        protected internal NodeViewModel2(GraphViewModel ownerViewModel, NodeViewModel2 parent, string baseName, INodePresenter nodePresenter)
-            : base(ownerViewModel, nodePresenter.Type, baseName, nodePresenter.Index)
+        protected internal NodeViewModel2(GraphViewModel ownerViewModel, NodeViewModel2 parent, string baseName, Type nodeType, List<INodePresenter> nodePresenters)
+            : base(ownerViewModel, nodeType, baseName, default(Index))
         {
-            NodePresenter = nodePresenter;
-            var member = nodePresenter as MemberNodePresenter;
-            var displayAttribute = member?.MemberAttributes.OfType<DisplayAttribute>().FirstOrDefault();
-            if (displayAttribute != null)
-                DisplayName = displayAttribute.Name;
+            this.nodePresenters = nodePresenters;
+            foreach (var nodePresenter in nodePresenters)
+            {
+                var member = nodePresenter as MemberNodePresenter;
+                var displayAttribute = member?.MemberAttributes.OfType<DisplayAttribute>().FirstOrDefault();
+                // TODO: check for discrepencies in the display attribute name
+                if (displayAttribute != null)
+                    DisplayName = displayAttribute.Name;
+            }
 
             parent?.AddChild(this);
         }
@@ -129,7 +163,8 @@ namespace SiliconStudio.Presentation.Quantum
         public int? CustomOrder { get { return customOrder; } set { SetValue(ref customOrder, value, nameof(CustomOrder), nameof(Order)); } }
 
         /// <inheritdoc/>
-        public override int? Order => CustomOrder ?? NodePresenter.Order;
+        // FIXME
+        public override int? Order => CustomOrder ?? NodePresenters.First().Order;
 
         /// <inheritdoc/>
         public sealed override bool HasCollection => CollectionDescriptor.IsCollection(Type);
@@ -137,12 +172,15 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public sealed override bool HasDictionary => DictionaryDescriptor.IsDictionary(Type);
 
-        public INodePresenter NodePresenter { get; }
+        public IReadOnlyCollection<INodePresenter> NodePresenters => nodePresenters;
 
-        protected internal override object InternalNodeValue { get { return NodePresenter.Value; } set { SetNodeValue(value); } }
+        // FIXME
+
+        protected internal override object InternalNodeValue { get { return NodePresenters.First().Value; } set { SetNodeValue(value); } }
 
         [Obsolete]
-        public override bool IsPrimitive => NodePresenter.IsPrimitive;
+        // FIXME
+        public override bool IsPrimitive => NodePresenters.First().IsPrimitive;
 
         protected override void Refresh()
         {
@@ -151,20 +189,17 @@ namespace SiliconStudio.Presentation.Quantum
 
         protected virtual void SetNodeValue(object newValue)
         {
-            using (var transaction = ServiceProvider.TryGet<IUndoRedoService>()?.CreateTransaction())
+            foreach (var nodePresenter in NodePresenters)
             {
-                NodePresenter.UpdateValue(newValue);
-                // TODO: move this in the (future) derived class
-                if (transaction != null)
-                {
-                    ServiceProvider.TryGet<IUndoRedoService>()?.SetName(transaction, $"Update property {DisplayPath}");
-                }
+                // TODO: normally it shouldn't take that path (since it uses commands), but this is not safe with newly instantiated values
+                nodePresenter.UpdateValue(newValue);
             }
         }
 
         IMemberDescriptor IGraphNodeViewModel.GetMemberDescriptor()
         {
-            var member = NodePresenter as MemberNodePresenter;
+            // FIXME
+            var member = NodePresenters.First() as MemberNodePresenter;
             return member?.MemberDescriptor;
         }
     }

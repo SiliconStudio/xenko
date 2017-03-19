@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 
@@ -15,6 +16,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         List<INodePresenterCommand> Commands { get; }
 
+        PropertyContainer AttachedProperties { get; }
+
         Type Type { get; }
 
         bool IsPrimitive { get; }
@@ -28,6 +31,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         int? Order { get; }
 
         object Value { get; }
+
+        string CombineKey { get; }
 
         NodeAccessor GetNodeAccessor();
 

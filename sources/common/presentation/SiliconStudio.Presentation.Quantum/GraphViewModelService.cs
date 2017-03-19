@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Quantum.Presenters;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -12,6 +13,7 @@ namespace SiliconStudio.Presentation.Quantum
     public class GraphViewModelService
     {
         private readonly List<IPropertyNodeUpdater> propertyNodeUpdaters = new List<IPropertyNodeUpdater>();
+        private readonly List<INodePresenterUpdater> nodePresenterUpdaters = new List<INodePresenterUpdater>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphViewModelService"/> class.
@@ -81,5 +83,22 @@ namespace SiliconStudio.Presentation.Quantum
             }
             NodeInitialized?.Invoke(this, new NodeInitializedEventArgs(node));
         }
+
+        /// <summary>
+        /// Raise the <see cref="NodeInitialized"/> event.
+        /// </summary>
+        /// <param name="node">The node that has been modified.</param>
+        internal void NotifyNodePresenterChanged(INodePresenter node)
+        {
+            foreach (var updater in nodePresenterUpdaters)
+            {
+                updater.UpdateNode(node);
+            }
+        }
+    }
+
+    public interface INodePresenterUpdater
+    {
+        void UpdateNode([NotNull] INodePresenter node);
     }
 }
