@@ -78,7 +78,6 @@
     <Compile Include="Commands\AbstractNodeEntry.cs" />
     <Compile Include="Commands\AbstractNodeType.cs" />
     <Compile Include="Commands\AbstractNodeValue.cs" />
-    <Compile Include="Commands\AddNewItemCommand.cs" />
     <Compile Include="Commands\AddPrimitiveKeyCommand.cs" />
     <Compile Include="Commands\MoveItemCommand.cs" />
     <Compile Include="Commands\RemoveItemCommand.cs" />

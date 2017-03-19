@@ -12,7 +12,6 @@ namespace SiliconStudio.Assets.Quantum
     {
         public AssetNodeContainer()
         {
-            NodeBuilder.AvailableCommands.Add(new AddNewItemCommand());
             NodeBuilder.AvailableCommands.Add(new AddPrimitiveKeyCommand());
             NodeBuilder.AvailableCommands.Add(new RemoveItemCommand());
             NodeBuilder.AvailableCommands.Add(new MoveItemCommand());

@@ -21,7 +21,6 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CombineMode.cs" />
-    <Compile Include="Commands\ChangeValueCommand.cs" />
     <Compile Include="Commands\NodeCommandBase.cs" />
     <Compile Include="Commands\SyncNodeCommandBase.cs" />
     <Compile Include="Internal\Content.cs" />
