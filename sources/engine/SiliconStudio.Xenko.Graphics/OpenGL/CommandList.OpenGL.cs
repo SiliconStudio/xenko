@@ -1531,6 +1531,19 @@ namespace SiliconStudio.Xenko.Graphics
 
             Internal.Refactor.ThrowNotImplementedException();
         }
+        
+        /// <summary>
+        /// Unsets an unordered access view from the shader pipeline.
+        /// </summary>
+        /// <param name="unorderedAccessView">The unordered access view.</param>
+        internal void UnsetUnorderedAccessView(GraphicsResource unorderedAccessView)
+        {
+#if DEBUG
+            GraphicsDevice.EnsureContextActive();
+#endif
+            
+            //Internal.Refactor.ThrowNotImplementedException();
+        }
 
         internal void SetupTargets()
         {

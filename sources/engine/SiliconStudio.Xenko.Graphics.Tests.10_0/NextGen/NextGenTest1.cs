@@ -75,11 +75,11 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                     {
                         var position = new Vector3((i - cubeWidth / 2) * 2.4f, (j - cubeWidth / 2) * 2.4f, (k - cubeWidth / 2) * 2.4f);
                         //var material = (k/4)%2 == 0 ? material1 : material2;
-                        var isShadowReceiver = (k / 2) % 2 == 0;
+                        //var isShadowReceiver = (k / 2) % 2 == 0;
 
                         var entity = new Entity
                         {
-                            new ModelComponent { Model = model, Materials = { { 0, material1 } }, IsShadowReceiver = isShadowReceiver },
+                            new ModelComponent { Model = model, Materials = { { 0, material1 } } },
                         };
                         entity.Transform.Position = position;
                         Scene.Entities.Add(entity);

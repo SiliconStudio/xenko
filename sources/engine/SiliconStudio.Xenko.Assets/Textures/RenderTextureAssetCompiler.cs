@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                     Width = Parameters.Asset.Width,
                     Height = Parameters.Asset.Height,
                     Format = Parameters.Asset.Format,
-                    ColorSpace = Parameters.Asset.ColorSpace.ToColorSpace(Parameters.ColorSpace, TextureHint.Color)
+                    ColorSpace = Parameters.Asset.IsSRgb(Parameters.ColorSpace) ? ColorSpace.Linear : ColorSpace.Gamma,
                 });
 
                 return Task.FromResult(ResultStatus.Successful);

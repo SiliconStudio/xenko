@@ -331,6 +331,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         unsafe partial void SetScissorRectangleImpl(ref Rectangle scissorRectangle);
+
         unsafe partial void SetScissorRectanglesImpl(int scissorCount, Rectangle[] scissorRectangles);
     }
 }

@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Assets
         /// <returns>The color space of the current package of the session, or <see cref="RenderingSettings.DefaultColorSpace"/>.</returns>
         public static ColorSpace GetReferenceColorSpace(this PackageSession session, PlatformType platform)
         {
-            return GetGameSettingsAssetOrDefault(session).Get<RenderingSettings>(platform).ColorSpace;
+            return GetGameSettingsAssetOrDefault(session).GetOrCreate<RenderingSettings>(platform).ColorSpace;
         }
     }
 }

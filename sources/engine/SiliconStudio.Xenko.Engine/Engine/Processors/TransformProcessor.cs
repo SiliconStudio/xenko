@@ -93,18 +93,14 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         internal static void UpdateTransformations(FastCollection<TransformComponent> transformationComponents)
         {
-            // TODO: Updates can currently not be parallelized, since root entities in child scenes depend on other root entities.
-            // This should be fixed by building a single transformation tree, instead of using post transform operations.
-
-            // Dispatcher.ForEach(transformationComponents, transformation =>
-            foreach (var transformation in transformationComponents)
+            Dispatcher.ForEach(transformationComponents, transformation =>
             {
                 UpdateTransformation(transformation);
 
                 // Recurse
                 if (transformation.Children.Count > 0)
                     UpdateTransformationsRecursive(transformation.Children);
-            }
+            });
         }
 
         private static void UpdateTransformationsRecursive(FastCollection<TransformComponent> transformationComponents)
@@ -136,10 +132,28 @@ namespace SiliconStudio.Xenko.Engine.Processors
             foreach (var t in TransformationRoots)
                 notSpecialRootComponents.Add(t);
 
+            // Update scene transforms
+            // TODO: Entity processors should not be aware of scenes
+            var sceneInstance = EntityManager as SceneInstance;
+            if (sceneInstance?.RootScene != null)
+            {
+                UpdateTransfromationsRecursive(sceneInstance.RootScene);
+            }
+
             // Special roots are already filtered out
             UpdateTransformations(notSpecialRootComponents);
         }
-        
+
+        private static void UpdateTransfromationsRecursive(Scene scene)
+        {
+            scene.UpdateWorldMatrixInternal(false);
+
+            foreach (var childScene in scene.Children)
+            {
+                UpdateTransfromationsRecursive(childScene);
+            }
+        }
+
         private void Children_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
             // Added/removed children of entities in the entity manager have to be added/removed of the entity manager.

@@ -83,84 +83,74 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             var parameters = context.Parameters;
             var skybox = result.Skybox;
             skybox.Parameters = parameters;
-
-            if (asset.Model != null)
+            
+            var cubemap = asset.CubeMap;
+            if (cubemap == null)
             {
-                var cubemap = ((SkyboxCubeMapModel)asset.Model).CubeMap;
-                if (cubemap == null)
-                {
-                    return result;
-                }
-
-                // load the skybox texture from the asset.
-                var reference = AttachedReferenceManager.GetAttachedReference(cubemap);
-                var skyboxTexture = context.Content.Load<Texture>(BuildTextureForSkyboxGenerationLocation(reference.Url));
-                if (skyboxTexture.Dimension != TextureDimension.TextureCube)
-                {
-                    result.Error("SkyboxGenerator: The texture used as skybox should be a Cubemap.");
-                    return result;
-                }
-
-                var shaderSource = asset.Model.Generate(context);
-                parameters.Set(SkyboxKeys.Shader, shaderSource);
-
-                // If we are using the skybox asset for lighting, we can compute it
-                // TODO: This following code should be pluggable (like asset.Model.Generate(context);) but it is currently not
-                if (asset.Usage != SkyboxUsage.Background)
-                {
-                    // Specular lighting only?
-                    if (asset.Usage != SkyboxUsage.SpecularLighting)
-                    {
-                        // -------------------------------------------------------------------
-                        // Calculate Diffuse prefiltering
-                        // -------------------------------------------------------------------
-                        var lamberFiltering = new LambertianPrefilteringSHNoCompute(context.RenderContext)
-                        {
-                            HarmonicOrder = (int)asset.DiffuseSHOrder,
-                            RadianceMap = skyboxTexture
-                        };
-                        lamberFiltering.Draw(context.RenderDrawContext);
-
-                        var coefficients = lamberFiltering.PrefilteredLambertianSH.Coefficients;
-                        for (int i = 0; i < coefficients.Length; i++)
-                        {
-                            coefficients[i] = coefficients[i]*SphericalHarmonics.BaseCoefficients[i];
-                        }
-
-                        skybox.DiffuseLightingParameters.Set(SkyboxKeys.Shader, new ShaderClassSource("SphericalHarmonicsEnvironmentColor", lamberFiltering.HarmonicOrder));
-                        skybox.DiffuseLightingParameters.Set(SphericalHarmonicsEnvironmentColorKeys.SphericalColors, coefficients);
-                    }
-
-                    // -------------------------------------------------------------------
-                    // Calculate Specular prefiltering
-                    // -------------------------------------------------------------------
-                    var specularRadiancePrefilterGGX = new RadiancePrefilteringGGXNoCompute(context.RenderContext);
-
-                    var textureSize = asset.SpecularCubeMapSize <= 0 ? 64 : asset.SpecularCubeMapSize;
-                    textureSize = (int)Math.Pow(2, Math.Round(Math.Log(textureSize, 2)));
-                    if (textureSize < 64) textureSize = 64;
-
-                    // TODO: Add support for HDR 32bits 
-                    var filteringTextureFormat = skyboxTexture.Format.IsHDR() ? skyboxTexture.Format : PixelFormat.R8G8B8A8_UNorm;
-
-                    //var outputTexture = Texture.New2D(graphicsDevice, 256, 256, skyboxTexture.Format, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6);
-                    using (var outputTexture = Texture.New2D(context.GraphicsDevice, textureSize, textureSize, true, filteringTextureFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 6))
-                    {
-                        specularRadiancePrefilterGGX.RadianceMap = skyboxTexture;
-                        specularRadiancePrefilterGGX.PrefilteredRadiance = outputTexture;
-                        specularRadiancePrefilterGGX.Draw(context.RenderDrawContext);
-
-                        var cubeTexture = Texture.NewCube(context.GraphicsDevice, textureSize, true, skyboxTexture.Format);
-                        context.RenderDrawContext.CommandList.Copy(outputTexture, cubeTexture);
-
-                        cubeTexture.SetSerializationData(cubeTexture.GetDataAsImage(context.RenderDrawContext.CommandList));
-
-                        skybox.SpecularLightingParameters.Set(SkyboxKeys.Shader, new ShaderClassSource("RoughnessCubeMapEnvironmentColor"));
-                        skybox.SpecularLightingParameters.Set(SkyboxKeys.CubeMap, cubeTexture);
-                    }
-                }
-                // TODO: cubeTexture is not deallocated
+                return result;
             }
+
+            // load the skybox texture from the asset.
+            var reference = AttachedReferenceManager.GetAttachedReference(cubemap);
+            var skyboxTexture = context.Content.Load<Texture>(BuildTextureForSkyboxGenerationLocation(reference.Url));
+            if (skyboxTexture.Dimension != TextureDimension.TextureCube)
+            {
+                result.Error("SkyboxGenerator: The texture used as skybox should be a Cubemap.");
+                return result;
+            }
+
+            // If we are using the skybox asset for lighting, we can compute it
+            // Specular lighting only?
+            if (asset.Usage != SkyboxUsage.SpecularLighting)
+            {
+                // -------------------------------------------------------------------
+                // Calculate Diffuse prefiltering
+                // -------------------------------------------------------------------
+                var lamberFiltering = new LambertianPrefilteringSHNoCompute(context.RenderContext)
+                {
+                    HarmonicOrder = (int)asset.DiffuseSHOrder,
+                    RadianceMap = skyboxTexture
+                };
+                lamberFiltering.Draw(context.RenderDrawContext);
+
+                var coefficients = lamberFiltering.PrefilteredLambertianSH.Coefficients;
+                for (int i = 0; i < coefficients.Length; i++)
+                {
+                    coefficients[i] = coefficients[i]*SphericalHarmonics.BaseCoefficients[i];
+                }
+
+                skybox.DiffuseLightingParameters.Set(SkyboxKeys.Shader, new ShaderClassSource("SphericalHarmonicsEnvironmentColor", lamberFiltering.HarmonicOrder));
+                skybox.DiffuseLightingParameters.Set(SphericalHarmonicsEnvironmentColorKeys.SphericalColors, coefficients);
+            }
+
+            // -------------------------------------------------------------------
+            // Calculate Specular prefiltering
+            // -------------------------------------------------------------------
+            var specularRadiancePrefilterGGX = new RadiancePrefilteringGGXNoCompute(context.RenderContext);
+
+            var textureSize = asset.SpecularCubeMapSize <= 0 ? 64 : asset.SpecularCubeMapSize;
+            textureSize = (int)Math.Pow(2, Math.Round(Math.Log(textureSize, 2)));
+            if (textureSize < 64) textureSize = 64;
+
+            // TODO: Add support for HDR 32bits 
+            var filteringTextureFormat = skyboxTexture.Format.IsHDR() ? skyboxTexture.Format : PixelFormat.R8G8B8A8_UNorm;
+
+            //var outputTexture = Texture.New2D(graphicsDevice, 256, 256, skyboxTexture.Format, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6);
+            using (var outputTexture = Texture.New2D(context.GraphicsDevice, textureSize, textureSize, true, filteringTextureFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 6))
+            {
+                specularRadiancePrefilterGGX.RadianceMap = skyboxTexture;
+                specularRadiancePrefilterGGX.PrefilteredRadiance = outputTexture;
+                specularRadiancePrefilterGGX.Draw(context.RenderDrawContext);
+
+                var cubeTexture = Texture.NewCube(context.GraphicsDevice, textureSize, true, skyboxTexture.Format);
+                context.RenderDrawContext.CommandList.Copy(outputTexture, cubeTexture);
+
+                cubeTexture.SetSerializationData(cubeTexture.GetDataAsImage(context.RenderDrawContext.CommandList));
+
+                skybox.SpecularLightingParameters.Set(SkyboxKeys.Shader, new ShaderClassSource("RoughnessCubeMapEnvironmentColor"));
+                skybox.SpecularLightingParameters.Set(SkyboxKeys.CubeMap, cubeTexture);
+            }
+            // TODO: cubeTexture is not deallocated
 
             return result;
         }

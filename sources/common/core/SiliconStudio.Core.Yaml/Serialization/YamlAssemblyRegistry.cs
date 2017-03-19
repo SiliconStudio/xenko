@@ -46,6 +46,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
@@ -249,7 +250,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
                     // Else try to use schema tag for scalars
                     // Else use full name of the type
 
-                    var typeName = type.GetShortAssemblyQualifiedName();
+                    var typeName = GetShortAssemblyQualifiedName(type);
                     if (!UseShortTypeName)
                         throw new NotSupportedException("UseShortTypeName supports only True.");
 
@@ -269,7 +270,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             if (typeName == null) throw new ArgumentNullException(nameof(typeName));
             List<string> genericArguments;
             int arrayNesting;
-            var resolvedTypeName = TypeExtensions.GetGenericArgumentsAndArrayDimension(typeName, out genericArguments, out arrayNesting);
+            var resolvedTypeName = GetGenericArgumentsAndArrayDimension(typeName, out genericArguments, out arrayNesting);
             var resolvedType = ResolveSingleType(resolvedTypeName);
             if (genericArguments != null)
             {
@@ -353,6 +354,151 @@ namespace SiliconStudio.Core.Yaml.Serialization
             }
         }
 
+        /// <summary>
+        /// Gets the assembly qualified name of the type, but without the assembly version or public token.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>The assembly qualified name of the type, but without the assembly version or public token.</returns>
+        /// <exception cref="InvalidOperationException">Unable to get an assembly qualified name for type.</exception>
+        /// <example>
+        ///     <list type="bullet">
+        ///         <item><c>typeof(string).GetShortAssemblyQualifiedName(); // System.String,mscorlib</c></item>
+        ///         <item><c>typeof(string[]).GetShortAssemblyQualifiedName(); // System.String[],mscorlib</c></item>
+        ///         <item><c>typeof(List&lt;string&gt;).GetShortAssemblyQualifiedName(); // System.Collection.Generics.List`1[[System.String,mscorlib]],mscorlib</c></item>
+        ///     </list>
+        /// </example>
+        private static string GetShortAssemblyQualifiedName(Type type)
+        {
+            if (type.AssemblyQualifiedName == null)
+                throw new InvalidOperationException($"Unable to get an assembly qualified name for type [{type}]");
+
+            var sb = new StringBuilder();
+            DoGetShortAssemblyQualifiedName(type, sb);
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Split the given short assembly-qualified type name into a generic definition type and a collection of generic argument types, and retrieve the dimension of the array if the type is an array type.
+        /// </summary>
+        /// <param name="shortAssemblyQualifiedName">The given short assembly-qualified type name to split.</param>
+        /// <param name="genericArguments">The generic argument types extracted, if the given type was generic. Otherwise null.</param>
+        /// <param name="arrayNesting">The number of arrays that are nested if the type is an array type.</param>
+        /// <returns>The corresponding generic definition type.</returns>
+        /// <remarks>If the given type is not generic, this method sets <paramref name="genericArguments"/> to null and returns <paramref name="shortAssemblyQualifiedName"/>.</remarks>
+        [NotNull]
+        private static string GetGenericArgumentsAndArrayDimension([NotNull] string shortAssemblyQualifiedName, [CanBeNull] out List<string> genericArguments, out int arrayNesting)
+        {
+            if (shortAssemblyQualifiedName == null) throw new ArgumentNullException(nameof(shortAssemblyQualifiedName));
+            var firstBracket = int.MaxValue;
+            var lastBracket = int.MinValue;
+            var bracketLevel = 0;
+            genericArguments = null;
+            arrayNesting = 0;
+            var startIndex = 0;
+            for (var i = 0; i < shortAssemblyQualifiedName.Length; ++i)
+            {
+                if (shortAssemblyQualifiedName[i] == '[')
+                {
+                    firstBracket = Math.Min(firstBracket, i);
+                    ++bracketLevel;
+                    if (bracketLevel == 2)
+                    {
+                        startIndex = i + 1;
+                    }
+                }
+                if (shortAssemblyQualifiedName[i] == ']')
+                {
+                    lastBracket = Math.Max(lastBracket, i);
+                    --bracketLevel;
+                    if (bracketLevel == 1)
+                    {
+                        if (genericArguments == null)
+                            genericArguments = new List<string>();
+
+                        genericArguments.Add(shortAssemblyQualifiedName.Substring(startIndex, i - startIndex));
+                    }
+                    if (bracketLevel == 0 && i > 0)
+                    {
+                        if (shortAssemblyQualifiedName[i - 1] == '[')
+                        {
+                            ++arrayNesting;
+                        }
+                    }
+                }
+            }
+            if (genericArguments != null || arrayNesting > 0)
+            {
+                var genericType = shortAssemblyQualifiedName.Substring(0, firstBracket) + shortAssemblyQualifiedName.Substring(lastBracket + 1);
+                return genericType;
+            }
+            return shortAssemblyQualifiedName;
+        }
+
+        private static void DoGetShortAssemblyQualifiedName(Type type, StringBuilder sb, bool appendAssemblyName = true)
+        {
+            // namespace
+            sb.Append(type.Namespace).Append(".");
+            // check if it's an array, store the information, and work on the element type
+            var arrayNesting = 0;
+            while (type.IsArray)
+            {
+                if (type.GetArrayRank() != 1)
+                    throw new NotSupportedException("Multi-dimensional arrays are not supported.");
+                type = type.GetElementType();
+                ++arrayNesting;
+            }
+            // nested declaring types
+            var declaringType = type.DeclaringType;
+            if (declaringType != null)
+            {
+                var declaringTypeName = string.Empty;
+                do
+                {
+                    declaringTypeName = declaringType.Name + "+" + declaringTypeName;
+                    declaringType = declaringType.DeclaringType;
+                } while (declaringType != null);
+                sb.Append(declaringTypeName);
+            }
+            // type
+            sb.Append(type.Name);
+            // generic arguments
+            if (type.IsGenericType)
+            {
+                sb.Append("[[");
+                var genericArguments = type.GetGenericArguments();
+                for (var i = 0; i < genericArguments.Length; i++)
+                {
+                    if (i > 0)
+                        sb.Append("],[");
+                    DoGetShortAssemblyQualifiedName(genericArguments[i], sb);
+                }
+                sb.Append("]]");
+            }
+            while (arrayNesting > 0)
+            {
+                --arrayNesting;
+                sb.Append("[]");
+            }
+            // assembly
+            if (appendAssemblyName)
+                sb.Append(",").Append(GetShortAssemblyName(type.Assembly));
+        }
+
+        /// <summary>
+        /// Gets the qualified name of the assembly, but without the assembly version or public token.
+        /// </summary>
+        /// <param name="assembly">The assembly.</param>
+        /// <returns>The qualified name of the assembly, but without the assembly version or public token.</returns>
+        private static string GetShortAssemblyName(Assembly assembly)
+        {
+            var assemblyName = assembly.FullName;
+            var indexAfterAssembly = assemblyName.IndexOf(',');
+            if (indexAfterAssembly >= 0)
+            {
+                assemblyName = assemblyName.Substring(0, indexAfterAssembly);
+            }
+            return assemblyName;
+        }
         struct MappedType
         {
             public MappedType(Type type, bool remapped)

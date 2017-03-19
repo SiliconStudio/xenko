@@ -43,6 +43,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SkeletonAsset.cs" />
     <Compile Include="SkeletonAssetCompiler.cs" />
+    <Compile Include="TextureFactories.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />

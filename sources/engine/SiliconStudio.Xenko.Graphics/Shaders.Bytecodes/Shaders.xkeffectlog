@@ -35,10 +35,3 @@ UsedParameters:
     EffectSourceCode.Namespace: SiliconStudio.Xenko.Graphics
     EffectSourceCode.ClassDeclaration: internal partial
     EffectSourceCode.FieldName: binaryBytecodeSRgb
----
-!EffectCompileRequest
-EffectName: BackgroundEffect
-UsedParameters:
-    EffectSourceCode.Enable: true
-    EffectSourceCode.Namespace: SiliconStudio.Xenko.Graphics
-    EffectSourceCode.ClassDeclaration: internal partial

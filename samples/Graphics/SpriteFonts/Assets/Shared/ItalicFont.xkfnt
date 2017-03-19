@@ -6,4 +6,4 @@ FontSource: !SystemFontProvider
     FontName: Arial
     Style: Italic
 FontType: !RuntimeRasterizedSpriteFontType
-    Size: 21.33333
+    Size: 22.0

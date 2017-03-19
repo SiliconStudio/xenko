@@ -66,20 +66,13 @@ namespace SiliconStudio.Core.TypeConverters
         /// </summary>
         public Vector3Converter()
         {
-            try
+            var type = typeof(Vector3);
+            Properties = new PropertyDescriptorCollection(new PropertyDescriptor[]
             {
-                var type = typeof(Vector3);
-                Properties = new PropertyDescriptorCollection(new PropertyDescriptor[] 
-                                                                  {
-                                                                      new FieldPropertyDescriptor(type.GetField("X")),
-                                                                      new FieldPropertyDescriptor(type.GetField("Y")),
-                                                                      new FieldPropertyDescriptor(type.GetField("Z"))
-                                                                  });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
+                new FieldPropertyDescriptor(type.GetField(nameof(Vector3.X))),
+                new FieldPropertyDescriptor(type.GetField(nameof(Vector3.Y))),
+                new FieldPropertyDescriptor(type.GetField(nameof(Vector3.Z)))
+            });
         }
 
         /// <summary>
@@ -100,8 +93,7 @@ namespace SiliconStudio.Core.TypeConverters
         /// </exception>
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
-            if (destinationType == null)
-                throw new ArgumentNullException("destinationType");
+            if (destinationType == null) throw new ArgumentNullException(nameof(destinationType));
 
             if (value is Vector3)
             {
@@ -148,10 +140,8 @@ namespace SiliconStudio.Core.TypeConverters
         /// </returns>
         public override object CreateInstance(ITypeDescriptorContext context, IDictionary propertyValues)
         {
-            if (propertyValues == null)
-                throw new ArgumentNullException("propertyValues");
-
-            return new Vector3((float)propertyValues["X"], (float)propertyValues["Y"], (float)propertyValues["Z"]);
+            if (propertyValues == null) throw new ArgumentNullException(nameof(propertyValues));
+            return new Vector3((float)propertyValues[nameof(Vector3.X)], (float)propertyValues[nameof(Vector3.Y)], (float)propertyValues[nameof(Vector3.Z)]);
         }
     }
 }

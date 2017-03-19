@@ -200,12 +200,6 @@
     <Compile Include="SDL\FormWindowState.cs" />
     <Compile Include="SDL\SDLMessageLoop.cs" />
     <Compile Include="SDL\Window.cs" />
-    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Direct3D11.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Null.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGL.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGLES.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Vulkan.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\BackgroundEffect.Extensions.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.Null.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.Vulkan.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
@@ -234,12 +228,6 @@
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
-    <Compile Include="Shaders\BackgroundEffect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>BackgroundEffect.xksl</DependentUpon>
-    </Compile>
     <Compile Include="Shaders\ColorUtility.cs">
       <DependentUpon>ColorUtility.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -263,6 +251,12 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SpriteSignedDistanceFieldFontShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\SpriteSuperSampler.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SpriteSuperSampler.xksl</DependentUpon>
     </Compile>
     <Compile Include="Shaders\UIEffect.cs">
       <DependentUpon>UIEffect.xkfx</DependentUpon>
@@ -608,10 +602,6 @@
     <None Include="Shaders.Bytecodes\CompileShaders.cmd" />
     <None Include="Shaders.Bytecodes\Graphics.xkpkg" />
     <None Include="Shaders.Bytecodes\Shaders.xkeffectlog" />
-    <None Include="Shaders\BackgroundEffect.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>BackgroundEffect.cs</LastGenOutput>
-    </None>
     <None Include="Shaders\SignedDistanceFieldFontShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SignedDistanceFieldFontShader.cs</LastGenOutput>
@@ -623,6 +613,10 @@
     <None Include="Shaders\SpriteSignedDistanceFieldFontShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SpriteSignedDistanceFieldFontShader.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SpriteSuperSampler.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SpriteSuperSampler.cs</LastGenOutput>
     </None>
     <None Include="Shaders\UIEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>

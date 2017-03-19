@@ -75,6 +75,15 @@ namespace SiliconStudio.Core.Yaml
             node.Children.Insert(movePosition, item.Key, item.Value);
         }
 
+
+        public bool ContainsChild(object key)
+        {
+            var yamlKey = ConvertFromDynamicForKey(key);
+            var keyPosition = node.Children.IndexOf(yamlKey);
+
+            return (keyPosition != -1);
+        }
+
         public void RemoveChild(object key)
         {
             var yamlKey = ConvertFromDynamicForKey(key);
