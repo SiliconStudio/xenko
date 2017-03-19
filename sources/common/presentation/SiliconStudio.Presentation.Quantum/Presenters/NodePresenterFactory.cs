@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Quantum;
@@ -7,6 +8,13 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class NodePresenterFactory : INodePresenterFactory, INodePresenterFactoryInternal
     {
+        public NodePresenterFactory(IReadOnlyCollection<INodePresenterCommand> availableCommands)
+        {
+            AvailableCommands = availableCommands;
+        }
+
+        public IReadOnlyCollection<INodePresenterCommand> AvailableCommands { get; }
+
         [NotNull]
         public INodePresenter CreateNodeHierarchy(IObjectNode rootNode, GraphNodePath rootNodePath)
         {

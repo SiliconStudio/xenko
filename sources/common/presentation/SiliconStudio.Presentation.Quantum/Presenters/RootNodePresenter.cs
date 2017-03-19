@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
@@ -18,11 +18,18 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             if (factory == null) throw new ArgumentNullException(nameof(factory));
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
             RootNode = rootNode;
-            Commands.AddRange(rootNode.Commands);
+
+            foreach (var command in factory.AvailableCommands)
+            {
+                if (command.CanAttach(this))
+                    Commands.Add(command);
+            }
+
+            AttachCommands();
         }
 
         public override string Name => "Root";
-        public sealed override List<INodeCommand> Commands { get; } = new List<INodeCommand>();
+        public sealed override List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
         public override Type Type => RootNode.Type;
         public override Index Index => Index.Empty;
         public override bool IsPrimitive => false;

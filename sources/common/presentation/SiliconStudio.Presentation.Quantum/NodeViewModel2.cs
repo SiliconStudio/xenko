@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
@@ -74,6 +74,13 @@ namespace SiliconStudio.Presentation.Quantum
                 owner.RootNode = viewModel;
             }
             GenerateChildren(owner, viewModel, nodePresenter);
+
+            foreach (var command in nodePresenter.Commands)
+            {
+                var commandWrapper = new NodeCommandWrapper(viewModel.ServiceProvider, nodePresenter, command);
+                viewModel.AddCommand(commandWrapper);
+            }
+
             owner.GraphViewModelService?.NotifyNodeInitialized(viewModel);
             return viewModel;
         }

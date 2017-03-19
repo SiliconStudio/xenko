@@ -26,15 +26,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             Name = index.ToString();
             container.ItemChanging += OnItemChanging;
             container.ItemChanged += OnItemChanged;
-            if (container.ItemReferences != null)
-            {
-                // If we have a target node, register commands attached to it. They will override the commands of the container node by name.
-                Commands.AddRange(container.IndexedTarget(index).Commands);
-            }
-
-            // Register commands from the container node, skipping those already registered from the target node.
-            var targetCommandNames = Commands.Select(x => x.Name).ToList();
-            Commands.AddRange(container.Commands.Where(x => !targetCommandNames.Contains(x.Name)));
+            AttachCommands();
         }
 
         public override void Dispose()
@@ -45,7 +37,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override string Name { get; }
 
-        public sealed override List<INodeCommand> Commands { get; } = new List<INodeCommand>();
+        public sealed override List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
 
         public INodePresenter OwnerCollection { get; }
 

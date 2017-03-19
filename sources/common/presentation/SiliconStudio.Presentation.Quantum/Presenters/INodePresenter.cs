@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Commands;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
 {
@@ -15,7 +13,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         IReadOnlyList<INodePresenter> Children { get; }
 
-        List<INodeCommand> Commands { get; }
+        List<INodePresenterCommand> Commands { get; }
 
         Type Type { get; }
 

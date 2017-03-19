@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
@@ -30,7 +30,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public IReadOnlyList<INodePresenter> Children => children;
 
         public abstract string Name { get; }
-        public abstract List<INodeCommand> Commands { get; }
+        public abstract List<INodePresenterCommand> Commands { get; }
         public abstract Type Type { get; }
         public abstract bool IsPrimitive { get; }
         public abstract bool IsEnumerable { get; }
@@ -61,6 +61,15 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             {
                 factory.CreateChildren(this, parentingNode);
             }            
+        }
+
+        protected void AttachCommands()
+        {
+            foreach (var command in factory.AvailableCommands)
+            {
+                if (command.CanAttach(this))
+                    Commands.Add(command);
+            }
         }
 
         internal abstract Task RunCommand(INodeCommand command, object parameter);

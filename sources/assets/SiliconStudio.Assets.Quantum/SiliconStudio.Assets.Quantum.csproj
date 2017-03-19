@@ -80,7 +80,6 @@
     <Compile Include="Commands\AbstractNodeValue.cs" />
     <Compile Include="Commands\AddNewItemCommand.cs" />
     <Compile Include="Commands\AddPrimitiveKeyCommand.cs" />
-    <Compile Include="Commands\CreateNewInstanceCommand.cs" />
     <Compile Include="Commands\MoveItemCommand.cs" />
     <Compile Include="Commands\RemoveItemCommand.cs" />
     <Compile Include="Commands\RenameStringKeyCommand.cs" />

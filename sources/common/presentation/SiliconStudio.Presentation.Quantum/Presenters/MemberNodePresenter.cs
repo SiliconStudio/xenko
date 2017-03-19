@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,18 +29,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             member.Changing += OnMemberChanging;
             member.Changed += OnMemberChanged;
 
-            if (member.Target != null)
-            {
-                // If we have a target node, register commands attached to it. They will override the commands of the member node by name.
-                Commands.AddRange(member.Target.Commands);
-            }
-
-            // Register commands from the member node, skipping those already registered from the target node.
-            var targetCommandNames = Commands.Select(x => x.Name).ToList();
-            Commands.AddRange(member.Commands.Where(x => !targetCommandNames.Contains(x.Name)));
-
             var displayAttribute = memberAttributes.OfType<DisplayAttribute>().FirstOrDefault();
             Order = displayAttribute?.Order ?? member.MemberDescriptor.Order;
+
+            AttachCommands();
         }
 
         public override void Dispose()
@@ -51,7 +43,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override string Name { get; }
 
-        public sealed override List<INodeCommand> Commands { get; } = new List<INodeCommand>();
+        public sealed override List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
 
         public override Type Type => Member.Type;
 

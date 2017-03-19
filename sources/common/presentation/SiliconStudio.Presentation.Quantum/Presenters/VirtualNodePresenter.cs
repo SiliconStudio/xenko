@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
@@ -26,11 +26,13 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             Type = type;
             Order = order;
             Descriptor = TypeDescriptorFactory.Default.Find(type);
+
+            AttachCommands();
         }
 
         public override string Name { get; }
 
-        public sealed override List<INodeCommand> Commands { get; } = new List<INodeCommand>();
+        public sealed override List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
 
         public override Type Type { get; }
 

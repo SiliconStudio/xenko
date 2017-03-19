@@ -20,7 +20,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             GraphNodeViewModelFactory = GraphViewModel.DefaultGraphNodeViewModelFactory;
             CombinedNodeViewModelFactory = GraphViewModel.DefaultCombinedNodeViewModelFactory;
-            NodePresenterFactory = new NodePresenterFactory();
+            NodePresenterFactory = new NodePresenterFactory(AvailableCommands);
         }
 
         public INodePresenterFactory NodePresenterFactory { get; set; }
