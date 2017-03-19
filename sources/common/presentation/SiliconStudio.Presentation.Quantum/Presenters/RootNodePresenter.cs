@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Commands;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
 {
@@ -109,11 +107,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             {
                 throw new NodePresenterException("An error occurred while updating an item of the node, see the inner exception for more information.", e);
             }
-        }
-
-        internal override Task RunCommand(INodeCommand command, object parameter)
-        {
-            return command.Execute(RootNode, Index.Empty, parameter);
         }
     }
 }

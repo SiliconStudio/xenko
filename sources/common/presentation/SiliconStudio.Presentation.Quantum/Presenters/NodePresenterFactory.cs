@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Quantum;
 
-namespace SiliconStudio.Presentation.Quantum
+namespace SiliconStudio.Presentation.Quantum.Presenters
 {
     public class NodePresenterFactory : INodePresenterFactory, INodePresenterFactoryInternal
     {

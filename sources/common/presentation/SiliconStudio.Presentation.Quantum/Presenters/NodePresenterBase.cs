@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Commands;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
 {
@@ -71,8 +69,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
                     Commands.Add(command);
             }
         }
-
-        internal abstract Task RunCommand(INodeCommand command, object parameter);
 
         void IInitializingNodePresenter.AddChild([NotNull] IInitializingNodePresenter child)
         {

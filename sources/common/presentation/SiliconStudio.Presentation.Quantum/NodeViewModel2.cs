@@ -77,7 +77,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             foreach (var command in nodePresenter.Commands)
             {
-                var commandWrapper = new NodeCommandWrapper(viewModel.ServiceProvider, nodePresenter, command);
+                var commandWrapper = new NodePresenterCommandWrapper(viewModel.ServiceProvider, nodePresenter, command);
                 viewModel.AddCommand(commandWrapper);
             }
 

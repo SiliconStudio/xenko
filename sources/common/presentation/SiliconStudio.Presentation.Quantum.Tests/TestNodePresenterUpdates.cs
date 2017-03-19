@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Presentation.Quantum.Tests.Helpers;
 using SiliconStudio.Quantum;
 

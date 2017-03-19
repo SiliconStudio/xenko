@@ -125,25 +125,25 @@ namespace SiliconStudio.Presentation.Quantum
         {
             var targetNode = GetTargetNode(SourceNode, Index);
 
-            if (targetNode != SourceNode && targetNode != null)
-            {
-                foreach (var command in targetNode.Commands)
-                {
-                    var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, SourceNodePath, Index);
-                    AddCommand(commandWrapper);
-                }
-            }
+            //if (targetNode != SourceNode && targetNode != null)
+            //{
+            //    foreach (var command in targetNode.Commands)
+            //    {
+            //        var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, SourceNodePath, Index);
+            //        AddCommand(commandWrapper);
+            //    }
+            //}
 
-            var targetCommandNames = Commands.Select(x => x.Name).ToList();
-            foreach (var command in SourceNode.Commands)
-            {
-                // Add source commands that are not already provided by the target node
-                if (!targetCommandNames.Contains(command.Name))
-                {
-                    var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, SourceNodePath, Index);
-                    AddCommand(commandWrapper);
-                }
-            }
+            //var targetCommandNames = Commands.Select(x => x.Name).ToList();
+            //foreach (var command in SourceNode.Commands)
+            //{
+            //    // Add source commands that are not already provided by the target node
+            //    if (!targetCommandNames.Contains(command.Name))
+            //    {
+            //        var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, SourceNodePath, Index);
+            //        AddCommand(commandWrapper);
+            //    }
+            //}
 
             if (!isPrimitive && targetNode != null)
             {

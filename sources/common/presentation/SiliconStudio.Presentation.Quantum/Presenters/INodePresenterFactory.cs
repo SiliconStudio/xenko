@@ -1,7 +1,8 @@
-using SiliconStudio.Presentation.Quantum.Presenters;
+using System;
+using System.Collections.Generic;
 using SiliconStudio.Quantum;
 
-namespace SiliconStudio.Presentation.Quantum
+namespace SiliconStudio.Presentation.Quantum.Presenters
 {
     public interface INodePresenterFactory
     {

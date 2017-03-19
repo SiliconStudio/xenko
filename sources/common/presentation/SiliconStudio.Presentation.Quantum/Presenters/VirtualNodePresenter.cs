@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Commands;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
 {
@@ -90,12 +88,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public override void UpdateItem(object newValue, Index index)
         {
             throw new NodePresenterException($"{nameof(UpdateItem)} cannot be used on a {nameof(VirtualNodePresenter)}.");
-        }
-
-        internal override Task RunCommand(INodeCommand command, object parameter)
-        {
-            // TODO: support commands
-            return Task.CompletedTask;
         }
     }
 }

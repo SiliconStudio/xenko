@@ -1,36 +1,45 @@
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Commands;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
 {
     public class NodePresenterCommandWrapper : NodeCommandWrapperBase
     {
-        private readonly NodePresenterBase presenter;
-        private readonly INodeCommand command;
+        private readonly INodePresenter presenter;
 
-        public NodePresenterCommandWrapper(IViewModelServiceProvider serviceProvider, NodePresenterBase presenter, INodeCommand command)
+        public NodePresenterCommandWrapper(IViewModelServiceProvider serviceProvider, [NotNull] INodePresenter presenter, [NotNull] INodePresenterCommand command)
             : base(serviceProvider)
         {
+            if (presenter == null) throw new ArgumentNullException(nameof(presenter));
+            if (command == null) throw new ArgumentNullException(nameof(command));
             this.presenter = presenter;
-            this.command = command;
+            Command = command;
         }
+
+        public override string Name => Command.Name;
+
+        public override CombineMode CombineMode => Command.CombineMode;
+        
+        public INodePresenterCommand Command { get; }
 
         public override async Task Invoke(object parameter)
         {
             using (var transaction = UndoRedoService?.CreateTransaction())
             {
-                await presenter.RunCommand(command, parameter);
+                var preExecuteResult = await Command.PreExecute(presenter.Yield(), parameter);
+                await Command.Execute(presenter, parameter, preExecuteResult);
+                await Command.PostExecute(presenter.Yield(), parameter);
+
                 if (transaction != null)
                 {
                     UndoRedoService?.SetName(transaction, ActionName);
                 }
             }
         }
-
-        public override string Name => command.Name;
-
-        public override CombineMode CombineMode => command.CombineMode;
     }
 }

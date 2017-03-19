@@ -27,13 +27,12 @@
     <Compile Include="Controls\AsyncContentControl.cs" />
     <Compile Include="ExpandReferencePolicy.cs" />
     <Compile Include="GraphNodeBinding.cs" />
-    <Compile Include="NodeCommandWrapper.cs" />
+    <Compile Include="Presenters\NodePresenterCommandWrapper.cs" />
     <Compile Include="NodeViewModel2.cs" />
     <Compile Include="Presenters\INodePresenterCommand.cs" />
     <Compile Include="Presenters\INodePresenterFactory.cs" />
     <Compile Include="Presenters\INodePresenterFactoryInternal.cs" />
     <Compile Include="Presenters\NodePresenterCommandBase.cs" />
-    <Compile Include="Presenters\NodePresenterCommandWrapper.cs" />
     <Compile Include="Presenters\NodePresenterFactory.cs" />
     <Compile Include="Presenters\ItemNodePresenter.cs" />
     <Compile Include="Presenters\MemberNodePresenter.cs" />

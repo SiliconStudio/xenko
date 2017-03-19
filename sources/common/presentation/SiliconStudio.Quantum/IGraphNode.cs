@@ -1,7 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Quantum.Commands;
 
 namespace SiliconStudio.Quantum
 {
@@ -14,11 +13,6 @@ namespace SiliconStudio.Quantum
         /// Gets or sets the <see cref="System.Guid"/>.
         /// </summary>
         Guid Guid { get; }
-
-        /// <summary>
-        /// Gets the command collection.
-        /// </summary>
-        IReadOnlyCollection<INodeCommand> Commands { get; }
 
         /// <summary>
         /// Gets the expected type of for the content of this node.
