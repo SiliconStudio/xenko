@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;

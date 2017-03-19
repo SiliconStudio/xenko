@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Presentation.Quantum.Presenters;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -25,6 +26,9 @@ namespace SiliconStudio.Presentation.Quantum
         public INodePresenterFactory NodePresenterFactory { get; set; }
 
         public INodeViewModelFactory NodeViewModelFactory { get; set; }
+
+        public List<INodePresenterCommand> AvailableCommands { get; } = new List<INodePresenterCommand>();
+
         /// <summary>
         /// Gets or sets the graph node factory.
         /// </summary>

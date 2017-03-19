@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,6 +20,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             if (parent == null) throw new ArgumentNullException(nameof(parent));
             if (container == null) throw new ArgumentNullException(nameof(container));
             Container = container;
+            OwnerCollection = parent;
             Type = (container.Descriptor as CollectionDescriptor)?.ElementType ?? (container.Descriptor as DictionaryDescriptor)?.ValueType;
             Index = index;
             Name = index.ToString();
@@ -45,6 +46,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public override string Name { get; }
 
         public sealed override List<INodeCommand> Commands { get; } = new List<INodeCommand>();
+
+        public INodePresenter OwnerCollection { get; }
 
         public override Index Index { get; }
 

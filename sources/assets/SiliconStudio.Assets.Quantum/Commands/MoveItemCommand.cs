@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
