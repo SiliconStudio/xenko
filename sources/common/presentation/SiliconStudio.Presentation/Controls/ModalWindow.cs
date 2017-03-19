@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using SiliconStudio.Presentation.Services;
@@ -10,7 +11,9 @@ namespace SiliconStudio.Presentation.Controls
     {
         public virtual async Task<DialogResult> ShowModal()
         {
-            await WindowManager.ShowModal(this);
+            Owner = WindowManager.MainWindow?.Window ?? WindowManager.BlockingWindows.LastOrDefault()?.Window;
+            WindowStartupLocation = Owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
+            await Dispatcher.InvokeAsync(ShowDialog);
             return Result;
         }
 

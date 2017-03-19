@@ -32,7 +32,7 @@ namespace SiliconStudio.Core.Windows
         {
             if (lockFile != null)
             {
-                var overlapped = new NativeLockFile.OVERLAPPED();
+                var overlapped = new NativeOverlapped();
                 NativeLockFile.UnlockFileEx(lockFile.SafeFileHandle, 0, uint.MaxValue, uint.MaxValue, ref overlapped);
                 lockFile.Dispose();
 
@@ -91,7 +91,7 @@ namespace SiliconStudio.Core.Windows
                 if (millisecondsTimeout != 0 && millisecondsTimeout != -1)
                     throw new NotImplementedException("GlobalMutex.Wait() is implemented only for millisecondsTimeout 0 or -1");
 
-                var overlapped = new NativeLockFile.OVERLAPPED();
+                var overlapped = new NativeOverlapped();
                 bool hasHandle = NativeLockFile.LockFileEx(fileLock.SafeFileHandle, NativeLockFile.LOCKFILE_EXCLUSIVE_LOCK | (millisecondsTimeout == 0 ? NativeLockFile.LOCKFILE_FAIL_IMMEDIATELY : 0), 0, uint.MaxValue, uint.MaxValue, ref overlapped);
                 return hasHandle == false ? null : new FileLock(fileLock);
             }
