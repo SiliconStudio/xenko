@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 
@@ -18,6 +19,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             if (parent == null) throw new ArgumentNullException(nameof(parent));
             if (container == null) throw new ArgumentNullException(nameof(container));
             Container = container;
+            Descriptor = TypeDescriptorFactory.Default.Find(container.Descriptor.GetInnerCollectionType());
             OwnerCollection = parent;
             Type = (container.Descriptor as CollectionDescriptor)?.ElementType ?? (container.Descriptor as DictionaryDescriptor)?.ValueType;
             Index = index;
