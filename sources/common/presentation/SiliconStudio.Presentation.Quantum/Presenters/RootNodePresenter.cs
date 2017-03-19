@@ -108,5 +108,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
                 throw new NodePresenterException("An error occurred while updating an item of the node, see the inner exception for more information.", e);
             }
         }
+
+        public override NodeAccessor GetNodeAccessor()
+        {
+            return new NodeAccessor(RootNode, Index.Empty);
+        }
     }
 }

@@ -51,6 +51,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public abstract void UpdateItem(object newValue, Index index);
 
+        public abstract NodeAccessor GetNodeAccessor();
+
         protected void Refresh()
         {
             children.Clear();

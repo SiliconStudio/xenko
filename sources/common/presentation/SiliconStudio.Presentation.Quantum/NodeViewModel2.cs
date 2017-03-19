@@ -109,7 +109,6 @@ namespace SiliconStudio.Presentation.Quantum
 
     public class NodeViewModel2 : SingleNodeViewModel, IGraphNodeViewModel
     {
-        protected readonly INodePresenter NodePresenter;
         private int? customOrder;
 
         protected internal NodeViewModel2(GraphViewModel ownerViewModel, NodeViewModel2 parent, string baseName, INodePresenter nodePresenter)
@@ -137,6 +136,8 @@ namespace SiliconStudio.Presentation.Quantum
 
         /// <inheritdoc/>
         public sealed override bool HasDictionary => DictionaryDescriptor.IsDictionary(Type);
+
+        public INodePresenter NodePresenter { get; }
 
         protected internal override object InternalNodeValue { get { return NodePresenter.Value; } set { SetNodeValue(value); } }
 

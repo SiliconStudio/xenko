@@ -144,6 +144,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
+        public override NodeAccessor GetNodeAccessor()
+        {
+            return new NodeAccessor(Member, Index.Empty);
+        }
         private void OnMemberChanging(object sender, MemberNodeChangeEventArgs e)
         {
             ValueChanging?.Invoke(this, new ValueChangingEventArgs(e.NewValue));

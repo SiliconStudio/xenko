@@ -138,6 +138,11 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
+        public override NodeAccessor GetNodeAccessor()
+        {
+            return new NodeAccessor(Container, Index);
+        }
+
         private void OnItemChanging(object sender, ItemChangeEventArgs e)
         {
             if (IsValidChange(e))

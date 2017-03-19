@@ -89,5 +89,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         {
             throw new NodePresenterException($"{nameof(UpdateItem)} cannot be used on a {nameof(VirtualNodePresenter)}.");
         }
+
+        public override NodeAccessor GetNodeAccessor()
+        {
+            return default(NodeAccessor);
+        }
     }
 }

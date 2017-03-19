@@ -29,6 +29,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         object Value { get; }
 
+        NodeAccessor GetNodeAccessor();
+
         event EventHandler<ValueChangingEventArgs> ValueChanging;
 
         event EventHandler<ValueChangedEventArgs> ValueChanged;
