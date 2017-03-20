@@ -165,6 +165,7 @@
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
     <Compile Include="ValueConverters\AllEqualMultiConverter.cs" />
+    <Compile Include="ValueConverters\CharToString.cs" />
     <Compile Include="ValueConverters\ConverterHelper.cs" />
     <Compile Include="ValueConverters\DegreeAngleSingle.cs" />
     <Compile Include="ValueConverters\EmptyStringToBool.cs" />
@@ -174,6 +175,7 @@
     <Compile Include="ValueConverters\SumMultiConverter.cs" />
     <Compile Include="ValueConverters\ThicknessMultiConverter.cs" />
     <Compile Include="ValueConverters\VectorEditingModeToBoolean.cs" />
+    <Compile Include="ValueConverters\Yield.cs" />
     <Compile Include="ViewModel\CollectionChangeOperation.cs" />
     <Compile Include="ViewModel\PropertyChangeOperation.cs" />
     <Compile Include="Windows\CheckedMessageBox.cs" />
@@ -246,7 +248,7 @@
     <Compile Include="Interactivity\BehaviorCollection.cs" />
     <Compile Include="Behaviors\DeferredBehaviorBase.cs" />
     <Compile Include="Interactivity\Interaction.cs" />
-    <Compile Include="Extensions\ColorExtensions.cs" />
+    <Compile Include="Extensions\SystemColorExtensions.cs" />
     <Compile Include="Interop\NativeHelper.cs" />
     <Compile Include="Extensions\VisualExtensions.cs" />
     <Compile Include="Core\CancelRoutedEvent.cs" />

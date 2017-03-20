@@ -29,8 +29,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         public bool IsShadowCaster;
 
-        public bool IsShadowReceiver;
-
         public bool IsScalingNegative;
 
         public bool IsPreviousScalingNegative;

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Quantum;
@@ -27,8 +28,8 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="ownerViewModel">The <see cref="GraphViewModel"/> that owns the new <see cref="SingleNodeViewModel"/>.</param>
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
-        protected SingleNodeViewModel(GraphViewModel ownerViewModel, string baseName, Index index)
-            : base(ownerViewModel, index)
+        protected SingleNodeViewModel(GraphViewModel ownerViewModel, Type type, string baseName, Index index)
+            : base(ownerViewModel, type, index)
         {
             if (baseName == null && index == null)
                 throw new ArgumentException("baseName and index can't be both null.");
@@ -61,9 +62,16 @@ namespace SiliconStudio.Presentation.Quantum
             base.Destroy();
         }
 
-        public new void AddCommand(INodeCommandWrapper command)
+        /// <inheritdoc cref="NodeViewModel.AddCommand"/>
+        public new void AddCommand([NotNull] INodeCommandWrapper command)
         {
             base.AddCommand(command);
+        }
+
+        /// <inheritdoc cref="NodeViewModel.RemoveCommand"/>
+        public new bool RemoveCommand([NotNull] INodeCommandWrapper command)
+        {
+            return base.RemoveCommand(command);
         }
 
         /// <summary>
@@ -101,7 +109,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         public VirtualNodeViewModel CreateVirtualChild(string name, Type contentType, bool isPrimitive, int? order, Index index, Func<object> getter, Action<object> setter, IReadOnlyDictionary<string, object> nodeAssociatedData = null)
         {
-            var child = (VirtualNodeViewModel)Activator.CreateInstance(typeof(VirtualNodeViewModel<>).MakeGenericType(contentType), Owner, name, isPrimitive, order, index, getter, setter);
+            var child = new VirtualNodeViewModel(Owner, contentType, name, isPrimitive, order, index, getter, setter);
             nodeAssociatedData?.ForEach(x => child.AddAssociatedData(x.Key, x.Value));
             child.FinalizeInitialization();
             AddChild(child);

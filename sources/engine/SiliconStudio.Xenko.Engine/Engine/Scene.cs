@@ -12,6 +12,8 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Engine
 {
+    public class ChildSceneComponent { }
+
     /// <summary>
     /// A scene.
     /// </summary>
@@ -69,6 +71,44 @@ namespace SiliconStudio.Xenko.Engine
         [DataMemberIgnore]
         public TrackingCollection<Scene> Children { get; }
 
+        /// <summary>
+        /// An offset applied to all entities of the scene relative to it's parent scene.
+        /// </summary>
+        public Vector3 Offset;
+
+        /// <summary>
+        /// The absolute transform applied to all entities of the scene.
+        /// </summary>
+        /// <remarks>This field is overwritten by the transform processor each frame.</remarks>
+        public Matrix WorldMatrix;
+
+        /// <summary>
+        /// Updates the world transform of the scene.
+        /// </summary>
+        public void UpdateWorldMatrix()
+        {
+            UpdateWorldMatrixInternal(true);
+        }
+
+        internal void UpdateWorldMatrixInternal(bool isRecursive)
+        {
+            if (parent != null)
+            {
+                if (isRecursive)
+                {
+                    parent.UpdateWorldMatrixInternal(true);
+                }
+
+                WorldMatrix = parent.WorldMatrix;
+            }
+            else
+            {
+                WorldMatrix = Matrix.Identity;
+            }
+
+            WorldMatrix.TranslationVector += Offset;
+        }
+
         public override string ToString()
         {
             return $"Scene {Name}";
@@ -122,6 +162,7 @@ namespace SiliconStudio.Xenko.Engine
 
         private void AddItem(Entity item)
         {
+            // Root entity in another scene, or child of another entity
             if (item.Scene != null)
                 throw new InvalidOperationException("This entity already has a scene. Detach it first.");
 
@@ -130,7 +171,7 @@ namespace SiliconStudio.Xenko.Engine
 
         private void RemoveItem(Entity item)
         {
-            if (item.Scene != this)
+            if (item.scene != this)
                 throw new InvalidOperationException("This entity's scene is not the expected value.");
 
             item.scene = null;

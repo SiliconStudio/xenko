@@ -16,13 +16,13 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return typeof(double).CastToNumericType(value);
+            return System.Convert.ChangeType(value, typeof(double));
         }
 
         /// <inheritdoc/>
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return targetType.IsNumeric() ? targetType.CastToNumericType(value) : value;
+            return targetType.IsNumeric() ? System.Convert.ChangeType(value, targetType) : value;
         }
     }
 }

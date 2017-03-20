@@ -42,7 +42,6 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
         /// <value>The UV scale</value>
         /// <userdoc>The scale to apply to the UV coordinates of the shape. This can be used to tile a texture on it.</userdoc>
         [DataMember(520)]
-        [DefaultValue(1.0f)]
         [Display("UV Scale")]
         public Vector2 UvScale { get; set; }
 

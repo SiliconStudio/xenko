@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Presentation.Extensions
 {
@@ -23,7 +22,7 @@ namespace SiliconStudio.Presentation.Extensions
                     result.Add((double)v);
                 else
                 {
-                    var unboxed = (double)typeof(double).CastToNumericType(v);
+                    var unboxed = (double)System.Convert.ChangeType(v, typeof(double));
                     if (!double.IsNaN(unboxed))
                         result.Add(unboxed);
                 }

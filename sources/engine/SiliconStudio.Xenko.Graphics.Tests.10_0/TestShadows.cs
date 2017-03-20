@@ -371,7 +371,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 lightEntity1 = GenerateSphere();
                 lightEntity1.Add(lightComponent);
                 lightEntity1.Get<ModelComponent>().IsShadowCaster = false;
-                lightEntity1.Get<ModelComponent>().IsShadowReceiver = false;
                 lightEntity1.Get<ModelComponent>().Materials[0] = Material.New(GraphicsDevice, new MaterialDescriptor
                 {
                     Attributes =

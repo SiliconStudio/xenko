@@ -6,4 +6,22 @@
 // and re-save the associated .xkfx.
 // </auto-generated>
 
-// Nothing to generate
+using System;
+using SiliconStudio.Core;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Core.Mathematics;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
+
+namespace SiliconStudio.Xenko.Rendering.Skyboxes
+{
+    public static partial class SkyboxShaderKeys
+    {
+        public static readonly ValueParameterKey<float> Intensity = ParameterKeys.NewValue<float>();
+        public static readonly ObjectParameterKey<Texture> CubeMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<Matrix> ProjectionInverse = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> ViewInverse = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> SkyMatrix = ParameterKeys.NewValue<Matrix>();
+    }
+}

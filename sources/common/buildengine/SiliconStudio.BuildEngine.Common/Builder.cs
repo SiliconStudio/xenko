@@ -669,7 +669,7 @@ namespace SiliconStudio.BuildEngine
             var objectDatabase = Builder.ObjectDatabase;
 
             // Check current database version, and erase it if too old
-            int currentVersion = 0;
+            int currentVersion = ExpectedVersion;
             var versionFile = Path.Combine(VirtualFileSystem.GetAbsolutePath(VirtualFileSystem.ApplicationDatabasePath), "version");
             if (File.Exists(versionFile))
             {
@@ -681,7 +681,18 @@ namespace SiliconStudio.BuildEngine
                 catch (Exception e)
                 {
                     e.Ignore();
+                    currentVersion = 0;
                 }
+            }
+
+            // Prepare data base directories
+            ContentManager.GetFileProvider = () => MicrothreadLocalDatabases.DatabaseFileProvider;
+            var databasePathSplits = VirtualFileSystem.ApplicationDatabasePath.Split('/');
+            var accumulatorPath = "/";
+            foreach (var pathPart in databasePathSplits.Where(x => x != ""))
+            {
+                accumulatorPath += pathPart + "/";
+                VirtualFileSystem.CreateDirectory(accumulatorPath);
             }
 
             if (currentVersion != ExpectedVersion)
@@ -707,18 +718,6 @@ namespace SiliconStudio.BuildEngine
 
                 // Create directory
                 File.WriteAllText(versionFile, ExpectedVersion.ToString(CultureInfo.InvariantCulture));
-            }
-
-            // Prepare data base directories
-            ContentManager.GetFileProvider = () => MicrothreadLocalDatabases.DatabaseFileProvider;
-            var databasePathSplits = VirtualFileSystem.ApplicationDatabasePath.Split('/');
-            var accumulatorPath = "/";
-            foreach (var pathPart in databasePathSplits.Where(x => x != ""))
-            {
-                accumulatorPath += pathPart + "/";
-                VirtualFileSystem.CreateDirectory(accumulatorPath);
-
-                accumulatorPath += "";
             }
         }
 

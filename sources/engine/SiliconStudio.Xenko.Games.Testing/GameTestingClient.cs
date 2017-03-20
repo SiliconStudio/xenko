@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Games.Testing
             if (gamePath == null) throw new ArgumentNullException(nameof(gamePath));
 
             xenkoDir = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
-            if(xenkoDir.IsNullOrEmpty()) throw new NullReferenceException("Could not find SiliconStudioXenkoDir, make sure the environment variable is set.");
+            if(string.IsNullOrEmpty(xenkoDir)) throw new NullReferenceException("Could not find SiliconStudioXenkoDir, make sure the environment variable is set.");
 
             gameName = Path.GetFileNameWithoutExtension(gamePath);
             switch (platform)

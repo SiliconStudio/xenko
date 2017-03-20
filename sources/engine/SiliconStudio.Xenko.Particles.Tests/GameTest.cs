@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
         //        const int ParticleTestVersion = 11;  // Merged version between version 8 and 10
         //        const int ParticleTestVersion = 12; // NUnit3 switch
         //        const int ParticleTestVersion = 13; // Bug fix where soft edge particles don't render and the gold image was mistaken too
-        const int ParticleTestVersion = 113; //  Changed to avoid collisions with 1.9
+        const int ParticleTestVersion = 114; //  Changed to avoid collisions with 1.9
 
         /// <summary>
         ///  The <see cref="IndividualTestVersion"/> can be defined per test when only one of them is affected

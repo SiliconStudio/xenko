@@ -2,6 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <!-- Do not compile unit test when packaging -->
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioSkipUnitTests)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
     
     <SiliconStudioUnitTest>true</SiliconStudioUnitTest>
@@ -63,7 +64,7 @@
           <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>
         </Reference>
         <Reference Include="nunit.core.interfaces">
-          <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.core.interfaces.dll</HintPath>
+          <HintPath>$(SiliconStudioDependenciesDir)NUnit\addins\nunit.core.interfaces.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>

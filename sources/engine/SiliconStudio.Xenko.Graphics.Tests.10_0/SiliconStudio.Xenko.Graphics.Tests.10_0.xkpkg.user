@@ -35,6 +35,7 @@ Settings:
             CamNearClipPlane: 0.1
             CamFarClipPlane: 1000.0
             CamAspectRatio: 1.77777779
+            CamMoveSpeed: 3.0
             TranslationSnapActive: false
             TranslationSnapValue: 1.0
             RotationSnapActive: false
@@ -55,6 +56,8 @@ Settings:
                 - Transform
             NavigationVisible: false
             NavigationWireframes: false
+            LightProbeWireframe: false
+            SceneLoaded: false
         cc705cbb-f71d-4a11-bdcd-13549387203b:
             CamPosition: {X: 4.0, Y: 4.0, Z: 4.0}
             CamPitchYaw: {X: -0.5235988, Y: 0.7853982}
@@ -64,6 +67,7 @@ Settings:
             CamNearClipPlane: 0.1
             CamFarClipPlane: 1000.0
             CamAspectRatio: 1.77777779
+            CamMoveSpeed: 3.0
             TranslationSnapActive: false
             TranslationSnapValue: 1.0
             RotationSnapActive: false
@@ -97,15 +101,18 @@ Settings:
                 - Transform
             NavigationVisible: false
             NavigationWireframes: false
+            LightProbeWireframe: false
+            SceneLoaded: false
         6a8212fb-d3f3-4e1d-84be-67aca35be26e:
-            CamPosition: {X: -7.33975029, Y: 24.64952, Z: -0.556150258}
-            CamPitchYaw: {X: 1.33612084, Y: 39.3457947}
+            CamPosition: {X: 31.032938, Y: -14.8659925, Z: -34.51074}
+            CamPitchYaw: {X: -0.00113039534, Y: 33.9026451}
             CamProjection: Perspective
             CamVerticalFieldOfView: 45.0
             CamOrthographicSize: 10.0
             CamNearClipPlane: 0.1
             CamFarClipPlane: 1000.0
             CamAspectRatio: 1.77777779
+            CamMoveSpeed: 3.0
             TranslationSnapActive: false
             TranslationSnapValue: 1.0
             RotationSnapActive: false
@@ -127,3 +134,38 @@ Settings:
                 - Transform
             NavigationVisible: false
             NavigationWireframes: false
+            LightProbeWireframe: false
+            SceneLoaded: false
+        6e4549c1-7159-432a-ac4c-6b3cca4aad90:
+            CamPosition: {X: 2.22243142, Y: 2.29395437, Z: 2.70520329}
+            CamPitchYaw: {X: -0.274660349, Y: 0.7460392}
+            CamProjection: Perspective
+            CamVerticalFieldOfView: 45.0
+            CamOrthographicSize: 10.0
+            CamNearClipPlane: 0.1
+            CamFarClipPlane: 1000.0
+            CamAspectRatio: 1.77777779
+            CamMoveSpeed: 3.0
+            TranslationSnapActive: false
+            TranslationSnapValue: 1.0
+            RotationSnapActive: false
+            RotationSnapValue: 22.5
+            ScaleSnapActive: false
+            ScaleSnapValue: 1.1
+            SceneUnit: 1.0
+            SelectionMaskVisible: true
+            GridVisible: true
+            GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+            CameraPreviewVisible: true
+            RenderMode: Lighting
+            ActiveStream: 
+            TransformationGizmoSize: 1.0
+            ComponentGizmoSize: 1.0
+            FixedSizeGizmos: false
+            HiddenGizmos:
+                - Physics
+                - Transform
+            NavigationVisible: false
+            NavigationWireframes: false
+            LightProbeWireframe: false
+            SceneLoaded: false

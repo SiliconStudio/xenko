@@ -5,8 +5,9 @@ using System;
 
 namespace SiliconStudio.Xenko.Physics
 {
-    public interface IColliderShapeDesc : IComparable
+    public interface IColliderShapeDesc
     {
+        bool Match(object obj);
     }
 
     public interface IAssetColliderShapeDesc : IColliderShapeDesc

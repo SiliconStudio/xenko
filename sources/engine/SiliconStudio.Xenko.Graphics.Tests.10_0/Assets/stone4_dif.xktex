@@ -1,7 +1,8 @@
 !Texture
 Id: 07d38870-10a5-4be6-bb61-0e31226b9f46
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.10.0-alpha01}
 Tags: []
-Source: ../../../../samples/Graphics/MaterialSample/Resources/stone4_dif.jpeg
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Source: ../Resources/stone4_dif.jpeg
 Format: Color32Bits
+Type: !ColorTextureType
+    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

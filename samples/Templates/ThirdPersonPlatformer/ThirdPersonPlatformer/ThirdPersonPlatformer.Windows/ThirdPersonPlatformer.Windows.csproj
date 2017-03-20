@@ -100,9 +100,9 @@
     <Reference Condition="'$(SiliconStudioRuntime)' == ''" Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ThirdPersonPlatformer.Game\ThirdPersonPlatformer.Game.csproj">
+    <ProjectReference Include="..\..\..\TopDownRPG\TopDownRPG\TopDownRPG.Game\TopDownRPG.Game.csproj">
       <Project>{92b5077f-3d0d-4043-a3b4-25a32c9d64aa}</Project>
-      <Name>ThirdPersonPlatformer.Game</Name>
+      <Name>TopDownRPG.Game</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

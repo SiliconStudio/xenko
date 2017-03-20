@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
         {
             var asset = (SpriteStudioModelAsset)assetItem.Asset;
             var gameSettingsAsset = context.GetGameSettingsAsset();
-            var renderingSettings = gameSettingsAsset.Get<RenderingSettings>(context.Platform);
+            var renderingSettings = gameSettingsAsset.GetOrCreate<RenderingSettings>(context.Platform);
             var colorSpace = renderingSettings.ColorSpace;
 
             var cells = new List<SpriteStudioCell>();
@@ -37,12 +37,14 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                 var textureAsset = new TextureAsset
                 {
                     Id = AssetId.Empty, // CAUTION: It is important to use an empty GUID here, as we don't want the command to be rebuilt (by default, a new asset is creating a new guid)
-                    Alpha = AlphaFormat.Auto,
                     Format = TextureFormat.Color32Bits,
                     GenerateMipmaps = true,
-                    PremultiplyAlpha = true,
-                    ColorSpace = TextureColorSpace.Auto,
-                    Hint = TextureHint.Color
+                    Type = new ColorTextureType
+                    {
+                        Alpha = AlphaFormat.Auto,
+                        PremultiplyAlpha = true,
+                        UseSRgbSampling = true,
+                    }
                 };
 
                 result.BuildSteps.Add(
@@ -50,7 +52,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                         targetUrlInStorage + texIndex,
                         new TextureConvertParameters(texture, textureAsset, context.Platform,
                             context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile,
-                            gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace)));
+                            gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace)));
 
                 asset.BuildTextures.Add(targetUrlInStorage + texIndex);
 

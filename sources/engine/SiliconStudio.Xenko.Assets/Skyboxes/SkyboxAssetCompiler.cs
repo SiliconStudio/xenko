@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             var colorSpace = context.GetColorSpace();
 
             // build the textures for windows (needed for skybox compilation)
-            foreach (var dependency in asset.Model.GetDependencies())
+            foreach (var dependency in asset.GetDependencies())
             {
                 var dependencyItem = assetItem.Package.Assets.Find(dependency.Id);
                 if (dependencyItem?.Asset is TextureAsset)
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                     var textureUrl = SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(dependencyItem.Location);
 
                     var gameSettingsAsset = context.GetGameSettingsAsset();
-                    var renderingSettings = gameSettingsAsset.Get<RenderingSettings>(context.Platform);
+                    var renderingSettings = gameSettingsAsset.GetOrCreate<RenderingSettings>(context.Platform);
 
                     // Select the best graphics profile
                     var graphicsProfile = renderingSettings.DefaultGraphicsProfile >= GraphicsProfile.Level_10_0 ? renderingSettings.DefaultGraphicsProfile : GraphicsProfile.Level_10_0;
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                     var textureAssetItem = new AssetItem(textureUrl, textureAsset);
 
                     // Create and add the texture command.
-                    var textureParameters = new TextureConvertParameters(assetSource, textureAsset, PlatformType.Windows, GraphicsPlatform.Direct3D11, graphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
+                    var textureParameters = new TextureConvertParameters(assetSource, textureAsset, PlatformType.Windows, GraphicsPlatform.Direct3D11, graphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);
                     result.BuildSteps.Add(new AssetBuildStep(textureAssetItem) { new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureParameters) });
                 }
             }
@@ -73,13 +73,10 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             /// <inheritdoc/>
             protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                if (Parameters.Model != null)
+                foreach (var dependency in Parameters.GetDependencies())
                 {
-                    foreach (var dependency in Parameters.Model.GetDependencies())
-                    {
-                        // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to compute the skybox
-                        yield return new ObjectUrl(UrlType.Content, SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(dependency.Location));
-                    }
+                    // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to compute the skybox
+                    yield return new ObjectUrl(UrlType.Content, SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(dependency.Location));
                 }
             }
 
