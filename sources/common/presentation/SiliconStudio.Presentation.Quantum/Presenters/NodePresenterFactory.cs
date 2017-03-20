@@ -9,15 +9,19 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
     {
         [NotNull] private readonly INodeBuilder nodeBuilder;
 
-        public NodePresenterFactory([NotNull] INodeBuilder nodeBuilder, [NotNull] IReadOnlyCollection<INodePresenterCommand> availableCommands)
+        public NodePresenterFactory([NotNull] INodeBuilder nodeBuilder, [NotNull] IReadOnlyCollection<INodePresenterCommand> availableCommands, [NotNull] IReadOnlyCollection<INodePresenterUpdater> availableUpdaters)
         {
             this.nodeBuilder = nodeBuilder;
             if (nodeBuilder == null) throw new ArgumentNullException(nameof(nodeBuilder));
             if (availableCommands == null) throw new ArgumentNullException(nameof(availableCommands));
+            if (availableUpdaters == null) throw new ArgumentNullException(nameof(availableUpdaters));
             AvailableCommands = availableCommands;
+            AvailableUpdaters = availableUpdaters;
         }
 
         public IReadOnlyCollection<INodePresenterCommand> AvailableCommands { get; }
+
+        public IReadOnlyCollection<INodePresenterUpdater> AvailableUpdaters { get; }
 
         public bool IsPrimitiveType(Type type)
         {
@@ -30,6 +34,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
             var rootPresenter = CreateRootPresenter(propertyProvider, rootNode);
             CreateChildren(rootPresenter, rootNode, propertyProvider);
+            RunUpdaters(rootPresenter);
             return rootPresenter;
         }
 
@@ -93,6 +98,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
                         CreateChildren(memberPresenter, member.Target, propertyProvider);
                     }
                     parentPresenter.AddChild(memberPresenter);
+                    RunUpdaters(memberPresenter);
                 }
             }
         }
@@ -113,6 +119,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
                                 CreateChildren(itemPresenter, item.TargetNode, propertyProvider);
                             }
                             parentPresenter.AddChild(itemPresenter);
+                            RunUpdaters(itemPresenter);
                         }
                     }
                 }
@@ -124,9 +131,18 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
                         {
                             var itemPresenter = CreateItem(propertyProvider, parentPresenter, objectNode, item);
                             parentPresenter.AddChild(itemPresenter);
+                            RunUpdaters(itemPresenter);
                         }
                     }
                 }
+            }
+        }
+
+        private void RunUpdaters(IInitializingNodePresenter memberPresenter)
+        {
+            foreach (var updater in AvailableUpdaters)
+            {
+                updater.UpdateNode(memberPresenter);
             }
         }
     }

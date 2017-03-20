@@ -22,7 +22,7 @@ namespace SiliconStudio.Presentation.Quantum
         public GraphViewModelService([NotNull] NodeContainer nodeContainer)
         {
             if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
-            NodePresenterFactory = new NodePresenterFactory(nodeContainer.NodeBuilder, AvailableCommands);
+            NodePresenterFactory = new NodePresenterFactory(nodeContainer.NodeBuilder, AvailableCommands, AvailableUpdaters);
         }
 
         public INodePresenterFactory NodePresenterFactory { get; set; }
@@ -57,14 +57,6 @@ namespace SiliconStudio.Presentation.Quantum
         public void NotifyNodeInitialized(SingleNodeViewModel node)
         {
             foreach (var updater in propertyNodeUpdaters)
-            {
-                updater.UpdateNode(node);
-            }
-        }
-
-        internal void NotifyNodePresenterChanged(INodePresenter node)
-        {
-            foreach (var updater in AvailableUpdaters)
             {
                 updater.UpdateNode(node);
             }
