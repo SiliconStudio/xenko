@@ -5,9 +5,9 @@ using SiliconStudio.Quantum.References;
 namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
-    /// Implementation of <see cref="IPropertiesProviderViewModel"/> with a given <see cref="IContentNode"/>.
+    /// Implementation of <see cref="IPropertyProviderViewModel"/> with a given <see cref="IContentNode"/>.
     /// </summary>
-    public class SinglePropertyProvider : IPropertiesProviderViewModel
+    public class SinglePropertyProvider : IPropertyProviderViewModel
     {
         private readonly IObjectNode rootNode;
 
@@ -25,8 +25,8 @@ namespace SiliconStudio.Presentation.Quantum
 
 
         /// <inheritdoc/>
-        bool IPropertiesProviderViewModel.ShouldConstructMember(IMemberNode member) => true;
+        bool IPropertyProviderViewModel.ShouldConstructMember(IMemberNode member) => true;
 
-        bool IPropertiesProviderViewModel.ShouldConstructItem(IObjectNode collection, Index index) => true;
+        bool IPropertyProviderViewModel.ShouldConstructItem(IObjectNode collection, Index index) => true;
     }
 }

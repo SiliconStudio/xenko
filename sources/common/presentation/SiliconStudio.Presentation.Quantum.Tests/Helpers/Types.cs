@@ -8,11 +8,11 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
 {
     public static class Types
     {
-        public class TestPropertiesProvider : IPropertiesProviderViewModel
+        public class TestPropertyProvider : IPropertyProviderViewModel
         {
             private readonly IObjectNode rootNode;
 
-            public TestPropertiesProvider(IObjectNode rootNode)
+            public TestPropertyProvider(IObjectNode rootNode)
             {
                 this.rootNode = rootNode;
             }
@@ -23,9 +23,9 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
                 return rootNode;
             }
 
-            bool IPropertiesProviderViewModel.ShouldConstructMember(IMemberNode member) => true;
+            bool IPropertyProviderViewModel.ShouldConstructMember(IMemberNode member) => true;
 
-            bool IPropertiesProviderViewModel.ShouldConstructItem(IObjectNode collection, Index index) => true;
+            bool IPropertyProviderViewModel.ShouldConstructItem(IObjectNode collection, Index index) => true;
         }
 
         public class SimpleObject

@@ -37,7 +37,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         private readonly HashSet<string> combinedNodeChanges = new HashSet<string>();
         private readonly List<GraphViewModel> children = new List<GraphViewModel>();
-        private readonly Dictionary<INodePresenter, IPropertiesProviderViewModel> propertiesProviderMap = new Dictionary<INodePresenter, IPropertiesProviderViewModel>();
+        private readonly Dictionary<INodePresenter, IPropertyProviderViewModel> propertiesProviderMap = new Dictionary<INodePresenter, IPropertyProviderViewModel>();
         private INodeViewModel rootNode;
 
         private Func<CombinedNodeViewModel, object, string> formatCombinedUpdateMessage = (node, value) => $"Update property '{node.Name}'";
@@ -62,11 +62,11 @@ namespace SiliconStudio.Presentation.Quantum
         ///// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="GraphViewModelService"/> to use for this view model.</param>
         ///// <param name="propertyProvider">The object providing properties to display</param>
         ///// <param name="graphNode">The root node of the view model to generate.</param>
-        //private GraphViewModel(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider, IGraphNode graphNode)
+        //private GraphViewModel(IViewModelServiceProvider serviceProvider, IPropertyProviderViewModel propertyProvider, IGraphNode graphNode)
         //    : this(serviceProvider)
         //{
         //    if (graphNode == null) throw new ArgumentNullException(nameof(graphNode));
-        //    PropertiesProvider = propertyProvider;
+        //    PropertyProvider = propertyProvider;
         //    var node = GraphViewModelService.GraphNodeViewModelFactory(this, "Root", graphNode.IsPrimitive, graphNode, new GraphNodePath(graphNode), graphNode.Type, Index.Empty);
         //    RootNode = node;
         //    node.Initialize();
@@ -74,7 +74,7 @@ namespace SiliconStudio.Presentation.Quantum
         //    node.CheckConsistency();
         //}
 
-        private GraphViewModel(IViewModelServiceProvider serviceProvider, Type type, IEnumerable<Tuple<INodePresenter, IPropertiesProviderViewModel>> rootNodes)
+        private GraphViewModel(IViewModelServiceProvider serviceProvider, Type type, IEnumerable<Tuple<INodePresenter, IPropertyProviderViewModel>> rootNodes)
             : this(serviceProvider)
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
@@ -93,7 +93,7 @@ namespace SiliconStudio.Presentation.Quantum
             RootNode.Destroy();
         }
 
-        public static GraphViewModel Create(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider)
+        public static GraphViewModel Create(IViewModelServiceProvider serviceProvider, IPropertyProviderViewModel propertyProvider)
         {
             if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
             if (propertyProvider == null) throw new ArgumentNullException(nameof(propertyProvider));
@@ -110,13 +110,13 @@ namespace SiliconStudio.Presentation.Quantum
             return new GraphViewModel(serviceProvider, rootNode.Type, Tuple.Create(node, propertyProvider).Yield());
         }
 
-        public static GraphViewModel Create(IViewModelServiceProvider serviceProvider, IReadOnlyCollection<IPropertiesProviderViewModel> propertyProviders)
+        public static GraphViewModel Create(IViewModelServiceProvider serviceProvider, IReadOnlyCollection<IPropertyProviderViewModel> propertyProviders)
         {
             if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
             if (propertyProviders == null) throw new ArgumentNullException(nameof(propertyProviders));
             if (propertyProviders.Count == 0) throw new ArgumentException($@"{nameof(propertyProviders)} cannot be empty.", nameof(propertyProviders));
 
-            var rootNodes = new List<Tuple<INodePresenter, IPropertiesProviderViewModel>>();
+            var rootNodes = new List<Tuple<INodePresenter, IPropertyProviderViewModel>>();
             Type type = null;
             var factory = serviceProvider.Get<GraphViewModelService>().NodePresenterFactory;
             foreach (var propertyProvider in propertyProviders)
@@ -193,7 +193,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets the object providing properties for this view model.
         /// </summary>
         [Obsolete]
-        public IPropertiesProviderViewModel PropertiesProvider { get; }
+        public IPropertyProviderViewModel PropertyProvider { get; }
 
         /// <summary>
         /// Gets the <see cref="Logger"/> associated to this view model.
@@ -217,15 +217,15 @@ namespace SiliconStudio.Presentation.Quantum
         public event EventHandler<GraphViewModelNodeValueChanged> NodeValueChanged;
 
         /// <summary>
-        /// Retrieves the <see cref="IPropertiesProviderViewModel"/> corresponding to the given node presenter.
+        /// Retrieves the <see cref="IPropertyProviderViewModel"/> corresponding to the given node presenter.
         /// </summary>
         /// <param name="nodePresenter">The node presenter for which to retrieve the properties provider.</param>
         /// <returns>The properties provider of the given node presenter.</returns>
         [CanBeNull]
-        public IPropertiesProviderViewModel GetPropertyProvider([NotNull] INodePresenter nodePresenter)
+        public IPropertyProviderViewModel GetPropertyProvider([NotNull] INodePresenter nodePresenter)
         {
             if (nodePresenter == null) throw new ArgumentNullException(nameof(nodePresenter));
-            IPropertiesProviderViewModel result;
+            IPropertyProviderViewModel result;
             propertiesProviderMap.TryGetValue(nodePresenter.Root, out result);
             return result;
         }
