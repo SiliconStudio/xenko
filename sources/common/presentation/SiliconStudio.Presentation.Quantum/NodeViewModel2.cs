@@ -152,6 +152,10 @@ namespace SiliconStudio.Presentation.Quantum
                 // TODO: check for discrepencies in the display attribute name
                 if (displayAttribute != null)
                     DisplayName = displayAttribute.Name;
+
+                // Display this node if at least one presenter is visible
+                if (nodePresenter.IsVisible)
+                    IsVisible = true;
             }
 
             parent?.AddChild(this);

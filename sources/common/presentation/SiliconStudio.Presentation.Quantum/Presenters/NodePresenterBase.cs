@@ -27,7 +27,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public INodePresenter Root => Parent?.Root ?? Parent ?? this;
 
-        public INodePresenter Parent { get; }
+        public INodePresenter Parent { get; private set; }
 
         public IReadOnlyList<INodePresenter> Children => children;
 
@@ -36,6 +36,9 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public abstract Type Type { get; }
         public abstract bool IsPrimitive { get; }
         public abstract bool IsEnumerable { get; }
+
+        public bool IsVisible { get; set; } = true;
+
         public abstract Index Index { get; }
         public abstract ITypeDescriptor Descriptor { get; }
         public abstract int? Order { get; }
@@ -59,6 +62,19 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public abstract void UpdateItem(object newValue, Index index);
 
         public abstract NodeAccessor GetNodeAccessor();
+
+        public void ChangeParent(INodePresenter newParent)
+        {
+            if (newParent == null) throw new ArgumentNullException(nameof(newParent));
+
+            var parent = (NodePresenterBase)Parent;
+            parent?.children.Remove(this);
+
+            parent = (NodePresenterBase)newParent;
+            parent.children.Add(this);
+
+            Parent = newParent;
+        }
 
         protected void Refresh()
         {

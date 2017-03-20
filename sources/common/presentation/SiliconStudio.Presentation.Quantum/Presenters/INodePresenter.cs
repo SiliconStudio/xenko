@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 
@@ -26,6 +27,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         bool IsEnumerable { get; }
 
+        bool IsVisible { get; set; }
+
         Index Index { get; }
 
         ITypeDescriptor Descriptor { get; }
@@ -35,8 +38,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         object Value { get; }
 
         string CombineKey { get; }
-
-        NodeAccessor GetNodeAccessor();
 
         event EventHandler<ValueChangingEventArgs> ValueChanging;
 
@@ -52,5 +53,9 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         // TODO: this should probably be removed, UpdateValue should be called on the corresponding child node presenter itself
         void UpdateItem(object newValue, Index index);
+
+        NodeAccessor GetNodeAccessor();
+
+        void ChangeParent([NotNull] INodePresenter newParent);
     }
 }
