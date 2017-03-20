@@ -14,25 +14,9 @@ namespace SiliconStudio.Assets.Analysis
     {
         private readonly BuildDependencyManager buildDependencyManager;
         private readonly ConcurrentDictionary<AssetId, BuildAssetNode> dependencyLinks = new ConcurrentDictionary<AssetId, BuildAssetNode>();
-
         public readonly AssetItem AssetItem;
 
-        private long version;
-
-        /// <summary>
-        /// Gets the asset version incremental counter, increased everytime the asset is edited.
-        /// </summary>
-        public long Version
-        {
-            get
-            {
-                return Interlocked.Read(ref version);
-            }
-            set
-            {
-                Interlocked.Exchange(ref version, value);
-            }
-        }
+        private long version = -1;
 
         public ICollection<BuildAssetNode> DependencyNodes => dependencyLinks.Values;
 
@@ -54,6 +38,9 @@ namespace SiliconStudio.Assets.Analysis
             {
                 typesToFilterOut.Add(type);
             }
+
+            var assetVersion = AssetItem.Version;
+            if (Interlocked.Exchange(ref version, assetVersion) == assetVersion) return; //same version, skip analysis, do not clear links
 
             dependencyLinks.Clear();
 

@@ -24,6 +24,16 @@ namespace SiliconStudio.Assets.Compiler
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="addedBuildSteps">A local cache, created at the first prepare.</param>
+        /// <param name="finalResult">Internal steps are added to this final result</param>
+        /// <param name="context"></param>
+        /// <param name="assetItem"></param>
+        /// <param name="filterOutTypes"></param>
+        /// <param name="parentBuildStep"></param>
+        /// <param name="dependencyType"></param>
         public void Prepare(Dictionary<AssetId, BuildStep> addedBuildSteps, AssetCompilerResult finalResult, AssetCompilerContext context, AssetItem assetItem, HashSet<Type> filterOutTypes, BuildStep parentBuildStep = null, 
             BuildDependencyType dependencyType = BuildDependencyType.Runtime)
         {
@@ -31,6 +41,7 @@ namespace SiliconStudio.Assets.Compiler
 
             assetNode.Analyze(context, filterOutTypes);
 
+            //We want to avoid repeating steps, so we use the local cache to check if this compile command already has the step required first
             BuildStep buildStep;
             var inCache = true;
             if (!addedBuildSteps.TryGetValue(assetItem.Id, out buildStep))
@@ -49,10 +60,11 @@ namespace SiliconStudio.Assets.Compiler
                 inCache = false;
             }
 
+            //Go thru the dependencies of the node and prepare them as well
             foreach (var dependencyNode in assetNode.DependencyNodes)
             {
-                if ((dependencyNode.DependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent ||
-                    (dependencyNode.DependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime)
+                if ((dependencyNode.DependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent || //only if content is required Content.Load
+                    (dependencyNode.DependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime) //or the asset is required anyway at runtime
                 {
                     Prepare(addedBuildSteps, finalResult, context, dependencyNode.AssetItem, filterOutTypes, buildStep, dependencyNode.DependencyType);
                     if (finalResult.HasErrors)
@@ -62,16 +74,16 @@ namespace SiliconStudio.Assets.Compiler
                 }
             }
 
-            assetNode.Version = assetItem.Version;
-
-            if ((dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent ||
-                (dependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime)
+            //Finally link the steps together, this uses low level build engine primitive and routines to make sure dependencies are compiled
+            if ((dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent || //only if content is required Content.Load
+                (dependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime) //or the asset is required anyway at runtime
             {
-                if (!inCache)
+                if (!inCache)  //skip adding again the step if it was already in the final step
                 {
                     finalResult.BuildSteps.Add(buildStep);
                 }
 
+                //link
                 if (parentBuildStep != null)
                     BuildStep.LinkBuildSteps(buildStep, parentBuildStep);
             }
