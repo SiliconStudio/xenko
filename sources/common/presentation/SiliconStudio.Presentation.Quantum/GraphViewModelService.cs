@@ -20,7 +20,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         public GraphViewModelService()
         {
-            GraphNodeViewModelFactory = GraphViewModel.DefaultGraphNodeViewModelFactory;
             CombinedNodeViewModelFactory = GraphViewModel.DefaultCombinedNodeViewModelFactory;
             NodePresenterFactory = new NodePresenterFactory(AvailableCommands);
         }
@@ -30,12 +29,6 @@ namespace SiliconStudio.Presentation.Quantum
         public INodeViewModelFactory NodeViewModelFactory { get; set; }
 
         public List<INodePresenterCommand> AvailableCommands { get; } = new List<INodePresenterCommand>();
-
-        /// <summary>
-        /// Gets or sets the graph node factory.
-        /// </summary>
-        [Obsolete]
-        public CreateNodeDelegate GraphNodeViewModelFactory { get; set; }
 
         /// <summary>
         /// Gets or sets the combined node factory.

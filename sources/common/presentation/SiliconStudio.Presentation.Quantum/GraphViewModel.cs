@@ -15,19 +15,6 @@ using SiliconStudio.Quantum;
 namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
-    /// A factory that creates an <see cref="GraphNodeViewModel"/> from a set of parameters.
-    /// </summary>
-    /// <param name="viewModel">The <see cref="GraphViewModel"/> that owns the new <see cref="GraphNodeViewModel"/>.</param>
-    /// <param name="baseName">The base name of this node. Can be null if <see paramref="index"/> is not. If so a name will be automatically generated from the index.</param>
-    /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
-    /// <param name="modelNode">The model node bound to the new <see cref="GraphNodeViewModel"/>.</param>
-    /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given node.</param>
-    /// <param name="contentType">The type of content contained by the new <see cref="GraphNodeViewModel"/>.</param>
-    /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise.</param>
-    /// <returns>A new instance of <see cref="GraphNodeViewModel"/> corresponding to the given parameters.</returns>
-    public delegate GraphNodeViewModel CreateNodeDelegate(GraphViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index);
-
-    /// <summary>
     /// A factory that creates a <see cref="CombinedNodeViewModel"/> from a set of parameters.
     /// </summary>
     /// <param name="viewModel">The <see cref="GraphViewModel"/> that owns the new <see cref="GraphNodeViewModel"/>.</param>
@@ -55,7 +42,6 @@ namespace SiliconStudio.Presentation.Quantum
 
         private Func<CombinedNodeViewModel, object, string> formatCombinedUpdateMessage = (node, value) => $"Update property '{node.Name}'";
 
-        public static readonly CreateNodeDelegate DefaultGraphNodeViewModelFactory = DefaultCreateNode;
         public static readonly CreateCombinedNodeDelegate DefaultCombinedNodeViewModelFactory = DefaultCreateCombinedNode;
 
         /// <summary>
@@ -160,7 +146,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (viewModels == null) throw new ArgumentNullException(nameof(viewModels));
             var combinedViewModel = new GraphViewModel(serviceProvider);
 
-            var rootNodes = new List<GraphNodeViewModel>();
+            var rootNodes = new List<NodeViewModel2>();
             foreach (var viewModel in viewModels)
             {
                 if (!(viewModel.RootNode is SingleNodeViewModel))
@@ -168,7 +154,7 @@ namespace SiliconStudio.Presentation.Quantum
 
                 viewModel.Parent = combinedViewModel;
                 combinedViewModel.children.Add(viewModel);
-                var rootNode = (GraphNodeViewModel)viewModel.RootNode;
+                var rootNode = (NodeViewModel2)viewModel.RootNode;
                 rootNodes.Add(rootNode);
             }
 
@@ -283,12 +269,6 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
             combinedNodeChanges.Clear();
-        }
-
-        private static GraphNodeViewModel DefaultCreateNode(GraphViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index)
-        {
-            var node = new GraphNodeViewModel(viewModel, contentType, baseName, isPrimitive, modelNode, graphNodePath, index);
-            return node;
         }
 
         private static CombinedNodeViewModel DefaultCreateCombinedNode(GraphViewModel ownerViewModel, string baseName, Type contentType, IEnumerable<SingleNodeViewModel> combinedNodes, Index index)
