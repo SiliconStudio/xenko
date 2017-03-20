@@ -21,6 +21,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             if (member == null) throw new ArgumentNullException(nameof(member));
             Member = member;
             Name = member.Name;
+            DisplayName = Name;
 
             memberAttributes.AddRange(TypeDescriptorFactory.Default.AttributeRegistry.GetAttributes(member.MemberDescriptor.MemberInfo));
 
@@ -39,7 +40,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             Member.Changed -= OnMemberChanged;
         }
 
-        public override string Name { get; }
+        public sealed override string Name { get; }
 
         public sealed override List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
 

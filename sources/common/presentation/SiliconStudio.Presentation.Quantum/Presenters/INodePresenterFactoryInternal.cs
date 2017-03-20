@@ -5,7 +5,7 @@ using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
 {
-    public interface INodePresenterFactoryInternal
+    public interface INodePresenterFactoryInternal : INodePresenterFactory
     {
         IReadOnlyCollection<INodePresenterCommand> AvailableCommands { get; }
 

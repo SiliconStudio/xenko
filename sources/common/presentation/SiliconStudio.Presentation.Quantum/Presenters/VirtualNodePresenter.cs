@@ -11,6 +11,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         [NotNull] private readonly Func<object> getter;
         private readonly Action<object> setter;
         private readonly List<Attribute> memberAttributes = new List<Attribute>();
+        private IGraphNode associatedNode;
 
         public VirtualNodePresenter([NotNull] INodePresenterFactoryInternal factory, IPropertyProviderViewModel propertyProvider, [NotNull] INodePresenter parent, string name, Type type, int? order, [NotNull] Func<object> getter, Action<object> setter)
             : base(factory, propertyProvider, parent)
@@ -21,6 +22,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             if (parent == null) throw new ArgumentNullException(nameof(parent));
             if (getter == null) throw new ArgumentNullException(nameof(getter));
             Name = name;
+            DisplayName = Name;
             Type = type;
             Order = order;
             Descriptor = TypeDescriptorFactory.Default.Find(type);
@@ -28,7 +30,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             AttachCommands();
         }
 
-        public override string Name { get; }
+        public sealed override string Name { get; }
 
         public sealed override List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
 
@@ -53,6 +55,32 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public override event EventHandler<ValueChangingEventArgs> ValueChanging;
 
         public override event EventHandler<ValueChangedEventArgs> ValueChanged;
+
+        /// <summary>
+        /// Registers an <see cref="IGraphNode"/> object to this virtual node so when the node vakye is modified, it will raise the
+        /// <see cref="ValueChanging"/> and <see cref="ValueChanged"/> events.
+        /// </summary>
+        /// <param name="node">The node to register.</param>
+        /// <remarks>Events subscriptions are cleaned when this virtual node is disposed.</remarks>
+        public void RegisterAssociatedNode(IGraphNode node)
+        {
+            if (associatedNode != null)
+                throw new InvalidOperationException("A content has already been registered to this virtual node");
+
+            associatedNode = node;
+            associatedNode.RegisterChanging(AssociatedNodeChanging);
+            associatedNode.RegisterChanged(AssociatedNodeChanged);
+        }
+
+        public override void Dispose()
+        {
+            if (associatedNode != null)
+            {
+                associatedNode.UnregisterChanging(AssociatedNodeChanging);
+                associatedNode.UnregisterChanged(AssociatedNodeChanged);
+            }
+            base.Dispose();
+        }
 
         public override void UpdateValue(object newValue)
         {
@@ -93,6 +121,17 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public override NodeAccessor GetNodeAccessor()
         {
             return default(NodeAccessor);
+        }
+
+        private void AssociatedNodeChanging(object sender, INodeChangeEventArgs e)
+        {
+            ValueChanging?.Invoke(this, new ValueChangingEventArgs(e.NewValue));
+        }
+
+        private void AssociatedNodeChanged(object sender, INodeChangeEventArgs e)
+        {
+            Refresh();
+            ValueChanged?.Invoke(this, new ValueChangedEventArgs(e.OldValue));
         }
     }
 }

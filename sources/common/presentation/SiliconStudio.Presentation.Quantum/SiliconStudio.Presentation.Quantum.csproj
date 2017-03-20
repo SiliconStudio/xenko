@@ -26,9 +26,12 @@
     <Compile Include="CombinedNodeViewModel.cs" />
     <Compile Include="Controls\AsyncContentControl.cs" />
     <Compile Include="GraphNodeBinding.cs" />
+    <Compile Include="Presenters\SyncAnonymousNodePresenterCommand.cs" />
+    <Compile Include="ViewModels\INodeViewModelFactory.cs" />
+    <Compile Include="ViewModels\NodeViewModelFactory.cs" />
     <Compile Include="Presenters\INodePresenterUpdater.cs" />
     <Compile Include="Presenters\NodePresenterCommandWrapper.cs" />
-    <Compile Include="NodeViewModel.cs" />
+    <Compile Include="ViewModels\NodeViewModel.cs" />
     <Compile Include="Presenters\INodePresenterCommand.cs" />
     <Compile Include="Presenters\INodePresenterFactory.cs" />
     <Compile Include="Presenters\INodePresenterFactoryInternal.cs" />

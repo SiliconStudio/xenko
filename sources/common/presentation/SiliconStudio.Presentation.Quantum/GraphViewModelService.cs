@@ -28,6 +28,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         public List<INodePresenterCommand> AvailableCommands { get; } = new List<INodePresenterCommand>();
 
+        // TODO: pass the collection of updaters to the factory, too
         public List<INodePresenterUpdater> AvailableUpdaters { get; } = new List<INodePresenterUpdater>();
 
         /// <summary>

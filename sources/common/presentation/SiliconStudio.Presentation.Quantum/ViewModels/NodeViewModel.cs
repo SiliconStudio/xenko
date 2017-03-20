@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Presentation.Services;
@@ -13,8 +12,6 @@ namespace SiliconStudio.Presentation.Quantum
     [Obsolete("This interface is temporary to share properties while both GraphNodeViewModel and NodeViewModel2 exist")]
     public interface IGraphNodeViewModel : INodeViewModel
     {
-        int? CustomOrder { get; set; }
-
         IMemberDescriptor GetMemberDescriptor();
 
         void AddAssociatedData(string key, object value);
@@ -50,91 +47,6 @@ namespace SiliconStudio.Presentation.Quantum
         public object OldValue { get; }
     }
 
-    public interface INodeViewModelFactory
-    {
-        NodeViewModel CreateGraph([NotNull] GraphViewModel owner, [NotNull] Type rootType, [NotNull] IEnumerable<INodePresenter> rootNodes);
-    }
-
-    public class NodeViewModelFactory : INodeViewModelFactory
-    {
-        public NodeViewModel CreateGraph(GraphViewModel owner, Type rootType, IEnumerable<INodePresenter> rootNodes)
-        {
-            var rootViewModelNode = CreateNodeViewModel(owner, null, rootType, rootNodes.ToList(), true);
-            return rootViewModelNode;
-        }
-
-        protected NodeViewModel CreateNodeViewModel(GraphViewModel owner, NodeViewModel parent, Type nodeType, List<INodePresenter> nodePresenters, bool isRootNode = false)
-        {
-            // TODO: properly compute the name
-            var viewModel = new NodeViewModel(owner, parent, nodePresenters.First().Name, nodeType, nodePresenters);
-            if (isRootNode)
-            {
-                owner.RootNode = viewModel;
-            }
-            GenerateChildren(owner, viewModel, nodePresenters);
-
-            foreach (var nodePresenter in nodePresenters)
-            {
-                foreach (var command in nodePresenter.Commands)
-                {
-                    // TODO: review algorithm and properly implement CombineMode
-                    if (viewModel.Commands.Cast<NodePresenterCommandWrapper>().All(x => x.Command != command))
-                    {
-                        var commandWrapper = new NodePresenterCommandWrapper(viewModel.ServiceProvider, nodePresenter, command);
-                        viewModel.AddCommand(commandWrapper);
-                    }
-                }
-            }
-
-            owner.GraphViewModelService?.NotifyNodeInitialized(viewModel);
-            return viewModel;
-        }
-
-        protected virtual IEnumerable<List<INodePresenter>> CombineChildren(List<INodePresenter> nodePresenters)
-        {
-            var dictionary = new Dictionary<string, List<INodePresenter>>();
-            foreach (var nodePresenter in nodePresenters)
-            {
-                foreach (var child in nodePresenter.Children)
-                {
-                    List<INodePresenter> presenters;
-                    // TODO: properly implement CombineKey
-                    if (!dictionary.TryGetValue(child.CombineKey, out presenters))
-                    {
-                        presenters = new List<INodePresenter>();
-                        dictionary.Add(child.CombineKey, presenters);
-                    }
-                    presenters.Add(child);
-                }
-            }
-            return dictionary.Values.Where(x => x.Count == nodePresenters.Count);
-        }
-
-        private void GenerateChildren(GraphViewModel owner, NodeViewModel parent, List<INodePresenter> nodePresenters)
-        {
-            foreach (var child in CombineChildren(nodePresenters))
-            {
-                if (ShouldConstructViewModel(child))
-                {
-                    // TODO: properly compute the type
-                    CreateNodeViewModel(owner, parent, child.First().Type, child);
-                }
-            }
-        }
-
-        private static bool ShouldConstructViewModel(List<INodePresenter> nodePresenters)
-        {
-            foreach (var nodePresenter in nodePresenters)
-            {
-                var member = nodePresenter as MemberNodePresenter;
-                var displayAttribute = member?.MemberAttributes.OfType<DisplayAttribute>().FirstOrDefault();
-                if (displayAttribute != null && !displayAttribute.Browsable)
-                    return false;
-            }
-            return true;
-        }
-    }
-
     public class NodeViewModel : SingleNodeViewModel, IGraphNodeViewModel
     {
         private readonly List<INodePresenter> nodePresenters;
@@ -158,6 +70,8 @@ namespace SiliconStudio.Presentation.Quantum
                     IsVisible = true;
             }
 
+            // TODO: find a way to "merge" display name if they are different (string.Join?)
+            DisplayName = nodePresenters.First().DisplayName;
             parent?.AddChild(this);
         }
 
@@ -196,6 +110,7 @@ namespace SiliconStudio.Presentation.Quantum
             foreach (var nodePresenter in NodePresenters)
             {
                 // TODO: normally it shouldn't take that path (since it uses commands), but this is not safe with newly instantiated values
+                // fixme adding a test to check whether it's a content type from Quantum point of view might be safe enough.
                 nodePresenter.UpdateValue(newValue);
             }
         }

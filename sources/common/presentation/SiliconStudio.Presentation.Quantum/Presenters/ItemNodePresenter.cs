@@ -24,6 +24,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             Type = (container.Descriptor as CollectionDescriptor)?.ElementType ?? (container.Descriptor as DictionaryDescriptor)?.ValueType;
             Index = index;
             Name = index.ToString();
+            DisplayName = Name;
             container.ItemChanging += OnItemChanging;
             container.ItemChanged += OnItemChanged;
             AttachCommands();
@@ -35,7 +36,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             Container.ItemChanged -= OnItemChanged;
         }
 
-        public override string Name { get; }
+        public sealed override string Name { get; }
 
         public sealed override List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
 

@@ -12,7 +12,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
     {
         private readonly INodePresenterFactoryInternal factory;
         private readonly List<INodePresenter> children = new List<INodePresenter>();
-        private readonly PropertyContainer attachedProperties;
 
         protected NodePresenterBase([NotNull] INodePresenterFactoryInternal factory, [CanBeNull] IPropertyProviderViewModel propertyProvider, [CanBeNull] INodePresenter parent)
         {
@@ -35,6 +34,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public IReadOnlyList<INodePresenter> Children => children;
 
+        public string DisplayName { get; set; }
         public abstract string Name { get; }
         public abstract List<INodePresenterCommand> Commands { get; }
         public abstract Type Type { get; }
@@ -69,6 +69,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public abstract NodeAccessor GetNodeAccessor();
 
         public IPropertyProviderViewModel PropertyProvider { get; }
+
+        public INodePresenterFactory Factory => factory;
 
         public void ChangeParent(INodePresenter newParent)
         {

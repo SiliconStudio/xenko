@@ -11,6 +11,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
     {
         INodePresenter this[string childName] { get; }
 
+        string DisplayName { get; set; }
+
         string Name { get; }
 
         INodePresenter Root { get; }
@@ -44,6 +46,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         string CombineKey { get; }
 
         IPropertyProviderViewModel PropertyProvider { get; }
+
+        INodePresenterFactory Factory { get; }
 
         event EventHandler<ValueChangingEventArgs> ValueChanging;
 
