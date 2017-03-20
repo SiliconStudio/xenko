@@ -43,11 +43,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         public CombineMode CombineMode { get; set; }
 
-        /// <summary>
-        /// The reference expansion policy chosen while generating children for this node.
-        /// </summary>
-        public ExpandReferencePolicy ExpandReferencePolicy { get; protected set; } = ExpandReferencePolicy.None;
-
         /// <inheritdoc/>
         public override void Destroy()
         {

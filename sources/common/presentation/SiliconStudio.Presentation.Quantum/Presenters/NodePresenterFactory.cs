@@ -44,7 +44,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             if (parent == null) throw new ArgumentNullException(nameof(parent));
             if (member == null) throw new ArgumentNullException(nameof(member));
             // Ask the property provider if we have one, otherwise always construct.
-            return propertyProvider?.ShouldConstructMember(member, ExpandReferencePolicy.Full) ?? true;
+            return propertyProvider?.ShouldConstructMember(member) ?? true;
         }
 
         [NotNull]
@@ -60,7 +60,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             if (parent == null) throw new ArgumentNullException(nameof(parent));
             if (collectionNode == null) throw new ArgumentNullException(nameof(collectionNode));
             // Ask the property provider if we have one, otherwise always construct.
-            return propertyProvider?.ShouldConstructItem(collectionNode, index, ExpandReferencePolicy.Full) ?? true;
+            return propertyProvider?.ShouldConstructItem(collectionNode, index) ?? true;
         }
 
         [NotNull]

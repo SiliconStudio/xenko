@@ -339,7 +339,6 @@ namespace SiliconStudio.Presentation.Quantum
         private void GenerateChildren(IGraphNode targetNode, GraphNodePath targetNodePath, Index index)
         {
             // Set the default policy for expanding reference children.
-            ExpandReferencePolicy = ExpandReferencePolicy.Full;
             var initializedChildren = new List<NodeViewModel>();
 
             var objectNode = targetNode as IObjectNode;
@@ -365,7 +364,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (displayAttribute == null || displayAttribute.Browsable)
                 {
                     // The path is the source path here - the target path might contain the target resolution that we don't want at that point
-                    if (Owner.PropertiesProvider.ShouldConstructMember(memberContent, ExpandReferencePolicy))
+                    if (Owner.PropertiesProvider.ShouldConstructMember(memberContent))
                     {
                         var childPath = targetNodePath.Clone();
                         childPath.PushMember(memberContent.Name);
@@ -390,7 +389,7 @@ namespace SiliconStudio.Presentation.Quantum
                 // We create one node per item of the collection, we will check later if the reference should be expanded.
                 foreach (var reference in referenceEnumerable)
                 {
-                    if (Owner.PropertiesProvider.ShouldConstructItem(objectNode, reference.Index, ExpandReferencePolicy))
+                    if (Owner.PropertiesProvider.ShouldConstructItem(objectNode, reference.Index))
                     {
                         // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
                         // In this case, we must set the actual type to have type converter working, since they usually can't convert
@@ -410,7 +409,7 @@ namespace SiliconStudio.Presentation.Quantum
                 foreach (var key in dictionary.GetKeys(objectNode.Retrieve()))
                 {
                     var newIndex = new Index(key);
-                    if (Owner.PropertiesProvider.ShouldConstructItem(objectNode, newIndex, ExpandReferencePolicy))
+                    if (Owner.PropertiesProvider.ShouldConstructItem(objectNode, newIndex))
                     {
                         var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, objectNode, targetNodePath, dictionary.ValueType, newIndex);
                         AddChild(child);
@@ -426,7 +425,7 @@ namespace SiliconStudio.Presentation.Quantum
                 for (var i = 0; i < list.GetCollectionCount(objectNode.Retrieve()); ++i)
                 {
                     var newIndex = new Index(i);
-                    if (Owner.PropertiesProvider.ShouldConstructItem(objectNode, newIndex, ExpandReferencePolicy))
+                    if (Owner.PropertiesProvider.ShouldConstructItem(objectNode, newIndex))
                     {
                         var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, objectNode, targetNodePath, list.ElementType, newIndex);
                         AddChild(child);

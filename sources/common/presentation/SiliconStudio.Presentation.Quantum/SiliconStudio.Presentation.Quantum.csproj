@@ -25,7 +25,6 @@
     <Compile Include="CombinedNodeCommandWrapper.cs" />
     <Compile Include="CombinedNodeViewModel.cs" />
     <Compile Include="Controls\AsyncContentControl.cs" />
-    <Compile Include="ExpandReferencePolicy.cs" />
     <Compile Include="GraphNodeBinding.cs" />
     <Compile Include="Presenters\NodePresenterCommandWrapper.cs" />
     <Compile Include="NodeViewModel2.cs" />

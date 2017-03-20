@@ -23,8 +23,9 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
                 return rootNode;
             }
 
-            public bool ShouldConstructMember(IMemberNode member, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
-            public bool ShouldConstructItem(IObjectNode collection, Index index, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
+            bool IPropertiesProviderViewModel.ShouldConstructMember(IMemberNode member) => true;
+
+            bool IPropertiesProviderViewModel.ShouldConstructItem(IObjectNode collection, Index index) => true;
         }
 
         public class SimpleObject

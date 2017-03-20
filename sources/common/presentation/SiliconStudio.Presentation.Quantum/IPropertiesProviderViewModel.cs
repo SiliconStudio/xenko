@@ -24,17 +24,15 @@ namespace SiliconStudio.Presentation.Quantum
         /// Indicates whether the view model of a specific member should be constructed.
         /// </summary>
         /// <param name="member">The member to evaluate.</param>
-        /// <param name="expandReferencePolicy"></param>
         /// <returns><c>True</c> if the member node should be constructed, <c>False</c> otherwise.</returns>
-        bool ShouldConstructMember(IMemberNode member, ExpandReferencePolicy expandReferencePolicy);
+        bool ShouldConstructMember(IMemberNode member);
 
         /// <summary>
         /// Indicates whether the view model of a specific item of a collection should be constructed.
         /// </summary>
         /// <param name="collection">The collection to evaluate.</param>
         /// <param name="index">The index of the item to evaluate.</param>
-        /// <param name="expandReferencePolicy"></param>
         /// <returns><c>True</c> if the member node should be constructed, <c>False</c> otherwise.</returns>
-        bool ShouldConstructItem(IObjectNode collection, Index index, ExpandReferencePolicy expandReferencePolicy);
+        bool ShouldConstructItem(IObjectNode collection, Index index);
     }
 }
