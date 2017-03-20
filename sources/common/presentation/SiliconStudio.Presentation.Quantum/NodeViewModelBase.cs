@@ -265,9 +265,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// <returns><c>true</c> if the node can be moved, <c>fals</c> otherwise.</returns>
         public bool CanMove(INodeViewModel newParent)
         {
-            if (newParent is CombinedNodeViewModel)
-                return false;
-
             var parent = newParent;
             while (parent != null)
             {
@@ -285,11 +282,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="newName">The new name to give to the node once moved. This will modify its path. If <c>null</c>, it does not modify the name.</param>
         public void Move(INodeViewModel newParent, string newName = null)
         {
-            if (this is CombinedNodeViewModel)
-                throw new InvalidOperationException("A CombinedNodeViewModel cannot be moved.");
-            if (newParent is CombinedNodeViewModel)
-                throw new ArgumentException("The new parent cannot be a CombinedNodeViewModel");
-
             var parent = (NodeViewModelBase)newParent;
             while (parent != null)
             {
@@ -521,7 +513,7 @@ namespace SiliconStudio.Presentation.Quantum
                 memberNames.Add(child.Name);
             }
 
-            foreach (var command in Commands.OfType<ModelNodeCommandWrapper>())
+            foreach (var command in Commands.OfType<NodeCommandWrapperBase>())
             {
                 if (string.IsNullOrWhiteSpace(command.Name))
                     throw new InvalidOperationException("This node has a command with a null or blank name {0}");

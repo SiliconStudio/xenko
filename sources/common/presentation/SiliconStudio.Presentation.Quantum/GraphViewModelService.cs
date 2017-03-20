@@ -2,7 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Quantum.Presenters;
+using SiliconStudio.Presentation.Quantum.ViewModels;
+using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -16,10 +19,10 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphViewModelService"/> class.
         /// </summary>
-        public GraphViewModelService()
+        public GraphViewModelService([NotNull] NodeContainer nodeContainer)
         {
-            CombinedNodeViewModelFactory = GraphViewModel.DefaultCombinedNodeViewModelFactory;
-            NodePresenterFactory = new NodePresenterFactory(AvailableCommands);
+            if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
+            NodePresenterFactory = new NodePresenterFactory(nodeContainer.NodeBuilder, AvailableCommands);
         }
 
         public INodePresenterFactory NodePresenterFactory { get; set; }
@@ -30,12 +33,6 @@ namespace SiliconStudio.Presentation.Quantum
 
         // TODO: pass the collection of updaters to the factory, too
         public List<INodePresenterUpdater> AvailableUpdaters { get; } = new List<INodePresenterUpdater>();
-
-        /// <summary>
-        /// Gets or sets the combined node factory.
-        /// </summary>
-        [Obsolete]
-        public CreateCombinedNodeDelegate CombinedNodeViewModelFactory { get; set; }
 
         /// <summary>
         /// Registers a <see cref="IPropertyNodeUpdater"/> to this service.
@@ -57,7 +54,7 @@ namespace SiliconStudio.Presentation.Quantum
             propertyNodeUpdaters.Remove(propertyNodeUpdater);
         }
 
-        internal void NotifyNodeInitialized(SingleNodeViewModel node)
+        public void NotifyNodeInitialized(SingleNodeViewModel node)
         {
             foreach (var updater in propertyNodeUpdaters)
             {

@@ -5,14 +5,24 @@ using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
 {
-    public class NodePresenterFactory : INodePresenterFactory, INodePresenterFactoryInternal
+    public class NodePresenterFactory : INodePresenterFactoryInternal
     {
-        public NodePresenterFactory(IReadOnlyCollection<INodePresenterCommand> availableCommands)
+        [NotNull] private readonly INodeBuilder nodeBuilder;
+
+        public NodePresenterFactory([NotNull] INodeBuilder nodeBuilder, [NotNull] IReadOnlyCollection<INodePresenterCommand> availableCommands)
         {
+            this.nodeBuilder = nodeBuilder;
+            if (nodeBuilder == null) throw new ArgumentNullException(nameof(nodeBuilder));
+            if (availableCommands == null) throw new ArgumentNullException(nameof(availableCommands));
             AvailableCommands = availableCommands;
         }
 
         public IReadOnlyCollection<INodePresenterCommand> AvailableCommands { get; }
+
+        public bool IsPrimitiveType(Type type)
+        {
+            return nodeBuilder.IsPrimitiveType(type);
+        }
 
         [NotNull]
         public INodePresenter CreateNodeHierarchy(IObjectNode rootNode, GraphNodePath rootNodePath, IPropertyProviderViewModel propertyProvider)

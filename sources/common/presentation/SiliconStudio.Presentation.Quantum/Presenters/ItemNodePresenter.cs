@@ -4,6 +4,7 @@ using System.Linq;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Presentation.Quantum.ViewModels;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters

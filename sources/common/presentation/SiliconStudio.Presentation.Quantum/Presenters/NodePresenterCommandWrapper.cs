@@ -11,14 +11,14 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 {
     public class NodePresenterCommandWrapper : NodeCommandWrapperBase
     {
-        private readonly INodePresenter presenter;
+        private readonly IReadOnlyCollection<INodePresenter> presenters;
 
-        public NodePresenterCommandWrapper(IViewModelServiceProvider serviceProvider, [NotNull] INodePresenter presenter, [NotNull] INodePresenterCommand command)
+        public NodePresenterCommandWrapper(IViewModelServiceProvider serviceProvider, [NotNull] IReadOnlyCollection<INodePresenter> presenters, [NotNull] INodePresenterCommand command)
             : base(serviceProvider)
         {
-            if (presenter == null) throw new ArgumentNullException(nameof(presenter));
+            if (presenters == null) throw new ArgumentNullException(nameof(presenters));
             if (command == null) throw new ArgumentNullException(nameof(command));
-            this.presenter = presenter;
+            this.presenters = presenters;
             Command = command;
         }
 
@@ -30,16 +30,19 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override bool CanExecute(object parameter)
         {
-            return Command.CanExecute(presenter.Yield().ToList(), parameter);
+            return Command.CanExecute(presenters, parameter);
         }
 
         public override async Task Invoke(object parameter)
         {
             using (var transaction = UndoRedoService?.CreateTransaction())
             {
-                var preExecuteResult = await Command.PreExecute(presenter.Yield().ToList(), parameter);
-                await Command.Execute(presenter, parameter, preExecuteResult);
-                await Command.PostExecute(presenter.Yield().ToList(), parameter);
+                var preExecuteResult = await Command.PreExecute(presenters, parameter);
+                foreach (var presenter in presenters)
+                {
+                    await Command.Execute(presenter, parameter, preExecuteResult);
+                }
+                await Command.PostExecute(presenters.ToList(), parameter);
 
                 if (transaction != null)
                 {

@@ -4,10 +4,9 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.Quantum.Presenters;
-using SiliconStudio.Presentation.Services;
 using SiliconStudio.Quantum;
 
-namespace SiliconStudio.Presentation.Quantum
+namespace SiliconStudio.Presentation.Quantum.ViewModels
 {
     [Obsolete("This interface is temporary to share properties while both GraphNodeViewModel and NodeViewModel2 exist")]
     public interface IGraphNodeViewModel : INodeViewModel
@@ -53,6 +52,8 @@ namespace SiliconStudio.Presentation.Quantum
 
         private int? customOrder;
 
+        public static readonly object DifferentValues;
+
         protected internal NodeViewModel(GraphViewModel ownerViewModel, NodeViewModel parent, string baseName, Type nodeType, List<INodePresenter> nodePresenters)
             : base(ownerViewModel, nodeType, baseName, default(Index))
         {
@@ -94,15 +95,86 @@ namespace SiliconStudio.Presentation.Quantum
 
         // FIXME
 
-        protected internal override object InternalNodeValue { get { return NodePresenters.First().Value; } set { SetNodeValue(value); } }
+        protected internal override object InternalNodeValue { get { return GetNodeValue(); } set { SetNodeValue(value); } }
 
         [Obsolete]
         // FIXME
         public override bool IsPrimitive => NodePresenters.First().IsPrimitive;
 
+        public void FinishInitialization()
+        {
+            var commonCommands = new Dictionary<INodePresenterCommand, int>();
+            var commonAttachedProperties = new Dictionary<PropertyKey, object>();
+            foreach (var nodePresenter in nodePresenters)
+            {
+                foreach (var command in nodePresenter.Commands)
+                {
+                    int count;
+                    if (!commonCommands.TryGetValue(command, out count))
+                    {
+                        commonCommands.Add(command, 1);
+                    }
+                    else
+                    {
+                        commonCommands[command] = count + 1;
+                    }
+                }
+                foreach (var attachedProperty in nodePresenter.AttachedProperties)
+                {
+                    object value;
+                    if (!commonAttachedProperties.TryGetValue(attachedProperty.Key, out value))
+                    {
+                        commonAttachedProperties.Add(attachedProperty.Key, attachedProperty.Value);
+                    }
+                    // TODO: properly combine, in the same way that for the value (using DifferentValue object, etc.)
+                }
+            }
+            foreach (var command in commonCommands)
+            {
+                if (command.Key.CombineMode == CombineMode.DoNotCombine && command.Value > 1)
+                    continue;
+
+                if (command.Key.CombineMode == CombineMode.CombineOnlyForAll && command.Value < nodePresenters.Count)
+                    continue;
+
+                var commandWrapper = new NodePresenterCommandWrapper(ServiceProvider, nodePresenters, command.Key);
+                AddCommand(commandWrapper);
+            }
+            foreach (var attachedProperty in commonAttachedProperties)
+            {
+                AddAssociatedData(attachedProperty.Key.Name, attachedProperty.Value);
+            }
+        }
+
         protected override void Refresh()
         {
 
+        }
+
+        protected virtual object GetNodeValue()
+        {
+            object currentValue = null;
+            var isFirst = true;
+            foreach (var nodePresenter in NodePresenters)
+            {
+                if (isFirst)
+                {
+                    currentValue = nodePresenter.Value;
+                }
+                else if (nodePresenter.Factory.IsPrimitiveType(nodePresenter.Value?.GetType()))
+                {
+                    if (!Equals(currentValue, nodePresenter.Value))
+                        return DifferentValues;
+                }
+                else
+                {
+                    // FIXME: handle object references at AssetNodeViewModel level
+                    if (currentValue?.GetType() != nodePresenter.Value?.GetType())
+                        return DifferentValues;
+                }
+                isFirst = false;
+            }
+            return currentValue;
         }
 
         protected virtual void SetNodeValue(object newValue)

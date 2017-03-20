@@ -4,7 +4,7 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Presentation.Quantum.Presenters;
 
-namespace SiliconStudio.Presentation.Quantum
+namespace SiliconStudio.Presentation.Quantum.ViewModels
 {
     public class NodeViewModelFactory : INodeViewModelFactory
     {
@@ -14,7 +14,7 @@ namespace SiliconStudio.Presentation.Quantum
             return rootViewModelNode;
         }
 
-        protected NodeViewModel CreateNodeViewModel(GraphViewModel owner, NodeViewModel parent, Type nodeType, List<INodePresenter> nodePresenters, bool isRootNode = false)
+        protected virtual NodeViewModel CreateNodeViewModel(GraphViewModel owner, NodeViewModel parent, Type nodeType, List<INodePresenter> nodePresenters, bool isRootNode = false)
         {
             // TODO: properly compute the name
             var viewModel = new NodeViewModel(owner, parent, nodePresenters.First().Name, nodeType, nodePresenters);
@@ -23,23 +23,7 @@ namespace SiliconStudio.Presentation.Quantum
                 owner.RootNode = viewModel;
             }
             GenerateChildren(owner, viewModel, nodePresenters);
-
-            foreach (var nodePresenter in nodePresenters)
-            {
-                foreach (var command in nodePresenter.Commands)
-                {
-                    // TODO: review algorithm and properly implement CombineMode
-                    if (viewModel.Commands.Cast<NodePresenterCommandWrapper>().All(x => x.Command != command))
-                    {
-                        var commandWrapper = new NodePresenterCommandWrapper(viewModel.ServiceProvider, nodePresenter, command);
-                        viewModel.AddCommand(commandWrapper);
-                    }
-                }
-                foreach (var attachedProperty in nodePresenter.AttachedProperties)
-                {
-                    viewModel.AddAssociatedData(attachedProperty.Key.Name, attachedProperty.Value);
-                }
-            }
+            viewModel.FinishInitialization();
 
             owner.GraphViewModelService?.NotifyNodeInitialized(viewModel);
             return viewModel;
@@ -65,7 +49,7 @@ namespace SiliconStudio.Presentation.Quantum
             return dictionary.Values.Where(x => x.Count == nodePresenters.Count);
         }
 
-        private void GenerateChildren(GraphViewModel owner, NodeViewModel parent, List<INodePresenter> nodePresenters)
+        protected void GenerateChildren(GraphViewModel owner, NodeViewModel parent, List<INodePresenter> nodePresenters)
         {
             foreach (var child in CombineChildren(nodePresenters))
             {

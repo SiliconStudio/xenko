@@ -8,23 +8,13 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Quantum.Presenters;
+using SiliconStudio.Presentation.Quantum.ViewModels;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    /// <summary>
-    /// A factory that creates a <see cref="CombinedNodeViewModel"/> from a set of parameters.
-    /// </summary>
-    /// <param name="viewModel">The <see cref="GraphViewModel"/> that owns the new <see cref="GraphNodeViewModel"/>.</param>
-    /// <param name="baseName">The base name of this node. Can be null if <see paramref="index"/> is not. If so a name will be automatically generated from the index.</param>
-    /// <param name="contentType">The type of content in the combined node.</param>
-    /// <param name="combinedNodes">The nodes to combine.</param>
-    /// <param name="index">The index of this node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
-    /// <returns>A new instance of <see cref="CombinedNodeViewModel"/> corresponding to the given parameters.</returns>
-    public delegate CombinedNodeViewModel CreateCombinedNodeDelegate(GraphViewModel viewModel, string baseName, Type contentType, IEnumerable<SingleNodeViewModel> combinedNodes, Index index);
-
     /// <summary>
     /// A view model class to present a graph of <see cref="IContentNode"/> nodes to a view.
     /// </summary>
@@ -39,10 +29,6 @@ namespace SiliconStudio.Presentation.Quantum
         private readonly List<GraphViewModel> children = new List<GraphViewModel>();
         private readonly Dictionary<INodePresenter, IPropertyProviderViewModel> propertiesProviderMap = new Dictionary<INodePresenter, IPropertyProviderViewModel>();
         private INodeViewModel rootNode;
-
-        private Func<CombinedNodeViewModel, object, string> formatCombinedUpdateMessage = (node, value) => $"Update property '{node.Name}'";
-
-        public static readonly CreateCombinedNodeDelegate DefaultCombinedNodeViewModelFactory = DefaultCreateCombinedNode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphViewModel"/> class.
@@ -78,7 +64,7 @@ namespace SiliconStudio.Presentation.Quantum
             : this(serviceProvider)
         {
             if (rootNodes == null) throw new ArgumentNullException(nameof(rootNode));
-            var viewModelFactory = new NodeViewModelFactory();
+            var viewModelFactory = serviceProvider.Get<GraphViewModelService>().NodeViewModelFactory;
             foreach (var root in rootNodes)
             {
                 propertiesProviderMap.Add(root.Item1, root.Item2);
@@ -133,57 +119,17 @@ namespace SiliconStudio.Presentation.Quantum
                 else if (type != rootNode.Type)
                     return null;
 
-
                 var node = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode), propertyProvider);
                 rootNodes.Add(Tuple.Create(node, propertyProvider));
             }
             return new GraphViewModel(serviceProvider, type, rootNodes);
         }
 
-        public static GraphViewModel CombineViewModels(IViewModelServiceProvider serviceProvider, IReadOnlyCollection<GraphViewModel> viewModels)
-        {
-            if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
-            if (viewModels == null) throw new ArgumentNullException(nameof(viewModels));
-            var combinedViewModel = new GraphViewModel(serviceProvider);
-
-            var rootNodes = new List<NodeViewModel>();
-            foreach (var viewModel in viewModels)
-            {
-                if (!(viewModel.RootNode is SingleNodeViewModel))
-                    throw new ArgumentException(@"The view models to combine must contains SingleNodeViewModel.", nameof(viewModels));
-
-                viewModel.Parent = combinedViewModel;
-                combinedViewModel.children.Add(viewModel);
-                var rootNode = (NodeViewModel)viewModel.RootNode;
-                rootNodes.Add(rootNode);
-            }
-
-            if (rootNodes.Count < 2)
-                throw new ArgumentException(@"Called CombineViewModels with a collection of view models that is either empty or containt just a single item.", nameof(viewModels));
-
-            // Find best match for the root node type
-            var rootNodeType = rootNodes.First().Root.Type;
-            if (rootNodes.Skip(1).Any(x => x.Type != rootNodeType))
-                rootNodeType = typeof(object);
-
-            var service = serviceProvider.Get<GraphViewModelService>();
-            var rootCombinedNode = service.CombinedNodeViewModelFactory(combinedViewModel, "Root", rootNodeType, rootNodes, Index.Empty);
-            combinedViewModel.RootNode = rootCombinedNode;
-            rootCombinedNode.Initialize();
-            return combinedViewModel;
-        }
-
         /// <summary>
         /// Gets the root node of this <see cref="GraphViewModel"/>.
         /// </summary>
-        public INodeViewModel RootNode { get { return rootNode; } internal set { SetValue(ref rootNode, value); } }
-        
-        /// <summary>
-        /// Gets or sets a function that will generate a message for the action stack when combined nodes are modified. The function will receive
-        /// the modified combined node and the new value as parameters and should return a string corresponding to the message to add to the action stack.
-        /// </summary>
-        public Func<CombinedNodeViewModel, object, string> FormatCombinedUpdateMessage { get { return formatCombinedUpdateMessage; } set { if (value == null) throw new ArgumentException("The value cannot be null."); formatCombinedUpdateMessage = value; } }
-        
+        public INodeViewModel RootNode { get { return rootNode; } set { SetValue(ref rootNode, value); } }
+                
         /// <summary>
         /// Gets the <see cref="GraphViewModelService"/> associated to this view model.
         /// </summary>
@@ -213,7 +159,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Raised when the value of an <see cref="INodeViewModel"/> contained into this view model has changed.
         /// </summary>
-        /// <remarks>If this view model contains <see cref="CombinedNodeViewModel"/> instances, this event will be raised only once, at the end of the transaction.</remarks>
         public event EventHandler<GraphViewModelNodeValueChanged> NodeValueChanged;
 
         /// <summary>
@@ -251,30 +196,6 @@ namespace SiliconStudio.Presentation.Quantum
         {
             Parent?.combinedNodeChanges.Add(nodePath);
             NodeValueChanged?.Invoke(this, new GraphViewModelNodeValueChanged(this, nodePath));
-        }
-
-        internal CombinedActionsContext BeginCombinedAction(string actionName, string nodePath)
-        {
-            return new CombinedActionsContext(this, actionName, nodePath);
-        }
-
-        internal void EndCombinedAction(string nodePath)
-        {
-            var handler = NodeValueChanged;
-            if (handler != null)
-            {
-                foreach (var nodeChange in combinedNodeChanges)
-                {
-                    handler(this, new GraphViewModelNodeValueChanged(this, nodeChange));
-                }
-            }
-            combinedNodeChanges.Clear();
-        }
-
-        private static CombinedNodeViewModel DefaultCreateCombinedNode(GraphViewModel ownerViewModel, string baseName, Type contentType, IEnumerable<SingleNodeViewModel> combinedNodes, Index index)
-        {
-            var node = new CombinedNodeViewModel(ownerViewModel, contentType, baseName, combinedNodes, index);
-            return node;
         }
     }
 }

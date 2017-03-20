@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Quantum.Presenters;
 
-namespace SiliconStudio.Presentation.Quantum
+namespace SiliconStudio.Presentation.Quantum.ViewModels
 {
     public interface INodeViewModelFactory
     {

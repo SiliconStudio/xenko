@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Presentation.Quantum.ViewModels;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters

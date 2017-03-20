@@ -1,475 +1,475 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿//// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+//// This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Reflection;
-using SiliconStudio.Presentation.Commands;
-using SiliconStudio.Quantum;
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Reflection;
+//using SiliconStudio.Core.Extensions;
+//using SiliconStudio.Core.Reflection;
+//using SiliconStudio.Presentation.Commands;
+//using SiliconStudio.Quantum;
 
-namespace SiliconStudio.Presentation.Quantum
-{
-    public class CombinedNodeViewModel : NodeViewModelBase
-    {
-        private readonly List<SingleNodeViewModel> combinedNodes;
-        private readonly List<object> combinedNodeInitialValues;
-        private readonly HashSet<object> distinctCombinedNodeInitialValues;
-        private readonly int? order;
-        private readonly MemberInfo memberInfo;
-        private bool refreshQueued;
+//namespace SiliconStudio.Presentation.Quantum
+//{
+//    public class CombinedNodeViewModel : NodeViewModelBase
+//    {
+//        private readonly List<SingleNodeViewModel> combinedNodes;
+//        private readonly List<object> combinedNodeInitialValues;
+//        private readonly HashSet<object> distinctCombinedNodeInitialValues;
+//        private readonly int? order;
+//        private readonly MemberInfo memberInfo;
+//        private bool refreshQueued;
 
-        protected static readonly HashSet<CombinedNodeViewModel> ChangedNodes = new HashSet<CombinedNodeViewModel>();
-        protected static bool ChangeInProgress;
+//        protected static readonly HashSet<CombinedNodeViewModel> ChangedNodes = new HashSet<CombinedNodeViewModel>();
+//        protected static bool ChangeInProgress;
 
-        static CombinedNodeViewModel()
-        {
-            typeof(CombinedNodeViewModel).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
-        }
+//        static CombinedNodeViewModel()
+//        {
+//            typeof(CombinedNodeViewModel).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
+//        }
 
-        protected internal CombinedNodeViewModel(GraphViewModel ownerViewModel, Type type, string name, IEnumerable<SingleNodeViewModel> combinedNodes, Index index)
-            : base(ownerViewModel, type, index)
-        {
-            // ReSharper disable once DoNotCallOverridableMethodsInConstructor
-            DependentProperties.Add(nameof(InternalNodeValue), new[] { nameof(NodeValue), nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary) });
-            this.combinedNodes = new List<SingleNodeViewModel>(combinedNodes);
-            Name = name;
-            DisplayName = this.combinedNodes.First().DisplayName;
+//        protected internal CombinedNodeViewModel(GraphViewModel ownerViewModel, Type type, string name, IEnumerable<SingleNodeViewModel> combinedNodes, Index index)
+//            : base(ownerViewModel, type, index)
+//        {
+//            // ReSharper disable once DoNotCallOverridableMethodsInConstructor
+//            DependentProperties.Add(nameof(InternalNodeValue), new[] { nameof(NodeValue), nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary) });
+//            this.combinedNodes = new List<SingleNodeViewModel>(combinedNodes);
+//            Name = name;
+//            DisplayName = this.combinedNodes.First().DisplayName;
 
-            combinedNodeInitialValues = new List<object>();
-            distinctCombinedNodeInitialValues = new HashSet<object>();
+//            combinedNodeInitialValues = new List<object>();
+//            distinctCombinedNodeInitialValues = new HashSet<object>();
 
-            bool isReadOnly = false;
-            bool isVisible = false;
-            bool nullOrder = false;
+//            bool isReadOnly = false;
+//            bool isVisible = false;
+//            bool nullOrder = false;
 
-            foreach (var node in this.combinedNodes)
-            {
-                if (node.IsDestroyed)
-                    throw new InvalidOperationException("One of the combined node is already disposed.");
+//            foreach (var node in this.combinedNodes)
+//            {
+//                if (node.IsDestroyed)
+//                    throw new InvalidOperationException("One of the combined node is already disposed.");
 
-                if (node.IsReadOnly)
-                    isReadOnly = true;
+//                if (node.IsReadOnly)
+//                    isReadOnly = true;
 
-                if (node.IsVisible)
-                    isVisible = true;
+//                if (node.IsVisible)
+//                    isVisible = true;
 
-                if (node.Order == null)
-                    nullOrder = true;
+//                if (node.Order == null)
+//                    nullOrder = true;
 
-                if (order == node.Order || (!nullOrder && order == null))
-                    order = node.Order;
+//                if (order == node.Order || (!nullOrder && order == null))
+//                    order = node.Order;
 
-                // Note: sometimes member info could be different for the same member if we select objects of types that inherit from another
-                // This will just affect the view order, so it shouldn't be a problem.
-                if (memberInfo == null)
-                    memberInfo = node.MemberInfo;
+//                // Note: sometimes member info could be different for the same member if we select objects of types that inherit from another
+//                // This will just affect the view order, so it shouldn't be a problem.
+//                if (memberInfo == null)
+//                    memberInfo = node.MemberInfo;
 
-                combinedNodeInitialValues.Add(node.InternalNodeValue);
-                distinctCombinedNodeInitialValues.Add(node.InternalNodeValue);
-            }
-            IsReadOnly = isReadOnly;
-            IsVisible = isVisible;
+//                combinedNodeInitialValues.Add(node.InternalNodeValue);
+//                distinctCombinedNodeInitialValues.Add(node.InternalNodeValue);
+//            }
+//            IsReadOnly = isReadOnly;
+//            IsVisible = isVisible;
 
-            ResetInitialValues = new AnonymousCommand(ServiceProvider, () =>
-            {
-                using (Owner.BeginCombinedAction(Owner.FormatCombinedUpdateMessage(this, null), Path))
-                {
-                    CombinedNodes.Zip(combinedNodeInitialValues).ForEach(x => x.Item1.InternalNodeValue = x.Item2);
-                    Refresh();
-                }
-            });
+//            ResetInitialValues = new AnonymousCommand(ServiceProvider, () =>
+//            {
+//                using (Owner.BeginCombinedAction(Owner.FormatCombinedUpdateMessage(this, null), Path))
+//                {
+//                    CombinedNodes.Zip(combinedNodeInitialValues).ForEach(x => x.Item1.InternalNodeValue = x.Item2);
+//                    Refresh();
+//                }
+//            });
 
-            foreach (var node in CombinedNodes)
-            {
-                node.ValueChanged += CombinedNodeValueChanged;
-            }
-        }
+//            foreach (var node in CombinedNodes)
+//            {
+//                node.ValueChanged += CombinedNodeValueChanged;
+//            }
+//        }
 
-        internal void Initialize()
-        {
-            var commandGroups = new Dictionary<string, List<NodeCommandWrapperBase>>();
-            foreach (var node in combinedNodes)
-            {
-                if (node.IsDestroyed)
-                    throw new InvalidOperationException("One of the combined node is already disposed.");
+//        internal void Initialize()
+//        {
+//            var commandGroups = new Dictionary<string, List<NodeCommandWrapperBase>>();
+//            foreach (var node in combinedNodes)
+//            {
+//                if (node.IsDestroyed)
+//                    throw new InvalidOperationException("One of the combined node is already disposed.");
 
-                foreach (var command in node.Commands)
-                {
-                    var list = commandGroups.GetOrCreateValue(command.Name);
-                    list.Add((NodeCommandWrapperBase)command);
-                }
-            }
+//                foreach (var command in node.Commands)
+//                {
+//                    var list = commandGroups.GetOrCreateValue(command.Name);
+//                    list.Add((NodeCommandWrapperBase)command);
+//                }
+//            }
 
-            foreach (var commandGroup in commandGroups)
-            {
-                var mode = commandGroup.Value.First().CombineMode;
-                if (commandGroup.Value.Any(x => x.CombineMode != mode))
-                    throw new InvalidOperationException($"Inconsistent combine mode among command {commandGroup.Key}");
+//            foreach (var commandGroup in commandGroups)
+//            {
+//                var mode = commandGroup.Value.First().CombineMode;
+//                if (commandGroup.Value.Any(x => x.CombineMode != mode))
+//                    throw new InvalidOperationException($"Inconsistent combine mode among command {commandGroup.Key}");
 
-                var shouldCombine = mode != CombineMode.DoNotCombine && (mode == CombineMode.AlwaysCombine || commandGroup.Value.Count == combinedNodes.Count);
+//                var shouldCombine = mode != CombineMode.DoNotCombine && (mode == CombineMode.AlwaysCombine || commandGroup.Value.Count == combinedNodes.Count);
 
-                if (shouldCombine)
-                {
-                    var command = new CombinedNodeCommandWrapper(ServiceProvider, commandGroup.Key, commandGroup.Value);
-                    AddCommand(command);
-                }
-            }
+//                if (shouldCombine)
+//                {
+//                    var command = new CombinedNodeCommandWrapper(ServiceProvider, commandGroup.Key, commandGroup.Value);
+//                    AddCommand(command);
+//                }
+//            }
 
-            if (!HasCollection || HasDictionary)
-            {
-                var commonChildren = GetCommonChildren();
-                GenerateChildren(commonChildren);
-            }
-            else
-            {
-                var commonChildren = GetCommonChildrenInList();
-                if (commonChildren != null)
-                {
-                    // TODO: Disable list children for now - they need to be improved a lot (resulting combinaison is very random, especially for list of ints
-                    GenerateChildren(commonChildren);
-                }
-            }
-            foreach (var key in AssociatedData.Keys.ToList())
-            {
-                RemoveAssociatedData(key);
-            }
+//            if (!HasCollection || HasDictionary)
+//            {
+//                var commonChildren = GetCommonChildren();
+//                GenerateChildren(commonChildren);
+//            }
+//            else
+//            {
+//                var commonChildren = GetCommonChildrenInList();
+//                if (commonChildren != null)
+//                {
+//                    // TODO: Disable list children for now - they need to be improved a lot (resulting combinaison is very random, especially for list of ints
+//                    GenerateChildren(commonChildren);
+//                }
+//            }
+//            foreach (var key in AssociatedData.Keys.ToList())
+//            {
+//                RemoveAssociatedData(key);
+//            }
 
-            // TODO: we add associatedData added to SingleNodeViewModel this way, but it's a bit dangerous. Maybe we should check that all combined nodes have this data entry, and all with the same value.
-            foreach (var singleData in CombinedNodes.SelectMany(x => x.AssociatedData).Where(x => !AssociatedData.ContainsKey(x.Key)))
-            {
-                AddAssociatedData(singleData.Key, singleData.Value);
-            }
+//            // TODO: we add associatedData added to SingleNodeViewModel this way, but it's a bit dangerous. Maybe we should check that all combined nodes have this data entry, and all with the same value.
+//            foreach (var singleData in CombinedNodes.SelectMany(x => x.AssociatedData).Where(x => !AssociatedData.ContainsKey(x.Key)))
+//            {
+//                AddAssociatedData(singleData.Key, singleData.Value);
+//            }
 
-            FinalizeInitialization();
+//            FinalizeInitialization();
 
-            CheckDynamicMemberConsistency();
-        }
+//            CheckDynamicMemberConsistency();
+//        }
 
-        /// <inheritdoc/>
-        public sealed override bool IsPrimitive { get { return CombinedNodes.All(x => x.IsPrimitive); } }
+//        /// <inheritdoc/>
+//        public sealed override bool IsPrimitive { get { return CombinedNodes.All(x => x.IsPrimitive); } }
 
-        public IReadOnlyCollection<SingleNodeViewModel> CombinedNodes => combinedNodes;
+//        public IReadOnlyCollection<SingleNodeViewModel> CombinedNodes => combinedNodes;
 
-        public bool HasMultipleValues => ComputeHasMultipleValues();
+//        public bool HasMultipleValues => ComputeHasMultipleValues();
 
-        public bool HasMultipleInitialValues => ComputeHasMultipleInitialValues();
+//        public bool HasMultipleInitialValues => ComputeHasMultipleInitialValues();
 
-        public ICommandBase ResetInitialValues { get; private set; }
+//        public ICommandBase ResetInitialValues { get; private set; }
 
-        public IEnumerable<object> DistinctInitialValues => distinctCombinedNodeInitialValues;
+//        public IEnumerable<object> DistinctInitialValues => distinctCombinedNodeInitialValues;
 
-        public override int? Order => order;
+//        public override int? Order => order;
 
-        public override MemberInfo MemberInfo => memberInfo;
+//        public override MemberInfo MemberInfo => memberInfo;
 
-        public bool GroupByType { get; set; }
+//        public bool GroupByType { get; set; }
 
-        /// <inheritdoc/>
-        public sealed override bool HasCollection => CombinedNodes.First().HasCollection;
+//        /// <inheritdoc/>
+//        public sealed override bool HasCollection => CombinedNodes.First().HasCollection;
 
-        /// <inheritdoc/>
-        public sealed override bool HasDictionary => CombinedNodes.First().HasDictionary;
+//        /// <inheritdoc/>
+//        public sealed override bool HasDictionary => CombinedNodes.First().HasDictionary;
 
-        /// <inheritdoc/>
-        public override void Destroy()
-        {
-            foreach (var node in CombinedNodes.Where(x => !x.IsDestroyed))
-            {
-                node.Destroy();
-            }
-            base.Destroy();
-        }
+//        /// <inheritdoc/>
+//        public override void Destroy()
+//        {
+//            foreach (var node in CombinedNodes.Where(x => !x.IsDestroyed))
+//            {
+//                node.Destroy();
+//            }
+//            base.Destroy();
+//        }
 
-        protected override void Refresh()
-        {
-            if (Parent == null) throw new InvalidOperationException("The node to refresh can be a root node.");
+//        protected override void Refresh()
+//        {
+//            if (Parent == null) throw new InvalidOperationException("The node to refresh can be a root node.");
 
-            if (CombinedNodes.Any(x => x != null))
-            {
-                var parent = (CombinedNodeViewModel)Parent;
-                parent.NotifyPropertyChanging(Name);
-                OnPropertyChanging(nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary));
+//            if (CombinedNodes.Any(x => x != null))
+//            {
+//                var parent = (CombinedNodeViewModel)Parent;
+//                parent.NotifyPropertyChanging(Name);
+//                OnPropertyChanging(nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary));
                 
-                if (AreCombinable(CombinedNodes))
-                {
-                    ClearCommands();
+//                if (AreCombinable(CombinedNodes))
+//                {
+//                    ClearCommands();
 
-                    // Destroy all children and remove them
-                    Children.SelectDeep(x => x.Children).ForEach(x => x.Destroy());
-                    foreach (var child in Children.Cast<NodeViewModelBase>().ToList())
-                    {
-                        RemoveChild(child);
-                    }
+//                    // Destroy all children and remove them
+//                    Children.SelectDeep(x => x.Children).ForEach(x => x.Destroy());
+//                    foreach (var child in Children.Cast<NodeViewModelBase>().ToList())
+//                    {
+//                        RemoveChild(child);
+//                    }
 
-                    Initialize();
-                }
+//                    Initialize();
+//                }
 
-                OnPropertyChanged(nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary));
-                parent.NotifyPropertyChanged(Name);
-            }
-        }
+//                OnPropertyChanged(nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary));
+//                parent.NotifyPropertyChanged(Name);
+//            }
+//        }
 
-        public static bool AreCombinable(IEnumerable<SingleNodeViewModel> nodes, bool ignoreNameConstraint = false)
-        {
-            bool firstNode = true;
+//        public static bool AreCombinable(IEnumerable<SingleNodeViewModel> nodes, bool ignoreNameConstraint = false)
+//        {
+//            bool firstNode = true;
 
-            Type type = null;
-            string name = null;
-            object index = null;
-            foreach (var node in nodes)
-            {
-                if (firstNode)
-                {
-                    type = node.Type;
-                    name = node.Name;
-                    index = node.Index;
-                    firstNode = false;
-                }
-                else
-                {
-                    if (node.Type != type)
-                        return false;
-                    if (!ignoreNameConstraint && node.Name != name)
-                        return false;
-                    if (!Equals(node.Index, index))
-                        return false;
-                }
-            }
-            return true;
-        }
+//            Type type = null;
+//            string name = null;
+//            object index = null;
+//            foreach (var node in nodes)
+//            {
+//                if (firstNode)
+//                {
+//                    type = node.Type;
+//                    name = node.Name;
+//                    index = node.Index;
+//                    firstNode = false;
+//                }
+//                else
+//                {
+//                    if (node.Type != type)
+//                        return false;
+//                    if (!ignoreNameConstraint && node.Name != name)
+//                        return false;
+//                    if (!Equals(node.Index, index))
+//                        return false;
+//                }
+//            }
+//            return true;
+//        }
 
-        /// <inheritdoc/>
-        protected internal sealed override object InternalNodeValue
-        {
-            get
-            {
-                return HasMultipleValues ? Type.Default() : CombinedNodes.First().InternalNodeValue;
-            }
-            set
-            {
-                var displayName = Owner.FormatCombinedUpdateMessage(this, value);
-                using (Owner.BeginCombinedAction(displayName, Path))
-                {
-                    OnPropertyChanging(nameof(InternalNodeValue));
-                    CombinedNodes.ForEach(x => x.InternalNodeValue = value);
-                    OnPropertyChanged(nameof(InternalNodeValue));
-                }
-            }
-        }
+//        /// <inheritdoc/>
+//        protected internal sealed override object InternalNodeValue
+//        {
+//            get
+//            {
+//                return HasMultipleValues ? Type.Default() : CombinedNodes.First().InternalNodeValue;
+//            }
+//            set
+//            {
+//                var displayName = Owner.FormatCombinedUpdateMessage(this, value);
+//                using (Owner.BeginCombinedAction(displayName, Path))
+//                {
+//                    OnPropertyChanging(nameof(InternalNodeValue));
+//                    CombinedNodes.ForEach(x => x.InternalNodeValue = value);
+//                    OnPropertyChanged(nameof(InternalNodeValue));
+//                }
+//            }
+//        }
 
-        private void GenerateChildren(IEnumerable<KeyValuePair<string, List<SingleNodeViewModel>>> commonChildren)
-        {
-            foreach (var children in commonChildren)
-            {
-                var contentType = children.Value.First().Type;
-                var index = children.Value.First().Index;
-                var child = Owner.GraphViewModelService.CombinedNodeViewModelFactory(Owner, children.Key, contentType, children.Value, index);
-                AddChild(child);
-                child.Initialize();
-            }
-        }
+//        private void GenerateChildren(IEnumerable<KeyValuePair<string, List<SingleNodeViewModel>>> commonChildren)
+//        {
+//            foreach (var children in commonChildren)
+//            {
+//                var contentType = children.Value.First().Type;
+//                var index = children.Value.First().Index;
+//                var child = Owner.GraphViewModelService.CombinedNodeViewModelFactory(Owner, children.Key, contentType, children.Value, index);
+//                AddChild(child);
+//                child.Initialize();
+//            }
+//        }
 
-        private void GenerateListChildren(IEnumerable<KeyValuePair<object, List<SingleNodeViewModel>>> allChildren)
-        {
-            int currentIndex = 0;
-            foreach (var children in allChildren)
-            {
-                if (!ShouldCombine(children.Value, CombinedNodes.Count, "(ListItem)", true))
-                    continue;
+//        private void GenerateListChildren(IEnumerable<KeyValuePair<object, List<SingleNodeViewModel>>> allChildren)
+//        {
+//            int currentIndex = 0;
+//            foreach (var children in allChildren)
+//            {
+//                if (!ShouldCombine(children.Value, CombinedNodes.Count, "(ListItem)", true))
+//                    continue;
 
-                var contentType = children.Value.First().Type;
-                var name = $"Item {currentIndex}";
-                var child = Owner.GraphViewModelService.CombinedNodeViewModelFactory(Owner, name, contentType, children.Value, new Index(currentIndex));
-                AddChild(child);
-                child.Initialize();
-                child.DisplayName = name;
-                ++currentIndex;
-            }
-        }
+//                var contentType = children.Value.First().Type;
+//                var name = $"Item {currentIndex}";
+//                var child = Owner.GraphViewModelService.CombinedNodeViewModelFactory(Owner, name, contentType, children.Value, new Index(currentIndex));
+//                AddChild(child);
+//                child.Initialize();
+//                child.DisplayName = name;
+//                ++currentIndex;
+//            }
+//        }
 
-        private IEnumerable<KeyValuePair<string, List<SingleNodeViewModel>>> GetCommonChildren()
-        {
-            var allChildNodes = new Dictionary<string, List<SingleNodeViewModel>>();
-            foreach (var singleNode in CombinedNodes)
-            {
-                foreach (var node in singleNode.Children)
-                {
-                    var child = (SingleNodeViewModel)node;
-                    var list = allChildNodes.GetOrCreateValue(child.Name);
-                    list.Add(child);
-                }
-            }
+//        private IEnumerable<KeyValuePair<string, List<SingleNodeViewModel>>> GetCommonChildren()
+//        {
+//            var allChildNodes = new Dictionary<string, List<SingleNodeViewModel>>();
+//            foreach (var singleNode in CombinedNodes)
+//            {
+//                foreach (var node in singleNode.Children)
+//                {
+//                    var child = (SingleNodeViewModel)node;
+//                    var list = allChildNodes.GetOrCreateValue(child.Name);
+//                    list.Add(child);
+//                }
+//            }
 
-            return allChildNodes.Where(x => ShouldCombine(x.Value, CombinedNodes.Count, x.Key));
-        }
+//            return allChildNodes.Where(x => ShouldCombine(x.Value, CombinedNodes.Count, x.Key));
+//        }
 
-        private IEnumerable<KeyValuePair<string, List<SingleNodeViewModel>>> GetCommonChildrenInList()
-        {
-            var allChildNodes = new Dictionary<string, List<SingleNodeViewModel>>();
-            ITypeDescriptor singleType = null;
-            foreach (var singleNode in CombinedNodes)
-            {
-                var descriptor = TypeDescriptorFactory.Default.Find(singleNode.Type);
-                if (singleType != null && singleType != descriptor)
-                    return null;
+//        private IEnumerable<KeyValuePair<string, List<SingleNodeViewModel>>> GetCommonChildrenInList()
+//        {
+//            var allChildNodes = new Dictionary<string, List<SingleNodeViewModel>>();
+//            ITypeDescriptor singleType = null;
+//            foreach (var singleNode in CombinedNodes)
+//            {
+//                var descriptor = TypeDescriptorFactory.Default.Find(singleNode.Type);
+//                if (singleType != null && singleType != descriptor)
+//                    return null;
 
-                singleType = descriptor;
-            }
+//                singleType = descriptor;
+//            }
 
-            // If we're in a collection of value type, use usual name-based combination (which should actually be index-based)
-            if (singleType.GetInnerCollectionType().IsValueType)
-                return GetCommonChildren();
+//            // If we're in a collection of value type, use usual name-based combination (which should actually be index-based)
+//            if (singleType.GetInnerCollectionType().IsValueType)
+//                return GetCommonChildren();
 
-            if (GroupByType)
-            {
-                return null;
-            }
-            return GetCommonChildren();
-            //// When the collection are not of 
-            //foreach (var node in singleNode.Children)
-            //{
-            //    var child = (SingleNodeViewModel)node;
-            //    var list = allChildNodes.GetOrCreateValue(child.Name);
-            //    list.Add(child);
-            //}
+//            if (GroupByType)
+//            {
+//                return null;
+//            }
+//            return GetCommonChildren();
+//            //// When the collection are not of 
+//            //foreach (var node in singleNode.Children)
+//            //{
+//            //    var child = (SingleNodeViewModel)node;
+//            //    var list = allChildNodes.GetOrCreateValue(child.Name);
+//            //    list.Add(child);
+//            //}
 
-            //return allChildNodes.Where(x => ShouldCombine(x.Value, CombinedNodes.Count, x.Key));
-        }
+//            //return allChildNodes.Where(x => ShouldCombine(x.Value, CombinedNodes.Count, x.Key));
+//        }
 
-        private static bool ShouldCombine(List<SingleNodeViewModel> nodes, int combineCount, string name, bool ignoreNameConstraint = false)
-        {
-            CombineMode? combineMode = null;
+//        private static bool ShouldCombine(List<SingleNodeViewModel> nodes, int combineCount, string name, bool ignoreNameConstraint = false)
+//        {
+//            CombineMode? combineMode = null;
 
-            if (!AreCombinable(nodes, ignoreNameConstraint))
-                return false;
+//            if (!AreCombinable(nodes, ignoreNameConstraint))
+//                return false;
 
-            foreach (var node in nodes)
-            {
-                if (combineMode == null)
-                    combineMode = node.CombineMode;
+//            foreach (var node in nodes)
+//            {
+//                if (combineMode == null)
+//                    combineMode = node.CombineMode;
 
-                if (combineMode != node.CombineMode)
-                    throw new InvalidOperationException($"Inconsistent values of CombineMode in single nodes for child '{name}'");
-            }
+//                if (combineMode != node.CombineMode)
+//                    throw new InvalidOperationException($"Inconsistent values of CombineMode in single nodes for child '{name}'");
+//            }
 
-            if (combineMode == CombineMode.DoNotCombine)
-                return false;
+//            if (combineMode == CombineMode.DoNotCombine)
+//                return false;
 
-            return combineMode == CombineMode.AlwaysCombine || nodes.Count == combineCount;
-        }
+//            return combineMode == CombineMode.AlwaysCombine || nodes.Count == combineCount;
+//        }
 
-        private IEnumerable<KeyValuePair<object, List<SingleNodeViewModel>>> GetAllChildrenByValue()
-        {
-            var allChildNodes = new List<KeyValuePair<object, List<SingleNodeViewModel>>>();
-            foreach (var singleNode in CombinedNodes)
-            {
-                var usedSlots = new List<List<SingleNodeViewModel>>();
-                foreach (var node in singleNode.Children)
-                {
-                    var child = (SingleNodeViewModel)node;
-                    if (!child.Type.IsValueType && child.Type != typeof(string))
-                        return null;
+//        private IEnumerable<KeyValuePair<object, List<SingleNodeViewModel>>> GetAllChildrenByValue()
+//        {
+//            var allChildNodes = new List<KeyValuePair<object, List<SingleNodeViewModel>>>();
+//            foreach (var singleNode in CombinedNodes)
+//            {
+//                var usedSlots = new List<List<SingleNodeViewModel>>();
+//                foreach (var node in singleNode.Children)
+//                {
+//                    var child = (SingleNodeViewModel)node;
+//                    if (!child.Type.IsValueType && child.Type != typeof(string))
+//                        return null;
 
-                    var list = allChildNodes.FirstOrDefault(x => Equals(x.Key, child.InternalNodeValue) && !usedSlots.Contains(x.Value)).Value;
-                    if (list == null)
-                    {
-                        list = new List<SingleNodeViewModel>();
-                        allChildNodes.Add(new KeyValuePair<object, List<SingleNodeViewModel>>(child.InternalNodeValue, list));
-                    }
-                    list.Add(child);
-                    usedSlots.Add(list);
-                }
-            }
+//                    var list = allChildNodes.FirstOrDefault(x => Equals(x.Key, child.InternalNodeValue) && !usedSlots.Contains(x.Value)).Value;
+//                    if (list == null)
+//                    {
+//                        list = new List<SingleNodeViewModel>();
+//                        allChildNodes.Add(new KeyValuePair<object, List<SingleNodeViewModel>>(child.InternalNodeValue, list));
+//                    }
+//                    list.Add(child);
+//                    usedSlots.Add(list);
+//                }
+//            }
 
-            return allChildNodes;
-        }
+//            return allChildNodes;
+//        }
 
-        private bool ComputeHasMultipleValues()
-        {
-            if (IsPrimitive)
-                return CombinedNodes.Any(x => !Equals(x.InternalNodeValue, CombinedNodes.First().InternalNodeValue));
+//        private bool ComputeHasMultipleValues()
+//        {
+//            if (IsPrimitive)
+//                return CombinedNodes.Any(x => !Equals(x.InternalNodeValue, CombinedNodes.First().InternalNodeValue));
 
-            return !AreAllValuesOfTheSameType(CombinedNodes.Select(x => x.InternalNodeValue));
-        }
+//            return !AreAllValuesOfTheSameType(CombinedNodes.Select(x => x.InternalNodeValue));
+//        }
 
-        private bool ComputeHasMultipleInitialValues()
-        {
-            if (IsPrimitive)
-                return distinctCombinedNodeInitialValues.Count > 1;
+//        private bool ComputeHasMultipleInitialValues()
+//        {
+//            if (IsPrimitive)
+//                return distinctCombinedNodeInitialValues.Count > 1;
 
-            return !AreAllValuesOfTheSameType(distinctCombinedNodeInitialValues);
-        }
+//            return !AreAllValuesOfTheSameType(distinctCombinedNodeInitialValues);
+//        }
 
-        private static bool AreAllValuesOfTheSameType(IEnumerable<object> values)
-        {
-            bool first = true;
-            bool isNull = false;
-            Type type = null;
+//        private static bool AreAllValuesOfTheSameType(IEnumerable<object> values)
+//        {
+//            bool first = true;
+//            bool isNull = false;
+//            Type type = null;
 
-            foreach (var value in values)
-            {
-                // Check status of the first value
-                if (first)
-                {
-                    first = false;
-                    if (value == null)
-                        isNull = true;
-                    else
-                        type = value.GetType();
-                    continue;
-                }
+//            foreach (var value in values)
+//            {
+//                // Check status of the first value
+//                if (first)
+//                {
+//                    first = false;
+//                    if (value == null)
+//                        isNull = true;
+//                    else
+//                        type = value.GetType();
+//                    continue;
+//                }
 
-                // For every other values...
-                if (value != null)
-                {
-                    // Check if it should be null
-                    if (isNull)
-                        return false;
+//                // For every other values...
+//                if (value != null)
+//                {
+//                    // Check if it should be null
+//                    if (isNull)
+//                        return false;
 
-                    // Check if its type matches
-                    if (type != value.GetType())
-                        return false;
-                }
-                else if (!isNull)
-                {
-                    // Check if it should be non-null
-                    return false;
-                }
-            }
-            return true;
-        }
+//                    // Check if its type matches
+//                    if (type != value.GetType())
+//                        return false;
+//                }
+//                else if (!isNull)
+//                {
+//                    // Check if it should be non-null
+//                    return false;
+//                }
+//            }
+//            return true;
+//        }
 
-        private void CombinedNodeValueChanged(object sender, EventArgs e)
-        {
-            // Defer the refresh of one frame and ensure we execute it only once.
-            if (!refreshQueued)
-            {
-                Dispatcher.InvokeAsync(TriggerRefresh);
-                refreshQueued = true;
-            }
-        }
+//        private void CombinedNodeValueChanged(object sender, EventArgs e)
+//        {
+//            // Defer the refresh of one frame and ensure we execute it only once.
+//            if (!refreshQueued)
+//            {
+//                Dispatcher.InvokeAsync(TriggerRefresh);
+//                refreshQueued = true;
+//            }
+//        }
 
-        private void TriggerRefresh()
-        {
-            Dispatcher.EnsureAccess();
+//        private void TriggerRefresh()
+//        {
+//            Dispatcher.EnsureAccess();
 
-            if (!refreshQueued)
-                return;
+//            if (!refreshQueued)
+//                return;
 
-            try
-            {
-                if (!IsPrimitive)
-                {
-                    Refresh();
-                }
-            }
-            finally
-            {
-                refreshQueued = false;
-            }
-        }
-    }
-}
+//            try
+//            {
+//                if (!IsPrimitive)
+//                {
+//                    Refresh();
+//                }
+//            }
+//            finally
+//            {
+//                refreshQueued = false;
+//            }
+//        }
+//    }
+//}
