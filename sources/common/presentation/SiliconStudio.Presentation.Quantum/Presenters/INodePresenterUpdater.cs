@@ -7,6 +7,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 {
     public interface INodePresenterUpdater
     {
-        void UpdateNode([NotNull] IViewModelServiceProvider serviceProvider, [NotNull] INodePresenter node);
+        void UpdateNode([NotNull] INodePresenter node);
     }
 }

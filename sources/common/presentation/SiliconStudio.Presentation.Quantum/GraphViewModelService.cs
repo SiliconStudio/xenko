@@ -12,7 +12,6 @@ namespace SiliconStudio.Presentation.Quantum
     public class GraphViewModelService
     {
         private readonly List<IPropertyNodeUpdater> propertyNodeUpdaters = new List<IPropertyNodeUpdater>();
-        private readonly List<INodePresenterUpdater> nodePresenterUpdaters = new List<INodePresenterUpdater>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphViewModelService"/> class.
@@ -29,6 +28,8 @@ namespace SiliconStudio.Presentation.Quantum
 
         public List<INodePresenterCommand> AvailableCommands { get; } = new List<INodePresenterCommand>();
 
+        public List<INodePresenterUpdater> AvailableUpdaters { get; } = new List<INodePresenterUpdater>();
+
         /// <summary>
         /// Gets or sets the combined node factory.
         /// </summary>
@@ -39,6 +40,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Registers a <see cref="IPropertyNodeUpdater"/> to this service.
         /// </summary>
         /// <param name="propertyNodeUpdater">The node updater to register.</param>
+        [Obsolete]
         public void RegisterPropertyNodeUpdater(IPropertyNodeUpdater propertyNodeUpdater)
         {
             propertyNodeUpdaters.Add(propertyNodeUpdater);
@@ -48,6 +50,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Unregisters a <see cref="IPropertyNodeUpdater"/> from this service.
         /// </summary>
         /// <param name="propertyNodeUpdater">The node updater to unregister.</param>
+        [Obsolete]
         public void UnregisterPropertyNodeUpdater(IPropertyNodeUpdater propertyNodeUpdater)
         {
             propertyNodeUpdaters.Remove(propertyNodeUpdater);
@@ -63,7 +66,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal void NotifyNodePresenterChanged(INodePresenter node)
         {
-            foreach (var updater in nodePresenterUpdaters)
+            foreach (var updater in AvailableUpdaters)
             {
                 updater.UpdateNode(node);
             }

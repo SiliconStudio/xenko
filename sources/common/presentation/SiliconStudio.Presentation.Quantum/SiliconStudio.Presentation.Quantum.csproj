@@ -51,6 +51,7 @@
     <Compile Include="GraphViewModelService.cs" />
     <Compile Include="Presenters\NodePresenterBase.cs" />
     <Compile Include="Presenters\NodePresenterException.cs" />
+    <Compile Include="Presenters\NodePresenterUpdaterBase.cs" />
     <Compile Include="Presenters\RootNodePresenter.cs" />
     <Compile Include="Presenters\SyncNodePresenterCommandBase.cs" />
     <Compile Include="Presenters\VirtualNodePresenter.cs" />
