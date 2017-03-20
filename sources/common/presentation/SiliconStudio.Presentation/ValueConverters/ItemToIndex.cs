@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using SiliconStudio.Core.Annotations;
@@ -19,22 +20,29 @@ namespace SiliconStudio.Presentation.ValueConverters
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var collection = parameter as IList;
-            if (collection != null)
+            if (collection == null || collection.Count <= 0)
+                return -1;
+
+            // 1st attempt using the default item lookup
+            var res = collection.IndexOf(value);
+            if (res != -1 || value == null)
+                return res;
+
+            try
             {
-                // attempt generic reverse object lookup
-                var res = collection.IndexOf(value);
-                if (res != -1)
-                    return res;
-                // if we're here, it failed. Attempt #2 by using a normalizing (to doubles) conversion:
-                var asDoubles = collection.ToListOfDoubles();
-                if (asDoubles.IsNullOrEmpty())
-                    return -1;   // there were no numeric types in this collection.
+                // 2nd attempt using a normalizing conversion (to double):
+                var asDoubles = collection.Cast<object>().Select(x => (double)System.Convert.ChangeType(x, typeof(double))).ToList();
                 Debug.Assert(asDoubles.SequenceEqual(asDoubles.OrderBy(d => d)));
+
                 var search = asDoubles.BinarySearch((double)value);
-                if (search < 0) // API : it returns a 1-complement of the index if an exact match is not found.
+                if (search < 0) // Note: BinarySearch returns a 1-complement of the index when an exact match is not found.
                     search = Math.Min(~search, collection.Count - 1);
                 return search;
             }
+            catch (FormatException) { }
+            catch (InvalidCastException) { }
+            catch (OverflowException) { }
+
             return -1;
         }
 
