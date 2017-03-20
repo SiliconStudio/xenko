@@ -58,7 +58,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         public void ClearChildren()
         {
-            foreach (var child in Children.Cast<NodeViewModel>().ToList())
+            foreach (var child in Children.Cast<NodeViewModelBase>().ToList())
             {
                 RemoveChild(child);
             }

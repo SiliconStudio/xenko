@@ -146,7 +146,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (viewModels == null) throw new ArgumentNullException(nameof(viewModels));
             var combinedViewModel = new GraphViewModel(serviceProvider);
 
-            var rootNodes = new List<NodeViewModel2>();
+            var rootNodes = new List<NodeViewModel>();
             foreach (var viewModel in viewModels)
             {
                 if (!(viewModel.RootNode is SingleNodeViewModel))
@@ -154,7 +154,7 @@ namespace SiliconStudio.Presentation.Quantum
 
                 viewModel.Parent = combinedViewModel;
                 combinedViewModel.children.Add(viewModel);
-                var rootNode = (NodeViewModel2)viewModel.RootNode;
+                var rootNode = (NodeViewModel)viewModel.RootNode;
                 rootNodes.Add(rootNode);
             }
 

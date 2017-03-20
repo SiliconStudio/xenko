@@ -11,7 +11,7 @@ using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public abstract class SingleNodeViewModel : NodeViewModel
+    public abstract class SingleNodeViewModel : NodeViewModelBase
     {
         protected string[] DisplayNameDependentProperties;
         protected Func<string> DisplayNameProvider;
@@ -54,13 +54,13 @@ namespace SiliconStudio.Presentation.Quantum
             base.Destroy();
         }
 
-        /// <inheritdoc cref="NodeViewModel.AddCommand"/>
+        /// <inheritdoc cref="NodeViewModelBase.AddCommand"/>
         public new void AddCommand([NotNull] INodeCommandWrapper command)
         {
             base.AddCommand(command);
         }
 
-        /// <inheritdoc cref="NodeViewModel.RemoveCommand"/>
+        /// <inheritdoc cref="NodeViewModelBase.RemoveCommand"/>
         public new bool RemoveCommand([NotNull] INodeCommandWrapper command)
         {
             return base.RemoveCommand(command);

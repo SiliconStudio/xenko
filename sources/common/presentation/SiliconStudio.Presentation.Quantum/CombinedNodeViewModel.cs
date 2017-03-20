@@ -12,7 +12,7 @@ using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public class CombinedNodeViewModel : NodeViewModel
+    public class CombinedNodeViewModel : NodeViewModelBase
     {
         private readonly List<SingleNodeViewModel> combinedNodes;
         private readonly List<object> combinedNodeInitialValues;
@@ -199,7 +199,7 @@ namespace SiliconStudio.Presentation.Quantum
 
                     // Destroy all children and remove them
                     Children.SelectDeep(x => x.Children).ForEach(x => x.Destroy());
-                    foreach (var child in Children.Cast<NodeViewModel>().ToList())
+                    foreach (var child in Children.Cast<NodeViewModelBase>().ToList())
                     {
                         RemoveChild(child);
                     }

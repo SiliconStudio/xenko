@@ -5,7 +5,7 @@ using System;
 namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
-    /// An exception that occurs during consistency checks of <see cref="GraphViewModel"/> nodes, indicating that an <see cref="NodeViewModel"/> is un an unexpected state.
+    /// An exception that occurs during consistency checks of <see cref="GraphViewModel"/> nodes, indicating that an <see cref="NodeViewModelBase"/> is un an unexpected state.
     /// </summary>
     public class GraphViewModelConsistencyException : Exception
     {
@@ -15,7 +15,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="node">The node that is related to this error.</param>
         /// <param name="messageFormat">A composite format string that describes the error.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
-        public GraphViewModelConsistencyException(NodeViewModel node, string messageFormat, params object[] args)
+        public GraphViewModelConsistencyException(NodeViewModelBase node, string messageFormat, params object[] args)
             : base(string.Format(messageFormat, args))
         {
             Node = node;
@@ -23,8 +23,8 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <summary>
-        /// Gets the <see cref="NodeViewModel"/> that triggered this exception.
+        /// Gets the <see cref="NodeViewModelBase"/> that triggered this exception.
         /// </summary>
-        public NodeViewModel Node { get; private set; }
+        public NodeViewModelBase Node { get; private set; }
     }
 }

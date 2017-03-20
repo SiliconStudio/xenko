@@ -9,9 +9,9 @@ namespace SiliconStudio.Presentation.Quantum
 {
     internal class NodeViewModelDynamicMetaObject : DynamicMetaObject
     {
-        private readonly NodeViewModel node;
+        private readonly NodeViewModelBase node;
 
-        public NodeViewModelDynamicMetaObject(Expression parameter, NodeViewModel node)
+        public NodeViewModelDynamicMetaObject(Expression parameter, NodeViewModelBase node)
             : base(parameter, BindingRestrictions.Empty, node)
         {
             this.node = node;
@@ -29,27 +29,27 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 propertyName = binder.Name.Substring(GraphViewModel.HasChildPrefix.Length);
                 args[0] = Expression.Constant(propertyName);
-                expression = Expression.Call(self, typeof(NodeViewModel).GetMethod(nameof(NodeViewModel.GetChild), BindingFlags.Public | BindingFlags.Instance), args);
+                expression = Expression.Call(self, typeof(NodeViewModelBase).GetMethod(nameof(NodeViewModelBase.GetChild), BindingFlags.Public | BindingFlags.Instance), args);
                 expression = Expression.Convert(Expression.NotEqual(expression, Expression.Constant(null)), binder.ReturnType);
             }
             else if (binder.Name.StartsWith(GraphViewModel.HasCommandPrefix))
             {
                 propertyName = binder.Name.Substring(GraphViewModel.HasCommandPrefix.Length);
                 args[0] = Expression.Constant(propertyName);
-                expression = Expression.Call(self, typeof(NodeViewModel).GetMethod(nameof(NodeViewModel.GetCommand), BindingFlags.Public | BindingFlags.Instance), args);
+                expression = Expression.Call(self, typeof(NodeViewModelBase).GetMethod(nameof(NodeViewModelBase.GetCommand), BindingFlags.Public | BindingFlags.Instance), args);
                 expression = Expression.Convert(Expression.NotEqual(expression, Expression.Constant(null)), binder.ReturnType);
             }
             else if (binder.Name.StartsWith(GraphViewModel.HasAssociatedDataPrefix))
             {
                 propertyName = binder.Name.Substring(GraphViewModel.HasAssociatedDataPrefix.Length);
                 args[0] = Expression.Constant(propertyName);
-                expression = Expression.Call(self, typeof(NodeViewModel).GetMethod(nameof(NodeViewModel.GetAssociatedData), BindingFlags.Public | BindingFlags.Instance), args);
+                expression = Expression.Call(self, typeof(NodeViewModelBase).GetMethod(nameof(NodeViewModelBase.GetAssociatedData), BindingFlags.Public | BindingFlags.Instance), args);
                 expression = Expression.Convert(Expression.NotEqual(expression, Expression.Constant(null)), binder.ReturnType);
             }
             else
             {
                 args[0] = Expression.Constant(propertyName);
-                expression = Expression.Call(self, typeof(NodeViewModel).GetMethod(nameof(NodeViewModel.GetDynamicObject), BindingFlags.Public | BindingFlags.Instance), args);
+                expression = Expression.Call(self, typeof(NodeViewModelBase).GetMethod(nameof(NodeViewModelBase.GetDynamicObject), BindingFlags.Public | BindingFlags.Instance), args);
             }
 
             var getMember = new DynamicMetaObject(expression, BindingRestrictions.GetTypeRestriction(Expression, LimitType));
