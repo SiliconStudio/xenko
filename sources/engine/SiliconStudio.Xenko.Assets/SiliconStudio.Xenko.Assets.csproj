@@ -488,6 +488,7 @@
     </Content>
     <Compile Include="Navigation\NavigationMeshAssetCompiler.cs" />
   </ItemGroup>
+  <Import Project="..\..\assets\SiliconStudio.Archive\SiliconStudio.Archive.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -50,6 +50,7 @@ setup-SetupFiles*/
 /build/.vs
 /build/Xenko.version
 /build/Xenko.*VC.db
+/tools
 /externals/
 /sources/tools/Xenko.ShaderKeyGenerator/build/
 /sources/tools/Xenko.ProjectGenerator/build/
