@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Quantum.Presenters;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -69,10 +68,5 @@ namespace SiliconStudio.Presentation.Quantum
                 updater.UpdateNode(node);
             }
         }
-    }
-
-    public interface INodePresenterUpdater
-    {
-        void UpdateNode([NotNull] INodePresenter node);
     }
 }
