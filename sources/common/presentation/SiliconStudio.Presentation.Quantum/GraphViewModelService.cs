@@ -44,16 +44,6 @@ namespace SiliconStudio.Presentation.Quantum
         public CreateCombinedNodeDelegate CombinedNodeViewModelFactory { get; set; }
 
         /// <summary>
-        /// Raised when a node is initialized, either during the construction of the <see cref="GraphViewModel"/> or during the refresh of a
-        /// node that has been modified. This event is raised once for each modified <see cref="SingleNodeViewModel"/> and their recursive children.
-        /// </summary>
-        /// <remarks>
-        /// This event is intended to allow to customize nodes (by adding associated data, altering hierarchy, etc.). Subscribers should
-        /// not retain any refrence to the given node since they can be destroyed and recreated arbitrarily.
-        /// </remarks>
-        public event EventHandler<NodeInitializedEventArgs> NodeInitialized;
-
-        /// <summary>
         /// Registers a <see cref="IPropertyNodeUpdater"/> to this service.
         /// </summary>
         /// <param name="propertyNodeUpdater">The node updater to register.</param>
@@ -71,23 +61,14 @@ namespace SiliconStudio.Presentation.Quantum
             propertyNodeUpdaters.Remove(propertyNodeUpdater);
         }
 
-        /// <summary>
-        /// Raise the <see cref="NodeInitialized"/> event.
-        /// </summary>
-        /// <param name="node">The node that has been modified.</param>
         internal void NotifyNodeInitialized(SingleNodeViewModel node)
         {
             foreach (var updater in propertyNodeUpdaters)
             {
                 updater.UpdateNode(node);
             }
-            NodeInitialized?.Invoke(this, new NodeInitializedEventArgs(node));
         }
 
-        /// <summary>
-        /// Raise the <see cref="NodeInitialized"/> event.
-        /// </summary>
-        /// <param name="node">The node that has been modified.</param>
         internal void NotifyNodePresenterChanged(INodePresenter node)
         {
             foreach (var updater in nodePresenterUpdaters)
