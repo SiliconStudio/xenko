@@ -26,6 +26,7 @@
     <Compile Include="CombinedNodeViewModel.cs" />
     <Compile Include="Controls\AsyncContentControl.cs" />
     <Compile Include="GraphNodeBinding.cs" />
+    <Compile Include="Presenters\INodePresenterUpdater.cs" />
     <Compile Include="Presenters\NodePresenterCommandWrapper.cs" />
     <Compile Include="NodeViewModel.cs" />
     <Compile Include="Presenters\INodePresenterCommand.cs" />

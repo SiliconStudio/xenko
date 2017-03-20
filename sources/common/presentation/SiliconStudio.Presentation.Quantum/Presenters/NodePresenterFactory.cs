@@ -18,7 +18,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public INodePresenter CreateNodeHierarchy(IObjectNode rootNode, GraphNodePath rootNodePath, IPropertyProviderViewModel propertyProvider)
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
-            var rootPresenter = CreateRootPresenter(rootNode);
+            var rootPresenter = CreateRootPresenter(propertyProvider, rootNode);
             CreateChildren(rootPresenter, rootNode, propertyProvider);
             return rootPresenter;
         }
@@ -27,16 +27,16 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         {
             if (parentPresenter == null) throw new ArgumentNullException(nameof(parentPresenter));
             if (objectNode == null) throw new ArgumentNullException(nameof(objectNode));
-            CreateMembers(parentPresenter, objectNode, propertyProvider);
-            CreateItems(parentPresenter, objectNode, propertyProvider);
+            CreateMembers(propertyProvider, parentPresenter, objectNode);
+            CreateItems(propertyProvider, parentPresenter, objectNode);
             parentPresenter.FinalizeInitialization();
         }
 
         [NotNull]
-        protected virtual IInitializingNodePresenter CreateRootPresenter([NotNull] IObjectNode rootNode)
+        protected virtual IInitializingNodePresenter CreateRootPresenter(IPropertyProviderViewModel propertyProvider, [NotNull] IObjectNode rootNode)
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
-            return new RootNodePresenter(this, rootNode);
+            return new RootNodePresenter(this, propertyProvider, rootNode);
         }
 
         protected virtual bool ShouldCreateMemberPresenter([NotNull] INodePresenter parent, [NotNull] IMemberNode member, [CanBeNull] IPropertyProviderViewModel propertyProvider)
@@ -48,11 +48,11 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         }
 
         [NotNull]
-        protected virtual IInitializingNodePresenter CreateMember([NotNull] INodePresenter parentPresenter, [NotNull] IMemberNode member)
+        protected virtual IInitializingNodePresenter CreateMember(IPropertyProviderViewModel propertyProvider, [NotNull] INodePresenter parentPresenter, [NotNull] IMemberNode member)
         {
             if (parentPresenter == null) throw new ArgumentNullException(nameof(parentPresenter));
             if (member == null) throw new ArgumentNullException(nameof(member));
-            return new MemberNodePresenter(this, parentPresenter, member);
+            return new MemberNodePresenter(this, propertyProvider, parentPresenter, member);
         }
 
         protected virtual bool ShouldCreateItemPresenter([NotNull] INodePresenter parent, [NotNull] IObjectNode collectionNode, Index index, [CanBeNull] IPropertyProviderViewModel propertyProvider)
@@ -64,20 +64,20 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         }
 
         [NotNull]
-        protected virtual IInitializingNodePresenter CreateItem([NotNull] INodePresenter containerPresenter, [NotNull] IObjectNode containerNode, Index index)
+        protected virtual IInitializingNodePresenter CreateItem(IPropertyProviderViewModel propertyProvider, [NotNull] INodePresenter containerPresenter, [NotNull] IObjectNode containerNode, Index index)
         {
             if (containerPresenter == null) throw new ArgumentNullException(nameof(containerPresenter));
             if (containerNode == null) throw new ArgumentNullException(nameof(containerNode));
-            return new ItemNodePresenter(this, containerPresenter, containerNode, index);
+            return new ItemNodePresenter(this, propertyProvider, containerPresenter, containerNode, index);
         }
 
-        private void CreateMembers(IInitializingNodePresenter parentPresenter, IObjectNode objectNode, IPropertyProviderViewModel propertyProvider)
+        private void CreateMembers(IPropertyProviderViewModel propertyProvider, IInitializingNodePresenter parentPresenter, IObjectNode objectNode)
         {
             foreach (var member in objectNode.Members)
             {
                 if (ShouldCreateMemberPresenter(parentPresenter, member, propertyProvider))
                 {
-                    var memberPresenter = CreateMember(parentPresenter, member);
+                    var memberPresenter = CreateMember(propertyProvider, parentPresenter, member);
                     if (member.Target != null)
                     {
                         CreateChildren(memberPresenter, member.Target, propertyProvider);
@@ -87,7 +87,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        private void CreateItems(IInitializingNodePresenter parentPresenter, IObjectNode objectNode, IPropertyProviderViewModel propertyProvider)
+        private void CreateItems(IPropertyProviderViewModel propertyProvider, IInitializingNodePresenter parentPresenter, IObjectNode objectNode)
         {
             if (objectNode.IsEnumerable)
             {
@@ -97,7 +97,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
                     {
                         if (ShouldCreateItemPresenter(parentPresenter, objectNode, item.Index, propertyProvider))
                         {
-                            var itemPresenter = CreateItem(parentPresenter, objectNode, item.Index);
+                            var itemPresenter = CreateItem(propertyProvider, parentPresenter, objectNode, item.Index);
                             if (item.TargetNode != null)
                             {
                                 CreateChildren(itemPresenter, item.TargetNode, propertyProvider);
@@ -112,7 +112,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
                     {
                         if (ShouldCreateItemPresenter(parentPresenter, objectNode, item, propertyProvider))
                         {
-                            var itemPresenter = CreateItem(parentPresenter, objectNode, item);
+                            var itemPresenter = CreateItem(propertyProvider, parentPresenter, objectNode, item);
                             parentPresenter.AddChild(itemPresenter);
                         }
                     }

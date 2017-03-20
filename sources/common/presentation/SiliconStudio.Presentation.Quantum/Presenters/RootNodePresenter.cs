@@ -10,8 +10,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
     {
         protected readonly IObjectNode RootNode;
 
-        public RootNodePresenter([NotNull] INodePresenterFactoryInternal factory, [NotNull] IObjectNode rootNode)
-            : base(factory, null)
+        public RootNodePresenter([NotNull] INodePresenterFactoryInternal factory, IPropertyProviderViewModel propertyProvider, [NotNull] IObjectNode rootNode)
+            : base(factory, propertyProvider, null)
         {
             if (factory == null) throw new ArgumentNullException(nameof(factory));
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));

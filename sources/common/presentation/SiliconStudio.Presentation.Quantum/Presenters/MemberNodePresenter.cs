@@ -13,8 +13,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         protected readonly IMemberNode Member;
         private readonly List<Attribute> memberAttributes = new List<Attribute>();
 
-        public MemberNodePresenter([NotNull] INodePresenterFactoryInternal factory, [NotNull] INodePresenter parent, [NotNull] IMemberNode member)
-            : base(factory, parent)
+        public MemberNodePresenter([NotNull] INodePresenterFactoryInternal factory, IPropertyProviderViewModel propertyProvider, [NotNull] INodePresenter parent, [NotNull] IMemberNode member)
+            : base(factory, propertyProvider, parent)
         {
             if (factory == null) throw new ArgumentNullException(nameof(factory));
             if (parent == null) throw new ArgumentNullException(nameof(parent));

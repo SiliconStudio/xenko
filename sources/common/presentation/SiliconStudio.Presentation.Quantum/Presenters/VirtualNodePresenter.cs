@@ -12,8 +12,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         private readonly Action<object> setter;
         private readonly List<Attribute> memberAttributes = new List<Attribute>();
 
-        public VirtualNodePresenter([NotNull] INodePresenterFactoryInternal factory, [NotNull] INodePresenter parent, string name, Type type, int? order, [NotNull] Func<object> getter, Action<object> setter)
-            : base(factory, parent)
+        public VirtualNodePresenter([NotNull] INodePresenterFactoryInternal factory, IPropertyProviderViewModel propertyProvider, [NotNull] INodePresenter parent, string name, Type type, int? order, [NotNull] Func<object> getter, Action<object> setter)
+            : base(factory, propertyProvider, parent)
         {
             this.getter = getter;
             this.setter = setter;

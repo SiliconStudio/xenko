@@ -9,6 +9,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 {
     public interface INodePresenter : IDisposable
     {
+        INodePresenter this[string childName] { get; }
+
         string Name { get; }
 
         INodePresenter Root { get; }
@@ -38,6 +40,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         object Value { get; }
 
         string CombineKey { get; }
+
+        IPropertyProviderViewModel PropertyProvider { get; }
 
         event EventHandler<ValueChangingEventArgs> ValueChanging;
 

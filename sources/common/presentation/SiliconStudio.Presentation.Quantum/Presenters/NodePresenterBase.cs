@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
@@ -13,17 +14,20 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         private readonly List<INodePresenter> children = new List<INodePresenter>();
         private readonly PropertyContainer attachedProperties;
 
-        protected NodePresenterBase([NotNull] INodePresenterFactoryInternal factory, INodePresenter parent)
+        protected NodePresenterBase([NotNull] INodePresenterFactoryInternal factory, [CanBeNull] IPropertyProviderViewModel propertyProvider, [CanBeNull] INodePresenter parent)
         {
             if (factory == null) throw new ArgumentNullException(nameof(factory));
             this.factory = factory;
             Parent = parent;
+            PropertyProvider = propertyProvider;
         }
 
         public virtual void Dispose()
         {
             // Do nothing by default
         }
+
+        public INodePresenter this[string childName] => children.First(x => string.Equals(x.Name, childName, StringComparison.Ordinal));
 
         public INodePresenter Root => Parent?.Root ?? Parent ?? this;
 
@@ -62,6 +66,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public abstract void UpdateItem(object newValue, Index index);
 
         public abstract NodeAccessor GetNodeAccessor();
+
+        public IPropertyProviderViewModel PropertyProvider { get; }
 
         public void ChangeParent(INodePresenter newParent)
         {

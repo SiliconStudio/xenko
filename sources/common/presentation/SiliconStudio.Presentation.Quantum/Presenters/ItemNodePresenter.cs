@@ -12,8 +12,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
     {
         protected readonly IObjectNode Container;
 
-        public ItemNodePresenter([NotNull] INodePresenterFactoryInternal factory, [NotNull] INodePresenter parent, [NotNull] IObjectNode container, Index index)
-            : base(factory, parent)
+        public ItemNodePresenter([NotNull] INodePresenterFactoryInternal factory, IPropertyProviderViewModel propertyProvider, [NotNull] INodePresenter parent, [NotNull] IObjectNode container, Index index)
+            : base(factory, propertyProvider, parent)
         {
             if (factory == null) throw new ArgumentNullException(nameof(factory));
             if (parent == null) throw new ArgumentNullException(nameof(parent));
