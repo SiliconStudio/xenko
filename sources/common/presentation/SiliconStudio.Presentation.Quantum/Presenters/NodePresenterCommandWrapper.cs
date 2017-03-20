@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
@@ -27,13 +28,18 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         
         public INodePresenterCommand Command { get; }
 
+        public override bool CanExecute(object parameter)
+        {
+            return Command.CanExecute(presenter.Yield().ToList(), parameter);
+        }
+
         public override async Task Invoke(object parameter)
         {
             using (var transaction = UndoRedoService?.CreateTransaction())
             {
-                var preExecuteResult = await Command.PreExecute(presenter.Yield(), parameter);
+                var preExecuteResult = await Command.PreExecute(presenter.Yield().ToList(), parameter);
                 await Command.Execute(presenter, parameter, preExecuteResult);
-                await Command.PostExecute(presenter.Yield(), parameter);
+                await Command.PostExecute(presenter.Yield().ToList(), parameter);
 
                 if (transaction != null)
                 {

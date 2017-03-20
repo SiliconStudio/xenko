@@ -29,6 +29,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         bool IsEnumerable { get; }
 
+        bool IsReadOnly { get; }
+
         bool IsVisible { get; set; }
 
         Index Index { get; }

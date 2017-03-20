@@ -77,13 +77,13 @@ namespace SiliconStudio.Presentation.Quantum
         private GraphViewModel(IViewModelServiceProvider serviceProvider, Type type, IEnumerable<Tuple<INodePresenter, IPropertyProviderViewModel>> rootNodes)
             : this(serviceProvider)
         {
-            if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
+            if (rootNodes == null) throw new ArgumentNullException(nameof(rootNode));
             var viewModelFactory = new NodeViewModelFactory();
             foreach (var root in rootNodes)
             {
                 propertiesProviderMap.Add(root.Item1, root.Item2);
             }
-            viewModelFactory.CreateGraph(this, type, propertiesProviderMap.Keys);
+            rootNode = viewModelFactory.CreateGraph(this, type, propertiesProviderMap.Keys);
         }
 
         /// <inheritdoc/>

@@ -42,6 +42,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public abstract bool IsEnumerable { get; }
 
         public bool IsVisible { get; set; } = true;
+        public bool IsReadOnly { get; }
 
         public abstract Index Index { get; }
         public abstract ITypeDescriptor Descriptor { get; }
