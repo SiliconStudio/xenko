@@ -46,9 +46,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// The reference expansion policy chosen while generating children for this node.
         /// </summary>
-        /// <remarks>
-        /// This can be customized by <see cref="IPropertiesProviderViewModel.ShouldConstructChildren"/>.
-        /// </remarks>
         public ExpandReferencePolicy ExpandReferencePolicy { get; protected set; } = ExpandReferencePolicy.None;
 
         /// <inheritdoc/>

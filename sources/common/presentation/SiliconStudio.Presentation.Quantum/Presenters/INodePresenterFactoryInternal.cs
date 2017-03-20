@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
@@ -8,6 +9,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
     {
         IReadOnlyCollection<INodePresenterCommand> AvailableCommands { get; }
 
-        void CreateChildren(IInitializingNodePresenter parentPresenter, IObjectNode objectNode);
+        void CreateChildren([NotNull] IInitializingNodePresenter parentPresenter, [NotNull] IObjectNode objectNode, [CanBeNull] IPropertiesProviderViewModel propertyProvider = null);
     }
 }

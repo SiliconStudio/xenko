@@ -1,8 +1,5 @@
-namespace SiliconStudio.Presentation.Quantum
+﻿namespace SiliconStudio.Presentation.Quantum
 {
-    /// <summary>
-    /// Result of <see cref="IPropertiesProviderViewModel.ShouldConstructChildren"/>.
-    /// </summary>
     public enum ExpandReferencePolicy
     {
         /// <summary>

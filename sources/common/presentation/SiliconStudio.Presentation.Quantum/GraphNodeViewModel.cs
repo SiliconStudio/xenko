@@ -345,12 +345,8 @@ namespace SiliconStudio.Presentation.Quantum
             var objectNode = targetNode as IObjectNode;
             if (objectNode != null)
             {
-                ExpandReferencePolicy = Owner.PropertiesProvider.ShouldConstructChildren(SourceNode, index);
-                if (ExpandReferencePolicy != ExpandReferencePolicy.None)
-                {
-                    GenerateMembers(objectNode, targetNodePath, initializedChildren);
-                    GenerateItems(objectNode, targetNodePath, initializedChildren);
-                }
+                GenerateMembers(objectNode, targetNodePath, initializedChildren);
+                GenerateItems(objectNode, targetNodePath, initializedChildren);
             }
 
             // Call FinalizeInitialization on all created nodes after they were all initialized.

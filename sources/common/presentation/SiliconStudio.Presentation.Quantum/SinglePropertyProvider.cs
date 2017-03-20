@@ -1,3 +1,4 @@
+﻿using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.References;
 
@@ -22,9 +23,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public IObjectNode GetRootNode() => rootNode;
 
-
-        /// <inheritdoc/>
-        public ExpandReferencePolicy ShouldConstructChildren(IGraphNode graphNode, Index index) => ExpandReferencePolicy.Full;
 
         /// <inheritdoc/>
         public bool ShouldConstructMember(IMemberNode member, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;

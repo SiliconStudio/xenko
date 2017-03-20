@@ -120,7 +120,7 @@ namespace SiliconStudio.Presentation.Quantum
                 return null;
 
             var factory = serviceProvider.Get<GraphViewModelService>().NodePresenterFactory;
-            var node = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
+            var node = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode), propertyProvider);
             return new GraphViewModel(serviceProvider, rootNode.Type, Tuple.Create(node, propertyProvider).Yield());
         }
 
@@ -148,7 +148,7 @@ namespace SiliconStudio.Presentation.Quantum
                     return null;
 
 
-                var node = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
+                var node = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode), propertyProvider);
                 rootNodes.Add(Tuple.Create(node, propertyProvider));
             }
             return new GraphViewModel(serviceProvider, type, rootNodes);

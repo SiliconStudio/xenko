@@ -1,3 +1,5 @@
+﻿using System;
+using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -19,18 +21,10 @@ namespace SiliconStudio.Presentation.Quantum
         IObjectNode GetRootNode();
 
         /// <summary>
-        /// Indicates whether the children of the view model corresponding to the given node and index should be constructed.
-        /// </summary>
-        /// <param name="graphNode">The node of the view model to evaluate.</param>
-        /// <param name="index">The index of the view model to evaluate.</param>
-        /// <returns><see cref="ExpandReferencePolicy.Full"/> or <see cref="ExpandReferencePolicy.Partial"/> if respectively all or some of the members of the referenced node should be constructed, <see cref="ExpandReferencePolicy.None"/> otherwise.</returns>
-        ExpandReferencePolicy ShouldConstructChildren(IGraphNode graphNode, Index index);
-
-        /// <summary>
         /// Indicates whether the view model of a specific member should be constructed.
         /// </summary>
         /// <param name="member">The member to evaluate.</param>
-        /// <param name="expandReferencePolicy">The result from previous call to <see cref="ShouldConstructChildren"/>.</param>
+        /// <param name="expandReferencePolicy"></param>
         /// <returns><c>True</c> if the member node should be constructed, <c>False</c> otherwise.</returns>
         bool ShouldConstructMember(IMemberNode member, ExpandReferencePolicy expandReferencePolicy);
 
@@ -39,7 +33,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="collection">The collection to evaluate.</param>
         /// <param name="index">The index of the item to evaluate.</param>
-        /// <param name="expandReferencePolicy">The result from previous call to <see cref="ShouldConstructChildren"/>.</param>
+        /// <param name="expandReferencePolicy"></param>
         /// <returns><c>True</c> if the member node should be constructed, <c>False</c> otherwise.</returns>
         bool ShouldConstructItem(IObjectNode collection, Index index, ExpandReferencePolicy expandReferencePolicy);
     }

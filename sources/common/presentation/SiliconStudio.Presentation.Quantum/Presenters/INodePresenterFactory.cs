@@ -1,11 +1,12 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
 {
     public interface INodePresenterFactory
     {
-        INodePresenter CreateNodeHierarchy(IObjectNode rootNode, GraphNodePath rootNodePath);
+        INodePresenter CreateNodeHierarchy([NotNull] IObjectNode rootNode, [NotNull] GraphNodePath rootNodePath, [CanBeNull] IPropertiesProviderViewModel propertyProvider = null);
     }
 }

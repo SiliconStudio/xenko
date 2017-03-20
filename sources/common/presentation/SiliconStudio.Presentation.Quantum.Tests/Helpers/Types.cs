@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.References;
 
@@ -21,8 +22,6 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
             {
                 return rootNode;
             }
-
-            public ExpandReferencePolicy ShouldConstructChildren(IGraphNode graphNode, Index index) => ExpandReferencePolicy.Full;
 
             public bool ShouldConstructMember(IMemberNode member, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
             public bool ShouldConstructItem(IObjectNode collection, Index index, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
