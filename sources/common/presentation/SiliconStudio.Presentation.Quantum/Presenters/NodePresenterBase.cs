@@ -47,6 +47,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public abstract Index Index { get; }
         public abstract ITypeDescriptor Descriptor { get; }
+        public int? CustomOrder { get; set; }
         public abstract int? Order { get; }
         public abstract object Value { get; }
         public virtual string CombineKey => Name;

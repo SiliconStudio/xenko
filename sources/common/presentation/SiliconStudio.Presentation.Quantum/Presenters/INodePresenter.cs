@@ -40,6 +40,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         ITypeDescriptor Descriptor { get; }
 
+        int? CustomOrder { set; get; }
+
         int? Order { get; }
 
         object Value { get; }

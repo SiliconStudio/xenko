@@ -79,7 +79,8 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <summary>
         /// Gets or sets a custom value for the <see cref="Order"/> of this node.
         /// </summary>
-        public int? CustomOrder { get { return customOrder; } set { SetValue(ref customOrder, value, nameof(CustomOrder), nameof(Order)); } }
+        // FIXME
+        public int? CustomOrder { get { return NodePresenters.First().CustomOrder; } set { SetValue(ref customOrder, value, nameof(CustomOrder), nameof(Order)); } }
 
         /// <inheritdoc/>
         // FIXME
