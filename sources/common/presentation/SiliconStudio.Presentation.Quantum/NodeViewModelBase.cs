@@ -112,7 +112,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected internal abstract object InternalNodeValue { get; set; }
 
         /// <inheritdoc/>
-        public object NodeValue { get { return InternalNodeValue; } set { InternalNodeValue = ConvertValue(value); } }
+        public object NodeValue { get { return InternalNodeValue; } set { SetValue(() => InternalNodeValue = ConvertValue(value)); } }
 
         /// <summary>
         /// Gets or sets the index of this node, relative to its parent node when its contains a collection. Can be null of this node is not in a collection.

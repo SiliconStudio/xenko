@@ -31,8 +31,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             AttachCommands();
         }
 
-        public sealed override string Name { get; }
-
         public sealed override List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
 
         public override Type Type { get; }

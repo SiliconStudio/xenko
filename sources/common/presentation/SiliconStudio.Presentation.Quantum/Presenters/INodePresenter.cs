@@ -70,5 +70,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         NodeAccessor GetNodeAccessor();
 
         void ChangeParent([NotNull] INodePresenter newParent);
+
+        void Rename(string newName);
     }
 }

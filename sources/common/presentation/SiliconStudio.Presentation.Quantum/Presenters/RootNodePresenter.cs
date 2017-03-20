@@ -17,6 +17,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             if (factory == null) throw new ArgumentNullException(nameof(factory));
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
             RootNode = rootNode;
+            Name = "Root";
 
             foreach (var command in factory.AvailableCommands)
             {
@@ -27,7 +28,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             AttachCommands();
         }
 
-        public override string Name => "Root";
         public sealed override List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
         public override Type Type => RootNode.Type;
         public override Index Index => Index.Empty;

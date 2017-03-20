@@ -36,7 +36,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public IReadOnlyList<INodePresenter> Children => children;
 
         public string DisplayName { get; set; }
-        public abstract string Name { get; }
+        public string Name { get; protected set; }
         public abstract List<INodePresenterCommand> Commands { get; }
         public abstract Type Type { get; }
         public abstract bool IsPrimitive { get; }
@@ -85,6 +85,11 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             parent.children.Add(this);
 
             Parent = newParent;
+        }
+
+        public void Rename(string newName)
+        {
+            Name = newName;
         }
 
         protected void Refresh()

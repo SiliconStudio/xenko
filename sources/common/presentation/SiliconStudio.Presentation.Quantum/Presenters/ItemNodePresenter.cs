@@ -37,8 +37,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             Container.ItemChanged -= OnItemChanged;
         }
 
-        public sealed override string Name { get; }
-
         public sealed override List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
 
         public INodePresenter OwnerCollection { get; }
