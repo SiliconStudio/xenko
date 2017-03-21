@@ -674,42 +674,6 @@ namespace SiliconStudio.Xenko.Graphics
             return viewFormat;
         }
 
-        internal static PixelFormat ComputeNonMSAADepthFormat(PixelFormat format)
-        {
-            PixelFormat result;
-
-            switch (format)
-            {
-                case PixelFormat.R16_Float:
-                case PixelFormat.R16_Typeless:
-                case PixelFormat.D16_UNorm:
-                    result = PixelFormat.R16_Float;
-                    break;
-                case PixelFormat.R32_Float:
-                case PixelFormat.R32_Typeless:
-                case PixelFormat.D32_Float:
-                    result = PixelFormat.R32_Float;
-                    break;
-
-                // Note: for those formats we lose stencil buffer information during MSAA -> non-MSAA conversion
-                case PixelFormat.R24G8_Typeless:
-                case PixelFormat.D24_UNorm_S8_UInt:
-                case PixelFormat.R24_UNorm_X8_Typeless:
-                    result = PixelFormat.R32_Float;
-                    break;
-                case PixelFormat.R32G8X24_Typeless:
-                case PixelFormat.D32_Float_S8X24_UInt:
-                case PixelFormat.R32_Float_X8X24_Typeless:
-                    result = PixelFormat.R32_Float;
-                    break;
-
-                default:
-                    throw new NotSupportedException($"Unsupported depth format [{format}]");
-            }
-
-            return result;
-        }
-
         internal static SharpDX.DXGI.Format ComputeDepthViewFormatFromTextureFormat(PixelFormat format)
         {
             SharpDX.DXGI.Format viewFormat;

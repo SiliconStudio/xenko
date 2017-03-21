@@ -78,11 +78,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var textureDescription = texture.Description;
             textureDescription.Flags = TextureFlags.ShaderResource;
-            
-            if(textureDescription.IsMultiSample)
-                textureDescription.Format = Texture.ComputeNonMSAADepthFormat(textureDescription.Format);
-            else
-                textureDescription.Format = (PixelFormat)Texture.ComputeShaderResourceFormatFromDepthFormat(textureDescription.Format);
+            textureDescription.Format = (PixelFormat)Texture.ComputeShaderResourceFormatFromDepthFormat(textureDescription.Format);
 
             return renderContext.RenderContext.Allocator.GetTemporaryTexture2D(textureDescription);
         }
