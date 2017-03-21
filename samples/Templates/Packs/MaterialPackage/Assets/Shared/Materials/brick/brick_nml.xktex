@@ -1,7 +1,6 @@
 !Texture
 Id: be1dc296-66ae-418c-8325-c3fca80cc43f
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.10.0-alpha01}
 Tags: []
 Source: ../../../../Resources/Textures/brick/brick_nml.png
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Hint: NormalMap
+Type: !NormalMapTextureType {}
