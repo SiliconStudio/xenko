@@ -78,7 +78,7 @@
   to do nothing if this is not a Windows platform -->
   <Import Condition="'$(SiliconStudioCompilerTargetsEnable)' != 'false'" Project="$(SiliconStudioCompilerTargets)" />
 
-  <UsingTask TaskName="AssemblyProcessorTask" AssemblyFile="$(SiliconStudioAssemblyProcessorPath)" Condition=" '$(SiliconStudioAssemblyProcessorPath)' != '' "/>
+  <UsingTask TaskName="AssemblyProcessorTask" AssemblyFile="$(SiliconStudioAssemblyProcessorPath)" Condition=" '$(SiliconStudioAssemblyProcessorPath)' != '' And '$(SiliconStudioAssemblyProcessorDev)' != 'true' "/>
   
   <Target Name="RunSiliconStudioAssemblyProcessor" AfterTargets="CoreCompile" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true' and '$(SiliconStudioAssemblyProcessorPath)' != '' and '$(SiliconStudioAssemblyProcessorGlobal)' == 'true' and '$(SiliconStudioAssemblyProcessorOptions)' != '' ">
     <PropertyGroup Condition="'$(XenkoUserBuild)' != 'true'">
@@ -99,8 +99,10 @@
     </PropertyGroup>
 
     <!-- Run assembly processor -->
-    <Message Importance="normal" Text="&quot;$(SiliconStudioAssemblyProcessorPath)&quot; $(SiliconStudioAssemblyProcessorOptions)"/>
-    <AssemblyProcessorTask Arguments="$(SiliconStudioAssemblyProcessorOptions)"/>
+    <Message Condition=" '$(SiliconStudioAssemblyProcessorDev)' != 'true' " Importance="normal" Text="&quot;$(SiliconStudioAssemblyProcessorPath)&quot; $(SiliconStudioAssemblyProcessorOptions)"/>
+    <AssemblyProcessorTask Condition=" '$(SiliconStudioAssemblyProcessorDev)' != 'true' " Arguments="$(SiliconStudioAssemblyProcessorOptions)"/>
+    <!-- Dev mode: don't use task to avoid locking the file -->
+    <Exec Condition=" '$(SiliconStudioAssemblyProcessorDev)' == 'true' " Command="&quot;$(SiliconStudioAssemblyProcessorPath)&quot; $(SiliconStudioAssemblyProcessorOptions)"/>
   </Target>
 
   <Target Name="SetPrivateOnProjectReferences" BeforeTargets="BeforeCompile">

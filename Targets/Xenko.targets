@@ -143,6 +143,7 @@
     <!--This variable can be overriden by a platform specific targets (in case the executable is located into an assembly dll )-->
     <SiliconStudioIsExecutable Condition=" '$(OutputType)' == 'Exe'">true</SiliconStudioIsExecutable>
     <SiliconStudioIsExecutable Condition=" '$(OutputType)' == 'WinExe'">true</SiliconStudioIsExecutable>
+    <SiliconStudioAssemblyProcessorPath>$(SiliconStudioPackageXenko)\deps\AssemblyProcessor\SiliconStudio.AssemblyProcessor.exe</SiliconStudioAssemblyProcessorPath>
   </PropertyGroup>
 
   <!-- Include platform specific targets -->
@@ -155,7 +156,7 @@
   Assembly Processor
   *****************************************************************************************************************************
   -->
-  <UsingTask TaskName="AssemblyProcessorTask" AssemblyFile="$(SiliconStudioPackageXenko)\deps\AssemblyProcessor\SiliconStudio.AssemblyProcessor.exe"/>
+  <UsingTask TaskName="AssemblyProcessorTask" AssemblyFile="$(SiliconStudioAssemblyProcessorPath)" Condition=" '$(SiliconStudioAssemblyProcessorPath)' != '' And '$(SiliconStudioAssemblyProcessorDev)' != 'true' "/>
     
   <Target Name="SiliconStudioRunAssemblyProcessor" AfterTargets="CoreCompile" DependsOnTargets="ResolveProjectReferences" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true'">
     <WriteLinesToFile File="$(IntermediateOutputPath)XenkoReferences.cache" Lines="@(ReferencePath)" Overwrite="true" />
@@ -178,8 +179,10 @@
     </PropertyGroup>
     
     <!-- Run assembly processor -->
-    <Message Importance="low" Text="$(SiliconStudioAssemblyProcessorOptions)"/>
-    <AssemblyProcessorTask Arguments="$(SiliconStudioAssemblyProcessorOptions)"/>
+    <Message Condition=" '$(SiliconStudioAssemblyProcessorDev)' != 'true' " Importance="low" Text="&quot;$(SiliconStudioAssemblyProcessorPath)&quot; $(SiliconStudioAssemblyProcessorOptions)"/>
+    <AssemblyProcessorTask Condition=" '$(SiliconStudioAssemblyProcessorDev)' != 'true' " Arguments="$(SiliconStudioAssemblyProcessorOptions)"/>
+    <!-- Dev mode: don't use task to avoid locking the file -->
+    <Exec Condition=" '$(SiliconStudioAssemblyProcessorDev)' == 'true' " Command="&quot;$(SiliconStudioAssemblyProcessorPath)&quot; $(SiliconStudioAssemblyProcessorOptions)"/>
   </Target>
 
   <!-- 
