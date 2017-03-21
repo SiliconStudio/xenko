@@ -1,8 +1,9 @@
 !Texture
 Id: 36983d1e-09b4-4352-998c-af1551ee8470
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.10.0-alpha01}
 Tags: []
 Source: ../../../Resources/Textures/Grid1x1.png
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Alpha: None
-PremultiplyAlpha: false
+Type: !ColorTextureType
+    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+    Alpha: None
+    PremultiplyAlpha: false
