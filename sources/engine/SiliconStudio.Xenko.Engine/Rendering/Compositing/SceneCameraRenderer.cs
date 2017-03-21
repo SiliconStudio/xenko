@@ -77,40 +77,39 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         public static void UpdateCameraToRenderView(RenderContext context, RenderView renderView, CameraComponent camera)
         {
-            //// Copy scene camera renderer data
-            //renderView.CullingMask = sceneCameraRenderer.CullingMask;
-            //renderView.CullingMode = sceneCameraRenderer.CullingMode;
+            if (context == null || renderView == null)
+                return;
 
             // TODO: Multiple viewports?
             var currentViewport = context.ViewportState.Viewport0;
             renderView.ViewSize = new Vector2(currentViewport.Width, currentViewport.Height);
 
-            if (camera != null)
+            if (camera == null)
+                return;
+
+            // Setup viewport size
+            var aspectRatio = currentViewport.AspectRatio;
+
+            // Update the aspect ratio
+            if (camera.UseCustomAspectRatio)
             {
-                // Setup viewport size
-                var aspectRatio = currentViewport.AspectRatio;
-
-                // Update the aspect ratio
-                if (camera.UseCustomAspectRatio)
-                {
-                    aspectRatio = camera.AspectRatio;
-                }
-
-                // If the aspect ratio is calculated automatically from the current viewport, update matrices here
-                camera.Update(aspectRatio);
-
-                // Copy camera data
-                renderView.View = camera.ViewMatrix;
-                renderView.Projection = camera.ProjectionMatrix;
-                renderView.NearClipPlane = camera.NearClipPlane;
-                renderView.FarClipPlane = camera.FarClipPlane;
-                renderView.Frustum = camera.Frustum;
-
-                // Enable frustum culling
-                renderView.CullingMode = CameraCullingMode.Frustum;
-
-                Matrix.Multiply(ref renderView.View, ref renderView.Projection, out renderView.ViewProjection);
+                aspectRatio = camera.AspectRatio;
             }
+
+            // If the aspect ratio is calculated automatically from the current viewport, update matrices here
+            camera.Update(aspectRatio);
+
+            // Copy camera data
+            renderView.View = camera.ViewMatrix;
+            renderView.Projection = camera.ProjectionMatrix;
+            renderView.NearClipPlane = camera.NearClipPlane;
+            renderView.FarClipPlane = camera.FarClipPlane;
+            renderView.Frustum = camera.Frustum;
+
+            // Enable frustum culling
+            renderView.CullingMode = CameraCullingMode.Frustum;
+
+            Matrix.Multiply(ref renderView.View, ref renderView.Projection, out renderView.ViewProjection);
         }
     }
 }

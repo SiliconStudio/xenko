@@ -80,16 +80,28 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// <summary>
         /// The entry point for the game compositor.
         /// </summary>
+        /// <userdoc>
+        /// The renderer used by the game at runtime. It requires a properly set camera from the scene, found in the Cameras list.
+        /// </userdoc>
+        [DisplayName("Game renderer")]
         public ISceneRenderer Game { get; set; }
 
         /// <summary>
         /// The entry point for a compositor that can render a single view.
         /// </summary>
+        /// <userdoc>
+        /// The utility renderer is used for rendering cubemaps, light maps, render-to-texture, etc. It should be a single-only view renderer with no post-processing. It doesn't require camera or render target, because they are supplied by the caller.
+        /// </userdoc>
+        [DisplayName("Utility renderer")]
         public ISceneRenderer SingleView { get; set; }
 
         /// <summary>
         /// The entry point for a compositor used by the scene editor.
         /// </summary>
+        /// <userdoc>
+        /// The renderer used by the game studio while editing the scene. It can share the forward renderer with the game entry or not. It doesn't require a camera and uses the camera in the game studio instead.
+        /// </userdoc>
+        [DisplayName("Editor renderer")]
         public ISceneRenderer Editor { get; set; }
 
         public GraphicsCompositor Compile(bool copyRenderers)
