@@ -138,7 +138,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="name">The name of the <see cref="NodeViewModelBase"/> to look for.</param>
         /// <returns>The corresponding child node, or <c>null</c> if no child with the given name exists.</returns>
-        NodeViewModelBase GetChild(string name);
+        INodeViewModel GetChild(string name);
 
         /// <summary>
         /// Returns the command with the matching name.

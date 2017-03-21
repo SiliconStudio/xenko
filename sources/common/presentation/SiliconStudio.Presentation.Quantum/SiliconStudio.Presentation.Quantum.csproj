@@ -46,7 +46,6 @@
     <Compile Include="IPropertyProviderViewModel.cs" />
     <Compile Include="NodeCommandWrapperBase.cs" />
     <Compile Include="GraphViewModelNodeValueChanged.cs" />
-    <Compile Include="NodeViewModelBase.cs" />
     <Compile Include="GraphViewModelConsistencyException.cs" />
     <Compile Include="GraphViewModelService.cs" />
     <Compile Include="Presenters\NodePresenterBase.cs" />
