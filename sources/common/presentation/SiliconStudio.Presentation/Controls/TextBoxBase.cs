@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Windows;
 using System.Windows.Data;
@@ -31,6 +31,16 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="SelectAllOnFocus"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty SelectAllOnFocusProperty = DependencyProperty.Register("SelectAllOnFocus", typeof(bool), typeof(TextBoxBase), new PropertyMetadata(BooleanBoxes.FalseBox));
+
+        /// <summary>
+        /// Identifies the <see cref="WatermarkContent"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty WatermarkContentProperty = DependencyProperty.Register("WatermarkContent", typeof(object), typeof(TextBoxBase), new PropertyMetadata(null));
+
+        /// <summary>
+        /// Identifies the <see cref="WatermarkContentTemplate"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty WatermarkContentTemplateProperty = DependencyProperty.Register("WatermarkContentTemplate", typeof(DataTemplate), typeof(TextBoxBase), new PropertyMetadata(null));
 
         /// <summary>
         /// Identifies the <see cref="ValidateWithEnter"/> dependency property.
@@ -116,6 +126,16 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets or sets whether the text of the TextBox must be selected when the control gets focus.
         /// </summary>
         public bool SelectAllOnFocus { get { return (bool)GetValue(SelectAllOnFocusProperty); } set { SetValue(SelectAllOnFocusProperty, value.Box()); } }
+
+        /// <summary>
+        /// Gets or sets the content to display when the TextBox is empty.
+        /// </summary>
+        public object WatermarkContent { get { return GetValue(WatermarkContentProperty); } set { SetValue(WatermarkContentProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets the template of the content to display when the TextBox is empty.
+        /// </summary>
+        public DataTemplate WatermarkContentTemplate { get { return (DataTemplate)GetValue(WatermarkContentTemplateProperty); } set { SetValue(WatermarkContentTemplateProperty, value); } }
 
         /// <summary>
         /// Gets or sets whether the validation should happen when the user press <b>Enter</b>.

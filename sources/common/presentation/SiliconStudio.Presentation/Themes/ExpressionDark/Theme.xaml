@@ -1895,10 +1895,16 @@
                   </Grid>
                 </RepeatButton>
               </UniformGrid>
-              <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}"/>
+              <Grid>
+                <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}"/>
+                <ContentControl x:Name="Watermark" Content="{TemplateBinding WatermarkContent}" ContentTemplate="{TemplateBinding WatermarkContentTemplate}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="6,2,2,2" Focusable="False"/>
+              </Grid>
             </DockPanel>
           </Border>
           <ControlTemplate.Triggers>
+            <Trigger Property="HasText" Value="True">
+              <Setter TargetName="Watermark" Property="Visibility" Value="Hidden"/>
+            </Trigger>
             <Trigger Property="DisplayUpDownButtons" Value="True">
               <Setter TargetName="upDownButtons" Property="Visibility" Value="Visible"/>
             </Trigger>
@@ -1909,7 +1915,13 @@
         </ControlTemplate>
       </Setter.Value>
     </Setter>
-    <Setter Property="interactivity:Interaction.Behaviors">
+    <Setter Property="WatermarkContentTemplate">
+      <Setter.Value>
+        <DataTemplate>
+          <TextBlock Text="{Binding Mode=OneTime}" IsHitTestVisible="False" FontStyle="Italic" Foreground="Gray"/>
+        </DataTemplate>
+      </Setter.Value>
+    </Setter>    <Setter Property="interactivity:Interaction.Behaviors">
       <Setter.Value>
         <interactivity:BehaviorCollection>
           <behaviors:NumericTextBoxDragBehavior UsePreviewEvents="True" DragCursor="/SiliconStudio.Presentation;component/Resources/Cursors/CursorDrag.cur" />
