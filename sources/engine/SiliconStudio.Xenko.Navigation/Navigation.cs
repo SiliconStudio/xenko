@@ -146,12 +146,11 @@ namespace SiliconStudio.Xenko.Navigation
         /// Adds a new tile to the navigation mesh object
         /// </summary>
         /// <param name="navmesh"></param>
-        /// <param name="tileCoordinate">Coordinate of the tile to add</param>
         /// <param name="data">Navigation mesh binary data in the detour format to load</param>
         /// <param name="dataLength">Length of the binary mesh data</param>
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationAddTile", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool AddTile(IntPtr navmesh, Point tileCoordinate, IntPtr data, int dataLength);
+        public static extern bool AddTile(IntPtr navmesh, IntPtr data, int dataLength);
 
         /// <summary>
         /// Removes a tile from the navigation mesh object

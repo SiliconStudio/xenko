@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Navigation
         /// </summary>
         [DataMember(20)]
         public NavigationMeshBuildSettings BuildSettings { get; set; }
-        
+
         /// <summary>
         /// Settings for agents used with the dynamic navigation mesh
         /// </summary>

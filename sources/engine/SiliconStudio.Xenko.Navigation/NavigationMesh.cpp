@@ -68,7 +68,7 @@ bool NavigationMesh::Init(float cellTileSize)
 	return true;
 }
 
-bool NavigationMesh::LoadTile(Point tileCoordinate, uint8_t* navData, int navDataLength)
+bool NavigationMesh::LoadTile(uint8_t* navData, int navDataLength)
 {
 	if (!m_navMesh || !m_navQuery)
 		return false;
@@ -102,7 +102,9 @@ bool NavigationMesh::RemoveTile(Point tileCoordinate)
 		if (deletedData)
 			delete[] deletedData;
 		m_tileRefs.erase(tileRef);
+		return true;
 	}
+
 	return false;
 }
 

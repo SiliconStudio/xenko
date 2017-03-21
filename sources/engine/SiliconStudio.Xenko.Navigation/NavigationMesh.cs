@@ -25,10 +25,12 @@ namespace SiliconStudio.Xenko.Navigation
         internal float TileSize;
 
         internal float CellSize;
-
-        // Backing value of Layers and NumLayers
+        
         internal Dictionary<Guid, NavigationMeshLayer> LayersInternal = new Dictionary<Guid, NavigationMeshLayer>();
 
+        /// <summary>
+        /// The layers of this navigation mesh, there will be one layer for each enabled group that a navigation mesh is selected to build for
+        /// </summary>
         public IReadOnlyDictionary<Guid, NavigationMeshLayer> Layers => LayersInternal;
 
         internal class NavigationMeshSerializer : DataSerializer<NavigationMesh>

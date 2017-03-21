@@ -45,7 +45,7 @@ public:
 	NavigationMesh();
 	~NavigationMesh();
 	bool Init(float cellTileSize);
-	bool LoadTile(Point tileCoordinate, uint8_t* navData, int navDataLength);
+	bool LoadTile(uint8_t* navData, int navDataLength);
 	bool RemoveTile(Point tileCoordinate);
 	void FindPath(NavMeshPathfindQuery query, NavMeshPathfindResult* result);
 	void Raycast(NavMeshRaycastQuery query, NavMeshRaycastResult* result);

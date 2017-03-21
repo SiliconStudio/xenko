@@ -45,9 +45,9 @@ extern "C"
 		delete navmesh;
 	}
 
-	DLL_EXPORT_API bool xnNavigationAddTile(NavigationMesh* navmesh, Point tileCoordinate, uint8_t* data, int dataLength)
+	DLL_EXPORT_API bool xnNavigationAddTile(NavigationMesh* navmesh, uint8_t* data, int dataLength)
 	{
-		return navmesh->LoadTile(tileCoordinate, data, dataLength);
+		return navmesh->LoadTile(data, dataLength);
 	}
 	DLL_EXPORT_API bool xnNavigationRemoveTile(NavigationMesh* navmesh, Point tileCoordinate)
 	{
