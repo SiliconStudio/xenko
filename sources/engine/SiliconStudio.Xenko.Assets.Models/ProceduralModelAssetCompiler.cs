@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (ProceduralModelAsset)assetItem.Asset;
-            result.BuildSteps = new ListBuildStep { new GeometricPrimitiveCompileCommand(targetUrlInStorage, asset, assetItem.Package) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new GeometricPrimitiveCompileCommand(targetUrlInStorage, asset, assetItem.Package) };
         }
 
         private class GeometricPrimitiveCompileCommand : AssetCommand<ProceduralModelAsset>
