@@ -77,12 +77,15 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         public static void UpdateCameraToRenderView(RenderContext context, RenderView renderView, CameraComponent camera)
         {
-            if (context == null || renderView == null || camera == null)
+            if (context == null || renderView == null)
                 return;
 
             // TODO: Multiple viewports?
             var currentViewport = context.ViewportState.Viewport0;
             renderView.ViewSize = new Vector2(currentViewport.Width, currentViewport.Height);
+
+            if (camera == null)
+                return;
 
             // Setup viewport size
             var aspectRatio = currentViewport.AspectRatio;
