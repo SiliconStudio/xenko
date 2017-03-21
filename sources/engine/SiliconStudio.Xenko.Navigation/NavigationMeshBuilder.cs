@@ -93,15 +93,14 @@ namespace SiliconStudio.Xenko.Navigation
 
             if (agentSettings.Count == 0)
             {
-                Logger?.Error("No agent settings found");
+                Logger?.Warning("No agent settings found");
+                result.Success = true;
+                result.NavigationMesh = new NavigationMesh();
                 return result;
             }
 
             if (boundingBoxes.Count == 0)
-            {
-                Logger?.Error("No bounding boxes found");
-                return new NavigationMeshBuildResult();
-            }
+                Logger?.Warning("No bounding boxes found");
 
             var settingsHash = agentSettings?.ComputeHash() ?? 0;
             settingsHash = (settingsHash * 397) ^ buildSettings.GetHashCode();
