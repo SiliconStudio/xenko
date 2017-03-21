@@ -91,7 +91,7 @@ namespace SiliconStudio.AssemblyProcessor
                     {
                         xenkoEngineAssembly = assembly.Name.Name == "SiliconStudio.Xenko"
                             ? assembly
-                            : context.AssemblyResolver.Resolve("SiliconStudio.Xenko");
+                            : context.AssemblyResolver.Resolve(new AssemblyNameReference("SiliconStudio.Xenko", null));
                     }
                     catch (Exception)
                     {
@@ -204,7 +204,7 @@ namespace SiliconStudio.AssemblyProcessor
                 // Create instances of InternalValueArray<T>. Required for LLVM AOT
                 foreach (var elementType in effectKeysArrayElemementTypes)
                 {
-                    var siliconStudioXenkoAssembly = assembly.Name.Name == "SiliconStudio.Xenko" ? assembly : assembly.MainModule.AssemblyResolver.Resolve("SiliconStudio.Xenko");
+                    var siliconStudioXenkoAssembly = assembly.Name.Name == "SiliconStudio.Xenko" ? assembly : assembly.MainModule.AssemblyResolver.Resolve(new AssemblyNameReference("SiliconStudio.Xenko", null));
                     var parameterCollectionType = siliconStudioXenkoAssembly.MainModule.GetTypeResolved("SiliconStudio.Xenko.Rendering.ParameterCollection");
                     var internalValueArrayType = parameterCollectionType.NestedTypes.First(x => x.Name == "InternalValueArray`1");
                     var constructor = internalValueArrayType.GetConstructors().First();
