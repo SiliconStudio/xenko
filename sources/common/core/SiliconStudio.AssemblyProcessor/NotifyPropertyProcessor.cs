@@ -20,12 +20,6 @@ namespace SiliconStudio.AssemblyProcessor
     {
         private TypeReference voidType, stringType, objectType;
 
-        static NotifyPropertyProcessor()
-        {
-            // Force inclusion of Mono.Cecil.Pdb.dll by referencing it
-            typeof(PdbReader).ToString();
-        }
-
         public FieldReference GetPropertyChangedField(TypeDefinition typeDefinition)
         {
             // Not sure whether it's better to detect through name+type, or actual INotifyPropertyChanged interface (which we might not want to add sometime)
@@ -94,7 +88,7 @@ namespace SiliconStudio.AssemblyProcessor
             {
                 siliconStudioCoreAssembly = assembly.Name.Name == "SiliconStudio.Core"
                     ? assembly
-                    : context.AssemblyResolver.Resolve("SiliconStudio.Core");
+                    : context.AssemblyResolver.Resolve(new AssemblyNameReference("SiliconStudio.Core", null));
 
             }
             catch (Exception)
@@ -253,10 +247,10 @@ namespace SiliconStudio.AssemblyProcessor
                         returnInstruction.OpCode = OpCodes.Nop;
                         returnInstruction.Operand = null;
 
-                        var propertyChangedVariable = new VariableDefinition("propertyChanged", assembly.MainModule.ImportReference(propertyChangedFieldType));
+                        var propertyChangedVariable = new VariableDefinition(assembly.MainModule.ImportReference(propertyChangedFieldType));
                         property.SetMethod.Body.Variables.Add(propertyChangedVariable);
 
-                        var oldValueVariable = new VariableDefinition("oldValue", objectType);
+                        var oldValueVariable = new VariableDefinition(objectType);
                         property.SetMethod.Body.Variables.Add(oldValueVariable);
 
                         Instruction jump1, jump2;

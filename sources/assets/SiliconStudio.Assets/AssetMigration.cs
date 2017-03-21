@@ -4,11 +4,11 @@
 using System;
 using System.Globalization;
 using System.IO;
-using System.Text;
+using System.Linq;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Yaml;
-using System.Linq;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 

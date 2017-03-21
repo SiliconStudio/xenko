@@ -108,9 +108,6 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.11.0" />
     <Reference Include="Microsoft.VisualStudio.TextManager.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="NuGet">
-      <HintPath>..\..\..\deps\Nuget\NuGet.Core.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -150,45 +147,6 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\assets\SiliconStudio.Assets\NugetStore.cs">
-      <Link>Commands\NugetStore.cs</Link>
-    </Compile>
-    <Compile Include="..\..\assets\SiliconStudio.Assets\Reflection\OverridePostfixes.cs">
-      <Link>Core\OverridePostfixes.cs</Link>
-    </Compile>
-    <Compile Include="..\..\assets\SiliconStudio.Assets\Reflection\OverrideType.cs">
-      <Link>Core\OverrideType.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Windows\FileLock.cs">
-      <Link>Core\Design\Windows\FileLock.cs</Link>
-    </Compile>
-    <Compile Include="..\..\assets\SiliconStudio.Assets\DynamicYaml\IDynamicYamlNode.cs">
-      <Link>Core\Design\Yaml\IDynamicYamlNode.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Serialization\IO\NativeLockFile.cs">
-      <Link>Core\Design\Windows\NativeLockFile.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core\Diagnostics\CallerInfo.cs">
-      <Link>CallerInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\..\assets\SiliconStudio.Assets\DynamicYaml\DynamicYamlEmpty.cs">
-      <Link>Core\Design\Yaml\DynamicYamlEmpty.cs</Link>
-    </Compile>
-    <Compile Include="..\..\assets\SiliconStudio.Assets\DynamicYaml\DynamicYamlObject.cs">
-      <Link>Core\Design\Yaml\DynamicYamlObject.cs</Link>
-    </Compile>
-    <Compile Include="..\..\assets\SiliconStudio.Assets\DynamicYaml\DynamicYamlScalar.cs">
-      <Link>Core\Design\Yaml\DynamicYamlScalar.cs</Link>
-    </Compile>
-    <Compile Include="..\..\assets\SiliconStudio.Assets\DynamicYaml\DynamicYamlMapping.cs">
-      <Link>Core\Design\Yaml\DynamicYamlMapping.cs</Link>
-    </Compile>
-    <Compile Include="..\..\assets\SiliconStudio.Assets\DynamicYaml\DynamicYamlArray.cs">
-      <Link>Core\Design\Yaml\DynamicYamlArray.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\VisualStudio\*.cs">
-      <Link>Core\Design\VisualStudio\%(Filename).cs</Link>
-    </Compile>
     <Compile Include="..\..\assets\SiliconStudio.Assets\PackageSessionHelper.Solution.cs">
       <Link>Assets\PackageSessionHelper.Solution.cs</Link>
     </Compile>
@@ -313,6 +271,18 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\assets\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
+      <Project>{1e54a9a2-4439-4444-ae57-6d2ed3c0dc47}</Project>
+      <Name>SiliconStudio.Assets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\assets\SiliconStudio.Packages\SiliconStudio.Packages.csproj">
+      <Project>{acd2c831-bda2-4512-b4cc-75e8e1804f73}</Project>
+      <Name>SiliconStudio.Packages</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
+      <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
+      <Name>SiliconStudio.Core.Design</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
       <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
       <Name>SiliconStudio.Core.Yaml</Name>

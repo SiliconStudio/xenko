@@ -412,7 +412,7 @@ namespace SiliconStudio.AssemblyProcessor
         /// <returns></returns>
         public static TypeReference GenerateTypeCecil(this Type type, BaseAssemblyResolver assemblyResolver)
         {
-            var assemblyDefinition = assemblyResolver.Resolve(type.Assembly.FullName);
+            var assemblyDefinition = assemblyResolver.Resolve(AssemblyNameReference.Parse(type.Assembly.FullName));
             TypeReference typeReference;
 
             if (type.IsNested)
@@ -619,7 +619,8 @@ namespace SiliconStudio.AssemblyProcessor
             if (method.Body != null)
             {
                 clonedMethod.Body.Variables.AddRange(
-                    method.Body.Variables.Select(x => new VariableDefinition(x.Name, inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(x.VariableType)))));
+                    method.Body.Variables.Select(x => new VariableDefinition(inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(x.VariableType)))));
+
 
                 clonedMethod.Body.InitLocals = method.Body.InitLocals;
 

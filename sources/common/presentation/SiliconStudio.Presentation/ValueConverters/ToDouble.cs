@@ -22,7 +22,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return !targetType.IsNumeric() ? value : System.Convert.ChangeType(value, targetType);
+            return targetType.IsNumeric() ? System.Convert.ChangeType(value, targetType) : value;
         }
     }
 }

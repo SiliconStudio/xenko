@@ -3,4 +3,5 @@ Id: 01bd858c-372f-4873-a070-f92058833673
 SerializedVersion: {Xenko: 1.10.0-alpha01}
 Tags: []
 Source: ../../Resources/stone4_nml.jpeg
-Type: !NormalMapTextureType {}
+Type: !NormalMapTextureType
+    InvertY: false

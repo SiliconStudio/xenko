@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
+using SiliconStudio.Assets.Analysis;
+using System.Diagnostics.Contracts;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 

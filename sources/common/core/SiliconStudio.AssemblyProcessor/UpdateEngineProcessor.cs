@@ -70,12 +70,12 @@ namespace SiliconStudio.AssemblyProcessor
             // Get some useful Cecil objects from SiliconStudio.Core
             var siliconStudioCoreAssembly = context.Assembly.Name.Name == "SiliconStudio.Core"
                     ? context.Assembly
-                    : context.Assembly.MainModule.AssemblyResolver.Resolve("SiliconStudio.Core");
+                    : context.Assembly.MainModule.AssemblyResolver.Resolve(new AssemblyNameReference("SiliconStudio.Core", null));
             var siliconStudioCoreModule = siliconStudioCoreAssembly.MainModule;
 
             var siliconStudioXenkoEngineAssembly = context.Assembly.Name.Name == "SiliconStudio.Xenko.Engine"
                     ? context.Assembly
-                    : context.Assembly.MainModule.AssemblyResolver.Resolve("SiliconStudio.Xenko.Engine");
+                    : context.Assembly.MainModule.AssemblyResolver.Resolve(new AssemblyNameReference("SiliconStudio.Xenko.Engine", null));
             var siliconStudioXenkoEngineModule = siliconStudioXenkoEngineAssembly.MainModule;
 
             // Generate IL for SiliconStudio.Core

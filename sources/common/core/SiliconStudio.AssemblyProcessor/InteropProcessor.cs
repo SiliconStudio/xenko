@@ -204,7 +204,7 @@ namespace SiliconStudio.AssemblyProcessor
             var paramT = ((GenericInstanceMethod)fixedtoPatch.Operand).GenericArguments[0];
             // Preparing locals
             // local(0) T& pinned
-            method.Body.Variables.Add(new VariableDefinition("pin", new PinnedType(new ByReferenceType(paramT))));
+            method.Body.Variables.Add(new VariableDefinition(new PinnedType(new ByReferenceType(paramT))));
 
             int index = method.Body.Variables.Count - 1;
 
@@ -387,7 +387,7 @@ namespace SiliconStudio.AssemblyProcessor
             var paramT = ((GenericInstanceMethod)fixedtoPatch.Operand).GenericArguments[0];
             // Preparing locals
             // local(0) T*
-            method.Body.Variables.Add(new VariableDefinition("pin", new PinnedType(new ByReferenceType(paramT))));
+            method.Body.Variables.Add(new VariableDefinition(new PinnedType(new ByReferenceType(paramT))));
 
             int index = method.Body.Variables.Count - 1;
 

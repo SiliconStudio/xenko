@@ -1,6 +1,5 @@
 call "%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\vc\vcvarsall.bat" x86
-pushd ..\..\externals\il-repack
-call gradlew repack
+msbuild ..\..\externals\il-repack\ILRepack.sln /Property:Configuration=Release;Platform="Any CPU" /target:ILRepack
+pushd ..\..\externals\il-repack\ILRepack\bin\Release
+ILRepack.exe ILRepack.exe Fasterflect.dll BamlParser.dll Mono.Posix.dll /out:%~dp0\ILRepack.exe
 popd
-copy ..\..\externals\il-repack\build\tmp\repack\ILRepack.exe .
-copy ..\..\externals\il-repack\build\tmp\repack\ILRepack.pdb .
