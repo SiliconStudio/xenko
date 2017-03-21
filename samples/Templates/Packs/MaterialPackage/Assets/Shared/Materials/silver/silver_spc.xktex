@@ -1,6 +1,7 @@
 !Texture
 Id: 4a15baf8-150f-45fc-9a3b-ca36c33a956c
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.10.0-alpha01}
 Tags: []
 Source: ../../../../Resources/Textures/silver/silver_spc.png
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Type: !ColorTextureType
+    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
