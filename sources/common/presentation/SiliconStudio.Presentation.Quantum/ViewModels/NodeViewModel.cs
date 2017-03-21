@@ -84,7 +84,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             Owner = ownerViewModel;
             Type = nodeType;
             Index = default(Index);
-            IsVisible = true;
+            IsVisible = false;
             IsReadOnly = false;
 
             if (baseName == null)
@@ -96,12 +96,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             this.nodePresenters = nodePresenters;
             foreach (var nodePresenter in nodePresenters)
             {
-                var member = nodePresenter as MemberNodePresenter;
-                var displayAttribute = member?.MemberAttributes.OfType<DisplayAttribute>().FirstOrDefault();
-                // TODO: check for discrepencies in the display attribute name
-                if (displayAttribute != null)
-                    DisplayName = displayAttribute.Name;
-
                 // Display this node if at least one presenter is visible
                 if (nodePresenter.IsVisible)
                     IsVisible = true;
@@ -110,28 +104,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             // TODO: find a way to "merge" display name if they are different (string.Join?)
             DisplayName = nodePresenters.First().DisplayName;
             parent?.AddChild(this);
-        }
-
-        /// <summary>
-        /// Indicates whether the given name is reserved for the name of a property in an <see cref="NodeViewModel"/>. Any children node with a colliding name will
-        /// be escaped with the <see cref="EscapeName"/> method.
-        /// </summary>
-        /// <param name="name">The name to check.</param>
-        /// <returns><c>True</c> if the name is reserved, <c>false</c> otherwise.</returns>
-        public static bool IsReserved(string name)
-        {
-            return ReservedNames.Contains(name);
-        }
-
-        /// <summary>
-        /// Escapes the name of a child to avoid name collision with a property.
-        /// </summary>
-        /// <param name="name">The name to escape.</param>
-        /// <returns>The escaped name.</returns>
-        /// <remarks>Names are escaped using a trailing underscore character.</remarks>
-        public static string EscapeName(string name)
-        {
-            return !IsReserved(name) ? name : name + "_";
         }
 
         /// <summary>
@@ -175,13 +147,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         public INodeViewModel Root { get { INodeViewModel root = this; while (root.Parent != null) root = root.Parent; return root; } }
 
         /// <summary>
-        /// Gets whether this node contains a primitive value. A primitive value has no children node and does not need to refresh its hierarchy when its value is modified.
-        /// </summary>
-        [Obsolete]
-        // FIXME
-        public bool IsPrimitive => NodePresenters.First().IsPrimitive;
-
-        /// <summary>
         /// Gets or sets whether this node should be displayed in the view.
         /// </summary>
         public bool IsVisible { get { return isVisible; } set { SetValue(ref isVisible, value, () => IsVisibleChanged?.Invoke(this, EventArgs.Empty)); } }
@@ -191,14 +156,8 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// </summary>
         public bool IsReadOnly { get { return isReadOnly; } set { SetValue(ref isReadOnly, value); } }
 
-        /// <summary>
-        /// Gets or sets the value.
-        /// </summary>
-        // FIXME
-        private object InternalNodeValue { get { return GetNodeValue(); } set { SetNodeValue(value); } }
-
         /// <inheritdoc/>
-        public object NodeValue { get { return InternalNodeValue; } set { SetValue(() => InternalNodeValue = ConvertValue(value)); } }
+        public object NodeValue { get { return GetNodeValue(); } set { SetValue(() => SetNodeValue(ConvertValue(value))); } }
 
         /// <summary>
         /// Gets or sets the index of this node, relative to its parent node when its contains a collection. Can be null of this node is not in a collection.
@@ -256,12 +215,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <inheritdoc/>
         public int VisibleChildrenCount { get { return visibleChildrenCount; } private set { SetValue(ref visibleChildrenCount, value); } }
 
-        internal new bool IsDestroyed => base.IsDestroyed;
-
-        /// <inheritdoc/>
-        [Obsolete("This event is deprecated, IContent.Changed should be used instead")] // Unless needed for virtual/combined nodes?
-        public event EventHandler<EventArgs> ValueChanged;
-
         /// <inheritdoc/>
         public event EventHandler<EventArgs> IsVisibleChanged;
 
@@ -281,10 +234,29 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         public bool IsHighlighted { get { return isHighlighted; } set { SetValue(ref isHighlighted, value); } }
 
         /// <inheritdoc/>
-
-
         public IReadOnlyCollection<INodePresenter> NodePresenters => nodePresenters;
 
+        /// <summary>
+        /// Indicates whether the given name is reserved for the name of a property in an <see cref="NodeViewModel"/>. Any children node with a colliding name will
+        /// be escaped with the <see cref="EscapeName"/> method.
+        /// </summary>
+        /// <param name="name">The name to check.</param>
+        /// <returns><c>True</c> if the name is reserved, <c>false</c> otherwise.</returns>
+        public static bool IsReserved(string name)
+        {
+            return ReservedNames.Contains(name);
+        }
+
+        /// <summary>
+        /// Escapes the name of a child to avoid name collision with a property.
+        /// </summary>
+        /// <param name="name">The name to escape.</param>
+        /// <returns>The escaped name.</returns>
+        /// <remarks>Names are escaped using a trailing underscore character.</remarks>
+        public static string EscapeName(string name)
+        {
+            return !IsReserved(name) ? name : name + "_";
+        }
 
         public void FinishInitialization()
         {
@@ -459,54 +431,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         }
 
         /// <summary>
-        /// Indicates whether this node can be moved.
-        /// </summary>
-        /// <param name="newParent">The new parent of the node once moved.</param>
-        /// <returns><c>true</c> if the node can be moved, <c>fals</c> otherwise.</returns>
-        public bool CanMove(INodeViewModel newParent)
-        {
-            var parent = newParent;
-            while (parent != null)
-            {
-                if (parent == this)
-                    return false;
-                parent = parent.Parent;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Moves the node by setting it a new parent.
-        /// </summary>
-        /// <param name="newParent">The new parent of the node once moved.</param>
-        /// <param name="newName">The new name to give to the node once moved. This will modify its path. If <c>null</c>, it does not modify the name.</param>
-        public void Move(INodeViewModel newParent, string newName = null)
-        {
-            var parent = (NodeViewModel)newParent;
-            while (parent != null)
-            {
-                if (parent == this)
-                    throw new InvalidOperationException("A node cannot be moved into itself or one of its children.");
-                parent = (NodeViewModel)parent.Parent;
-            }
-
-            if (newParent.Children.Any(x => (newName == null && x.Name == Name) || x.Name == newName))
-                throw new InvalidOperationException("Unable to move this node, a node with the same name already exists.");
-
-            if (Parent != null)
-            {
-                parent = (NodeViewModel)Parent;
-                parent.RemoveChild(this);
-            }
-
-            if (newName != null)
-            {
-                Name = newName;
-            }
-            ((NodeViewModel)newParent).AddChild(this);
-        }
-
-        /// <summary>
         /// Returns the child node with the matching name.
         /// </summary>
         /// <param name="name">The name of the <see cref="NodeViewModel"/> to look for.</param>
@@ -594,7 +518,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{Name}: [{InternalNodeValue}]";
+            return $"{Name}: [{GetNodeValue()}]";
         }
 
         protected void AddAssociatedData(string key, object value)
@@ -749,8 +673,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             }
         }
 
-        protected void OnValueChanged() => ValueChanged?.Invoke(this, EventArgs.Empty);
-
         protected void CheckDynamicMemberConsistency()
         {
             var memberNames = new HashSet<string>();
@@ -821,6 +743,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
                     DisplayName = DisplayNameProvider();
                 }
             }
+            base.OnPropertyChanged(propertyNames);
         }
 
         private void ChildVisibilityChanged(object sender, EventArgs e)
@@ -917,5 +840,52 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
                 return containedPath.Length == containerPath.Length || containedPath[containerPath.Length] == '.';
             }
         }
+
+        ///// <summary>
+        ///// Indicates whether this node can be moved.
+        ///// </summary>
+        ///// <param name="newParent">The new parent of the node once moved.</param>
+        ///// <returns><c>true</c> if the node can be moved, <c>fals</c> otherwise.</returns>
+        //public bool CanMove(INodeViewModel newParent)
+        //{
+        //    var parent = newParent;
+        //    while (parent != null)
+        //    {
+        //        if (parent == this)
+        //            return false;
+        //        parent = parent.Parent;
+        //    }
+        //    return true;
+        //}
+        ///// <summary>
+        ///// Moves the node by setting it a new parent.
+        ///// </summary>
+        ///// <param name="newParent">The new parent of the node once moved.</param>
+        ///// <param name="newName">The new name to give to the node once moved. This will modify its path. If <c>null</c>, it does not modify the name.</param>
+        //public void Move(INodeViewModel newParent, string newName = null)
+        //{
+        //    var parent = (NodeViewModel)newParent;
+        //    while (parent != null)
+        //    {
+        //        if (parent == this)
+        //            throw new InvalidOperationException("A node cannot be moved into itself or one of its children.");
+        //        parent = (NodeViewModel)parent.Parent;
+        //    }
+
+        //    if (newParent.Children.Any(x => (newName == null && x.Name == Name) || x.Name == newName))
+        //        throw new InvalidOperationException("Unable to move this node, a node with the same name already exists.");
+
+        //    if (Parent != null)
+        //    {
+        //        parent = (NodeViewModel)Parent;
+        //        parent.RemoveChild(this);
+        //    }
+
+        //    if (newName != null)
+        //    {
+        //        Name = newName;
+        //    }
+        //    ((NodeViewModel)newParent).AddChild(this);
+        //}
     }
 }

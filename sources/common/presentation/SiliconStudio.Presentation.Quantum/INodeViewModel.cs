@@ -125,11 +125,6 @@ namespace SiliconStudio.Presentation.Quantum
         int VisibleChildrenCount { get; }
 
         /// <summary>
-        /// Raised when the <see cref="Value"/> property has changed.
-        /// </summary>
-        event EventHandler<EventArgs> ValueChanged;
-
-        /// <summary>
         /// Raised when the <see cref="IsVisible"/> property has changed.
         /// </summary>
         event EventHandler<EventArgs> IsVisibleChanged;
@@ -147,19 +142,5 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="name">The name of the command to look for.</param>
         /// <returns>The corresponding command, or <c>null</c> if no command with the given name exists.</returns>
         ICommandBase GetCommand(string name);
-
-        /// <summary>
-        /// Indicates whether this node can be moved.
-        /// </summary>
-        /// <param name="newParent">The new parent of the node once moved.</param>
-        /// <returns><c>true</c> if the node can be moved, <c>fals</c> otherwise.</returns>
-        bool CanMove(INodeViewModel newParent);
-
-        /// <summary>
-        /// Moves the node by setting it a new parent.
-        /// </summary>
-        /// <param name="newParent">The new parent of the node once moved.</param>
-        /// <param name="newName">The new name to give to the node once moved. This will modify its path. If <c>null</c>, it does not modify the name.</param>
-        void Move(INodeViewModel newParent, string newName = null);
     }
 }
