@@ -892,6 +892,15 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Converts this color to an equivalent <see cref="Color3"/>, discarding the alpha channel.
+        /// </summary>
+        /// <returns>An equivalent <see cref="Color3"/>, discarding the alpha channel.</returns>
+        public Color3 ToColor3()
+        {
+            return new Color3(R, G, B);
+        }
+
+        /// <summary>
         /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <returns>

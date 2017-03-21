@@ -60,7 +60,8 @@ namespace SiliconStudio.Presentation.Windows
             SetImage(messageBox, image);
             SetKeyBindings(messageBox, buttonList);
 
-            var result = (MessageBoxResult)await messageBox.ShowInternal(owner);
+            await messageBox.ShowModal();
+            var result = (MessageBoxResult)messageBox.ButtonResult;
             return new CheckedMessageBoxResult(result, messageBox.IsChecked);
         }
     }

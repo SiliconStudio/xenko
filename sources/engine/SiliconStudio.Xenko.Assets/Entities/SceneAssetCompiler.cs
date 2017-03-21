@@ -38,7 +38,12 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 var assetManager = new ContentManager();
 
-                var scene = new Scene { Parent = Parameters.Parent };
+                var scene = new Scene
+                {
+                    Parent = Parameters.Parent,
+                    Offset = Parameters.Offset
+                };
+
                 foreach (var rootEntity in Parameters.Hierarchy.RootPartIds)
                 {
                     scene.Entities.Add(Parameters.Hierarchy.Parts[rootEntity].Entity);

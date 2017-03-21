@@ -1,23 +1,15 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 namespace SiliconStudio.Xenko.Rendering.Skyboxes
 {
-    /// <summary>
-    /// Base shader to perform post effects. Draws the input mesh without transformation.
-    /// </summary>
-    shader SkyboxShader : ImageEffectShader, Transformation, SkyboxStream
+    shader SkyboxShader : SpriteBase, SkyboxStream
     {
-        cbuffer PerLighting
-        {
-            [Link("Skybox.Intensity")]
-            stage float Intensity;
-
-            [Link("Skybox.SkyMatrix")]
-            stage float4x4 SkyMatrix;
-        }
-
-        compose IComputeEnvironmentColor skyboxColor;
+        stage float Intensity;
+        stage TextureCube CubeMap;
+        stage float4x4 ProjectionInverse;
+        stage float4x4 ViewInverse;
+        stage float4x4 SkyMatrix;
 
         override stage void VSMain()
         {
@@ -31,8 +23,9 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         override stage float4 Shading()
         {
             var samplingDir = normalize(streams.skyboxViewDirection);
-            var color = skyboxColor.Compute(float3(samplingDir.x, samplingDir.y, -samplingDir.z)).rgb;
+            var color = CubeMap.Sample(LinearSampler, float3(samplingDir.x, samplingDir.y, -samplingDir.z)).rgb;
             return float4(color * Intensity, 1.0);
+            return float4(1,1,1,1);
         }
     };
 }

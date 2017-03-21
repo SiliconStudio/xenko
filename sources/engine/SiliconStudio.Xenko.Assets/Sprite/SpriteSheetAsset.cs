@@ -23,10 +23,11 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     [CategoryOrder(10, "Parameters")]
     [CategoryOrder(50, "Atlas Packing")]
     [CategoryOrder(150, "Sprites")]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha01")]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.10.0-alpha01")]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RenameImageGroupsUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(RemoveMaxSizeUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.5.0-alpha01", typeof(BorderSizeOrderUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.10.0-alpha01", typeof(SpriteSheetSRGBUpgrader))]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(SpriteSheet))]
     [AssetCompiler(typeof(SpriteSheetAssetCompiler))]
@@ -84,16 +85,17 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         public TextureFormat Format { get; set; } = TextureFormat.Compressed;
 
         /// <summary>
-        /// Gets or sets the value indicating whether the output texture is encoded into the standard RGB color space.
+        /// Indicates if the texture is in sRGB format (standard for color textures). When working in Linear color space the texture will bed converted to linear space when sampling.
         /// </summary>
         /// <userdoc>
-        /// If checked, the input image is considered as an sRGB image. This should be default for colored texture
-        /// with a HDR/gamma correct rendering.
+        /// Should be checked for all color textures, unless they are explicitly in linear space. When working in Linear color space, the texture will be stored in sRGB format and converted to linear space when sampling.
         /// </userdoc>
         [DataMember(45)]
-        [DefaultValue(TextureColorSpace.Auto)]
-        [Display("ColorSpace", "Parameters")]
-        public TextureColorSpace ColorSpace { get; set; } = TextureColorSpace.Auto;
+        [DefaultValue(true)]
+        [Display("sRGB sampling")]
+        public bool UseSRgbSampling { get; set; } = true;
+
+        public bool IsSRGBTexture(ColorSpace colorSpaceReference) => ((colorSpaceReference == ColorSpace.Linear) && UseSRgbSampling);
 
         /// <summary>
         /// Gets or sets the alpha format.
@@ -197,6 +199,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                 }
             }
         }
+
         class BorderSizeOrderUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
@@ -216,6 +219,18 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     var y = sprite.Borders.Y ?? 0.0f;
                     sprite.Borders.Y = sprite.Borders.Z ?? 0.0f;
                     sprite.Borders.Z = y;
+                }
+            }
+        }
+
+        class SpriteSheetSRGBUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                if (asset.ColorSpace != null)
+                {
+                    asset.UseSRgbSampling = (asset.ColorSpace != "Gamma"); // This is correct. It converts some legacy code with ambiguous meaning.
+                    asset.RemoveChild("ColorSpace");
                 }
             }
         }

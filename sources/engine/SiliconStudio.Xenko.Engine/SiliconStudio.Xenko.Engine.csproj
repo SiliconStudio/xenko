@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
@@ -118,7 +118,6 @@
     <Compile Include="Animations\CompressedTimeSpan.cs" />
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedQuaternionGroup.cs" />
     <Compile Include="Animations\Interpolator.cs" />
-    <Compile Include="Engine\ChildSceneComponent.cs" />
     <Compile Include="Engine\ComponentOrderAttribute.cs" />
     <Compile Include="Engine\Design\EffectCompilationMode.cs" />
     <Compile Include="Engine\Design\EntityChildPropertyResolver.cs" />
@@ -169,7 +168,6 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ICommsInterface.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketClient.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
-    <Compile Include="Engine\Processors\ChildSceneProcessor.cs" />
     <Compile Include="Engine\Processors\ModelTransformProcessor.cs" />
     <Compile Include="Engine\Prefab.cs" />
     <Compile Include="Engine\Processors\NavigationProcessor.cs" />
@@ -180,6 +178,12 @@
     <Compile Include="Profiling\GameProfilerSystem.cs" />
     <Compile Include="Profiling\GcProfiling.cs" />
     <Compile Include="Rendering\ActiveRenderStage.cs" />
+    <Compile Include="Rendering\Background\BackgroundShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>BackgroundShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\BackToFrontSortMode.cs" />
     <Compile Include="Rendering\Compositing\ClearRenderer.cs" />
     <Compile Include="Rendering\Compositing\DefaultRenderTargets.cs" />
@@ -323,6 +327,10 @@
     <Compile Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightRamp.cs" />
+    <None Include="Rendering\Background\BackgroundShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>BackgroundShader.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Images\RangeConversion\RangeCompressorShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>RangeCompressorShader.cs</LastGenOutput>
@@ -652,9 +660,6 @@
     <Compile Include="Rendering\Shadows\ShadowMapRenderView.cs" />
     <Compile Include="Rendering\SimpleGroupToRenderStageSelector.cs" />
     <Compile Include="Rendering\SkinningRenderFeature.cs" />
-    <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxRenderProcessor.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxRenderFeature.cs" />
     <Compile Include="Rendering\LightProbes\ComputeSphericalHarmonics.cs">
       <DependentUpon>ComputeSphericalHarmonics.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -795,7 +800,6 @@
     <Compile Include="Engine\ModelNodeLinkComponent.cs" />
     <Compile Include="Engine\SceneInstance.cs" />
     <Compile Include="Engine\ScriptComponent.cs" />
-    <Compile Include="Engine\SkyboxComponent.cs" />
     <Compile Include="Engine\SpriteComponent.cs" />
     <Compile Include="Engine\TransformComponent.cs" />
     <Compile Include="Rendering\RenderEffectState.cs" />
@@ -2509,12 +2513,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Skyboxes\ComputeSkyboxCubeMapColor.cs">
-      <DependentUpon>ComputeSkyboxCubeMapColor.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Rendering\Skyboxes\CubemapUtils.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2540,13 +2538,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\Skyboxes\Skybox.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxBackground.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxEffect.cs">
-      <DependentUpon>SkyboxEffect.xkfx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Rendering\Skyboxes\SkyboxKeys.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxShader.cs">
       <DependentUpon>SkyboxShader.xksl</DependentUpon>
@@ -3890,10 +3881,6 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TransformationSkinning.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Skyboxes\ComputeSkyboxCubeMapColor.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeSkyboxCubeMapColor.cs</LastGenOutput>
-    </None>
     <None Include="Rendering\Skyboxes\CubemapUtils.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapUtils.cs</LastGenOutput>
@@ -3909,10 +3896,6 @@
     <None Include="Rendering\Skyboxes\RoughnessCubeMapEnvironmentColor.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>RoughnessCubeMapEnvironmentColor.cs</LastGenOutput>
-    </None>
-    <None Include="Rendering\Skyboxes\SkyboxEffect.xkfx">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>SkyboxEffect.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Skyboxes\SkyboxShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

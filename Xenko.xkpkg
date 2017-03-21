@@ -3,7 +3,7 @@ Id: cc1bcc78-50b2-4da6-8902-f7a3ae42898b
 SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: Xenko
-    Version: 1.11.0-beta
+    Version: 1.11.1.1
     Owners:
       - Silicon Studio
     Authors: 
@@ -91,7 +91,10 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SpriteSheetSprites.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SpriteSheetUI.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/OfflineRasterizedSpriteFont.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Textures/DefaultTexture.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Textures/ColorTexture.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Textures/NormalMapTexture.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Textures/GrayscaleTexture.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Textures/DefaultRenderTexture.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/UI/Library.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/UI/Page.xktpl
     - Path: sources/engine/SiliconStudio.Xenko.SpriteStudio.Offline/Templates/Assets
@@ -122,5 +125,6 @@ TemplateFolders:
         - samples\Templates\FirstPersonShooter\FirstPersonShooter\FirstPersonShooter.xktpl
         - samples\Templates\ThirdPersonPlatformer\ThirdPersonPlatformer\ThirdPersonPlatformer.xktpl
         - samples\Templates\TopDownRPG\TopDownRPG\TopDownRPG.xktpl
+        - samples\Templates\VRSandbox\VRSandbox\VRSandbox.xktpl
 RootAssets:
     - c90f3988-0544-4cbe-993f-13af7d9c23c6:XenkoDefaultFont

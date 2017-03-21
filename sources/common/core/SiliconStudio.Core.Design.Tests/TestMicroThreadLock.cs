@@ -143,7 +143,7 @@ namespace SiliconStudio.Core.Design.Tests
                     SynchronizationContext.SetSynchronizationContext(sc);
                     sc.Post(async x =>
                     {
-                        using (await microThreadLock.LockSync())
+                        using ((await microThreadLock.ReserveSyncLock()).Lock())
                         {
                             var initialValue = counter;
                             for (var i = 0; i < IncrementCount; ++i)
@@ -178,7 +178,7 @@ namespace SiliconStudio.Core.Design.Tests
                     SynchronizationContext.SetSynchronizationContext(sc);
                     sc.Post(async x =>
                     {
-                        using (await microThreadLock.LockSync())
+                        using ((await microThreadLock.ReserveSyncLock()).Lock())
                         {
                             var initialValue = counter;
                             for (var i = 0; i < IncrementCount; ++i)
@@ -188,7 +188,7 @@ namespace SiliconStudio.Core.Design.Tests
                                 ++counter;
                             }
                         }
-                        using (await microThreadLock.LockSync())
+                        using ((await microThreadLock.ReserveSyncLock()).Lock())
                         {
                             var initialValue = counter;
                             for (var i = 0; i < IncrementCount; ++i)
@@ -223,22 +223,22 @@ namespace SiliconStudio.Core.Design.Tests
                     SynchronizationContext.SetSynchronizationContext(sc);
                     sc.Post(async x =>
                     {
-                        using (await microThreadLock.LockSync())
+                        using ((await microThreadLock.ReserveSyncLock()).Lock())
                         {
                             var initialValue = counter;
-                            using (await microThreadLock.LockSync())
+                            using ((await microThreadLock.ReserveSyncLock()).Lock())
                             {
                                 for (var i = 0; i < IncrementCount; ++i)
                                 {
-                                    using (await microThreadLock.LockSync())
+                                    using ((await microThreadLock.ReserveSyncLock()).Lock())
                                     {
                                         Assert.AreEqual(initialValue + i, counter);
                                     }
-                                    using (await microThreadLock.LockSync())
+                                    using ((await microThreadLock.ReserveSyncLock()).Lock())
                                     {
                                         Thread.Sleep(1);
                                     }
-                                    using (await microThreadLock.LockSync())
+                                    using ((await microThreadLock.ReserveSyncLock()).Lock())
                                     {
                                         ++counter;
                                     }
@@ -266,13 +266,13 @@ namespace SiliconStudio.Core.Design.Tests
             {
                 var task = Task.Run(async () =>
                 {
-                    using (await microThreadLock.LockSync())
+                    using ((await microThreadLock.ReserveSyncLock()).Lock())
                     {
                         var initialValue = counter;
                         for (var i = 0; i < IncrementCount; ++i)
                         {
                             Assert.AreEqual(initialValue + i, counter);
-                            Thread.Sleep(1);
+                            //Thread.Sleep(1);
                             ++counter;
                         }
                     }
@@ -293,7 +293,7 @@ namespace SiliconStudio.Core.Design.Tests
             {
                 var task = Task.Run(async () =>
                 {
-                    using (await microThreadLock.LockSync())
+                    using ((await microThreadLock.ReserveSyncLock()).Lock())
                     {
                         var initialValue = counter;
                         for (var i = 0; i < IncrementCount; ++i)
@@ -303,7 +303,7 @@ namespace SiliconStudio.Core.Design.Tests
                             ++counter;
                         }
                     }
-                    using (await microThreadLock.LockSync())
+                    using ((await microThreadLock.ReserveSyncLock()).Lock())
                     {
                         var initialValue = counter;
                         for (var i = 0; i < IncrementCount; ++i)
@@ -330,22 +330,22 @@ namespace SiliconStudio.Core.Design.Tests
             {
                 var task = Task.Run(async () =>
                 {
-                    using (await microThreadLock.LockSync())
+                    using ((await microThreadLock.ReserveSyncLock()).Lock())
                     {
                         var initialValue = counter;
-                        using (await microThreadLock.LockSync())
+                        using ((await microThreadLock.ReserveSyncLock()).Lock())
                         {
                             for (var i = 0; i < IncrementCount; ++i)
                             {
-                                using (await microThreadLock.LockSync())
+                                using ((await microThreadLock.ReserveSyncLock()).Lock())
                                 {
                                     Assert.AreEqual(initialValue + i, counter);
                                 }
-                                using (await microThreadLock.LockSync())
+                                using ((await microThreadLock.ReserveSyncLock()).Lock())
                                 {
                                     Thread.Sleep(1);
                                 }
-                                using (await microThreadLock.LockSync())
+                                using ((await microThreadLock.ReserveSyncLock()).Lock())
                                 {
                                     ++counter;
                                 }
@@ -391,7 +391,7 @@ namespace SiliconStudio.Core.Design.Tests
                     SynchronizationContext.SetSynchronizationContext(sc);
                     sc.Post(async x =>
                     {
-                        using (await microThreadLock.LockSync())
+                        using ((await microThreadLock.ReserveSyncLock()).Lock())
                         {
                             var initialValue = counter;
                             for (var i = 0; i < IncrementCount; ++i)
@@ -445,7 +445,7 @@ namespace SiliconStudio.Core.Design.Tests
             {
                 var task = Task.Run(async () =>
                 {
-                    using (await microThreadLock.LockSync())
+                    using ((await microThreadLock.ReserveSyncLock()).Lock())
                     {
                         var initialValue = counter;
                         for (var i = 0; i < IncrementCount; ++i)

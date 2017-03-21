@@ -1,8 +1,9 @@
 !SceneAsset
 Id: 6e4549c1-7159-432a-ac4c-6b3cca4aad90
-SerializedVersion: {Xenko: 1.10.0-beta02}
+SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
-Parent: null
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - 067bf333-bbd8-43ab-8949-143f3c69817b
@@ -97,13 +98,13 @@ Hierarchy:
                 Name: Directional light (2)
                 Components:
                     7079c04162f3944ea3206fa51989dcb5: !TransformComponent
-                        Id: 41c07970-f362-4e94-a320-6fa51989dcb5
+                        Id: ef764228-8d88-4b34-82e2-5bf1f6eaba1f
                         Position: {X: 0.0, Y: 2.0, Z: 0.0}
                         Rotation: {X: 0.05939117, Y: 0.9254165, Z: 0.163175911, W: -0.336824059}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     8270eacdfd149749872da0e86f3273a2: !LightComponent
-                        Id: cdea7082-14fd-4997-872d-a0e86f3273a2
+                        Id: d0044de9-7525-4180-b27a-56068a29d459
                         Type: !LightDirectional
                             Color: !ColorRgbProvider
                                 Value: {R: 1.0, G: 1.0, B: 1.0}

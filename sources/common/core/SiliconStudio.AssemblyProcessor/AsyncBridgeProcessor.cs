@@ -21,7 +21,7 @@ namespace SiliconStudio.AssemblyProcessor
         public bool Process(AssemblyProcessorContext context)
         {
             this.assembly = context.Assembly;
-            asyncBridgeAssembly = context.AssemblyResolver.Resolve("AsyncBridge");
+            asyncBridgeAssembly = context.AssemblyResolver.Resolve(new AssemblyNameReference("AsyncBridge", null));
 
             assembly.MainModule.AssemblyReferences.Add(asyncBridgeAssembly.Name);
 
@@ -166,7 +166,7 @@ namespace SiliconStudio.AssemblyProcessor
 
             for (int i = 0; i < type.Interfaces.Count; ++i)
             {
-                type.Interfaces[i] = ProcessTypeReference(type.Interfaces[i], null);
+                type.Interfaces[i].InterfaceType = ProcessTypeReference(type.Interfaces[i].InterfaceType, null);
             }
 
             foreach (var field in type.Fields)

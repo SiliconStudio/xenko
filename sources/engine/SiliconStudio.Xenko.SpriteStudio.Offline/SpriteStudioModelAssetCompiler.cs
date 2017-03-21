@@ -38,12 +38,14 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                 var textureAsset = new TextureAsset
                 {
                     Id = AssetId.Empty, // CAUTION: It is important to use an empty GUID here, as we don't want the command to be rebuilt (by default, a new asset is creating a new guid)
-                    Alpha = AlphaFormat.Auto,
                     Format = TextureFormat.Color32Bits,
                     GenerateMipmaps = true,
-                    PremultiplyAlpha = true,
-                    ColorSpace = TextureColorSpace.Auto,
-                    Hint = TextureHint.Color
+                    Type = new ColorTextureType
+                    {
+                        Alpha = AlphaFormat.Auto,
+                        PremultiplyAlpha = true,
+                        UseSRgbSampling = true,
+                    }
                 };
 
                 var textureConvertParameters = new TextureConvertParameters(texture, textureAsset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);

@@ -67,14 +67,17 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     var textureAsset = new TextureAsset
                     {
                         Id = AssetId.Empty, // CAUTION: It is important to use an empty GUID here, as we don't want the command to be rebuilt (by default, a new asset is creating a new guid)
-                        Alpha = asset.Alpha,
+                        
                         Format = asset.Format,
                         GenerateMipmaps = asset.GenerateMipmaps,
-                        PremultiplyAlpha = asset.PremultiplyAlpha,
-                        ColorKeyColor = asset.ColorKeyColor,
-                        ColorKeyEnabled = asset.ColorKeyEnabled,
-                        ColorSpace = asset.ColorSpace,
-                        Hint = TextureHint.Color
+                        Type = new ColorTextureType
+                        {
+                            Alpha = asset.Alpha,
+                            PremultiplyAlpha = asset.PremultiplyAlpha,
+                            ColorKeyColor = asset.ColorKeyColor,
+                            ColorKeyEnabled = asset.ColorKeyEnabled,
+                            UseSRgbSampling = true,
+                        }
                     };
 
                     // Get absolute path of asset source on disk
@@ -283,7 +286,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
 
                     var sprites = Parameters.SheetAsset.Sprites;
                     var packingParameters = Parameters.SheetAsset.Packing;
-                    bool isSRgb = Parameters.SheetAsset.ColorSpace.ToColorSpace(Parameters.ColorSpace, TextureHint.Color) == ColorSpace.Linear;
+                    bool isSRgb = Parameters.SheetAsset.IsSRGBTexture(Parameters.ColorSpace);
 
                     for (var i = 0; i < sprites.Count; ++i)
                     {

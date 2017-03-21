@@ -333,6 +333,10 @@
     <Compile Include="Navigation\NavigationMeshBuildUtils.cs" />
     <Compile Include="Navigation\NavigationMeshFactory.cs" />
     <Compile Include="Navigation\NavigationMeshInputBuilder.cs" />
+    <Compile Include="Textures\ColorTextureType.cs" />
+    <Compile Include="Textures\GrayscaleTextureType.cs" />
+    <Compile Include="Textures\ITextureType.cs" />
+    <Compile Include="Textures\NormalMapTextureType.cs" />
     <Compile Include="Serializers\EntitySerializer.cs" />
     <Compile Include="Rendering\GraphicsCompositorAssetCompiler.cs" />
     <Compile Include="Scripts\Accessibility.cs" />
@@ -424,14 +428,11 @@
     <Compile Include="Physics\ColliderShapeAsset.cs" />
     <Compile Include="Physics\ColliderShapeAssetCompiler.cs" />
     <Compile Include="Serializers\ParameterKeyDictionarySerializer.cs" />
-    <Compile Include="Skyboxes\ISkyboxModel.cs" />
     <Compile Include="Skyboxes\SkyboxAssetCompiler.cs" />
     <Compile Include="Skyboxes\SkyboxAsset.cs" />
-    <Compile Include="Skyboxes\SkyboxCubeMapModel.cs" />
     <Compile Include="Skyboxes\SkyboxGenerator.cs" />
     <Compile Include="Skyboxes\SkyboxPreFilteringDiffuseOrder.cs" />
     <Compile Include="Sprite\SpriteSheetType.cs" />
-    <Compile Include="Textures\TextureColorSpace.cs" />
     <Compile Include="Sprite\PackingAttributes.cs" />
     <Compile Include="Textures\Packing\AtlasTextureElement.cs" />
     <Compile Include="Textures\Packing\AtlasTextureLayout.cs" />

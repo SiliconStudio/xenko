@@ -49,14 +49,15 @@ namespace SiliconStudio.Xenko.Assets.Textures
         public RenderTextureFormat Format { get; set; } = RenderTextureFormat.LDR;
 
         /// <summary>
-        /// Gets or sets the value indicating whether the output texture is encoded into the standard RGB color space.
+        /// Texture will be stored in sRGB format (standard for color textures) and converted to linear space when sampled. Only relevant when working in Linear color space.
         /// </summary>
         /// <userdoc>
-        /// If checked, the input image is considered as an sRGB image. This should be default for colored texture
-        /// with a HDR/gamma correct rendering.
+        /// Should be checked for all color textures, unless they are explicitly in linear space. Texture will be stored in sRGB format (standard for color textures) and converted to linear space when sampled. Only relevant when working in Linear color space.
         /// </userdoc>
-        [DefaultValue(TextureColorSpace.Auto)]
-        [Display("ColorSpace", "Format")]
-        public TextureColorSpace ColorSpace { get; set; } = TextureColorSpace.Auto;
+        [DefaultValue(true)]
+        [Display("sRGB sampling")]
+        public bool UseSRgbSampling { get; set; } = true;
+
+        public bool IsSRgb(ColorSpace colorSpaceReference) => ((colorSpaceReference == ColorSpace.Linear) && UseSRgbSampling);
     }
 }
