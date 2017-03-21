@@ -82,6 +82,11 @@ namespace SiliconStudio.Xenko.Graphics
         public readonly bool HasDepthAsReadOnlyRT;
 
         /// <summary>
+        /// Boolean indicating if the multi-sampled Depth buffer can directly be used as a ShaderResourceView
+        /// </summary>
+        public readonly bool HasMSAADepthAsSRV;
+
+        /// <summary>
         /// Boolean indicating if the graphics API supports resource renaming (with either <see cref="MapMode.WriteDiscard"/> or <see cref="CommandList.UpdateSubresource"/> with full size).
         /// </summary>
         public readonly bool HasResourceRenaming;

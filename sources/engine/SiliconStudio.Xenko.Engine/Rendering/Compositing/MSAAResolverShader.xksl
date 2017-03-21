@@ -12,8 +12,20 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         stage float4 SvPosUnpack;
         stage float2 TextureSizeLess1;
+#ifndef INPUT_MSAA_SAMPLES
 		stage Texture2DMS<float4> InputTexture;
-
+#elif INPUT_MSAA_SAMPLES == 1
+		stage Texture2DMS<float4, 1> InputTexture;
+#elif INPUT_MSAA_SAMPLES == 2
+		stage Texture2DMS<float4, 2> InputTexture;
+#elif INPUT_MSAA_SAMPLES == 4
+		stage Texture2DMS<float4, 4> InputTexture;
+#elif INPUT_MSAA_SAMPLES == 8
+		stage Texture2DMS<float4, 8> InputTexture;
+#else
+        #error "Unsupported amount of MSAA texture samples."
+#endif
+        
         // Supported filter types (note: this must match C# source)
         const int FilterTypes_Box = 1;
         const int FilterTypes_Triangle = 2;

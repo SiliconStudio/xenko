@@ -283,55 +283,27 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             PostEffects?.Collect(context);
         }
 
-        protected static PixelFormat GetNonMSAADepthFormat(PixelFormat format)
-        {
-            PixelFormat result;
-
-            switch (format)
-            {
-                case PixelFormat.R16_Typeless:
-                case PixelFormat.D16_UNorm:
-                    result = PixelFormat.R16_Float;
-                    break;
-                case PixelFormat.R32_Typeless:
-                case PixelFormat.D32_Float:
-                    result = PixelFormat.R32_Float;
-                    break;
-                
-                // Note: for those formats we lose stencil buffer information during MSAA -> non-MSAA conversion
-                case PixelFormat.R24G8_Typeless:
-                case PixelFormat.D24_UNorm_S8_UInt:
-                case PixelFormat.R24_UNorm_X8_Typeless:
-                    result = PixelFormat.R32_Float;
-                    break;
-                case PixelFormat.R32G8X24_Typeless:
-                case PixelFormat.D32_Float_S8X24_UInt:
-                case PixelFormat.R32_Float_X8X24_Typeless:
-                    result = PixelFormat.R32_Float;
-                    break;
-
-                default:
-                    throw new NotSupportedException($"Unsupported depth format [{format}]");
-            }
-
-            return result;
-        }
-
         protected virtual void ResolveDepthMSAA(RenderDrawContext drawContext)
         {
-            ViewDepthStencilNoMSAA = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(
-                ViewDepthStencil.ViewWidth, ViewDepthStencil.ViewHeight, 1, GetNonMSAADepthFormat(ViewDepthStencil.Format), TextureFlags.RenderTarget | TextureFlags.ShaderResource)));
+            if (ViewDepthStencilNoMSAA != null)
+                return;
+            if (ViewDepthStencil.MultiSampleLevel == MSAALevel.None)
+            {
+                ViewDepthStencilNoMSAA = ViewDepthStencil;
+                return;
+            }
 
-            ResolveMSAA(drawContext, ViewDepthStencil, ViewDepthStencilNoMSAA);
+            ViewDepthStencilNoMSAA = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(
+                ViewDepthStencil.ViewWidth, ViewDepthStencil.ViewHeight, 1, Texture.ComputeNonMSAADepthFormat(ViewDepthStencil.Format), TextureFlags.RenderTarget | TextureFlags.ShaderResource)));
+
+            ResolveMSAA(drawContext, ViewDepthStencil, ViewDepthStencilNoMSAA, 1);
         }
 
-        protected virtual void ResolveMSAA(RenderDrawContext drawContext, Texture input, Texture output)
+        protected virtual void ResolveMSAA(RenderDrawContext drawContext, Texture input, Texture output, int maxResolveSamples = 8)
         {
             if (MSAAResolver != null && MSAAResolver.Enabled)
             {
-                MSAAResolver.SetInput(input);
-                MSAAResolver.SetOutput(output);
-                MSAAResolver.Draw(drawContext);
+                MSAAResolver.Resolve(drawContext, input, output, maxResolveSamples);
             }
             else
             {
@@ -423,20 +395,19 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 }
 
                 // Draw [main view | transparent stage]
+                Texture depthStencilSRV = null;
                 if (TransparentRenderStage != null)
                 {
                     // Some transparent shaders will require the depth as a shader resource - resolve it only once and set it here
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
-                        var depthStencilSRV = ResolveDepthAsSRV(drawContext);
+                        depthStencilSRV = ResolveDepthAsSRV(drawContext);
+
+                        // Override depth stencil buffer if it doesn't support SRV
+                        if (depthStencilSRV != null)
+                            ViewDepthStencil = depthStencilSRV;
 
                         renderSystem.Draw(drawContext, context.RenderView, TransparentRenderStage);
-
-                        // Free the depth texture since we won't need it anymore
-                        if (depthStencilSRV != null)
-                        {
-                            drawContext.Resolver.ReleaseDepthStenctilAsShaderResource(depthStencilSRV);
-                        }
                     }
                 }
 
@@ -473,9 +444,15 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         var color = ViewTargetsComposition as IColorTarget;
                         if (color != null)
                         {
-                            drawContext.CommandList.CopyMultiSample(color.Color, 0, ViewOutputTarget, 0);
+                            ResolveMSAA(drawContext, color.Color, ViewOutputTarget);
                         }
                     }
+                }
+
+                // Free the depth texture since we won't need it anymore
+                if (depthStencilSRV != null)
+                {
+                    drawContext.Resolver.ReleaseDepthStenctilAsShaderResource(depthStencilSRV);
                 }
             }
         }
@@ -517,11 +494,15 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)));
                 }
 
+                // Check if can use multi-sampled depth bufer as a shader resource on the current platform
+                TextureFlags depthStencilTextureFlags = TextureFlags.DepthStencil;
+                if (GraphicsDevice.Features.HasMSAADepthAsSRV)
+                    depthStencilTextureFlags |= TextureFlags.ShaderResource;
+
                 //Handle Depth
                 ViewDepthStencil = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
                         TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, currentDepthStencil?.ViewFormat ?? DepthBufferFormat,
-                            TextureFlags.ShaderResource | TextureFlags.DepthStencil, 1, GraphicsResourceUsage.Default, actualMSAALevel)));
-
+                            depthStencilTextureFlags, 1, GraphicsResourceUsage.Default, actualMSAALevel)));
             }
             else
             {
@@ -580,6 +561,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             }
 
             ViewOutputTarget = currentRenderTarget;
+            ViewDepthStencilNoMSAA = null;
         }
 
         protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)

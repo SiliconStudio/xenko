@@ -3,6 +3,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Images;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
@@ -14,6 +15,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     public class MSAAResolver : ImageEffect
     {
         private readonly ImageEffectShader msaaResolver;
+        private int maxSamples;
 
         /// <summary>
         /// MSAA resolve shader modes.
@@ -108,6 +110,18 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             FilterRadius = 1.0f;
         }
 
+        public void Resolve(RenderDrawContext drawContext, Texture input, Texture output, int maxResolveSamples)
+        {
+            // Force to resolve multi-sampled depth texture using only single sample
+            if (input.IsDepthStencil)
+                maxResolveSamples = 1;
+
+            maxSamples = maxResolveSamples;
+            SetInput(0, input);
+            SetOutput(output);
+            Draw(drawContext);
+        }
+
         protected override void InitializeCore()
         {
             base.InitializeCore();
@@ -126,23 +140,16 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 throw new ArgumentOutOfRangeException(nameof(input), "Source texture is not a MSAA texture.");
 
             // Prepare
+            int samplesCount = Math.Min(maxSamples, (int)input.MultiSampleLevel);
             var inputSize = input.Size;
             // SvPosUnpack = float4(float2(0.5, -0.5) * TextureSize, float2(0.5, 0.5) * TextureSize))
             // TextureSizeLess1 = TextureSize - 1
             msaaResolver.Parameters.Set(MSAAResolverShaderKeys.SvPosUnpack, new Vector4(0.5f * inputSize.Width, -0.5f * inputSize.Height, 0.5f * inputSize.Width, 0.5f * inputSize.Height));
             msaaResolver.Parameters.Set(MSAAResolverShaderKeys.TextureSizeLess1, new Vector2(inputSize.Width - 1.0f, inputSize.Height - 1.0f));
             msaaResolver.Parameters.Set(MSAAResolverParams.ResolveFilterDiameter, FilterRadius * 2.0f);
-
-            // Check if it's a depth buffer
-            if (input.IsDepthStencil)
-            {
-                // Resolve multi-sampled depth texture but use only single sample
-                msaaResolver.Parameters.Set(MSAAResolverShaderKeys.InputTexture, input);
-                msaaResolver.Parameters.Set(MSAAResolverParams.MSAASamples, 1);
-                msaaResolver.SetOutput(output);
-                msaaResolver.Draw(drawContext);
-            }
-            else if (FilterType == FilterTypes.Default)
+            msaaResolver.Parameters.Set(MSAAResolverParams.MSAASamples, samplesCount);
+            
+            if (FilterType == FilterTypes.Default)
             {
                 // Resolve using in-build API function
                 drawContext.CommandList.CopyMultiSample(input, 0, output, 0);
@@ -151,8 +158,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 // Resolve using custom pixel shader
                 msaaResolver.Parameters.Set(MSAAResolverShaderKeys.InputTexture, input);
-                msaaResolver.Parameters.Set(MSAAResolverParams.MSAASamples, (int)input.MultiSampleLevel);
-                msaaResolver.Parameters.Set(MSAAResolverParams.ResolveFilterType, (int)FilterType);
+                msaaResolver.Parameters.Set(MSAAResolverParams.InputQuality, (int)input.MultiSampleLevel);
+                if (samplesCount > 1)
+                    msaaResolver.Parameters.Set(MSAAResolverParams.ResolveFilterType, (int)FilterType);
                 msaaResolver.SetOutput(output);
                 msaaResolver.Draw(drawContext);
             }
