@@ -6,18 +6,20 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Packages;
 
 namespace SiliconStudio.Xenko.Assets.Tasks
 {
-    internal sealed class PackageArchive
+    internal static class PackageArchive
     {
         public static void Build(Package package, string specialVersion = null, string outputDirectory = null)
         {
-            if (package == null) throw new ArgumentNullException("package");
+            if (package == null) throw new ArgumentNullException(nameof(package));
 
-            var meta = new NuGet.ManifestMetadata();
-            package.Meta.ToNugetManifest(meta);
+            var meta = new ManifestMetadata();
+            PackageStore.ToNugetManifest(package.Meta, meta);
 
             // Override version with task SpecialVersion (if specified by user)
             if (specialVersion != null)
@@ -25,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                 meta.Version = new PackageVersion(package.Meta.Version.ToString().Split('-').First() + "-" + specialVersion).ToString();
             }
 
-            var builder = new NuGet.PackageBuilder();
+            var builder = new NugetPackageBuilder();
             builder.Populate(meta);
 
             var currentAssemblyLocation = Assembly.GetExecutingAssembly().Location;
@@ -33,7 +35,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
 
             // TODO this is not working 
             // We are excluding everything that is in a folder that starts with a dot (ie. .shadow, .vs)
-            var files = new List<NuGet.ManifestFile>()
+            var files = new List<ManifestFile>()
                 {
                     NewFile(@"Bin\**\*.exe", "Bin", @"Bin\**\.*\**\*.exe"),
                     NewFile(@"Bin\**\*.vsix", "Bin", @"Bin\**\.*\**\*.vsix"),
@@ -160,9 +162,9 @@ namespace SiliconStudio.Xenko.Assets.Tasks
             File.Delete(newPackage.FullPath);
         }
 
-        private static NuGet.ManifestFile NewFile(string source, string target, string exclude = null)
+        private static ManifestFile NewFile(string source, string target, string exclude = null)
         {
-            return new NuGet.ManifestFile()
+            return new ManifestFile()
                 {
                     Source = source.Replace('/', '\\'),
                     Target = target.Replace('/', '\\'),
@@ -170,13 +172,13 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                 };
         }
 
-        private static string GetOutputPath(NuGet.PackageBuilder builder, string outputDirectory)
+        private static string GetOutputPath(NugetPackageBuilder builder, string outputDirectory)
         {
             string version = builder.Version.ToString();
 
             // Output file is {id}.{version}
             string outputFile = builder.Id + "." + version;
-            outputFile += NuGet.Constants.PackageExtension;
+            outputFile += PackageConstants.PackageExtension;
 
             return Path.Combine(outputDirectory, outputFile);
         }

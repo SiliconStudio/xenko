@@ -20,9 +20,6 @@
     <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="NuGet.Core">
-      <HintPath>..\..\..\deps\Nuget\NuGet.core.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -81,6 +78,32 @@
     <Compile Include="IAssetPartDesign.cs" />
     <Compile Include="IProjectAsset.cs" />
     <Compile Include="IProjectFileGeneratorAsset.cs" />
+    <Compile Include="Package.Constants.cs" />
+    <Compile Include="Package.cs" />
+    <Compile Include="PackageAssetCollection.cs" />
+    <Compile Include="PackageBuildConfiguration.cs" />
+    <Compile Include="PackageCollection.cs" />
+    <Compile Include="PackageDependency.cs" />
+    <Compile Include="PackageExtensions.cs" />
+    <Compile Include="PackageLoadedAssembly.cs" />
+    <Compile Include="PackageLoadingAssetFile.cs" />
+    <Compile Include="PackageLoadParameters.cs" />
+    <Compile Include="PackageMeta.cs" />
+    <Compile Include="PackageProfile.cs" />
+    <Compile Include="PackageReference.cs" />
+    <Compile Include="PackageReferenceBase.cs" />
+    <Compile Include="PackageSaveParameters.cs" />
+    <Compile Include="PackageSession.cs" />
+    <Compile Include="PackageSession.Extensions.cs" />
+    <Compile Include="PackageSessionHelper.cs" />
+    <Compile Include="PackageSessionHelper.Solution.cs" />
+    <Compile Include="PackageSessionProfilingKeys.cs" />
+    <Compile Include="PackageSessionResult.cs" />
+    <Compile Include="PackageStore.cs" />
+    <Compile Include="PackageUpgrader.cs" />
+    <Compile Include="PackageUpgraderAttribute.cs" />
+    <Compile Include="PackageUserSettings.cs" />
+    <Compile Include="PackageVersionRangeExtensions.cs" />
     <Compile Include="Reflection\CollectionItemIdentifiers.cs" />
     <Compile Include="Reflection\CollectionItemIdHelper.cs" />
     <Compile Include="Reflection\IdentifiableHelper.cs" />
@@ -158,32 +181,8 @@
     <Compile Include="IFileSynchronizable.cs" />
     <Compile Include="Analysis\AssetResolver.cs" />
     <Compile Include="IO\FileExtensionCollection.cs" />
-    <Compile Include="NugetLogEventArgs.cs" />
-    <Compile Include="NugetStore.cs" />
     <Compile Include="AssetMigration.cs" />
     <Compile Include="OverrideUpgraderHint.cs" />
-    <Compile Include="Package.Constants.cs" />
-    <Compile Include="PackageLoadedAssembly.cs" />
-    <Compile Include="PackageDependency.cs" />
-    <Compile Include="PackageExtensions.cs" />
-    <Compile Include="PackageLoadingAssetFile.cs" />
-    <Compile Include="PackageReferenceBase.cs" />
-    <Compile Include="PackageSessionHelper.cs" />
-    <Compile Include="PackageSessionHelper.Solution.cs" />
-    <Compile Include="PackageLoadParameters.cs" />
-    <Compile Include="PackageUserSettings.cs" />
-    <Compile Include="PackageStore.cs" />
-    <Compile Include="PackageMeta.cs" />
-    <Compile Include="PackageReference.cs" />
-    <Compile Include="PackageStoreExtensions.cs" />
-    <Compile Include="PackageUpgrader.cs" />
-    <Compile Include="PackageUpgraderAttribute.cs" />
-    <Compile Include="PackageVersion.cs" />
-    <Compile Include="PackageVersionExtensions.cs" />
-    <Compile Include="PackageVersionRange.cs" />
-    <Compile Include="PackageVersionRangeExtensions.cs" />
-    <Compile Include="PackageBuildConfiguration.cs" />
-    <Compile Include="PackageProfile.cs" />
     <Compile Include="Compiler\CompilerAttribute.cs" />
     <Compile Include="Compiler\CompilerContext.cs" />
     <Compile Include="Compiler\CompilerRegistry.cs" />
@@ -192,12 +191,9 @@
     <Compile Include="Compiler\ImportStreamCommand.cs" />
     <Compile Include="Compiler\ItemListCompiler.cs" />
     <Compile Include="Compiler\PackageCompiler.cs" />
-    <Compile Include="PackageSessionProfilingKeys.cs" />
-    <Compile Include="PackageSessionResult.cs" />
     <Compile Include="ProjectFileGeneratorAsset.cs" />
     <Compile Include="ProjectSourceCodeAsset.cs" />
     <Compile Include="RawAsset.cs" />
-    <Compile Include="PackageSaveParameters.cs" />
     <Compile Include="RootAssetCollection.cs" />
     <Compile Include="Serializers\AssetItemSerializer.cs" />
     <Compile Include="Serializers\YamlAssetSerializer.cs" />
@@ -224,9 +220,6 @@
     <Compile Include="Selectors\PathSelector.cs" />
     <Compile Include="Serializers\PackageVersionRangeSerializer.cs" />
     <Compile Include="Serializers\IAssetSerializer.cs" />
-    <Compile Include="PackageCollection.cs" />
-    <Compile Include="PackageSession.cs" />
-    <Compile Include="PackageSession.Extensions.cs" />
     <Compile Include="Serializers\ContentReferenceSerializer.cs" />
     <Compile Include="Serializers\PackageVersionSerializer.cs" />
     <Compile Include="Serializers\PropertyKeyYamlSerializer.cs" />
@@ -246,7 +239,6 @@
     <Compile Include="AssetException.cs" />
     <Compile Include="AssetDescriptionAttribute.cs" />
     <Compile Include="Asset.cs" />
-    <Compile Include="PackageAssetCollection.cs" />
     <Compile Include="AssetFileSerializer.cs" />
     <Compile Include="Diagnostics\AssetLoggerExtensions.cs" />
     <Compile Include="Diagnostics\AssetLogMessage.cs" />
@@ -264,7 +256,6 @@
     <Compile Include="AssetItem.cs" />
     <Compile Include="IO\FileUtility.cs" />
     <Compile Include="IAssetImporter.cs" />
-    <Compile Include="Package.cs" />
     <Compile Include="PropertyCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\SearchDirection.cs" />
@@ -331,6 +322,11 @@
       <Name>SiliconStudio.Core.Serialization</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Packages\SiliconStudio.Packages.csproj">
+      <Project>{acd2c831-bda2-4512-b4cc-75e8e1804f73}</Project>
+      <Name>SiliconStudio.Packages</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\PackageSessionAnalysis.cs" />
@@ -347,7 +343,6 @@
     <None Include="packages.config" />
     <None Include="Diagrams\AssetsDiagram.cd" />
     <None Include="Diagrams\BuildCommands.cd" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\deps\Nuget\NuGet.exe">

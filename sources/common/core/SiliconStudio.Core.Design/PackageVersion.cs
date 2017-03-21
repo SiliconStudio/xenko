@@ -10,13 +10,12 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
+
 using System;
 using System.Text.RegularExpressions;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Serializers;
 
-namespace SiliconStudio.Assets
+namespace SiliconStudio.Core
 {
     /// <summary>
     /// A hybrid implementation of SemVer that supports semantic versioning as described at http://semver.org while not strictly enforcing it to 
@@ -95,11 +94,11 @@ namespace SiliconStudio.Assets
         {
             if (version == null)
             {
-                throw new ArgumentNullException("version");
+                throw new ArgumentNullException(nameof(version));
             }
             Version = NormalizeVersionValue(version);
-            SpecialVersion = specialVersion ?? String.Empty;
-            this.originalString = String.IsNullOrEmpty(originalString) ? version.ToString() + (!String.IsNullOrEmpty(specialVersion) ? '-' + specialVersion : null) : originalString;
+            SpecialVersion = specialVersion ?? string.Empty;
+            this.originalString = string.IsNullOrEmpty(originalString) ? version + (!string.IsNullOrEmpty(specialVersion) ? '-' + specialVersion : null) : originalString;
         }
 
         internal PackageVersion(PackageVersion semVer)
@@ -112,30 +111,21 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Gets the normalized version portion.
         /// </summary>
-        public Version Version { get; private set; }
+        public Version Version { get; }
 
         /// <summary>
         /// Gets the optional special version.
         /// </summary>
-        public string SpecialVersion { get; private set; }
+        public string SpecialVersion { get; }
 
         public string[] GetOriginalVersionComponents()
         {
-            if (!String.IsNullOrEmpty(originalString))
+            if (!string.IsNullOrEmpty(originalString))
             {
-                string original;
 
                 // search the start of the SpecialVersion part, if any
                 int dashIndex = originalString.IndexOf('-');
-                if (dashIndex != -1)
-                {
-                    // remove the SpecialVersion part
-                    original = originalString.Substring(0, dashIndex);
-                }
-                else
-                {
-                    original = originalString;
-                }
+                var original = dashIndex != -1 ? originalString.Substring(0, dashIndex) : originalString;
 
                 return SplitAndPadVersionString(original);
             }
@@ -156,7 +146,7 @@ namespace SiliconStudio.Assets
             {
                 // if 'a' has less than 4 elements, we pad the '0' at the end 
                 // to make it 4.
-                var b = new string[4] { "0", "0", "0", "0" };
+                string [] b = { "0", "0", "0", "0" };
                 Array.Copy(a, 0, b, 0, a.Length);
                 return b;
             }
@@ -167,15 +157,15 @@ namespace SiliconStudio.Assets
         /// </summary>
         public static PackageVersion Parse(string version)
         {
-            if (String.IsNullOrEmpty(version))
+            if (string.IsNullOrEmpty(version))
             {
-                throw new ArgumentNullException("version", "cannot be null or empty");
+                throw new ArgumentNullException(nameof(version), "cannot be null or empty");
             }
 
             PackageVersion semVer;
             if (!TryParse(version, out semVer))
             {
-                throw new ArgumentException(String.Format("Invalid version format [{0}]", version), "version");
+                throw new ArgumentException($"Invalid version format [{version}]", nameof(version));
             }
             return semVer;
         }
@@ -244,21 +234,21 @@ namespace SiliconStudio.Assets
 
         public int CompareTo(object obj)
         {
-            if (Object.ReferenceEquals(obj, null))
+            if (ReferenceEquals(obj, null))
             {
                 return 1;
             }
             PackageVersion other = obj as PackageVersion;
             if (other == null)
             {
-                throw new ArgumentException("Object must be a SemanticVersion", "obj");
+                throw new ArgumentException("Object must be a SemanticVersion", nameof(obj));
             }
             return CompareTo(other);
         }
 
         public int CompareTo(PackageVersion other)
         {
-            if (Object.ReferenceEquals(other, null))
+            if (ReferenceEquals(other, null))
             {
                 return 1;
             }
@@ -289,9 +279,9 @@ namespace SiliconStudio.Assets
 
         public static bool operator ==(PackageVersion version1, PackageVersion version2)
         {
-            if (Object.ReferenceEquals(version1, null))
+            if (ReferenceEquals(version1, null))
             {
-                return Object.ReferenceEquals(version2, null);
+                return ReferenceEquals(version2, null);
             }
             return version1.Equals(version2);
         }
@@ -305,7 +295,7 @@ namespace SiliconStudio.Assets
         {
             if (version1 == null)
             {
-                throw new ArgumentNullException("version1");
+                throw new ArgumentNullException(nameof(version1));
             }
             return version1.CompareTo(version2) < 0;
         }
@@ -319,7 +309,7 @@ namespace SiliconStudio.Assets
         {
             if (version1 == null)
             {
-                throw new ArgumentNullException("version1");
+                throw new ArgumentNullException(nameof(version1));
             }
             return version2 < version1;
         }
@@ -336,7 +326,7 @@ namespace SiliconStudio.Assets
 
         public bool Equals(PackageVersion other)
         {
-            return !Object.ReferenceEquals(null, other) &&
+            return !ReferenceEquals(null, other) &&
                    Version.Equals(other.Version) &&
                    SpecialVersion.Equals(other.SpecialVersion, StringComparison.OrdinalIgnoreCase);
         }
@@ -344,7 +334,7 @@ namespace SiliconStudio.Assets
         public override bool Equals(object obj)
         {
             PackageVersion semVer = obj as PackageVersion;
-            return !Object.ReferenceEquals(null, semVer) && Equals(semVer);
+            return !ReferenceEquals(null, semVer) && Equals(semVer);
         }
 
         public override int GetHashCode()
@@ -361,7 +351,7 @@ namespace SiliconStudio.Assets
         internal class PackageVersionDataSerializer : DataSerializer<PackageVersion>
         {
             /// <inheritdoc/>
-            public override bool IsBlittable { get { return true; } }
+            public override bool IsBlittable => true;
 
             /// <inheritdoc/>
             public override void Serialize(ref PackageVersion obj, ArchiveMode mode, SerializationStream stream)
@@ -370,7 +360,7 @@ namespace SiliconStudio.Assets
                 {
                     string version = null;
                     stream.Serialize(ref version);
-                    obj = PackageVersion.Parse(version);
+                    obj = Parse(version);
                 }
                 else
                 {
@@ -378,15 +368,6 @@ namespace SiliconStudio.Assets
                     stream.Serialize(ref version);
                 }
             }
-        }
-
-        internal static PackageVersion FromSemanticVersion(NuGet.SemanticVersion semanticVersion)
-        {
-            if (semanticVersion == null)
-            {
-                return null;
-            }
-            return new PackageVersion(semanticVersion.ToString());
         }
     }
 }

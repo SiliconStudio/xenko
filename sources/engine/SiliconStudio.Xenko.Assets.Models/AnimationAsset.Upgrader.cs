@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
