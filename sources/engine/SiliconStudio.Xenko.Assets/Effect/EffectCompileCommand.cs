@@ -94,12 +94,12 @@ namespace SiliconStudio.Xenko.Assets.Effect
                 return Task.FromResult(ResultStatus.Failed);
             }
 
-            // Register all dependencies
-            var allSources = new HashSet<string>(completedTask.Bytecode.HashSources.Select(keyPair => keyPair.Key));
-            foreach (var className in allSources)
-            {
-                commandContext.RegisterInputDependency(new ObjectUrl(UrlType.ContentLink, EffectCompilerBase.GetStoragePathFromShaderType(className)));
-            }
+//            // Register all dependencies
+//            var allSources = new HashSet<string>(completedTask.Bytecode.HashSources.Select(keyPair => keyPair.Key));
+//            foreach (var className in allSources)
+//            {
+//                commandContext.RegisterInputDependency(new ObjectUrl(UrlType.ContentLink, EffectCompilerBase.GetStoragePathFromShaderType(className)));
+//            }
 
             // Generate sourcecode if configured
             if (compilerParameters.ContainsKey(EffectSourceCodeKeys.Enable))
