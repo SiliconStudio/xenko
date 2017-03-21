@@ -16,6 +16,7 @@
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <XenkoBuildTags>WindowsTools</XenkoBuildTags>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+    <OutputPath>$(SiliconStudioOutputCommonDir)\Tools\$(AssemblyName)</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Options">

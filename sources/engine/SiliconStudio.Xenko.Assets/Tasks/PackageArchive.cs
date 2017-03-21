@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
             // We are excluding everything that is in a folder that starts with a dot (ie. .shadow, .vs)
             var files = new List<ManifestFile>()
                 {
-                    NewFile(@"Bin\**\*.exe", "Bin", @"Bin\**\.*\**\*.exe"),
+                    NewFile(@"Bin\**\*.exe", "Bin", @"Bin\**\.*\**\*.exe;Bin\**\Tools\**.exe"),
                     NewFile(@"Bin\**\*.vsix", "Bin", @"Bin\**\.*\**\*.vsix"),
                     NewFile(@"Bin\**\*.so", "Bin", @"Bin\**\.*\**\*.so"),
                     NewFile(@"Bin\**\*.a", "Bin", @"Bin\**\.*\**\*.a"),
