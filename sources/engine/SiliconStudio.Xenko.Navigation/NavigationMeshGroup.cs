@@ -31,12 +31,7 @@ namespace SiliconStudio.Xenko.Navigation
         /// </summary>
         [DataMember(5)]
         public NavigationAgentSettings AgentSettings;
-
-        public NavigationMeshGroup()
-        {
-            
-        }
-
+        
         protected bool Equals(NavigationMeshGroup other)
         {
             return string.Equals(Name, other.Name) && Equals(AgentSettings, other.AgentSettings) && Id.Equals(other.Id);

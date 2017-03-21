@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Navigation
         /// </summary>
         public Logger Logger;
 
-        private NavigationMesh lastNavigationMesh;
+        private NavigationMesh oldNavigationMesh;
         
         private List<StaticColliderData> colliders = new List<StaticColliderData>();
         private HashSet<Guid> registeredGuids = new HashSet<Guid>();
@@ -36,10 +36,10 @@ namespace SiliconStudio.Xenko.Navigation
         /// <summary>
         /// Initializes the builder, optionally with a previous navigation mesh when building incrementally
         /// </summary>
-        /// <param name="lastNavigationMesh">The previous navigation mesh, to allow incremental builds</param>
-        public NavigationMeshBuilder(NavigationMesh lastNavigationMesh = null)
+        /// <param name="oldNavigationMesh">The previous navigation mesh, to allow incremental builds</param>
+        public NavigationMeshBuilder(NavigationMesh oldNavigationMesh = null)
         {
-            this.lastNavigationMesh = lastNavigationMesh;
+            this.oldNavigationMesh = oldNavigationMesh;
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Navigation
         public NavigationMeshBuildResult Build(NavigationMeshBuildSettings buildSettings, ICollection<NavigationMeshGroup> groups, CollisionFilterGroupFlags includedCollisionGroups,
             ICollection<BoundingBox> boundingBoxes, CancellationToken cancellationToken)
         {
-            var lastCache = lastNavigationMesh?.Cache;
+            var lastCache = oldNavigationMesh?.Cache;
             var result = new NavigationMeshBuildResult();
 
             if (groups.Count == 0)
@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Navigation
             if (lastCache != null && lastCache.SettingsHash != settingsHash)
             {
                 // Start from scratch if settings changed
-                lastNavigationMesh = null;
+                oldNavigationMesh = null;
                 Logger?.Info("Build settings changed, doing a full rebuild");
             }
 
@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Navigation
             BuildInput(collidersLocal, includedCollisionGroups);
 
             // Check if cache was cleared while building the input
-            lastCache = lastNavigationMesh?.Cache;
+            lastCache = oldNavigationMesh?.Cache;
 
             // The new navigation mesh that will be created
             result.NavigationMesh = new NavigationMesh();
@@ -255,14 +255,12 @@ namespace SiliconStudio.Xenko.Navigation
 
                     // Copy tiles from from the previous build into the current
                     NavigationMeshLayer sourceLayer = null;
-                    if (lastNavigationMesh != null && lastNavigationMesh.LayersInternal.TryGetValue(currentGroup.Id, out sourceLayer))
+                    if (oldNavigationMesh != null && oldNavigationMesh.LayersInternal.TryGetValue(currentGroup.Id, out sourceLayer))
                     {
                         foreach (var sourceTile in sourceLayer.Tiles)
                             layer.TilesInternal.Add(sourceTile.Key, sourceTile.Value);
                     }
-
-                    // Store settings and agent settings inside of the layer
-
+                    
                     foreach (var p in builtTiles)
                     {
                         if (p.Item2 == null)
@@ -277,6 +275,36 @@ namespace SiliconStudio.Xenko.Navigation
                             layer.TilesInternal[p.Item1] = p.Item2;
                         }
                     }
+
+                    // Add information about which tiles were updated to the result
+                    if (tilesToBuild.Count > 0)
+                    {
+                        var layerUpdateInfo = new NavigationMeshLayerUpdateInfo();
+                        layerUpdateInfo.GroupId = currentGroup.Id;
+                        layerUpdateInfo.UpdatedTiles = tilesToBuild.ToList();
+                        result.UpdatedLayers.Add(layerUpdateInfo);
+                    }
+                }
+            }
+
+            // Check for removed layers
+            if (oldNavigationMesh != null)
+            {
+                var newGroups = groups.ToLookup(x => x.Id);
+                foreach (var oldLayer in oldNavigationMesh.Layers)
+                {
+                    if (!newGroups.Contains(oldLayer.Key))
+                    {
+                        var updateInfo = new NavigationMeshLayerUpdateInfo();
+                        updateInfo.UpdatedTiles.Capacity = oldLayer.Value.Tiles.Count;
+
+                        foreach (var tile in oldLayer.Value.Tiles)
+                        {
+                            updateInfo.UpdatedTiles.Add(tile.Key);
+                        }
+
+                        result.UpdatedLayers.Add(updateInfo);
+                    }
                 }
             }
 
@@ -284,7 +312,7 @@ namespace SiliconStudio.Xenko.Navigation
             newCache.BoundingBoxes = new List<BoundingBox>(boundingBoxes);
 
             // Update navigation mesh
-            lastNavigationMesh = result.NavigationMesh;
+            oldNavigationMesh = result.NavigationMesh;
             
             result.Success = true;
             return result;
@@ -389,7 +417,7 @@ namespace SiliconStudio.Xenko.Navigation
         /// </summary>
         private void BuildInput(StaticColliderData[] collidersLocal, CollisionFilterGroupFlags includedCollisionGroups)
         {
-            NavigationMeshCache lastCache = lastNavigationMesh?.Cache;
+            NavigationMeshCache lastCache = oldNavigationMesh?.Cache;
             
             bool clearCache = false;
             
@@ -541,9 +569,9 @@ namespace SiliconStudio.Xenko.Navigation
                 colliderData.Processed = true;
             });
 
-            if (clearCache && lastNavigationMesh != null)
+            if (clearCache && oldNavigationMesh != null)
             {
-                lastNavigationMesh = null;
+                oldNavigationMesh = null;
             }
         }
 

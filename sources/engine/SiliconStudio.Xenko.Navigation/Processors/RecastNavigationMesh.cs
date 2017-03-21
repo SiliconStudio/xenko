@@ -37,8 +37,8 @@ namespace SiliconStudio.Xenko.Navigation.Processors
                 Navigation.TileHeader* header = (Navigation.TileHeader*)dataPtr;
                 var coord = new Point(header->X, header->Y);
 
-                if (tileCoordinates.Contains(coord))
-                    RemoveTile(coord);
+                // Remove old tile if it exists
+                RemoveTile(coord);
 
                 tileCoordinates.Add(coord);
                 return Navigation.AddTile(navmesh, new IntPtr(dataPtr), data.Length);
@@ -51,8 +51,8 @@ namespace SiliconStudio.Xenko.Navigation.Processors
         /// <param name="coord">The tile coordinate</param>
         public bool RemoveTile(Point coord)
         {
-           if(!tileCoordinates.Contains(coord))
-                throw new ArgumentOutOfRangeException();
+            if (!tileCoordinates.Contains(coord))
+                return false;
 
             tileCoordinates.Remove(coord);
             return Navigation.RemoveTile(navmesh, coord);

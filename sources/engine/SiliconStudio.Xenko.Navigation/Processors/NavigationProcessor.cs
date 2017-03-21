@@ -20,10 +20,9 @@ namespace SiliconStudio.Xenko.Navigation.Processors
     public class NavigationProcessor : EntityProcessor<NavigationComponent, NavigationProcessor.AssociatedData>
     {
         private Dictionary<NavigationMesh, NavigationMeshData> loadedNavigationMeshes = new Dictionary<NavigationMesh, NavigationMeshData>();
-
         private DynamicNavigationMeshSystem dynamicNavigationMeshSystem;
         private GameSystemCollection gameSystemCollection;
-
+        
         public override void Update(GameTime time)
         {
             // Update scene offsets for navigation components
@@ -36,7 +35,7 @@ namespace SiliconStudio.Xenko.Navigation.Processors
         protected override void OnSystemAdd()
         {
             gameSystemCollection = Services.GetServiceAs<IGameSystemCollection>() as GameSystemCollection;
-            if(gameSystemCollection == null)
+            if (gameSystemCollection == null)
                 throw new Exception("NavigationProcessor can not access the game systems collection");
 
             gameSystemCollection.CollectionChanged += GameSystemsOnCollectionChanged;
@@ -51,7 +50,7 @@ namespace SiliconStudio.Xenko.Navigation.Processors
 
             if (dynamicNavigationMeshSystem != null)
             {
-                dynamicNavigationMeshSystem.NavigationUpdated -= DynamicNavigationMeshSystemOnNavigationUpdated;
+                dynamicNavigationMeshSystem.NavigationMeshUpdated -= DynamicNavigationMeshSystemOnNavigationMeshUpdatedUpdated;
             }
         }
 
@@ -75,10 +74,60 @@ namespace SiliconStudio.Xenko.Navigation.Processors
             data.Component.NavigationMeshChanged -= ComponentOnNavigationMeshChanged;
         }
 
-        private void DynamicNavigationMeshSystemOnNavigationUpdated(object sender, EventArgs eventArgs)
+        private void DynamicNavigationMeshSystemOnNavigationMeshUpdatedUpdated(object sender, NavigationMeshUpdatedEventArgs eventArgs)
         {
-            // Send updates for components using dynamic navigation meshes
-            var componentsToUpdate = ComponentDatas.Values.Where(x=>x.Component.NavigationMesh == null).ToArray();
+            var newNavigationMesh = eventArgs.BuildResult.NavigationMesh;
+            NavigationMeshData data;
+            if (eventArgs.OldNavigationMesh != null && loadedNavigationMeshes.TryGetValue(eventArgs.OldNavigationMesh, out data))
+            {
+                // Move to new navigation mesh
+                loadedNavigationMeshes.Remove(eventArgs.OldNavigationMesh);
+                loadedNavigationMeshes.Add(newNavigationMesh, data);
+
+                data.NavigationMesh = newNavigationMesh;
+
+                // Replace tiles in recast navigation mesh for all loaded groups
+                var updatedLayers = eventArgs.BuildResult.UpdatedLayers.ToDictionary(x => x.GroupId);
+                var oldGroupKeys = data.LoadedGroups.Keys.ToList();
+                foreach (var oldGroupKey in oldGroupKeys)
+                {
+                    var loadedGroup = data.LoadedGroups[oldGroupKey];
+
+                    // See if this layer was updated
+                    NavigationMeshLayerUpdateInfo layerUpdateInfo;
+                    if (!updatedLayers.TryGetValue(oldGroupKey, out layerUpdateInfo))
+                        continue;
+
+                    // Check if the new navigation mesh contains this layer
+                    //  if it does not, that means it was removed completely and we
+                    //  will remove all the loaded tiles in the loop below
+                    NavigationMeshLayer newLayer = null;
+                    newNavigationMesh.Layers.TryGetValue(oldGroupKey, out newLayer);
+
+                    foreach (var updatedTileCoord in layerUpdateInfo.UpdatedTiles)
+                    {
+                        NavigationMeshTile newTile = null;
+                        if (newLayer != null)
+                        {
+                            if (!newLayer.Tiles.TryGetValue(updatedTileCoord, out newTile))
+                                break;
+                        }
+
+                        // Either add the tile if it is contained in the new navigation mesh or 
+                        //  try to remove it if it does not
+                        if (newTile != null)
+                            loadedGroup.RecastNavigationMesh.AddOrReplaceTile(newTile.Data);
+                        else
+                        {
+                            loadedGroup.RecastNavigationMesh.RemoveTile(updatedTileCoord);
+                        }
+                    }
+                }
+            }
+            
+            // Update loaded navigation meshes for components that are useing it, 
+            //  in case a group was added
+            var componentsToUpdate = ComponentDatas.Values.Where(x => x.Component.NavigationMesh == null).ToArray();
             foreach (var component in componentsToUpdate)
             {
                 UpdateNavigationMesh(component);
@@ -97,13 +146,13 @@ namespace SiliconStudio.Xenko.Navigation.Processors
             if (navigationMeshToLoad == null && dynamicNavigationMeshSystem != null)
             {
                 // Load dynamic navigation mesh when no navigation mesh is specified on the component
-                navigationMeshToLoad = dynamicNavigationMeshSystem.CurrentNavigationMesh;
+                navigationMeshToLoad = dynamicNavigationMeshSystem?.CurrentNavigationMesh;
             }
 
             NavigationMeshGroupData loadedGroup = Load(navigationMeshToLoad, data.Component.Group);
             if (data.LoadedGroup != null)
                 Unload(data.LoadedGroup);
-            
+
             data.Component.RecastNavigationMesh = loadedGroup?.RecastNavigationMesh;
             data.LoadedGroup = loadedGroup;
 
@@ -115,7 +164,7 @@ namespace SiliconStudio.Xenko.Navigation.Processors
             // Store scene offset of entity in the component, which will make all the queries local to the baked navigation mesh (for baked navigation only)
             data.Component.SceneOffset = data.Component.NavigationMesh != null ? data.Component.Entity.Scene.Offset : Vector3.Zero;
         }
-        
+
         private void GameSystemsOnCollectionChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
         {
             // Detect addition of dynamic navigation mesh system
@@ -124,7 +173,7 @@ namespace SiliconStudio.Xenko.Navigation.Processors
                 dynamicNavigationMeshSystem = gameSystemCollection.OfType<DynamicNavigationMeshSystem>().FirstOrDefault();
                 if (dynamicNavigationMeshSystem != null)
                 {
-                    dynamicNavigationMeshSystem.NavigationUpdated += DynamicNavigationMeshSystemOnNavigationUpdated;
+                    dynamicNavigationMeshSystem.NavigationMeshUpdated += DynamicNavigationMeshSystemOnNavigationMeshUpdatedUpdated;
                 }
             }
         }
@@ -141,7 +190,10 @@ namespace SiliconStudio.Xenko.Navigation.Processors
             NavigationMeshData data;
             if (!loadedNavigationMeshes.TryGetValue(mesh, out data))
             {
-                loadedNavigationMeshes.Add(mesh, data = new NavigationMeshData());
+                loadedNavigationMeshes.Add(mesh, data = new NavigationMeshData
+                {
+                    NavigationMesh = mesh
+                });
             }
 
             NavigationMeshGroupData groupData;
@@ -150,17 +202,18 @@ namespace SiliconStudio.Xenko.Navigation.Processors
                 NavigationMeshLayer layer;
                 if (!mesh.Layers.TryGetValue(group.Id, out layer))
                     return null; // Group not present in navigation mesh
-                
+
                 data.LoadedGroups.Add(group.Id, groupData = new NavigationMeshGroupData
                 {
-                    NavigationMesh = mesh,
+                    Data = data,
                     RecastNavigationMesh = new RecastNavigationMesh(mesh),
+                    Id = group.Id,
                 });
 
                 // Add initial tiles to the navigation mesh
                 foreach (var tile in layer.Tiles)
                 {
-                    if(!groupData.RecastNavigationMesh.AddOrReplaceTile(tile.Value.Data))
+                    if (!groupData.RecastNavigationMesh.AddOrReplaceTile(tile.Value.Data))
                         throw new InvalidOperationException("Failed to add tile");
                 }
             }
@@ -172,16 +225,23 @@ namespace SiliconStudio.Xenko.Navigation.Processors
         /// <summary>
         /// Removes a reference to a group
         /// </summary>
-        private void Unload(NavigationMeshGroupData mesh)
+        private void Unload(NavigationMeshGroupData group)
         {
-            int referenceCount = mesh.Release();
+            int referenceCount = group.Release();
             if (referenceCount < 0)
                 throw new ArgumentOutOfRangeException();
 
-            if(referenceCount == 0)
+            if (referenceCount == 0)
             {
                 // Remove group
+                var data = group.Data;
+                data.LoadedGroups.Remove(group.Id);
 
+                // Remove data
+                if (data.LoadedGroups.Count == 0)
+                {
+                    loadedNavigationMeshes.Remove(data.NavigationMesh);
+                }
             }
         }
 
@@ -190,35 +250,38 @@ namespace SiliconStudio.Xenko.Navigation.Processors
         /// </summary>
         public class AssociatedData
         {
-            public NavigationComponent Component;
-            public NavigationMeshGroupData LoadedGroup;
+            internal NavigationComponent Component;
+            internal NavigationMeshGroupData LoadedGroup;
         }
 
         /// <summary>
         /// Contains groups that are loaded for a navigation mesh
         /// </summary>
-        public class NavigationMeshData
+        internal class NavigationMeshData
         {
+            public NavigationMesh NavigationMesh;
             public readonly Dictionary<Guid, NavigationMeshGroupData> LoadedGroups = new Dictionary<Guid, NavigationMeshGroupData>();
         }
 
         /// <summary>
         /// A loaded group of a navigation mesh
         /// </summary>
-        public class NavigationMeshGroupData : IReferencable
+        internal class NavigationMeshGroupData : IReferencable
         {
-            public NavigationMesh NavigationMesh;
+            public NavigationMeshData Data;
             public RecastNavigationMesh RecastNavigationMesh;
+            public Guid Id;
 
             public int ReferenceCount { get; private set; } = 0;
+
             public int AddReference()
             {
-                return --ReferenceCount;
+                return ++ReferenceCount;
             }
 
             public int Release()
             {
-                return ++ReferenceCount;
+                return --ReferenceCount;
             }
         }
 

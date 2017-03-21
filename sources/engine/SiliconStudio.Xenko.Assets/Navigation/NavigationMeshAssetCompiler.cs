@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             private readonly ContentManager contentManager = new ContentManager();
             private readonly Dictionary<string, PhysicsColliderShape> loadedColliderShapes = new Dictionary<string, PhysicsColliderShape>();
 
-            private NavigationMesh lastNavigationMesh;
+            private NavigationMesh oldNavigationMesh;
 
             private UFile assetUrl;
             private NavigationMeshAsset asset;
@@ -107,8 +107,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             {
                 var intermediateDataId = ComputeAssetIntermediateDataId();
 
-                lastNavigationMesh = LoadIntermediateData(intermediateDataId);
-                var navigationMeshBuilder = new NavigationMeshBuilder(lastNavigationMesh);
+                oldNavigationMesh = LoadIntermediateData(intermediateDataId);
+                var navigationMeshBuilder = new NavigationMeshBuilder(oldNavigationMesh);
                 navigationMeshBuilder.Logger = commandContext.Logger;
 
                 foreach (var colliderData in staticColliderDatas)

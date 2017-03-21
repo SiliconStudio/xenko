@@ -16,6 +16,12 @@ using SiliconStudio.Xenko.Navigation.Processors;
 
 namespace SiliconStudio.Xenko.Navigation
 {
+    public class NavigationMeshUpdatedEventArgs : EventArgs
+    {
+        public NavigationMesh OldNavigationMesh;
+        public NavigationMeshBuildResult BuildResult;
+    }
+
     /// <summary>
     /// System that handles building of navigation meshes at runtime
     /// </summary>
@@ -64,7 +70,7 @@ namespace SiliconStudio.Xenko.Navigation
         /// <summary>
         /// Raised when the navigation mesh for the current scene is updated
         /// </summary>
-        public event EventHandler NavigationUpdated;
+        public event EventHandler<NavigationMeshUpdatedEventArgs> NavigationMeshUpdated;
 
         /// <summary>
         /// The most recently built navigation mesh
@@ -187,8 +193,13 @@ namespace SiliconStudio.Xenko.Navigation
             var result = resultTask.Result;
             if (result.Success)
             {
+                var args = new NavigationMeshUpdatedEventArgs
+                {
+                    OldNavigationMesh = CurrentNavigationMesh,
+                    BuildResult = result,
+                };
                 CurrentNavigationMesh = result.NavigationMesh;
-                NavigationUpdated?.Invoke(this, null);
+                NavigationMeshUpdated?.Invoke(this, args);
             }
         }
 
@@ -245,7 +256,7 @@ namespace SiliconStudio.Xenko.Navigation
             UpdateScene(null);
             
             CurrentNavigationMesh = null;
-            NavigationUpdated?.Invoke(this, null);
+            NavigationMeshUpdated?.Invoke(this, null);
         }
 
         private void OnEnabledChanged(object sender, EventArgs eventArgs)
