@@ -97,7 +97,7 @@ namespace SiliconStudio.Assets.Compiler
             private readonly IList<AssetItem> assets;
 
             public DefaultAssetsCompiler(IList<AssetItem> assets)
-                : base(assetCompilerRegistry)
+                : base(assetCompilerRegistry, new AssetCompilationContext())
             {
                 this.assets = assets;
             }

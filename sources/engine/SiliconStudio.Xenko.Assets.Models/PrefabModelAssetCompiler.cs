@@ -23,6 +23,7 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
+    [CompatibleAsset(typeof(PrefabModelAsset), typeof(AssetCompilationContext))]
     internal class PrefabModelAssetCompiler : AssetCompilerBase
     {
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)

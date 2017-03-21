@@ -22,6 +22,7 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Assets.Physics
 {
+    [CompatibleAsset(typeof(ColliderShapeAsset), typeof(AssetCompilationContext))]
     internal class ColliderShapeAssetCompiler : AssetCompilerBase
     {
         static ColliderShapeAssetCompiler()

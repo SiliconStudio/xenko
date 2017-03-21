@@ -16,6 +16,7 @@ using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Assets.Audio
 {
+    [CompatibleAsset(typeof(SoundAsset), typeof(AssetCompilationContext))]
     public class SoundAssetCompiler : AssetCompilerBase
     {
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)

@@ -31,7 +31,7 @@ namespace SiliconStudio.Assets.Analysis
 
         public void Analyze(AssetCompilerContext context, HashSet<Type> typesToFilterOut)
         {
-            var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(AssetItem.Asset.GetType());
+            var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(AssetItem.Asset.GetType(), buildDependencyManager.CompilationContext);
             if (mainCompiler == null) return; //scripts and such don't have compiler
 
             foreach (var type in mainCompiler.GetTypesToFilterOut(context, AssetItem))

@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Compiler;
@@ -10,6 +11,8 @@ namespace SiliconStudio.Assets.Analysis
         public static readonly AssetCompilerRegistry AssetCompilerRegistry = new AssetCompilerRegistry();
 
         private readonly ConcurrentDictionary<BuildNodeDesc, BuildAssetNode> nodes = new ConcurrentDictionary<BuildNodeDesc, BuildAssetNode>();
+
+        public Type CompilationContext { get; set; } = typeof(AssetCompilationContext);
 
         public BuildAssetNode FindOrCreateNode(AssetItem item, BuildDependencyType dependencyType)
         {

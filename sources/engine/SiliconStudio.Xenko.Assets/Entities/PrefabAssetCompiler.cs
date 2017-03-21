@@ -17,6 +17,7 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
+    [CompatibleAsset(typeof(PrefabAsset), typeof(AssetCompilationContext))]
     public class PrefabAssetCompiler : EntityHierarchyCompilerBase<PrefabAsset>
     {
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)

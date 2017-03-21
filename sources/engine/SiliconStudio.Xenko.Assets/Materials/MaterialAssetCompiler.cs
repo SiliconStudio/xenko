@@ -17,6 +17,7 @@ using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Assets.Materials
 {
+    [CompatibleAsset(typeof(MaterialAsset), typeof(AssetCompilationContext))]
     internal class MaterialAssetCompiler : AssetCompilerBase
     {
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)

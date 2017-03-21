@@ -17,6 +17,7 @@ using SiliconStudio.Xenko.Assets.Materials;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
+    [CompatibleAsset(typeof(AnimationAsset), typeof(AssetCompilationContext))]
     public class AnimationAssetCompiler : AssetCompilerBase
     {
         public const string RefClipSuffix = "_reference_clip";

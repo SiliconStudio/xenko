@@ -15,6 +15,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// <summary>
     /// Entry point to compile an <see cref="EffectShaderAsset"/>
     /// </summary>
+    [CompatibleAsset(typeof(EffectShaderAsset), typeof(AssetCompilationContext))]
     public class EffectShaderAssetCompiler : AssetCompilerBase
     {
         public static readonly PropertyKey<ConcurrentDictionary<string, string>> ShaderLocationsKey = new PropertyKey<ConcurrentDictionary<string, string>>("ShaderPathsKey", typeof(EffectShaderAssetCompiler));

@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
     /// <summary>
     /// Texture asset compiler.
     /// </summary>
+    [CompatibleAsset(typeof(TextureAsset), typeof(AssetCompilationContext))]
     public class TextureAssetCompiler : AssetCompilerBase
     {
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)

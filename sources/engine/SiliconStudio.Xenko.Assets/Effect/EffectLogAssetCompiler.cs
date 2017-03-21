@@ -16,6 +16,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// <summary>
     /// Compiles same effects as a previous recorded session.
     /// </summary>
+    [CompatibleAsset(typeof(EffectLogAsset), typeof(AssetCompilationContext))]
     public class EffectLogAssetCompiler : AssetCompilerBase
     {
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)

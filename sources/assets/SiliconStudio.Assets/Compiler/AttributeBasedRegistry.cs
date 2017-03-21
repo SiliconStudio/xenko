@@ -4,18 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Compiler
 {
-    /// <summary>
-    /// A registry that builds itself based on assembly customs attributes
-    /// </summary>
-    /// <typeparam name="T">The type of the attribute that specifies the compiler to use</typeparam>
-    /// <typeparam name="I">The type of the class implementing the <see cref="IAssetCompiler"/> interface to register</typeparam>
-    public abstract class AttributeBasedRegistry<T, I> : CompilerRegistry<I> where T: CompilerAttribute where I: class, IAssetCompiler
+    public abstract class AttributeBasedRegistry<I> : CompilerRegistry<I> where I : class, IAssetCompiler
     {
         private readonly Logger log = GlobalLogger.GetLogger("AssetsCompiler.AttributeBasedRegistry");
 
@@ -46,11 +40,11 @@ namespace SiliconStudio.Assets.Compiler
             foreach (var type in assembly.GetTypes())
             {
                 // Only process Asset types
-                if (!typeof(Asset).IsAssignableFrom(type) || !type.IsClass)
-                    continue; 
+                if (!typeof(IAssetCompiler).IsAssignableFrom(type) || !type.IsClass)
+                    continue;
 
                 // Asset compiler
-                var compilerAttribute = type.GetCustomAttribute<T>();
+                var compilerAttribute = type.GetCustomAttribute<CompatibleAssetAttribute>();
 
                 if (compilerAttribute == null) // no compiler attribute in this asset
                     continue;
@@ -66,23 +60,29 @@ namespace SiliconStudio.Assets.Compiler
             }
         }
 
-        protected virtual bool ProcessAttribute(T compilerAttribute, Type type)
+        protected virtual bool ProcessAttribute(CompatibleAssetAttribute compilerAttribute, Type type)
         {
-            var compilerType = AssemblyRegistry.GetType(compilerAttribute.TypeName);
-            if (compilerType == null)
+            if (!typeof(ICompilationContext).IsAssignableFrom(compilerAttribute.CompilationContext))
             {
-                log.Error($"Unable to find compiler [{compilerAttribute.TypeName}] for asset [{type}]");
+                log.Error($"Invalid compiler context type [{compilerAttribute.CompilationContext}], must inherit from ICompilerContext");
                 return false;
             }
 
-            var compilerInstance = Activator.CreateInstance(compilerType) as I;
+            var assetType = AssemblyRegistry.GetType(compilerAttribute.TypeName);
+            if (assetType == null)
+            {
+                log.Error($"Unable to find asset [{compilerAttribute.TypeName}] for compiler [{type}]");
+                return false;
+            }
+
+            var compilerInstance = Activator.CreateInstance(type) as I;
             if (compilerInstance == null)
             {
-                log.Error($"Invalid compiler type [{compilerAttribute.TypeName}], must inherit from IAssetCompiler");
+                log.Error($"Invalid compiler type [{type}], must inherit from IAssetCompiler");
                 return false;
             }
 
-            RegisterCompiler(type, compilerInstance);
+            RegisterCompiler(assetType, compilerInstance, compilerAttribute.CompilationContext);
             return true;
         }
 

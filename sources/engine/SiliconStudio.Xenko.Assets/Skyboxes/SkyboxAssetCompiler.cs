@@ -16,6 +16,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
+    [CompatibleAsset(typeof(SkyboxAsset), typeof(AssetCompilationContext))]
     internal class SkyboxAssetCompiler : AssetCompilerBase
     {
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)

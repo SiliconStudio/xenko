@@ -15,6 +15,13 @@ namespace SiliconStudio.Assets.Compiler
     {
         private readonly BuildDependencyManager buildDependencyManager = new BuildDependencyManager();
 
+        public AssetDependenciesCompiler(Type compilationContext)
+        {
+            if(!typeof(ICompilationContext).IsAssignableFrom(compilationContext))
+                throw new InvalidOperationException($"{nameof(compilationContext)} should inherit from ICompilationContext");
+            buildDependencyManager.CompilationContext = compilationContext;
+        }
+
         public void Prepare(Dictionary<AssetId, BuildStep> addedBuildSteps, AssetCompilerResult finalResult, AssetCompilerContext context, List<AssetItem> assetItems, HashSet<Type> filterOutTypes, BuildStep parentBuildStep = null,
             BuildDependencyType dependencyType = BuildDependencyType.Runtime)
         {
@@ -46,7 +53,7 @@ namespace SiliconStudio.Assets.Compiler
             var inCache = true;
             if (!addedBuildSteps.TryGetValue(assetItem.Id, out buildStep))
             {
-                var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(assetItem.Asset.GetType());
+                var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(assetItem.Asset.GetType(), buildDependencyManager.CompilationContext);
                 if (mainCompiler == null) return;
 
                 var mainResult = mainCompiler.Prepare(context, assetItem);

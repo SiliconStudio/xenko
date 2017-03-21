@@ -13,6 +13,7 @@ using SiliconStudio.Xenko.Assets.SpriteFont;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
+    [CompatibleAsset(typeof(UILibraryAsset), typeof(AssetCompilationContext))]
     public sealed class UILibraryAssetCompiler : UIAssetCompilerBase<UILibraryAsset>
     {
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)

@@ -15,6 +15,7 @@ using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
+    [CompatibleAsset(typeof(ProceduralModelAsset), typeof(AssetCompilationContext))]
     internal class ProceduralModelAssetCompiler : AssetCompilerBase
     {
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)

@@ -25,6 +25,7 @@ using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Assets.Navigation
 {
+    [CompatibleAsset(typeof(NavigationMeshAsset), typeof(AssetCompilationContext))]
     class NavigationMeshAssetCompiler : AssetCompilerBase
     { 
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)

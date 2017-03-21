@@ -72,6 +72,7 @@
     <Compile Include="AssetTracker.cs" />
     <Compile Include="BasePart.cs" />
     <Compile Include="CollectionIdGenerator.cs" />
+    <Compile Include="Compiler\CompatibleAssetAttribute.cs" />
     <Compile Include="Diagnostics\AssetSerializableLogMessage.cs" />
     <Compile Include="DynamicYaml\DynamicYaml.cs" />
     <Compile Include="DynamicYaml\DynamicYamlArray.cs" />

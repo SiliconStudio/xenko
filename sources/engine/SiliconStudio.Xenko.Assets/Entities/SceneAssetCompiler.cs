@@ -20,6 +20,7 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
+    [CompatibleAsset(typeof(SceneAsset), typeof(AssetCompilationContext))]
     public class SceneAssetCompiler : EntityHierarchyCompilerBase<SceneAsset>
     {
         protected override AssetCommand<SceneAsset> Create(string url, SceneAsset assetParameters, Package package)
