@@ -4,4 +4,5 @@ SerializedVersion: {Xenko: 1.10.0-alpha01}
 Tags: []
 Source: ../../Resources/stone4_nml.jpeg
 Format: AsIs
-Type: !NormalMapTextureType {}
+Type: !NormalMapTextureType
+    InvertY: false
