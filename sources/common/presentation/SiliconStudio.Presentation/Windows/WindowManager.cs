@@ -330,6 +330,7 @@ namespace SiliconStudio.Presentation.Windows
                     Logger.Verbose($"Main window ({MainWindow.Hwnd}) enabled because no more modal nor blocking windows are visible.");
                     MainWindow.IsDisabled = false;
                 }
+                ActivateMainWindow();
             }
             else
             {
@@ -353,9 +354,9 @@ namespace SiliconStudio.Presentation.Windows
                             MainWindow.IsDisabled = false;
                         }
                     }
+                    ActivateMainWindow();
                 }
             }
-            ActivateMainWindow();
         }
 
         [CanBeNull]
