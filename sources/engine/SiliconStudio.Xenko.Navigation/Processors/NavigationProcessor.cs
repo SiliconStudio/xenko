@@ -16,11 +16,6 @@ namespace SiliconStudio.Xenko.Navigation.Processors
     /// </summary>
     public class NavigationProcessor : EntityProcessor<NavigationComponent, NavigationProcessor.AssociatedData>
     {
-        /// <summary>
-        /// Maps navigation meshed to their natively loaded counterparts
-        /// </summary>
-        private readonly Dictionary<NavigationMesh, NavigationMeshInternal> loadedNavigationMeshes = new Dictionary<NavigationMesh, NavigationMeshInternal>();
-
         private readonly HashSet<NavigationComponent> dynamicNavigationComponents = new HashSet<NavigationComponent>();
 
         private DynamicNavigationMeshSystem dynamicNavigationMeshSystem;
@@ -54,12 +49,6 @@ namespace SiliconStudio.Xenko.Navigation.Processors
                         UpdateNavigationMesh(p.Key, p.Value);
                     }
                 }
-
-                // Should update selected layer?
-                if (p.Key.NavigationMeshLayer != p.Value.SelectedLayer)
-                {
-                    SelectLayer(p.Key, p.Value);
-                }
             }
         }
 
@@ -74,12 +63,6 @@ namespace SiliconStudio.Xenko.Navigation.Processors
 
         protected override void OnSystemRemove()
         {
-            // Dispose of all loaded navigation meshes
-            foreach (var pair in loadedNavigationMeshes)
-            {
-                pair.Value.Dispose();
-            }
-            loadedNavigationMeshes.Clear();
         }
 
         protected override AssociatedData GenerateComponentData(Entity entity, NavigationComponent component)
@@ -102,16 +85,7 @@ namespace SiliconStudio.Xenko.Navigation.Processors
         private void RemoveReference(NavigationComponent component, AssociatedData data)
         {
             // Check if loaded navigation mesh is no longer needed
-            if (data.NavigationMeshInternal != null)
-            {
-                if (data.NavigationMeshInternal.RemoveReference(component))
-                {
-                    loadedNavigationMeshes.Remove(data.LoadedNavigationMesh);
-                    data.NavigationMeshInternal.Dispose();
-                }
-            }
-
-            data.NavigationMeshInternal = null;
+            
             data.LoadedNavigationMesh = null;
             component.NavigationMeshInternal = IntPtr.Zero;
             dynamicNavigationComponents.Remove(component);
@@ -143,32 +117,9 @@ namespace SiliconStudio.Xenko.Navigation.Processors
 
             if (targetNavigationMesh != null)
             {
-                NavigationMeshInternal navigationMeshInternal;
-                if (!loadedNavigationMeshes.TryGetValue(targetNavigationMesh, out navigationMeshInternal))
-                {
-                    navigationMeshInternal = new NavigationMeshInternal(targetNavigationMesh);
-                    loadedNavigationMeshes.Add(targetNavigationMesh, navigationMeshInternal);
-                }
-                data.NavigationMeshInternal = navigationMeshInternal;
-                navigationMeshInternal.AddReference(component);
-
-                SelectLayer(component, data);
-
                 // Mark new navigation mesh as loaded
                 data.LoadedNavigationMesh = targetNavigationMesh;
             }
-        }
-
-        private void SelectLayer(NavigationComponent component, AssociatedData data)
-        {
-            if (data.NavigationMeshInternal?.Layers == null)
-                return;
-
-            // Store a pointer to the native navmesh object in the navmesh component
-            component.NavigationMeshInternal = component.NavigationMeshLayer < data.NavigationMeshInternal.Layers.Length
-                ? data.NavigationMeshInternal.Layers[component.NavigationMeshLayer]
-                : IntPtr.Zero;
-            data.SelectedLayer = component.NavigationMeshLayer;
         }
         
         /// <summary>
@@ -178,10 +129,33 @@ namespace SiliconStudio.Xenko.Navigation.Processors
         {
             public NavigationMesh LoadedNavigationMesh;
             public NavigationComponent Component;
-            internal NavigationMeshInternal NavigationMeshInternal;
             internal int SelectedLayer;
         }
 
+        /// <summary>
+        /// Recast native navigation mesh wrapper
+        /// </summary>
+        public class RecastNavigationMesh : IDisposable
+        {
+            private IntPtr navmesh;
+
+            public RecastNavigationMesh(NavigationMesh navigationMesh)
+            {
+                navmesh = Navigation.CreateNavmesh(navigationMesh.TileSize * navigationMesh.CellSize);
+            }
+
+            public void Dispose()
+            {
+                Navigation.DestroyNavmesh(navmesh);
+            }
+
+            public static implicit operator IntPtr(RecastNavigationMesh obj)
+            {
+                return obj.navmesh;
+            }
+        }
+
+/*
         internal class NavigationMeshInternal : IDisposable
         {
             private readonly float cellTileSize;
@@ -192,7 +166,7 @@ namespace SiliconStudio.Xenko.Navigation.Processors
             public NavigationMeshInternal(NavigationMesh navigationMesh)
             {
                 cellTileSize = navigationMesh.TileSize * navigationMesh.CellSize;
-                Layers = new IntPtr[navigationMesh.NumLayers];
+                Layers = new IntPtr[navigationMesh];
                 for (int i = 0; i < navigationMesh.NumLayers; i++)
                 {
                     Layers[i] = LoadLayer(navigationMesh.Layers[i]);
@@ -251,5 +225,6 @@ namespace SiliconStudio.Xenko.Navigation.Processors
                 return layer;
             }
         }
+*/
     }
 }

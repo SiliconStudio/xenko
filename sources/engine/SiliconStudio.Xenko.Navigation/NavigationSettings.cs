@@ -39,10 +39,9 @@ namespace SiliconStudio.Xenko.Navigation
         
         /// <summary>
         /// Settings for agents used with the dynamic navigation mesh
-        /// Every entry corresponds with a layer, which is used by <see cref="NavigationComponent.NavigationMeshLayer"/> to select one from this list
         /// </summary>
         [DataMember(30)]
-        public List<NavigationAgentSettings> NavigationMeshAgentSettings = new List<NavigationAgentSettings>();
+        public List<NavigationMeshGroup> Groups = new List<NavigationMeshGroup>();
     }
 
     public class NavigationSettingsFactory : IObjectFactory
@@ -55,9 +54,9 @@ namespace SiliconStudio.Xenko.Navigation
                 EnableDynamicNavigationMesh = false,
                 BuildSettings = ObjectFactoryRegistry.NewInstance<NavigationMeshBuildSettings>(),
                 IncludedCollisionGroups = CollisionFilterGroupFlags.AllFilter,
-                NavigationMeshAgentSettings = new List<NavigationAgentSettings>
+                Groups = new List<NavigationMeshGroup>
                 {
-                    ObjectFactoryRegistry.NewInstance<NavigationAgentSettings>()
+                    ObjectFactoryRegistry.NewInstance<NavigationMeshGroup>()
                 }
             };
         }

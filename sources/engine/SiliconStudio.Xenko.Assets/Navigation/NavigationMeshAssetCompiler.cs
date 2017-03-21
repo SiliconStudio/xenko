@@ -12,6 +12,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
@@ -109,8 +110,14 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 foreach (var colliderData in staticColliderDatas)
                     navigationMeshBuilder.Add(colliderData);
-                
-                var result = navigationMeshBuilder.Build(asset.BuildSettings, asset.NavigationMeshAgentSettings, asset.IncludedCollisionGroups, boundingBoxes, CancellationToken.None);
+
+                // TODO: Get this from game settings
+                var Groups = new List<NavigationMeshGroup>
+                {
+                    ObjectFactoryRegistry.NewInstance<NavigationMeshGroup>()
+                };
+
+                var result = navigationMeshBuilder.Build(asset.BuildSettings, Groups, asset.IncludedCollisionGroups, boundingBoxes, CancellationToken.None);
                 
                 // Unload loaded collider shapes
                 foreach (var pair in loadedColliderShapes)

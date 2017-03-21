@@ -85,15 +85,15 @@ namespace SiliconStudio.Xenko.Navigation
         /// <param name="boundingBoxes">A collection of bounding boxes to use as the region for which to generate navigation mesh tiles</param>
         /// <param name="cancellationToken">A cancellation token to interrupt the build process</param>
         /// <returns>The build result</returns>
-        public NavigationMeshBuildResult Build(NavigationMeshBuildSettings buildSettings, ICollection<NavigationAgentSettings> agentSettings, CollisionFilterGroupFlags includedCollisionGroups,
+        public NavigationMeshBuildResult Build(NavigationMeshBuildSettings buildSettings, ICollection<NavigationMeshGroup> groups, CollisionFilterGroupFlags includedCollisionGroups,
             ICollection<BoundingBox> boundingBoxes, CancellationToken cancellationToken)
         {
             var lastCache = lastNavigationMesh?.Cache;
             var result = new NavigationMeshBuildResult();
 
-            if (agentSettings.Count == 0)
+            if (groups.Count == 0)
             {
-                Logger?.Warning("No agent settings found");
+                Logger?.Warning("No group settings found");
                 result.Success = true;
                 result.NavigationMesh = new NavigationMesh();
                 return result;
@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Navigation
             if (boundingBoxes.Count == 0)
                 Logger?.Warning("No bounding boxes found");
 
-            var settingsHash = agentSettings?.ComputeHash() ?? 0;
+            var settingsHash = groups?.ComputeHash() ?? 0;
             settingsHash = (settingsHash * 397) ^ buildSettings.GetHashCode();
             if (lastCache != null && lastCache.SettingsHash != settingsHash)
             {
@@ -162,58 +162,45 @@ namespace SiliconStudio.Xenko.Navigation
             var inputIndices = sceneNavigationMeshInputBuilder.Indices.ToArray();
 
             // Enumerate over every layer, and build tiles for each of those layers using the provided agent settings
-            var agentSettingsEnumerator = agentSettings.GetEnumerator();
-            for (int layerIndex = 0; layerIndex < agentSettings.Count; layerIndex++)
+            using (var agentSettingsEnumerator = groups.GetEnumerator())
             {
-                agentSettingsEnumerator.MoveNext();
-                var currentAgentSettings = agentSettingsEnumerator.Current;
-
-                HashSet<Point> tilesToBuild = new HashSet<Point>();
-
-                foreach (var colliderData in collidersLocal)
+                for (int layerIndex = 0; layerIndex < groups.Count; layerIndex++)
                 {
-                    if (colliderData.InputBuilder == null)
-                        continue;
+                    agentSettingsEnumerator.MoveNext();
+                    var currentGroup = agentSettingsEnumerator.Current;
+                    var currentAgentSettings = currentGroup.AgentSettings;
 
-                    if (colliderData.Processed)
-                    {
-                        MarkTiles(colliderData.InputBuilder, ref buildSettings, ref currentAgentSettings, tilesToBuild);
-                        if (colliderData.Previous != null)
-                            MarkTiles(colliderData.Previous.InputBuilder, ref buildSettings, ref currentAgentSettings, tilesToBuild);
-                    }
-                }
+                    HashSet<Point> tilesToBuild = new HashSet<Point>();
 
-                // Check for removed colliders
-                if (lastCache != null)
-                {
-                    foreach (var obj in lastCache.Objects)
+                    foreach (var colliderData in collidersLocal)
                     {
-                        if (!newCache.Objects.ContainsKey(obj.Key))
+                        if (colliderData.InputBuilder == null)
+                            continue;
+
+                        if (colliderData.Processed)
                         {
-                            MarkTiles(obj.Value.InputBuilder, ref buildSettings, ref currentAgentSettings, tilesToBuild);
+                            MarkTiles(colliderData.InputBuilder, ref buildSettings, ref currentAgentSettings, tilesToBuild);
+                            if (colliderData.Previous != null)
+                                MarkTiles(colliderData.Previous.InputBuilder, ref buildSettings, ref currentAgentSettings, tilesToBuild);
                         }
                     }
-                }
 
-                // Calculate updated/added bounding boxes
-                foreach (var boundingBox in boundingBoxes)
-                {
-                    if (!lastCache?.BoundingBoxes.Contains(boundingBox) ?? true) // In the case of no case, mark all tiles in all bounding boxes to be rebuilt
+                    // Check for removed colliders
+                    if (lastCache != null)
                     {
-                        var tiles = NavigationMeshBuildUtils.GetOverlappingTiles(buildSettings, boundingBox);
-                        foreach (var tile in tiles)
+                        foreach (var obj in lastCache.Objects)
                         {
-                            tilesToBuild.Add(tile);
+                            if (!newCache.Objects.ContainsKey(obj.Key))
+                            {
+                                MarkTiles(obj.Value.InputBuilder, ref buildSettings, ref currentAgentSettings, tilesToBuild);
+                            }
                         }
                     }
-                }
 
-                // Check for removed bounding boxes
-                if (lastCache != null)
-                {
-                    foreach (var boundingBox in lastCache.BoundingBoxes)
+                    // Calculate updated/added bounding boxes
+                    foreach (var boundingBox in boundingBoxes)
                     {
-                        if (!boundingBoxes.Contains(boundingBox))
+                        if (!lastCache?.BoundingBoxes.Contains(boundingBox) ?? true) // In the case of no case, mark all tiles in all bounding boxes to be rebuilt
                         {
                             var tiles = NavigationMeshBuildUtils.GetOverlappingTiles(buildSettings, boundingBox);
                             foreach (var tile in tiles)
@@ -222,57 +209,73 @@ namespace SiliconStudio.Xenko.Navigation
                             }
                         }
                     }
-                }
 
-                long buildTimeStamp = DateTime.UtcNow.Ticks;
-                
-                ConcurrentCollector<Tuple<Point, NavigationMeshTile>> builtTiles = new ConcurrentCollector<Tuple<Point, NavigationMeshTile>>(tilesToBuild.Count);
-                Dispatcher.ForEach(tilesToBuild.ToArray(), tileCoordinate =>
-                {
-                    // Allow cancellation while building tiles
-                    if (cancellationToken.IsCancellationRequested)
-                        return;
-
-                    // Builds the tile, or returns null when there is nothing generated for this tile (empty tile)
-                    NavigationMeshTile meshTile = BuildTile(tileCoordinate, buildSettings, currentAgentSettings, boundingBoxes,
-                        inputVertices, inputIndices, buildTimeStamp);
-
-                    // Add the result to the list of built tiles
-                    builtTiles.Add(new Tuple<Point, NavigationMeshTile>(tileCoordinate, meshTile));
-                });
-
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    Logger?.Warning("Operation cancelled");
-                    return result;
-                }
-
-                // Add layer to the navigation mesh
-                var layer = new NavigationMeshLayer();
-                result.NavigationMesh.LayersInternal.Add(layer);
-
-                // Copy tiles from from the previous build into the current
-                if (lastNavigationMesh != null && lastNavigationMesh.LayersInternal.Count > layerIndex)
-                {
-                    var sourceLayer = lastNavigationMesh.LayersInternal[layerIndex];
-                    foreach (var sourceTile in sourceLayer.Tiles)
-                        layer.TilesInternal.Add(sourceTile.Key, sourceTile.Value);
-                }
-
-                // Store settings and agent settings inside of the layer
-
-                foreach (var p in builtTiles)
-                {
-                    if (p.Item2 == null)
+                    // Check for removed bounding boxes
+                    if (lastCache != null)
                     {
-                        // Remove a tile
-                        if (layer.TilesInternal.ContainsKey(p.Item1))
-                            layer.TilesInternal.Remove(p.Item1);
+                        foreach (var boundingBox in lastCache.BoundingBoxes)
+                        {
+                            if (!boundingBoxes.Contains(boundingBox))
+                            {
+                                var tiles = NavigationMeshBuildUtils.GetOverlappingTiles(buildSettings, boundingBox);
+                                foreach (var tile in tiles)
+                                {
+                                    tilesToBuild.Add(tile);
+                                }
+                            }
+                        }
                     }
-                    else
+
+                    long buildTimeStamp = DateTime.UtcNow.Ticks;
+
+                    ConcurrentCollector<Tuple<Point, NavigationMeshTile>> builtTiles = new ConcurrentCollector<Tuple<Point, NavigationMeshTile>>(tilesToBuild.Count);
+                    Dispatcher.ForEach(tilesToBuild.ToArray(), tileCoordinate =>
                     {
-                        // Set or update tile
-                        layer.TilesInternal[p.Item1] = p.Item2;
+                        // Allow cancellation while building tiles
+                        if (cancellationToken.IsCancellationRequested)
+                            return;
+
+                        // Builds the tile, or returns null when there is nothing generated for this tile (empty tile)
+                        NavigationMeshTile meshTile = BuildTile(tileCoordinate, buildSettings, currentAgentSettings, boundingBoxes,
+                            inputVertices, inputIndices, buildTimeStamp);
+
+                        // Add the result to the list of built tiles
+                        builtTiles.Add(new Tuple<Point, NavigationMeshTile>(tileCoordinate, meshTile));
+                    });
+
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        Logger?.Warning("Operation cancelled");
+                        return result;
+                    }
+
+                    // Add layer to the navigation mesh
+                    var layer = new NavigationMeshLayer();
+                    result.NavigationMesh.LayersInternal.Add(currentGroup.Id, layer);
+
+                    // Copy tiles from from the previous build into the current
+                    NavigationMeshLayer sourceLayer = null;
+                    if (lastNavigationMesh != null && lastNavigationMesh.LayersInternal.TryGetValue(currentGroup.Id, out sourceLayer))
+                    {
+                        foreach (var sourceTile in sourceLayer.Tiles)
+                            layer.TilesInternal.Add(sourceTile.Key, sourceTile.Value);
+                    }
+
+                    // Store settings and agent settings inside of the layer
+
+                    foreach (var p in builtTiles)
+                    {
+                        if (p.Item2 == null)
+                        {
+                            // Remove a tile
+                            if (layer.TilesInternal.ContainsKey(p.Item1))
+                                layer.TilesInternal.Remove(p.Item1);
+                        }
+                        else
+                        {
+                            // Set or update tile
+                            layer.TilesInternal[p.Item1] = p.Item2;
+                        }
                     }
                 }
             }

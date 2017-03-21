@@ -22,25 +22,28 @@ namespace SiliconStudio.Xenko.Navigation
     public class DynamicNavigationMeshSystem : GameSystem
     {
         /// <summary>
+        /// If <c>true</c>, this will automatically rebuild on addition/removal of static collider components
+        /// </summary>
+        [DataMember(5)]
+        public bool AutomaticRebuild { get; set; } = true;
+
+        /// <summary>
         /// Collision filter that indicates which colliders are used in navmesh generation
         /// </summary>
+        [DataMember(10)]
         public CollisionFilterGroupFlags IncludedCollisionGroups { get; set; }
 
         /// <summary>
         /// Build settings used by Recast
         /// </summary>
+        [DataMember(20)]
         public NavigationMeshBuildSettings BuildSettings { get; set; }
-
+        
         /// <summary>
         /// Settings for agents used with the dynamic navigation mesh
-        /// Every entry corresponds with a layer, which is used by <see cref="NavigationComponent.NavigationMeshLayer"/> to select one from this list
         /// </summary>
-        public List<NavigationAgentSettings> AgentSettings { get; private set; } = new List<NavigationAgentSettings>();
-
-        /// <summary>
-        /// If <c>true</c>, this will automatically rebuild on addition/removal of static collider components
-        /// </summary>
-        public bool AutomaticRebuild { get; set; } = true;
+        [DataMember(30)]
+        public List<NavigationMeshGroup> Groups { get; private set; } = new List<NavigationMeshGroup>();
 
         private bool pendingRebuild = true;
 
@@ -82,9 +85,9 @@ namespace SiliconStudio.Xenko.Navigation
                 // Initial build settings
                 BuildSettings = ObjectFactoryRegistry.NewInstance<NavigationMeshBuildSettings>();
                 IncludedCollisionGroups = CollisionFilterGroupFlags.AllFilter;
-                AgentSettings = new List<NavigationAgentSettings>
+                Groups = new List<NavigationMeshGroup>
                 {
-                    ObjectFactoryRegistry.NewInstance<NavigationAgentSettings>()
+                    ObjectFactoryRegistry.NewInstance<NavigationMeshGroup>()
                 };
             }
         }
@@ -102,7 +105,7 @@ namespace SiliconStudio.Xenko.Navigation
 
             BuildSettings = navigationSettings.BuildSettings;
             IncludedCollisionGroups = navigationSettings.IncludedCollisionGroups;
-            AgentSettings = navigationSettings.NavigationMeshAgentSettings;
+            Groups = navigationSettings.Groups;
             Enabled = navigationSettings.EnableDynamicNavigationMesh;
 
             
@@ -169,7 +172,7 @@ namespace SiliconStudio.Xenko.Navigation
                 // Only have one active build at a time
                 lock (builder)
                 {
-                    return builder.Build(BuildSettings, AgentSettings, IncludedCollisionGroups,  boundingBoxes, buildTaskCancellationTokenSource.Token);
+                    return builder.Build(BuildSettings, Groups, IncludedCollisionGroups,  boundingBoxes, buildTaskCancellationTokenSource.Token);
                 }
             });
             await result;
