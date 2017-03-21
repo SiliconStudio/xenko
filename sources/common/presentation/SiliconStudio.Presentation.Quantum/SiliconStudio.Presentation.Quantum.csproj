@@ -44,7 +44,6 @@
     <Compile Include="Presenters\INodePresenter.cs" />
     <Compile Include="INodeViewModel.cs" />
     <Compile Include="IPropertyProviderViewModel.cs" />
-    <Compile Include="IPropertyNodeUpdater.cs" />
     <Compile Include="NodeCommandWrapperBase.cs" />
     <Compile Include="GraphViewModelNodeValueChanged.cs" />
     <Compile Include="NodeInitializedEventArgs.cs" />

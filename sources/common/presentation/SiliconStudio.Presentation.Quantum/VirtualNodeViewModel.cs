@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Linq;
 using SiliconStudio.Core.Extensions;
@@ -64,12 +64,6 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        /// <summary>
-        /// Registers an <see cref="IGraphNode"/> object to this virtual node so when the content is modified, this node will trigger notifications
-        /// of property changes for the <see cref="VirtualNodeViewModel{T}.TypedValue"/> property.
-        /// </summary>
-        /// <param name="nodeent">The content to register.</param>
-        /// <remarks>Events subscriptions are cleaned when this virtual node is disposed.</remarks>
         public void RegisterContentForNotifications(IGraphNode node)
         {
             if (associatedNode != null)
@@ -84,7 +78,6 @@ namespace SiliconStudio.Presentation.Quantum
         {
             // Safety check
             if (initialized) throw new InvalidOperationException("This node has already been initialized.");
-            Owner.GraphViewModelService.NotifyNodeInitialized(this);
             initialized = true;
         }
 

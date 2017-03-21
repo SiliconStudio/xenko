@@ -24,8 +24,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             }
             GenerateChildren(owner, viewModel, nodePresenters);
             viewModel.FinishInitialization();
-
-            owner.GraphViewModelService?.NotifyNodeInitialized(viewModel);
             return viewModel;
         }
 

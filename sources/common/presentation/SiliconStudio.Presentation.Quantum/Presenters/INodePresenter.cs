@@ -32,7 +32,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         bool IsEnumerable { get; }
 
-        bool IsReadOnly { get; }
+        bool IsReadOnly { get; set; }
 
         bool IsVisible { get; set; }
 

@@ -14,8 +14,6 @@ namespace SiliconStudio.Presentation.Quantum
     /// </summary>
     public class GraphViewModelService
     {
-        private readonly List<IPropertyNodeUpdater> propertyNodeUpdaters = new List<IPropertyNodeUpdater>();
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphViewModelService"/> class.
         /// </summary>
@@ -32,35 +30,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         public List<INodePresenterCommand> AvailableCommands { get; } = new List<INodePresenterCommand>();
 
-        // TODO: pass the collection of updaters to the factory, too
         public List<INodePresenterUpdater> AvailableUpdaters { get; } = new List<INodePresenterUpdater>();
 
-        /// <summary>
-        /// Registers a <see cref="IPropertyNodeUpdater"/> to this service.
-        /// </summary>
-        /// <param name="propertyNodeUpdater">The node updater to register.</param>
-        [Obsolete]
-        public void RegisterPropertyNodeUpdater(IPropertyNodeUpdater propertyNodeUpdater)
-        {
-            propertyNodeUpdaters.Add(propertyNodeUpdater);
-        }
-
-        /// <summary>
-        /// Unregisters a <see cref="IPropertyNodeUpdater"/> from this service.
-        /// </summary>
-        /// <param name="propertyNodeUpdater">The node updater to unregister.</param>
-        [Obsolete]
-        public void UnregisterPropertyNodeUpdater(IPropertyNodeUpdater propertyNodeUpdater)
-        {
-            propertyNodeUpdaters.Remove(propertyNodeUpdater);
-        }
-
-        public void NotifyNodeInitialized(SingleNodeViewModel node)
-        {
-            foreach (var updater in propertyNodeUpdaters)
-            {
-                updater.UpdateNode(node);
-            }
-        }
     }
 }
