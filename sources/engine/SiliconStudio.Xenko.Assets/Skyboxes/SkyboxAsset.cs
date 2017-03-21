@@ -21,7 +21,6 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
     [DataContract("SkyboxAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Skybox))]
-    [AssetCompiler(typeof(SkyboxAssetCompiler))]
     [Display(1000, "Skybox")]
     public sealed class SkyboxAsset : Asset
     {

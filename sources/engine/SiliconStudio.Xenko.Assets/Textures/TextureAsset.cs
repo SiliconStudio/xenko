@@ -23,7 +23,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [DataContract("Texture")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Texture))]
-    [AssetCompiler(typeof(TextureAssetCompiler))]
     [Display(1055, "Texture")]
     [CategoryOrder(10, "Size")]
     [CategoryOrder(20, "Format")]

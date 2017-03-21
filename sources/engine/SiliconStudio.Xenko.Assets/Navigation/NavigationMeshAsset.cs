@@ -22,7 +22,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(NavigationMesh))]
     [Display("Navigation Mesh")]
-    [AssetCompiler(typeof(NavigationMeshAssetCompiler))]
     public class NavigationMeshAsset : Asset
     {
         public const string FileExtension = ".xknavmesh";

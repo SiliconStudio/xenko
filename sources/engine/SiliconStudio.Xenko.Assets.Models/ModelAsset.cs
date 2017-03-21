@@ -20,7 +20,6 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("Model")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetContentType(typeof(Model))]
-    [AssetCompiler(typeof(ModelAssetCompiler))]
     [Display(1900, "Model")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha02")]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 2, typeof(Upgrader))]

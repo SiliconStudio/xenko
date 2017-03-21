@@ -150,7 +150,6 @@
     <Compile Include="FileVersionManager.cs" />
     <Compile Include="Compiler\AssetCommand.cs" />
     <Compile Include="Compiler\AssetCompiledArgs.cs" />
-    <Compile Include="Compiler\AssetCompilerAttribute.cs" />
     <Compile Include="Compiler\AssetCompilerBase.cs" />
     <Compile Include="Compiler\AssetCompilerContext.cs" />
     <Compile Include="Compiler\AssetCompilerRegistry.cs" />

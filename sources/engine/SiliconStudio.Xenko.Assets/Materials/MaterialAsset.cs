@@ -22,7 +22,6 @@ namespace SiliconStudio.Xenko.Assets.Materials
     [DataContract("MaterialAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Material))]
-    [AssetCompiler(typeof(MaterialAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.4.0-beta")]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RemoveParametersUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]

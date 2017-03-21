@@ -18,7 +18,6 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("PrefabModelAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Model))]
-    [AssetCompiler(typeof(PrefabModelAssetCompiler))]
     [Display(1855, "Prefab Model")]
     public sealed class PrefabModelAsset : Asset, IModelAsset, IAssetCompileTimeDependencies
     {
