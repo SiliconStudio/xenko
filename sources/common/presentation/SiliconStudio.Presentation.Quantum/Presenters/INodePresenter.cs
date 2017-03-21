@@ -24,7 +24,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         List<INodePresenterCommand> Commands { get; }
 
-        PropertyContainer AttachedProperties { get; }
+        PropertyContainerClass AttachedProperties { get; }
 
         Type Type { get; }
 

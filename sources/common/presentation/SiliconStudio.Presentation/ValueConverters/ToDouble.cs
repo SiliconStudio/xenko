@@ -16,7 +16,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return System.Convert.ChangeType(value, typeof(double));
+            return value != null ? System.Convert.ChangeType(value, typeof(double)) : null;
         }
 
         /// <inheritdoc/>

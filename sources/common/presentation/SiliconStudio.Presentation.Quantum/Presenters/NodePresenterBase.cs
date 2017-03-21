@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -51,7 +52,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public abstract int? Order { get; }
         public abstract object Value { get; }
         public virtual string CombineKey => Name;
-        public PropertyContainer AttachedProperties { get; } = new PropertyContainer();
+        public PropertyContainerClass AttachedProperties { get; } = new PropertyContainerClass();
 
         public abstract event EventHandler<ValueChangingEventArgs> ValueChanging;
         public abstract event EventHandler<ValueChangedEventArgs> ValueChanged;
@@ -73,6 +74,11 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public IPropertyProviderViewModel PropertyProvider { get; }
 
         public INodePresenterFactory Factory => factory;
+
+        public override string ToString()
+        {
+            return $"[{GetType().Name}] {Name} (Count = {Children.Count}";
+        }
 
         public void ChangeParent(INodePresenter newParent)
         {
@@ -110,7 +116,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
                     Commands.Add(command);
             }
         }
-
+        
         void IInitializingNodePresenter.AddChild([NotNull] IInitializingNodePresenter child)
         {
             children.Add(child);

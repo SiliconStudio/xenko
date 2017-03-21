@@ -57,6 +57,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override object Value => Member.Retrieve();
 
+        [NotNull]
         public IMemberDescriptor MemberDescriptor => Member.MemberDescriptor;
 
         public IReadOnlyList<Attribute> MemberAttributes => memberAttributes;

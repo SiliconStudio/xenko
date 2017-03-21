@@ -23,6 +23,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
             NodePresenterFactory = new NodePresenterFactory(nodeContainer.NodeBuilder, AvailableCommands, AvailableUpdaters);
+            NodeViewModelFactory = new NodeViewModelFactory();
         }
 
         public INodePresenterFactory NodePresenterFactory { get; set; }
