@@ -1,10 +1,13 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 
@@ -63,10 +66,20 @@ namespace SiliconStudio.Xenko.Assets.Entities
         public const string FileSceneExtension = ".xkscene;.pdxscene";
 
         /// <summary>
+        /// A collection of identifier of all the children of this scene..
+        /// </summary>
+        [DataMember(10)]
+        [Display(Browsable = false)]
+        [NonIdentifiableCollectionItems]
+        [NotNull]
+        public List<AssetId> ChildrenIds { get; } = new List<AssetId>();
+
+        /// <summary>
         /// The parent scene.
         /// </summary>
         /// <userdoc>The parent scene.</userdoc>
-        [DataMember(10)]
+        [DataMember(20)]
+        [Display(Browsable = false)] // FIXME: make it visible in the property grid, but readonly.
         [DefaultValue(null)]
         public Scene Parent { get; set; }
 
@@ -74,7 +87,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// The translation offset relative to the <see cref="Parent"/> scene.
         /// </summary>
         /// <userdoc>The translation offset of the scene with regard to its parent scene, if any.</userdoc>
-        [DataMember(20)]
+        [DataMember(30)]
         public Vector3 Offset { get; set; }
     }
 }

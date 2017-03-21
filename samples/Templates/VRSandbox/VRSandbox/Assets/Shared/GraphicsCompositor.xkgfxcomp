@@ -69,12 +69,6 @@ RenderFeatures:
                 OpaqueRenderStage: ref!! 50671147-a5c1-49d4-b4ad-3625f71439b3
                 TransparentRenderStage: ref!! 0fa30591-02ee-486d-9347-2b6aee83d035
                 EffectName: Test
-    e9267aaffdfeb308d632ae267eb49b08: !SiliconStudio.Xenko.Rendering.Skyboxes.SkyboxRenderFeature,SiliconStudio.Xenko.Engine
-        RenderStageSelectors:
-            bfbf0c6faecbfc15c4ace31f498fa051: !SiliconStudio.Xenko.Rendering.SimpleGroupToRenderStageSelector,SiliconStudio.Xenko.Engine
-                RenderStage: ref!! 50671147-a5c1-49d4-b4ad-3625f71439b3
-                EffectName: SkyboxEffect
-        PipelineProcessors: {}
     60780391e205770513fdd53e07279a01: !SiliconStudio.Xenko.Rendering.Background.BackgroundRenderFeature,SiliconStudio.Xenko.Engine
         RenderStageSelectors:
             11c8b8ccb522e3cd1dd6688016062a6d: !SiliconStudio.Xenko.Rendering.SimpleGroupToRenderStageSelector,SiliconStudio.Xenko.Engine
@@ -111,49 +105,9 @@ SharedRenderers:
             IgnoreCameraRotation*: false
             RequiredApis:
                 52966a5cf2c1adabab391689b4b3bc35*: Oculus
+                26aad065c7126df1f9428d7f4cbd4e8e*: OpenVR
             ResolutionScale: 1.0
         MSAALevel*: X4
-    34ecb9b2633eacfc439ba8744fe05102: !PostProcessingEffects
-        Id: 608bf04d-8640-469d-b710-1ecf6a46f794
-        Enabled*: true
-        AmbientOcclusion:
-            Enabled*: false
-        DepthOfField:
-            Enabled*: false
-            MaxBokehSize*: 0.01
-            DOFAreas*: {X: 0.5, Y: 6.0, Z: 30.0, W: 200.0}
-            QualityPreset*: 0.7
-            Technique*: HexagonalTripleRhombi
-            AutoFocus*: false
-        BrightFilter:
-            Color: {R: 1.0, G: 1.0, B: 1.0}
-        Bloom:
-            Enabled*: false
-            Distortion: {X: 1.0, Y: 1.0}
-            Afterimage:
-                Enabled: false
-        LightStreak:
-            Enabled*: false
-            Amount*: 0.003
-            Attenuation: 0.7
-        LensFlare:
-            Enabled*: false
-            Amount*: 0.02
-        ColorTransforms:
-            Transforms:
-                1e06f805f8b2e949a06c30d45fe413ef: !ToneMap
-                    Operator: !ToneMapHejl2Operator {}
-                    AutoExposure*: false
-                    Exposure*: 4.4
-                    AdaptationRate*: 0.3
-                c57351444609d14ea258b3f511ec8a74: !FilmGrain
-                    Enabled*: true
-                e86e22e9a5d65545b8b55fca26e0afee: !Vignetting
-                    Enabled: false
-                    Color: {R: 0.0, G: 0.0, B: 0.0}
-        Antialiasing: !FXAAEffect
-            Enabled*: false
-            Quality*: 20
     e4fdc03ab99242b3b516df183f259aad*: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine
         Id: 7e02cd29-ca10-41f1-88d1-0ec22e083549
         Clear:
@@ -170,8 +124,7 @@ SharedRenderers:
         VRSettings:
             Enabled: false
             IgnoreCameraRotation: false
-            RequiredApis:
-                7b6230343872a1fcebf9021c4b78d752: OpenVR
+            RequiredApis: {}
             ResolutionScale: 1.0
         MSAALevel: None
     1bb079da57cd9ac93c46e238091dcef5*: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine
@@ -191,7 +144,8 @@ SharedRenderers:
             Enabled: false
             RequiredApis: {}
             ResolutionScale: 1.0
-        MSAALevel: None
+        MSAALevel: X4
+    34ecb9b2633eacfc439ba8744fe05102: ~(Deleted)
 Game: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
     Camera: {Index: 0}
