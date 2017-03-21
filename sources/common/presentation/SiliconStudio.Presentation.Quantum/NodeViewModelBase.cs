@@ -213,7 +213,7 @@ namespace SiliconStudio.Presentation.Quantum
             return $"{Name}: [{InternalNodeValue}]";
         }
 
-        public void AddAssociatedData(string key, object value)
+        protected void AddAssociatedData(string key, object value)
         {
             if (initializingChildren == null)
             {

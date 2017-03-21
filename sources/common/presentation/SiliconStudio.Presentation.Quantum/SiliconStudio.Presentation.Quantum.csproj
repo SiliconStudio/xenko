@@ -46,7 +46,6 @@
     <Compile Include="IPropertyProviderViewModel.cs" />
     <Compile Include="NodeCommandWrapperBase.cs" />
     <Compile Include="GraphViewModelNodeValueChanged.cs" />
-    <Compile Include="NodeInitializedEventArgs.cs" />
     <Compile Include="NodeViewModelBase.cs" />
     <Compile Include="GraphViewModelConsistencyException.cs" />
     <Compile Include="GraphViewModelService.cs" />
@@ -56,7 +55,6 @@
     <Compile Include="Presenters\RootNodePresenter.cs" />
     <Compile Include="Presenters\SyncNodePresenterCommandBase.cs" />
     <Compile Include="Presenters\VirtualNodePresenter.cs" />
-    <Compile Include="SingleNodeViewModel.cs" />
     <Compile Include="DebugExtensions.cs" />
     <Compile Include="NodeViewModelDynamicMetaObject.cs" />
     <Compile Include="GraphViewModel.cs" />
@@ -66,8 +64,6 @@
     <Compile Include="View\NodeViewModelTemplateProvider.cs" />
     <Compile Include="View\RangedValueTemplateProvider.cs" />
     <Compile Include="View\TypeMatchTemplateProvider.cs" />
-    <Compile Include="VirtualNodeCommandWrapper.cs" />
-    <Compile Include="VirtualNodeViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
