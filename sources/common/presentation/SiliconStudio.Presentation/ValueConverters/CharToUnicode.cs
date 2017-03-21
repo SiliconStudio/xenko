@@ -3,6 +3,7 @@
 using System;
 using System.Globalization;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -13,25 +14,27 @@ namespace SiliconStudio.Presentation.ValueConverters
     public class CharToUnicode : ValueConverterBase<CharToUnicode>
     {
         /// <inheritdoc/>
-        [NotNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var unicodeValue = ConverterHelper.ConvertToInt32(value, culture);
-            return unicodeValue;
+            if (targetType.IsNullable())
+                return value is char ? (object)ConverterHelper.ConvertToInt32(value, culture) : null;
+
+            return ConverterHelper.ConvertToInt32(value, culture);
         }
 
         /// <inheritdoc/>
-        [NotNull]
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {
-                var charValue = ConverterHelper.ConvertToChar(ConverterHelper.ConvertToInt32(value, culture), culture);
-                return charValue;
+                if (targetType.IsNullable())
+                    return value is int ? (object)ConverterHelper.ConvertToChar(ConverterHelper.ConvertToInt32(value, culture), culture) : null;
+
+                return ConverterHelper.ConvertToChar(ConverterHelper.ConvertToInt32(value, culture), culture);
             }
             catch (Exception)
             {
-                return default(char);
+                return targetType.Default();
             }
         }
     }
