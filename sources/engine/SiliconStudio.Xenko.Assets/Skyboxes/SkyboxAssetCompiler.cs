@@ -40,10 +40,10 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (SkyboxAsset)assetItem.Asset;
-            result.BuildSteps = new ListBuildStep();
-            result.ShouldWaitForPreviousBuilds = true;
 
             var colorSpace = context.GetColorSpace();
+
+            result.BuildSteps = new AssetBuildStep(assetItem);
 
             // build the textures for windows (needed for skybox compilation)
             foreach (var dependency in asset.GetDependencies())
@@ -75,10 +75,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             }
 
             // add the skybox command itself.
-            result.BuildSteps.Add(new AssetBuildStep(assetItem)
-            {
-                new SkyboxCompileCommand(targetUrlInStorage, asset, assetItem.Package)
-            });
+            result.BuildSteps.Add(new SkyboxCompileCommand(targetUrlInStorage, asset, assetItem.Package));
         }
 
         private class SkyboxCompileCommand : AssetCommand<SkyboxAsset>
@@ -86,17 +83,17 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             public SkyboxCompileCommand(string url, SkyboxAsset parameters, Package package)
                 : base(url, parameters, package)
             {
-                InputFilesGetter = GetInternalFiles;
+                //InputFilesGetter = GetInternalFiles;
             }
 
-            private IEnumerable<ObjectUrl> GetInternalFiles()
-            {
-                foreach (var dependency in Parameters.GetDependencies())
-                {
-                    // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to compute the skybox
-                    yield return new ObjectUrl(UrlType.Content, SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(dependency.Location));
-                }
-            }
+//            private IEnumerable<ObjectUrl> GetInternalFiles()
+//            {
+//                foreach (var dependency in Parameters.GetDependencies())
+//                {
+//                    // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to compute the skybox
+//                    yield return new ObjectUrl(UrlType.Content, SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(dependency.Location));
+//                }
+//            }
 
             /// <inheritdoc/>
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
