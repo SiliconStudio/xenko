@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
@@ -18,6 +19,7 @@ using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Assets.Physics;
+using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Navigation;
 using SiliconStudio.Xenko.Physics;
 
@@ -98,6 +100,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 EnsureClonedSceneAndHash();
                 writer.Write(sceneHash);
+                writer.Write(asset.SelectedGroups);
             }
             
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -111,13 +114,9 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 foreach (var colliderData in staticColliderDatas)
                     navigationMeshBuilder.Add(colliderData);
 
-                // TODO: Get this from game settings
-                var Groups = new List<NavigationMeshGroup>
-                {
-                    ObjectFactoryRegistry.NewInstance<NavigationMeshGroup>()
-                };
+                var groupsFiltered = asset.SelectedGroups.NotNull().ToList();
 
-                var result = navigationMeshBuilder.Build(asset.BuildSettings, Groups, asset.IncludedCollisionGroups, boundingBoxes, CancellationToken.None);
+                var result = navigationMeshBuilder.Build(asset.BuildSettings, groupsFiltered, asset.IncludedCollisionGroups, boundingBoxes, CancellationToken.None);
                 
                 // Unload loaded collider shapes
                 foreach (var pair in loadedColliderShapes)

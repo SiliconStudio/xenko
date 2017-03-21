@@ -23,10 +23,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             {
                 BuildSettings = ObjectFactoryRegistry.NewInstance<NavigationMeshBuildSettings>(),
                 IncludedCollisionGroups = CollisionFilterGroupFlags.AllFilter,
-                NavigationMeshAgentSettings = new List<NavigationAgentSettings>
-                {
-                    ObjectFactoryRegistry.NewInstance<NavigationAgentSettings>()
-                }
             };
         }
     }

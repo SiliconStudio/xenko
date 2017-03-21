@@ -46,16 +46,15 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         public NavigationMeshBuildSettings BuildSettings { get; set; }
 
         /// <summary>
-        /// Settings for agents used with this navigationMesh
-        /// Every entry corresponds with a layer, which is used by <see cref="NavigationComponent.NavigationMeshLayer"/> to select one from this list at runtime
+        /// Groups that this navigation mesh should be built for
         /// </summary>
-        [DataMember(2010)] public List<NavigationAgentSettings> NavigationMeshAgentSettings = new List<NavigationAgentSettings>();
+        public List<NavigationMeshGroup> SelectedGroups { get; private set; } = new List<NavigationMeshGroup>();
 
         public override int GetHashCode()
         {
             unchecked
             {
-                var hashCode = NavigationMeshAgentSettings?.ComputeHash() ?? 0;
+                var hashCode = SelectedGroups?.ComputeHash() ?? 0;
                 hashCode = (hashCode*397) ^ (int)IncludedCollisionGroups;
                 hashCode = (hashCode*397) ^ BuildSettings.GetHashCode();
                 if (Scene != null)
