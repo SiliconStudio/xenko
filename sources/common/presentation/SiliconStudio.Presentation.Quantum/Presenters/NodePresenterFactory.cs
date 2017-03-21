@@ -138,11 +138,11 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        private void RunUpdaters(IInitializingNodePresenter memberPresenter)
+        protected void RunUpdaters(IInitializingNodePresenter nodePresenter)
         {
             foreach (var updater in AvailableUpdaters)
             {
-                updater.UpdateNode(memberPresenter);
+                updater.UpdateNode(nodePresenter);
             }
         }
     }

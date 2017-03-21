@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
+using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
 {
-    public class SyncAnonymousNodePresenterCommand : SyncNodePresenterCommandBase
+    public class AnonymousNodePresenterCommand : NodePresenterCommandBase
     {
-        private readonly Action<INodePresenter, object> execute;
+        private readonly Func<INodePresenter, object, Task> execute;
         private readonly Func<INodePresenter, bool> canAttach;
 
-        public SyncAnonymousNodePresenterCommand([NotNull] string name, [NotNull] Action<INodePresenter, object> execute, [CanBeNull] Func<INodePresenter, bool> canAttach = null)
+        public AnonymousNodePresenterCommand([NotNull] string name, [NotNull] Func<INodePresenter, object, Task> execute, [CanBeNull] Func<INodePresenter, bool> canAttach = null)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
             if (execute == null) throw new ArgumentNullException(nameof(execute));
@@ -28,9 +28,9 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         }
 
         /// <inheritdoc/>
-        protected override void ExecuteSync(INodePresenter nodePresenter, object parameter, object preExecuteResult)
+        public override Task Execute(INodePresenter nodePresenter, object parameter, object preExecuteResult)
         {
-            execute(nodePresenter, parameter);
+            return execute(nodePresenter, parameter);
         }
     }
 }
