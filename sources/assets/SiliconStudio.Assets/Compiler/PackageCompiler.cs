@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SiliconStudio.BuildEngine;
 
 namespace SiliconStudio.Assets.Compiler
 {
@@ -13,9 +14,10 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public class PackageCompiler : IPackageCompiler
     {
-        private static readonly AssetCompilerRegistry assetCompilerRegistry = new AssetCompilerRegistry();
-        private readonly List<IPackageCompiler> compilers;
+        //private static readonly AssetCompilerRegistry assetCompilerRegistry = new AssetCompilerRegistry();
+        //private readonly List<IPackageCompiler> compilers;
         private readonly IPackageCompilerSource packageCompilerSource;
+        private readonly AssetDependenciesCompiler dependenciesCompiler = new AssetDependenciesCompiler(typeof(AssetCompilationContext));
 
         static PackageCompiler()
         {
@@ -35,7 +37,7 @@ namespace SiliconStudio.Assets.Compiler
         public PackageCompiler(IPackageCompilerSource packageCompilerSource)
         {
             this.packageCompilerSource = packageCompilerSource;
-            compilers = new List<IPackageCompiler>();
+            //compilers = new List<IPackageCompiler>();
         }
 
         /// <summary>
@@ -61,25 +63,26 @@ namespace SiliconStudio.Assets.Compiler
                 return result;
             }
 
-            var defaultAssetsCompiler = new DefaultAssetsCompiler(assets);
-            defaultAssetsCompiler.AssetCompiled += OnAssetCompiled;
-
-            // Add default compilers
-            compilers.Clear();
-            compilers.Add(defaultAssetsCompiler);
-
-            // Compile using all PackageCompiler
-            foreach (var compiler in compilers)
-            {
-                var compilerResult = compiler.Compile(compilerContext);
-                compilerResult.CopyTo(result);
-                while (compilerResult.BuildSteps.Count > 0)
-                {
-                    var step = compilerResult.BuildSteps[0];
-                    compilerResult.BuildSteps.RemoveAt(0);
-                    result.BuildSteps.Add(step);
-                }
-            }
+            dependenciesCompiler.Prepare(new Dictionary<AssetId, BuildStep>(), result, compilerContext, assets, new HashSet<Type>());
+//            var defaultAssetsCompiler = new DefaultAssetsCompiler(assets);
+//            defaultAssetsCompiler.AssetCompiled += OnAssetCompiled;
+//
+//            // Add default compilers
+//            compilers.Clear();
+//            compilers.Add(defaultAssetsCompiler);
+//
+//            // Compile using all PackageCompiler
+//            foreach (var compiler in compilers)
+//            {
+//                var compilerResult = compiler.Compile(compilerContext);
+//                compilerResult.CopyTo(result);
+//                while (compilerResult.BuildSteps.Count > 0)
+//                {
+//                    var step = compilerResult.BuildSteps[0];
+//                    compilerResult.BuildSteps.RemoveAt(0);
+//                    result.BuildSteps.Add(step);
+//                }
+//            }
 
             return result;
         }
@@ -92,25 +95,26 @@ namespace SiliconStudio.Assets.Compiler
         /// <summary>
         /// Internal default compiler for compiling all assets 
         /// </summary>
-        private class DefaultAssetsCompiler : ItemListCompiler, IPackageCompiler
-        {
-            private readonly IList<AssetItem> assets;
-
-            public DefaultAssetsCompiler(IList<AssetItem> assets)
-                : base(assetCompilerRegistry, new AssetCompilationContext())
-            {
-                this.assets = assets;
-            }
-
-            public AssetCompilerResult Compile(AssetCompilerContext context)
-            {
-                var result = new AssetCompilerResult();
-
-                // generate the build steps required to build the assets via base class
-                Prepare(context, assets, result);
-
-                return result;
-            }
-        }
+//        private class DefaultAssetsCompiler : ItemListCompiler, IPackageCompiler
+//        {
+//            private readonly IList<AssetItem> assets;
+//            private readonly AssetDependenciesCompiler dependenciesCompiler = new AssetDependenciesCompiler(typeof(AssetCompilationContext));
+//
+//            public DefaultAssetsCompiler(IList<AssetItem> assets)
+//                : base(assetCompilerRegistry, new AssetCompilationContext())
+//            {
+//                this.assets = assets;
+//            }
+//
+//            public AssetCompilerResult Compile(AssetCompilerContext context)
+//            {
+//                var result = new AssetCompilerResult();
+//
+//                // generate the build steps required to build the assets via base class
+//                Prepare(context, assets, result);
+//
+//                return result;
+//            }
+//        }
     }
 }
