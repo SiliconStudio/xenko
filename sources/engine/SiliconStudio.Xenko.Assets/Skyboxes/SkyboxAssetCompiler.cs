@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
         {
             var skyboxAsset = (SkyboxAsset)assetItem.Asset;
-            foreach (var dependency in skyboxAsset.Model.GetDependencies())
+            foreach (var dependency in skyboxAsset.GetDependencies())
             {
                 var dependencyItem = assetItem.Package.Assets.Find(dependency.Id);
                 if (dependencyItem?.Asset is TextureAsset)
@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
             private IEnumerable<ObjectUrl> GetInternalFiles()
             {
-                foreach (var dependency in Parameters.Model.GetDependencies())
+                foreach (var dependency in Parameters.GetDependencies())
                 {
                     // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to compute the skybox
                     yield return new ObjectUrl(UrlType.Content, SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(dependency.Location));
@@ -103,16 +103,6 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             {
                 base.ComputeParameterHash(writer);
                 writer.Write(1); // Change this number to recompute the hash when prefiltering algorithm are changed
-            }
-
-            /// <inheritdoc/>
-            protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
-            {
-                foreach (var dependency in Parameters.GetDependencies())
-                {
-                    // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to compute the skybox
-                    yield return new ObjectUrl(UrlType.Content, SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(dependency.Location));
-                }
             }
 
             /// <inheritdoc/>

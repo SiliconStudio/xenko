@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(TransformSRgbToColorSpace))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.10.0-alpha01", typeof(DescriptionUpgrader))]
-    public sealed class TextureAsset : AssetWithSource, IAssetCompileTimeDependencies
+    public sealed class TextureAsset : AssetWithSource
     {
         private const string TextureAssetVersion = "1.10.0-alpha01";
 
