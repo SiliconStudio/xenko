@@ -306,7 +306,7 @@ namespace SiliconStudio.Core.MicroThreading
             Schedule(schedulerEntryNode, ScheduleMode.Last);
         }
 
-        internal PriorityQueueNode<SchedulerEntry> Create(Action simpleAction, int priority)
+        internal PriorityQueueNode<SchedulerEntry> Create(Action simpleAction, long priority)
         {
             return new PriorityQueueNode<SchedulerEntry>(new SchedulerEntry(simpleAction, priority));
         }

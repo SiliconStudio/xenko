@@ -40,7 +40,7 @@ namespace SiliconStudio.AssemblyProcessor
                 return false;
 
             // Generate serialization assembly
-            var serializationAssemblyFilepath = RoslynCodeMerger.GenerateRolsynAssemblyLocation(context.Assembly.MainModule.FullyQualifiedName);
+            var serializationAssemblyFilepath = RoslynCodeMerger.GenerateRolsynAssemblyLocation(context.Assembly.MainModule.FileName);
             context.Assembly = RoslynCodeMerger.GenerateRoslynAssembly(context.AssemblyResolver, context.Assembly, serializationAssemblyFilepath, SignKeyFile, References, MemoryReferences, Log, SourceCodes);
 
             return true;

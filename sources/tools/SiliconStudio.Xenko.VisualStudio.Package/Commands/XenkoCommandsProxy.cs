@@ -7,8 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using NShader;
-using NuGet;
 using SiliconStudio.Assets;
+using SiliconStudio.Packages;
 
 namespace SiliconStudio.Xenko.VisualStudio.Commands
 {
@@ -306,7 +306,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
             if (NugetStore.IsStoreDirectory(xenkoSdkDir))
             {
                 var store = new NugetStore(xenkoSdkDir);
-                IPackage xenkoPackage = null;
+                NugetPackage xenkoPackage = null;
 
                 // Try to find the package with the expected version
                 if (packageInfo.ExpectedVersion != null && packageInfo.ExpectedVersion >= MinimumVersion)
@@ -321,7 +321,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
                     return packageInfo;
 
                 // Return the loaded version and the sdk path
-                var packageDirectory = store.PathResolver.GetPackageDirectory(xenkoPackage);
+                var packageDirectory = store.GetPackageDirectory(xenkoPackage);
                 packageInfo.LoadedVersion = GetVersion(xenkoPackage);
                 packageInfo.SdkPath = Path.Combine(xenkoSdkDir, store.RepositoryPath, packageDirectory);
             }
@@ -329,7 +329,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
             return packageInfo;
         }
 
-        private static Version GetVersion(IPackage package)
+        private static Version GetVersion(NugetPackage package)
         {
             var originalVersion = package.Version.Version;
             return new Version(originalVersion.Major, originalVersion.Minor);

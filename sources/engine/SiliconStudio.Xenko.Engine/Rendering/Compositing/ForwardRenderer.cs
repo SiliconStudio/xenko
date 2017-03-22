@@ -180,6 +180,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         {
             var camera = context.GetCurrentCamera();
 
+            if (context.RenderView == null)
+                throw new NullReferenceException(nameof(context.RenderView) + " is null. Please make sure you have your camera correctly set.");
+
             // Setup pixel formats for RenderStage
             using (context.SaveRenderOutputAndRestore())
             {

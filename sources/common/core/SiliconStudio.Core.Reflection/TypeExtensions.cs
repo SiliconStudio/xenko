@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -10,13 +11,14 @@ namespace SiliconStudio.Core.Reflection
     {
         private static readonly Dictionary<Type, bool> AnonymousTypes = new Dictionary<Type, bool>();
 
-        public static bool HasInterface([NotNull] this Type type, Type lookInterfaceType)
+        public static bool HasInterface([NotNull] this Type type, [NotNull] Type lookInterfaceType)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             return type.GetInterface(lookInterfaceType) != null;
         }
 
-        public static Type GetInterface(this Type type, Type lookInterfaceType)
+        [CanBeNull]
+        public static Type GetInterface([NotNull] this Type type, [NotNull] Type lookInterfaceType)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (lookInterfaceType == null)
@@ -31,7 +33,7 @@ namespace SiliconStudio.Core.Reflection
                             && interfaceType.GetGenericTypeDefinition() == lookInterfaceType)
                             return interfaceType;
 
-                for (Type t = type; t != null; t = t.GetTypeInfo().BaseType)
+                for (var t = type; t != null; t = t.GetTypeInfo().BaseType)
                     if (t.GetTypeInfo().IsGenericType && t.GetGenericTypeDefinition() == lookInterfaceType)
                         return t;
             }
@@ -113,7 +115,7 @@ namespace SiliconStudio.Core.Reflection
             if (type == null) throw new ArgumentNullException(nameof(type));
             return type.GetTypeInfo().IsValueType && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;
         }
-        
+
         /// <summary>
         /// Check if the type is a ValueType and does not contain any non ValueType members.
         /// </summary>

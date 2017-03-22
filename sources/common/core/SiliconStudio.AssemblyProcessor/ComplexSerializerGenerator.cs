@@ -36,7 +36,7 @@ namespace SiliconStudio.AssemblyProcessor
                 throw new InvalidOperationException("Missing mscorlib.dll from assembly");
             }
 
-            var coreSerializationAssembly = assemblyResolver.Resolve("SiliconStudio.Core");
+            var coreSerializationAssembly = assemblyResolver.Resolve(new AssemblyNameReference("SiliconStudio.Core", null));
 
             // Register serializer factories (determine which type requires which serializer)
             generator.SerializerFactories.Add(new CecilGenericSerializerFactory(typeof(IList<>), coreSerializationAssembly.MainModule.GetTypeResolved("SiliconStudio.Core.Serialization.Serializers.ListInterfaceSerializer`1")));

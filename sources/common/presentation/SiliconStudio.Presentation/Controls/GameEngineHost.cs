@@ -177,13 +177,14 @@ namespace SiliconStudio.Presentation.Controls
                 {
                     root = parent;
 
-                    parent = VisualTreeHelper.GetParent(root) as Visual;
                     var parentElement = parent as FrameworkElement;
-                    if (parentElement != null && !parentElement.IsLoaded)
-                        shouldShow = false;
+                    if (parentElement != null)
+                    {
+                        if (!parentElement.IsLoaded || !parentElement.IsVisible)
+                            shouldShow = false;
+                    }
 
-                    if (parent == null)
-                        break;
+                    parent = VisualTreeHelper.GetParent(root) as Visual;
                 }
 
                 if (root == null)
@@ -202,9 +203,9 @@ namespace SiliconStudio.Presentation.Controls
                     NativeHelper.SetWindowPos(Handle, NativeHelper.HWND_TOP, boundingBox.X, boundingBox.Y, boundingBox.Z, boundingBox.W, flags);
                 }
                 
-                if (shouldShow && attached)
+                if (attached)
                 {
-                    NativeHelper.ShowWindow(Handle, NativeHelper.SW_SHOWNOACTIVATE);
+                    NativeHelper.ShowWindow(Handle, shouldShow ? NativeHelper.SW_SHOWNOACTIVATE : NativeHelper.SW_HIDE);
                 }
             }, DispatcherPriority.Input); // This code must be dispatched after the DispatcherPriority.Loaded to properly work since it's checking the IsLoaded flag!
         }
