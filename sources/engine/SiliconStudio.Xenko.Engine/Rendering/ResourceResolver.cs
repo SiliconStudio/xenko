@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -67,7 +68,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             renderContext.RenderContext.Allocator.ReleaseReference(depthAsSR);
         }
-
+        
         /// <summary>
         /// Gets a texture view which can be used to copy the depth buffer
         /// </summary>
@@ -77,7 +78,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var textureDescription = texture.Description;
             textureDescription.Flags = TextureFlags.ShaderResource;
-            textureDescription.Format = PixelFormat.R24_UNorm_X8_Typeless;
+            textureDescription.Format = (PixelFormat)Texture.ComputeShaderResourceFormatFromDepthFormat(textureDescription.Format);
 
             return renderContext.RenderContext.Allocator.GetTemporaryTexture2D(textureDescription);
         }
