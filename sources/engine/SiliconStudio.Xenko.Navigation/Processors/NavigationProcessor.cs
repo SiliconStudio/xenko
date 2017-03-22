@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Navigation.Processors
                         if (newLayer != null)
                         {
                             if (!newLayer.Tiles.TryGetValue(updatedTileCoord, out newTile))
-                                break;
+                                continue;
                         }
 
                         // Either add the tile if it is contained in the new navigation mesh or 
