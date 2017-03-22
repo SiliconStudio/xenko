@@ -28,10 +28,16 @@ namespace SiliconStudio.Assets.Compiler
             buildDependencyManager.CompilationContext = compilationContext;
         }
 
+        /// <summary>
+        /// Prepare the list of assets to be built, building all the steps and linking them properly
+        /// </summary>
+        /// <param name="context">The AssetCompilerContext</param>
+        /// <param name="assetItems">The assets to prepare for build</param>
+        /// <returns></returns>
         public AssetCompilerResult Prepare(AssetCompilerContext context, List<AssetItem> assetItems)
         {
             var finalResult = new AssetCompilerResult();
-            var addedBuildSteps = new Dictionary<AssetId, AssetCompilerResult>();
+            var addedBuildSteps = new Dictionary<AssetId, AssetCompilerResult>(); // a cache of build steps in order to link and reuse
             foreach (var assetItem in assetItems)
             {
                 Prepare(addedBuildSteps, finalResult, context, assetItem, null);
@@ -39,11 +45,17 @@ namespace SiliconStudio.Assets.Compiler
             return finalResult;
         }
 
+        /// <summary>
+        /// Prepare a single asset to be built
+        /// </summary>
+        /// <param name="context">The AssetCompilerContext</param>
+        /// <param name="assetItem">The asset to build</param>
+        /// <returns></returns>
         public AssetCompilerResult Prepare(AssetCompilerContext context, AssetItem assetItem)
         {
             var finalResult = new AssetCompilerResult();
-            var addedBuildSteps = new Dictionary<AssetId, AssetCompilerResult>();
-            var filters = new HashSet<Type>();
+            var addedBuildSteps = new Dictionary<AssetId, AssetCompilerResult>(); // a cache of build steps in order to link and reuse
+            var filters = new HashSet<Type>(); //the types to filter out, this is incremental between prepares
             Prepare(addedBuildSteps, finalResult, context, assetItem, filters);
             return finalResult;
         }

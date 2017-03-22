@@ -6,14 +6,30 @@ using SiliconStudio.Assets.Compiler;
 
 namespace SiliconStudio.Assets.Analysis
 {
+    /// <summary>
+    /// Build dependency manager
+    /// Basically is a container of BuildAssetNode
+    /// </summary>
     public sealed class BuildDependencyManager
     {
+        /// <summary>
+        /// The AssetCompilerRegistry, here mostly for ease of access
+        /// </summary>
         public static readonly AssetCompilerRegistry AssetCompilerRegistry = new AssetCompilerRegistry();
 
         private readonly ConcurrentDictionary<BuildNodeDesc, BuildAssetNode> nodes = new ConcurrentDictionary<BuildNodeDesc, BuildAssetNode>();
 
+        /// <summary>
+        /// The context of the build itself, nodes might differ between contexts
+        /// </summary>
         public Type CompilationContext { get; set; } = typeof(AssetCompilationContext);
 
+        /// <summary>
+        /// Finds or creates a node, notice that this will not perform an analysis on the node, which must be explicitly called on the node
+        /// </summary>
+        /// <param name="item">The asset item to find or create</param>
+        /// <param name="dependencyType">The type of dependency</param>
+        /// <returns>The build node associated with item</returns>
         public BuildAssetNode FindOrCreateNode(AssetItem item, BuildDependencyType dependencyType)
         {
             var nodeDesc = new BuildNodeDesc
@@ -32,6 +48,12 @@ namespace SiliconStudio.Assets.Analysis
             return node;
         }
 
+        /// <summary>
+        /// Finds a node, notice that this will not perform an analysis on the node, which must be explicitly called on the node
+        /// </summary>
+        /// <param name="item">The asset item to find</param>
+        /// <param name="dependencyType">The type of dependency</param>
+        /// <returns>The build node associated with item or null if it was not found</returns>
         public BuildAssetNode FindNode(AssetItem item, BuildDependencyType dependencyType)
         {
             var nodeDesc = new BuildNodeDesc
@@ -49,11 +71,20 @@ namespace SiliconStudio.Assets.Analysis
             return node;
         }
 
+        /// <summary>
+        /// Finds all the nodes associated with the asset
+        /// </summary>
+        /// <param name="item">The asset item to find</param>
+        /// <returns>The build nodes associated with item or null if it was not found</returns>
         public IEnumerable<BuildAssetNode> FindNodes(AssetItem item)
         {
             return nodes.Where(x => x.Value.AssetItem == item).Select(x => x.Value);
         }
 
+        /// <summary>
+        /// Removes the node from the build graph
+        /// </summary>
+        /// <param name="node">The node to remove</param>
         public void RemoveNode(BuildAssetNode node)
         {
             var nodeDesc = new BuildNodeDesc
@@ -65,6 +96,10 @@ namespace SiliconStudio.Assets.Analysis
             nodes.TryRemove(nodeDesc, out node);
         }
 
+        /// <summary>
+        /// Removes the nodes associated with item from the build graph
+        /// </summary>
+        /// <param name="item">The item to use to find nodes to remove</param>
         public void RemoveNode(AssetItem item)
         {
             var assetNodes = FindNodes(item).ToList();
