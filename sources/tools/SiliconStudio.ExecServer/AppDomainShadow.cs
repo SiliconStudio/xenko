@@ -389,6 +389,7 @@ namespace SiliconStudio.ExecServer
             // - Combined with shadow copying, it is quite slow (from almsot 0 to 0.8sec startup time!)
             // - ApplicationBase must contain all assemblies that are optimized/cached (this forces us to have a different ApplicationBase, so we should never rely on it in tools)
             // - Sometimes AssemblyResolve seems to not be fired (filed http://stackoverflow.com/questions/42581860/loaderoptimization-multidomain-causes-assemblyresolve-to-not-fire)
+            // - Since we copy to top-level folder, AssemblySearchPaths will be preceded by referencers path, which makes it take the wrong assembly
             // As a result, we don't use BinProbePath and rely on ToolAssemblyResolveModuleInitializer to copy our assemblies at the top level.
 
             if (shadowCache)

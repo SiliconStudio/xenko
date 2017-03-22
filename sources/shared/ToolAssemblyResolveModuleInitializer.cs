@@ -43,8 +43,32 @@ namespace SiliconStudio.Xenko
                     {
                         try
                         {
-                            // now you can safely overwrite it
-                            sourceFile.CopyTo(destFile.FullName, true);
+                            // Out of safety, patch .ssdeps
+                            // Note: shouldn't be used: unit tests should directly add all the graphics specific assemblies as primary project references, and same for actual games (automatically done through the Xenko.targets)
+                            var extension = sourceFile.Extension;
+                            if (extension?.ToLowerInvariant() == ".ssdeps")
+                            {
+                                var dependencies = File.ReadAllLines(sourceFile.FullName);
+                                for (var index = 0; index < dependencies.Length; index++)
+                                {
+                                    var dependency = dependencies[index];
+
+                                    // Patch the second item: build a new relative path from destination
+                                    var dependencyEntries = dependency.Split(';');
+                                    var fullPath = Path.Combine(sourceFile.DirectoryName, dependencyEntries[1]);
+                                    dependencyEntries[1] = new Uri(destFile.FullName).MakeRelativeUri(new Uri(fullPath)).ToString().Replace('/', '\\');
+
+                                    dependencies[index] = string.Join(";", dependencyEntries);
+                                }
+
+                                File.WriteAllLines(destFile.FullName, dependencies);
+                            }
+                            else
+                            {
+                                // now you can safely overwrite it
+                                Directory.CreateDirectory(destFile.DirectoryName);
+                                sourceFile.CopyTo(destFile.FullName, true);
+                            }
                         }
                         catch
                         {

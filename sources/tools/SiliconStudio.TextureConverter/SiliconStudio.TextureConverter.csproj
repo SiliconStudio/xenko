@@ -151,18 +151,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(XenkoDependenciesDir)FreeImage\Release\**\*.dll">
+    <SiliconStudioNativeLib Include="$(XenkoDependenciesDir)FreeImage\Release\**\*.dll">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(XenkoDependenciesDir)TextureWrappers\Release\**\*.dll">
+    </SiliconStudioNativeLib>
+    <SiliconStudioNativeLib Include="$(XenkoDependenciesDir)TextureWrappers\Release\**\*.dll">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(XenkoDependenciesDir)PVRTT\**\*.dll">
+    </SiliconStudioNativeLib>
+    <SiliconStudioNativeLib Include="$(XenkoDependenciesDir)PVRTT\**\*.dll">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </SiliconStudioNativeLib>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">

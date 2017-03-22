@@ -72,10 +72,11 @@
         </Reference>
       </ItemGroup>
       <ItemGroup>
-        <SiliconStudioContent Include="..\..\..\deps\OpenVR\$(SiliconStudioPlatform)\**\openvr_api.*">
+        <SiliconStudioNativeLib Include="..\..\..\deps\OpenVR\$(SiliconStudioPlatform)\**\openvr_api.*">
           <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </SiliconStudioContent>
+        </SiliconStudioNativeLib>
       </ItemGroup>
     </When>
   </Choose>

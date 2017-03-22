@@ -39,6 +39,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                 {
                     NewFile(@"Bin\**\*.exe", "Bin", @"Bin\**\.*\**\*.exe;Bin\**\Tools\**.exe"),
                     NewFile(@"Bin\**\*.so", "Bin", @"Bin\**\.*\**\*.so"),
+                    NewFile(@"Bin\**\*.ssdeps", "Bin", @"Bin\**\.*\**\*.ssdeps"),
                     NewFile(@"Bin\**\*.a", "Bin", @"Bin\**\.*\**\*.a"),
                     NewFile(@"Bin\**\*.md", "Bin", @"Bin\**\.*\**\*.md"),
                     NewFile(@"Bin\**\*.html", "Bin", @"Bin\**\.*\**\*.html"),

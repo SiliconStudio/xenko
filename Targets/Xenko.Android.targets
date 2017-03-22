@@ -5,7 +5,14 @@
     <SiliconStudioNETFrameworkVersion>v2.3</SiliconStudioNETFrameworkVersion>
   </PropertyGroup>
 
-  <Target Name="_SiliconStudioEmbedNativeLibraries" Condition=" '$(SiliconStudioIsExecutable)' == 'true'" AfterTargets="ResolveReferences">
+  <!-- Copy native libraries to output -->
+  <Target Name="_SiliconStudioSetupNativeLibraries" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <AndroidNativeLibrary Include="@(_SiliconStudioDependencyNativeLib)"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_SiliconStudioEmbedNativeLibraries" Condition=" '$(SiliconStudioIsExecutable)' == 'true'" BeforeTargets="Build">
     <!-- Expand native libraries into Content items for the different supported CPU architectures -->
     <ItemGroup>
       <!-- Note: Xamarin can automatically probe Abi using containing folder name -->

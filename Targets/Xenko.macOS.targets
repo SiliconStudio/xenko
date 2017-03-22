@@ -18,31 +18,12 @@
     </None>
   </ItemGroup>
 
-  <Target Name="_SiliconStudioEmbedNativeLibraries" Condition=" '$(SiliconStudioIsExecutable)' == 'true'" AfterTargets="ResolveReferences">
-
-    <!-- On Vulkan embed the SPIR-V shader compiler -->
-    <ItemGroup Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan'">
-      <Content Include="$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator"/>
-    </ItemGroup>
-
-    <!-- Expand native libraries into Content items for the different supported CPU architectures -->
+  <!-- Copy native libraries to output -->
+  <Target Name="_SiliconStudioSetupNativeLibraries" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences">
     <ItemGroup>
-      <Content Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)x86\%(Filename).dylib')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)x86\%(SiliconStudioEmbeddedNativeLibrary.Filename).dylib')">
-        <Link>x86\%(Filename).dylib</Link>
+      <None Include="@(_SiliconStudioDependencyNativeLib)">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)$(SiliconStudioXenkoGraphicsApi)\x86\%(Filename).dylib')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)$(SiliconStudioXenkoGraphicsApi)\x86\%(SiliconStudioEmbeddedNativeLibrary.Filename).dylib')">
-        <Link>x86\%(Filename).dylib</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)x64\%(Filename).dylib')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)x64\%(SiliconStudioEmbeddedNativeLibrary.Filename).dylib')">
-        <Link>x64\%(Filename).dylib</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)$(SiliconStudioXenkoGraphicsApi)\x64\%(Filename).dylib')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)$(SiliconStudioXenkoGraphicsApi)\x64\%(SiliconStudioEmbeddedNativeLibrary.Filename).dylib')">
-        <Link>x64\%(Filename).dylib</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
+      </None>
     </ItemGroup>
   </Target>
 

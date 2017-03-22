@@ -112,23 +112,6 @@
     <Exec Condition=" '$(SiliconStudioAssemblyProcessorDev)' == 'true' " Command="&quot;$(SiliconStudioAssemblyProcessorPath)&quot; $(SiliconStudioAssemblyProcessorOptions)"/>
   </Target>
 
-  <!-- SiliconStudioContent allows TargetPath outside (i.e. starts with ../) which are refused by certain targets such as UWP -->
-  <Target Name="CopySiliconStudioContent" BeforeTargets="Build" Inputs="@(SiliconStudioContent)" Outputs="@(SiliconStudioContent->'$(OutDir)%(Link)')">
-    <ItemGroup>
-      <SiliconStudioContent Include="@(SiliconStudioContent)"/>
-    </ItemGroup>
-
-    <Copy
-      SourceFiles = "@(SiliconStudioContent)"
-      DestinationFiles = "@(SiliconStudioContent->'$(OutDir)%(Link)')"
-      OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"
-      Retries="$(CopyRetryCount)"
-      RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)"
-      UseHardlinksIfPossible="$(CreateHardLinksForAdditionalFilesIfPossible)">
-      <Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
-    </Copy>
-  </Target>
-
   <Target Name="SetPrivateOnProjectReferences" BeforeTargets="BeforeCompile">
     <!-- Automatically add Private on project references if they are already built in same folder as output folder -->
     <ItemGroup Condition="'$(OutputPath)' == '$(SiliconStudioOutputCommonDir)'">
@@ -140,27 +123,5 @@
     </ItemGroup>
   </Target>
 
-  <!-- For MonoTouch executable projects, we add a target that set the variable MtouchExtraArgs -->
-  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
-    <ResolveReferencesDependsOn>
-      SetMtouchExtraArgs;
-      $(ResolveReferencesDependsOn)
-    </ResolveReferencesDependsOn>
-  </PropertyGroup>
-
-  <!-- For MonoTouch executable projects, we force native compilation with 'clang', and force linking with native siliconstudio.core library
-       Note: this target can be redefined to add link other libraries -->
-  <Target Name="SetMtouchExtraArgs" Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
-    <PropertyGroup>
-      <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags "-L%24{ProjectDir}/source -lstdc++ -lcore -force_load %24{ProjectDir}/source/libcore.a"</MtouchExtraArgs>
-    </PropertyGroup>
-  </Target>
-  
-  <!-- For MonoTouch executable projects, we add a target that copies the siliconstudio.core native library to link in the project root directory -->
-  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
-    <BuildDependsOn>
-        CopySiliconStudioNativeLibraries;
-        $(BuildDependsOn);
-    </BuildDependsOn>  
-  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)SiliconStudio.PostSettings.Dependencies.targets"/>
 </Project>

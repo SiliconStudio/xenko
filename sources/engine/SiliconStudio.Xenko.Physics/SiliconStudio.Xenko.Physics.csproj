@@ -22,21 +22,19 @@
   <Choose>
     <When Condition="'$(SiliconStudioPlatform)' == 'Windows'">
       <ItemGroup>
-        <Content Include="..\..\..\deps\VHACD\**\VHACD.dll">
+        <SiliconStudioNativeLib Include="..\..\..\deps\VHACD\**\VHACD.dll">
           <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
+        </SiliconStudioNativeLib>
       </ItemGroup>
     </When>
   </Choose>
   <ItemGroup>
-    <None Include="..\..\..\deps\BulletPhysics\$(SiliconStudioPlatform)\**\libbulletc.*">
+    <SiliconStudioNativeLib Include="..\..\..\deps\BulletPhysics\$(SiliconStudioPlatform)\**\libbulletc.*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </SiliconStudioNativeLib>
+    <SiliconStudioContent Condition="'$(SiliconStudioPlatform)' == 'Linux'" Include="..\..\..\deps\BulletPhysics\BulletSharp.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Condition="'$(SiliconStudioPlatform)' == 'Linux'" Include="..\..\..\deps\BulletPhysics\BulletSharp.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </SiliconStudioContent>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="BulletSharp">

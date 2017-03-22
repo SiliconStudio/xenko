@@ -88,18 +88,20 @@
   <Choose>
     <When Condition="$(SiliconStudioUI.Contains('SDL'))">
       <ItemGroup>
-        <SiliconStudioContent Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\*SDL2*">
+        <SiliconStudioNativeLib Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\*SDL2*">
           <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </SiliconStudioContent>
+        </SiliconStudioNativeLib>
       </ItemGroup>
     </When>
   </Choose>
   <ItemGroup>
-    <SiliconStudioContent Include="$(XenkoDependenciesDir)\freetype\$(SiliconStudioPlatform)\**\*.*">
+    <SiliconStudioNativeLib Include="$(XenkoDependenciesDir)\freetype\$(SiliconStudioPlatform)\**\*.*">
       <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </SiliconStudioContent>
+    </SiliconStudioNativeLib>
   </ItemGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
     <Reference Include="SharpFont">

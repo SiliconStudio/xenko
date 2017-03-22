@@ -172,6 +172,10 @@
       <Project>{9BC63BEC-F305-451D-BB31-262938EA964D}</Project>
       <Name>SiliconStudio.Xenko.SpriteStudio.Runtime</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.VirtualReality\SiliconStudio.Xenko.VirtualReality.csproj">
+      <Project>{53782603-3096-40c2-abd3-f8f311bae4be}</Project>
+      <Name>SiliconStudio.Xenko.VirtualReality</Name>
+    </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Compile Include="BasicInputTest.cs" />

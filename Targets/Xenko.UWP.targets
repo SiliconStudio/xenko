@@ -23,17 +23,13 @@
     <AppxPackageTestDir>$(AppxPackageDir)Test\</AppxPackageTestDir>
     <AppxPackageName>$(AssemblyName)</AppxPackageName>
   </PropertyGroup>
-  
-  <Target Name="_SiliconStudioEmbedNativeLibraries" Condition=" '$(SiliconStudioIsExecutable)' == 'true'" AfterTargets="ResolveReferences">
-    <!-- Expand native libraries into Content items for the current CPU architecture -->
+
+  <!-- Copy native libraries to output -->
+  <Target Name="_SiliconStudioSetupNativeLibraries" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences">
     <ItemGroup>
-      <Content Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)$(SiliconStudioCPU)\%(Filename).dll')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)$(SiliconStudioCPU)\%(SiliconStudioEmbeddedNativeLibrary.Filename).dll')">
-        <Link>%(Filename).dll</Link>
+      <Content Include="@(_SiliconStudioDependencyNativeLib)" Condition="$([System.String]::Copy('%(_SiliconStudioDependencyNativeLib.Link)').StartsWith('$(SiliconStudioCPU)'))">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)$(SiliconStudioXenkoGraphicsApi)\$(SiliconStudioCPU)\%(Filename).dll')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)$(SiliconStudioXenkoGraphicsApi)\$(SiliconStudioCPU)\%(SiliconStudioEmbeddedNativeLibrary.Filename).dll')">
-        <Link>%(Filename).dll</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Link>$([System.String]::Copy('%(_SiliconStudioDependencyNativeLib.Link)').Replace('$(SiliconStudioCPU)\', ''))</Link>
       </Content>
     </ItemGroup>
   </Target>

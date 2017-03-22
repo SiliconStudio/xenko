@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Private", "00-Ta
 		..\sources\common\targets\SiliconStudio.CSharp.targets = ..\sources\common\targets\SiliconStudio.CSharp.targets
 		..\sources\common\targets\SiliconStudio.GlobalSettings.targets = ..\sources\common\targets\SiliconStudio.GlobalSettings.targets
 		..\sources\common\targets\SiliconStudio.iOS.CSharp.targets = ..\sources\common\targets\SiliconStudio.iOS.CSharp.targets
+		..\sources\common\targets\SiliconStudio.PostSettings.Dependencies.targets = ..\sources\common\targets\SiliconStudio.PostSettings.Dependencies.targets
 		..\sources\common\targets\SiliconStudio.PostSettings.targets = ..\sources\common\targets\SiliconStudio.PostSettings.targets
 		..\sources\common\targets\SiliconStudio.PreSettings.targets = ..\sources\common\targets\SiliconStudio.PreSettings.targets
 		..\sources\common\targets\SiliconStudio.UWP.Cpp.targets = ..\sources\common\targets\SiliconStudio.UWP.Cpp.targets

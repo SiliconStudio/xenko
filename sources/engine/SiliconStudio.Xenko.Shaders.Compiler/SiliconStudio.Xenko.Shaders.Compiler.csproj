@@ -93,24 +93,28 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'Windows'">
-    <SiliconStudioContent Include="$(WindowsSdkDir_81)\Redist\D3D\**\d3dcompiler_47.dll">
+    <SiliconStudioNativeLib Include="$(WindowsSdkDir_81)\Redist\D3D\**\d3dcompiler_47.dll">
       <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </SiliconStudioContent>
-    <SiliconStudioContent Include="..\..\..\deps\glsl-optimizer\$(SiliconStudioPlatform)\**\glsl_optimizer.dll">
+    </SiliconStudioNativeLib>
+    <SiliconStudioNativeLib Include="..\..\..\deps\glsl-optimizer\$(SiliconStudioPlatform)\**\glsl_optimizer.dll">
       <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </SiliconStudioContent>
+    </SiliconStudioNativeLib>
     <SiliconStudioContent Include="..\..\..\deps\glslang\glslangValidator.exe">
       <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </SiliconStudioContent>
   </ItemGroup>
   <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'Linux' And '$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan'">
-    <Content Include="..\..\..\deps\glslang\glslangValidator">
+    <SiliconStudioContent Include="..\..\..\deps\glslang\glslangValidator">
       <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </SiliconStudioContent>
   </ItemGroup>
   <Import Project="..\..\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
