@@ -646,6 +646,33 @@ namespace SiliconStudio.Xenko.Graphics
             return desc;
         }
 
+        internal static PixelFormat ComputeShaderResourceFormatFromDepthFormat(PixelFormat format)
+        {
+            PixelFormat viewFormat;
+
+            // Determine TypeLess Format and ShaderResourceView Format
+            switch (format)
+            {
+                case PixelFormat.D16_UNorm:
+                    viewFormat = PixelFormat.R16_Float;
+                    break;
+                case PixelFormat.D32_Float:
+                    viewFormat = PixelFormat.R32_Float;
+                    break;
+                case PixelFormat.D24_UNorm_S8_UInt:
+                    viewFormat = PixelFormat.R24_UNorm_X8_Typeless;
+                    break;
+                case PixelFormat.D32_Float_S8X24_UInt:
+                    viewFormat = PixelFormat.R32_Float_X8X24_Typeless;
+                    break;
+                default:
+                    viewFormat = PixelFormat.None;
+                    break;
+            }
+
+            return viewFormat;
+        }
+
         internal static SharpDX.DXGI.Format ComputeDepthViewFormatFromTextureFormat(PixelFormat format)
         {
             SharpDX.DXGI.Format viewFormat;
