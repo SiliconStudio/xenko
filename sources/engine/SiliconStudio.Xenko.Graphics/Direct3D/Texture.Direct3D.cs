@@ -432,7 +432,7 @@ namespace SiliconStudio.Xenko.Graphics
                 return null;
 
             // Check that the format is supported
-            if (ComputeShaderResourceFormatFromDepthFormat(ViewFormat) == SharpDX.DXGI.Format.Unknown)
+            if (ComputeShaderResourceFormatFromDepthFormat(ViewFormat) == PixelFormat.None)
                 throw new NotSupportedException("Depth stencil format [{0}] not supported".ToFormat(ViewFormat));
 
             // Setup the HasStencil flag
@@ -644,33 +644,6 @@ namespace SiliconStudio.Xenko.Graphics
                 desc.OptionFlags = ResourceOptionFlags.TextureCube;
 
             return desc;
-        }
-
-        internal static SharpDX.DXGI.Format ComputeShaderResourceFormatFromDepthFormat(PixelFormat format)
-        {
-            SharpDX.DXGI.Format viewFormat;
-
-            // Determine TypeLess Format and ShaderResourceView Format
-            switch (format)
-            {
-                case PixelFormat.D16_UNorm:
-                    viewFormat = SharpDX.DXGI.Format.R16_Float;
-                    break;
-                case PixelFormat.D32_Float:
-                    viewFormat = SharpDX.DXGI.Format.R32_Float;
-                    break;
-                case PixelFormat.D24_UNorm_S8_UInt:
-                    viewFormat = SharpDX.DXGI.Format.R24_UNorm_X8_Typeless;
-                    break;
-                case PixelFormat.D32_Float_S8X24_UInt:
-                    viewFormat = SharpDX.DXGI.Format.R32_Float_X8X24_Typeless;
-                    break;
-                default:
-                    viewFormat = SharpDX.DXGI.Format.Unknown;
-                    break;
-            }
-
-            return viewFormat;
         }
 
         internal static SharpDX.DXGI.Format ComputeDepthViewFormatFromTextureFormat(PixelFormat format)
