@@ -33,7 +33,7 @@ namespace SiliconStudio.AssemblyProcessor
                     // Scan interfaces
                     foreach (var @interface in currentType.Interfaces)
                     {
-                        ScanAttributes(context.Log, assemblyScanCodeGenerator, @interface, type);
+                        ScanAttributes(context.Log, assemblyScanCodeGenerator, @interface.InterfaceType, type);
                     }
 
                     ScanAttributes(context.Log, assemblyScanCodeGenerator, currentType, type);

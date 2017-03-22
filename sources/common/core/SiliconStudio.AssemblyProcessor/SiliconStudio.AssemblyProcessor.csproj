@@ -61,6 +61,10 @@
       <HintPath>..\..\deps\Mono.Cecil\Mono.Cecil.Pdb.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Mono.Cecil.Mdb">
+      <HintPath>..\..\deps\Mono.Cecil\Mono.Cecil.Mdb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Mono.Cecil.Rocks">
       <HintPath>..\..\deps\Mono.Cecil\Mono.Cecil.Rocks.dll</HintPath>
       <Private>True</Private>

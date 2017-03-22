@@ -1,8 +1,9 @@
 !SceneAsset
 Id: 413fc3cf-56da-4cfd-ba3f-370f6a1f4b87
-SerializedVersion: {Xenko: 1.10.0-beta02}
+SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
-Parent: null
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - 121144a7-d914-42cf-851e-3aac370c336f
@@ -49,7 +50,7 @@ Hierarchy:
                         Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                         Children: {}
                     fc0bd594a2d5964888d105d99175a3b8: !ModelComponent
-                        Id: 94d50bfc-d5a2-4896-88d1-05d99175a3b8
+                        Id: 94d50bfc-d5a2-4896-88d1-05d99175a3b9
                         Model: 6050c0d0-b0d7-4f9a-a85c-ce1400becce2:LightingTests/Cube
                         Materials: {}
         -   Entity:
@@ -95,13 +96,12 @@ Hierarchy:
                             Shadow:
                                 Size: Small
                                 BiasParameters: {}
-                                Type: CubeMap
         -   Entity:
                 Id: 40b50304-4226-47bf-8ea6-2fa899574180
                 Name: Cube (2)
                 Components:
                     5c714aedb1e06e43a6f3076cb67d8627: !TransformComponent
-                        Id: ed4a715c-e0b1-436e-a6f3-076cb67d8627
+                        Id: ed4a715c-e0b1-436e-a6f3-076cb67d8628
                         Position: {X: -1.0, Y: 0.5, Z: 1.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
@@ -144,13 +144,13 @@ Hierarchy:
                 Name: DirectionalLightShadowOneCascade
                 Components:
                     3830076b50a23d45a849520a16e6fc5d: !TransformComponent
-                        Id: 6b073038-a250-453d-a849-520a16e6fc5d
+                        Id: 6b073039-a250-453d-a849-520a16e6fc5d
                         Position: {X: 2.871928E-07, Y: 4.14986849, Z: 0.0}
                         Rotation: {X: -0.128036618, Y: 0.321061224, Z: 0.232282013, W: 0.90915966}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     66357c175af61c4daccd6730f99645cb: !LightComponent
-                        Id: 177c3566-f65a-4d1c-accd-6730f99645cb
+                        Id: 177c3567-f65a-4d1c-accd-6730f99645cb
                         Enabled: false
                         Type: !LightDirectional
                             Color: !ColorRgbProvider
@@ -183,13 +183,13 @@ Hierarchy:
                 Name: DirectionalLightShadowOneCascadePCF
                 Components:
                     3830076b50a23d45a849520a16e6fc5d: !TransformComponent
-                        Id: 6b073038-a250-453d-a849-520a16e6fc5d
+                        Id: 6b07303a-a250-453d-a849-520a16e6fc5d
                         Position: {X: 2.871928E-07, Y: 4.14986849, Z: 0.0}
                         Rotation: {X: -0.128036618, Y: 0.321061224, Z: 0.232282013, W: 0.90915966}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     66357c175af61c4daccd6730f99645cb: !LightComponent
-                        Id: 177c3566-f65a-4d1c-accd-6730f99645cb
+                        Id: 177c3568-f65a-4d1c-accd-6730f99645cb
                         Enabled: false
                         Type: !LightDirectional
                             Color: !ColorRgbProvider
@@ -208,13 +208,13 @@ Hierarchy:
                 Name: DirectionalLight
                 Components:
                     3830076b50a23d45a849520a16e6fc5d: !TransformComponent
-                        Id: 6b073038-a250-453d-a849-520a16e6fc5d
+                        Id: 6b07303b-a250-453d-a849-520a16e6fc5d
                         Position: {X: 2.871928E-07, Y: 4.14986849, Z: 0.0}
                         Rotation: {X: -0.128036618, Y: 0.321061224, Z: 0.232282013, W: 0.90915966}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     66357c175af61c4daccd6730f99645cb: !LightComponent
-                        Id: 177c3566-f65a-4d1c-accd-6730f99645cb
+                        Id: 177c3569-f65a-4d1c-accd-6730f99645cb
                         Enabled: false
                         Type: !LightDirectional
                             Color: !ColorRgbProvider
@@ -243,13 +243,13 @@ Hierarchy:
                 Name: Cube
                 Components:
                     5c714aedb1e06e43a6f3076cb67d8627: !TransformComponent
-                        Id: ed4a715c-e0b1-436e-a6f3-076cb67d8627
+                        Id: ed5a715c-e0b1-436e-a6f3-076cb67d8627
                         Position: {X: -1.0, Y: 0.5, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     fc0bd594a2d5964888d105d99175a3b8: !ModelComponent
-                        Id: 94d50bfc-d5a2-4896-88d1-05d99175a3b8
+                        Id: 94d50bff-d5a2-4896-88d1-05d99175a3b8
                         Model: 6050c0d0-b0d7-4f9a-a85c-ce1400becce2:LightingTests/Cube
                         Materials: {}
         -   Entity:
@@ -287,23 +287,20 @@ Hierarchy:
                     2dac5cd3e8a15243886ec4fb9acaec3c: !LightComponent
                         Id: d35cac2d-a1e8-4352-886e-c4fb9acaec3c
                         Enabled: false
-                        Type: !LightSkybox {}
-                    8f05d38639efca4e8cceb35a3125d933: !SkyboxComponent
-                        Id: 86d3058f-ef39-4eca-8cce-b35a3125d933
-                        Enabled: false
-                        Skybox: bf8844a5-1ce4-402f-a538-b8a7edb40fcf:Skybox
+                        Type: !LightSkybox
+                            Skybox: bf8844a5-1ce4-402f-a538-b8a7edb40fcf:Skybox
         -   Entity:
                 Id: d6126c1f-087c-4cbe-892c-f28f634ee998
                 Name: SpotLightShadow
                 Components:
-                    bd7922f79fff794ea126ff07dcc4b40f: !TransformComponent
-                        Id: f72279bd-ff9f-4e79-a126-ff07dcc4b40f
+                    bd7922f79fff794ea126ff07dcc4b41f: !TransformComponent
+                        Id: f72279bd-ff9f-4e79-a126-ff07dcc4b40c
                         Position: {X: -1.19172478, Y: 2.335762, Z: 3.27401161}
                         Rotation: {X: -0.7198463, Y: -0.2198463, Z: -0.262002617, W: 0.6040228}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
-                    41dded131a709042a96298d2e7ac7925: !LightComponent
-                        Id: 13eddd41-701a-4290-a962-98d2e7ac7925
+                    41dded131a709042a96298d2e7ac7926: !LightComponent
+                        Id: 13eddd41-701a-4290-a962-98d2e7ac7926
                         Type: !LightSpot
                             Color: !ColorRgbProvider
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
@@ -319,13 +316,13 @@ Hierarchy:
                 Name: DirectionalLightShadowFourCascades
                 Components:
                     3830076b50a23d45a849520a16e6fc5d: !TransformComponent
-                        Id: 6b073038-a250-453d-a849-520a16e6fc5d
+                        Id: 6b07303c-a250-453d-a849-520a16e6fc5d
                         Position: {X: 2.871928E-07, Y: 4.14986849, Z: 0.0}
                         Rotation: {X: -0.128036618, Y: 0.321061224, Z: 0.232282013, W: 0.90915966}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     66357c175af61c4daccd6730f99645cb: !LightComponent
-                        Id: 177c3566-f65a-4d1c-accd-6730f99645cb
+                        Id: 177c356a-f65a-4d1c-accd-6730f99645cb
                         Enabled: false
                         Type: !LightDirectional
                             Color: !ColorRgbProvider
@@ -340,17 +337,14 @@ Hierarchy:
                 Id: f72ac81c-ef07-4575-9a6d-6e16c676225c
                 Name: SkyboxRotated
                 Components:
-                    16527d3b0115c949a7b419b7a9778d21: !TransformComponent
-                        Id: 3b7d5216-1501-49c9-a7b4-19b7a9778d21
+                    16527d3b0115c949a7b419b7a9778d28: !TransformComponent
+                        Id: 3b7d5216-1501-49c9-a7b4-19b7a9778d28
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 1.0, Y: 0.0, Z: 0.0, W: -4.371139E-08}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
-                    2dac5cd3e8a15243886ec4fb9acaec3c: !LightComponent
-                        Id: d35cac2d-a1e8-4352-886e-c4fb9acaec3c
+                    2dac5cd3e8a15243886ec4fb9acaec38: !LightComponent
+                        Id: d35cac2d-a1e8-4352-886e-c4fb9acaec3a
                         Enabled: false
-                        Type: !LightSkybox {}
-                    8f05d38639efca4e8cceb35a3125d933: !SkyboxComponent
-                        Id: 86d3058f-ef39-4eca-8cce-b35a3125d933
-                        Enabled: false
-                        Skybox: bf8844a5-1ce4-402f-a538-b8a7edb40fcf:Skybox
+                        Type: !LightSkybox
+                            Skybox: bf8844a5-1ce4-402f-a538-b8a7edb40fcf:Skybox

@@ -195,7 +195,8 @@ namespace SiliconStudio.Presentation.Windows
             };
             SetImage(messageBox, image);
             SetKeyBindings(messageBox, buttonList);
-            return (MessageBoxResult)await messageBox.ShowInternal(owner);
+            await messageBox.ShowModal();
+            return (MessageBoxResult)messageBox.ButtonResult;
         }
 
         internal static void SetKeyBindings(MessageBox messageBox, [NotNull] IEnumerable<DialogButtonInfo> buttons)

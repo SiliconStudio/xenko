@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Assets
 {

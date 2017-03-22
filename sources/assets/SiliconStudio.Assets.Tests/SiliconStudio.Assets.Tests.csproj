@@ -23,10 +23,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="NuGet.Core, Version=2.8.50926.602, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\deps\Nuget\NuGet.Core.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.core.interfaces, Version=2.6.0.12051, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(SiliconStudioDependenciesDir)NUnit\addins\nunit.core.interfaces.dll</HintPath>
@@ -113,6 +109,11 @@
     <ProjectReference Include="..\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
       <Project>{1e54a9a2-4439-4444-ae57-6d2ed3c0dc47}</Project>
       <Name>SiliconStudio.Assets</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Packages\SiliconStudio.Packages.csproj">
+      <Project>{acd2c831-bda2-4512-b4cc-75e8e1804f73}</Project>
+      <Name>SiliconStudio.Packages</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

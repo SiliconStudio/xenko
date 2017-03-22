@@ -2,6 +2,7 @@
 Id: bc8d83e5-a707-4213-b92c-d2e699e02d5f
 SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
+ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
@@ -7399,14 +7400,15 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
-                    4198cc1d926fd047a67ae5f4f8bb2804: !SkyboxComponent
-                        Id: 1dcc9841-6f92-47d0-a67a-e5f4f8bb2804
-                        Skybox: 4b8f5897-426c-4115-b1b9-51db553adcb4:Skybox
-                        Intensity: 3.0
                     ac01fe8ecaadef41b216daac5718fc50: !LightComponent
                         Id: 8efe01ac-adca-41ef-b216-daac5718fc50
-                        Type: !LightSkybox {}
-                        Intensity: 0.25
+                        Type: !LightSkybox
+                            Skybox: 4b8f5897-426c-4115-b1b9-51db553adcb4:Skybox
+                        Intensity: 0.75
+                    8033c195faf34b2aacd30afd3844aa42: !BackgroundComponent
+                        Id: f09ed5a0-01ed-41e3-b358-fb3df7fc27cd
+                        Texture: d11a2414-7f1a-4035-922d-09e307a3c665:Skybox Texture
+                        Intensity: 3.0
         -   Entity:
                 Id: fb86557c-418f-4043-be2b-68c06a6e8da3
                 Name: Ramp1x1_2x2 (2)

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using SiliconStudio.Assets;
+using SiliconStudio.Packages;
 using SiliconStudio.Xenko.Engine.Network;
 
 namespace SiliconStudio.Xenko.ConnectionRouter
@@ -52,7 +53,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                 if (xenkoPackage == null)
                     return null;
 
-                var packageDirectory = store.PathResolver.GetPackageDirectory(xenkoPackage);
+                var packageDirectory = store.GetPackageDirectory(xenkoPackage);
                 return Path.Combine(xenkoSdkDir, store.RepositoryPath, packageDirectory);
             }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -113,7 +114,7 @@ namespace SiliconStudio.Core.Reflection
             if (type == null) throw new ArgumentNullException(nameof(type));
             return type.GetTypeInfo().IsValueType && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;
         }
-        
+
         /// <summary>
         /// Check if the type is a ValueType and does not contain any non ValueType members.
         /// </summary>

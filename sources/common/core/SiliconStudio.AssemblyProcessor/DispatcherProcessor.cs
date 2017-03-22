@@ -51,7 +51,7 @@ namespace SiliconStudio.AssemblyProcessor
             var mscorlibAssembly = CecilExtensions.FindCorlibAssembly(context.Assembly);
 
             siliconStudioCoreAssembly = context.Assembly.Name.Name == "SiliconStudio.Core" ? context.Assembly :
-                context.AssemblyResolver.Resolve("SiliconStudio.Core");
+                context.AssemblyResolver.Resolve(new AssemblyNameReference("SiliconStudio.Core", null));
 
             pooledClosureType = context.Assembly.MainModule.ImportReference(siliconStudioCoreAssembly.MainModule.GetType("SiliconStudio.Core.Threading.IPooledClosure"));
 
@@ -70,7 +70,7 @@ namespace SiliconStudio.AssemblyProcessor
             var interlockedTypeDefinition = mscorlibAssembly.MainModule.GetTypeResolved("System.Threading.Interlocked");
             if (interlockedTypeDefinition == null)
             {
-                var threadingAssembly = context.AssemblyResolver.Resolve("System.Threading");
+                var threadingAssembly = context.AssemblyResolver.Resolve(new AssemblyNameReference("System.Threading", null));
                 interlockedTypeDefinition = threadingAssembly.MainModule.GetTypeResolved("System.Threading.Interlocked");
             }
             var interlockedType = context.Assembly.MainModule.ImportReference(interlockedTypeDefinition);
@@ -324,7 +324,7 @@ namespace SiliconStudio.AssemblyProcessor
             ilProcessor2.InsertBefore(retInstruction, ilProcessor2.Create(OpCodes.Stsfld, poolFieldReference));
 
             // Implement IPooledClosure
-            closureType.Interfaces.Add(pooledClosureType);
+            closureType.Interfaces.Add(new InterfaceImplementation(pooledClosureType));
 
             // Create reference count field
             var countField = new FieldDefinition("<referenceCount>", FieldAttributes.Public, context.Assembly.MainModule.TypeSystem.Int32);

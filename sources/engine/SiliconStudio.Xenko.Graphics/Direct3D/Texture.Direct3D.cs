@@ -622,13 +622,16 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
+            int quality = 0;
+            if(GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_1 && textureDescription.IsMultiSample)
+                quality = (int)StandardMultisampleQualityLevels.StandardMultisamplePattern;
+
             var desc = new Texture2DDescription()
             {
                 Width = textureDescription.Width,
                 Height = textureDescription.Height,
                 ArraySize = textureDescription.ArraySize,
-                // TODO calculate appropriate MultiSamples
-                SampleDescription = new SharpDX.DXGI.SampleDescription((int)textureDescription.MultiSampleLevel, 0),
+                SampleDescription = new SharpDX.DXGI.SampleDescription((int)textureDescription.MultiSampleLevel, quality),
                 BindFlags = GetBindFlagsFromTextureFlags(flags),
                 Format = format,
                 MipLevels = textureDescription.MipLevels,
