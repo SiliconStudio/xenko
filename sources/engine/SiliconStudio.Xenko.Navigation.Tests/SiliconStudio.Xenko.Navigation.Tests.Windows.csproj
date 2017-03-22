@@ -88,10 +88,9 @@
     <StartupObject>SiliconStudio.Xenko.Navigation.Tests.NavigationTest</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="README.md" />
     <Compile Include="Module.cs" />
     <Compile Include="PlayerController.cs" />
-    <Compile Include="TestClass1.cs" />
+    <Compile Include="DynamicBarrierTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Condition="'$(SiliconStudioRuntime)' == ''" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
