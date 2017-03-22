@@ -11,6 +11,7 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Assets.Effect;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Graphics;
 
@@ -33,6 +34,18 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                 if (dependencyItem?.Asset is TextureAsset)
                 {
                     yield return new ObjectUrl(UrlType.Content, dependency.Location);
+                }
+            }
+
+            //skybox needs many shaders to generate... todo should find which ones at some point maybe!
+            foreach (var sessionPackage in assetItem.Package.Session.Packages)
+            {
+                foreach (var sessionPackageAsset in sessionPackage.Assets)
+                {
+                    if (sessionPackageAsset.Asset is EffectShaderAsset)
+                    {
+                        yield return new ObjectUrl(UrlType.Content, sessionPackageAsset.Location);
+                    }
                 }
             }
         }

@@ -19,10 +19,24 @@ namespace SiliconStudio.Xenko.Assets.Effect
     [CompatibleAsset(typeof(EffectLogAsset), typeof(AssetCompilationContext))]
     public class EffectLogAssetCompiler : AssetCompilerBase
     {
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
+        {
+            foreach (var sessionPackage in assetItem.Package.Session.Packages)
+            {
+                foreach (var sessionPackageAsset in sessionPackage.Assets)
+                {
+                    if (sessionPackageAsset.Asset is EffectShaderAsset)
+                    {
+                        yield return new ObjectUrl(UrlType.Content, sessionPackageAsset.Location);
+                    }
+                }
+            }
+        }
+
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var originalSourcePath = assetItem.FullPath;
-            result.ShouldWaitForPreviousBuilds = true;
+
             result.BuildSteps = new AssetBuildStep(assetItem);
 
             var urlRoot = originalSourcePath.GetParent();
