@@ -304,7 +304,6 @@
     <Compile Include="Audio\SoundFactories.cs" />
     <Compile Include="Audio\RawSoundAssetImporter.cs" />
     <Compile Include="Audio\SoundAsset.cs" />
-    <Compile Include="CompilationContext.cs" />
     <Compile Include="DefaultFactories.cs" />
     <Compile Include="EditorSettings.cs" />
     <Compile Include="Effect\EffectByteCodeToSourceCodeWriter.cs" />
