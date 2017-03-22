@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.IO;
-
 using System.Diagnostics;
 using System.ServiceModel;
 using SiliconStudio.Core.Serialization.Contents;
@@ -116,9 +115,8 @@ namespace SiliconStudio.BuildEngine
             bool monitorExited = false;
             var status = ResultStatus.NotProcessed;
             // if any external input has changed since the last execution (or if we don't have a successful execution in cache, trigger the command
-            CommandResultEntry matchingResult = null;
+            CommandResultEntry matchingResult;
             ObjectId commandHash;
-
             try
             {               
                 {
@@ -211,12 +209,6 @@ namespace SiliconStudio.BuildEngine
                     status = ResultStatus.NotTriggeredWasSuccessful;
                     RegisterCommandResult(commandResultEntries, matchingResult, status);
                 }
-
-                Debug.WriteLine($"Skipped: {Command.Title} {commandHash}");
-            }
-            else
-            {
-                Debug.WriteLine($"Executed: {Command.Title} {commandHash}");
             }
 
             return status;
