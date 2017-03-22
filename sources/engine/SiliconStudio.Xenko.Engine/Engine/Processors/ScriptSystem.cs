@@ -20,6 +20,8 @@ namespace SiliconStudio.Xenko.Engine.Processors
     /// </summary>
     public sealed class ScriptSystem : GameSystemBase
     {
+        private const long UpdateBit = 1 << 32;
+
         internal readonly static Logger Log = GlobalLogger.GetLogger("ScriptSystem");
 
         /// <summary>
@@ -84,7 +86,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                     var asyncScript = script as AsyncScript;
                     if (asyncScript != null)
                     {
-                        asyncScript.MicroThread = AddTask(asyncScript.Execute, asyncScript.Priority);
+                        asyncScript.MicroThread = AddTask(asyncScript.Execute, asyncScript.Priority & UpdateBit);
                     }
                 }
             }
@@ -94,7 +96,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             {
                 // Update priority
                 var updateSchedulerNode = syncScript.UpdateSchedulerNode;
-                updateSchedulerNode.Value.Priority = syncScript.Priority;
+                updateSchedulerNode.Value.Priority = syncScript.Priority & UpdateBit;
 
                 // Schedule
                 Scheduler.Schedule(updateSchedulerNode, ScheduleMode.Last);
@@ -128,7 +130,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// </summary>
         /// <param name="microThreadFunction">The micro thread function.</param>
         /// <returns>MicroThread.</returns>
-        public MicroThread AddTask(Func<Task> microThreadFunction, int priority = 0)
+        public MicroThread AddTask(Func<Task> microThreadFunction, long priority = 0)
         {
             var microThread = Scheduler.Create();
             microThread.Priority = priority;
@@ -162,7 +164,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             var syncScript = script as SyncScript;
             if (syncScript != null)
             {
-                syncScript.UpdateSchedulerNode = Scheduler.Create(syncScript.Update, syncScript.Priority);
+                syncScript.UpdateSchedulerNode = Scheduler.Create(syncScript.Update, syncScript.Priority & UpdateBit);
                 syncScript.UpdateSchedulerNode.Value.Token = syncScript;
                 syncScripts.Add(syncScript);
             }

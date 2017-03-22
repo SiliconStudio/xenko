@@ -111,6 +111,9 @@ namespace SiliconStudio.AssemblyProcessor
                     assemblyDefinition = AssemblyDefinition.ReadAssembly(inputFile, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = readWriteSymbols, ReadWrite = true });
                     bool modified;
 
+                    // Check if pdb was actually read
+                    readWriteSymbols = assemblyDefinition.MainModule.SymbolReader != null;
+
                     var symbolWriterProvider = assemblyDefinition.MainModule.SymbolReader?.GetWriterProvider();
 
                     var result = Run(ref assemblyDefinition, ref readWriteSymbols, out modified);
@@ -229,9 +232,6 @@ namespace SiliconStudio.AssemblyProcessor
                 processors.Add(new InitLocalsProcessor());
                 processors.Add(new DispatcherProcessor());
                 processors.Add(new OpenSourceSignProcessor());
-
-                // Check if pdb was actually read
-                readWriteSymbols = assemblyDefinition.MainModule.HasDebugHeader;
 
                 // Check if there is already a AssemblyProcessedAttribute (in which case we can skip processing, it has already been done).
                 // Note that we should probably also match the command line as well so that we throw an error if processing is different (need to rebuild).

@@ -78,9 +78,27 @@ namespace SiliconStudio.Core.Extensions
             }
         }
 
-        private static bool IsInstantiableType([NotNull] Type x)
+        private static bool IsInstantiableType([NotNull] Type type)
         {
-            return (x.IsPublic || x.IsNestedPublic) && !x.IsAbstract && x.GetConstructor(Type.EmptyTypes) != null;
+            var instantiable = (type.IsPublic || type.IsNestedPublic) && !type.IsAbstract && type.GetConstructor(Type.EmptyTypes) != null;
+            if (!instantiable)
+                return false;
+
+            // Check if the type has a DataContract. If not, it shouldn't be used because it won't be serializable.
+            var inheritedOnly = false;
+            while (type != typeof(object))
+            {
+                // Note: DataContract attribute is not valid on interface
+                var dataContract = type.GetCustomAttribute<DataContractAttribute>(false);
+                if (dataContract != null)
+                {
+                    return !inheritedOnly || dataContract.Inherited;
+                }
+                inheritedOnly = true;
+                // ReSharper disable once PossibleNullReferenceException - BaseType is null only for Object type by design, which the condition of the while loop
+                type = type.BaseType;
+            }
+            return false;
         }
 
         private static void ClearCache(object sender, AssemblyRegisteredEventArgs e)

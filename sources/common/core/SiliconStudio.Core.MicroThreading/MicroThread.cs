@@ -48,7 +48,7 @@ namespace SiliconStudio.Core.MicroThreading
         /// <value>
         /// The priority.
         /// </value>
-        public int Priority
+        public long Priority
         {
             get { return ScheduledLinkedListNode.Value.Priority; }
             set
@@ -256,7 +256,7 @@ namespace SiliconStudio.Core.MicroThreading
             State = (exception is OperationCanceledException) ? MicroThreadState.Canceled : MicroThreadState.Failed;
         }
 
-        internal void Reschedule(ScheduleMode scheduleMode, int newPriority)
+        internal void Reschedule(ScheduleMode scheduleMode, long newPriority)
         {
             lock (Scheduler.scheduledEntries)
             {
