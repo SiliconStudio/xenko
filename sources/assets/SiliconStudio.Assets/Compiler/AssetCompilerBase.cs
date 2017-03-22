@@ -15,7 +15,7 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public abstract class AssetCompilerBase : IAssetCompiler
     {
-        public virtual IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        public virtual IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
         {
             var depsEnumerator = assetItem.Asset as IAssetCompileTimeDependencies;
             if (depsEnumerator == null) yield break;

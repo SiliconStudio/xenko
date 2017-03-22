@@ -67,7 +67,7 @@ namespace SiliconStudio.Assets.Analysis
             }
 
             //Input files required
-            foreach (var inputFile in mainCompiler.GetInputFiles(AssetItem))
+            foreach (var inputFile in mainCompiler.GetInputFiles(context, AssetItem))
             {
                 if (inputFile.Type == UrlType.Content || inputFile.Type == UrlType.ContentLink)
                 {

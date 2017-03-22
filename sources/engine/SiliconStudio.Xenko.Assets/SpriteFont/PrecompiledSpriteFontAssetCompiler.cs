@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     {
         private static readonly FontDataFactory FontDataFactory = new FontDataFactory();
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
         {
             var asset = (PrecompiledSpriteFontAsset)assetItem.Asset;
             yield return new ObjectUrl(UrlType.File, asset.FontDataFile);
@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             {
                 new PrecompiledSpriteFontCommand(targetUrlInStorage, asset, assetItem.Package)
                 {
-                    InputFilesGetter = () => GetInputFiles(assetItem)
+                    InputFilesGetter = () => GetInputFiles(context, assetItem)
         }
             };
         }

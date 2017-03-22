@@ -22,7 +22,7 @@ namespace SiliconStudio.Assets.Compiler
         /// <returns>The result of the compilation.</returns>
         AssetCompilerResult Prepare(AssetCompilerContext context, AssetItem assetItem);
 
-        IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem);
+        IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem);
 
         IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem);
 

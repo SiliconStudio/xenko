@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ColliderShapeAsset), BuildDependencyType.CompileContent);
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
         {
             var asset = (NavigationMeshAsset)assetItem.Asset;
             if (asset.Scene != null)
@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             {
                 new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context)
                 {
-                    InputFilesGetter = () => GetInputFiles(assetItem)
+                    InputFilesGetter = () => GetInputFiles(context, assetItem)
                 }
             };
         }

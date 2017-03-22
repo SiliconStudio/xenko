@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
             yield return typeof(TextureAsset);
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
         {
             var asset = (ColliderShapeAsset)assetItem.Asset;
             foreach (var convexHullDesc in

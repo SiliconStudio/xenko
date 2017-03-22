@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(GameSettingsAsset), BuildDependencyType.CompileAsset);
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
         {
             foreach (var compileTimeDependency in ((MaterialAsset)assetItem.Asset).EnumerateCompileTimeDependencies(assetItem.Package.Session))
             {
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
             {
                 new MaterialCompileCommand(targetUrlInStorage, assetItem, asset, context)
                 {
-                    InputFilesGetter = () => GetInputFiles(assetItem)
+                    InputFilesGetter = () => GetInputFiles(context, assetItem)
                 }
             };
         }

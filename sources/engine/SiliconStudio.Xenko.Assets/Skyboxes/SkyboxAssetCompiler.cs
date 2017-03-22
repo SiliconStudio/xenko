@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.CompileContent);
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
         {
             var skyboxAsset = (SkyboxAsset)assetItem.Asset;
             foreach (var dependency in skyboxAsset.GetDependencies())

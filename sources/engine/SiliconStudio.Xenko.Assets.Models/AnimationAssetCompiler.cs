@@ -26,16 +26,9 @@ namespace SiliconStudio.Xenko.Assets.Models
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
         {
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SkeletonAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
-
-            var compileContext = context.GetCompilationContext();
-            if (compileContext == CompilationContext.Thumbnail || compileContext == CompilationContext.Preview)
-            {
-                yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ModelAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
-                yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
-            }
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
         {
             var animAsset = (AnimationAsset)assetItem.Asset;
 
@@ -71,7 +64,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 return;
             }
 
-            sourceBuildStep.InputFilesGetter = () => GetInputFiles(assetItem);
+            sourceBuildStep.InputFilesGetter = () => GetInputFiles(context, assetItem);
             sourceBuildStep.Mode = ImportModelCommand.ExportMode.Animation;
             sourceBuildStep.SourcePath = assetSource;
             sourceBuildStep.Location = targetUrlInStorage;

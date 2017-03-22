@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
         {
             var modelAsset = (ModelAsset)assetItem.Asset;
 
@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 return;
             }
 
-            importModelCommand.InputFilesGetter = () => GetInputFiles(assetItem);
+            importModelCommand.InputFilesGetter = () => GetInputFiles(context, assetItem);
             importModelCommand.Mode = ImportModelCommand.ExportMode.Model;
             importModelCommand.SourcePath = assetSource;
             importModelCommand.Location = targetUrlInStorage;
