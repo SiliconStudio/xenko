@@ -129,7 +129,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         void IInitializingNodePresenter.FinalizeInitialization()
         {
-            children.Sort(GraphNodePresenter.CompareChildren);
         }
     }
 }

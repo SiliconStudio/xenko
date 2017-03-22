@@ -38,7 +38,6 @@
     <Compile Include="Presenters\NodePresenterFactory.cs" />
     <Compile Include="Presenters\ItemNodePresenter.cs" />
     <Compile Include="Presenters\MemberNodePresenter.cs" />
-    <Compile Include="Presenters\GraphNodePresenter.cs" />
     <Compile Include="IInitializingNodePresenter.cs" />
     <Compile Include="INodeCommandWrapper.cs" />
     <Compile Include="Presenters\INodePresenter.cs" />
