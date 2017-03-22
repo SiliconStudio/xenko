@@ -81,8 +81,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
+                ValueChanging?.Invoke(this, new ValueChangingEventArgs(Value));
                 Container.IndexedTarget(Index).Add(value);
                 Refresh();
+                ValueChanged?.Invoke(this, new ValueChangedEventArgs(Value));
             }
             catch (Exception e)
             {
@@ -97,8 +99,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
+                ValueChanging?.Invoke(this, new ValueChangingEventArgs(Value));
                 Container.IndexedTarget(Index).Add(value, index);
                 Refresh();
+                ValueChanged?.Invoke(this, new ValueChangedEventArgs(Value));
             }
             catch (Exception e)
             {
@@ -113,28 +117,14 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
+                ValueChanging?.Invoke(this, new ValueChangingEventArgs(Value));
                 Container.IndexedTarget(Index).Remove(value, index);
                 Refresh();
+                ValueChanged?.Invoke(this, new ValueChangedEventArgs(Value));
             }
             catch (Exception e)
             {
                 throw new NodePresenterException("An error occurred while removing an item to the node, see the inner exception for more information.", e);
-            }
-        }
-
-        public override void UpdateItem(object newValue, Index index)
-        {
-            if (Container.IndexedTarget(Index) == null || !Container.IndexedTarget(Index).IsEnumerable)
-                throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(AddItem)} cannot be invoked on members that are not collection.");
-
-            try
-            {
-                Container.IndexedTarget(Index).Update(newValue, index);
-                Refresh();
-            }
-            catch (Exception e)
-            {
-                throw new NodePresenterException("An error occurred while updating an item of the node, see the inner exception for more information.", e);
             }
         }
 
@@ -151,19 +141,24 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         private void OnItemChanged(object sender, ItemChangeEventArgs e)
         {
-            Refresh();
-            ValueChanged?.Invoke(this, new ValueChangedEventArgs(e.OldValue));
+            if (IsValidChange(e))
+            {
+                Refresh();
+                ValueChanged?.Invoke(this, new ValueChangedEventArgs(e.OldValue));
+            }
         }
 
         private bool IsValidChange([NotNull] INodeChangeEventArgs e)
         {
+            // We should care only if the change is an update at the same index.
+            // Other scenarios (add, remove) are handled by the parent node.
             switch (e.ChangeType)
             {
                 case ContentChangeType.CollectionUpdate:
                     return Equals(e.Index, Index);
                 case ContentChangeType.CollectionAdd:
                 case ContentChangeType.CollectionRemove:
-                    return true; // TODO: probably not sufficent
+                    return false;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

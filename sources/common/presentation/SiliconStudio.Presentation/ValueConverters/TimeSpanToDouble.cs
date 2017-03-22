@@ -13,24 +13,14 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (targetType == typeof(double?) && !(value is TimeSpan))
-            {
-                return null;
-            }
-            // ReSharper disable once PossibleNullReferenceException
-            return ((TimeSpan)value).TotalSeconds;
+            return targetType == typeof(double) ? ConverterHelper.ConvertToTimeSpan(value, culture).TotalSeconds : ConverterHelper.TryConvertToTimeSpan(value, culture)?.TotalSeconds;
         }
 
         /// <inheritdoc/>
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (targetType == typeof(TimeSpan?))
-            {
-                if (!(value is double))
-                    return null;
-            }
-            var seconds = ConverterHelper.ConvertToDouble(value, culture);
-            return TimeSpan.FromSeconds(seconds);
+            var doubleValue = targetType == typeof(TimeSpan) ? ConverterHelper.ConvertToDouble(value, culture) : ConverterHelper.TryConvertToDouble(value, culture);
+            return doubleValue != null ? (object)TimeSpan.FromSeconds(doubleValue.Value) : null;
         }
     }
 }

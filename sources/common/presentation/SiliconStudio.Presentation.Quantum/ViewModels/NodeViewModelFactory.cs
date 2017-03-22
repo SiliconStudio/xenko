@@ -14,6 +14,18 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             return rootViewModelNode;
         }
 
+        public void GenerateChildren(GraphViewModel owner, NodeViewModel parent, List<INodePresenter> nodePresenters)
+        {
+            foreach (var child in CombineChildren(nodePresenters))
+            {
+                if (ShouldConstructViewModel(child))
+                {
+                    // TODO: properly compute the type
+                    CreateNodeViewModel(owner, parent, child.First().Type, child);
+                }
+            }
+        }
+
         protected virtual NodeViewModel CreateNodeViewModel(GraphViewModel owner, NodeViewModel parent, Type nodeType, List<INodePresenter> nodePresenters, bool isRootNode = false)
         {
             // TODO: properly compute the name
@@ -22,8 +34,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             {
                 owner.RootNode = viewModel;
             }
-            GenerateChildren(owner, viewModel, nodePresenters);
-            viewModel.FinishInitialization();
+            viewModel.Refresh();
             return viewModel;
         }
 
@@ -45,18 +56,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
                 }
             }
             return dictionary.Values.Where(x => x.Count == nodePresenters.Count);
-        }
-
-        protected void GenerateChildren(GraphViewModel owner, NodeViewModel parent, List<INodePresenter> nodePresenters)
-        {
-            foreach (var child in CombineChildren(nodePresenters))
-            {
-                if (ShouldConstructViewModel(child))
-                {
-                    // TODO: properly compute the type
-                    CreateNodeViewModel(owner, parent, child.First().Type, child);
-                }
-            }
         }
 
         private static bool ShouldConstructViewModel(List<INodePresenter> nodePresenters)

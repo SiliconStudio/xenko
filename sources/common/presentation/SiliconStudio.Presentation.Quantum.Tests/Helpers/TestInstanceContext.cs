@@ -19,7 +19,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
 
         public GraphViewModel CreateViewModel()
         {
-            return GraphViewModel.Create(context.ServiceProvider, PropertyProvider);
+            return GraphViewModel.Create(context.ServiceProvider, new[] { PropertyProvider });
         }
     }
 }

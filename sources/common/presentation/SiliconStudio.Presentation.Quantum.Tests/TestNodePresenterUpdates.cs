@@ -80,7 +80,6 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             var factory = new NodePresenterFactory();
             var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
 
-            presenter.Children[1].UpdateItem("ddd", new Index(1));
             Assert.AreEqual(typeof(List<string>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(2, presenter.Children[1].Children.Count);
@@ -94,7 +93,6 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(instance.List[0], presenter.Children[1].Children[0].Value);
             Assert.AreEqual(instance.List[1], presenter.Children[1].Children[1].Value);
 
-            presenter.Children[1].UpdateItem("eee", new Index(1));
             Assert.AreEqual(typeof(List<string>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(2, presenter.Children[1].Children.Count);
@@ -108,7 +106,6 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(instance.List[0], presenter.Children[1].Children[0].Value);
             Assert.AreEqual(instance.List[1], presenter.Children[1].Children[1].Value);
 
-            presenter.Children[1].UpdateItem("fff", new Index(0));
             Assert.AreEqual(typeof(List<string>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(2, presenter.Children[1].Children.Count);
@@ -276,7 +273,6 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             var factory = new NodePresenterFactory();
             var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
 
-            presenter.Children[1].UpdateItem(new Types.SimpleType { String = "ddd" }, new Index(1));
             Assert.AreEqual(typeof(List<Types.SimpleType>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(2, presenter.Children[1].Children.Count);
@@ -292,7 +288,6 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(instance.List[0], presenter.Children[1].Children[0].Value);
             Assert.AreEqual(instance.List[1], presenter.Children[1].Children[1].Value);
 
-            presenter.Children[1].UpdateItem(new Types.SimpleType { String = "eee" }, new Index(1));
             Assert.AreEqual(typeof(List<Types.SimpleType>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(2, presenter.Children[1].Children.Count);
@@ -308,7 +303,6 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(instance.List[0], presenter.Children[1].Children[0].Value);
             Assert.AreEqual(instance.List[1], presenter.Children[1].Children[1].Value);
 
-            presenter.Children[1].UpdateItem(new Types.SimpleType { String = "fff" }, new Index(0));
             Assert.AreEqual(typeof(List<Types.SimpleType>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(2, presenter.Children[1].Children.Count);

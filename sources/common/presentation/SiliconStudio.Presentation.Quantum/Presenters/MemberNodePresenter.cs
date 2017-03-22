@@ -88,8 +88,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
+                ValueChanging?.Invoke(this, new ValueChangingEventArgs(Value));
                 Member.Target.Add(value);
                 Refresh();
+                ValueChanged?.Invoke(this, new ValueChangedEventArgs(Value));
             }
             catch (Exception e)
             {
@@ -104,8 +106,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
+                ValueChanging?.Invoke(this, new ValueChangingEventArgs(Value));
                 Member.Target.Add(value, index);
                 Refresh();
+                ValueChanged?.Invoke(this, new ValueChangedEventArgs(Value));
             }
             catch (Exception e)
             {
@@ -120,28 +124,14 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
+                ValueChanging?.Invoke(this, new ValueChangingEventArgs(Value));
                 Member.Target.Remove(value, index);
                 Refresh();
+                ValueChanged?.Invoke(this, new ValueChangedEventArgs(Value));
             }
             catch (Exception e)
             {
                 throw new NodePresenterException("An error occurred while removing an item to the node, see the inner exception for more information.", e);
-            }
-        }
-
-        public override void UpdateItem(object newValue, Index index)
-        {
-            if (Member.Target == null || !Member.Target.IsEnumerable)
-                throw new NodePresenterException($"{nameof(MemberNodePresenter)}.{nameof(UpdateItem)} cannot be invoked on members that are not collection.");
-
-            try
-            {
-                Member.Target.Update(newValue, index);
-                Refresh();
-            }
-            catch (Exception e)
-            {
-                throw new NodePresenterException("An error occurred while updating an item of the node, see the inner exception for more information.", e);
             }
         }
 

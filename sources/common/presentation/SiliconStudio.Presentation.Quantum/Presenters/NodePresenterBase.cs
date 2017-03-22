@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -67,8 +66,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public abstract void RemoveItem(object value, Index index);
 
-        public abstract void UpdateItem(object newValue, Index index);
-
         public abstract NodeAccessor GetNodeAccessor();
 
         public IPropertyProviderViewModel PropertyProvider { get; }
@@ -100,7 +97,14 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         protected void Refresh()
         {
+            // Remove existing children
+            foreach (var child in children)
+            {
+                child.Dispose();
+            }
             children.Clear();
+
+            // And recompute them from the current value.
             var parentingNode = ParentingNode;
             if (parentingNode != null)
             {
