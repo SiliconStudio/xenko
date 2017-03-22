@@ -54,6 +54,15 @@ namespace SiliconStudio.Xenko.Navigation.Tests
             Script.AddTask(RunAsyncTests);
         }
 
+        protected override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+            if (gameTime.Total > TimeSpan.FromSeconds(6))
+            {
+                Assert.Fail("Test timed out");
+            }
+        }
+
         private async Task RunAsyncTests()
         {
             // Wait for start method to be called
