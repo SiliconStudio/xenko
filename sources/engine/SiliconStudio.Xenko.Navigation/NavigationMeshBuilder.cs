@@ -602,6 +602,7 @@ namespace SiliconStudio.Xenko.Navigation
             // Generate source plane triangles
             Vector3[] planePoints;
             int[] planeInds;
+            plane.Normalize();
             NavigationMeshBuildUtils.BuildPlanePoints(ref plane, maxDiagonal, out planePoints, out planeInds);
 
             Vector3 tangent, bitangent;
