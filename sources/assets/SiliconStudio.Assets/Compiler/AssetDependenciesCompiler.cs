@@ -24,6 +24,7 @@ namespace SiliconStudio.Assets.Compiler
         {
             if(!typeof(ICompilationContext).IsAssignableFrom(compilationContext))
                 throw new InvalidOperationException($"{nameof(compilationContext)} should inherit from ICompilationContext");
+
             buildDependencyManager.CompilationContext = compilationContext;
         }
 

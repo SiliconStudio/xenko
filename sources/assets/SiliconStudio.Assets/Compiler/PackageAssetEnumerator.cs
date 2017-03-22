@@ -41,7 +41,7 @@ namespace SiliconStudio.Assets.Compiler
                 // This is a hack to resolve the issue of prefab models depending on other prefab models. The assets of each package are sorted correctly
                 // in term of dependencies, but in the opposite order (last to build is first of the list). So by sorting by inverted build order we'll
                 // also maintain the opposite order for assets that have the same build order. Finally reversing at the end but everything in the correct order
-                packageAssets.Sort((item1, item2) => item1.Asset != null && item2.Asset != null ? -item1.Asset.InternalBuildOrder.CompareTo(item2.Asset.InternalBuildOrder) : 0);
+                packageAssets.Sort((item1, item2) => -item1.Asset.InternalBuildOrder.CompareTo(item2.Asset.InternalBuildOrder));
                 return packageAssets;
             }).Reverse().ToList();
         }

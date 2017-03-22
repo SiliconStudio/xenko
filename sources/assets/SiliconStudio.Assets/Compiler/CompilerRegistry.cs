@@ -107,6 +107,12 @@ namespace SiliconStudio.Assets.Compiler
             T compiler;
             if(!typeToCompiler.TryGetValue(typeData, out compiler))
             {
+                //support nested context types!
+                if (context.BaseType != typeof(object))
+                {
+                    return GetCompiler(type, context.BaseType);
+                }
+
                 compiler = DefaultCompiler;
             }
 
