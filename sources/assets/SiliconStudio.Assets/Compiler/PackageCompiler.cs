@@ -50,7 +50,7 @@ namespace SiliconStudio.Assets.Compiler
         /// Compile the current package session.
         /// That is generate the list of build steps to execute to create the package assets.
         /// </summary>
-        public AssetCompilerResult Compile(AssetCompilerContext compilerContext)
+        public AssetCompilerResult Prepare(AssetCompilerContext compilerContext)
         {
             if (compilerContext == null) throw new ArgumentNullException("compilerContext");
 

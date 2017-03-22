@@ -12,6 +12,6 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         /// <param name="compilerContext">The compiler context.</param>
         /// <returns>Result of compilation.</returns>
-        AssetCompilerResult Compile(AssetCompilerContext compilerContext);
+        AssetCompilerResult Prepare(AssetCompilerContext compilerContext);
     }
 }
