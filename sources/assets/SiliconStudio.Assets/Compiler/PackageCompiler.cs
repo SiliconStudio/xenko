@@ -46,7 +46,6 @@ namespace SiliconStudio.Assets.Compiler
         /// <value>The SDK directory.</value>
         public static string SdkDirectory { get; set; }
 
-
         /// <summary>
         /// Compile the current package session.
         /// That is generate the list of build steps to execute to create the package assets.
@@ -63,26 +62,8 @@ namespace SiliconStudio.Assets.Compiler
                 return result;
             }
 
-            dependenciesCompiler.Prepare(new Dictionary<AssetId, BuildStep>(), result, compilerContext, assets, new HashSet<Type>());
-//            var defaultAssetsCompiler = new DefaultAssetsCompiler(assets);
-//            defaultAssetsCompiler.AssetCompiled += OnAssetCompiled;
-//
-//            // Add default compilers
-//            compilers.Clear();
-//            compilers.Add(defaultAssetsCompiler);
-//
-//            // Compile using all PackageCompiler
-//            foreach (var compiler in compilers)
-//            {
-//                var compilerResult = compiler.Compile(compilerContext);
-//                compilerResult.CopyTo(result);
-//                while (compilerResult.BuildSteps.Count > 0)
-//                {
-//                    var step = compilerResult.BuildSteps[0];
-//                    compilerResult.BuildSteps.RemoveAt(0);
-//                    result.BuildSteps.Add(step);
-//                }
-//            }
+            dependenciesCompiler.AssetCompiled += OnAssetCompiled;
+            result = dependenciesCompiler.Prepare(compilerContext, assets);
 
             return result;
         }
@@ -91,30 +72,5 @@ namespace SiliconStudio.Assets.Compiler
         {
             AssetCompiled?.Invoke(this, assetCompiledArgs);
         }
-
-        /// <summary>
-        /// Internal default compiler for compiling all assets 
-        /// </summary>
-//        private class DefaultAssetsCompiler : ItemListCompiler, IPackageCompiler
-//        {
-//            private readonly IList<AssetItem> assets;
-//            private readonly AssetDependenciesCompiler dependenciesCompiler = new AssetDependenciesCompiler(typeof(AssetCompilationContext));
-//
-//            public DefaultAssetsCompiler(IList<AssetItem> assets)
-//                : base(assetCompilerRegistry, new AssetCompilationContext())
-//            {
-//                this.assets = assets;
-//            }
-//
-//            public AssetCompilerResult Compile(AssetCompilerContext context)
-//            {
-//                var result = new AssetCompilerResult();
-//
-//                // generate the build steps required to build the assets via base class
-//                Prepare(context, assets, result);
-//
-//                return result;
-//            }
-//        }
     }
 }

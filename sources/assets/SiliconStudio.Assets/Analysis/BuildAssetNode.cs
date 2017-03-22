@@ -29,14 +29,17 @@ namespace SiliconStudio.Assets.Analysis
             buildDependencyManager = dependencyManager;
         }
 
-        public void Analyze(AssetCompilerContext context, HashSet<Type> typesToFilterOut)
+        public void Analyze(AssetCompilerContext context, HashSet<Type> typesToFilterOut = null)
         {
             var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(AssetItem.Asset.GetType(), buildDependencyManager.CompilationContext);
             if (mainCompiler == null) return; //scripts and such don't have compiler
 
-            foreach (var type in mainCompiler.GetTypesToFilterOut(context, AssetItem))
+            if (typesToFilterOut != null)
             {
-                typesToFilterOut.Add(type);
+                foreach (var type in mainCompiler.GetTypesToFilterOut(context, AssetItem))
+                {
+                    typesToFilterOut.Add(type);
+                }
             }
 
             var assetVersion = AssetItem.Version;
@@ -51,7 +54,7 @@ namespace SiliconStudio.Assets.Analysis
                 foreach (var assetDependency in dependencies.LinksOut)
                 {
                     var assetType = assetDependency.Item.Asset.GetType();
-                    if (!typesToFilterOut.Contains(assetType))
+                    if (typesToFilterOut == null || !typesToFilterOut.Contains(assetType))
                     {
                         foreach (var inputType in mainCompiler.GetInputTypes(context, assetDependency.Item).Where(x => x.Key == assetType))
                         {
@@ -70,7 +73,7 @@ namespace SiliconStudio.Assets.Analysis
                 {
                     var asset = AssetItem.Package.Session.FindAsset(inputFile.Path); //this will search all packages
                     if (asset == null) continue; //this might be an error tho...
-                    if (!typesToFilterOut.Contains(asset.GetType()))
+                    if (typesToFilterOut == null || !typesToFilterOut.Contains(asset.GetType()))
                     {
                         var dependencyType = inputFile.Type == UrlType.Content ? BuildDependencyType.CompileContent : BuildDependencyType.CompileAsset;
                         var node = buildDependencyManager.FindOrCreateNode(asset, dependencyType);
