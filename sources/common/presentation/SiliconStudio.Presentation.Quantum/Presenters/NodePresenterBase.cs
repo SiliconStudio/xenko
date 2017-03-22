@@ -97,12 +97,13 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         protected void Refresh()
         {
-            // Remove existing children
+            // Remove existing children and attached properties
             foreach (var child in children)
             {
                 child.Dispose();
             }
             children.Clear();
+            AttachedProperties.Clear();
 
             // And recompute them from the current value.
             var parentingNode = ParentingNode;

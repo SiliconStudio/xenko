@@ -33,12 +33,18 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
             var rootPresenter = CreateRootPresenter(propertyProvider, rootNode);
-            CreateChildren(rootPresenter, rootNode, propertyProvider);
+            GenerateChildren(rootPresenter, rootNode, propertyProvider);
             RunUpdaters(rootPresenter);
             return rootPresenter;
         }
 
         public void CreateChildren(IInitializingNodePresenter parentPresenter, IObjectNode objectNode, IPropertyProviderViewModel propertyProvider)
+        {
+            GenerateChildren(parentPresenter, objectNode, propertyProvider);
+            RunUpdaters(parentPresenter);
+        }
+
+        private void GenerateChildren(IInitializingNodePresenter parentPresenter, IObjectNode objectNode, IPropertyProviderViewModel propertyProvider)
         {
             if (parentPresenter == null) throw new ArgumentNullException(nameof(parentPresenter));
             if (objectNode == null) throw new ArgumentNullException(nameof(objectNode));
@@ -95,7 +101,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
                     var memberPresenter = CreateMember(propertyProvider, parentPresenter, member);
                     if (member.Target != null)
                     {
-                        CreateChildren(memberPresenter, member.Target, propertyProvider);
+                        GenerateChildren(memberPresenter, member.Target, propertyProvider);
                     }
                     parentPresenter.AddChild(memberPresenter);
                     RunUpdaters(memberPresenter);
@@ -116,7 +122,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
                             var itemPresenter = CreateItem(propertyProvider, parentPresenter, objectNode, item.Index);
                             if (item.TargetNode != null)
                             {
-                                CreateChildren(itemPresenter, item.TargetNode, propertyProvider);
+                                GenerateChildren(itemPresenter, item.TargetNode, propertyProvider);
                             }
                             parentPresenter.AddChild(itemPresenter);
                             RunUpdaters(itemPresenter);

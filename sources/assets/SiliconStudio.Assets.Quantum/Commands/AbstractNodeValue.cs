@@ -11,7 +11,7 @@ namespace SiliconStudio.Assets.Quantum.Commands
         /// <summary>
         /// An object that can be passed as parameter to the command, in order to set the value of the node to <c>null</c>.
         /// </summary>
-        public static AbstractNodeValue Null { get; } = new AbstractNodeValue(null, "Null");
+        public static AbstractNodeValue Null { get; } = new AbstractNodeValue(null, "None");
 
         public AbstractNodeValue(object value, string displayValue)
         {

@@ -153,8 +153,6 @@
 
 //        public IReadOnlyCollection<SingleNodeViewModel> CombinedNodes => combinedNodes;
 
-//        public bool HasMultipleValues => ComputeHasMultipleValues();
-
 //        public bool HasMultipleInitialValues => ComputeHasMultipleInitialValues();
 
 //        public ICommandBase ResetInitialValues { get; private set; }

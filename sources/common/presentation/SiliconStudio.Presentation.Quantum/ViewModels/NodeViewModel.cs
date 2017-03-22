@@ -302,7 +302,10 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
                             commonAttachedProperties[attachedProperty.Key] = DifferentValues;
                         }
                     }
-                    commonAttachedProperties.Add(attachedProperty.Key, attachedProperty.Value);
+                    else
+                    {
+                        commonAttachedProperties.Add(attachedProperty.Key, attachedProperty.Value);
+                    }
                 }
             }
             foreach (var command in commonCommands)
