@@ -64,5 +64,15 @@ namespace SiliconStudio.Assets.Analysis
 
             nodes.TryRemove(nodeDesc, out node);
         }
+
+        public void RemoveNode(AssetItem item)
+        {
+            var assetNodes = FindNodes(item).ToList();
+            foreach (var buildAssetNode in assetNodes)
+            {
+                BuildAssetNode node;
+                nodes.TryRemove(new BuildNodeDesc { AssetId = item.Id, BuildDependencyType = buildAssetNode.DependencyType } , out node);
+            }
+        }
     }
 }
