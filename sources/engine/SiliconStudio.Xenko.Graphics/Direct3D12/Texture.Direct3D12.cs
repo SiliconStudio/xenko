@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// Initializes from a native SharpDX.Texture
         /// </summary>
         /// <param name="texture">The texture.</param>
-        internal Texture InitializeFrom(SharpDX.Direct3D12.Resource texture, bool isSrgb)
+        internal Texture InitializeFromImpl(SharpDX.Direct3D12.Resource texture, bool isSrgb)
         {
             NativeDeviceChild = texture;
             var newTextureDescription = ConvertFromNativeDescription(texture.Description);

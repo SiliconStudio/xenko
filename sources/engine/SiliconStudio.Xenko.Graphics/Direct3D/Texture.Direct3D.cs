@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// Initializes from a native SharpDX.Texture
         /// </summary>
         /// <param name="texture">The texture.</param>
-        internal Texture InitializeFrom(Texture2D texture, bool isSrgb)
+        internal Texture InitializeFromImpl(Texture2D texture, bool isSrgb)
         {
             NativeDeviceChild = texture;
             var newTextureDescription = ConvertFromNativeDescription(texture.Description);
@@ -101,9 +101,9 @@ namespace SiliconStudio.Xenko.Graphics
             return InitializeFrom(newTextureDescription);
         }
 
-        internal Texture InitializeFrom(ShaderResourceView srv)
+        internal Texture InitializeFromImpl(ShaderResourceView srv)
         {
-            return InitializeFrom(new Texture2D(srv.Resource.NativePointer), false);
+            return InitializeFromImpl(new Texture2D(srv.Resource.NativePointer), false);
         }
 
         private void InitializeFromImpl(DataBox[] dataBoxes = null)

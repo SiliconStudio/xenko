@@ -315,7 +315,7 @@ namespace SiliconStudio.Xenko.VirtualReality
             var eyeTexSrv = IntPtr.Zero;
             Valve.VR.OpenVR.Compositor.GetMirrorTextureD3D11(eyeIndex == 0 ? EVREye.Eye_Left : EVREye.Eye_Right, nativeDevice, ref eyeTexSrv);
             var tex = new Texture(device);
-            tex.InitializeFrom(new ShaderResourceView(eyeTexSrv));
+            tex.InitializeFromImpl(new ShaderResourceView(eyeTexSrv));
             return tex;
         }
     }
