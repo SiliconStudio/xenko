@@ -15,8 +15,7 @@ namespace SiliconStudio.Xenko.Navigation.Tests
         /// <summary>
         /// The maximum speed the character can run at
         /// </summary>
-        [Display("Run Speed")]
-        public float Speed { get; set; } = 10;
+        public float Speed { get; set; } = 100;
 
         /// <summary>
         /// The distance from the destination at which the character will stop moving
@@ -36,21 +35,18 @@ namespace SiliconStudio.Xenko.Navigation.Tests
 
         public NavigationComponent Navigation { get; set; }
 
+        public CharacterComponent Character { get; set; }
+
+        public Vector3 SpawnPosition { get; set; }
+
         // Allow some inertia to the movement
         private Vector3 moveDirection = Vector3.Zero;
 
-        private bool isRunning = false;
-        
-        // Character Component
-        private CharacterComponent character;
-        private float yawOrientation;
-        
         // Pathfinding state
         private readonly List<Vector3> pathToDestination = new List<Vector3>();
         private int waypointIndex;
         private Vector3 moveDestination;
-        
-        private Vector3 spawnLocation;
+
 
         private bool ReachedDestination => waypointIndex >= pathToDestination.Count;
 
@@ -71,19 +67,18 @@ namespace SiliconStudio.Xenko.Navigation.Tests
             if (Navigation == null) throw new ArgumentException("Please add a NavigationComponent to the entity containing PlayerController with the correct navigation mesh!");
 
             // Will search for an CharacterComponent within the same entity as this script
-            character = Entity.Get<CharacterComponent>();
-            if (character == null) throw new ArgumentException("Please add a CharacterComponent to the entity containing PlayerController!");
+            Character = Entity.Get<CharacterComponent>();
+            if (Character == null) throw new ArgumentException("Please add a CharacterComponent to the entity containing PlayerController!");
             
-            spawnLocation = Entity.Transform.WorldMatrix.TranslationVector;
-            moveDestination = spawnLocation;
+            moveDestination = SpawnPosition;
         }
 
         public void Reset()
         {
             pathToDestination.Clear();
             HaltMovement();
-            Entity.Transform.Position = Entity.Transform.WorldToLocal(spawnLocation);
-            moveDestination = spawnLocation;
+            moveDestination = SpawnPosition;
+            Character.Teleport(SpawnPosition);
         }
 
         public override void Update()
@@ -91,6 +86,7 @@ namespace SiliconStudio.Xenko.Navigation.Tests
             if (!ReachedDestination)
             {
                 var direction = CurrentWaypoint - Entity.Transform.WorldMatrix.TranslationVector;
+                direction.Y = 0.0f;
 
                 // Get distance towards next point and normalize the direction at the same time
                 var length = direction.Length();
@@ -136,23 +132,15 @@ namespace SiliconStudio.Xenko.Navigation.Tests
                 }
 
                 // Calculate speed based on distance from final destination
-                float moveSpeed = (moveDestination - Entity.Transform.WorldMatrix.TranslationVector).Length() * DestinationSlowdown;
-                if (moveSpeed > 1.0f)
-                    moveSpeed = 1.0f;
+                float moveSpeed = 1.0f;
 
                 // Slow down around corners
                 float cornerSpeedMultiply = Math.Max(0.0f, Vector3.Dot(direction, moveDirection)) * CornerSlowdown + (1.0f - CornerSlowdown);
 
                 // Allow a very simple inertia to the character to make animation transitions more fluid
-                moveDirection = moveDirection * 0.85f + direction * moveSpeed * cornerSpeedMultiply * 0.15f;
+                moveDirection = direction * moveSpeed * cornerSpeedMultiply * 0.15f;
 
-                character.SetVelocity(moveDirection * Speed);
-
-                // Character orientation
-                if (moveDirection.Length() > 0.001)
-                {
-                    yawOrientation = MathUtil.RadiansToDegrees((float)Math.Atan2(-moveDirection.Z, moveDirection.X) + MathUtil.PiOverTwo);
-                }
+                Character.SetVelocity(moveDirection * Speed);
             }
             else
             {
@@ -161,18 +149,15 @@ namespace SiliconStudio.Xenko.Navigation.Tests
             }
         }
 
-        public class MoveResult
+        public void UpdateSpawnPosition()
         {
-            public bool Success;
-            public Vector3 Start;
-            public Vector3 End;
-            public TimeSpan StartTime;
-            public TimeSpan EndTime;
+            Entity.Transform.UpdateWorldMatrix();
+            SpawnPosition = Entity.Transform.WorldMatrix.TranslationVector;
         }
-        
+
         public Task<MoveResult> TryMove(Vector3 destination)
         {
-            if(taskCompletionSource != null)
+            if (taskCompletionSource != null)
                 throw new InvalidOperationException("Overlapping update commands");
 
             pendingResult = new MoveResult();
@@ -197,7 +182,6 @@ namespace SiliconStudio.Xenko.Navigation.Tests
                 // If this path still contains more points, set the player to running
                 if (!ReachedDestination)
                 {
-                    isRunning = true;
                     moveDestination = destination;
                 }
 
@@ -215,10 +199,18 @@ namespace SiliconStudio.Xenko.Navigation.Tests
 
         private void HaltMovement()
         {
-            isRunning = false;
             moveDirection = Vector3.Zero;
-            character.SetVelocity(Vector3.Zero);
+            Character.SetVelocity(Vector3.Zero);
             moveDestination = Entity.Transform.WorldMatrix.TranslationVector;
+        }
+
+        public class MoveResult
+        {
+            public bool Success;
+            public Vector3 Start;
+            public Vector3 End;
+            public TimeSpan StartTime;
+            public TimeSpan EndTime;
         }
     }
 }

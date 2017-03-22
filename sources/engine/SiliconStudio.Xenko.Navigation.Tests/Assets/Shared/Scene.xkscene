@@ -445,9 +445,9 @@ Hierarchy:
                 Components:
                     a45c4e21ad7f60f09479ebb083927e39: !TransformComponent
                         Id: ad04f69a-f21e-4262-a3e6-2a0a6f5cadab
-                        Position: {X: 0.0, Y: -0.5, Z: 0.0}
+                        Position: {X: 0.0, Y: -0.1, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 4.0, Y: 0.1, Z: 4.0}
+                        Scale: {X: 4.0, Y: 0.2, Z: 4.0}
                         Children: {}
                     11b956829a8408f400f4e06ea7a3c47b: !ModelComponent
                         Id: 6aa38535-043e-4153-a0a1-5a7e8983f73b
@@ -465,4 +465,4 @@ Hierarchy:
                         ColliderShapes:
                             768409bd4922b7825cc4ff1caa5bcd0c: !StaticPlaneColliderShapeDesc
                                 Normal: {X: 0.0, Y: 1.0, Z: 0.0}
-                                Offset: 0.0
+                                Offset: 0.1

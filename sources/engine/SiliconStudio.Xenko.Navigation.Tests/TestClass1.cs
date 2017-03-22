@@ -12,7 +12,7 @@ using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Navigation.Tests
 {
-    public class NavigationTest : GameTestBase
+    public class DynamicBarrierTest : Game
     {
         private Entity entityA;
         private Entity entityB;
@@ -26,14 +26,9 @@ namespace SiliconStudio.Xenko.Navigation.Tests
 
         private DynamicNavigationMeshSystem dynamicNavigation;
 
-        public NavigationTest()
+        public DynamicBarrierTest()
         {
             AutoLoadDefaultSettings = true;
-        }
-
-        protected override void PrepareContext()
-        {
-            base.PrepareContext();
         }
 
         protected override async Task LoadContent()
@@ -61,7 +56,16 @@ namespace SiliconStudio.Xenko.Navigation.Tests
 
         private async Task RunAsyncTests()
         {
-            await Script.NextFrame();
+            // Wait for start method to be called
+            while(controllerA.Character == null)
+                await Script.NextFrame();
+
+            // Wait for controllers to be on the ground
+            while (!controllerA.Character.IsGrounded || !controllerB.Character.IsGrounded)
+                await Script.NextFrame();
+
+            controllerA.UpdateSpawnPosition();
+            controllerB.UpdateSpawnPosition();
 
             // Enabled a wall that blocks A and B
             RecursiveToggle(filterAB, true);
@@ -83,6 +87,26 @@ namespace SiliconStudio.Xenko.Navigation.Tests
 
             await Task.WhenAll(controllerA.TryMove(targetPosition).ContinueWith(x => { Assert.IsTrue(x.Result.Success); }),
                 controllerB.TryMove(targetPosition).ContinueWith(x => { Assert.IsFalse(x.Result.Success); }));
+
+            await Reset();
+
+            // Disable both walls
+            RecursiveToggle(filterAB, false);
+            RecursiveToggle(filterB, false);
+            buildResult = await dynamicNavigation.Rebuild();
+            Assert.IsTrue(buildResult.Success);
+
+            await Task.WhenAll(controllerA.TryMove(targetPosition).ContinueWith(x => { Assert.IsTrue(x.Result.Success); }),
+                controllerB.TryMove(targetPosition).ContinueWith(x => { Assert.IsTrue(x.Result.Success); }));
+
+            // Walk back to spawn with only letting A pass
+            RecursiveToggle(filterAB, false);
+            RecursiveToggle(filterB, true);
+            buildResult = await dynamicNavigation.Rebuild();
+            Assert.IsTrue(buildResult.Success);
+
+            await Task.WhenAll(controllerA.TryMove(controllerA.SpawnPosition).ContinueWith(x => { Assert.IsTrue(x.Result.Success); }),
+                controllerB.TryMove(controllerB.SpawnPosition).ContinueWith(x => { Assert.IsFalse(x.Result.Success); }));
 
             Exit();
         }
@@ -108,10 +132,16 @@ namespace SiliconStudio.Xenko.Navigation.Tests
         }
 
         [Test]
+        public static void DynamicBarrierTest1()
+        {
+            DynamicBarrierTest game = new DynamicBarrierTest();
+            game.Run();
+            game.Dispose();
+        }
+        
         public static void Main()
         {
-            NavigationTest game = new NavigationTest();
-            game.Run();
+            DynamicBarrierTest1();
         }
     }
 }
