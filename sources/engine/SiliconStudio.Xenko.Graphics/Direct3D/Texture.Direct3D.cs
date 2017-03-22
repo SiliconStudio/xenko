@@ -529,7 +529,7 @@ namespace SiliconStudio.Xenko.Graphics
             var viewFormat = (SharpDX.DXGI.Format)ViewFormat;
             if (IsDepthStencil)
             {
-                viewFormat = ComputeShaderResourceFormatFromDepthFormat(ViewFormat);
+                viewFormat = (SharpDX.DXGI.Format)ComputeShaderResourceFormatFromDepthFormat(ViewFormat);
             }
 
             return viewFormat;
