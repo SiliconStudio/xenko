@@ -122,7 +122,6 @@ namespace SiliconStudio.Xenko.Graphics
                         break;
                     case TextureDimension.Texture2D:
                     case TextureDimension.TextureCube:
-                        var desc = ConvertToNativeDescription2D();
                         NativeDeviceChild = new Texture2D(GraphicsDevice.NativeDevice, ConvertToNativeDescription2D(), ConvertDataBoxes(dataBoxes));
                         break;
                     case TextureDimension.Texture3D:

@@ -68,9 +68,6 @@ namespace SiliconStudio.Xenko.Graphics
             HasMultiThreadingConcurrentResources = true;
             HasDriverCommandLists = true;
 
-            // TODO D3D12
-            for (int i = 0; i < mapFeaturesPerFormat.Length; i++)
-                mapFeaturesPerFormat[i] = new FeaturesPerFormat((PixelFormat)i, MSAALevel.None, FormatSupport.None);
             // Check features for each DXGI.Format
             foreach (var format in Enum.GetValues(typeof(SharpDX.DXGI.Format)))
             {
@@ -89,7 +86,7 @@ namespace SiliconStudio.Xenko.Graphics
                     maximumMSAA = GetMaximumMSAASampleCount(nativeDevice, dxgiFormat);
                 }
 
-                //mapFeaturesPerFormat[(int)dxgiFormat] = new FeaturesPerFormat((PixelFormat)dxgiFormat, maximumMSAA, formatSupport);
+                mapFeaturesPerFormat[(int)dxgiFormat] = new FeaturesPerFormat((PixelFormat)dxgiFormat, maximumMSAA, formatSupport);
             }
         }
 
