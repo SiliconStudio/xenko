@@ -321,6 +321,8 @@ namespace SiliconStudio.Xenko.Assets
                 var gameSettings = assetFiles.FirstOrDefault(x => x.AssetLocation == GameSettingsAsset.GameSettingsLocation);
                 if (gameSettings != null)
                 {
+                    RunAssetUpgradersUntilVersion(log, dependentPackage, dependency.Name, gameSettings.Yield().ToList(), new PackageVersion("1.10.0-alpha02"));
+
                     using (var gameSettingsYaml = gameSettings.AsYamlAsset())
                     {
                         // Figure out graphics profile; default is Level_10_0 (which is same as GraphicsCompositor default)
@@ -398,7 +400,7 @@ namespace SiliconStudio.Xenko.Assets
                         upgrader.UpgradeAsset(yaml.DynamicRootNode);
                     }
                 }
-            
+            }
 
 
             if (dependency.Version.MinVersion < new PackageVersion("1.11.1.2"))
@@ -406,7 +408,7 @@ namespace SiliconStudio.Xenko.Assets
                 var navigationMeshAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xknavmesh");
                 var scenes = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkscene");
                 UpgradeNavigationBoundingBox(navigationMeshAssets, scenes);
-            }}
+            }
 
 
             return true;
