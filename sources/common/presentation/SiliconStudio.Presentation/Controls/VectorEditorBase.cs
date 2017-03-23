@@ -193,6 +193,9 @@ namespace SiliconStudio.Presentation.Controls
 
         protected static object CoerceComponentValue(DependencyObject sender, object basevalue)
         {
+            if (basevalue == null)
+                return null;
+
             var editor = (VectorEditorBase<T>)sender;
             var decimalPlaces = editor.DecimalPlaces;
             return decimalPlaces < 0 ? basevalue : (float)Math.Round((float)basevalue, decimalPlaces);

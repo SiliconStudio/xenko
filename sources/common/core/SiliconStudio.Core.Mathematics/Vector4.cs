@@ -81,24 +81,28 @@ namespace SiliconStudio.Core.Mathematics
         /// The X component of the vector.
         /// </summary>
         [DataMember(0)]
+        [Display(Browsable = false)]
         public float X;
 
         /// <summary>
         /// The Y component of the vector.
         /// </summary>
         [DataMember(1)]
+        [Display(Browsable = false)]
         public float Y;
 
         /// <summary>
         /// The Z component of the vector.
         /// </summary>
         [DataMember(2)]
+        [Display(Browsable = false)]
         public float Z;
 
         /// <summary>
         /// The W component of the vector.
         /// </summary>
         [DataMember(3)]
+        [Display(Browsable = false)]
         public float W;
 
         /// <summary>

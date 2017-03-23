@@ -118,6 +118,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <value>The X position.</value>
         /// <userdoc>The beginning of the rectangle along the Ox axis.</userdoc>
         [DataMember(0)]
+        [Display(Browsable = false)]
         public float X
         {
             get
@@ -136,6 +137,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <value>The Y position.</value>
         /// <userdoc>The beginning of the rectangle along the Oy axis.</userdoc>
         [DataMember(1)]
+        [Display(Browsable = false)]
         public float Y
         {
             get
@@ -154,6 +156,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <value>The width.</value>
         /// <userdoc>The width of the rectangle.</userdoc>
         [DataMember(2)]
+        [Display(Browsable = false)]
         public float Width
         {
             get { return width; }
@@ -166,6 +169,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <value>The height.</value>
         /// <userdoc>The height of the rectangle.</userdoc>
         [DataMember(3)]
+        [Display(Browsable = false)]
         public float Height
         {
             get { return height; }

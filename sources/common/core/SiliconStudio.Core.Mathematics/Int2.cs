@@ -69,12 +69,14 @@ namespace SiliconStudio.Core.Mathematics
         /// The X component of the vector.
         /// </summary>
         [DataMember(0)]
+        [Display(Browsable = false)]
         public int X;
 
         /// <summary>
         /// The Y component of the vector.
         /// </summary>
         [DataMember(1)]
+        [Display(Browsable = false)]
         public int Y;
 
         /// <summary>

@@ -2,9 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Presentation.ValueConverters
@@ -77,6 +79,19 @@ namespace SiliconStudio.Presentation.ValueConverters
         public static TimeSpan ConvertToTimeSpan(object value, IFormatProvider culture)
         {
             return value != DependencyProperty.UnsetValue ? (TimeSpan)value : default(TimeSpan);
+        }
+
+        /// <summary>
+        /// Converts the given value to <see cref="AngleSingle"/>.
+        /// If the given value is <see cref="DependencyProperty.UnsetValue"/>, it converts to the default value of the <see cref="AngleSingle"/> type.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <param name="culture">The format provider to use for the conversion.</param>
+        /// <returns>The value converted to <see cref="AngleSingle"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static AngleSingle ConvertToAngleSingle(object value, IFormatProvider culture)
+        {
+            return value != DependencyProperty.UnsetValue ? (AngleSingle)value : default(AngleSingle);
         }
 
         /// <summary>
@@ -170,6 +185,19 @@ namespace SiliconStudio.Presentation.ValueConverters
         public static TimeSpan? TryConvertToTimeSpan(object value, IFormatProvider culture)
         {
             return value != null && value != DependencyProperty.UnsetValue ? (TimeSpan?)ConvertToTimeSpan(value, culture) : null;
+        }
+
+        /// <summary>
+        /// Converts the given value to <see cref="AngleSingle"/>.
+        /// If the given value is <see cref="DependencyProperty.UnsetValue"/>, it converts to the default value of the <see cref="AngleSingle"/> type.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <param name="culture">The format provider to use for the conversion.</param>
+        /// <returns>The value converted to <see cref="AngleSingle"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static AngleSingle? TryConvertToAngleSingle(object value, IFormatProvider culture)
+        {
+            return value != null && value != DependencyProperty.UnsetValue ? (AngleSingle?)ConvertToAngleSingle(value, culture) : null;
         }
 
         /// <summary>
