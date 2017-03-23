@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
             public bool IsSizeInPercentage;
 
-            public bool IsCompressed;
+            public bool ShouldCompress;
 
             public AlphaFormat DesiredAlpha;
 
@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                 IsSRgb = textureParameters.Texture.Type.IsSRgb(textureParameters.ColorSpace);
                 DesiredSize = new Size2((int)asset.Width, (int)asset.Height);
                 IsSizeInPercentage = asset.IsSizeInPercentage;
-                IsCompressed = asset.IsCompressed;
+                ShouldCompress = asset.IsCompressed;
                 DesiredAlpha = asset.Type.Alpha;
                 TextureHint = asset.Type.Hint;
                 InvertY = (asset.Type.Hint == TextureHint.NormalMap) ? ((NormapMapTextureType)asset.Type).InvertY : false;
@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
                 DesiredSize = new Size2(100, 100);
                 IsSizeInPercentage = true;
-                IsCompressed = asset.IsCompressed;
+                ShouldCompress = asset.IsCompressed;
                 DesiredAlpha = asset.Alpha;
                 TextureHint = TextureHint.Color;
                 GenerateMipmaps = asset.GenerateMipmaps;
@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                 (outputFormat >= PixelFormat.BC6H_Typeless && outputFormat <= PixelFormat.BC7_UNorm_SRgb);
 
             // compressed DDS files has to have a size multiple of 4.
-            if (parameters.IsCompressed && isBlockCompressed &&
+            if (parameters.ShouldCompress && isBlockCompressed &&
                 ((textureSize.Width % 4) != 0 || (textureSize.Height % 4) != 0))
             {
                 textureSize.Width = unchecked((int)(((uint)(textureSize.Width + 3)) & ~(uint)3));
@@ -205,7 +205,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
             // Default output format
             var outputFormat = PixelFormat.R8G8B8A8_UNorm;
-            switch (parameters.IsCompressed)
+            switch (parameters.ShouldCompress)
             {
                 case true:
                     switch (parameters.Platform)

@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </userdoc>
         [DataMember(50)]
         [DefaultValue(true)]
-        [Display("Compressed")]
+        [Display("Compress")]
         public bool IsCompressed { get; set; } = true;
 
         /// <summary>
