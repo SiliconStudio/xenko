@@ -313,13 +313,16 @@ namespace SiliconStudio.Core.MicroThreading
 
         internal void Schedule(PriorityQueueNode<SchedulerEntry> schedulerEntry, ScheduleMode scheduleMode)
         {
-            var nextCounter = SchedulerCounter++;
-            if (scheduleMode == ScheduleMode.First)
-                nextCounter = -nextCounter;
+            lock (scheduledEntries)
+            {
+                var nextCounter = SchedulerCounter++;
+                if (scheduleMode == ScheduleMode.First)
+                    nextCounter = -nextCounter;
 
-            schedulerEntry.Value.SchedulerCounter = nextCounter;
+                schedulerEntry.Value.SchedulerCounter = nextCounter;
 
-            scheduledEntries.Enqueue(schedulerEntry);
+                scheduledEntries.Enqueue(schedulerEntry);
+            }
         }
 
 
