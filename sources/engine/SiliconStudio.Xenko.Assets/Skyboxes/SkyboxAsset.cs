@@ -1,9 +1,8 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Reflection;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -11,7 +10,6 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Skyboxes;
 
@@ -41,7 +39,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         /// </summary>
         public SkyboxAsset()
         {
-            AmbientLighting = true;
+            HasDiffuseLighting = true;
             DiffuseSHOrder = SkyboxPreFilteringDiffuseOrder.Order3;
             SpecularCubeMapSize = 256;
         }
@@ -61,14 +59,15 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         public Texture CubeMap { get; set; }
 
         /// <summary>
-        /// Gets or set if this skybox affects ambient lighting, if <c>false</c> this skybox will only affect specular lighting
+        /// Gets or set if this skybox has diffuse lighting lighting, if <c>false</c> this skybox will only affect specular lighting
         /// </summary>
         /// <userdoc>
-        /// Use the skybox for ambient lighting as well as specular lighting
+        /// Use the skybox for diffuse lighting as well as specular lighting
         /// </userdoc>
         [DataMember(15)]
         [DefaultValue(true)]
-        public bool AmbientLighting { get; set; }
+        [Display("Diffuse Lighting")]
+        public bool HasDiffuseLighting { get; set; }
 
         /// <summary>
         /// Gets or sets the diffuse sh order.

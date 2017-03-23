@@ -101,7 +101,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
             // If we are using the skybox asset for lighting, we can compute it
             // Specular lighting only?
-            if (asset.AmbientLighting)
+            if (asset.HasDiffuseLighting)
             {
                 // -------------------------------------------------------------------
                 // Calculate Diffuse prefiltering
