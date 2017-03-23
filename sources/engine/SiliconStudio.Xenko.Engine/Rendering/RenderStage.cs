@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -54,6 +55,9 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         [DataMemberIgnore]
         public RenderOutputDescription Output;
+
+        [DataMemberIgnore]
+        public IRenderTargetCompositionQueriable RenderTargetComposition;
 
         /// <summary>
         /// Index in <see cref="RenderSystem.RenderStages"/>.

@@ -1,76 +1,37 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Linq;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Images;
+using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
-    public class DefaultRenderTargets : IColorTarget, INormalTarget, IVelocityTarget, IMultipleRenderViews
+    public class ColorTargetSemantic : IRenderTargetSemantic
     {
-        private readonly FastList<Texture> renderTargets = new FastList<Texture>();
-        private Texture color;
-        private Texture normal;
-        private Texture velocity;
-        private bool dirty = true;
+        public string ShaderClass { get; } = null;
+    }
 
-        public Texture Color
-        {
-            get { return color; }
-            set { color = value; dirty = true; }
-        }
+    public class NormalTargetSemantic : IRenderTargetSemantic
+    {
+        public string ShaderClass { get; } = null;
+    }
 
-        public Texture Normal
-        {
-            get { return normal; }
-            set { normal = value; dirty = true; }
-        }
+    public class VelocityTargetSemantic : IRenderTargetSemantic
+    {
+        public string ShaderClass { get; } = null;
+    }
 
-        public Texture Velocity
-        {
-            get { return velocity; }
-            set { velocity = value; dirty = true; }
-        }
+    public class OctaNormalSpecColorTargetSemantic : IRenderTargetSemantic
+    {
+        public string ShaderClass { get; } = "GBufferOutputNormalSpec";
+    }
 
-        private void RefreshTargets()
-        {
-            if (!dirty)
-                return;
-
-            dirty = false;
-
-            renderTargets.Clear();
-
-            //color
-            renderTargets.Add(Color);
-
-            //normals
-            if (Normal != null)
-                renderTargets.Add(Normal);
-
-            //velocity
-            if (Velocity != null)
-                renderTargets.Add(Velocity);
-        }
-
-        public Texture[] RenderTargets
-        {
-            get
-            {
-                RefreshTargets();
-                return renderTargets.Items;
-            }
-        }
-
-        public int RenderTargetCount
-        {
-            get
-            {
-                RefreshTargets();
-                return renderTargets.Count;
-            }
-        }
-
-        public int Count { get; set; }
-
-        public int Index { get; set; }
+    public class EnvlightRoughnessTargetSemantic : IRenderTargetSemantic
+    {
+        public string ShaderClass { get; } = "GBufferOutputIblRoughness";
     }
 }

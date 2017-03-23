@@ -3,6 +3,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Rendering.Images
@@ -245,13 +246,17 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
         }
 
-        public void Draw(RenderDrawContext drawContext, IRenderTarget inputTargetsComposition, Texture inputDepthStencil, Texture outputTarget)
+        public void Draw(RenderDrawContext drawContext, RenderTargetSetup inputTargetsComposition, Texture inputDepthStencil, Texture outputTarget)
         {
-            var colorInput = inputTargetsComposition as IColorTarget;
-            if (colorInput == null) return;
+            var colorInputActive = inputTargetsComposition.IsActive(typeof(ColorTargetSemantic));
+            if (!colorInputActive) return;
 
-            SetInput(0, colorInput.Color);
+            var fullComposition = inputTargetsComposition.TexturesComposition;
+
+            SetInput(0, fullComposition[0]);
             SetInput(1, inputDepthStencil);
+            for (int i = 1; i < fullComposition.Length; ++i)
+                SetInput(i + 1, fullComposition[i]);
             SetOutput(outputTarget);
             Draw(drawContext);
         }
@@ -259,6 +264,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public bool RequiresVelocityBuffer => false;
 
         public bool RequiresNormalBuffer => false;
+
+        public bool RequiresSsrGBuffers => false; // localReflections.Enabled; TODO : to merge with RLR branch.
 
         protected override void DrawCore(RenderDrawContext context)
         {

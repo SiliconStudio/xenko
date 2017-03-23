@@ -158,6 +158,7 @@
     <Compile Include="Rendering\Compositing\ForwardRenderer.LightProbes.cs" />
     <Compile Include="Rendering\Compositing\ForwardRenderer.VRUtils.cs" />
     <Compile Include="Rendering\Compositing\GraphicsCompositor.cs" />
+    <Compile Include="Rendering\Compositing\ForwardRenderer.MRT.cs" />
     <Compile Include="Rendering\Compositing\MSAAResolver.cs" />
     <None Include="Rendering\Compositing\MSAAResolverEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -259,6 +260,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>VolumeMinMaxShader.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Compositing\RenderTargets.cs" />
     <Compile Include="Rendering\RenderViewFlags.cs" />
     <Compile Include="Rendering\Skyboxes\CubemapSceneRenderer.cs" />
     <Compile Include="Rendering\Lights\LightPointShadowMap.cs" />
@@ -774,6 +776,13 @@
     <Compile Include="Rendering\ViewResourceGroupLayout.cs" />
     <Compile Include="Rendering\VisibilityGroup.cs" />
     <Compile Include="Rendering\WireframePipelineProcessor.cs" />
+    <Compile Include="Rendering\XenkoMRT.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>XenkoMRT.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\XenkoMRTKeys.cs" />
     <Compile Include="Shaders.Compiler\RemoteEffectCompiler.cs" />
     <Compile Include="Engine\Processors\BackgroundComponentProcessor.cs" />
     <Compile Include="Engine\AnimationComponent.cs" />
@@ -3772,6 +3781,10 @@
       <LastGenOutput>PickingShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\XenkoDefaultFont.xkfnt" />
+    <None Include="Rendering\XenkoMRT.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>XenkoMRT.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\XenkoWireframeShadingEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>XenkoWireframeShadingEffect.cs</LastGenOutput>

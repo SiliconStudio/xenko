@@ -107,5 +107,10 @@ namespace SiliconStudio.Xenko.Rendering
         {
             mixin (extensionPostVertexStage);
         }
+
+        // -----------------------------------------------
+        // MRT colors computers from output 1. (color0 excluded)
+        // -----------------------------------------------
+        mixin XenkoMRT;
    };
 }

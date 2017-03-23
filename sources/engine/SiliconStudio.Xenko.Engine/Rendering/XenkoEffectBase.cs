@@ -113,6 +113,7 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     context.Mixin(mixin, (extensionPostVertexStage));
                 }
+                context.Mixin(mixin, "XenkoMRT");
             }
 
             [ModuleInitializer]
