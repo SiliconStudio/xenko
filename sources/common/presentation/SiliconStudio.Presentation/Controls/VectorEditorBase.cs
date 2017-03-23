@@ -21,6 +21,16 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty IsDropDownOpenProperty = DependencyProperty.Register("IsDropDownOpen", typeof(bool), typeof(VectorEditorBase), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
+        /// Identifies the <see cref="WatermarkContent"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty WatermarkContentProperty = DependencyProperty.Register("WatermarkContent", typeof(object), typeof(VectorEditorBase), new PropertyMetadata(null));
+
+        /// <summary>
+        /// Identifies the <see cref="WatermarkContentTemplate"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty WatermarkContentTemplateProperty = DependencyProperty.Register("WatermarkContentTemplate", typeof(DataTemplate), typeof(VectorEditorBase), new PropertyMetadata(null));
+
+        /// <summary>
         /// Gets or sets the number of decimal places displayed in the <see cref="NumericTextBox"/>.
         /// </summary>
         public int DecimalPlaces { get { return (int)GetValue(DecimalPlacesProperty); } set { SetValue(DecimalPlacesProperty, value); } }
@@ -29,6 +39,16 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets or sets whether the drop-down of this vector editor is currently open
         /// </summary>
         public bool IsDropDownOpen { get { return (bool)GetValue(IsDropDownOpenProperty); } set { SetValue(IsDropDownOpenProperty, value.Box()); } }
+
+        /// <summary>
+        /// Gets or sets the content to display when the TextBox is empty.
+        /// </summary>
+        public object WatermarkContent { get { return GetValue(WatermarkContentProperty); } set { SetValue(WatermarkContentProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets the template of the content to display when the TextBox is empty.
+        /// </summary>
+        public DataTemplate WatermarkContentTemplate { get { return (DataTemplate)GetValue(WatermarkContentTemplateProperty); } set { SetValue(WatermarkContentTemplateProperty, value); } }
 
         /// <summary>
         /// Sets the vector value of this vector editor from a single float value.
