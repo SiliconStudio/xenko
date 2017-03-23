@@ -10,13 +10,13 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
+
 using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using SiliconStudio.Core;
 
-namespace SiliconStudio.Assets
+namespace SiliconStudio.Core
 {
     /// <summary>
     /// A dependency to a range of version.
@@ -45,19 +45,16 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PackageVersionRange"/> class.
+        /// Initializes a new instance of the <see cref="PackageVersionRange"/> class with only one possible version.
         /// </summary>
         /// <param name="version">The exact version.</param>
-        public PackageVersionRange(PackageVersion version)
+        public PackageVersionRange(PackageVersion version):this(version, true, version, true)
         {
-            IsMinInclusive = true;
-            IsMaxInclusive = true;
-            MinVersion = version;
-            MaxVersion = version;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PackageVersionRange" /> class.
+        /// Initializes a new instance of the <see cref="PackageVersionRange" /> class with just a lower bound 
+        /// <paramref name="minVersion"/> that can be inclusive or not depending on <paramref name="minVersionInclusive"/>.
         /// </summary>
         /// <param name="minVersion">The minimum version.</param>
         /// <param name="minVersionInclusive">if set to <c>true</c> the minimum version is inclusive</param>
@@ -65,6 +62,21 @@ namespace SiliconStudio.Assets
         {
             IsMinInclusive = minVersionInclusive;
             MinVersion = minVersion;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PackageVersionRange" /> class.
+        /// </summary>
+        /// <param name="minVersion">The minimum version.</param>
+        /// <param name="minVersionInclusive">if set to <c>true</c> the minimum version is inclusive</param>
+        /// <param name="maxVersion">The maximum version.</param>
+        /// <param name="maxVersionInclusive">if set to <c>true</c> the maximum version is inclusive</param>
+        public PackageVersionRange(PackageVersion minVersion, bool minVersionInclusive, PackageVersion maxVersion, bool maxVersionInclusive)
+        {
+            IsMinInclusive = minVersionInclusive;
+            IsMaxInclusive = maxVersionInclusive;
+            MinVersion = minVersion;
+            MaxVersion = maxVersion;
         }
 
         /// <summary>
@@ -159,7 +171,7 @@ namespace SiliconStudio.Assets
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
 
             var versionSpec = new PackageVersionRange();
@@ -333,20 +345,43 @@ namespace SiliconStudio.Assets
             return versionBuilder.ToString();
         }
 
-        internal static PackageVersionRange FromVersionSpec(NuGet.IVersionSpec spec)
+        public Func<T, bool> ToFilter<T>(Func<T, PackageVersion> extractor)
         {
-            if (spec == null)
+            if (extractor == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(extractor));
             }
 
-            return new PackageVersionRange()
+            return p =>
+            {
+                PackageVersion version = extractor(p);
+                bool condition = true;
+                if (MinVersion != null)
                 {
-                    MinVersion = PackageVersion.FromSemanticVersion(spec.MinVersion),
-                    IsMinInclusive = spec.IsMinInclusive,
-                    MaxVersion = PackageVersion.FromSemanticVersion(spec.MaxVersion),
-                    IsMaxInclusive = spec.IsMaxInclusive
-                };
+                    if (IsMinInclusive)
+                    {
+                        condition = version >= MinVersion;
+                    }
+                    else
+                    {
+                        condition = version > MinVersion;
+                    }
+                }
+
+                if (MaxVersion != null)
+                {
+                    if (IsMaxInclusive)
+                    {
+                        condition = condition && version <= MaxVersion;
+                    }
+                    else
+                    {
+                        condition = condition && version < MaxVersion;
+                    }
+                }
+
+                return condition;
+            };
         }
     }
 }

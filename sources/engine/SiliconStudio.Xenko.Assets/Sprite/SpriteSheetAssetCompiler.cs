@@ -67,8 +67,8 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     var textureAsset = new TextureAsset
                     {
                         Id = AssetId.Empty, // CAUTION: It is important to use an empty GUID here, as we don't want the command to be rebuilt (by default, a new asset is creating a new guid)
-                        
-                        Format = asset.Format,
+
+                        IsCompressed = asset.IsCompressed,
                         GenerateMipmaps = asset.GenerateMipmaps,
                         Type = new ColorTextureType
                         {

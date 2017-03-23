@@ -21,12 +21,12 @@ namespace SiliconStudio.Assets.Serializers
 
         public override object ConvertFrom(ref ObjectContext context, Scalar fromScalar)
         {
-            PackageVersionRange packageVersion;
-            if (!PackageVersionRange.TryParse(fromScalar.Value, out packageVersion))
+            PackageVersionRange versionRange;
+            if (!PackageVersionRange.TryParse(fromScalar.Value, out versionRange))
             {
                 throw new YamlException(fromScalar.Start, fromScalar.End, "Invalid version dependency format. Unable to decode [{0}]".ToFormat(fromScalar.Value));
             }
-            return packageVersion;
+            return versionRange;
         }
 
         public override string ConvertTo(ref ObjectContext objectContext)

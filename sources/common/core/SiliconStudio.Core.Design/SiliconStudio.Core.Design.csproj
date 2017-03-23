@@ -68,6 +68,8 @@
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="NamingHelper.cs" />
     <Compile Include="ObjectCache.cs" />
+    <Compile Include="PackageVersion.cs" />
+    <Compile Include="PackageVersionRange.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflection\AssemblyContainer.cs" />
     <Compile Include="Reflection\DataVisitorBase.cs" />

@@ -72,16 +72,15 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         public bool ColorKeyEnabled { get; set; }
 
         /// <summary>
-        /// Gets or sets the texture format.
+        /// If Compressed, the final texture will be compressed to an appropriate format based on the target platform. The final texture size must be a multiple of 4.
         /// </summary>
-        /// <value>The texture format.</value>
         /// <userdoc>
-        /// The texture format in which all the images of the group should be converted to.
+        /// If Compressed, the final texture will be compressed to an appropriate format based on the target platform. The final texture size must be a multiple of 4.
         /// </userdoc>
         [DataMember(40)]
-        [DefaultValue(TextureFormat.Compressed)]
-        [Display(category: "Parameters")]
-        public TextureFormat Format { get; set; } = TextureFormat.Compressed;
+        [DefaultValue(true)]
+        [Display("Compressed", "Parameters")]
+        public bool IsCompressed { get; set; } = true;
 
         /// <summary>
         /// Indicates if the texture is in sRGB format (standard for color textures). When working in Linear color space the texture will bed converted to linear space when sampling.
@@ -230,6 +229,31 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                 {
                     asset.UseSRgbSampling = (asset.ColorSpace != "Gamma"); // This is correct. It converts some legacy code with ambiguous meaning.
                     asset.RemoveChild("ColorSpace");
+                }
+            }
+        }
+
+        private class CompressionUpgrader : AssetUpgraderBase
+        {
+            // public TextureFormat Format { get; set; } = TextureFormat.Compressed;
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                if (asset.ContainsChild("Format"))
+                {
+                    if (asset.Format == "Compressed")
+                    {
+                        asset.IsCompressed = true;
+                    }
+                    else
+                    {
+                        asset.IsCompressed = false;
+                    }
+
+                    asset.RemoveChild("Format");
+                }
+                else
+                {
+                    asset.IsCompressed = true;
                 }
             }
         }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
@@ -36,42 +36,6 @@
       <ItemGroup Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
         <Reference Include="System" />
         <Reference Include="System.Core" />
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
-      <ItemGroup>
-        <Reference Include="SharpDX">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
-        </Reference>
-        <Reference Include="SharpDX.DXGI">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
-        </Reference>
-        <Reference Include="SharpDX.D3DCompiler">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
-      <ItemGroup>
-        <Reference Include="SharpDX.Direct3D11">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D12' ">
-      <ItemGroup>
-        <Reference Include="SharpDX.Direct3D12">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
-        </Reference>
       </ItemGroup>
     </When>
   </Choose>
@@ -194,6 +158,23 @@
     <Compile Include="Rendering\Compositing\ForwardRenderer.LightProbes.cs" />
     <Compile Include="Rendering\Compositing\ForwardRenderer.VRUtils.cs" />
     <Compile Include="Rendering\Compositing\GraphicsCompositor.cs" />
+    <Compile Include="Rendering\Compositing\MSAAResolver.cs" />
+    <None Include="Rendering\Compositing\MSAAResolverEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MSAAResolverEffect.cs</LastGenOutput>
+    </None>
+    <Compile Include="Rendering\Compositing\MSAAResolverEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MSAAResolverEffect.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Compositing\MSAAResolverShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MSAAResolverShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Compositing\RenderTextureSceneRenderer.cs" />
     <Compile Include="Rendering\Compositing\SceneCameraRenderer.cs" />
     <Compile Include="Rendering\Compositing\SceneRendererCollection.cs" />
@@ -330,6 +311,10 @@
     <None Include="Rendering\Background\BackgroundShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BackgroundShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Compositing\MSAAResolverShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MSAAResolverShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\RangeConversion\RangeCompressorShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

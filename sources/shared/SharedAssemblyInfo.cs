@@ -3,6 +3,7 @@
 #pragma warning disable 436 // The type 'type' in 'assembly' conflicts with the imported type 'type2' in 'assembly' (due to XenkoVersion being duplicated)
 using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using SiliconStudio;
 
 [assembly:AssemblyCompany("Silicon Studio")]
