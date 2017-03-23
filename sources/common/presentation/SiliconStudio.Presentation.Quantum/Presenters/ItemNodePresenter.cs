@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
@@ -150,12 +149,17 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         private bool IsValidChange([NotNull] INodeChangeEventArgs e)
         {
+            return IsValidChange(e.ChangeType, e.Index, Index);
+        }
+
+        public static bool IsValidChange(ContentChangeType changeType, Index changeIndex, Index presenterIndex)
+        {
             // We should care only if the change is an update at the same index.
             // Other scenarios (add, remove) are handled by the parent node.
-            switch (e.ChangeType)
+            switch (changeType)
             {
                 case ContentChangeType.CollectionUpdate:
-                    return Equals(e.Index, Index);
+                    return Equals(changeIndex, presenterIndex);
                 case ContentChangeType.CollectionAdd:
                 case ContentChangeType.CollectionRemove:
                     return false;

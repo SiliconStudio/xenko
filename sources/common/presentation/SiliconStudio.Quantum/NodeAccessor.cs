@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Quantum
 {
@@ -17,8 +17,14 @@ namespace SiliconStudio.Quantum
         /// </summary>
         public readonly Index Index;
 
-        public NodeAccessor(IGraphNode node, Index index)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NodeAccessor"/> structure.
+        /// </summary>
+        /// <param name="node">The target node of this accessor.</param>
+        /// <param name="index">The index of the target item if this accessor target an item. <see cref="Quantum.Index.Empty"/> otherwise.</param>
+        public NodeAccessor([NotNull] IGraphNode node, Index index)
         {
+            if (node == null) throw new ArgumentNullException(nameof(node));
             Node = node;
             Index = index;
         }

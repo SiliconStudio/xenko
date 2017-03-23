@@ -9,10 +9,11 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 {
     public class VirtualNodePresenter : NodePresenterBase
     {
+        protected NodeAccessor AssociatedNode;
         [NotNull] private readonly Func<object> getter;
         private readonly Action<object> setter;
         private readonly List<Attribute> memberAttributes = new List<Attribute>();
-        private IGraphNode associatedNode;
+        private bool updatingValue;
 
         public VirtualNodePresenter([NotNull] INodePresenterFactoryInternal factory, IPropertyProviderViewModel propertyProvider, [NotNull] INodePresenter parent, string name, Type type, int? order, [NotNull] Func<object> getter, Action<object> setter)
             : base(factory, propertyProvider, parent)
@@ -39,7 +40,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override bool IsEnumerable => false;
 
-        public override Index Index => Index.Empty;
+        public override Index Index => AssociatedNode.Node != null ? AssociatedNode.Index : Index.Empty;
 
         public override ITypeDescriptor Descriptor { get; }
 
@@ -59,24 +60,24 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         /// Registers an <see cref="IGraphNode"/> object to this virtual node so when the node vakye is modified, it will raise the
         /// <see cref="ValueChanging"/> and <see cref="ValueChanged"/> events.
         /// </summary>
-        /// <param name="node">The node to register.</param>
+        /// <param name="associatedNodeAccessor">An accessor to the node to register.</param>
         /// <remarks>Events subscriptions are cleaned when this virtual node is disposed.</remarks>
-        public void RegisterAssociatedNode(IGraphNode node)
+        public virtual void RegisterAssociatedNode(NodeAccessor associatedNodeAccessor)
         {
-            if (associatedNode != null)
+            if (AssociatedNode.Node != null)
                 throw new InvalidOperationException("A content has already been registered to this virtual node");
 
-            associatedNode = node;
-            associatedNode.RegisterChanging(AssociatedNodeChanging);
-            associatedNode.RegisterChanged(AssociatedNodeChanged);
+            AssociatedNode = associatedNodeAccessor;
+            AssociatedNode.Node.RegisterChanging(AssociatedNodeChanging);
+            AssociatedNode.Node.RegisterChanged(AssociatedNodeChanged);
         }
 
         public override void Dispose()
         {
-            if (associatedNode != null)
+            if (AssociatedNode.Node != null)
             {
-                associatedNode.UnregisterChanging(AssociatedNodeChanging);
-                associatedNode.UnregisterChanged(AssociatedNodeChanged);
+                AssociatedNode.Node.UnregisterChanging(AssociatedNodeChanging);
+                AssociatedNode.Node.UnregisterChanged(AssociatedNodeChanged);
             }
             base.Dispose();
         }
@@ -86,14 +87,21 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 var oldValue = getter();
-                ValueChanging?.Invoke(this, new ValueChangingEventArgs(newValue));
+                var changeType = Index == Index.Empty ? ContentChangeType.ValueChange : ContentChangeType.CollectionUpdate;
+                RaiseNodeChanging(newValue, changeType, Index);
+                updatingValue = true;
                 setter(newValue);
-                Refresh();
-                ValueChanged?.Invoke(this, new ValueChangedEventArgs(oldValue));
+                updatingValue = false;
+                RaiseNodeChanged(oldValue, changeType, Index);
             }
             catch (Exception e)
             {
                 throw new NodePresenterException("An error occurred while updating the value of the node, see the inner exception for more information.", e);
+            }
+            finally
+            {
+                // Note: not sure it is worth doing this in finally block. Currently if we have an exception here we're already screwed.
+                updatingValue = false;
             }
         }
 
@@ -119,13 +127,39 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         private void AssociatedNodeChanging(object sender, INodeChangeEventArgs e)
         {
-            ValueChanging?.Invoke(this, new ValueChangingEventArgs(e.NewValue));
+            RaiseNodeChanging(e.NewValue, e.ChangeType, e.Index);
         }
 
         private void AssociatedNodeChanged(object sender, INodeChangeEventArgs e)
         {
-            Refresh();
-            ValueChanged?.Invoke(this, new ValueChangedEventArgs(e.OldValue));
+            RaiseNodeChanged(e.OldValue, e.ChangeType, e.Index);
+        }
+
+        private void RaiseNodeChanging(object newValue, ContentChangeType changeType, Index index)
+        {
+            if (ShouldRaiseEvent(changeType, index))
+            {
+                ValueChanging?.Invoke(this, new ValueChangingEventArgs(newValue));
+            }
+        }
+
+        private void RaiseNodeChanged(object oldValue, ContentChangeType changeType, Index index)
+        {
+            if (ShouldRaiseEvent(changeType, index))
+            {
+                ValueChanged?.Invoke(this, new ValueChangedEventArgs(oldValue));
+            }
+        }
+
+        private bool ShouldRaiseEvent(ContentChangeType changeType, Index index)
+        {
+            if (updatingValue)
+                return false;
+
+            if (AssociatedNode.Node == null || AssociatedNode.Index == Index.Empty)
+                return true;
+
+            return index != Index.Empty && ItemNodePresenter.IsValidChange(changeType, index, Index);
         }
     }
 }
