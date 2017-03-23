@@ -9,8 +9,9 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.Textures
@@ -25,13 +26,14 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [Display(1055, "Texture")]
     [CategoryOrder(10, "Size")]
     [CategoryOrder(20, "Format")]
-    [CategoryOrder(30, "Transparency")]
     [AssetFormatVersion(XenkoConfig.PackageName, TextureAssetVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(TransformSRgbToColorSpace))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.10.0-alpha01", typeof(DescriptionUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-alpha01", TextureAssetVersion, typeof(CompressionUpgrader))]
     public sealed class TextureAsset : AssetWithSource, IAssetCompileTimeDependencies
     {
-        private const string TextureAssetVersion = "1.4.0-beta";
+        private const string TextureAssetVersion = "1.11.1.2";
 
         /// <summary>
         /// The default file extension used by the <see cref="TextureAsset"/>.
@@ -82,64 +84,15 @@ namespace SiliconStudio.Xenko.Assets.Textures
         public bool IsSizeInPercentage { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets a value indicating whether to enable color key. Default is false.
+        /// If Compressed, the final texture will be compressed to an appropriate format based on the target platform. The final texture size must be a multiple of 4.
         /// </summary>
-        /// <value><c>true</c> to enable color key; otherwise, <c>false</c>.</value>
         /// <userdoc>
-        /// If checked, all pixels of the color set in the ColorKeyColor property will be replaced by transparent black.
-        /// </userdoc>
-        [DataMember(43)]
-        [DefaultValue(false)]
-        [Display(null, "Transparency")]
-        public bool ColorKeyEnabled { get; set; }
-
-        /// <summary>
-        /// Gets or sets the color key used when color keying for a texture is enabled. When color keying, all pixels of a specified color are replaced with transparent black.
-        /// </summary>
-        /// <value>The color key.</value>
-        /// <userdoc>
-        /// If ColorKeyEnabled is true, All pixels of the color set to this property are replaced with transparent black.
-        /// </userdoc>
-        [DataMember(45)]
-        [Display(null, "Transparency")]
-        public Color ColorKeyColor { get; set; } = new Color(255, 0, 255);
-
-        /// <summary>
-        /// Gets or sets the texture format.
-        /// </summary>
-        /// <value>The texture format.</value>
-        /// <userdoc>
-        /// The format to use for the texture. If Compressed, the final texture size must be a multiple of 4.
+        /// If Compressed, the final texture will be compressed to an appropriate format based on the target platform. The final texture size must be a multiple of 4.
         /// </userdoc>
         [DataMember(50)]
-        [DefaultValue(TextureFormat.Compressed)]
-        [Display(null, "Format")]
-        public TextureFormat Format { get; set; } = TextureFormat.Compressed;
-
-        /// <summary>
-        /// Gets or sets the hint to indicate the type of texture. See remarks.
-        /// </summary>
-        /// <value>The hint.</value>
-        /// <remarks>This hint helps the texture compressor to select the appropriate format based on the HW Level and 
-        /// platform.</remarks>
-        /// <userdoc>A hint to indicate the usage/type of texture. This hint helps the texture compressor to select the 
-        /// appropriate format based on the HW Level and platform.</userdoc>
-        [DataMember(51)]
-        [DefaultValue(TextureHint.Color)]
-        [Display(null, "Format")]
-        public TextureHint Hint { get; set; } = TextureHint.Color;
-
-        /// <summary>
-        /// Gets or sets the alpha format.
-        /// </summary>
-        /// <value>The alpha format.</value>
-        /// <userdoc>
-        /// The format to use for alpha in the texture.
-        /// </userdoc>
-        [DataMember(55)]
-        [DefaultValue(AlphaFormat.Auto)]
-        [Display(null, "Transparency")]
-        public AlphaFormat Alpha { get; set; } = AlphaFormat.Auto;
+        [DefaultValue(true)]
+        [Display("Compress")]
+        public bool IsCompressed { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether to generate mipmaps.
@@ -148,34 +101,22 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// <userdoc>
         /// If checked, Mipmaps will be pre-generated for this texture.
         /// </userdoc>
-        [DataMember(60)]
+        [DataMember(70)]
         [DefaultValue(true)]
         [Display(null, "Format")]
         public bool GenerateMipmaps { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the value indicating whether the output texture is encoded into the standard RGB color space.
+        /// The description of the data contained in the texture. See remarks.
         /// </summary>
-        /// <userdoc>
-        /// If checked, the input image is considered as an sRGB image. This should be default for colored texture
-        /// with a HDR/gamma correct rendering.
-        /// </userdoc>
-        [DataMember(70)]
-        [DefaultValue(TextureColorSpace.Auto)]
-        [Display("ColorSpace", "Format")]
-        public TextureColorSpace ColorSpace { get; set; } = TextureColorSpace.Auto;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to convert the texture in premultiply alpha.
-        /// </summary>
-        /// <value><c>true</c> to convert the texture in premultiply alpha.; otherwise, <c>false</c>.</value>
-        /// <userdoc>
-        /// If checked, The color values will be pre-multiplied by the alpha value.
-        /// </userdoc>
-        [DataMember(80)]
-        [DefaultValue(true)]
-        [Display(null, "Transparency")]
-        public bool PremultiplyAlpha { get; set; } = true;
+        /// <remarks>This description helps the texture compressor to select the appropriate format based on the HW Level and 
+        /// platform.</remarks>
+        /// <userdoc>A hint to indicate the usage/type of texture. This hint helps the texture compressor to select the 
+        /// appropriate format based on the HW Level and platform.</userdoc>
+        [DataMember(60)]
+        [NotNull]
+        [Display(null, "Format", Expand = ExpandRule.Always)]
+        public ITextureType Type { get; set; } = new ColorTextureType();
 
         public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
         {
@@ -190,14 +131,73 @@ namespace SiliconStudio.Xenko.Assets.Textures
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
-                if (asset.SRgb != null)
+                // Code was removed intentionally. Backward compatibility before 1.4.0-beta is no longer supported
+            }
+        }
+
+        private class CompressionUpgrader : AssetUpgraderBase
+        {
+            // public TextureFormat Format { get; set; } = TextureFormat.Compressed;
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                if (asset.ContainsChild("Format"))
                 {
-                    // By default transform to auto
-                    asset.ColorSpace = TextureColorSpace.Auto;
-                    asset.RemoveChild("SRgb");
+                    if (asset.Format == "Compressed")
+                    {
+                        asset.IsCompressed = true;
+                    }
+                    else
+                    {
+                        asset.IsCompressed = false;
+                    }
+
+                    asset.RemoveChild("Format");
+                }
+                else
+                {
+                    asset.IsCompressed = true;
                 }
             }
         }
- 
+
+        private class DescriptionUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                if (asset.Hint == "NormalMap")
+                {
+                    dynamic textureType = asset.Type = new DynamicYamlMapping(new YamlMappingNode());
+                    textureType.Node.Tag = "!NormalMapTextureType";
+                }
+                else if (asset.Hint == "Grayscale")
+                {
+                    dynamic textureType = asset.Type = new DynamicYamlMapping(new YamlMappingNode());
+                    textureType.Node.Tag = "!GrayscaleTextureType";
+                }
+                else
+                {
+                    dynamic textureType = asset.Type = new DynamicYamlMapping(new YamlMappingNode());
+                    textureType.Node.Tag = "!ColorTextureType";
+
+                    if (asset.ContainsChild("ColorSpace"))
+                        textureType.UseSRgbSampling = (asset.ColorSpace != "Gamma"); // This is correct. It converts some legacy code with ambiguous meaning.
+                    if (asset.ContainsChild("ColorKeyEnabled"))
+                        textureType.ColorKeyEnabled = asset.ColorKeyEnabled;
+                    if (asset.ContainsChild("ColorKeyColor"))
+                        textureType.ColorKeyColor = asset.ColorKeyColor;
+                    if (asset.ContainsChild("Alpha"))
+                        textureType.Alpha = asset.Alpha;
+                    if (asset.ContainsChild("PremultiplyAlpha"))
+                        textureType.PremultiplyAlpha = asset.PremultiplyAlpha;
+                }
+
+                asset.RemoveChild("ColorSpace");
+                asset.RemoveChild("ColorKeyEnabled");
+                asset.RemoveChild("ColorKeyColor");
+                asset.RemoveChild("Alpha");
+                asset.RemoveChild("PremultiplyAlpha");
+                asset.RemoveChild("Hint");
+            }
+        }
     }
 }

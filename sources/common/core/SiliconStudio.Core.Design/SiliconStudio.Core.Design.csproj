@@ -68,6 +68,8 @@
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="NamingHelper.cs" />
     <Compile Include="ObjectCache.cs" />
+    <Compile Include="PackageVersion.cs" />
+    <Compile Include="PackageVersionRange.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflection\AssemblyContainer.cs" />
     <Compile Include="Reflection\DataVisitorBase.cs" />
@@ -75,8 +77,6 @@
     <Compile Include="Reflection\IDataVisitor.cs" />
     <Compile Include="Reflection\ShadowObject.cs" />
     <Compile Include="Reflection\ShadowObjectPropertyKey.cs" />
-    <Compile Include="Reflection\ThisDescriptor.cs" />
-    <Compile Include="Reflection\TypeExtensions.cs" />
     <Compile Include="Reflection\VisitorContext.cs" />
     <Compile Include="Settings\ChangesValidatedEventArgs.cs" />
     <Compile Include="Settings\FileModifiedEventArgs.cs" />
@@ -108,6 +108,7 @@
     <Compile Include="Transactions\TransactionsDiscardedEventArgs.cs" />
     <Compile Include="Transactions\TransactionStack.cs" />
     <Compile Include="Transactions\TransactionStackFactory.cs" />
+    <Compile Include="TypeConverters\Color3Converter.cs" />
     <Compile Include="Windows\FileLock.cs" />
     <Compile Include="Windows\GlobalMutex.cs" />
     <Compile Include="Yaml\AssetIdSerializer.cs" />

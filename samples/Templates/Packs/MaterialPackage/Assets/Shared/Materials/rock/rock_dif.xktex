@@ -1,6 +1,7 @@
 !Texture
 Id: c84484a7-fd81-420c-9834-d01c901c6998
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.10.0-alpha01}
 Tags: []
 Source: ../../../../Resources/Textures/rock/rock_dif.png
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Type: !ColorTextureType
+    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

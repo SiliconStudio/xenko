@@ -7,9 +7,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using ILRepacking;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Mono.Cecil;
+using Mono.Cecil.Pdb;
 
 namespace SiliconStudio.AssemblyProcessor
 {
@@ -72,12 +74,15 @@ namespace SiliconStudio.AssemblyProcessor
             metadataReferences.Add(CreateMetadataReference(assemblyResolver, mscorlibAssembly));
             var collectionAssembly = CecilExtensions.FindCollectionsAssembly(assembly);
             metadataReferences.Add(CreateMetadataReference(assemblyResolver, collectionAssembly));
-            metadataReferences.Add(CreateMetadataReference(assemblyResolver, assembly));
+
+            // Open file currently being processed using FileShare.ReadWrite
+            using (var stream = File.Open(assembly.MainModule.FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                metadataReferences.Add(MetadataReference.CreateFromStream(stream, filePath: assembly.MainModule.FileName));
 
             // In case SiliconStudio.Core was not referenced, let's add it.
             if (assembly.Name.Name != "SiliconStudio.Core" && !references.Any(x => string.Compare(Path.GetFileNameWithoutExtension(x), "SiliconStudio.Core", StringComparison.OrdinalIgnoreCase) == 0))
             {
-                metadataReferences.Add(CreateMetadataReference(assemblyResolver, assemblyResolver.Resolve("SiliconStudio.Core")));
+                metadataReferences.Add(CreateMetadataReference(assemblyResolver, assemblyResolver.Resolve(new AssemblyNameReference("SiliconStudio.Core", null))));
             }
 
             // Create roslyn compilation object
@@ -103,22 +108,29 @@ namespace SiliconStudio.AssemblyProcessor
                 }
             }
 
+            // Make sure every instruction in the primary assembly has offset up to date
+            // Ideally, we should do it manually only on method whose instructions changed so far
+            foreach (var type in assembly.MainModule.Types)
+            {
+                GenerateOffsetForMethodsOfType(type);
+            }
+
             var repackOptions = new ILRepacking.RepackOptions(new string[0])
             {
-                OutputFile = assembly.MainModule.FullyQualifiedName,
+                OutputFile = assembly.MainModule.FileName,
                 DebugInfo = true,
                 CopyAttributes = true,
                 AllowMultipleAssemblyLevelAttributes = true,
                 XmlDocumentation = false,
                 NoRepackRes = true,
                 InputAssemblies = new[] { serializationAssemblyLocation },
-                SearchDirectories = assemblyResolver.GetSearchDirectories(),
-                SearchAssemblies = references,
+                SearchDirectories = new string[0],
             };
 
             // Run ILMerge
             var merge = new ILRepacking.ILRepack(repackOptions)
             {
+                GlobalAssemblyResolver = new RepackAssemblyResolverAdapter(assemblyResolver),
                 PrimaryAssemblyDefinition = assembly,
                 MemoryOnly = true,
                 //KeepFirstOfMultipleAssemblyLevelAttributes = true,
@@ -163,6 +175,9 @@ namespace SiliconStudio.AssemblyProcessor
                     merge.TargetAssemblyMainModule.Attributes |= ModuleAttributes.StrongNameSigned;
             }
 
+            // Dispose old assembly
+            assembly.Dispose();
+
             try
             {
                 // Delete serializer dll
@@ -182,6 +197,34 @@ namespace SiliconStudio.AssemblyProcessor
             return merge.TargetAssemblyDefinition;
         }
 
+        /// <summary>
+        /// Recompute offsets for method instructions.
+        /// </summary>
+        /// <param name="type"></param>
+        private static void GenerateOffsetForMethodsOfType(TypeDefinition type)
+        {
+            foreach (var nestedType in type.NestedTypes)
+            {
+                GenerateOffsetForMethodsOfType(nestedType);
+            }
+
+            foreach (var method in type.Methods)
+            {
+                var body = method.Body;
+                if (body == null)
+                    continue;
+
+                int offset = 0;
+                var instructions = body.Instructions;
+                for (int i = 0; i < instructions.Count; i++)
+                {
+                    var instruction = body.Instructions[i];
+                    instruction.Offset = offset;
+                    offset += instruction.GetSize();
+                }
+            }
+        }
+
         private static MetadataReference CreateMetadataReference(IAssemblyResolver assemblyResolver, AssemblyDefinition assembly)
         {
             // Try to find if it has been registed with a in-memory version first
@@ -195,7 +238,8 @@ namespace SiliconStudio.AssemblyProcessor
                 }
             }
 
-            return MetadataReference.CreateFromFile(assembly.MainModule.FullyQualifiedName);
+            var filename = assembly.MainModule.FileName;
+            return MetadataReference.CreateFromFile(filename);
         }
 
         public static string GenerateRolsynAssemblyLocation(string assemblyLocation)
@@ -211,6 +255,35 @@ namespace SiliconStudio.AssemblyProcessor
         {
             public string Code;
             public string Name;
+        }
+
+        class RepackAssemblyResolverAdapter : IRepackAssemblyResolver
+        {
+            private readonly CustomAssemblyResolver assemblyResolver;
+
+            public RepackAssemblyResolverAdapter(CustomAssemblyResolver assemblyResolver)
+            {
+                this.assemblyResolver = assemblyResolver;
+            }
+
+            public void Dispose()
+            {
+            }
+
+            public AssemblyDefinition Resolve(AssemblyNameReference name)
+            {
+                return assemblyResolver.Resolve(name);
+            }
+
+            public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
+            {
+                return assemblyResolver.Resolve(name, parameters);
+            }
+
+            public void RegisterAssembly(AssemblyDefinition assembly)
+            {
+                assemblyResolver.RegisterAssembly(assembly);
+            }
         }
     }
 }

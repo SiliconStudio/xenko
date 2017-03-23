@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Xenko.Graphics.OpenGL;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
@@ -91,6 +92,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             HasDepthAsSRV = isOpenGLES3;
             HasDepthAsReadOnlyRT = isOpenGLES3;
+            HasMSAADepthAsSRV = isOpenGLES3;
 
             deviceRoot.HasDepthClamp = SupportedExtensions.Contains("GL_ARB_depth_clamp");
   
@@ -109,6 +111,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             HasDepthAsSRV = deviceRoot.version >= 300;
             HasDepthAsReadOnlyRT = deviceRoot.version >= 300;
+            HasMSAADepthAsSRV = deviceRoot.version >= 300;
 
             deviceRoot.HasDepthClamp = deviceRoot.version >= 300;
 
@@ -124,6 +127,8 @@ namespace SiliconStudio.Xenko.Graphics
             HasMultiThreadingConcurrentResources = false;
 
             // TODO: Enum supported formats in mapFeaturesPerFormat
+            for (int i = 0; i < mapFeaturesPerFormat.Length; i++)
+                mapFeaturesPerFormat[i] = new FeaturesPerFormat((PixelFormat)i, MSAALevel.None, FormatSupport.None);
 
             // Find shader model based on OpenGL version (might need to check extensions more carefully)
             RequestedProfile = deviceRoot.requestedGraphicsProfile;

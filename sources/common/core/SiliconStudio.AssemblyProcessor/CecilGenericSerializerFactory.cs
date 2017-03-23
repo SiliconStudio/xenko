@@ -41,7 +41,7 @@ namespace SiliconStudio.AssemblyProcessor
             // Note: Not perfectly valid but hopefully it should be fast enough.
             if (objectType.IsGenericInstance && checkInterfaces)
             {
-                if (objectType.GetElementType().Resolve().Interfaces.Any(x => x.IsGenericInstance && x.GetElementType().FullName == genericSerializableType.FullName))
+                if (objectType.GetElementType().Resolve().Interfaces.Any(x => x.InterfaceType.IsGenericInstance && x.InterfaceType.GetElementType().FullName == genericSerializableType.FullName))
                     return CreateSerializer(objectType);
             }
             if (objectType.IsGenericInstance && objectType.GetElementType().FullName == genericSerializableType.FullName)

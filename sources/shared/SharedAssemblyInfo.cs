@@ -3,6 +3,7 @@
 #pragma warning disable 436 // The type 'type' in 'assembly' conflicts with the imported type 'type2' in 'assembly' (due to XenkoVersion being duplicated)
 using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using SiliconStudio;
 
 [assembly:AssemblyCompany("Silicon Studio")]
@@ -35,10 +36,10 @@ namespace SiliconStudio
         /// <summary>
         /// The .NET current assembly version as text, not including pre-release (alpha, beta...) information.
         /// </summary>
-        public const string CurrentAssemblyAsText = "1.11.0";
+        public const string CurrentAssemblyAsText = "1.11.1.1";
 
         /// <summary>
-        /// The Store current version as text, including pre-release (alpha, beta...) information
+        /// The current version as text, including pre-release (alpha, beta...) information, if needed
         /// </summary>
         /// <remarks>
         /// Version number as described in http://docs.nuget.org/docs/reference/versioning
@@ -46,7 +47,7 @@ namespace SiliconStudio
         /// please use a double digit like alpha00 alpha01...etc. in order to make sure that we will follow the correct
         /// order for the versions.
         /// </remarks>
-        public const string CurrentAsText = CurrentAssemblyAsText + "-beta"; 
+        public const string CurrentAsText = CurrentAssemblyAsText; 
     }
 
     partial class PublicKeys

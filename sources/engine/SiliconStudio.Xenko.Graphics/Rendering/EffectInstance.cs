@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <returns>True if the effect was recompiled, false otherwise.</returns>
         public bool UpdateEffect(GraphicsDevice graphicsDevice)
         {
-            if (permutationCounter != Parameters.PermutationCounter || (effect != null && effect.SourceChanged))
+            if (effect == null || permutationCounter != Parameters.PermutationCounter || (effect != null && effect.SourceChanged))
             {
                 permutationCounter = Parameters.PermutationCounter;
 

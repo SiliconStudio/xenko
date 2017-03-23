@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.VirtualReality
             {
                 var mirrorTex = OculusOvr.GetMirrorTexture(ovrSession, Dx11Texture2DGuid);
                 MirrorTexture = new Texture(device);
-                MirrorTexture.InitializeFrom(new Texture2D(mirrorTex), false);
+                MirrorTexture.InitializeFromImpl(new Texture2D(mirrorTex), false);
             }
 
             textures = new Texture[texturesCount];
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.VirtualReality
                 }
 
                 textures[i] = new Texture(device);
-                textures[i].InitializeFrom(new Texture2D(ptr), false);
+                textures[i].InitializeFromImpl(new Texture2D(ptr), false);
             }
 
             ActualRenderFrameSize = new Size2(textures[0].Width, textures[0].Height);
