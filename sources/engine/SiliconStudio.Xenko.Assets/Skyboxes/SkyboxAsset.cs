@@ -59,10 +59,13 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         [DataMember(10)]
         [Display("CubeMap", Expand = ExpandRule.Always)]
         public Texture CubeMap { get; set; }
-        
+
         /// <summary>
         /// Gets or set if this skybox affects ambient lighting, if <c>false</c> this skybox will only affect specular lighting
         /// </summary>
+        /// <userdoc>
+        /// Use the skybox for ambient lighting as well as specular lighting
+        /// </userdoc>
         [DataMember(15)]
         [DefaultValue(true)]
         public bool AmbientLighting { get; set; }
