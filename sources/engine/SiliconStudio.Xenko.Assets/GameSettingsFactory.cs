@@ -1,4 +1,5 @@
 using SiliconStudio.Assets;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Graphics;
@@ -11,6 +12,9 @@ namespace SiliconStudio.Xenko.Assets
         public static GameSettingsAsset Create()
         {
             var asset = new GameSettingsAsset();
+
+            asset.SplashScreen = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("d26edb11-10bd-403c-b3c2-9c7fcccf25e5"), "XenkoDefaultSplashScreen");
+
             //add default filters, todo maybe a config file somewhere is better
             asset.PlatformFilters.Add("PowerVR SGX 54[0-9]");
             asset.PlatformFilters.Add("Adreno \\(TM\\) 2[0-9][0-9]");

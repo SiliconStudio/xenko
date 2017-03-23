@@ -64,6 +64,9 @@ namespace SiliconStudio.Xenko.Assets
         [DataMember(1500)]
         public GraphicsCompositor GraphicsCompositor { get; set; }
 
+        [DataMember(1600)]
+        public Texture SplashScreen { get; set; }
+
         [DataMember(2000)]
         [MemberCollection(ReadOnly = true, NotNullItems = true)]
         public List<Configuration> Defaults { get; } = new List<Configuration>();
