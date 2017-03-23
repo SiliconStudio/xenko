@@ -22,6 +22,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -401,15 +402,23 @@ namespace SiliconStudio.Xenko.Assets
                     }
                 }
             }
-
-
+            
             if (dependency.Version.MinVersion < new PackageVersion("1.11.1.2"))
             {
                 var navigationMeshAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xknavmesh");
                 var scenes = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkscene");
                 UpgradeNavigationBoundingBox(navigationMeshAssets, scenes);
-            }
 
+                // Upgrade game settings to have groups for navigation meshes
+                var gameSettingsAsset = assetFiles.FirstOrDefault(x => x.AssetLocation == GameSettingsAsset.GameSettingsLocation);
+                if (gameSettingsAsset != null)
+                {
+                    // Upgrade the game settings first to contain navigation mesh settings entry
+                    RunAssetUpgradersUntilVersion(log, dependentPackage, dependency.Name, gameSettingsAsset.Yield().ToList(), new PackageVersion("1.11.1.2"));
+
+                    UpgradeNavigationMeshGroups(navigationMeshAssets, gameSettingsAsset);
+                }
+            }
 
             return true;
         }
@@ -514,6 +523,7 @@ namespace SiliconStudio.Xenko.Assets
             var serializer = AssetFileSerializer.FindSerializer(assetFileExtension);
             return serializer is YamlAssetSerializer;
         }
+
         /// <summary>
         /// Base interface for code upgrading
         /// </summary>
@@ -649,7 +659,7 @@ namespace SiliconStudio.Xenko.Assets
                 return base.VisitIdentifierName(node);
             }
         }
-        
+
         private void UpgradeNavigationBoundingBox(IEnumerable<PackageLoadingAssetFile> navigationMeshes, IEnumerable<PackageLoadingAssetFile> scenes)
         {
             foreach (var navigationMesh in navigationMeshes)
@@ -723,6 +733,67 @@ namespace SiliconStudio.Xenko.Assets
                                 var guidB = new Guid(((YamlScalarNode)entityB.Children[idKey]).Value);
                                 return guidA.CompareTo(guidB);
                             });
+                        }
+                    }
+                }
+            }
+        }
+
+        private void UpgradeNavigationMeshGroups(IEnumerable<PackageLoadingAssetFile> navigationMeshAssets, PackageLoadingAssetFile gameSettingsAsset)
+        {
+            // Collect all unique groups from all navigation mesh assets
+            Dictionary<ObjectId, YamlMappingNode> agentSettings = new Dictionary<ObjectId, YamlMappingNode>();
+            foreach (var navigationMeshAsset in navigationMeshAssets)
+            {
+                using (var navigationMesh = navigationMeshAsset.AsYamlAsset())
+                {
+                    HashSet<ObjectId> selectedGroups = new HashSet<ObjectId>();
+                    foreach (var setting in navigationMesh.DynamicRootNode.NavigationMeshAgentSettings)
+                    {
+                        var currentAgentSettings = setting.Value;
+                        using (DigestStream digestStream = new DigestStream(Stream.Null))
+                        {
+                            BinarySerializationWriter writer = new BinarySerializationWriter(digestStream);
+                            writer.Write((float)currentAgentSettings.Height);
+                            writer.Write((float)currentAgentSettings.Radius);
+                            writer.Write((float)currentAgentSettings.MaxClimb);
+                            writer.Write((float)currentAgentSettings.MaxSlope.Radians);
+                            if (!agentSettings.ContainsKey(digestStream.CurrentHash))
+                                agentSettings.Add(digestStream.CurrentHash, currentAgentSettings.Node);
+                            selectedGroups.Add(digestStream.CurrentHash);
+                        }
+                    }
+
+                    // Replace agent settings with group reference on the navigation mesh
+                    navigationMesh.DynamicRootNode.NavigationMeshAgentSettings = DynamicYamlEmpty.Default;
+                    navigationMesh.DynamicRootNode.SelectedGroups = new DynamicYamlMapping(new YamlMappingNode());
+                    foreach (var selectedGroup in selectedGroups)
+                    {
+                        dynamic group = new DynamicYamlMapping(new YamlMappingNode());
+                        group.Id = selectedGroup.ToGuid().ToString("D");
+                        group.AgentSettings = agentSettings[selectedGroup];
+                        navigationMesh.DynamicRootNode.SelectedGroups[Guid.NewGuid().ToString("N")] = group;
+                    }
+                }
+            }
+
+            // Add them to the game settings
+            int groupIndex = 0;
+            using (var gameSettings = gameSettingsAsset.AsYamlAsset())
+            {
+                var defaults = gameSettings.DynamicRootNode.Defaults;
+                foreach (var setting in defaults)
+                {
+                    if (setting.Node.Tag == "!SiliconStudio.Xenko.Navigation.NavigationSettings,SiliconStudio.Xenko.Navigation")
+                    {
+                        var groups = setting.Groups as DynamicYamlArray;
+                        foreach (var groupToAdd in agentSettings)
+                        {
+                            dynamic newGroup = new DynamicYamlMapping(new YamlMappingNode());
+                            newGroup.Id = groupToAdd.Key.ToGuid().ToString("D");
+                            newGroup.Name = $"Group {groupIndex++}";
+                            newGroup.AgentSettings = groupToAdd.Value;
+                            groups.Add(newGroup);
                         }
                     }
                 }
