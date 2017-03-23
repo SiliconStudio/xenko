@@ -300,10 +300,11 @@ namespace SiliconStudio.Core.MicroThreading
         }
 
         // TODO: We will need a better API than exposing PriorityQueueNode<SchedulerEntry> before we can make this public.
-        internal void Add(Action simpleAction, int priority = 0, object token = null)
+        internal PriorityQueueNode<SchedulerEntry> Add(Action simpleAction, int priority = 0, object token = null)
         {
             var schedulerEntryNode = new PriorityQueueNode<SchedulerEntry>(new SchedulerEntry(simpleAction, priority) { Token = token });
             Schedule(schedulerEntryNode, ScheduleMode.Last);
+            return schedulerEntryNode;
         }
 
         internal PriorityQueueNode<SchedulerEntry> Create(Action simpleAction, long priority)
@@ -325,6 +326,14 @@ namespace SiliconStudio.Core.MicroThreading
             }
         }
 
+        internal void Unschedule(PriorityQueueNode<SchedulerEntry> schedulerEntry)
+        {
+            lock (scheduledEntries)
+            {
+                if (schedulerEntry.Index != -1)
+                    scheduledEntries.Remove(schedulerEntry);
+            }
+        }
 
         // TODO: Currently kept as a struct, but maybe a class would make more sense?
         // Ideally it should be merged with PriorityQueueNode so that we need to allocate only one object?
