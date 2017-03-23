@@ -14,9 +14,10 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         override stage void VSMain()
         {
             base.VSMain();
-            var position = float4(streams.TexCoord.x * 2 - 1, 1 - streams.TexCoord.y * 2, 1.0f, 1.0f);
+            var screenPosition = streams.ShadingPosition / streams.ShadingPosition.w;
+            var position = float4(screenPosition.x, screenPosition.y, 1.0f, 1.0f);
             var directionVS = mul(position, ProjectionInverse).xyz;
-            var directionWS = mul(directionVS, (float3x3)ViewInverse);
+            var directionWS = mul(float4(directionVS,0), ViewInverse).xyz;
             streams.skyboxViewDirection = mul(directionWS, (float3x3)SkyMatrix);
         }
 
