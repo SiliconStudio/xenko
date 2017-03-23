@@ -468,7 +468,6 @@
     <Compile Include="Textures\AlphaFormat.cs" />
     <Compile Include="Textures\TextureAsset.cs" />
     <Compile Include="Textures\TextureAssetCompiler.cs" />
-    <Compile Include="Textures\TextureFormat.cs" />
     <Compile Include="Textures\TextureImporter.cs" />
     <Compile Include="WindowsGameSettingsProfile.cs" />
   </ItemGroup>

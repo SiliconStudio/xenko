@@ -11,9 +11,9 @@ namespace SiliconStudio.Core.Reflection
     {
         private static readonly Dictionary<Type, bool> AnonymousTypes = new Dictionary<Type, bool>();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool HasInterface([NotNull] this Type type, [NotNull] Type lookInterfaceType)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
             return type.GetInterface(lookInterfaceType) != null;
         }
 
@@ -21,8 +21,7 @@ namespace SiliconStudio.Core.Reflection
         public static Type GetInterface([NotNull] this Type type, [NotNull] Type lookInterfaceType)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
-            if (lookInterfaceType == null)
-                throw new ArgumentNullException(nameof(lookInterfaceType));
+            if (lookInterfaceType == null) throw new ArgumentNullException(nameof(lookInterfaceType));
 
             var typeinfo = lookInterfaceType.GetTypeInfo();
             if (typeinfo.IsGenericTypeDefinition)
