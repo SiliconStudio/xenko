@@ -257,6 +257,7 @@ namespace SiliconStudio.Xenko.Engine
                     deviceManager.PreferredColorSpace = renderingSettings.ColorSpace;
                     SceneSystem.InitialSceneUrl = Settings?.DefaultSceneUrl;
                     SceneSystem.InitialGraphicsCompositorUrl = Settings?.DefaultGraphicsCompositorUrl;
+                    SceneSystem.SplashScreenUrl = Settings?.SplashScreenUrl;
                 }
             }
         }

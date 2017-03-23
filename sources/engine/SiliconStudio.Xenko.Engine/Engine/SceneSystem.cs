@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization.Contents;
@@ -50,24 +51,44 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         public string InitialSceneUrl { get; set; }
 
+        /// <summary>
+        /// URL of the initial graphics compositor that should be used upon loading
+        /// </summary>
         public string InitialGraphicsCompositorUrl { get; set; }
 
+        /// <summary>
+        /// URL of the splash screen texture that should be used upon loading
+        /// </summary>
+        public string SplashScreenUrl { get; set; }
+
         public GraphicsCompositor GraphicsCompositor { get; set; }
+
+        private Task<Scene> sceneTask;
+        private Task<GraphicsCompositor> compositorTask;
+
+        private const double MinSplashScreenTime = 3.0f;
+
+        private Texture splashScreenTexture;
 
         protected override void LoadContent()
         {
             var content = Services.GetSafeServiceAs<ContentManager>();
             var graphicsContext = Services.GetSafeServiceAs<GraphicsContext>();
 
-            // Preload the scene if it exists
+            // Preload the scene if it exists and show splash screen
             if (InitialSceneUrl != null && content.Exists(InitialSceneUrl))
             {
-                SceneInstance = new SceneInstance(Services, content.Load<Scene>(InitialSceneUrl));
+                sceneTask = content.LoadAsync<Scene>(InitialSceneUrl);
             }
 
             if (InitialGraphicsCompositorUrl != null && content.Exists(InitialGraphicsCompositorUrl))
             {
-                GraphicsCompositor = content.Load<GraphicsCompositor>(InitialGraphicsCompositorUrl);
+                compositorTask = content.LoadAsync<GraphicsCompositor>(InitialGraphicsCompositorUrl);
+            }
+
+            if (SplashScreenUrl != null && content.Exists(SplashScreenUrl))
+            {
+                splashScreenTexture = content.Load<Texture>(SplashScreenUrl);
             }
 
             // Create the drawing context
@@ -127,6 +148,40 @@ namespace SiliconStudio.Xenko.Engine
             using (renderDrawContext.RenderContext.PushTagAndRestore(SceneInstance.Current, SceneInstance))
             {
                 GraphicsCompositor?.Draw(renderDrawContext);
+            }
+
+            //do this here, make sure GC and Scene are updated/rendered the next frame!
+            if (sceneTask != null && compositorTask != null)
+            {
+                if (gameTime.Total.TotalSeconds > MinSplashScreenTime || splashScreenTexture == null) //load asap if no splash screen is here
+                {
+                    if (sceneTask.IsCompleted && compositorTask.IsCompleted)
+                    {
+                        SceneInstance = new SceneInstance(Services, sceneTask.Result);
+                        GraphicsCompositor = compositorTask.Result;
+                        sceneTask = null;
+                        compositorTask = null;
+
+                        if (splashScreenTexture != null)
+                        {
+                            var content = Services.GetSafeServiceAs<ContentManager>();
+                            content.Unload(splashScreenTexture);
+                            splashScreenTexture = null;
+                        }
+                    }
+                }
+
+                if (splashScreenTexture != null)
+                {
+                    var viewport = Game.GraphicsContext.CommandList.Viewport;
+                    var x = -splashScreenTexture.Width / 2;
+                    var y = -splashScreenTexture.Height / 2;
+                    x += Game.GraphicsContext.CommandList.RenderTarget.Width / 2;
+                    y += Game.GraphicsContext.CommandList.RenderTarget.Height / 2;
+                    Game.GraphicsContext.CommandList.SetViewport(new Viewport(x, y, splashScreenTexture.Width, splashScreenTexture.Height));
+                    Game.GraphicsContext.DrawTexture(splashScreenTexture);
+                    Game.GraphicsContext.CommandList.SetViewport(viewport);
+                }
             }
         }
     }

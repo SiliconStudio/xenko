@@ -5,6 +5,7 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Data;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Engine.Design
 {
@@ -29,6 +30,8 @@ namespace SiliconStudio.Xenko.Engine.Design
         public string DefaultSceneUrl { get; set; }
 
         public string DefaultGraphicsCompositorUrl { get; set; }
+
+        public string SplashScreenUrl { get; set; }
 
         /// <summary>
         /// Gets or sets the compilation mode used.
