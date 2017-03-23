@@ -10,6 +10,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Skyboxes;
 
@@ -22,9 +24,13 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Skybox))]
     [AssetCompiler(typeof(SkyboxAssetCompiler))]
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
+    [AssetUpgrader(XenkoConfig.PackageName, "0", "1.11.1.1", typeof(RemoveSkyboxUsage))]
     [Display(1000, "Skybox")]
     public sealed class SkyboxAsset : Asset
     {
+        private const string CurrentVersion = "1.11.1.1";
+
         /// <summary>
         /// The default file extension used by the <see cref="SkyboxAsset"/>.
         /// </summary>
@@ -35,7 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         /// </summary>
         public SkyboxAsset()
         {
-            Usage = SkyboxUsage.Lighting;
+            AmbientLighting = true;
             DiffuseSHOrder = SkyboxPreFilteringDiffuseOrder.Order3;
             SpecularCubeMapSize = 256;
         }
@@ -53,14 +59,13 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         [DataMember(10)]
         [Display("CubeMap", Expand = ExpandRule.Always)]
         public Texture CubeMap { get; set; }
-
+        
         /// <summary>
-        /// Gets or sets the usge of this skybox
+        /// Gets or set if this skybox affects ambient lighting, if <c>false</c> this skybox will only affect specular lighting
         /// </summary>
-        /// <userdoc>The usage of this skybox</userdoc>
         [DataMember(15)]
-        [DefaultValue(SkyboxUsage.Lighting)]
-        public SkyboxUsage Usage { get; set; }
+        [DefaultValue(true)]
+        public bool AmbientLighting { get; set; }
 
         /// <summary>
         /// Gets or sets the diffuse sh order.
@@ -89,6 +94,24 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             {
                 var reference = AttachedReferenceManager.GetAttachedReference(CubeMap);
                 yield return new AssetReference(reference.Id, reference.Url);
+            }
+        }
+
+        internal class RemoveSkyboxUsage : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                bool ambientLighting = true;
+                if (asset.Usage != null)
+                {
+                    if (asset.Usage == "SpecularLighting")
+                    {
+                        ambientLighting = false;
+                    }
+                }
+                
+                asset.Usage = DynamicYamlEmpty.Default;
+                asset.AmbientLighting = ambientLighting;
             }
         }
     }
