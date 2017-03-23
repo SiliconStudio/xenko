@@ -93,8 +93,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     // Make sure the view is collected (if not done previously)
                     context.VisibilityGroup.TryCollect(renderViewData.Key);
 
+                    if (MathUtil.NearEqual(renderViewData.Key.MinimumDistance, renderViewData.Key.MaximumDistance))
+                    {
+                        renderViewData.Key.MaximumDistance = renderViewData.Key.MinimumDistance + 1e-10f;
+                    }
+
                     // Check if there is any shadow receivers at all
-                    if (renderViewData.Key.MinimumDistance >= renderViewData.Key.MaximumDistance)
+                    if (float.IsInfinity(renderViewData.Key.MinimumDistance) || float.IsInfinity(renderViewData.Key.MaximumDistance))
                     {
                         continue;
                     }
