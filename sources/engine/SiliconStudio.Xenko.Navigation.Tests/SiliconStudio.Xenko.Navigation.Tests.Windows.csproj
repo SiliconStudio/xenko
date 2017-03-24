@@ -15,7 +15,10 @@
     <FileAlignment>512</FileAlignment>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SiliconStudio.Xenko.Navigation.Tests</RootNamespace>
-    <SiliconStudioBuildProfile>$(SiliconStudioPlatform)</SiliconStudioBuildProfile>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+    <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>Windows</SiliconStudioBuildProfile>
+    <SiliconStudioPackageGuid>{f98cfc8c-b3de-442a-ae37-06db6235f7da}</SiliconStudioPackageGuid>
     <SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)..\..\..</SiliconStudioXenkoDir>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == ''">Direct3D11</SiliconStudioXenkoGraphicsApi>
