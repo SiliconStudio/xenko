@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrCreateQuadLayerTexturesDx", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr CreateQuadLayerTexturesDx(IntPtr session, IntPtr dxDevice, out int outTextureCount, int width, int height);
+        public static extern IntPtr CreateQuadLayerTexturesDx(IntPtr session, IntPtr dxDevice, out int outTextureCount, int width, int height, int mipLevels, int sampleCount);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrSetQuadLayerParams", CallingConvention = CallingConvention.Cdecl)]
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrCommitFrame", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool CommitFrame(IntPtr session, IntPtr[] extraLayer, int numberOfExtraLayers);
+        public static extern bool CommitFrame(IntPtr session, int numberOfExtraLayers, [MarshalAs(UnmanagedType.LPArray)] IntPtr[] extraLayer);
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
         public struct FrameProperties
