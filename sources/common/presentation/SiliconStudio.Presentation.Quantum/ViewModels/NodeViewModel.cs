@@ -84,7 +84,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             Owner = ownerViewModel;
             Type = nodeType;
             Index = default(Index);
-            IsReadOnly = false;
 
             if (baseName == null)
                 throw new ArgumentException("baseName and index can't be both null.");
@@ -99,7 +98,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
                 nodePresenter.ValueChanged += ValueChanged;
             }
 
-            UpdateVisibility();
+            UpdateViewModelProperties();
 
             // TODO: find a way to "merge" display name if they are different (string.Join?)
             DisplayName = nodePresenters.First().DisplayName;
@@ -273,7 +272,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             }
 
             var commonCommands = new Dictionary<INodePresenterCommand, int>();
-            var commonAttachedProperties = new Dictionary<PropertyKey, object>();
             foreach (var nodePresenter in nodePresenters)
             {
                 foreach (var command in nodePresenter.Commands)
@@ -288,21 +286,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
                         commonCommands[command] = count + 1;
                     }
                 }
-                foreach (var attachedProperty in nodePresenter.AttachedProperties)
-                {
-                    object value;
-                    if (commonAttachedProperties.TryGetValue(attachedProperty.Key, out value))
-                    {
-                        if (!Equals(value, attachedProperty.Value))
-                        {
-                            commonAttachedProperties[attachedProperty.Key] = DifferentValues;
-                        }
-                    }
-                    else
-                    {
-                        commonAttachedProperties.Add(attachedProperty.Key, attachedProperty.Value);
-                    }
-                }
             }
             foreach (var command in commonCommands)
             {
@@ -315,9 +298,14 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
                 var commandWrapper = new NodePresenterCommandWrapper(ServiceProvider, nodePresenters, command.Key);
                 AddCommand(commandWrapper);
             }
+
+            var commonAttachedProperties = nodePresenters.SelectMany(x => x.AttachedProperties).GroupBy(x => x.Key).ToList();
             foreach (var attachedProperty in commonAttachedProperties)
             {
-                AddAssociatedData(attachedProperty.Key.Name, attachedProperty.Value);
+                var combiner = attachedProperty.Key.Metadatas.OfType<PropertyCombinerMetadata>().FirstOrDefault()?.Combiner ?? (x => DifferentValues);
+                var values = attachedProperty.Select(x => x.Value).ToList();
+                var value = values.Count == 1 ? values[0] : combiner(values);
+                AddAssociatedData(attachedProperty.Key.Name, value);
             }
         }
 
@@ -347,7 +335,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
                 }
                 else if (nodePresenter.Factory.IsPrimitiveType(nodePresenter.Value?.GetType()))
                 {
-                    if (!Equals(currentValue, nodePresenter.Value))
+                    if (!AreValueEqual(currentValue, nodePresenter.Value))
                         return DifferentValues;
                 }
                 else
@@ -697,6 +685,11 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             base.OnPropertyChanged(propertyNames);
         }
 
+        protected virtual bool AreValueEqual(object value1, object value2)
+        {
+            return Equals(value1, value2);
+        }
+
         private void ChildVisibilityChanged(object sender, EventArgs e)
         {
             var node = (INodeViewModel)sender;
@@ -724,21 +717,28 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             }
 
             OnPropertyChanged(nameof(NodeValue));
-            UpdateVisibility();
+            UpdateViewModelProperties();
             Owner.NotifyNodeChanged(Path);
         }
 
-        private void UpdateVisibility()
+        private void UpdateViewModelProperties()
         {
             var shouldBeVisible = false;
+            var shouldBeReadOnly = false;
+
             foreach (var nodePresenter in nodePresenters)
             {
                 // Display this node if at least one presenter is visible
                 if (nodePresenter.IsVisible)
                     shouldBeVisible = true;
+
+                // Make it read-only if at least one presenter is read-only
+                if (nodePresenter.IsReadOnly)
+                    shouldBeReadOnly = true;
             }
 
             IsVisible = shouldBeVisible;
+            IsReadOnly = shouldBeReadOnly;
         }
 
         private static int CompareChildren(INodeViewModel a, INodeViewModel b)

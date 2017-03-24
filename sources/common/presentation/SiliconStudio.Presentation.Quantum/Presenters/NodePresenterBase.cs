@@ -126,7 +126,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             AttachedProperties.Clear();
 
             // And recompute them from the current value.
-            factory.CreateChildren(this, ParentingNode);
+            factory.CreateChildren(this, ParentingNode, PropertyProvider);
         }
 
         protected void AttachCommands()

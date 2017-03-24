@@ -9,6 +9,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
     {
         IReadOnlyCollection<INodePresenterCommand> AvailableCommands { get; }
 
-        void CreateChildren([NotNull] IInitializingNodePresenter parentPresenter, IObjectNode objectNode, [CanBeNull] IPropertyProviderViewModel propertyProvider = null);
+        void CreateChildren([NotNull] IInitializingNodePresenter parentPresenter, IObjectNode objectNode, [CanBeNull] IPropertyProviderViewModel propertyProvider);
     }
 }

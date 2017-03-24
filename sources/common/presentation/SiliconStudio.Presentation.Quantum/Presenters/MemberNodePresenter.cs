@@ -22,7 +22,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             Member = member;
             Name = member.Name;
             DisplayName = Name;
-
+            IsReadOnly = !Member.MemberDescriptor.HasSet;
             memberAttributes.AddRange(TypeDescriptorFactory.Default.AttributeRegistry.GetAttributes(member.MemberDescriptor.MemberInfo));
 
             member.Changing += OnMemberChanging;

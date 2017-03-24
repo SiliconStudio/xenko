@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using SiliconStudio.Core.Annotations;
+
 namespace SiliconStudio.Assets.Quantum.Commands
 {
     /// <summary>
@@ -13,8 +16,9 @@ namespace SiliconStudio.Assets.Quantum.Commands
         /// </summary>
         public static AbstractNodeValue Null { get; } = new AbstractNodeValue(null, "None");
 
-        public AbstractNodeValue(object value, string displayValue)
+        public AbstractNodeValue(object value, [NotNull] string displayValue)
         {
+            if (displayValue == null) throw new ArgumentNullException(nameof(displayValue));
             Value = value;
             DisplayValue = displayValue;
         }
@@ -25,6 +29,16 @@ namespace SiliconStudio.Assets.Quantum.Commands
         public object Value { get; }
 
         /// <inheritdoc/>
+        public override bool Equals(AbstractNodeEntry other)
+        {
+            var abstractNodeValue = other as AbstractNodeValue;
+            if (abstractNodeValue == null)
+                return false;
+
+            return Equals(Value, abstractNodeValue.Value);
+        }
+
+        /// <inheritdoc/>
         public override string DisplayValue { get; }
 
         /// <inheritdoc/>
@@ -32,5 +46,11 @@ namespace SiliconStudio.Assets.Quantum.Commands
 
         /// <inheritdoc/>
         public override bool IsMatchingValue(object value) => ReferenceEquals(Value, value);
+
+        /// <inheritdoc/>
+        protected override int ComputeHashCode()
+        {
+            return (DisplayValue.GetHashCode() * 397) ^ (Value?.GetHashCode() ?? 0);
+        }
     }
 }

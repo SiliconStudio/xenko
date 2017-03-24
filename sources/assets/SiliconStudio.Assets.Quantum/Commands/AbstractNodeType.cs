@@ -34,6 +34,16 @@ namespace SiliconStudio.Assets.Quantum.Commands
         }
 
         /// <inheritdoc/>
+        public override bool Equals(AbstractNodeEntry other)
+        {
+            var abstractNodeType = other as AbstractNodeType;
+            if (abstractNodeType == null)
+                return false;
+
+            return Type == abstractNodeType.Type;
+        }
+
+        /// <inheritdoc/>
         public override bool IsMatchingValue(object value) => value?.GetType() == Type;
 
         public static IEnumerable<AbstractNodeType> GetInheritedInstantiableTypes(Type type)
@@ -42,5 +52,11 @@ namespace SiliconStudio.Assets.Quantum.Commands
         }
 
         public override string ToString() => DisplayValue;
+
+        /// <inheritdoc/>
+        protected override int ComputeHashCode()
+        {
+            return Type.GetHashCode();
+        }
     }
 }

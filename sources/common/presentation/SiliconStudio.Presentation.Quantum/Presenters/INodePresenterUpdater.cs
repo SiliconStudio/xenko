@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using SiliconStudio.Core.Annotations;
-using SiliconStudio.Presentation.ViewModel;
+﻿using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
 {

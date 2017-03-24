@@ -1,9 +1,11 @@
-﻿namespace SiliconStudio.Assets.Quantum.Commands
+﻿using System;
+
+namespace SiliconStudio.Assets.Quantum.Commands
 {
     /// <summary>
     /// Define a value that can be set by <see cref="CreateNewInstanceCommand"/>.
     /// </summary>
-    public abstract class AbstractNodeEntry
+    public abstract class AbstractNodeEntry : IEquatable<AbstractNodeEntry>
     {
         /// <summary>
         /// The display value, as a string.
@@ -23,5 +25,35 @@
         /// <param name="value">The value to check against.</param>
         /// <returns>True if it matches, otherwise false.</returns>
         public abstract bool IsMatchingValue(object value);
+
+        public abstract bool Equals(AbstractNodeEntry other);
+
+        protected abstract int ComputeHashCode();
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != this.GetType())
+                return false;
+            return Equals((AbstractNodeEntry)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return ComputeHashCode();
+        }
+
+        public static bool operator ==(AbstractNodeEntry left, AbstractNodeEntry right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(AbstractNodeEntry left, AbstractNodeEntry right)
+        {
+            return !Equals(left, right);
+        }
     }
 }
