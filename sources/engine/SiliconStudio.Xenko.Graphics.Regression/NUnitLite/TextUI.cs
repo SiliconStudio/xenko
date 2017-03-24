@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             // Set the default writer - may be overridden by the args specified
             this.writer = writer;
 #if SILICONSTUDIO_PLATFORM_IOS
-            this.runner = new NUnitLiteTestAssemblyRunner(new NamespaceAssemblyBuilder(new NUnitLiteTestAssemblyBuilder()), null);
+            this.runner = new NUnitLiteTestAssemblyRunner(new NamespaceAssemblyBuilder(new NUnitLiteTestAssemblyBuilder()), new FinallyDelegate());
 #else
             this.runner = new NUnitLiteTestAssemblyRunner(new NamespaceAssemblyBuilder(new NUnitLiteTestAssemblyBuilder()));
 #endif
