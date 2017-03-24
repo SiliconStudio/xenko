@@ -4,7 +4,7 @@ Build file used to build Xenko and package it from the command line.
 Example of use: 
 "C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" Xenko.build /t:PackageLauncher
 -->
-<Project ToolsVersion="14.0" DefaultTarget="Help" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" DefaultTarget="Help" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <XenkoRoot>$(MSBuildThisFileDirectory)..\</XenkoRoot>
     <XenkoRootBin>$(XenkoRoot)Bin\Windows\</XenkoRootBin>
