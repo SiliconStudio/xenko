@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Navigation
 
         public DynamicNavigationMeshSystem(IServiceRegistry registry) : base(registry)
         {
-            Enabled = true;
+            Enabled = false;
             EnabledChanged += OnEnabledChanged;
         }
 

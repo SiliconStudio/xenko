@@ -27,7 +27,7 @@ Defaults:
         EnableDynamicNavigationMesh: false
         IncludedCollisionGroups: AllFilter
         BuildSettings:
-            CellHeight: 0.2
+            CellHeight: 0.1
             CellSize: 0.03
             TileSize: 32
             MinRegionArea: 2

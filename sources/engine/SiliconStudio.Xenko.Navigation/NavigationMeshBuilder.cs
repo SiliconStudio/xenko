@@ -528,6 +528,7 @@ namespace SiliconStudio.Xenko.Navigation
 
                             // Pre-Transform plane parameters
                             plane.Normal = Vector3.TransformNormal(planeDesc.Normal, transform);
+                            plane.Normal.Normalize();
                             plane.D += Vector3.Dot(transform.TranslationVector, plane.Normal);
 
                             colliderData.Planes.Add(plane);
@@ -602,7 +603,6 @@ namespace SiliconStudio.Xenko.Navigation
             // Generate source plane triangles
             Vector3[] planePoints;
             int[] planeInds;
-            plane.Normalize();
             NavigationMeshBuildUtils.BuildPlanePoints(ref plane, maxDiagonal, out planePoints, out planeInds);
 
             Vector3 tangent, bitangent;

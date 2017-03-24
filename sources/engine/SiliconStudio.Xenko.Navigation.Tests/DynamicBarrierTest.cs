@@ -48,8 +48,8 @@ namespace SiliconStudio.Xenko.Navigation.Tests
             if (dynamicNavigation == null)
                 throw new Exception("Failed to find dynamic navigation mesh system");
 
-            dynamicNavigation.Enabled = true;
             dynamicNavigation.AutomaticRebuild = false;
+            dynamicNavigation.Enabled = true;
 
             Script.AddTask(RunAsyncTests);
         }
