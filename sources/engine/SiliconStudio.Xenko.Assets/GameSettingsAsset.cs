@@ -37,10 +37,10 @@ namespace SiliconStudio.Xenko.Assets
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.6.0-beta", typeof(UpgraderPlatformsConfiguration))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.6.0-beta", "1.6.1-alpha01", typeof(UpgradeNewGameSettings))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.6.1-alpha01", "1.9.3-alpha01", typeof(UpgradeAddAudioSettings))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.9.3-alpha01", "1.11.0", typeof(UpgradeAddNavigationSettings))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.3-alpha01", "1.11.0.0", typeof(UpgradeAddNavigationSettings))]
     public class GameSettingsAsset : Asset
     {
-        private const string CurrentVersion = "1.11.0";
+        private const string CurrentVersion = "1.11.0.0";
 
         /// <summary>
         /// The default file extension used by the <see cref="GameSettingsAsset"/>.
@@ -286,21 +286,7 @@ namespace SiliconStudio.Xenko.Assets
                 settings.BuildSettings = buildSettings;
 
                 var groups = new DynamicYamlArray(new YamlSequenceNode());
-
-                // TODO: do we want default groups?
-                //dynamic group = new DynamicYamlMapping(new YamlMappingNode());
-                //group.Id = Guid.NewGuid().ToString("D");
-                //group.Name = "Default";
-                //var agentSettingsNode = new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Navigation.NavigationAgentSettings,SiliconStudio.Xenko.Navigation" };
-                //dynamic agentSettings = new DynamicYamlMapping(agentSettingsNode);
-                //agentSettings.Height = 1.0f;
-                //agentSettings.MaxClimb = 0.25f;
-                //agentSettings.Radius = 0.5;
-                //agentSettings.MaxSlope = new DynamicYamlMapping(new YamlMappingNode());
-                //agentSettings.MaxSlope.Radians = MathUtil.DegreesToRadians(45.0f);
-                //group.AgentSettings = agentSettings;
-                //groups.Add(group);
-
+                
                 // Agent settings array
                 settings.Groups = groups;
 
