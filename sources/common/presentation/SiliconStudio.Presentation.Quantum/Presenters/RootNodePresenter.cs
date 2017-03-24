@@ -17,6 +17,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
             RootNode = rootNode;
             Name = "Root";
+            DisplayName = string.Empty;
 
             foreach (var command in factory.AvailableCommands)
             {

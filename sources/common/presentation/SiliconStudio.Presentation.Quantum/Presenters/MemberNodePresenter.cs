@@ -21,6 +21,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             if (member == null) throw new ArgumentNullException(nameof(member));
             Member = member;
             Name = member.Name;
+            CombineKey = Name;
             DisplayName = Name;
             IsReadOnly = !Member.MemberDescriptor.HasSet;
             memberAttributes.AddRange(TypeDescriptorFactory.Default.AttributeRegistry.GetAttributes(member.MemberDescriptor.MemberInfo));

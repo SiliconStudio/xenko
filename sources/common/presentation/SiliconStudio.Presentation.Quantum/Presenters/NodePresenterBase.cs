@@ -58,7 +58,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public int? CustomOrder { get; set; }
         public abstract int? Order { get; }
         public abstract object Value { get; }
-        public virtual string CombineKey => Name;
+        public string CombineKey { get; set; }
         public PropertyContainerClass AttachedProperties { get; } = new PropertyContainerClass();
 
         public event EventHandler<ValueChangingEventArgs> ValueChanging;
@@ -99,9 +99,13 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             Parent = newParent;
         }
 
-        public void Rename(string newName)
+        public void Rename(string newName, bool overwriteCombineKey = true)
         {
             Name = newName;
+            if (overwriteCombineKey)
+            {
+                CombineKey = newName;
+            }
         }
 
         public void AddDependency([NotNull] INodePresenter node, bool refreshOnNestedNodeChanges)

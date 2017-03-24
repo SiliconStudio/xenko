@@ -24,6 +24,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             if (parent == null) throw new ArgumentNullException(nameof(parent));
             if (getter == null) throw new ArgumentNullException(nameof(getter));
             Name = name;
+            CombineKey = Name;
             DisplayName = Name;
             Type = type;
             Order = order;

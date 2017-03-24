@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Presentation.Quantum.ViewModels;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
@@ -24,7 +23,9 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             Type = (container.Descriptor as CollectionDescriptor)?.ElementType ?? (container.Descriptor as DictionaryDescriptor)?.ValueType;
             Index = index;
             Name = index.ToString();
-            DisplayName = Name;
+            CombineKey = Name;
+            DisplayName = Index.IsInt ? "Item " + Index : Index.ToString();
+
             container.ItemChanging += OnItemChanging;
             container.ItemChanged += OnItemChanged;
             AttachCommands();
@@ -40,7 +41,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public INodePresenter OwnerCollection { get; }
 
-        public override Index Index { get; }
+        public sealed override Index Index { get; }
 
         public override Type Type { get; }
 

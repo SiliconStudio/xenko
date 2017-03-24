@@ -78,6 +78,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         void ChangeParent([NotNull] INodePresenter newParent);
 
-        void Rename(string newName);
+        void Rename(string newName, bool overwriteCombineKey = true);
     }
 }

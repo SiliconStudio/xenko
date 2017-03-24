@@ -83,13 +83,12 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             DependentProperties.Add(nameof(Path), new[] { nameof(DisplayPath) });
             Owner = ownerViewModel;
             Type = nodeType;
-            Index = default(Index);
 
             if (baseName == null)
                 throw new ArgumentException("baseName and index can't be both null.");
 
             CombineMode = CombineMode.CombineOnlyForAll;
-            SetName(baseName);
+            Name = EscapeName(baseName);
 
             this.nodePresenters = nodePresenters;
             foreach (var nodePresenter in nodePresenters)
@@ -100,8 +99,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
 
             UpdateViewModelProperties();
 
-            // TODO: find a way to "merge" display name if they are different (string.Join?)
-            DisplayName = nodePresenters.First().DisplayName;
             parent?.AddChild(this);
         }
 
@@ -118,7 +115,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <summary>
         /// Gets or sets the name of this node. Note that the name can be used to access this node from its parent using a dynamic object.
         /// </summary>
-        public string Name { get; protected set; }
+        public string Name { get; }
 
         /// <summary>
         /// Gets or sets the name used to display the node to the user.
@@ -158,14 +155,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
 
         /// <inheritdoc/>
         public object NodeValue { get { return GetNodeValue(); } set { SetNodeValue(ConvertValue(value)); } }
-
-        /// <summary>
-        /// Gets or sets the index of this node, relative to its parent node when its contains a collection. Can be null of this node is not in a collection.
-        /// </summary>
-        [Obsolete]
-        public Index Index { get; }
-
-        public bool HasIndex => Index != Index.Empty;
 
         /// <summary>
         /// Gets the list of children nodes.
@@ -255,7 +244,8 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <remarks>Names are escaped using a trailing underscore character.</remarks>
         public static string EscapeName(string name)
         {
-            return !IsReserved(name) ? name : name + "_";
+            var escaped = !IsReserved(name) ? name : name + "_";
+            return escaped.Replace(".", "-");
         }
 
         public void FinishInitialization()
@@ -361,45 +351,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
                     nodePresenter.UpdateValue(newValue);
                 }
             }
-        }
-
-        private void SetName(string nodeName)
-        {
-            var index = Index;
-            nodeName = nodeName?.Replace(".", "-");
-
-            if (!string.IsNullOrWhiteSpace(nodeName))
-            {
-                Name = nodeName;
-                DisplayName = Utils.SplitCamelCase(nodeName);
-            }
-            else if (!index.IsEmpty)
-            {
-                // TODO: make a better interface for custom naming specification
-                var propertyKey = index.Value as PropertyKey;
-                if (propertyKey != null)
-                {
-                    string name = propertyKey.Name.Replace(".", "-");
-
-                    if (name == "Key")
-                        name = propertyKey.PropertyType.Name.Replace(".", "-");
-
-                    Name = name;
-                    var parts = propertyKey.Name.Split('.');
-                    DisplayName = parts.Length == 2 ? $"{parts[1]} ({parts[0]})" : name;
-                }
-                else
-                {
-                    if (index.IsInt)
-                        Name = "Item " + index.ToString().Replace(".", "-");
-                    else
-                        Name = index.ToString().Replace(".", "-");
-
-                    DisplayName = Name;
-                }
-            }
-
-            Name = EscapeName(Name);
         }
 
         /// <summary>
@@ -739,6 +690,9 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
 
             IsVisible = shouldBeVisible;
             IsReadOnly = shouldBeReadOnly;
+
+            // TODO: find a way to "merge" display name if they are different (string.Join?)
+            DisplayName = Utils.SplitCamelCase(nodePresenters.First().DisplayName);
         }
 
         private static int CompareChildren(INodeViewModel a, INodeViewModel b)
@@ -746,15 +700,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             // Order has the best priority for comparison, if set.
             if ((a.Order ?? 0) != (b.Order ?? 0))
                 return (a.Order ?? 0).CompareTo(b.Order ?? 0);
-
-            // Then we use index, if they are set and comparable.
-            if (!a.Index.IsEmpty && !b.Index.IsEmpty)
-            {
-                if (a.Index.Value.GetType() == b.Index.Value.GetType())
-                {
-                    return a.Index.CompareTo(b.Index);
-                }
-            }
 
             // Then, try to use metadata token (if members)
             if (a.MemberInfo != null || b.MemberInfo != null)
