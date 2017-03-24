@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         /// </summary>
         public SkyboxAsset()
         {
-            HasDiffuseLighting = true;
+            IsSpecularOnly = false;
             DiffuseSHOrder = SkyboxPreFilteringDiffuseOrder.Order3;
             SpecularCubeMapSize = 256;
         }
@@ -59,15 +59,15 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         public Texture CubeMap { get; set; }
 
         /// <summary>
-        /// Gets or set if this skybox has diffuse lighting lighting, if <c>false</c> this skybox will only affect specular lighting
+        /// Gets or set if this skybox affects specular only, if <c>false</c> this skybox will affect ambient lighting
         /// </summary>
         /// <userdoc>
-        /// Use the skybox for diffuse lighting as well as specular lighting
+        /// Use the skybox only for specular lighting
         /// </userdoc>
         [DataMember(15)]
-        [DefaultValue(true)]
-        [Display("Diffuse Lighting")]
-        public bool HasDiffuseLighting { get; set; }
+        [DefaultValue(false)]
+        [Display("Specular Only")]
+        public bool IsSpecularOnly { get; set; }
 
         /// <summary>
         /// Gets or sets the diffuse sh order.
@@ -99,21 +99,19 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             }
         }
 
-        internal class RemoveSkyboxUsage : AssetUpgraderBase
+        class RemoveSkyboxUsage : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
-                bool ambientLighting = true;
                 if (asset.Usage != null)
                 {
                     if (asset.Usage == "SpecularLighting")
                     {
-                        ambientLighting = false;
+                        asset.IsSpecularOnly = true;
                     }
                 }
                 
                 asset.Usage = DynamicYamlEmpty.Default;
-                asset.AmbientLighting = ambientLighting;
             }
         }
     }
