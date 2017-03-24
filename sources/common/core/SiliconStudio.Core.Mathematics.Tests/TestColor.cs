@@ -24,5 +24,17 @@ namespace SiliconStudio.Core.Tests
             Assert.AreEqual(new ColorHSV(0, 0, 0.5019608f, 1), ColorHSV.FromColor(Color.Gray));
             Assert.AreEqual(new ColorHSV(0, 1, 0.5019608f, 1), ColorHSV.FromColor(Color.Maroon));
         }
+
+        [Test]
+        public void TestHSV2RGBConvertion()
+        {
+            Assert.AreEqual(Color.Black.ToColor4(), ColorHSV.FromColor(Color.Black).ToColor());
+            Assert.AreEqual(Color.White.ToColor4(), ColorHSV.FromColor(Color.White).ToColor());
+            Assert.AreEqual(Color.Red.ToColor4(), ColorHSV.FromColor(Color.Red).ToColor());
+            Assert.AreEqual(Color.Lime.ToColor4(), ColorHSV.FromColor(Color.Lime).ToColor());
+            Assert.AreEqual(Color.Blue.ToColor4(), ColorHSV.FromColor(Color.Blue).ToColor());
+            Assert.AreEqual(Color.Silver.ToColor4(), ColorHSV.FromColor(Color.Silver).ToColor());
+            Assert.AreEqual(Color.Maroon.ToColor4(), ColorHSV.FromColor(Color.Maroon).ToColor());
+        }
     }
 }

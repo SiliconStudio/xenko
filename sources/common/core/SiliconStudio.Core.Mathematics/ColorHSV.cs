@@ -60,29 +60,28 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>A three component vector containing the red, green, and blue components of the color.</returns>
         public Color4 ToColor()
         {
-            var hdiv = (int)(H / 60);
-            int hi = hdiv % 6;
-            float f = H / 60 - hdiv;
-
-            float v = V;
+            float hdiv = H / 60;
+            int hi = (int)hdiv;
+            float f = hdiv - hi;
+            
             float p = V * (1 - S);
-            float q = V * (1 - f * S);
-            float t = V * (1 - (1 - f) * S);
+            float q = V * (1 - (S * f));
+            float t = V * (1 - (S * (1 - f)));
 
             switch (hi)
             {
                 case 0:
-                    return new Color4(v, t, p, A);
+                    return new Color4(V, t, p, A);
                 case 1:
-                    return new Color4(q, v, p, A);
+                    return new Color4(q, V, p, A);
                 case 2:
-                    return new Color4(p, v, t, A);
+                    return new Color4(p, V, t, A);
                 case 3:
-                    return new Color4(p, q, v, A);
+                    return new Color4(p, q, V, A);
                 case 4:
-                    return new Color4(t, p, v, A);
+                    return new Color4(t, p, V, A);
                 default:
-                    return new Color4(v, p, q, A);
+                    return new Color4(V, p, q, A);
             }
         }
 
