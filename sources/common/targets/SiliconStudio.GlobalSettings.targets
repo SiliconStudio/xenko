@@ -1,4 +1,4 @@
-<!-- Global settings used to configure the SiliconStudioPlatform -->
+﻿<!-- Global settings used to configure the SiliconStudioPlatform -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!--Import Local Pre Settings for the solution being loaded -->
   <Import Project="$(SolutionDir)$(SolutionName).GlobalSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).GlobalSettings.Local.targets')" />
@@ -44,7 +44,7 @@
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'UWP' ">
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <AutoIncludeSystemAssembly>true</AutoIncludeSystemAssembly>
-    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
