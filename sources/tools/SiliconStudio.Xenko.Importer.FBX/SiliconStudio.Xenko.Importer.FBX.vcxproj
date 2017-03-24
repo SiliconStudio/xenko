@@ -7,7 +7,7 @@
     <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
     <SiliconStudioAssemblyProcessorOptions>
     </SiliconStudioAssemblyProcessorOptions>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
     <FbxSdkDir>$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Autodesk FBX SDK 2017.0.1', 'Install_Dir', null, RegistryView.Registry32))</FbxSdkDir>
     <FbxSdkDir Condition="'$(FbxSdkDir)' == '' and exists('..\..\..\deps\FBX SDK\2017.0.1')">..\..\..\deps\FBX SDK\2017.0.1</FbxSdkDir>
     <PlatformToolset>v140</PlatformToolset>
