@@ -540,7 +540,7 @@ extern "C" {
 		
 	}
 
-	DLL_EXPORT_API npBool xnOvrCommitFrame(void* session, int numberOfExtraLayers, xnOvrQuadLayer** extraLayers)
+	DLL_EXPORT_API npBool xnOvrCommitFrame(void* session, int numberOfExtraLayers, void** extraLayers)
 	{
 		return true;
 	}
