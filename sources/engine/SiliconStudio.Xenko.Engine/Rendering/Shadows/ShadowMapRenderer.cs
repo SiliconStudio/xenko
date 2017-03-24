@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                     if (MathUtil.NearEqual(renderViewData.Key.MinimumDistance, renderViewData.Key.MaximumDistance))
                     {
-                        renderViewData.Key.MaximumDistance = renderViewData.Key.MinimumDistance + 1e-10f;
+                        renderViewData.Key.MaximumDistance = renderViewData.Key.MinimumDistance + MathUtil.ZeroTolerance;
                     }
 
                     // Check if there is any shadow receivers at all
