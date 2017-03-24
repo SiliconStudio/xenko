@@ -68,6 +68,14 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         NodeAccessor GetNodeAccessor();
 
+        /// <summary>
+        /// Adds a dependency to the given node.
+        /// </summary>
+        /// <param name="node">The node that should be a dependency of this node.</param>
+        /// <param name="refreshOnNestedNodeChanges">If true, this node will also be refreshed when one of the child node of the dependency node changes.</param>
+        /// <remarks>A node that is a dependency to this node will trigger a refresh of this node each time its value is modified (or the value of one of its parent).</remarks>
+        void AddDependency(INodePresenter node, bool refreshOnNestedNodeChanges);
+
         void ChangeParent([NotNull] INodePresenter newParent);
 
         void Rename(string newName);

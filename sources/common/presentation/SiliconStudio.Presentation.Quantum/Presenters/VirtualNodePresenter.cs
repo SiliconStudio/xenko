@@ -52,13 +52,9 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         protected override IObjectNode ParentingNode => null;
 
-        public override event EventHandler<ValueChangingEventArgs> ValueChanging;
-
-        public override event EventHandler<ValueChangedEventArgs> ValueChanged;
-
         /// <summary>
         /// Registers an <see cref="IGraphNode"/> object to this virtual node so when the node vakye is modified, it will raise the
-        /// <see cref="ValueChanging"/> and <see cref="ValueChanged"/> events.
+        /// <see cref="NodePresenterBase.ValueChanging"/> and <see cref="NodePresenterBase.ValueChanged"/> events.
         /// </summary>
         /// <param name="associatedNodeAccessor">An accessor to the node to register.</param>
         /// <remarks>Events subscriptions are cleaned when this virtual node is disposed.</remarks>
@@ -139,7 +135,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         {
             if (ShouldRaiseEvent(changeType, index))
             {
-                ValueChanging?.Invoke(this, new ValueChangingEventArgs(newValue));
+                RaiseValueChanging(newValue);
             }
         }
 
@@ -147,7 +143,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         {
             if (ShouldRaiseEvent(changeType, index))
             {
-                ValueChanged?.Invoke(this, new ValueChangedEventArgs(oldValue));
+                RaiseValueChanged(Value);
             }
         }
 

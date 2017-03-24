@@ -66,9 +66,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         private string displayName;
         private int visibleChildrenCount;
         private List<INodeViewModel> initializingChildren = new List<INodeViewModel>();
-
         private readonly List<INodePresenter> nodePresenters;
-        private List<DependencyPath> dependencies;
         private int? customOrder;
         private bool isHighlighted;
 
@@ -86,7 +84,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             Owner = ownerViewModel;
             Type = nodeType;
             Index = default(Index);
-            IsVisible = false;
             IsReadOnly = false;
 
             if (baseName == null)
@@ -98,13 +95,11 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             this.nodePresenters = nodePresenters;
             foreach (var nodePresenter in nodePresenters)
             {
-                // Display this node if at least one presenter is visible
-                if (nodePresenter.IsVisible)
-                    IsVisible = true;
-
                 nodePresenter.ValueChanging += ValueChanging;
                 nodePresenter.ValueChanged += ValueChanged;
             }
+
+            UpdateVisibility();
 
             // TODO: find a way to "merge" display name if they are different (string.Join?)
             DisplayName = nodePresenters.First().DisplayName;
@@ -134,6 +129,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <summary>
         /// Gets the path of this node. The path is constructed from the name of all nodes from the root to this one, separated by periods.
         /// </summary>
+        [Obsolete]
         public string Path => Parent != null ? Parent.Path + '.' + Name : Name;
 
         /// <summary>
@@ -325,36 +321,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             }
         }
 
-        /// <inheritdoc/>
-        public override void Destroy()
-        {
-            if (dependencies != null)
-            {
-                Owner.NodeValueChanged -= DependencyNodeValueChanged;
-                dependencies = null;
-            }
-            base.Destroy();
-        }
-
-        /// <summary>
-        /// Adds a dependency to the node represented by the given path.
-        /// </summary>
-        /// <param name="nodePath">The path to the node that should be a dependency of this node.</param>
-        /// <param name="refreshOnNestedNodeChanges">If true, this node will also be refreshed when one of the child node of the dependency node changes.</param>
-        /// <remarks>A node that is a dependency to this node will trigger a refresh of this node each time its value is modified (or the value of one of its parent).</remarks>
-        public void AddDependency(string nodePath, bool refreshOnNestedNodeChanges)
-        {
-            if (string.IsNullOrEmpty(nodePath)) throw new ArgumentNullException(nameof(nodePath));
-
-            if (dependencies == null)
-            {
-                dependencies = new List<DependencyPath>();
-                Owner.NodeValueChanged += DependencyNodeValueChanged;
-            }
-
-            dependencies.Add(new DependencyPath(nodePath, refreshOnNestedNodeChanges));
-        }
-
         /// <summary>
         /// Registers a function that can compute the display name of this node. If the function uses some children of this node to compute
         /// the display name, the name of these children can be passed so the function is re-evaluated each time one of these children value changes.
@@ -446,14 +412,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             }
 
             Name = EscapeName(Name);
-        }
-
-        private void DependencyNodeValueChanged(object sender, GraphViewModelNodeValueChanged e)
-        {
-            if (dependencies?.Any(x => x.ShouldRefresh(e.NodePath)) ?? false)
-            {
-                Refresh();
-            }
         }
 
         /// <summary>
@@ -766,7 +724,21 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             }
 
             OnPropertyChanged(nameof(NodeValue));
+            UpdateVisibility();
             Owner.NotifyNodeChanged(Path);
+        }
+
+        private void UpdateVisibility()
+        {
+            var shouldBeVisible = false;
+            foreach (var nodePresenter in nodePresenters)
+            {
+                // Display this node if at least one presenter is visible
+                if (nodePresenter.IsVisible)
+                    shouldBeVisible = true;
+            }
+
+            IsVisible = shouldBeVisible;
         }
 
         private static int CompareChildren(INodeViewModel a, INodeViewModel b)
@@ -817,42 +789,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             }
 
             return TypeDescriptor.GetConverter(Type).ConvertFrom(value);
-        }
-        private struct DependencyPath
-        {
-            private readonly string path;
-            private readonly bool refreshOnNestedNodeChanges;
-
-            public DependencyPath(string path, bool refreshOnNestedNodeChanges)
-            {
-                this.path = path;
-                this.refreshOnNestedNodeChanges = refreshOnNestedNodeChanges;
-            }
-
-            public bool ShouldRefresh(string modifiedNodePath)
-            {
-                if (IsContainingPath(modifiedNodePath, path))
-                {
-                    // The node that has changed is the dependent node or one of its parent, let's refresh
-                    return true;
-                }
-                if (refreshOnNestedNodeChanges && IsContainingPath(path, modifiedNodePath))
-                {
-                    // The node that has changed is a child of the dependent node, and we asked for recursive dependencies, let's refresh
-                    return true;
-                }
-
-                return false;
-            }
-
-            private static bool IsContainingPath(string containerPath, string containedPath)
-            {
-                if (!containedPath.StartsWith(containerPath))
-                    return false;
-
-                // Check if the strings are actually identical, or if the next character in the contained path is a property separator ('.')
-                return containedPath.Length == containerPath.Length || containedPath[containerPath.Length] == '.';
-            }
         }
     }
 }

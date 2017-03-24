@@ -5,6 +5,14 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 {
     public abstract class NodePresenterUpdaterBase : INodePresenterUpdater
     {
-        public abstract void UpdateNode(INodePresenter node);
+        public virtual void UpdateNode(INodePresenter node)
+        {
+            // Do nothing by default
+        }
+
+        public virtual void FinalizeTree(INodePresenter root)
+        {
+            // Do nothing by default
+        }
     }
 }

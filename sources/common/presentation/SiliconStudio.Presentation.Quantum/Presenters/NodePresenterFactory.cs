@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Quantum;
 
@@ -8,6 +9,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
     public class NodePresenterFactory : INodePresenterFactoryInternal
     {
         [NotNull] private readonly INodeBuilder nodeBuilder;
+        [NotNull] private readonly ThreadLocal<bool> buildingNodes = new ThreadLocal<bool>();
 
         public NodePresenterFactory([NotNull] INodeBuilder nodeBuilder, [NotNull] IReadOnlyCollection<INodePresenterCommand> availableCommands, [NotNull] IReadOnlyCollection<INodePresenterUpdater> availableUpdaters)
         {
@@ -32,16 +34,25 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public INodePresenter CreateNodeHierarchy(IObjectNode rootNode, GraphNodePath rootNodePath, IPropertyProviderViewModel propertyProvider)
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
+            buildingNodes.Value = true;
             var rootPresenter = CreateRootPresenter(propertyProvider, rootNode);
             GenerateChildren(rootPresenter, rootNode, propertyProvider);
             RunUpdaters(rootPresenter);
+            buildingNodes.Value = false;
+            FinalizeTree(rootPresenter);
             return rootPresenter;
         }
 
         public void CreateChildren(IInitializingNodePresenter parentPresenter, IObjectNode objectNode, IPropertyProviderViewModel propertyProvider)
         {
-            GenerateChildren(parentPresenter, objectNode, propertyProvider);
+            buildingNodes.Value = true;
+            if (objectNode != null)
+            {
+                GenerateChildren(parentPresenter, objectNode, propertyProvider);
+            }
             RunUpdaters(parentPresenter);
+            buildingNodes.Value = false;
+            FinalizeTree(parentPresenter.Root);
         }
 
         private void GenerateChildren(IInitializingNodePresenter parentPresenter, IObjectNode objectNode, IPropertyProviderViewModel propertyProvider)
@@ -149,6 +160,22 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             foreach (var updater in AvailableUpdaters)
             {
                 updater.UpdateNode(nodePresenter);
+            }
+        }
+
+        protected void FinalizeTree([NotNull] INodePresenter rootPresenter)
+        {
+            if (rootPresenter == null) throw new ArgumentNullException(nameof(rootPresenter));
+
+            // We might enter here while we're still constructing the hierarchy, if for example we create
+            // a virtual node in one updater. In this case we skip this call because our hierarchy is still
+            // incomplete. It's guaranteed that this method will be called again at the end of the creation.
+            if (buildingNodes.IsValueCreated && buildingNodes.Value)
+                return;
+
+            foreach (var updater in AvailableUpdaters)
+            {
+                updater.FinalizeTree(rootPresenter);
             }
         }
     }

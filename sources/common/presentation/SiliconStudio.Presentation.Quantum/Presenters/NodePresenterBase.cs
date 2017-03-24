@@ -13,6 +13,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
     {
         private readonly INodePresenterFactoryInternal factory;
         private readonly List<INodePresenter> children = new List<INodePresenter>();
+        private HashSet<INodePresenter> dependencies;
 
         protected NodePresenterBase([NotNull] INodePresenterFactoryInternal factory, [CanBeNull] IPropertyProviderViewModel propertyProvider, [CanBeNull] INodePresenter parent)
         {
@@ -24,7 +25,13 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public virtual void Dispose()
         {
-            // Do nothing by default
+            if (dependencies != null)
+            {
+                foreach (var dependency in dependencies)
+                {
+                    dependency.ValueChanged -= DependencyChanged;
+                }
+            }
         }
 
         public INodePresenter this[string childName] => children.First(x => string.Equals(x.Name, childName, StringComparison.Ordinal));
@@ -37,6 +44,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public string DisplayName { get; set; }
         public string Name { get; protected set; }
+
         public abstract List<INodePresenterCommand> Commands { get; }
         public abstract Type Type { get; }
         public abstract bool IsPrimitive { get; }
@@ -53,8 +61,9 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public virtual string CombineKey => Name;
         public PropertyContainerClass AttachedProperties { get; } = new PropertyContainerClass();
 
-        public abstract event EventHandler<ValueChangingEventArgs> ValueChanging;
-        public abstract event EventHandler<ValueChangedEventArgs> ValueChanged;
+        public event EventHandler<ValueChangingEventArgs> ValueChanging;
+
+        public event EventHandler<ValueChangedEventArgs> ValueChanged;
 
         protected abstract IObjectNode ParentingNode { get; }
 
@@ -95,6 +104,17 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             Name = newName;
         }
 
+        public void AddDependency([NotNull] INodePresenter node, bool refreshOnNestedNodeChanges)
+        {
+            if (node == null) throw new ArgumentNullException(nameof(node));
+
+            dependencies = dependencies ?? new HashSet<INodePresenter>();        
+            if (dependencies.Add(node))
+            {
+                node.ValueChanged += DependencyChanged;
+            }
+        }
+
         protected void Refresh()
         {
             // Remove existing children and attached properties
@@ -106,11 +126,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             AttachedProperties.Clear();
 
             // And recompute them from the current value.
-            var parentingNode = ParentingNode;
-            if (parentingNode != null)
-            {
-                factory.CreateChildren(this, parentingNode);
-            }            
+            factory.CreateChildren(this, ParentingNode);
         }
 
         protected void AttachCommands()
@@ -121,7 +137,24 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
                     Commands.Add(command);
             }
         }
-        
+
+        protected void RaiseValueChanging(object newValue)
+        {
+            ValueChanging?.Invoke(this, new ValueChangingEventArgs(newValue));
+        }
+
+        protected void RaiseValueChanged(object oldValue)
+        {
+            ValueChanged?.Invoke(this, new ValueChangedEventArgs(oldValue));
+        }
+
+        private void DependencyChanged(object sender, ValueChangedEventArgs e)
+        {
+            RaiseValueChanging(Value);
+            Refresh();
+            RaiseValueChanged(Value);
+        }
+
         void IInitializingNodePresenter.AddChild([NotNull] IInitializingNodePresenter child)
         {
             children.Add(child);

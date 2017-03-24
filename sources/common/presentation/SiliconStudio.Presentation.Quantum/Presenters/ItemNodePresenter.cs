@@ -50,13 +50,9 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override ITypeDescriptor Descriptor { get; }
 
-        public override int? Order { get; }
+        public override int? Order => null;
 
         public override object Value => Container.Retrieve(Index);
-
-        public override event EventHandler<ValueChangingEventArgs> ValueChanging;
-
-        public override event EventHandler<ValueChangedEventArgs> ValueChanged;
 
         protected override IObjectNode ParentingNode => Container.ItemReferences != null ? Container.IndexedTarget(Index) : null;
 
@@ -80,10 +76,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
-                ValueChanging?.Invoke(this, new ValueChangingEventArgs(Value));
+                RaiseValueChanging(Value);
                 Container.IndexedTarget(Index).Add(value);
                 Refresh();
-                ValueChanged?.Invoke(this, new ValueChangedEventArgs(Value));
+                RaiseValueChanged(Value);
             }
             catch (Exception e)
             {
@@ -98,10 +94,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
-                ValueChanging?.Invoke(this, new ValueChangingEventArgs(Value));
+                RaiseValueChanging(Value);
                 Container.IndexedTarget(Index).Add(value, index);
                 Refresh();
-                ValueChanged?.Invoke(this, new ValueChangedEventArgs(Value));
+                RaiseValueChanged(Value);
             }
             catch (Exception e)
             {
@@ -116,10 +112,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
-                ValueChanging?.Invoke(this, new ValueChangingEventArgs(Value));
+                RaiseValueChanging(Value);
                 Container.IndexedTarget(Index).Remove(value, index);
                 Refresh();
-                ValueChanged?.Invoke(this, new ValueChangedEventArgs(Value));
+                RaiseValueChanged(Value);
             }
             catch (Exception e)
             {
@@ -135,7 +131,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         private void OnItemChanging(object sender, ItemChangeEventArgs e)
         {
             if (IsValidChange(e))
-                ValueChanging?.Invoke(this, new ValueChangingEventArgs(e.NewValue));
+                RaiseValueChanging(e.NewValue);
         }
 
         private void OnItemChanged(object sender, ItemChangeEventArgs e)
@@ -143,7 +139,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             if (IsValidChange(e))
             {
                 Refresh();
-                ValueChanged?.Invoke(this, new ValueChangedEventArgs(e.OldValue));
+                RaiseValueChanged(e.OldValue);
             }
         }
 

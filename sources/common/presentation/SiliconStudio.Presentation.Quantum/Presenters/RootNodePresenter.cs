@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Presentation.Quantum.ViewModels;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
@@ -36,8 +35,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public override ITypeDescriptor Descriptor => RootNode.Descriptor;
         public override int? Order => null;
         public override object Value => RootNode.Retrieve();
-        public override event EventHandler<ValueChangingEventArgs> ValueChanging;
-        public override event EventHandler<ValueChangedEventArgs> ValueChanged;
 
         protected override IObjectNode ParentingNode => RootNode;
 
@@ -53,10 +50,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
-                ValueChanging?.Invoke(this, new ValueChangingEventArgs(Value));
+                RaiseValueChanging(Value);
                 RootNode.Add(value);
                 Refresh();
-                ValueChanged?.Invoke(this, new ValueChangedEventArgs(Value));
+                RaiseValueChanged(Value);
             }
             catch (Exception e)
             {
@@ -71,10 +68,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
-                ValueChanging?.Invoke(this, new ValueChangingEventArgs(Value));
+                RaiseValueChanging(Value);
                 RootNode.Add(value, index);
                 Refresh();
-                ValueChanged?.Invoke(this, new ValueChangedEventArgs(Value));
+                RaiseValueChanged(Value);
             }
             catch (Exception e)
             {
@@ -89,10 +86,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
-                ValueChanging?.Invoke(this, new ValueChangingEventArgs(Value));
+                RaiseValueChanging(Value);
                 RootNode.Remove(value, index);
                 Refresh();
-                ValueChanged?.Invoke(this, new ValueChangedEventArgs(Value));
+                RaiseValueChanged(Value);
             }
             catch (Exception e)
             {
