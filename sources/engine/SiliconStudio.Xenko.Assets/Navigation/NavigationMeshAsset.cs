@@ -30,24 +30,25 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         /// <summary>
         /// Scene that is used for building the navigation mesh
         /// </summary>
-        [DataMember(1000)]
+        [DataMember(10)]
         public Scene Scene { get; set; }
         
         /// <summary>
         /// Collision filter that indicates which colliders are used in navmesh generation
         /// </summary>
-        [DataMember(1500)]
+        [DataMember(20)]
         public CollisionFilterGroupFlags IncludedCollisionGroups { get; set; }
 
         /// <summary>
         /// Build settings used by Recast
         /// </summary>
-        [DataMember(2000)]
+        [DataMember(30)]
         public NavigationMeshBuildSettings BuildSettings { get; set; }
 
         /// <summary>
         /// Groups that this navigation mesh should be built for
         /// </summary>
+        [DataMember(40)]
         public List<NavigationMeshGroup> SelectedGroups { get; private set; } = new List<NavigationMeshGroup>();
 
         public override int GetHashCode()

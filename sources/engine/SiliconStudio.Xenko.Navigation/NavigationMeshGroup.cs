@@ -55,6 +55,11 @@ namespace SiliconStudio.Xenko.Navigation
                 return hashCode;
             }
         }
+
+        public override string ToString()
+        {
+            return $"{Name} {{{Id}}}";
+        }
     }
     
     public class NavigationMeshGroupFactory : IObjectFactory

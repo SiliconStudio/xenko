@@ -170,6 +170,12 @@ namespace SiliconStudio.Xenko.Navigation
                     var currentGroup = agentSettingsEnumerator.Current;
                     var currentAgentSettings = currentGroup.AgentSettings;
 
+                    if (result.NavigationMesh.LayersInternal.ContainsKey(currentGroup.Id))
+                    {
+                        Logger.Error($"The same group can't be selected twice: {currentGroup}");
+                        return result;
+                    }
+
                     HashSet<Point> tilesToBuild = new HashSet<Point>();
 
                     foreach (var colliderData in collidersLocal)
