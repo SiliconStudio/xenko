@@ -85,7 +85,7 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	float bbSize[3];
 	rcVsub(bbSize, bmax, bmin);
 	if (bbSize[0] <= 0.0f || bbSize[1] <= 0.0f || bbSize[2] <= 0.0f)
-		return nullptr; // Negative or empty bounding box
+		return ret; // Negative or empty bounding box
 
 	// Check input parameters
 	if (m_buildSettings.detailSampleDistInput < 1.0f)
