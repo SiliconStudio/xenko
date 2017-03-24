@@ -80,7 +80,6 @@ namespace SiliconStudio.Xenko.UI
         [DataMember(2)]
         [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
-        [Display(Browsable = false)]
         public float Back;
 
         /// <summary>
@@ -90,7 +89,6 @@ namespace SiliconStudio.Xenko.UI
         [DataMember(4)]
         [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
-        [Display(Browsable = false)]
         public float Bottom;
 
         /// <summary>
@@ -100,7 +98,6 @@ namespace SiliconStudio.Xenko.UI
         [DataMember(5)]
         [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
-        [Display(Browsable = false)]
         public float Front;
 
         /// <summary>
@@ -110,7 +107,6 @@ namespace SiliconStudio.Xenko.UI
         [DataMember(0)]
         [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
-        [Display(Browsable = false)]
         public float Left;
 
         /// <summary>
@@ -120,7 +116,6 @@ namespace SiliconStudio.Xenko.UI
         [DataMember(3)]
         [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
-        [Display(Browsable = false)]
         public float Right;
 
         /// <summary>
@@ -130,7 +125,6 @@ namespace SiliconStudio.Xenko.UI
         [DataMember(1)]
         [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
-        [Display(Browsable = false)]
         public float Top;
 
         /// <summary>

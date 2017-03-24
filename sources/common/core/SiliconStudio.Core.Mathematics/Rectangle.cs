@@ -112,7 +112,6 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <value>The X position.</value>
         [DataMember(0)]
-        [Display(Browsable = false)]
         public int X
         {
             get
@@ -130,7 +129,6 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <value>The Y position.</value>
         [DataMember(1)]
-        [Display(Browsable = false)]
         public int Y
         {
             get
@@ -148,7 +146,6 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <value>The width.</value>
         [DataMember(2)]
-        [Display(Browsable = false)]
         public int Width
         {
             get
@@ -166,7 +163,6 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <value>The height.</value>
         [DataMember(3)]
-        [Display(Browsable = false)]
         public int Height
         {
             get { return height; }

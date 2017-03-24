@@ -69,11 +69,11 @@ namespace SiliconStudio.Presentation.Controls
         {
             Vector3? newDecomposedRotation;
             if (property == XProperty)
-                newDecomposedRotation = X.HasValue && Value.HasValue ? (Vector3?)new Vector3(MathUtil.DegreesToRadians(X.Value), decomposedRotation.Y, decomposedRotation.Z) : null;
+                newDecomposedRotation = X.HasValue ? (Vector3?)new Vector3(MathUtil.DegreesToRadians(X.Value), decomposedRotation.Y, decomposedRotation.Z) : null;
             else if (property == YProperty)
-                newDecomposedRotation = Y.HasValue && Value.HasValue ? (Vector3?)new Vector3(decomposedRotation.X, MathUtil.DegreesToRadians(Y.Value), decomposedRotation.Z) : null;
+                newDecomposedRotation = Y.HasValue ? (Vector3?)new Vector3(decomposedRotation.X, MathUtil.DegreesToRadians(Y.Value), decomposedRotation.Z) : null;
             else if (property == ZProperty)
-                newDecomposedRotation = Z.HasValue && Value.HasValue ? (Vector3?)new Vector3(decomposedRotation.X, decomposedRotation.Y, MathUtil.DegreesToRadians(Z.Value)) : null;
+                newDecomposedRotation = Z.HasValue ? (Vector3?)new Vector3(decomposedRotation.X, decomposedRotation.Y, MathUtil.DegreesToRadians(Z.Value)) : null;
             else
                 throw new ArgumentException("Property unsupported by method UpdateValueFromComponent.");
 

@@ -302,7 +302,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             var commonAttachedProperties = nodePresenters.SelectMany(x => x.AttachedProperties).GroupBy(x => x.Key).ToList();
             foreach (var attachedProperty in commonAttachedProperties)
             {
-                var combiner = attachedProperty.Key.Metadatas.OfType<PropertyCombinerMetadata>().FirstOrDefault()?.Combiner ?? (x => DifferentValues);
+                var combiner = attachedProperty.Key.Metadatas.OfType<PropertyCombinerMetadata>().FirstOrDefault()?.Combiner ?? DefaultCombineAttachedProperty;
                 var values = attachedProperty.Select(x => x.Value).ToList();
                 var value = values.Count == 1 ? values[0] : combiner(values);
                 AddAssociatedData(attachedProperty.Key.Name, value);
@@ -789,6 +789,21 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             }
 
             return TypeDescriptor.GetConverter(Type).ConvertFrom(value);
+        }
+
+        private static object DefaultCombineAttachedProperty(IEnumerable<object> arg)
+        {
+            object result = null;
+            bool isFirst = true;
+            foreach (var value in arg)
+            {
+                if (isFirst)
+                    result = value;
+                else
+                    result = Equals(result, value) ? result : DifferentValues;
+                isFirst = false;
+            }
+            return result;
         }
     }
 }

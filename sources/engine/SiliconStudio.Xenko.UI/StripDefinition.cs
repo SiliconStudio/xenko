@@ -94,7 +94,6 @@ namespace SiliconStudio.Xenko.UI
         /// <userdoc>The type of the strip.</userdoc>
         [DataMember]
         [DefaultValue(StripType.Star)]
-        [Display(Browsable = false)]
         public StripType Type
         {
             get { return type; }
@@ -118,7 +117,6 @@ namespace SiliconStudio.Xenko.UI
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
         [DefaultValue(1.0f)]
-        [Display(Browsable = false)]
         public float SizeValue
         {
             get { return sizeValue; }
