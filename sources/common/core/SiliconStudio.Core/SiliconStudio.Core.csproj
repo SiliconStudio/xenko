@@ -313,9 +313,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TupleSerializer.cs</LastGenOutput>
     </None>
-    <None Include="SiliconStudio.Core.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <SiliconStudioContent Include="SiliconStudio.Core.dll.config"/>
     <None Include="Native\lz4\lz4.c" />
     <None Include="Native\lz4\lz4.h" />
     <None Include="Native\lz4\lz4hc.c" />

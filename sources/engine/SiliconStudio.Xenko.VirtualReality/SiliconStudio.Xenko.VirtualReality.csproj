@@ -154,9 +154,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="SiliconStudio.Xenko.VirtualReality.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+	<SiliconStudioContent Include="SiliconStudio.Xenko.VirtualReality.dll.config"/>
     <None Include="Xenko.Native.Libs.targets">
       <SubType>Designer</SubType>
     </None>

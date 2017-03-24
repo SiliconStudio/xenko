@@ -93,9 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Native\Celt.cpp" />
-    <None Include="SiliconStudio.Xenko.Native.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <SiliconStudioContent Include="SiliconStudio.Xenko.Audio.dll.config"/>
     <None Include="Xenko.Native.Libs.targets">
       <SubType>Designer</SubType>
     </None>

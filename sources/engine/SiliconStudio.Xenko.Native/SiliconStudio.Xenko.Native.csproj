@@ -48,9 +48,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="SiliconStudio.Xenko.Native.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <SiliconStudioContent Include="SiliconStudio.Xenko.Native.dll.config"/>
     <None Include="Xenko.Native.Libs.targets">
       <SubType>Designer</SubType>
     </None>

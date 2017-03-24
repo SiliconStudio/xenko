@@ -6,8 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\*.config"/>
-
     <None Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'" Include="$(SiliconStudioPackageXenkoPlatformBin)\CoreCLRSetup.sh">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
