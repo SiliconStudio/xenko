@@ -383,7 +383,6 @@
     <Compile Include="Scripts\VisualScriptAsset.cs" />
     <Compile Include="Scripts\VisualScriptCompiler.cs" />
     <Compile Include="SceneRenderer.cs" />
-    <Compile Include="Skyboxes\SkyboxUsage.cs" />
     <Compile Include="SpriteFont\Compiler\SignedDistanceFieldFontCompiler.cs" />
     <Compile Include="SpriteFont\Compiler\SignedDistanceFieldFontWriter.cs" />
     <Compile Include="SpriteFont\Compiler\SignedDistanceFieldFontImporter.cs" />
