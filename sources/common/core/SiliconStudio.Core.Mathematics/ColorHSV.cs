@@ -101,16 +101,21 @@ namespace SiliconStudio.Core.Mathematics
 
             if (delta > 0.0f)
             {
-                if (max == color.R && max != color.G)
-                    h += (color.G - color.B) / delta;
-                if (max == color.G && max != color.B)
-                    h += (2.0f + (color.B - color.R) / delta);
-                if (max == color.B && max != color.R)
-                    h += (4.0f + (color.R - color.G) / delta);
-                h *= 60.0f;
+                if (color.R >= max)
+                    h = (color.G - color.B);
+                else if (color.G >= max)
+                    h = (color.B - color.R) + 2.0f;
+                else
+                    h = (color.R - color.G) + 4.0f;
+                h *= 60.0f / delta;
+
+                if (h < 0)
+                    h += 360f;
             }
 
-            return new ColorHSV(h, (max != 0.0f) ? 1.0f - min / max : 0.0f, max, color.A);
+            float s = MathUtil.IsZero(max) ? 0.0f : delta / max;
+
+            return new ColorHSV(h, s, max, color.A);
         }
 
         /// <inheritdoc/>
