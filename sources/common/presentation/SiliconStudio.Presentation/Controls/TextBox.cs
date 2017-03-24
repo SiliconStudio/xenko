@@ -36,16 +36,6 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyPropertyKey TrimmedTextPropertyKey = DependencyProperty.RegisterReadOnly("TrimmedText", typeof(string), typeof(TextBox), new PropertyMetadata(""));
 
         /// <summary>
-        /// Identifies the <see cref="TextTrimming"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty TextTrimmingProperty = DependencyProperty.Register("TextTrimming", typeof(TextTrimming), typeof(TextBox), new PropertyMetadata(TextTrimming.None));
-
-        /// <summary>
-        /// Identifies the <see cref="TrimmingSource"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty TrimmingSourceProperty = DependencyProperty.Register("TrimmingSource", typeof(TrimmingSource), typeof(TextBox), new PropertyMetadata(TrimmingSource.End));
-
-        /// <summary>
         /// Identifies the <see cref="TrimmedText"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty TrimmedTextProperty = TrimmedTextPropertyKey.DependencyProperty;
