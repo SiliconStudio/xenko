@@ -109,13 +109,7 @@ namespace SiliconStudio.Xenko.Navigation
             // Initialize build settings from game settings
             var navigationSettings = gameSettings.Configurations.Get<NavigationSettings>();
 
-            BuildSettings = navigationSettings.BuildSettings;
-            IncludedCollisionGroups = navigationSettings.IncludedCollisionGroups;
-            Groups = navigationSettings.Groups;
-            Enabled = navigationSettings.EnableDynamicNavigationMesh;
-
-            
-            pendingRebuild = true;
+            InitializeSettingsFromNavigationSettings(navigationSettings);
         }
 
         /// <inheritdoc />
@@ -186,6 +180,16 @@ namespace SiliconStudio.Xenko.Navigation
             FinilizeRebuild(result);
 
             return result.Result;
+        }
+
+        internal void InitializeSettingsFromNavigationSettings(NavigationSettings navigationSettings)
+        {
+            BuildSettings = navigationSettings.BuildSettings;
+            IncludedCollisionGroups = navigationSettings.IncludedCollisionGroups;
+            Groups = navigationSettings.Groups;
+            Enabled = navigationSettings.EnableDynamicNavigationMesh;
+            
+            pendingRebuild = true;
         }
 
         private void FinilizeRebuild(Task<NavigationMeshBuildResult> resultTask)
