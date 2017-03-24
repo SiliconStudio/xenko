@@ -50,14 +50,14 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         public object OldValue { get; }
     }
 
-    public class NodeViewModel : DispatcherViewModel, INodeViewModel, IDynamicMetaObjectProvider
+    public class NodeViewModel : DispatcherViewModel, IDynamicMetaObjectProvider
     {
         internal class DifferentValuesObject { public readonly string Name = "DifferentValues"; };
 
         protected string[] DisplayNameDependentProperties;
         protected Func<string> DisplayNameProvider;
         protected static readonly HashSet<string> ReservedNames = new HashSet<string>();
-        private readonly AutoUpdatingSortedObservableCollection<INodeViewModel> children = new AutoUpdatingSortedObservableCollection<INodeViewModel>(new AnonymousComparer<INodeViewModel>(CompareChildren), nameof(Name), nameof(Index), nameof(Order));
+        private readonly AutoUpdatingSortedObservableCollection<NodeViewModel> children = new AutoUpdatingSortedObservableCollection<NodeViewModel>(new AnonymousComparer<NodeViewModel>(CompareChildren), nameof(Name), nameof(Index), nameof(Order));
         private readonly ObservableCollection<INodeCommandWrapper> commands = new ObservableCollection<INodeCommandWrapper>();
         private readonly Dictionary<string, object> associatedData = new Dictionary<string, object>();
         private readonly List<string> changingProperties = new List<string>();
@@ -65,7 +65,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         private bool isReadOnly;
         private string displayName;
         private int visibleChildrenCount;
-        private List<INodeViewModel> initializingChildren = new List<INodeViewModel>();
+        private List<NodeViewModel> initializingChildren = new List<NodeViewModel>();
         private readonly List<INodePresenter> nodePresenters;
         private int? customOrder;
         private bool isHighlighted;
@@ -136,12 +136,12 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <summary>
         /// Gets the parent of this node.
         /// </summary>
-        public INodeViewModel Parent { get; private set; }
+        public NodeViewModel Parent { get; private set; }
 
         /// <summary>
         /// Gets the root of this node.
         /// </summary>
-        public INodeViewModel Root { get { INodeViewModel root = this; while (root.Parent != null) root = root.Parent; return root; } }
+        public NodeViewModel Root { get { NodeViewModel root = this; while (root.Parent != null) root = root.Parent; return root; } }
 
         /// <summary>
         /// Gets or sets whether this node should be displayed in the view.
@@ -159,7 +159,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <summary>
         /// Gets the list of children nodes.
         /// </summary>
-        public IReadOnlyCollection<INodeViewModel> Children => initializingChildren != null ? (IReadOnlyCollection<INodeViewModel>)initializingChildren : children;
+        public IReadOnlyCollection<NodeViewModel> Children => initializingChildren != null ? (IReadOnlyCollection<NodeViewModel>)initializingChildren : children;
 
         /// <summary>
         /// Gets the list of commands available in this node.
@@ -226,7 +226,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         public IReadOnlyCollection<INodePresenter> NodePresenters => nodePresenters;
 
         /// <summary>
-        /// Indicates whether the given name is reserved for the name of a property in an <see cref="NodeViewModel"/>. Any children node with a colliding name will
+        /// Indicates whether the given name is reserved for the name of a property in an <see cref="SiliconStudio.Presentation.Quantum.ViewModels.NodeViewModel"/>. Any children node with a colliding name will
         /// be escaped with the <see cref="EscapeName"/> method.
         /// </summary>
         /// <param name="name">The name to check.</param>
@@ -356,9 +356,9 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <summary>
         /// Returns the child node with the matching name.
         /// </summary>
-        /// <param name="name">The name of the <see cref="NodeViewModel"/> to look for.</param>
+        /// <param name="name">The name of the <see cref="SiliconStudio.Presentation.Quantum.ViewModels.NodeViewModel"/> to look for.</param>
         /// <returns>The corresponding child node, or <c>null</c> if no child with the given name exists.</returns>
-        public INodeViewModel GetChild(string name)
+        public NodeViewModel GetChild(string name)
         {
             name = EscapeName(name);
             return Children.FirstOrDefault(x => x.Name == name);
@@ -643,7 +643,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
 
         private void ChildVisibilityChanged(object sender, EventArgs e)
         {
-            var node = (INodeViewModel)sender;
+            var node = (NodeViewModel)sender;
             if (node.IsVisible)
                 ++VisibleChildrenCount;
             else
@@ -695,7 +695,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             DisplayName = Utils.SplitCamelCase(nodePresenters.First().DisplayName);
         }
 
-        private static int CompareChildren(INodeViewModel a, INodeViewModel b)
+        private static int CompareChildren(NodeViewModel a, NodeViewModel b)
         {
             // Order has the best priority for comparison, if set.
             if ((a.Order ?? 0) != (b.Order ?? 0))

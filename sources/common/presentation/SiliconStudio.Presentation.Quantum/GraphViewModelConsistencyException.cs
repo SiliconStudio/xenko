@@ -6,7 +6,7 @@ using SiliconStudio.Presentation.Quantum.ViewModels;
 namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
-    /// An exception that occurs during consistency checks of <see cref="GraphViewModel"/> nodes, indicating that an <see cref="NodeViewModel"/> is un an unexpected state.
+    /// An exception that occurs during consistency checks of <see cref="GraphViewModel"/> nodes, indicating that an <see cref="SiliconStudio.Presentation.Quantum.ViewModels.NodeViewModel"/> is un an unexpected state.
     /// </summary>
     public class GraphViewModelConsistencyException : Exception
     {
@@ -24,7 +24,7 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <summary>
-        /// Gets the <see cref="NodeViewModel"/> that triggered this exception.
+        /// Gets the <see cref="SiliconStudio.Presentation.Quantum.ViewModels.NodeViewModel"/> that triggered this exception.
         /// </summary>
         public NodeViewModel Node { get; private set; }
     }

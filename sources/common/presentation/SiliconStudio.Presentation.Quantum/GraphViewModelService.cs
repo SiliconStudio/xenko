@@ -26,7 +26,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         public INodePresenterFactory NodePresenterFactory { get; set; }
 
-        public INodeViewModelFactory NodeViewModelFactory { get; set; }
+        public NodeViewModelFactory NodeViewModelFactory { get; set; }
 
         public List<INodePresenterCommand> AvailableCommands { get; } = new List<INodePresenterCommand>();
 

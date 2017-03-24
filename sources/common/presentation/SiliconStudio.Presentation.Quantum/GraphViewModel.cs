@@ -26,7 +26,7 @@ namespace SiliconStudio.Presentation.Quantum
         public const string HasAssociatedDataPrefix = "HasAssociatedData_";
 
         private readonly Dictionary<INodePresenter, IPropertyProviderViewModel> propertiesProviderMap = new Dictionary<INodePresenter, IPropertyProviderViewModel>();
-        private INodeViewModel rootNode;
+        private NodeViewModel rootNode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphViewModel"/> class.
@@ -86,7 +86,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the root node of this <see cref="GraphViewModel"/>.
         /// </summary>
-        public INodeViewModel RootNode { get { return rootNode; } set { SetValue(ref rootNode, value); } }
+        public NodeViewModel RootNode { get { return rootNode; } set { SetValue(ref rootNode, value); } }
                 
         /// <summary>
         /// Gets the <see cref="GraphViewModelService"/> associated to this view model.
@@ -105,7 +105,7 @@ namespace SiliconStudio.Presentation.Quantum
         public Logger Logger { get; private set; }
 
         /// <summary>
-        /// Raised when the value of an <see cref="INodeViewModel"/> contained into this view model has changed.
+        /// Raised when the value of an <see cref="SiliconStudio.Presentation.Quantum.ViewModels.NodeViewModel"/> contained into this view model has changed.
         /// </summary>
         public event EventHandler<GraphViewModelNodeValueChanged> NodeValueChanged;
 
@@ -124,7 +124,7 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         [Pure]
-        public INodeViewModel ResolveNode(string path)
+        public NodeViewModel ResolveNode(string path)
         {
             var members = path.Split('.');
             if (members[0] != RootNode.Name)

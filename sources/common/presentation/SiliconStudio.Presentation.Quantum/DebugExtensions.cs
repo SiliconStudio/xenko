@@ -4,12 +4,13 @@ using System;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
+using SiliconStudio.Presentation.Quantum.ViewModels;
 
 namespace SiliconStudio.Presentation.Quantum
 {
     public static class DebugExtensions
     {
-        public static void AssertHierarchy(this INodeViewModel node)
+        public static void AssertHierarchy(this NodeViewModel node)
         {
             foreach (var child in node.Children)
             {
