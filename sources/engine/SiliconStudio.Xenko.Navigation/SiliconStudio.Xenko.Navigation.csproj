@@ -81,7 +81,7 @@
     <Compile Include="NavigationMeshGroup.cs" />
     <Compile Include="NavigationSettings.cs" />
     <Compile Include="Processors\BoundingBoxProcessor.cs" />
-    <Compile Include="NavigationBoundingBox.cs" />
+    <Compile Include="NavigationBoundingBoxComponent.cs" />
     <Compile Include="DynamicNavigationMeshSystem.cs" />
     <Compile Include="NativeInvoke.cs" />
     <Compile Include="NavigationAgentSettings.cs" />

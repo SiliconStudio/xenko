@@ -675,8 +675,8 @@ namespace SiliconStudio.Xenko.Assets
                         var boundingBox = navmeshAsset.BoundingBox;
                         var boundingBoxMin = new Vector3((float)boundingBox.Minimum.X, (float)boundingBox.Minimum.Y, (float)boundingBox.Minimum.Z);
                         var boundingBoxMax = new Vector3((float)boundingBox.Maximum.X, (float)boundingBox.Maximum.Y, (float)boundingBox.Maximum.Z);
-                        var boundingBoxScale = (boundingBoxMax - boundingBoxMin) * 0.5f;
-                        var boundingBoxCenter = boundingBoxScale + boundingBoxMin;
+                        var boundingBoxSize = (boundingBoxMax - boundingBoxMin) * 0.5f;
+                        var boundingBoxCenter = boundingBoxSize + boundingBoxMin;
                             
                         using (var matchingSceneYamlAsset = matchingScene.AsYamlAsset())
                         {
@@ -703,7 +703,7 @@ namespace SiliconStudio.Xenko.Assets
                             });
                             transformComponent.Scale = new DynamicYamlMapping(new YamlMappingNode
                             {
-                                { "X", $"{boundingBoxScale.X}" }, { "Y", $"{boundingBoxScale.Y}" }, { "Z", $"{boundingBoxScale.Z}" }
+                                { "X", "1.0" }, { "Y", "1.0" }, { "Z", "1.0" }
                             });
                             transformComponent.Children = new DynamicYamlMapping(new YamlMappingNode());
                             components.AddChild(Guid.NewGuid().ToString("N"), transformComponent);
@@ -711,7 +711,8 @@ namespace SiliconStudio.Xenko.Assets
                             // Bounding box component
                             dynamic boxComponent = new DynamicYamlMapping(new YamlMappingNode());
                             boxComponent.Id = Guid.NewGuid().ToString();
-                            boxComponent.Node.Tag = "!SiliconStudio.Xenko.Navigation.NavigationBoundingBox,SiliconStudio.Xenko.Navigation";
+                            boxComponent.Node.Tag = "!SiliconStudio.Xenko.Navigation.NavigationBoundingBoxComponent,SiliconStudio.Xenko.Navigation";
+                            boxComponent.Size = boundingBoxSize;
                             components.AddChild(Guid.NewGuid().ToString("N"), boxComponent);
 
                             newEntity.Components = components;

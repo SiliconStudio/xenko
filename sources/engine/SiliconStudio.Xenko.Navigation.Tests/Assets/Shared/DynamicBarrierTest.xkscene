@@ -20,8 +20,7 @@ Hierarchy:
         - 83725125-785c-42dc-ba87-2a4b9653b8ec
         - e0958bf2-1941-479b-b759-9fc933bdf5ab
     Parts:
-        -   Folder: Walls
-            Entity:
+        -   Entity:
                 Id: 1b291246-c658-41f2-b2d2-8cc5699a92c0
                 Name: Cube
                 Components:
@@ -50,8 +49,8 @@ Hierarchy:
                         Id: 9aadd319-8d39-40d7-9020-b22f3bb2f3c9
                         Model: 9672dcba-148d-47ab-9af3-9696910c496d:Cube
                         Materials: {}
-        -   Folder: null
-            Entity:
+            Folder: Walls
+        -   Entity:
                 Id: 29448a1a-4e7e-42ca-a032-3e106c9613c1
                 Name: Obstacle
                 Components:
@@ -80,6 +79,7 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+            Folder: null
         -   Entity:
                 Id: 295c486b-0edc-4320-ba52-130acbdcb8f4
                 Name: Directional light
@@ -147,8 +147,7 @@ Hierarchy:
                         Projection: Perspective
                         OrthographicSize: 4.4
                         Slot: {Index: 0}
-        -   Folder: null
-            Entity:
+        -   Entity:
                 Id: 79cfb766-5086-49ea-85b4-55425b7318ee
                 Name: Obstacle
                 Components:
@@ -177,6 +176,7 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+            Folder: null
         -   Entity:
                 Id: 83725125-785c-42dc-ba87-2a4b9653b8ec
                 Name: FilterB
@@ -189,8 +189,7 @@ Hierarchy:
                         Children:
                             d1a16438c041cf8108c6d86e61e7bb70: ref!! 26b348d2-3e19-44c5-978e-a4ac2f3992c7
                             3fd420375f2e1209ab0635da0d6bba14: ref!! 1ea72c65-10de-49be-b318-3a957c9491a9
-        -   Folder: Walls
-            Entity:
+        -   Entity:
                 Id: 88315865-86a8-4673-b67a-e496bdac3d23
                 Name: Cube
                 Components:
@@ -219,6 +218,7 @@ Hierarchy:
                         Id: c56b9842-f1e2-4f3b-9ccc-97000a800e84
                         Model: 9672dcba-148d-47ab-9af3-9696910c496d:Cube
                         Materials: {}
+            Folder: Walls
         -   Entity:
                 Id: 8f8676ae-0aa7-43c4-9479-eb3ab8617197
                 Name: Navigation bounding box
@@ -227,12 +227,12 @@ Hierarchy:
                         Id: d6e87699-514d-4d06-9766-749822044bf9
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 2.0, Y: 10.0, Z: 2.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
-                    a9ac668c91bd00b210567d35f9b2a0e0: !SiliconStudio.Xenko.Navigation.NavigationBoundingBox,SiliconStudio.Xenko.Navigation
+                    a9ac668c91bd00b210567d35f9b2a0e0: !SiliconStudio.Xenko.Navigation.NavigationBoundingBoxComponent,SiliconStudio.Xenko.Navigation
                         Id: 044a0e48-4da6-4878-a2b9-d2f3c227b218
-        -   Folder: Walls
-            Entity:
+                        Size: {X: 2.0, Y: 2.5, Z: 2.0}
+        -   Entity:
                 Id: a52c4951-e37f-4df0-a4c7-b80543d40e08
                 Name: Cube
                 Components:
@@ -261,8 +261,8 @@ Hierarchy:
                         Id: 37132a52-a47f-4f3c-a9c3-6d94b21bf9ac
                         Model: 9672dcba-148d-47ab-9af3-9696910c496d:Cube
                         Materials: {}
-        -   Folder: null
-            Entity:
+            Folder: Walls
+        -   Entity:
                 Id: b81c1c18-a541-467d-ae3f-51398aa18036
                 Name: Obstacle
                 Components:
@@ -291,8 +291,8 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-        -   Folder: null
-            Entity:
+            Folder: null
+        -   Entity:
                 Id: c97d2f7c-cb4c-4755-b5e1-2d0c31612edc
                 Name: B
                 Components:
@@ -337,6 +337,7 @@ Hierarchy:
                                 Radius: 0.2
                                 MaxClimb: 0.25
                                 MaxSlope: {Radians: 0.7853982}
+            Folder: null
         -   Entity:
                 Id: ddad8031-c1f2-40e4-a4c9-4b55cebe869e
                 Name: A
@@ -409,8 +410,7 @@ Hierarchy:
                         Children:
                             d1a16438c041cf8108c6d86e61e7bb70: ref!! edd54a25-0398-46d1-953e-6e60ff4dc476
                             3fd420375f2e1209ab0635da0d6bba14: ref!! 0bf6df8e-b610-4b79-b0b4-e4c89f82c5f3
-        -   Folder: Walls
-            Entity:
+        -   Entity:
                 Id: e30b6a87-f27c-49bc-9389-7ac52f8b4d8c
                 Name: Cube
                 Components:
@@ -439,6 +439,7 @@ Hierarchy:
                         Id: 9924d2ee-711d-4557-a221-e7a90cd1cd2c
                         Model: 9672dcba-148d-47ab-9af3-9696910c496d:Cube
                         Materials: {}
+            Folder: Walls
         -   Entity:
                 Id: ef0519fd-297f-4754-9cee-f7c5bdb1d60c
                 Name: Floor

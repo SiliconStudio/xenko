@@ -9,13 +9,13 @@ using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Navigation.Processors
 {
-    internal class BoundingBoxProcessor : EntityProcessor<NavigationBoundingBox, BoundingBoxProcessor.BoundingBoxData>
+    internal class BoundingBoxProcessor : EntityProcessor<NavigationBoundingBoxComponent, BoundingBoxProcessor.BoundingBoxData>
     {
-        public delegate void CollectionChangedEventHandler(NavigationBoundingBox component);
+        public delegate void CollectionChangedEventHandler(NavigationBoundingBoxComponent component);
         
-        public ICollection<NavigationBoundingBox> BoundingBoxes => ComponentDatas.Keys;
+        public ICollection<NavigationBoundingBoxComponent> BoundingBoxes => ComponentDatas.Keys;
         
-        protected override BoundingBoxData GenerateComponentData(Entity entity, NavigationBoundingBox component)
+        protected override BoundingBoxData GenerateComponentData(Entity entity, NavigationBoundingBoxComponent component)
         {
             return new BoundingBoxData();
         }

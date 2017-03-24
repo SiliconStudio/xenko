@@ -220,7 +220,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                         foreach (var entity in sceneEntities)
                         {
                             // Collect bounding box entities
-                            NavigationBoundingBox boundingBoxComponent = entity.Get<NavigationBoundingBox>();
+                            NavigationBoundingBoxComponent boundingBoxComponent = entity.Get<NavigationBoundingBoxComponent>();
                             // Collect static collider entities
                             StaticColliderComponent colliderComponent = entity.Get<StaticColliderComponent>();
 
@@ -236,7 +236,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                 Quaternion rotation;
                                 Vector3 translation;
                                 boundingBoxComponent.Entity.Transform.WorldMatrix.Decompose(out scale, out rotation, out translation);
-                                var boundingBox = new BoundingBox(translation - scale, translation + scale);
+                                var boundingBox = new BoundingBox(translation - boundingBoxComponent.Size * scale, translation + boundingBoxComponent.Size * scale);
                                 boundingBoxes.Add(boundingBox);
 
                                 // Hash collider for ComputeParameterHash

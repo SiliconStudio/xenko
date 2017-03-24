@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Navigation.Processors;
@@ -14,7 +15,12 @@ namespace SiliconStudio.Xenko.Navigation
     [DataContract]
     [DefaultEntityComponentProcessor(typeof(BoundingBoxProcessor), ExecutionMode = ExecutionMode.All)]
     [Display("Navigation bounding box")]
-    public class NavigationBoundingBox : EntityComponent
+    public class NavigationBoundingBoxComponent : EntityComponent
     {
+        /// <summary>
+        /// The size of one edge of the bounding box
+        /// </summary>
+        [DataMember(0)]
+        public Vector3 Size;
     }
 }

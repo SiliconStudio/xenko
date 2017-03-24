@@ -30,12 +30,12 @@ Hierarchy:
                         Id: 46029b75-1a76-4889-9b4e-a18490b0290b
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 2.43181014, Y: 12.1590509, Z: 2.43181014}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
-                    a9ac668c91bd00b210567d35f9b2a0e0: !SiliconStudio.Xenko.Navigation.NavigationBoundingBox,SiliconStudio.Xenko.Navigation
+                    a9ac668c91bd00b210567d35f9b2a0e0: !SiliconStudio.Xenko.Navigation.NavigationBoundingBoxComponent,SiliconStudio.Xenko.Navigation
                         Id: 0d236985-b94f-4e47-b71a-513cc63fbb1e
-        -   Folder: null
-            Entity:
+                        Size: {X: 2.5, Y: 2.5, Z: 2.5}
+        -   Entity:
                 Id: 1b154418-a1b6-4171-9b4e-a241b8394f41
                 Name: B
                 Components:
@@ -80,6 +80,7 @@ Hierarchy:
                                 Radius: 0.2
                                 MaxClimb: 0.25
                                 MaxSlope: {Radians: 0.7853982}
+            Folder: null
         -   Entity:
                 Id: 34f86ef3-d3af-4d5e-9dbb-3b8c6e7a856c
                 Name: Camera
@@ -118,8 +119,7 @@ Hierarchy:
                                 PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic {}
                                 BiasParameters: {}
                         Intensity: 3.0
-        -   Folder: null
-            Entity:
+        -   Entity:
                 Id: 3abd9db2-979e-4f5f-a028-9d34307b68c9
                 Name: Obstacle
                 Components:
@@ -148,6 +148,7 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+            Folder: null
         -   Entity:
                 Id: 411f263b-a71b-4b98-8cb0-4a80b06c56cb
                 Name: Ambient light
@@ -163,8 +164,7 @@ Hierarchy:
                         Type: !LightAmbient
                             Color: !ColorRgbProvider
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
-        -   Folder: null
-            Entity:
+        -   Entity:
                 Id: 90f7c7d0-fb74-46f7-baa3-4e048eebc79c
                 Name: Obstacle
                 Components:
@@ -193,8 +193,8 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-        -   Folder: Walls
-            Entity:
+            Folder: null
+        -   Entity:
                 Id: 953fb4e2-1370-4e6b-b391-d66931d928ad
                 Name: Cube
                 Components:
@@ -223,8 +223,8 @@ Hierarchy:
                         Id: 4ae75e0b-fcb3-4b0d-88a6-af94f62364b5
                         Model: 9672dcba-148d-47ab-9af3-9696910c496d:Cube
                         Materials: {}
-        -   Folder: Walls
-            Entity:
+            Folder: Walls
+        -   Entity:
                 Id: 9f055169-c56d-4b19-babf-10fd9a9af96e
                 Name: Cube
                 Components:
@@ -253,8 +253,8 @@ Hierarchy:
                         Id: 433d3476-c31e-43bd-85de-3b9890d207cf
                         Model: 9672dcba-148d-47ab-9af3-9696910c496d:Cube
                         Materials: {}
-        -   Folder: Walls
-            Entity:
+            Folder: Walls
+        -   Entity:
                 Id: a71ff4b6-8e97-4ec9-9302-84c220560ab8
                 Name: Cube
                 Components:
@@ -283,6 +283,7 @@ Hierarchy:
                         Id: 693f851e-8612-47d3-b791-cfacfddcc51e
                         Model: 9672dcba-148d-47ab-9af3-9696910c496d:Cube
                         Materials: {}
+            Folder: Walls
         -   Entity:
                 Id: ab26af78-e7a6-4246-8eb5-c3c1cd7c83e9
                 Name: Obstacle
@@ -312,8 +313,7 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-        -   Folder: null
-            Entity:
+        -   Entity:
                 Id: af09f176-6a85-41bd-966c-569ed15b6e28
                 Name: Obstacle
                 Components:
@@ -342,13 +342,14 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+            Folder: null
         -   Entity:
                 Id: bfc8465c-94d4-4105-be9f-deb44d402237
                 Name: Floor
                 Components:
                     a45c4e21ad7f60f09479ebb083927e39: !TransformComponent
                         Id: f128dcb2-a12f-44b2-bb4b-3efde57812bf
-                        Position: {X: 0.0, Y: -0.1, Z: 0.0}
+                        Position: {X: 0.0, Y: 0.004031062, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 4.0, Y: 0.2, Z: 4.0}
                         Children: {}
@@ -369,8 +370,7 @@ Hierarchy:
                             768409bd4922b7825cc4ff1caa5bcd0c: !StaticPlaneColliderShapeDesc
                                 Normal: {X: 0.0, Y: 1.0, Z: 0.0}
                                 Offset: 0.0
-        -   Folder: Walls
-            Entity:
+        -   Entity:
                 Id: f3ad54c4-872e-4d4e-ab52-7849a74294dd
                 Name: Cube
                 Components:
@@ -399,6 +399,7 @@ Hierarchy:
                         Id: 2d35e192-dfb5-4155-ad28-416bfda1f8ca
                         Model: 9672dcba-148d-47ab-9af3-9696910c496d:Cube
                         Materials: {}
+            Folder: Walls
         -   Entity:
                 Id: f4dc5eb7-d675-467a-9324-f2c0cc39a5bd
                 Name: A

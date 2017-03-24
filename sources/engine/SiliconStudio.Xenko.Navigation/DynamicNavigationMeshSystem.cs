@@ -170,7 +170,7 @@ namespace SiliconStudio.Xenko.Navigation
                 Quaternion rotation;
                 Vector3 translation;
                 boundingBox.Entity.Transform.WorldMatrix.Decompose(out scale, out rotation, out translation);
-                boundingBoxes.Add(new BoundingBox(translation - scale, translation + scale));
+                boundingBoxes.Add(new BoundingBox(translation - boundingBox.Size * scale, translation + boundingBox.Size * scale));
             }
 
             var result = Task.Run(() =>
