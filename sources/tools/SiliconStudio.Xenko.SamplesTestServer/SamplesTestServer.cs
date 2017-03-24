@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
             //start logging the iOS device if we have the proper tools avail
             if (IosTracker.CanProxy())
             {
-                var loggerProcess = Process.Start(new ProcessStartInfo($"{ Environment.GetEnvironmentVariable("SiliconStudioXenkoDir") }\\Bin\\Windows-Direct3D11\\idevicesyslog.exe", "-d")
+                var loggerProcess = Process.Start(new ProcessStartInfo($"{ Environment.GetEnvironmentVariable("SiliconStudioXenkoDir") }\\Bin\\Windows\\idevicesyslog.exe", "-d")
                 {
                     UseShellExecute = false,
                     CreateNoWindow = true,
@@ -265,8 +265,8 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                     Thread.Sleep(5000); //ios processes might be slow to close, we must make sure that we start clean
                                     var start = new ProcessStartInfo
                                     {
-                                        WorkingDirectory = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows-Direct3D11\\",
-                                        FileName = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows-Direct3D11\\idevicedebug.exe",
+                                        WorkingDirectory = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows\\",
+                                        FileName = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows\\idevicedebug.exe",
                                         Arguments = $"run com.your-company.{request.GameAssembly}",
                                         UseShellExecute = false
                                     };

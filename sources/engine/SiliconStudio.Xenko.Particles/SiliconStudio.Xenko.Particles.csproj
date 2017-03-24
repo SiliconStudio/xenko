@@ -11,7 +11,7 @@
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
     <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">

@@ -103,9 +103,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                 if (xenkoSdkDir != null)
                 {
                     // Try to find Connection Router in Xenko Sdk
-                    routerAssemblyLocation = Path.Combine(xenkoSdkDir, @"Bin\Windows-Direct3D11", routerAssemblyExe);
-                    if (!File.Exists(routerAssemblyLocation))
-                        routerAssemblyLocation = Path.Combine(xenkoSdkDir, @"Bin\Windows", routerAssemblyExe);
+                    routerAssemblyLocation = Path.Combine(xenkoSdkDir, @"Bin\Windows", routerAssemblyExe);
 
                     // Could not find anything, use router from current version instead of latest version
                     if (!File.Exists(routerAssemblyLocation))

@@ -60,7 +60,7 @@ namespace SiliconStudio.Core
                     if (envSdk != null)
                     {
                         //give a further try by using xenko env dir.. this is specially necessary when dealing with nunit tests
-                        libraryFilename = Path.Combine(envSdk, "Bin\\Windows-Direct3D11\\" + cpu, libraryName);
+                        libraryFilename = Path.Combine(envSdk, "Bin\\Windows\\" + cpu, libraryName);
                         result = LoadLibrary(libraryFilename);
                     }
                 }

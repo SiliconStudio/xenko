@@ -11,7 +11,7 @@ using ObjCRuntime;
 
 namespace SiliconStudio.Core.Native
 {
-    internal static class NativeInvoke
+    public static class NativeInvoke
     {
 #if SILICONSTUDIO_PLATFORM_IOS
         internal const string Library = "__Internal";

@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
 
                 var installationDir = DirectoryHelper.GetPackageDirectory("Xenko");
                 var binDir = UPath.Combine(installationDir, new UDirectory("Bin"));
-                binDir = UPath.Combine(binDir, new UDirectory("Windows-Direct3D11"));
+                binDir = UPath.Combine(binDir, new UDirectory("Windows"));
                 var ffmpeg = UPath.Combine(binDir, new UFile("ffmpeg.exe"));
                 if (!File.Exists(ffmpeg))
                 {

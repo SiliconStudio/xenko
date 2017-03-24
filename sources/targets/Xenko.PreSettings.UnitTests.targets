@@ -1,0 +1,17 @@
+﻿<!-- Build file pre-included by all Xenko projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)..\..</SiliconStudioXenkoDir>
+  </PropertyGroup>
+
+  <!--Import Local Pre Settings for the solution being loaded -->
+  <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
+  <Import Project="$(SolutionDir)SiliconStudio.PreSettings.Local.targets" Condition="Exists('$(SolutionDir)SiliconStudio.PreSettings.Local.targets')" />
+
+  <PropertyGroup>
+    <SiliconStudioPlatformFullName>$(SiliconStudioPlatform)</SiliconStudioPlatformFullName>
+    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioBuildDirExtension)</SiliconStudioPlatformFullName>
+
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+</Project>

@@ -12,7 +12,7 @@
     <RootNamespace>SiliconStudio.Core.MicroThreading</RootNamespace>
     <AssemblyName>SiliconStudio.Core.MicroThreading</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>

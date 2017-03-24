@@ -33,8 +33,8 @@
 
 #ifndef LZ4_CS_ADAPTER
 
-#include "../../../../../deps/NativePath/standard/stdlib.h"
-#include "../../../../../deps/NativePath/standard/string.h"
+#include "../../../../../../deps/NativePath/standard/stdlib.h"
+#include "../../../../../../deps/NativePath/standard/string.h"
 
 //**************************************
 // CPU Feature Detection
@@ -135,7 +135,7 @@
 //**************************************
 // Basic Types
 //**************************************
-#include "../../../../../deps/NativePath/standard/stdint.h"
+#include "../../../../../../deps/NativePath/standard/stdint.h"
 #define BYTE	uint8_t
 #define U16		uint16_t
 #define U32		uint32_t
