@@ -38,8 +38,8 @@ namespace SiliconStudio.Xenko.Assets.Tasks
             var files = new List<ManifestFile>()
                 {
                     NewFile(@"Bin\**\*.exe", "Bin", @"Bin\**\.*\**\*.exe;Bin\**\Tools\**.exe"),
-                    NewFile(@"Bin\**\*.vsix", "Bin", @"Bin\**\.*\**\*.vsix"),
                     NewFile(@"Bin\**\*.so", "Bin", @"Bin\**\.*\**\*.so"),
+                    NewFile(@"Bin\**\*.ssdeps", "Bin", @"Bin\**\.*\**\*.ssdeps"),
                     NewFile(@"Bin\**\*.a", "Bin", @"Bin\**\.*\**\*.a"),
                     NewFile(@"Bin\**\*.md", "Bin", @"Bin\**\.*\**\*.md"),
                     NewFile(@"Bin\**\*.html", "Bin", @"Bin\**\.*\**\*.html"),

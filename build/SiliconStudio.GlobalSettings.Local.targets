@@ -2,6 +2,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <!--  Defines the API used by Xenko - Values are Direct3D/Null/OpenGL/OpenGLES -->
-    <XenkoGraphicsApi Condition=" '$(XenkoGraphicsApi)' == '' ">Direct3D11</XenkoGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi Condition=" '$(SiliconStudioXenkoGraphicsApi)' == '' ">Direct3D11</SiliconStudioXenkoGraphicsApi>
   </PropertyGroup>
 </Project>

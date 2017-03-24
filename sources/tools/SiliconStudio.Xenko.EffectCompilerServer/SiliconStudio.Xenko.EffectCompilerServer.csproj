@@ -12,7 +12,7 @@
     <RootNamespace>SiliconStudio.Xenko.EffectCompilerServer</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.EffectCompilerServer</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

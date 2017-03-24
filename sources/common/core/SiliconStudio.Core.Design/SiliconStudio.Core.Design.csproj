@@ -13,7 +13,7 @@
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -29,7 +29,7 @@
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
@@ -63,6 +63,7 @@
     <Compile Include="IO\UPathType.cs" />
     <Compile Include="IO\UPathTypeConverter.cs" />
     <Compile Include="ISyncLockable.cs" />
+    <Compile Include="KeyValuePair.cs" />
     <Compile Include="MicroThreadLock.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="NamespaceDoc.cs" />

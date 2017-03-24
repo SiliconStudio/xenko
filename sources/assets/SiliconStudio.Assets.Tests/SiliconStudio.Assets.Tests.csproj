@@ -9,6 +9,7 @@
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+    <SiliconStudioXenkoOutputFolder>Tests\$(AssemblyName)</SiliconStudioXenkoOutputFolder>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>SiliconStudio.Assets.Tests.TestPackage</StartupObject>
@@ -69,91 +70,82 @@
     <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">
       <Project>{7732cb84-a39a-4adf-b740-fd32a352fa8a}</Project>
       <Name>SiliconStudio.BuildEngine.Common</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
       <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
       <Name>SiliconStudio.Core.Design</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
       <Project>{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}</Project>
       <Name>SiliconStudio.Core.Reflection</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
       <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
       <Name>SiliconStudio.Core.Yaml</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
       <Name>SiliconStudio.Core</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
       <Project>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</Project>
       <Name>SiliconStudio.Core.IO</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
       <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
       <Name>SiliconStudio.Core.Serialization</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
       <Project>{1e54a9a2-4439-4444-ae57-6d2ed3c0dc47}</Project>
       <Name>SiliconStudio.Assets</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Packages\SiliconStudio.Packages.csproj">
       <Project>{acd2c831-bda2-4512-b4cc-75e8e1804f73}</Project>
       <Name>SiliconStudio.Packages</Name>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="data\SiliconStudio.Assets.Tests\TestPackage\SubPackage\SubPackage.xkpkg">
+    <None Include="data\TestPackage\SubPackage\SubPackage.xkpkg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="data\SiliconStudio.Assets.Tests\TestPackage\SubFolder\TestAsset.xktest">
+    <Content Include="data\TestPackage\SubFolder\TestAsset.xktest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="data\SiliconStudio.Assets.Tests\TestPackage\TestAsset.xktest">
+    <Content Include="data\TestPackage\TestAsset.xktest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="data\SiliconStudio.Assets.Tests\TestPackage\TestPackageLoadingWithAssets.xkpkg">
+    <None Include="data\TestPackage\TestPackageLoadingWithAssets.xkpkg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="data\SiliconStudio.Assets.Tests\TestSerializing\TestSerializing_TestMyAssetObject_Reference.xkobj">
+    <None Include="data\TestSerializing\TestSerializing_TestMyAssetObject_Reference.xkobj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="data\SiliconStudio.Assets.Tests\TestFileVersionManager\test.txt">
+    <Content Include="data\TestFileVersionManager\test.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="data\SiliconStudio.Assets.Tests\TestPackage\TestRaw.xkraw">
+    <None Include="data\TestPackage\TestRaw.xkraw">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\SiliconStudio.Assets.Tests\TestBasicPackageCreateSaveLoad\TestPackage_TestBasicPackageCreateSaveLoad_Reference.xkpkg">
+    <None Include="data\TestBasicPackageCreateSaveLoad\TestPackage_TestBasicPackageCreateSaveLoad_Reference.xkpkg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="SiliconStudio.Assets.Tests\Projects\CircularDeps\" />
-    <Folder Include="SiliconStudio.Assets.Tests\Projects\ComplexDeps\entity\texture\" />
-    <Folder Include="SiliconStudio.Assets.Tests\Projects\ComplexDeps\material\" />
-    <Folder Include="SiliconStudio.Assets.Tests\Projects\ComplexDeps\model\animation\" />
-    <Folder Include="SiliconStudio.Assets.Tests\Projects\EntityDeps\subfolder\" />
-    <Folder Include="SiliconStudio.Assets.Tests\Projects\MaterialDeps\subfolder\" />
-    <Folder Include="SiliconStudio.Assets.Tests\Projects\TextureDeps\" />
+    <Folder Include="Projects\CircularDeps\" />
+    <Folder Include="Projects\ComplexDeps\entity\texture\" />
+    <Folder Include="Projects\ComplexDeps\material\" />
+    <Folder Include="Projects\ComplexDeps\model\animation\" />
+    <Folder Include="Projects\EntityDeps\subfolder\" />
+    <Folder Include="Projects\MaterialDeps\subfolder\" />
+    <Folder Include="Projects\TextureDeps\" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -12,7 +12,7 @@
     <AppxGeneratePriEnabled>false</AppxGeneratePriEnabled>
     <QuickGraphPath>QuickGraph.dll</QuickGraphPath>
     <QuickGraphPath Condition="'$(SiliconStudioPlatform)' == 'Android'">QuickGraph.Android.dll</QuickGraphPath>
-    <XenkoBuildTags>Windows</XenkoBuildTags>
+    <SiliconStudioBuildTags>Windows</SiliconStudioBuildTags>
     <SiliconStudioCompilerTargetsEnable>false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <ItemGroup>

@@ -383,6 +383,33 @@ namespace SiliconStudio.Xenko.Assets.Textures
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            // OpenGLES: avoid BGRA (optional extension)
+            if (parameters.GraphicsPlatform == GraphicsPlatform.OpenGLES)
+            {
+                switch (outputFormat)
+                {
+                    case PixelFormat.B8G8R8A8_UNorm:
+                        outputFormat = PixelFormat.R8G8B8A8_UNorm;
+                        break;
+                    case PixelFormat.B8G8R8A8_UNorm_SRgb:
+                        outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
+                        break;
+                }
+            }
+
+            // OpenGL and OpenGLES: avoid R5G6B5 (not implemented)
+            if (parameters.GraphicsPlatform == GraphicsPlatform.OpenGLES || parameters.GraphicsPlatform == GraphicsPlatform.OpenGL)
+            {
+                switch (outputFormat)
+                {
+                    case PixelFormat.B5G5R5A1_UNorm:
+                    case PixelFormat.B5G6R5_UNorm:
+                        outputFormat = PixelFormat.R8G8B8A8_UNorm;
+                        break;
+                }
+            }
+
             return outputFormat;
         }
 

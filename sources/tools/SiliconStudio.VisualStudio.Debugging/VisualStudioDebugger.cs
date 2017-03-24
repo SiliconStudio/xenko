@@ -71,9 +71,27 @@ namespace SiliconStudio.VisualStudio.Debugging
             });
         }
 
+        public void DetachFromProcess(int processId)
+        {
+            context.Execute(() =>
+            {
+                // Make this DTE attach the newly created process
+                MessageFilter.Register();
+                var processes = dte.Debugger.LocalProcesses.OfType<EnvDTE.Process>();
+                var process = processes.FirstOrDefault(x => x.ProcessID == processId);
+                process?.Detach();
+                MessageFilter.Revoke();
+            });
+        }
+
         public void Attach()
         {
             AttachToProcess(System.Diagnostics.Process.GetCurrentProcess().Id);
+        }
+
+        public void Detach()
+        {
+            DetachFromProcess(System.Diagnostics.Process.GetCurrentProcess().Id);
         }
 
         public void Dispose()

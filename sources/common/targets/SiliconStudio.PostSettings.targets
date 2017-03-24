@@ -1,4 +1,4 @@
-<!-- Build file post-included by all Silicon Studio projects -->
+﻿<!-- Build file post-included by all Silicon Studio projects -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- Add Default targets used by Msbuild for undefined Platforms / or when skipping compilation under a platform -->
@@ -9,7 +9,11 @@
   <Target Name="GetTargetPath"/>
   <Target Name="GetNativeManifest"/>
   <Target Name="GetPackagingOutputs"/>
-  
+
+  <!--Import Local Post Settings for the solution being loaded -->
+  <Import Project="$(SolutionDir)$(SolutionName).PostSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PostSettings.Local.targets')" />
+  <Import Project="$(SolutionDir)SiliconStudio.PostSettings.Local.targets" Condition="Exists('$(SolutionDir)SiliconStudio.PostSettings.Local.targets')" />
+
   <!-- Include platform dependent assembly when specified -->
   <Choose>
     <When Condition="'$(SiliconStudioPlatformDependent)' == 'true'">
@@ -72,6 +76,9 @@
   <PropertyGroup>
     <SiliconStudioCompilerTargetsEnable Condition="!Exists('$(SiliconStudioCompilerTargets)')">false</SiliconStudioCompilerTargetsEnable>
     <SiliconStudioCompilerTargetsEnable Condition=" '$(SiliconStudioPlatform)' != 'Windows' and $(SiliconStudioWindowsOnly) == 'true'">false</SiliconStudioCompilerTargetsEnable>
+
+    <!-- Skip unit tests if requested -->
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioSkipUnitTests)' == 'true' And $(SiliconStudioXenkoOutputFolder.StartsWith('Tests'))">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
 
   <!-- Import the specific compiler targets for the selected platform/language if it exists and if `SiliconStudioWindowsOnly` is true, makes sure
@@ -116,27 +123,5 @@
     </ItemGroup>
   </Target>
 
-  <!-- For MonoTouch executable projects, we add a target that set the variable MtouchExtraArgs -->
-  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
-    <ResolveReferencesDependsOn>
-      SetMtouchExtraArgs;
-      $(ResolveReferencesDependsOn)
-    </ResolveReferencesDependsOn>
-  </PropertyGroup>
-  
-  <!-- For MonoTouch executable projects, we force native compilation with 'clang', and force linking with native siliconstudio.core library
-       Note: this target can be redefined to add link other libraries -->
-  <Target Name="SetMtouchExtraArgs" Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
-    <PropertyGroup>
-      <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags "-L%24{ProjectDir}/source -lstdc++ -lcore -force_load %24{ProjectDir}/source/libcore.a"</MtouchExtraArgs>
-    </PropertyGroup>
-  </Target>
-  
-  <!-- For MonoTouch executable projects, we add a target that copies the siliconstudio.core native library to link in the project root directory -->
-  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
-    <BuildDependsOn>
-        CopySiliconStudioNativeLibraries;
-        $(BuildDependsOn);
-    </BuildDependsOn>  
-  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)SiliconStudio.PostSettings.Dependencies.targets"/>
 </Project>

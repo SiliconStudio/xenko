@@ -236,7 +236,18 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                         throw new InvalidOperationException();
                     }
 
-                    var servicePath = Path.Combine(xenkoSdkDir, @"Bin\Windows-Direct3D11", serviceExe);
+                    var servicePath = Path.Combine(xenkoSdkDir, @"Bin\Windows", serviceExe);
+
+                    // For backward compatibility, we also try older Xenko 1.x paths
+                    if (!File.Exists(servicePath))
+                        servicePath = Path.Combine(xenkoSdkDir, @"Bin\Windows-Direct3D11", serviceExe);
+
+                    if (!File.Exists(servicePath))
+                    {
+                        Log.Error($"{RouterMessage.ClientRequestServer} action URL [{url}] references a process that doesn't seem to exist.");
+                        throw new InvalidOperationException();
+                    }
+
                     RunServiceProcessAndLog(servicePath);
                 }
             }

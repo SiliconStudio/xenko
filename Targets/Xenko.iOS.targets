@@ -3,31 +3,6 @@
     <SiliconStudioNETFrameworkVersion>v1.0</SiliconStudioNETFrameworkVersion>
   </PropertyGroup>
 
-  <!-- Embed native libraries -->
-  <ItemGroup>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libfreetype.a" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libcore*.a" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libbulletc.a" />
-
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libxenko*.a" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libNativePath.a" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libCelt.a" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libRecast.a" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libDetour.a" />
-    <!-- Let users add this if they want for now.
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libgvr.a" />
-    -->
-    <!-- Users custom native libraries -->
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\*.a" />
-  </ItemGroup>
-
-  <!-- strip any "lib" prefix and populate the LibraryName value -->
-  <ItemGroup>
-    <_SiliconStudioEmbeddedNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary)">
-      <LibraryName>$([System.Text.RegularExpressions.Regex]::Match('%(Filename)', `(lib)*(.+)`).get_Groups().get_Item(2).ToString())</LibraryName>
-    </_SiliconStudioEmbeddedNativeLibrary>
-  </ItemGroup>
-
   <!-- 
   *****************************************************************************************************************************
   Handle SiliconStudioEmbedNativeLibrary files
@@ -46,70 +21,42 @@
 
   <Target Name="EnsureXamarinVersion" BeforeTargets="PrepareForBuild">
     <Error Condition="'$(XamarinVersion)' == ''" Text="Xamarin iOS version was not found. Ensure HKEY_LOCAL_MACHINE\SOFTWARE\Xamarin\iOS\InstalledVersion is properly set."/>
-    <Error Condition="($(XamarinIOSMajorVersion) == 7 and $(XamarinIOSMinorVersion) >= 3) or ($(XamarinIOSMajorVersion) == 8 and $(XamarinIOSMinorVersion) &lt; 2)" Text="Xamarin iOS versions 7.3 to 8.1 are not compatible with Xenko (https://bugzilla.xamarin.com/show_bug.cgi?id=22906). Either downgrade to 7.2 (Xamarin 3.3) or upgrade to 8.2 (Xamarin 3.7)."/>
-    <Error Condition="($(XamarinIOSMajorVersion) == 8 and $(XamarinIOSMinorVersion) >= 6 and $(XamarinIOSMinorVersion) &lt; 9)" Text="Xamarin iOS versions 8.6 to 8.8 are not compatible with Xenko. Please upgrade to 8.9 (Xamarin 3.9)."/>
+    <Error Condition="($(XamarinIOSMajorVersion) == 8 And $(XamarinIOSMinorVersion) &lt; 10) Or $(XamarinIOSMajorVersion) &lt; 8" Text="Xamarin iOS version less than 8.10 is not compatible with Xenko. Please upgrade to 8.10."/>
   </Target>
 
   <!-- Rewrite BuildDependsOn and ResolveReferencesDependsOn -->
   <PropertyGroup Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
-    <BuildDependsOn>
-      CopyXenkoNativeiOsLibrary;
-      $(BuildDependsOn);
-    </BuildDependsOn>
     <!-- iOS: Ensure assets have been deployed before calling _CollectBundleResources (on Xamarin iOS 7 we use BeforeTargets) -->
-    <_CollectBundleResourcesDependsOn Condition="$(XamarinIOSMajorVersion) >= 8">
-      DeployAssetsiOS8;
+    <_CollectBundleResourcesDependsOn>
+      DeployAssetsiOS;
       $(_CollectBundleResourcesDependsOn);
     </_CollectBundleResourcesDependsOn>
   </PropertyGroup>
 
   <!-- Override PostSettings target CopySiliconStudioNativeLibraries. 
        Copy the libcore.a library to the project root directory for future native link. -->
-  <Target Name="CopyXenkoNativeiOsLibrary" Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
-    <!-- Xamarin iOS 7.3- (deprecated) -->
-    <Copy Condition="$(XamarinIOSMajorVersion) &lt;= 7" SourceFiles="@(ResolvedSiliconStudioEmbeddedNativeLibrary)" DestinationFiles="@(_SiliconStudioEmbeddedNativeLibrary->'$(ProjectDir)%(Filename)%(Extension)')"/>
-    <!-- Xamarin iOS 8.2+
-         HACK: Use LogicalName so that it is not actually inside the app bundle
-    -->
-    <ItemGroup Condition="$(XamarinIOSMajorVersion) == 8 And $(XamarinIOSMinorVersion) &lt; 6">
-      <BundleResource Include="@(_SiliconStudioEmbeddedNativeLibrary)">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <LogicalName>..\lib%(_SiliconStudioEmbeddedNativeLibrary.LibraryName)%(_SiliconStudioEmbeddedNativeLibrary.Extension)</LogicalName>
-      </BundleResource>
-    </ItemGroup>
+  <Target Name="CopyXenkoNativeiOsLibrary" Condition=" '$(SiliconStudioIsExecutable)' == 'true'" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
+      <!-- strip any "lib" prefix and populate the LibraryName value -->
+      <_SiliconStudioDependencyNativeLib>
+        <LibraryName>$([System.Text.RegularExpressions.Regex]::Match('%(Filename)', `(lib)*(.+)`).get_Groups().get_Item(2).ToString())</LibraryName>
+      </_SiliconStudioDependencyNativeLib>
 
-    <ItemGroup Condition="$(XamarinIOSMajorVersion) == 8 And $(XamarinIOSMinorVersion) == 9">
-      <NativeReferences Include="@(_SiliconStudioEmbeddedNativeLibrary)">
+      <None Include="@(_SiliconStudioDependencyNativeLib)">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <LogicalName>..\lib%(_SiliconStudioEmbeddedNativeLibrary.LibraryName)%(_SiliconStudioEmbeddedNativeLibrary.Extension)</LogicalName>
-      </NativeReferences>
-    </ItemGroup>
-
-    <!--Seems it helps from Xamarin iOS 8.10 to get files copied... -->
-    <ItemGroup Condition="($(XamarinIOSMajorVersion) == 8 And $(XamarinIOSMinorVersion) >= 10) Or $(XamarinIOSMajorVersion) >= 9">
-      <None Include="@(_SiliconStudioEmbeddedNativeLibrary)">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <LogicalName>..\lib%(_SiliconStudioEmbeddedNativeLibrary.LibraryName)%(_SiliconStudioEmbeddedNativeLibrary.Extension)</LogicalName>
       </None>
     </ItemGroup>
-    <Copy SessionId="$(BuildSessionId)" Condition="($(XamarinIOSMajorVersion) == 8 And $(XamarinIOSMinorVersion) >= 10) Or $(XamarinIOSMajorVersion) >= 9" SourceFiles="@(_SiliconStudioEmbeddedNativeLibrary)" DestinationFiles="@(SiliconStudioEmbeddedNativeLibrary->'$(ProjectDir)%(Filename)%(Extension)')"/>
+
+    <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
+      <MtouchExtraArgsLibs>$(XenkoMTouchExtras) -L"%24{ProjectDir}" @(_SiliconStudioDependencyNativeLib->'-l%(LibraryName) "%24{ProjectDir}/%(Filename)%(Extension)"',' ')</MtouchExtraArgsLibs>
+      <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags '-lstdc++ $(MtouchExtraArgsLibs)'</MtouchExtraArgs>
+    </PropertyGroup>
+
+    <!--<Copy SessionId="$(BuildSessionId)" SourceFiles="@(_SiliconStudioDependencyNativeLib)" DestinationFiles="@(_SiliconStudioDependencyNativeLib->'$(ProjectDir)%(Filename)%(Extension)')"/>-->
   </Target>
 
   <!-- Deploy assets and native libraries (Xamarin iOS 8.2+ version) -->
-  <Target Name="DeployAssetsiOS8" DependsOnTargets="_GenerateBundleName;SiliconStudioCompileAsset" Condition="'$(SiliconStudioIsExecutable)' == 'true' And $(XamarinIOSMajorVersion) >= 8">
-    <PropertyGroup Condition="$(XamarinIOSMajorVersion) == 8 And $(XamarinIOSMinorVersion) &lt; 6">
-      <MtouchExtraArgsLibs>$(XenkoMTouchExtras) @(_SiliconStudioEmbeddedNativeLibrary->'-l%(LibraryName) "%24{ProjectDir}/$(_AppBundlePath)../%(Filename)%(Extension)"',' ')</MtouchExtraArgsLibs>
-      <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags "-L%24{ProjectDir}/$(_AppBundlePath)../ -lstdc++ $(MtouchExtraArgsLibs)"</MtouchExtraArgs>
-    </PropertyGroup>
-    <PropertyGroup Condition="$(XamarinIOSMajorVersion) == 8 And $(XamarinIOSMinorVersion) == 9">
-      <MtouchExtraArgsLibs>$(XenkoMTouchExtras) @(_SiliconStudioEmbeddedNativeLibrary->'-L"%24{ProjectDir}/%(RootDir)%(Directory)" -l%(LibraryName) "%24{ProjectDir}/%(FullPath)"',' ')</MtouchExtraArgsLibs>
-      <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags '-lstdc++ $(MtouchExtraArgsLibs)'</MtouchExtraArgs>
-    </PropertyGroup>
-    <PropertyGroup Condition="($(XamarinIOSMajorVersion) == 8 And $(XamarinIOSMinorVersion) >= 10) Or $(XamarinIOSMajorVersion) >= 9">
-      <MtouchExtraArgsLibs>$(XenkoMTouchExtras) -L"%24{ProjectDir}" @(_SiliconStudioEmbeddedNativeLibrary->'-l%(LibraryName) "%24{ProjectDir}/%(Filename)%(Extension)"',' ')</MtouchExtraArgsLibs>
-      <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags '-lstdc++ $(MtouchExtraArgsLibs)'</MtouchExtraArgs>
-    </PropertyGroup>
-
+  <Target Name="DeployAssetsiOS" DependsOnTargets="_GenerateBundleName;SiliconStudioCompileAsset" Condition="'$(SiliconStudioIsExecutable)' == 'true'">
     <!-- Add all game data as content on iphone. Note that "Link" doesn't work but Xamarin seems to use a similar "LogicalName" property. -->
     <ItemGroup>
       <!-- Define the Assets to deploy -->
@@ -125,26 +72,6 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <Link>data\%(RecursiveDir)%(Filename)%(Extension)</Link>
       </Content>
-    </ItemGroup>
-  </Target>
-
-  <!-- Deploy assets and native libraries (Xamarin iOS 7.3- version)
-       Deprecated, later we will only support Xamarin iOS 8.2+ -->
-  <Target Name="DeployAssetsiOS7" BeforeTargets="_GenerateBundleContentDir" Condition="'$(SiliconStudioIsExecutable)' == 'true' And $(XamarinIOSMajorVersion) &lt;= 7">
-    <PropertyGroup>
-      <MtouchExtraArgsLibs>$(XenkoMTouchExtras) @(_SiliconStudioEmbeddedNativeLibrary->'-l%(LibraryName) "%24{ProjectDir}/source/%(Filename)%(Extension)"',' ')</MtouchExtraArgsLibs>
-      <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags "-L%24{ProjectDir}/source -lstdc++ $(MtouchExtraArgsLibs)"</MtouchExtraArgs>
-    </PropertyGroup>
-
-    <!-- Add all game data as content on iphone. Note that "Link" doesn't work but Xamarin seems to use a similar "LogicalName" property. -->
-    <ItemGroup>
-      <!-- Define the Assets to deploy -->
-      <AssetsToDeploy Include="$(SiliconStudioCompileAssetOutputPath)\**\*.*"/>
-
-      <_BundleResourceWithLogicalName Include="@(AssetsToDeploy)">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <LogicalName>data\%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
-      </_BundleResourceWithLogicalName>
     </ItemGroup>
   </Target>
 </Project>

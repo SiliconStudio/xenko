@@ -7,7 +7,7 @@
     <RootNamespace>SiliconStudio.Xenko.RemoteShaderCompiler</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.RemoteShaderCompiler</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

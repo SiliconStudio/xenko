@@ -14,7 +14,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <XenkoBulletPlatform>Windows</XenkoBulletPlatform>
     <XenkoBulletPlatform Condition="'$(SiliconStudioPlatform)' == 'iOS'">iOS</XenkoBulletPlatform>
     <XenkoBulletSignedDir Condition="'$(SiliconStudioSign)' == 'true'">Signed\</XenkoBulletSignedDir>
@@ -22,21 +22,19 @@
   <Choose>
     <When Condition="'$(SiliconStudioPlatform)' == 'Windows'">
       <ItemGroup>
-        <Content Include="..\..\..\deps\VHACD\**\VHACD.dll">
+        <SiliconStudioNativeLib Include="..\..\..\deps\VHACD\**\VHACD.dll">
           <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
+        </SiliconStudioNativeLib>
       </ItemGroup>
     </When>
   </Choose>
   <ItemGroup>
-    <None Include="..\..\..\deps\BulletPhysics\$(SiliconStudioPlatform)\**\libbulletc.*">
+    <SiliconStudioNativeLib Include="..\..\..\deps\BulletPhysics\$(SiliconStudioPlatform)\**\libbulletc.*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </SiliconStudioNativeLib>
+    <SiliconStudioContent Condition="'$(SiliconStudioPlatform)' == 'Linux'" Include="..\..\..\deps\BulletPhysics\BulletSharp.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Condition="'$(SiliconStudioPlatform)' == 'Linux'" Include="..\..\..\deps\BulletPhysics\BulletSharp.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </SiliconStudioContent>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="BulletSharp">
@@ -123,11 +121,6 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
       <Project>{1320f627-ee43-4115-8e89-19d1753e51f2}</Project>
       <Name>SiliconStudio.Core.MicroThreading</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
-      <Project>{fcf36d39-bffe-4719-b245-05640ee34c5f}</Project>
-      <Name>SiliconStudio.Core.Native</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
