@@ -126,9 +126,8 @@ namespace SiliconStudio.Xenko.Navigation.Tests
                         pendingResult.Success = true;
                         taskCompletionSource.SetResult(pendingResult);
                         taskCompletionSource = null;
-
-                        return;
                     }
+                    return;
                 }
 
                 // Calculate speed based on distance from final destination
