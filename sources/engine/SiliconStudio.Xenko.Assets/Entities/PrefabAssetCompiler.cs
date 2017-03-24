@@ -7,7 +7,7 @@ using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
-    [CompatibleAsset(typeof(PrefabAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(PrefabAsset), typeof(AssetCompilationContext))]
     public class PrefabAssetCompiler : EntityHierarchyCompilerBase<PrefabAsset>
     {
         protected override AssetCommand<PrefabAsset> Create(string url, PrefabAsset assetParameters, Package package)

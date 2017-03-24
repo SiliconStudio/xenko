@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public class AssetDependenciesCompiler
     {
-        private readonly BuildDependencyManager buildDependencyManager = new BuildDependencyManager();
+        private readonly BuildDependencyManager buildDependencyManager;
 
         /// <summary>
         /// Raised when a single asset has been compiled.
@@ -25,7 +25,7 @@ namespace SiliconStudio.Assets.Compiler
             if(!typeof(ICompilationContext).IsAssignableFrom(compilationContext))
                 throw new InvalidOperationException($"{nameof(compilationContext)} should inherit from ICompilationContext");
 
-            buildDependencyManager.CompilationContext = compilationContext;
+            buildDependencyManager = new BuildDependencyManager(compilationContext);
         }
 
         /// <summary>

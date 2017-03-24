@@ -13,7 +13,7 @@ using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
-    [CompatibleAsset(typeof(PrecompiledSpriteFontAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(PrecompiledSpriteFontAsset), typeof(AssetCompilationContext))]
     public class PrecompiledSpriteFontAssetCompiler : AssetCompilerBase
     {
         private static readonly FontDataFactory FontDataFactory = new FontDataFactory();

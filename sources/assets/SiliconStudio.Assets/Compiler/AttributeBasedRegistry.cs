@@ -44,7 +44,7 @@ namespace SiliconStudio.Assets.Compiler
                     continue;
 
                 // Asset compiler
-                var compilerAttribute = type.GetCustomAttribute<CompatibleAssetAttribute>();
+                var compilerAttribute = type.GetCustomAttribute<AssetCompilerAttribute>();
 
                 if (compilerAttribute == null) // no compiler attribute in this asset
                     continue;
@@ -60,18 +60,18 @@ namespace SiliconStudio.Assets.Compiler
             }
         }
 
-        protected virtual bool ProcessAttribute(CompatibleAssetAttribute compilerAttribute, Type type)
+        protected virtual bool ProcessAttribute(AssetCompilerAttribute compilerCompilerAttribute, Type type)
         {
-            if (!typeof(ICompilationContext).IsAssignableFrom(compilerAttribute.CompilationContext))
+            if (!typeof(ICompilationContext).IsAssignableFrom(compilerCompilerAttribute.CompilationContext))
             {
-                log.Error($"Invalid compiler context type [{compilerAttribute.CompilationContext}], must inherit from ICompilerContext");
+                log.Error($"Invalid compiler context type [{compilerCompilerAttribute.CompilationContext}], must inherit from ICompilerContext");
                 return false;
             }
 
-            var assetType = AssemblyRegistry.GetType(compilerAttribute.TypeName);
+            var assetType = AssemblyRegistry.GetType(compilerCompilerAttribute.TypeName);
             if (assetType == null)
             {
-                log.Error($"Unable to find asset [{compilerAttribute.TypeName}] for compiler [{type}]");
+                log.Error($"Unable to find asset [{compilerCompilerAttribute.TypeName}] for compiler [{type}]");
                 return false;
             }
 
@@ -82,7 +82,7 @@ namespace SiliconStudio.Assets.Compiler
                 return false;
             }
 
-            RegisterCompiler(assetType, compilerInstance, compilerAttribute.CompilationContext);
+            RegisterCompiler(assetType, compilerInstance, compilerCompilerAttribute.CompilationContext);
             return true;
         }
 

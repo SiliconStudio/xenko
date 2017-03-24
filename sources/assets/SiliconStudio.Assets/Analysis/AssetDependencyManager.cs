@@ -6,12 +6,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using SiliconStudio.Assets.Visitors;
-using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.MicroThreading;
 
 namespace SiliconStudio.Assets.Analysis
 {

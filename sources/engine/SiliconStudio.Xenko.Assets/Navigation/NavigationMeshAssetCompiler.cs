@@ -25,7 +25,7 @@ using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Assets.Navigation
 {
-    [CompatibleAsset(typeof(NavigationMeshAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(NavigationMeshAsset), typeof(AssetCompilationContext))]
     class NavigationMeshAssetCompiler : AssetCompilerBase
     { 
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
@@ -587,8 +587,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                     // Pre-Transform plane parameters
                     plane.Normal = Vector3.TransformNormal(plane.Normal, shape.Transform);
-                    float offsetf = Vector3.Dot(shape.Transform.TranslationVector, plane.Normal);
-                    plane.D += offsetf;
+                    float scalarOffset = Vector3.Dot(shape.Transform.TranslationVector, plane.Normal);
+                    plane.D += scalarOffset;
 
                     // Generate source plane triangles
                     Vector3[] planePoints;

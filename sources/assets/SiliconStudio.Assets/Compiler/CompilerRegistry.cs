@@ -10,14 +10,6 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Assets.Compiler
 {
-    public interface ICompilationContext
-    {      
-    }
-
-    public class AssetCompilationContext : ICompilationContext
-    {        
-    }
-
     /// <summary>
     /// A registry containing the compiler associated to all the asset types
     /// </summary>

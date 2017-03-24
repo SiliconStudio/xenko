@@ -17,7 +17,7 @@ using SiliconStudio.Xenko.Assets.Materials;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    [CompatibleAsset(typeof(AnimationAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(AnimationAsset), typeof(AssetCompilationContext))]
     public class AnimationAssetCompiler : AssetCompilerBase
     {
         public const string RefClipSuffix = "_reference_clip";
@@ -26,20 +26,6 @@ namespace SiliconStudio.Xenko.Assets.Models
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
         {
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SkeletonAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
-        }
-
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
-        {
-            var animAsset = (AnimationAsset)assetItem.Asset;
-
-            if (animAsset.Skeleton != null)
-            {
-                var skeleton = assetItem.Package.FindAssetFromProxyObject(animAsset.Skeleton);
-                if (skeleton != null)
-                {
-                    yield return new ObjectUrl(UrlType.Content, skeleton.Location);
-                }
-            }
         }
 
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
@@ -64,7 +50,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 return;
             }
 
-            sourceBuildStep.InputFilesGetter = () => GetInputFiles(context, assetItem);
+            //sourceBuildStep.InputFilesGetter = () => GetInputFiles(context, assetItem);
             sourceBuildStep.Mode = ImportModelCommand.ExportMode.Animation;
             sourceBuildStep.SourcePath = assetSource;
             sourceBuildStep.Location = targetUrlInStorage;

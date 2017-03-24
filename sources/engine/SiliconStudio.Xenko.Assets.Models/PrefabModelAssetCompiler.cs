@@ -23,7 +23,7 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    [CompatibleAsset(typeof(PrefabModelAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(PrefabModelAsset), typeof(AssetCompilationContext))]
     internal class PrefabModelAssetCompiler : AssetCompilerBase
     {
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ModelAsset), BuildDependencyType.CompileContent);
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(PrefabModelAsset), BuildDependencyType.CompileContent);
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ProceduralModelAsset), BuildDependencyType.CompileContent);
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SkeletonAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SkeletonAsset), BuildDependencyType.CompileAsset);
 
             //Material are needed both in game and in compiler
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
@@ -296,7 +296,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
                 var loadSettings = new ContentManagerLoaderSettings
                 {
-                    ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton), typeof(Material), typeof(Prefab), typeof(Scene))
+                    ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Material), typeof(Prefab), typeof(Scene))
                 };
 
                 IList<Entity> allEntities = new List<Entity>();

@@ -22,7 +22,7 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Assets.Physics
 {
-    [CompatibleAsset(typeof(ColliderShapeAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(ColliderShapeAsset), typeof(AssetCompilationContext))]
     internal class ColliderShapeAssetCompiler : AssetCompilerBase
     {
         static ColliderShapeAssetCompiler()
@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
             }
         }
 
-        public override IEnumerable<Type> GetTypesToFilterOut(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<Type> GetInputTypesToExclude(AssetCompilerContext context, AssetItem assetItem)
         {
             foreach(var type in AssetRegistry.GetAssetTypes(typeof(Material)))
             {

@@ -17,7 +17,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
-    [CompatibleAsset(typeof(SpriteStudioAnimationAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(SpriteStudioAnimationAsset), typeof(AssetCompilationContext))]
     internal class SpriteStudioAnimationAssetCompiler : AssetCompilerBase
     {
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)

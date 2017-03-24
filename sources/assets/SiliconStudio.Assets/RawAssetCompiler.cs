@@ -8,7 +8,7 @@ namespace SiliconStudio.Assets
     /// <summary>
     /// Raw asset compiler.
     /// </summary>
-    [CompatibleAsset(typeof(RawAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(RawAsset), typeof(AssetCompilationContext))]
     internal class RawAssetCompiler : AssetCompilerBase
     {
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)

@@ -6,7 +6,7 @@ using SiliconStudio.Assets.Compiler;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    [CompatibleAsset(typeof(SkeletonAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(SkeletonAsset), typeof(AssetCompilationContext))]
     public class SkeletonAssetCompiler : AssetCompilerBase
     {
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)

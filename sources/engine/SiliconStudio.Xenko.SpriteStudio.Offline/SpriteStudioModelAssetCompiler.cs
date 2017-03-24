@@ -17,7 +17,7 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
-    [CompatibleAsset(typeof(SpriteStudioModelAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(SpriteStudioModelAsset), typeof(AssetCompilationContext))]
     internal class SpriteStudioModelAssetCompiler : AssetCompilerBase
     {
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)

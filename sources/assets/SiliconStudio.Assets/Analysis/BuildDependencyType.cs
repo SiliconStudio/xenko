@@ -5,6 +5,9 @@ namespace SiliconStudio.Assets.Analysis
     [Flags]
     public enum BuildDependencyType
     {
+        /// <summary>
+        /// This asset dependency will be necessary in a running game (could be preview and thumbnail too!)
+        /// </summary>
         Runtime = 0x1,
         /// <summary>
         /// Only the asset is necessary

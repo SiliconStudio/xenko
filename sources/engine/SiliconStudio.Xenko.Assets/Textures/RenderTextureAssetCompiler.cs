@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.Rendering.RenderTextures;
 
 namespace SiliconStudio.Xenko.Assets.Textures
 {
-    [CompatibleAsset(typeof(RenderTextureAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(RenderTextureAsset), typeof(AssetCompilationContext))]
     public class RenderTextureAssetCompiler : AssetCompilerBase
     {
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)

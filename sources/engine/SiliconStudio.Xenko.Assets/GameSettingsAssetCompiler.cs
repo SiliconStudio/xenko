@@ -17,7 +17,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [CompatibleAsset(typeof(GameSettingsAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(GameSettingsAsset), typeof(AssetCompilationContext))]
     public class GameSettingsAssetCompiler : AssetCompilerBase
     {
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)

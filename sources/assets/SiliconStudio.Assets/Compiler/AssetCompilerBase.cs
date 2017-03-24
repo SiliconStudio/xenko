@@ -15,6 +15,7 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public abstract class AssetCompilerBase : IAssetCompiler
     {
+        /// <inheritdoc/>
         public virtual IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
         {
             var depsEnumerator = assetItem.Asset as IAssetCompileTimeDependencies;
@@ -28,12 +29,14 @@ namespace SiliconStudio.Assets.Compiler
             }
         }
 
+        /// <inheritdoc/>
         public virtual IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
         {
             yield break;
         }
 
-        public virtual IEnumerable<Type> GetTypesToFilterOut(AssetCompilerContext context, AssetItem assetItem)
+        /// <inheritdoc/>
+        public virtual IEnumerable<Type> GetInputTypesToExclude(AssetCompilerContext context, AssetItem assetItem)
         {
             yield break;
         }

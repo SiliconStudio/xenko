@@ -13,7 +13,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    [CompatibleAsset(typeof(ModelAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(ModelAsset), typeof(AssetCompilationContext))]
     public class ModelAssetCompiler : AssetCompilerBase
     {
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)

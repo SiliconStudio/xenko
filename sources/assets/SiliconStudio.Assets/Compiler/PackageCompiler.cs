@@ -14,8 +14,6 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public class PackageCompiler : IPackageCompiler
     {
-        //private static readonly AssetCompilerRegistry assetCompilerRegistry = new AssetCompilerRegistry();
-        //private readonly List<IPackageCompiler> compilers;
         private readonly IPackageCompilerSource packageCompilerSource;
         private readonly AssetDependenciesCompiler dependenciesCompiler = new AssetDependenciesCompiler(typeof(AssetCompilationContext));
 
@@ -37,7 +35,6 @@ namespace SiliconStudio.Assets.Compiler
         public PackageCompiler(IPackageCompilerSource packageCompilerSource)
         {
             this.packageCompilerSource = packageCompilerSource;
-            //compilers = new List<IPackageCompiler>();
         }
 
         /// <summary>

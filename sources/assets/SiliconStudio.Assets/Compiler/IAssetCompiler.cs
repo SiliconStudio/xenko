@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Assets.Analysis;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Compiler
@@ -22,10 +21,28 @@ namespace SiliconStudio.Assets.Compiler
         /// <returns>The result of the compilation.</returns>
         AssetCompilerResult Prepare(AssetCompilerContext context, AssetItem assetItem);
 
+        /// <summary>
+        /// Enumerates all the dependencies required to compile this asset
+        /// </summary>
+        /// <param name="context">The asset compiler context</param>
+        /// <param name="assetItem">The asset for which dependencies are enumerated</param>
+        /// <returns>The dependencies</returns>
         IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem);
 
+        /// <summary>
+        /// Enumerates all the asset types required to compile this asset
+        /// </summary>
+        /// <param name="context">The asset compiler context</param>
+        /// <param name="assetItem">The asset for which types are enumerated</param>
+        /// <returns>The dependencies</returns>
         IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem);
 
-        IEnumerable<Type> GetTypesToFilterOut(AssetCompilerContext context, AssetItem assetItem);
+        /// <summary>
+        /// Enumerates all the asset types to exclude when compiling this asset
+        /// </summary>
+        /// <param name="context">The asset compiler context</param>
+        /// <param name="assetItem">The asset for which types are enumerated</param>
+        /// <returns>The types to exclude</returns>
+        IEnumerable<Type> GetInputTypesToExclude(AssetCompilerContext context, AssetItem assetItem);
     }
 }

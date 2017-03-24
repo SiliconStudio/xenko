@@ -54,7 +54,6 @@
     <Compile Include="Analysis\BuildAssetNode.cs" />
     <Compile Include="Analysis\BuildDependencyManager.cs" />
     <Compile Include="Analysis\BuildDependencyType.cs" />
-    <Compile Include="Analysis\BuildNodeDesc.cs" />
     <Compile Include="Analysis\CollectionItemIdsAnalysis.cs" />
     <Compile Include="Analysis\IAssetDependencyManager.cs" />
     <Compile Include="Analysis\IdentifiableObjectAnalysis.cs" />
@@ -69,7 +68,9 @@
     <Compile Include="AssetTracker.cs" />
     <Compile Include="BasePart.cs" />
     <Compile Include="CollectionIdGenerator.cs" />
-    <Compile Include="Compiler\CompatibleAssetAttribute.cs" />
+    <Compile Include="Compiler\AssetCompilationContext.cs" />
+    <Compile Include="Compiler\AssetCompilerAttribute.cs" />
+    <Compile Include="Compiler\ICompilationContext.cs" />
     <Compile Include="Diagnostics\AssetSerializableLogMessage.cs" />
     <Compile Include="DynamicYaml\DynamicYaml.cs" />
     <Compile Include="DynamicYaml\DynamicYamlArray.cs" />
@@ -304,6 +305,7 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
       <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
       <Name>SiliconStudio.Core.MicroThreading</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
       <Project>{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}</Project>

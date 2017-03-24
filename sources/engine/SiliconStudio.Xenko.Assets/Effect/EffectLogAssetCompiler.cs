@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// <summary>
     /// Compiles same effects as a previous recorded session.
     /// </summary>
-    [CompatibleAsset(typeof(EffectLogAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(EffectLogAsset), typeof(AssetCompilationContext))]
     public class EffectLogAssetCompiler : AssetCompilerBase
     {
         public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)

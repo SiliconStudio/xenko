@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
     /// <summary>
     /// Texture asset compiler.
     /// </summary>
-    [CompatibleAsset(typeof(TextureAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(TextureAsset), typeof(AssetCompilationContext))]
     public class TextureAssetCompiler : AssetCompilerBase
     {
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
@@ -73,6 +73,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
             protected override void ComputeAssemblyHash(BinarySerializationWriter writer)
             {
                 writer.Write(DataSerializer.BinaryFormatVersion);
+                writer.Write(Parameters.SourcePathFromDisk);
 
                 // Since Image format is quite stable, we want to manually control it's assembly hash here
                 writer.Write(1);

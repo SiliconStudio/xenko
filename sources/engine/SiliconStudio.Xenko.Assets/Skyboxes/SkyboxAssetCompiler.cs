@@ -17,7 +17,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
-    [CompatibleAsset(typeof(SkyboxAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(SkyboxAsset), typeof(AssetCompilationContext))]
     internal class SkyboxAssetCompiler : AssetCompilerBase
     {
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
@@ -96,17 +96,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             public SkyboxCompileCommand(string url, SkyboxAsset parameters, Package package)
                 : base(url, parameters, package)
             {
-                //InputFilesGetter = GetInternalFiles;
             }
-
-//            private IEnumerable<ObjectUrl> GetInternalFiles()
-//            {
-//                foreach (var dependency in Parameters.GetDependencies())
-//                {
-//                    // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to compute the skybox
-//                    yield return new ObjectUrl(UrlType.Content, SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(dependency.Location));
-//                }
-//            }
 
             /// <inheritdoc/>
             protected override void ComputeParameterHash(BinarySerializationWriter writer)

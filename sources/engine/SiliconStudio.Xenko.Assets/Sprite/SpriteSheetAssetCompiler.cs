@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     /// <summary>
     /// The <see cref="SpriteSheetAsset"/> compiler.
     /// </summary>
-    [CompatibleAsset(typeof(SpriteSheetAsset), typeof(AssetCompilationContext))]
+    [AssetCompiler(typeof(SpriteSheetAsset), typeof(AssetCompilationContext))]
     public class SpriteSheetAssetCompiler : AssetCompilerBase 
     {
         private static bool TextureFileIsValid(UFile file)

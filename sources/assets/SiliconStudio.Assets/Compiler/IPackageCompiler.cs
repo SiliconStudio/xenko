@@ -8,7 +8,7 @@ namespace SiliconStudio.Assets.Compiler
     public interface IPackageCompiler
     {
         /// <summary>
-        /// Compiles a package with the specified compiler context.
+        /// Prepares a package with the specified compiler context.
         /// </summary>
         /// <param name="compilerContext">The compiler context.</param>
         /// <returns>Result of compilation.</returns>

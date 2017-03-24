@@ -41,7 +41,7 @@ namespace SiliconStudio.Assets.Analysis
 
             if (typesToFilterOut != null)
             {
-                foreach (var type in mainCompiler.GetTypesToFilterOut(context, AssetItem))
+                foreach (var type in mainCompiler.GetInputTypesToExclude(context, AssetItem))
                 {
                     typesToFilterOut.Add(type);
                 }
