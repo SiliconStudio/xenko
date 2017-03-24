@@ -15,7 +15,7 @@
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -31,7 +31,7 @@
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>

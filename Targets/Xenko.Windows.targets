@@ -1,94 +1,28 @@
-<!-- Build file post-included by all Xenko projects -->
+﻿<!-- Build file post-included by all Xenko projects -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
     <SiliconStudioNETFrameworkVersion>v4.5</SiliconStudioNETFrameworkVersion>
   </PropertyGroup>
   
-  <!-- Embed native libraries -->
-  <ItemGroup>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\freetype.dll">
-	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\freetype.dll">
-	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\libcore*.dll">
-	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\libcore*.dll">
-	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\libbulletc.dll">
-	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\libbulletc.dll">
-	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\d3dcompiler_47.dll">
-	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\d3dcompiler_47.dll">
-	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\glsl_optimizer.dll">
-	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\glsl_optimizer.dll">
-	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\openvr_api.dll">
-	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\openvr_api.dll">
-	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\libxenko*.dll">
-	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\libxenko*.dll">
-	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    
-    <!-- Users custom native libraries -->
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\**\*.dll">
-      <SiliconStudioNativeCPU>%(SiliconStudioEmbeddedNativeLibrary.RecursiveDir)</SiliconStudioNativeCPU>
-    </SiliconStudioEmbeddedNativeLibrary>
-  </ItemGroup>
-
   <!-- On Windows platform automatically add the following references -->
   <Choose>
-    <When Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
+    <When Condition=" '$(SiliconStudioIsExecutable)' == 'true' And '$(SiliconStudioUnitTest)' != 'true' ">
       <ItemGroup>
         <Reference Include="SiliconStudio.Xenko.Shaders.Compiler">
-          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Shaders.Compiler.dll</HintPath>
-          <Private Condition="'$(SiliconStudioUnitTest)' == 'true'">False</Private>
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioXenkoGraphicsApi)\SiliconStudio.Xenko.Shaders.Compiler.dll</HintPath>
         </Reference>
-
-        <Content Condition="'$(SiliconStudioUnitTest)' != 'true'" Include="@(SiliconStudioEmbeddedNativeLibrary)">
-          <Link>%(SiliconStudioNativeCPU)\%(Filename)%(Extension)</Link>
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-          <Visible>False</Visible>
-        </Content>
       </ItemGroup>
-	  </When>
+    </When>
   </Choose>
-  
-  <!-- On Vulkan embed the SPIR-V shader compiler -->
-  <Target Name="EmbedShaderCompiler" BeforeTargets="SiliconStudioUpdateGraphicsPlatform" Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan'">
-    <Copy SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator.exe" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+
+  <!-- Copy native libraries to output -->
+  <Target Name="_SiliconStudioSetupNativeLibraries" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <None Include="@(_SiliconStudioDependencyNativeLib)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
   </Target>
 
-  <!-- Add SDL2 if we are not using DX -->
-  <Target Name="EmbedSDL2" BeforeTargets="SiliconStudioCompileAsset" Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan' or '$(SiliconStudioXenkoGraphicsApi)' == 'OpenGL'">
-    <Copy SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\x86\SDL2.dll" DestinationFolder="$(OutputPath)\x86" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\x64\SDL2.dll" DestinationFolder="$(OutputPath)\x64" SkipUnchangedFiles="true" />
-  </Target>
-  
 </Project>

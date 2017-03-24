@@ -4,7 +4,6 @@
   <PropertyGroup>
     <SiliconStudioCommonPreSettingsName>Xenko</SiliconStudioCommonPreSettingsName>
     <SiliconStudioPlatform Condition="'$(SiliconStudioPlatform)' == ''">UWP</SiliconStudioPlatform>
-    <XenkoGraphicsApi Condition="'$(XenkoGraphicsApi)' == ''">Direct3D11</XenkoGraphicsApi>
-    <SiliconStudioXenkoGraphicsApi>$(XenkoGraphicsApi)</SiliconStudioXenkoGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == ''">Direct3D11</SiliconStudioXenkoGraphicsApi>
   </PropertyGroup>
 </Project>

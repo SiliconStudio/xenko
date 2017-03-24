@@ -15,7 +15,7 @@
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
     <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <Choose>
@@ -4009,11 +4009,6 @@
     <Folder Include="Rendering\Shadows\obsolete\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
-      <Project>{FCF36D39-BFFE-4719-B245-05640EE34C5F}</Project>
-      <Name>SiliconStudio.Core.Native</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>

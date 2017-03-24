@@ -14,7 +14,7 @@
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -39,15 +39,15 @@
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
         </Reference>
         <Reference Include="SharpDX.DXGI">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
         </Reference>
         <Reference Include="SharpDX.Direct2D1">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct2D1.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct2D1.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>

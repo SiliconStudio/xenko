@@ -4,7 +4,7 @@
   <PropertyGroup>
     <SiliconStudioProjectType>Cpp</SiliconStudioProjectType>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
     <SiliconStudioAssemblyProcessorOptions>
     </SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>

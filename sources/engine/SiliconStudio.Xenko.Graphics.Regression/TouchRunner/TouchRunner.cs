@@ -500,7 +500,7 @@ namespace SiliconStudio.Xenko.UnitTesting.UI {
 		        //current.Listener = this; // Internal on Android
 		        current.GetType().GetField("listener", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(current, this);
                 current.TestObject = test is TestSuite ? null : Reflect.Construct((test as TestMethod).Method.ReflectedType, null);
-		        WorkItem wi = test.CreateWorkItem(filter, null);
+		        WorkItem wi = test.CreateWorkItem(filter, new FinallyDelegate());
 		        wi.Execute(current);
 		        Result = wi.Result;
 		        return Result;

@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Presentation</RootNamespace>
     <AssemblyName>SiliconStudio.Presentation</AssemblyName>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
