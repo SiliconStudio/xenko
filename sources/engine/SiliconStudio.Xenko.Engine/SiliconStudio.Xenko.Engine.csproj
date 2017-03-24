@@ -15,7 +15,7 @@
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
     <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <Choose>
@@ -36,42 +36,6 @@
       <ItemGroup Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
         <Reference Include="System" />
         <Reference Include="System.Core" />
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
-      <ItemGroup>
-        <Reference Include="SharpDX">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
-        </Reference>
-        <Reference Include="SharpDX.DXGI">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
-        </Reference>
-        <Reference Include="SharpDX.D3DCompiler">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
-      <ItemGroup>
-        <Reference Include="SharpDX.Direct3D11">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D12' ">
-      <ItemGroup>
-        <Reference Include="SharpDX.Direct3D12">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
-        </Reference>
       </ItemGroup>
     </When>
   </Choose>
@@ -4036,11 +4000,6 @@
     <Folder Include="Rendering\Shadows\obsolete\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
-      <Project>{FCF36D39-BFFE-4719-B245-05640EE34C5F}</Project>
-      <Name>SiliconStudio.Core.Native</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>

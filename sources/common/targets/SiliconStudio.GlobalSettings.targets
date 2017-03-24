@@ -17,15 +17,15 @@
     <SiliconStudioDependenciesDir Condition="'$(SiliconStudioDependenciesDir)' == ''">$(MSBuildThisFileDirectory)..\deps\</SiliconStudioDependenciesDir>
     <SiliconStudioDependenciesDir Condition="'$(SiliconStudioDependenciesDir)' != '' and !HasTrailingSlash('$(SiliconStudioDependenciesDir)')">$(SiliconStudioDependenciesDir)\</SiliconStudioDependenciesDir>
     <!-- Define the location where to build assemblies. -->
-    <SiliconStudioBuildDirectory>$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioBuildDirectory>
+    <SiliconStudioBuildDirectory>$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</SiliconStudioBuildDirectory>
     <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioBuildDirExtension)</SiliconStudioBuildDirectory>
     <BaseIntermediateOutputPath Condition=" $(BaseIntermediateOutputPath) == '' ">obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath Condition=" $(IntermediateOutputPath) == '' ">$(BaseIntermediateOutputPath)$(SiliconStudioBuildDirectory)\</IntermediateOutputPath>
-    <DefaultOutputPath>Bin\$(SiliconStudioBuildDirectory)\</DefaultOutputPath>
-    <OutputPath Condition="'$(OutputPath)' == ''">$(DefaultOutputPath)</OutputPath>
+    <SiliconStudioOutputPath Condition=" $(SiliconStudioOutputPath) == '' ">Bin\$(SiliconStudioBuildDirectory)\</SiliconStudioOutputPath>
+    <OutputPath Condition="'$(OutputPath)' == ''">$(SiliconStudioOutputPath)</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <FileAlignment>512</FileAlignment>
-    <XenkoSharpDXSdkDir Condition="'$(XenkoSharpDXSdkDir)' == ''">$(SiliconStudioDependenciesDir)SharpDX</XenkoSharpDXSdkDir>
+    <SharpDXSdkDir Condition="'$(SharpDXSdkDir)' == ''">$(SiliconStudioDependenciesDir)SharpDX</SharpDXSdkDir>
   </PropertyGroup>
 
   <!-- 
@@ -36,9 +36,7 @@
     <TargetFrameworkVersionToolLow>v4.5.1</TargetFrameworkVersionToolLow>
     <TargetFrameworkVersionTool>v4.6.2</TargetFrameworkVersionTool>
     <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
-    <XenkoSharpDXSdkBinDir>$(XenkoSharpDXSdkDir)\Bin\Desktop</XenkoSharpDXSdkBinDir>
-    <XenkoSharpDXAudioSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXAudioSdkBinDir>
-    <XenkoSharpDXInputSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXInputSdkBinDir>
+    <SharpDXSdkBinDir>$(SharpDXSdkDir)\Bin\Desktop</SharpDXSdkBinDir>
     <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP;NET45</SiliconStudioPlatformDefines>
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-4.0\</NUnitLiteBinDir>
   </PropertyGroup>
@@ -52,9 +50,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_UWP;NET45;NETFX_CORE;WINDOWS_UAP</SiliconStudioPlatformDefines>
-    <XenkoSharpDXSdkBinDir>$(XenkoSharpDXSdkDir)\Bin\StoreApp</XenkoSharpDXSdkBinDir>
-    <XenkoSharpDXAudioSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXAudioSdkBinDir>
-    <XenkoSharpDXInputSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXInputSdkBinDir>
+    <SharpDXSdkBinDir>$(SharpDXSdkDir)\Bin\StoreApp</SharpDXSdkBinDir>
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-win10\</NUnitLiteBinDir>
   </PropertyGroup>
 

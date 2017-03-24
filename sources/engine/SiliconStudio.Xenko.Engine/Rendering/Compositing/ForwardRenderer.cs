@@ -328,8 +328,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         protected virtual void ResolveDepthMSAA(RenderDrawContext drawContext)
         {
-            if (ViewDepthStencilNoMSAA != null)
-                return;
             if (ViewDepthStencil.MultiSampleLevel == MSAALevel.None)
             {
                 ViewDepthStencilNoMSAA = ViewDepthStencil;
@@ -604,7 +602,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             }
 
             ViewOutputTarget = currentRenderTarget;
-            ViewDepthStencilNoMSAA = null;
         }
 
         protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <!-- Do not compile unit test when packaging -->
@@ -41,9 +41,6 @@
 
   <PropertyGroup>
     <SiliconStudioDependenciesDir>$(SiliconStudioPackageXenko)\sources\common\deps\</SiliconStudioDependenciesDir>
-    
-    <!-- Append unit test name (if not Android) -->
-    <SiliconStudioCompileAssetOutputPath Condition="'$(SiliconStudioPlatform)' != 'Android'">$(SiliconStudioCompileAssetOutputPath)\$(AssemblyName)</SiliconStudioCompileAssetOutputPath>
   </PropertyGroup>
 
   <!-- Include platform dependent assembly when specified -->
@@ -89,4 +86,7 @@
       <SiliconStudioXenkoCompileAssetOptions>$(SiliconStudioXenkoCompileAssetOptions) --property:SiliconStudioXenkoGraphicsApi=$(SiliconStudioXenkoGraphicsApi)</SiliconStudioXenkoCompileAssetOptions>
     </PropertyGroup>
   </Target>
+
+  <!-- Import target to handle ProjectReference for executables -->
+  <Import Project="$(MSBuildThisFileDirectory)Xenko.InternalReferences.targets"/>
 </Project>

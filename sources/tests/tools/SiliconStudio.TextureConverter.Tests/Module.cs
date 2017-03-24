@@ -1,16 +1,18 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using System.IO;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.TextureConverter.Tests
 {
     public static class Module
     {
-        public const string ApplicationPath = "SiliconStudio.TextureConverter.Tests";
-        public const string PathToInputImages = ApplicationPath+"/InputImages/";
-        public const string PathToOutputImages = ApplicationPath+"SiliconStudio.TextureConverter.Tests/InputImages/";
-        public const string PathToAtlasImages = PathToInputImages + "atlas/";
+        public static readonly string ApplicationPath = AppDomain.CurrentDomain.BaseDirectory;
+        public static readonly string PathToInputImages = Path.Combine(ApplicationPath, "InputImages") + Path.DirectorySeparatorChar;
+        public static readonly string PathToOutputImages = Path.Combine(ApplicationPath, "OutputImages") + Path.DirectorySeparatorChar;
+        public static readonly string PathToAtlasImages = PathToInputImages + "atlas" + Path.DirectorySeparatorChar;
         
         static Module()
         {

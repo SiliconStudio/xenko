@@ -4,7 +4,7 @@
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
     <XenkoNativeOutputName>libcore</XenkoNativeOutputName>
   </PropertyGroup>
-  <Import Project="..\..\..\native\Xenko.Native.targets" />
+  <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -13,7 +13,7 @@
     <RootNamespace>SiliconStudio.Core.Native</RootNamespace>
     <AssemblyName>SiliconStudio.Core.Native</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <Choose>
@@ -56,6 +56,7 @@
     <None Include="CoreNative.h" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <Import Project="..\..\..\native\Xenko.Native.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

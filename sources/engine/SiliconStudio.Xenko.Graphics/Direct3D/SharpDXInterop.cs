@@ -141,7 +141,7 @@ namespace SiliconStudio.Xenko.Graphics
                 unknown.AddReference();
             }
 
-            tex.InitializeFrom(dxTexture2D, false);
+            tex.InitializeFromImpl(dxTexture2D, false);
 
             return tex;
         }
@@ -205,7 +205,7 @@ namespace SiliconStudio.Xenko.Graphics
                 unknown.AddReference();
             }
 
-            tex.InitializeFrom(dxTexture2D, false);
+            tex.InitializeFromImpl(dxTexture2D, false);
 
             return tex;
         }

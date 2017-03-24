@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Graphics
             // Initialize the swap chain
             swapChain = CreateSwapChain();
 
-            backBuffer = new Texture(device).InitializeFrom(swapChain.GetBackBuffer<BackBufferResourceType>(0), Description.BackBufferFormat.IsSRgb());
+            backBuffer = new Texture(device).InitializeFromImpl(swapChain.GetBackBuffer<BackBufferResourceType>(0), Description.BackBufferFormat.IsSRgb());
 
             // Reload should get backbuffer from swapchain as well
             //backBufferTexture.Reload = graphicsResource => ((Texture)graphicsResource).Recreate(swapChain.GetBackBuffer<SharpDX.Direct3D11.Texture>(0));
@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
                 // Manually swap back buffer
                 backBuffer.NativeResource.Dispose();
-                backBuffer.InitializeFrom(swapChain.GetBackBuffer<BackBufferResourceType>((++bufferSwapIndex) % bufferCount), Description.BackBufferFormat.IsSRgb());
+                backBuffer.InitializeFromImpl(swapChain.GetBackBuffer<BackBufferResourceType>((++bufferSwapIndex) % bufferCount), Description.BackBufferFormat.IsSRgb());
 #endif
             }
             catch (SharpDXException sharpDxException)
@@ -198,7 +198,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Put it in our back buffer texture
             // TODO: Update new size
-            backBuffer.InitializeFrom(backBufferTexture, Description.BackBufferFormat.IsSRgb());
+            backBuffer.InitializeFromImpl(backBufferTexture, Description.BackBufferFormat.IsSRgb());
             backBuffer.LifetimeState = GraphicsResourceLifetimeState.Active;
         }
 
@@ -234,7 +234,7 @@ namespace SiliconStudio.Xenko.Graphics
             var backBufferTexture = swapChain.GetBackBuffer<BackBufferResourceType>(0);
 
             // Put it in our back buffer texture
-            backBuffer.InitializeFrom(backBufferTexture, Description.BackBufferFormat.IsSRgb());
+            backBuffer.InitializeFromImpl(backBufferTexture, Description.BackBufferFormat.IsSRgb());
 
             foreach (var texture in fastList)
             {

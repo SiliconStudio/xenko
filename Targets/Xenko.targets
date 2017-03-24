@@ -17,12 +17,13 @@
     <!-- Windows10 was renammed into UWP -->
     <SiliconStudioPlatform Condition="'$(SiliconStudioPlatform)' == 'Windows10'">UWP</SiliconStudioPlatform>
     <!-- Defaults for CPU and GraphicsApi based on platform-->
-    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Windows'">Direct3D11</SiliconStudioXenkoGraphicsApi>
-    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'UWP'">Direct3D11</SiliconStudioXenkoGraphicsApi>
-    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Android'">OpenGLES</SiliconStudioXenkoGraphicsApi>
-    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'iOS'">OpenGLES</SiliconStudioXenkoGraphicsApi>
-    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Linux'">OpenGL</SiliconStudioXenkoGraphicsApi>
-    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'macOS'">OpenGL</SiliconStudioXenkoGraphicsApi>
+    <SiliconStudioXenkoDefaultGraphicsApi Condition="'$(SiliconStudioPlatform)' == 'Windows'">Direct3D11</SiliconStudioXenkoDefaultGraphicsApi>
+    <SiliconStudioXenkoDefaultGraphicsApi Condition="'$(SiliconStudioPlatform)' == 'UWP'">Direct3D11</SiliconStudioXenkoDefaultGraphicsApi>
+    <SiliconStudioXenkoDefaultGraphicsApi Condition="'$(SiliconStudioPlatform)' == 'Android'">OpenGLES</SiliconStudioXenkoDefaultGraphicsApi>
+    <SiliconStudioXenkoDefaultGraphicsApi Condition="'$(SiliconStudioPlatform)' == 'iOS'">OpenGLES</SiliconStudioXenkoDefaultGraphicsApi>
+    <SiliconStudioXenkoDefaultGraphicsApi Condition="'$(SiliconStudioPlatform)' == 'Linux'">OpenGL</SiliconStudioXenkoDefaultGraphicsApi>
+    <SiliconStudioXenkoDefaultGraphicsApi Condition="'$(SiliconStudioPlatform)' == 'macOS'">OpenGL</SiliconStudioXenkoDefaultGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioXenkoDefaultGraphicsApi)' != ''">$(SiliconStudioXenkoDefaultGraphicsApi)</SiliconStudioXenkoGraphicsApi>
 
     <!--By default, turn on assembly processor-->
     <SiliconStudioAssemblyProcessor Condition="'$(SiliconStudioAssemblyProcessor)' == ''">true</SiliconStudioAssemblyProcessor>
@@ -31,10 +32,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(SiliconStudioPlatformFullName)' == ''">
     <!-- Define the location where to build assemblies. -->
-    <SiliconStudioPlatformFullName>$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</SiliconStudioPlatformFullName>
+    <SiliconStudioPlatformFullName>$(SiliconStudioPlatform)</SiliconStudioPlatformFullName>
     <SiliconStudioPlatformFullName Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioBuildDirExtension)</SiliconStudioPlatformFullName>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <SiliconStudioXenkoGraphicsSpecificOriginal>$(SiliconStudioPlatformFullName)\$(SiliconStudioXenkoGraphicsApi)</SiliconStudioXenkoGraphicsSpecificOriginal>
+  </PropertyGroup>
 
   <!-- 
   *****************************************************************************************************************************
@@ -48,7 +51,7 @@
     <!-- Resolve path (remove ".." elements), for better support on Xamarin iOS -->
     <SiliconStudioPackageXenko>$([System.IO.Path]::GetFullPath('$(SiliconStudioPackageXenko)'))</SiliconStudioPackageXenko>
     <SiliconStudioPackageXenkoBin Condition="'$(SiliconStudioPackageXenkoBin)' == ''">$(SiliconStudioPackageXenko)\Bin</SiliconStudioPackageXenkoBin>
-    <SiliconStudioPackageXenkoSdkBin Condition="'$(SiliconStudioPackageXenkoSdkBin)' == ''">$(SiliconStudioPackageXenkoBin)\Windows-Direct3D11</SiliconStudioPackageXenkoSdkBin>
+    <SiliconStudioPackageXenkoSdkBin Condition="'$(SiliconStudioPackageXenkoSdkBin)' == ''">$(SiliconStudioPackageXenkoBin)\Windows</SiliconStudioPackageXenkoSdkBin>
     <SiliconStudioPackageXenkoPlatformBin Condition="'$(SiliconStudioPackageXenkoPlatformBin)' == ''">$(SiliconStudioPackageXenkoBin)\$(SiliconStudioPlatformFullName)</SiliconStudioPackageXenkoPlatformBin>
   </PropertyGroup>
 
@@ -60,9 +63,6 @@
   <Choose>
     <When Condition="'$(SiliconStudioUnitTest)' != 'true'">
       <ItemGroup>
-        <Reference Include="SiliconStudio.Core.Native">
-          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Core.Native.dll</HintPath>
-        </Reference>
         <Reference Include="SiliconStudio.Core">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Core.dll</HintPath>
         </Reference>
@@ -88,16 +88,16 @@
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Engine.dll</HintPath>
         </Reference>
         <Reference Include="SiliconStudio.Xenko.Games">
-          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Games.dll</HintPath>
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioXenkoGraphicsApi)\SiliconStudio.Xenko.Games.dll</HintPath>
         </Reference>
         <Reference Include="SiliconStudio.Xenko.Graphics">
-          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Graphics.dll</HintPath>
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioXenkoGraphicsApi)\SiliconStudio.Xenko.Graphics.dll</HintPath>
         </Reference>
         <Reference Include="SiliconStudio.Xenko.Particles">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Particles.dll</HintPath>
         </Reference>
         <Reference Include="SiliconStudio.Xenko.Input">
-          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Input.dll</HintPath>
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioXenkoGraphicsApi)\SiliconStudio.Xenko.Input.dll</HintPath>
         </Reference>
         <Reference Include="SiliconStudio.Xenko.Shaders">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Shaders.dll</HintPath>
@@ -118,7 +118,7 @@
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Native.dll</HintPath>
         </Reference>
         <Reference Include="SiliconStudio.Xenko.VirtualReality">
-          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.VirtualReality.dll</HintPath>
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioXenkoGraphicsApi)\SiliconStudio.Xenko.VirtualReality.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
@@ -183,6 +183,57 @@
     <AssemblyProcessorTask Condition=" '$(SiliconStudioAssemblyProcessorDev)' != 'true' " Arguments="$(SiliconStudioAssemblyProcessorOptions)"/>
     <!-- Dev mode: don't use task to avoid locking the file -->
     <Exec Condition=" '$(SiliconStudioAssemblyProcessorDev)' == 'true' " Command="&quot;$(SiliconStudioAssemblyProcessorPath)&quot; $(SiliconStudioAssemblyProcessorOptions)"/>
+  </Target>
+
+  <!-- 
+  *****************************************************************************************************************************
+  Dependencies reading (from .ssdeps)
+  Important: Please keep in sync with SiliconStudio.PostSettings.Dependencies.Targets
+  *****************************************************************************************************************************
+  -->
+  <!-- List dependency files from .ssdeps -->
+  <Target Name="_SiliconStudioListDepsFiles" DependsOnTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <_SiliconStudioDepsFile Include="@(ReferencePath->'%(RootDir)%(Directory)%(Filename).ssdeps')" Condition="'%(CopyLocal)' != 'false' And Exists('%(RootDir)%(Directory)%(Filename).ssdeps')"/>
+      <_SiliconStudioDepsFile Include="@(ReferenceDependencyPaths->'%(RootDir)%(Directory)%(Filename).ssdeps')" Condition="'%(CopyLocal)' != 'false' And Exists('%(RootDir)%(Directory)%(Filename).ssdeps')"/>
+    </ItemGroup>
+  </Target>
+
+  <!-- Note: this target Outputs are not real, used so that it gets expanded for each file
+             also, if _SiliconStudioDepsFile is empty the target is still called so check for it -->
+  <Target Name="_SiliconStudioBuildDependencies" DependsOnTargets="_SiliconStudioListDepsFiles" Outputs="%(_SiliconStudioDepsFile.Identity)">
+    <!-- Read dependencies from file -->
+    <ReadLinesFromFile File="%(_SiliconStudioDepsFile.Identity)" Condition="'%(_SiliconStudioDepsFile.Identity)' != ''">
+      <Output TaskParameter="Lines" ItemName="_SiliconStudioDependencyLocal"/>
+    </ReadLinesFromFile>
+    <PropertyGroup>
+      <_SiliconStudioSourceDir>%(_SiliconStudioDepsFile.RootDir)%(_SiliconStudioDepsFile.Directory)</_SiliconStudioSourceDir>
+    </PropertyGroup>
+    <ItemGroup>
+      <_SiliconStudioDependencyLocal>
+        <!-- Note: Using regex match rather than regex split or string split to avoid MSBuild MissingMethodException -->
+        <Type>$([System.Text.RegularExpressions.Regex]::Match('%(Identity)', `(.*);(.*);(.*)`).get_Groups().get_Item(1).ToString())</Type>
+        <SourcePath>$([System.Text.RegularExpressions.Regex]::Match('%(Identity)', `(.*);(.*);(.*)`).get_Groups().get_Item(2).ToString())</SourcePath>
+        <Link>$([System.Text.RegularExpressions.Regex]::Match('%(Identity)', `(.*);(.*);(.*)`).get_Groups().get_Item(3).ToString())</Link>
+      </_SiliconStudioDependencyLocal>
+      <_SiliconStudioDependencyContent Include="@(_SiliconStudioDependencyLocal->'$(_SiliconStudioSourceDir)%(SourcePath)')" Condition="'%(_SiliconStudioDependencyLocal.Type)' == 'Content'"/>
+      <_SiliconStudioDependencyNativeLib Include="@(_SiliconStudioDependencyLocal->'$(_SiliconStudioSourceDir)%(SourcePath)')" Condition="'%(_SiliconStudioDependencyLocal.Type)' == 'NativeLib'"/>
+    </ItemGroup>
+
+    <!-- Message -->
+    <Message Importance="Normal" Text="Detected dependency from %(_SiliconStudioDepsFile.FileName)" Condition="'%(_SiliconStudioDepsFile.Identity)' != ''"/>
+    <Message Importance="Normal" Text="  %(_SiliconStudioDependencyLocal.Type): %(_SiliconStudioDependencyLocal.Identity) => %(_SiliconStudioDependencyLocal.Link)"/>
+
+    <!-- Cleanup so that _SiliconStudioDependencyLocal is local -->
+    <ItemGroup>
+      <_SiliconStudioDependencyLocal Remove="@(_SiliconStudioDependencyLocal)"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_SiliconStudioCopyContent" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences" Condition="'$(SiliconStudioXenkoOutputFolder)' != ''">
+    <ItemGroup>
+      <Content Include="@(_SiliconStudioDependencyContent)"/>
+    </ItemGroup>
   </Target>
 
   <!-- 
@@ -271,16 +322,20 @@
   <Target Name="SiliconStudioUpdateGraphicsPlatform" DependsOnTargets="SiliconStudioGetGraphicsPlatform" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
     <Message Importance="Normal" Text="Detected Graphics Platform $(SiliconStudioXenkoGraphicsApi)"/>
     <PropertyGroup>
-      <SiliconStudioPlatformFullNameOriginal>$(SiliconStudioPlatformFullName)</SiliconStudioPlatformFullNameOriginal>
-      <SiliconStudioPlatformFullName>$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</SiliconStudioPlatformFullName>
-      <SiliconStudioPlatformFullName Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioBuildDirExtension)</SiliconStudioPlatformFullName>
+      <SiliconStudioXenkoGraphicsSpecific>$(SiliconStudioPlatformFullName)\$(SiliconStudioXenkoGraphicsApi)</SiliconStudioXenkoGraphicsSpecific>
+      <!-- Since some assemblies are graphics API specific, we need to add those to search path, and do so before everything else (so that $(OutDir) doesn't take precedence) -->
+      <AssemblySearchPaths>
+        $(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioXenkoGraphicsApi)\;
+        $(SiliconStudioPackageXenkoPlatformBin)\;
+        $(AssemblySearchPaths)
+      </AssemblySearchPaths>
     </PropertyGroup>
     
     <!-- Rewrite dependencies -->
     <ItemGroup>
       <CustomAdditionalCompileInputs Include="$(IntermediateOutputPath)XenkoGraphicsPlatform.cache" />
-      <Reference Condition="$([System.String]::Copy('%(Reference.HintPath)').Contains('$(SiliconStudioPlatformFullNameOriginal)'))">
-        <HintPath>$([System.String]::Copy('%(Reference.HintPath)').Replace('$(SiliconStudioPlatformFullNameOriginal)','$(SiliconStudioPlatformFullName)'))</HintPath>
+      <Reference Condition="$([System.String]::Copy('%(Reference.HintPath)').Contains('$(SiliconStudioXenkoGraphicsSpecificOriginal)'))">
+        <HintPath>$([System.String]::Copy('%(Reference.HintPath)').Replace('$(SiliconStudioXenkoGraphicsSpecificOriginal)','$(SiliconStudioXenkoGraphicsSpecific)'))</HintPath>
       </Reference>
     </ItemGroup>
   </Target>
