@@ -9,8 +9,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SiliconStudio.Core.Tests</RootNamespace>
-    <AssemblyName>SiliconStudio.Core.Tests</AssemblyName>
+    <RootNamespace>SiliconStudio.Core.Mathematics.Tests</RootNamespace>
+    <AssemblyName>SiliconStudio.Core.Mathematics.Tests</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
