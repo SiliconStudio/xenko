@@ -1,5 +1,4 @@
 ﻿using System;
-using SiliconStudio.Assets.Quantum.Commands;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
