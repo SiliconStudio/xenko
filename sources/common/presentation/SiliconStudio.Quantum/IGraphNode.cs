@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum
@@ -18,6 +19,7 @@ namespace SiliconStudio.Quantum
         /// Gets the expected type of for the content of this node.
         /// </summary>
         /// <remarks>The actual type of the content can be different, for example it could be a type inheriting from this type.</remarks>
+        [NotNull]
         Type Type { get; }
 
         /// <summary>
@@ -29,6 +31,7 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets or sets the type descriptor of this content
         /// </summary>
+        [NotNull]
         ITypeDescriptor Descriptor { get; }
 
         /// <summary>

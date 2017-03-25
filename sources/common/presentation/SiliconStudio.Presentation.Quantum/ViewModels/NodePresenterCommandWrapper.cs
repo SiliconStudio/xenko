@@ -6,9 +6,10 @@ using System.Windows.Input;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Commands;
+using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Presentation.ViewModel;
 
-namespace SiliconStudio.Presentation.Quantum.Presenters
+namespace SiliconStudio.Presentation.Quantum.ViewModels
 {
     /// <summary>
     /// A class that wraps an instance of <see cref="INodePresenterCommand"/> into an <see cref="ICommand"/> instance.

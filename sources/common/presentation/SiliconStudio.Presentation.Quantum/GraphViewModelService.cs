@@ -31,6 +31,5 @@ namespace SiliconStudio.Presentation.Quantum
         public List<INodePresenterCommand> AvailableCommands { get; } = new List<INodePresenterCommand>();
 
         public List<INodePresenterUpdater> AvailableUpdaters { get; } = new List<INodePresenterUpdater>();
-
     }
 }

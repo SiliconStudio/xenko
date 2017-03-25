@@ -1,5 +1,6 @@
 ﻿using System;
 using SiliconStudio.Presentation.Quantum.Presenters;
+using SiliconStudio.Presentation.Quantum.ViewModels;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum

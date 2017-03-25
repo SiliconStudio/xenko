@@ -1,12 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
 
-namespace SiliconStudio.Presentation.Quantum
+using System;
+using System.Collections.Generic;
+
+namespace SiliconStudio.Presentation.Quantum.ViewModels
 {
-    public class GraphViewModelNodeValueChanged : EventArgs
+    public class NodeViewModelValueChangedArgs : EventArgs
     {
-        public GraphViewModelNodeValueChanged(GraphViewModel viewModel, string nodePath)
+        public NodeViewModelValueChangedArgs(GraphViewModel viewModel, string nodePath)
         {
             ViewModel = viewModel;
             NodePath = nodePath;

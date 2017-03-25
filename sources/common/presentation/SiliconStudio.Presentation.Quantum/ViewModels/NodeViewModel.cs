@@ -20,56 +20,28 @@ using Expression = System.Linq.Expressions.Expression;
 
 namespace SiliconStudio.Presentation.Quantum.ViewModels
 {
-    public class ValueChangingEventArgs : EventArgs
-    {
-        private bool coerced;
-
-        public ValueChangingEventArgs(object newValue)
-        {
-            NewValue = newValue;
-        }
-
-        public object NewValue { get; private set; }
-
-        //public bool Cancel { get; set; }
-
-        //public void Coerce(object value)
-        //{
-        //    NewValue = value;
-        //    coerced = true;
-        //}
-    }
-
-    public class ValueChangedEventArgs : EventArgs
-    {
-        public ValueChangedEventArgs(object oldValue)
-        {
-            OldValue = oldValue;
-        }
-
-        public object OldValue { get; }
-    }
-
     public class NodeViewModel : DispatcherViewModel, IDynamicMetaObjectProvider
     {
         internal class DifferentValuesObject { public readonly string Name = "DifferentValues"; };
 
-        protected string[] DisplayNameDependentProperties;
-        protected Func<string> DisplayNameProvider;
         protected static readonly HashSet<string> ReservedNames = new HashSet<string>();
         private readonly AutoUpdatingSortedObservableCollection<NodeViewModel> children = new AutoUpdatingSortedObservableCollection<NodeViewModel>(new AnonymousComparer<NodeViewModel>(CompareChildren), nameof(Name), nameof(Index), nameof(Order));
         private readonly ObservableCollection<NodePresenterCommandWrapper> commands = new ObservableCollection<NodePresenterCommandWrapper>();
         private readonly Dictionary<string, object> associatedData = new Dictionary<string, object>();
-        private List<NodeViewModel> initializingChildren = new List<NodeViewModel>();
         private readonly List<string> changingProperties = new List<string>();
         private readonly GraphViewModel owner;
+        private readonly List<INodePresenter> nodePresenters;
+        private List<NodeViewModel> initializingChildren = new List<NodeViewModel>();
         private bool isVisible;
         private bool isReadOnly;
         private string displayName;
-        private readonly List<INodePresenter> nodePresenters;
-        private int? customOrder;
         private bool isHighlighted;
 
+#if DEBUG
+        private static bool DebugQuantumPropertyChanges = true;
+#else
+        private static bool DebugQuantumPropertyChanges = false;
+#endif
 
         public static readonly object DifferentValues = new DifferentValuesObject();
 
@@ -102,11 +74,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         }
 
         /// <summary>
-        /// Gets the expected type of <see cref="NodeValue"/>.
-        /// </summary>
-        public Type Type { get; }
-
-        /// <summary>
         /// Gets or sets the name of this node. Note that the name can be used to access this node from its parent using a dynamic object.
         /// </summary>
         public string Name { get; }
@@ -122,6 +89,16 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         public string DisplayPath { get { if (Parent == null) return string.Empty; var parentPath = Parent.DisplayPath; return parentPath != string.Empty ? parentPath + '.' + DisplayName : DisplayName; } }
 
         /// <summary>
+        /// Gets or sets the value of the nodes represented by this view model.
+        /// </summary>
+        public object NodeValue { get { return GetNodeValue(); } set { SetNodeValue(ConvertValue(value)); } }
+
+        /// <summary>
+        /// Gets the expected type of <see cref="NodeValue"/>.
+        /// </summary>
+        public Type Type { get; }
+
+        /// <summary>
         /// Gets the parent of this node.
         /// </summary>
         public NodeViewModel Parent { get; private set; }
@@ -132,17 +109,14 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         public NodeViewModel Root { get { NodeViewModel root = this; while (root.Parent != null) root = root.Parent; return root; } }
 
         /// <summary>
-        /// Gets or sets whether this node should be displayed in the view.
+        /// Gets whether this node should be displayed in the view.
         /// </summary>
-        public bool IsVisible { get { return isVisible; } set { SetValue(ref isVisible, value); } }
+        public bool IsVisible { get { return isVisible; } private set { SetValue(ref isVisible, value); } }
 
         /// <summary>
-        /// Gets or sets whether this node can be modified in the view.
+        /// Gets whether this node can be modified in the view.
         /// </summary>
-        public bool IsReadOnly { get { return isReadOnly; } set { SetValue(ref isReadOnly, value); } }
-
-        /// <inheritdoc/>
-        public object NodeValue { get { return GetNodeValue(); } set { SetNodeValue(ConvertValue(value)); } }
+        public bool IsReadOnly { get { return isReadOnly; } private set { SetValue(ref isReadOnly, value); } }
 
         /// <summary>
         /// Gets the list of children nodes.
@@ -165,14 +139,9 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         public int Level => Parent?.Level + 1 ?? 0;
 
         /// <summary>
-        /// Gets the order number of this node in its parent.
-        /// </summary>
-        // FIXME
-        public int? Order => NodePresenters.First().CustomOrder ?? NodePresenters.First().Order;
-
-        /// <summary>
         /// Gets the member info (if any).
         /// </summary>
+        [Obsolete]
         public MemberInfo MemberInfo => null;
 
         /// <summary>
@@ -202,30 +171,12 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <summary>
         /// Gets the path of this node. The path is constructed from the name of all nodes from the root to this one, separated by periods.
         /// </summary>
-        private string Path => Parent != null ? Parent.Path + '.' + Name : Name;
+        protected string Path => Parent != null ? Parent.Path + '.' + Name : Name;
 
         /// <summary>
-        /// Indicates whether the given name is reserved for the name of a property in an <see cref="SiliconStudio.Presentation.Quantum.ViewModels.NodeViewModel"/>. Any children node with a colliding name will
-        /// be escaped with the <see cref="EscapeName"/> method.
+        /// Gets the order number of this node in its parent.
         /// </summary>
-        /// <param name="name">The name to check.</param>
-        /// <returns><c>True</c> if the name is reserved, <c>false</c> otherwise.</returns>
-        public static bool IsReserved(string name)
-        {
-            return ReservedNames.Contains(name);
-        }
-
-        /// <summary>
-        /// Escapes the name of a child to avoid name collision with a property.
-        /// </summary>
-        /// <param name="name">The name to escape.</param>
-        /// <returns>The escaped name.</returns>
-        /// <remarks>Names are escaped using a trailing underscore character.</remarks>
-        public static string EscapeName(string name)
-        {
-            var escaped = !IsReserved(name) ? name : name + "_";
-            return escaped.Replace(".", "-");
-        }
+        protected int? Order => NodePresenters.First().CustomOrder ?? NodePresenters.First().Order;
 
         public void FinishInitialization()
         {
@@ -279,60 +230,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         }
 
         /// <summary>
-        /// Registers a function that can compute the display name of this node. If the function uses some children of this node to compute
-        /// the display name, the name of these children can be passed so the function is re-evaluated each time one of these children value changes.
-        /// </summary>
-        /// <param name="provider">A function that can compute the display name of this node.</param>
-        /// <param name="dependentProperties">The names of children that should trigger the re-evaluation of the display name when they are modified.</param>
-        public void SetDisplayNameProvider(Func<string> provider, params string[] dependentProperties)
-        {
-            DisplayNameProvider = provider;
-            DisplayNameDependentProperties = dependentProperties?.Select(EscapeName).ToArray();
-            if (provider != null)
-                DisplayName = provider();
-        }
-
-        protected virtual object GetNodeValue()
-        {
-            object currentValue = null;
-            var isFirst = true;
-            foreach (var nodePresenter in NodePresenters)
-            {
-                if (isFirst)
-                {
-                    currentValue = nodePresenter.Value;
-                }
-                else if (nodePresenter.Factory.IsPrimitiveType(nodePresenter.Value?.GetType()))
-                {
-                    if (!AreValueEqual(currentValue, nodePresenter.Value))
-                        return DifferentValues;
-                }
-                else
-                {
-                    // FIXME: handle object references at AssetNodeViewModel level
-                    if (currentValue?.GetType() != nodePresenter.Value?.GetType())
-                        return DifferentValues;
-                }
-                isFirst = false;
-            }
-            return currentValue;
-        }
-
-        protected virtual void SetNodeValue(object newValue)
-        {
-            foreach (var nodePresenter in NodePresenters)
-            {
-                // TODO: normally it shouldn't take that path (since it uses commands), but this is not safe with newly instantiated values
-                // fixme adding a test to check whether it's a content type from Quantum point of view might be safe enough.
-                var oldValue = nodePresenter.Value;
-                if (!Equals(oldValue, newValue))
-                {
-                    nodePresenter.UpdateValue(newValue);
-                }
-            }
-        }
-
-        /// <summary>
         /// Returns the child node with the matching name.
         /// </summary>
         /// <param name="name">The name of the <see cref="SiliconStudio.Presentation.Quantum.ViewModels.NodeViewModel"/> to look for.</param>
@@ -382,12 +279,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             return new NodeViewModelDynamicMetaObject(parameter, this);
         }
 
-        [NotNull]
-        protected virtual NodePresenterCommandWrapper ConstructCommandWrapper(INodePresenterCommand command)
-        {
-            return new NodePresenterCommandWrapper(ServiceProvider, nodePresenters, command);
-        }
-
         internal void NotifyPropertyChanging(string propertyName)
         {
             if (!changingProperties.Contains(propertyName))
@@ -405,37 +296,50 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             }
         }
 
-        /// <inheritdoc/>
-        public override string ToString()
+        [NotNull]
+        protected virtual NodePresenterCommandWrapper ConstructCommandWrapper(INodePresenterCommand command)
         {
-            return $"{Name}: [{GetNodeValue()}]";
+            return new NodePresenterCommandWrapper(ServiceProvider, nodePresenters, command);
         }
 
-        protected void AddAssociatedData(string key, object value)
+        protected virtual object GetNodeValue()
         {
-            if (initializingChildren == null)
+            object currentValue = null;
+            var isFirst = true;
+            foreach (var nodePresenter in NodePresenters)
             {
-                OnPropertyChanging(key);
+                if (isFirst)
+                {
+                    currentValue = nodePresenter.Value;
+                }
+                else if (nodePresenter.Factory.IsPrimitiveType(nodePresenter.Value?.GetType()))
+                {
+                    if (!AreValueEqual(currentValue, nodePresenter.Value))
+                        return DifferentValues;
+                }
+                else
+                {
+                    // FIXME: handle object references at AssetNodeViewModel level
+                    if (currentValue?.GetType() != nodePresenter.Value?.GetType())
+                        return DifferentValues;
+                }
+                isFirst = false;
             }
-            associatedData.Add(key, value);
-            if (initializingChildren == null)
-            {
-                OnPropertyChanged(key);
-            }
+            return currentValue;
         }
 
-        public bool RemoveAssociatedData(string key)
+        protected virtual void SetNodeValue(object newValue)
         {
-            if (initializingChildren == null)
+            foreach (var nodePresenter in NodePresenters)
             {
-                OnPropertyChanging(key);
+                // TODO: normally it shouldn't take that path (since it uses commands), but this is not safe with newly instantiated values
+                // fixme adding a test to check whether it's a content type from Quantum point of view might be safe enough.
+                var oldValue = nodePresenter.Value;
+                if (!Equals(oldValue, newValue))
+                {
+                    nodePresenter.UpdateValue(newValue);
+                }
             }
-            var result = associatedData.Remove(key);
-            if (initializingChildren == null)
-            {
-                OnPropertyChanged(key);
-            }
-            return result;
         }
 
         /// <summary>
@@ -458,87 +362,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
 
             owner.GraphViewModelService.NodeViewModelFactory.GenerateChildren(owner, this, nodePresenters);
             FinishInitialization();
-        }
-
-
-        /// <summary>
-        /// Adds the given node to the list of children of this node.
-        /// </summary>
-        /// <param name="child">The node to add as child.</param>
-        protected void AddChild(NodeViewModel child)
-        {
-            if (child == null) throw new ArgumentNullException(nameof(child));
-            if (child.Parent != null) throw new InvalidOperationException("The node already have a parent.");
-            if (Children.Contains(child)) throw new InvalidOperationException("The node is already in the children list of its parent.");
-            if (initializingChildren == null)
-            {
-                NotifyPropertyChanging(child.Name);
-            }
-            child.Parent = this;
-
-            if (initializingChildren == null)
-            {
-                children.Add(child);
-                NotifyPropertyChanged(child.Name);
-            }
-            else
-            {
-                initializingChildren.Add(child);
-            }
-        }
-
-        protected void RemoveChild(NodeViewModel node)
-        {
-            if (node == null) throw new ArgumentNullException(nameof(node));
-            if (!Children.Contains(node)) throw new InvalidOperationException("The node is not in the children list of its parent.");
-
-            if (initializingChildren == null)
-            {
-                NotifyPropertyChanging(node.Name);
-            }
-
-            node.Parent = null;
-            if (initializingChildren == null)
-            {
-                children.Remove(node);
-                NotifyPropertyChanged(node.Name);
-            }
-            else
-            {
-                initializingChildren.Remove(node);
-            }
-        }
-
-        /// <summary>
-        /// Adds the provided <paramref name="command"/> to this node.
-        /// </summary>
-        /// <param name="command">The command to add.</param>
-        public void AddCommand([NotNull] NodePresenterCommandWrapper command)
-        {
-            if (command == null) throw new ArgumentNullException(nameof(command));
-
-            OnPropertyChanging($"{GraphViewModel.HasCommandPrefix}{command.Name}");
-            OnPropertyChanging(command.Name);
-            commands.Add(command);
-            OnPropertyChanged(command.Name);
-            OnPropertyChanged($"{GraphViewModel.HasCommandPrefix}{command.Name}");
-        }
-
-        /// <summary>
-        /// Removes the provided <paramref name="command"/> from this node, if it exists.
-        /// </summary>
-        /// <param name="command">The command to remove.</param>
-        /// <returns><c>true</c> if the command was sucessfully removed; otherwise, <c>false</c>.</returns>
-        public bool RemoveCommand([NotNull] NodePresenterCommandWrapper command)
-        {
-            if (command == null) throw new ArgumentNullException(nameof(command));
-
-            OnPropertyChanging($"{GraphViewModel.HasCommandPrefix}{command.Name}");
-            OnPropertyChanging(command.Name);
-            var removed = commands.Remove(command);
-            OnPropertyChanged(command.Name);
-            OnPropertyChanged($"{GraphViewModel.HasCommandPrefix}{command.Name}");
-            return removed;
         }
 
         protected void CheckDynamicMemberConsistency()
@@ -581,11 +404,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             }
         }
 
-#if DEBUG
-        private static bool DebugQuantumPropertyChanges = true;
-#else
-        private static bool DebugQuantumPropertyChanges = false;
-#endif
         protected override void OnPropertyChanging(params string[] propertyNames)
         {
             if (DebugQuantumPropertyChanges && HasPropertyChangingSubscriber)
@@ -605,13 +423,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
                 foreach (var property in propertyNames)
                 {
                     owner.Logger.Debug($"Node Property changed: [{Path}].{property}");
-                }
-            }
-            if (DisplayNameProvider != null && DisplayNameDependentProperties != null)
-            {
-                if (propertyNames.Any(x => DisplayNameDependentProperties.Contains(x)))
-                {
-                    DisplayName = DisplayNameProvider();
                 }
             }
             base.OnPropertyChanged(propertyNames);
@@ -646,6 +457,49 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             owner.NotifyNodeChanged(Path);
         }
 
+        private object ConvertValue(object value)
+        {
+            if (Type.IsInstanceOfType(value))
+                return value;
+
+            if (value is IConvertible)
+            {
+                var typeCode = Type.GetTypeCode(Type);
+                if (typeCode != TypeCode.Empty && typeCode != TypeCode.Object)
+                {
+                    return Convert.ChangeType(value, Type);
+                }
+            }
+
+            return TypeDescriptor.GetConverter(Type).ConvertFrom(value);
+        }
+
+        private void AddChild([NotNull] NodeViewModel child) => ChangeAndNotify(() => ((ICollection<NodeViewModel>)initializingChildren ?? children).Remove(child), $"{GraphViewModel.HasChildPrefix}{child.Name}", child.Name);
+
+        private void RemoveChild([NotNull] NodeViewModel child) => ChangeAndNotify(() => ((ICollection<NodeViewModel>)initializingChildren ?? children).Remove(child), $"{GraphViewModel.HasChildPrefix}{child.Name}", child.Name);
+
+        private void AddCommand([NotNull] NodePresenterCommandWrapper command) => ChangeAndNotify(() => commands.Add(command), $"{GraphViewModel.HasCommandPrefix}{command.Name}", command.Name);
+
+        private void RemoveCommand([NotNull] NodePresenterCommandWrapper command) => ChangeAndNotify(() => commands.Remove(command), $"{GraphViewModel.HasCommandPrefix}{command.Name}", command.Name);
+
+        private void AddAssociatedData([NotNull] string key, object value) => ChangeAndNotify(() => associatedData.Add(key, value), $"{GraphViewModel.HasAssociatedDataPrefix}{key}", key);
+
+        private void RemoveAssociatedData([NotNull] string key) => ChangeAndNotify(() => associatedData.Remove(key), $"{GraphViewModel.HasAssociatedDataPrefix}{key}", key);
+
+        private void ChangeAndNotify([NotNull] Action changeAction, params string[] propertyNames)
+        {
+            if (changeAction == null) throw new ArgumentNullException(nameof(changeAction));
+            if (initializingChildren == null)
+            {
+                OnPropertyChanging(propertyNames);
+            }
+            changeAction();
+            if (initializingChildren == null)
+            {
+                OnPropertyChanged(propertyNames);
+            }
+        }
+
         private void UpdateViewModelProperties()
         {
             var shouldBeVisible = false;
@@ -667,6 +521,37 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
 
             // TODO: find a way to "merge" display name if they are different (string.Join?)
             DisplayName = Utils.SplitCamelCase(nodePresenters.First().DisplayName);
+
+            CheckDynamicMemberConsistency();
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"{Name}: [{GetNodeValue()}]";
+        }
+
+        /// <summary>
+        /// Indicates whether the given name is reserved for the name of a property in an <see cref="SiliconStudio.Presentation.Quantum.ViewModels.NodeViewModel"/>. Any children node with a colliding name will
+        /// be escaped with the <see cref="EscapeName"/> method.
+        /// </summary>
+        /// <param name="name">The name to check.</param>
+        /// <returns><c>True</c> if the name is reserved, <c>false</c> otherwise.</returns>
+        public static bool IsReserved(string name)
+        {
+            return ReservedNames.Contains(name);
+        }
+
+        /// <summary>
+        /// Escapes the name of a child to avoid name collision with a property.
+        /// </summary>
+        /// <param name="name">The name to escape.</param>
+        /// <returns>The escaped name.</returns>
+        /// <remarks>Names are escaped using a trailing underscore character.</remarks>
+        public static string EscapeName(string name)
+        {
+            var escaped = !IsReserved(name) ? name : name + "_";
+            return escaped.Replace(".", "-");
         }
 
         private static int CompareChildren(NodeViewModel a, NodeViewModel b)
@@ -691,23 +576,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
 
             // Otherwise, the first child would be the one who have an order value.
             return a.Order == null ? 1 : -1;
-        }
-
-        private object ConvertValue(object value)
-        {
-            if (Type.IsInstanceOfType(value))
-                return value;
-
-            if (value is IConvertible)
-            {
-                var typeCode = Type.GetTypeCode(Type);
-                if (typeCode != TypeCode.Empty && typeCode != TypeCode.Object)
-                {
-                    return Convert.ChangeType(value, Type);
-                }
-            }
-
-            return TypeDescriptor.GetConverter(Type).ConvertFrom(value);
         }
 
         private static object DefaultCombineAttachedProperty(IEnumerable<object> arg)

@@ -1,4 +1,5 @@
-﻿using SiliconStudio.Quantum;
+﻿using SiliconStudio.Presentation.Quantum.ViewModels;
+using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
 {

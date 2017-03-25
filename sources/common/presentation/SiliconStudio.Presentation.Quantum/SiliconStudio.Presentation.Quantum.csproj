@@ -21,8 +21,6 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CombinedNodeViewModel.cs" />
-    <Compile Include="Controls\AsyncContentControl.cs" />
     <Compile Include="GraphNodeBinding.cs" />
     <Compile Include="Presenters\AnonymousNodePresenterCommand.cs" />
     <Compile Include="Presenters\PropertyCombinerMetadata.cs" />
@@ -30,7 +28,7 @@
     <Compile Include="ViewModels\INodeViewModelFactory.cs" />
     <Compile Include="ViewModels\NodeViewModelFactory.cs" />
     <Compile Include="Presenters\INodePresenterUpdater.cs" />
-    <Compile Include="Presenters\NodePresenterCommandWrapper.cs" />
+    <Compile Include="ViewModels\NodePresenterCommandWrapper.cs" />
     <Compile Include="ViewModels\NodeViewModel.cs" />
     <Compile Include="Presenters\INodePresenterCommand.cs" />
     <Compile Include="Presenters\INodePresenterFactory.cs" />
@@ -42,8 +40,7 @@
     <Compile Include="Presenters\IInitializingNodePresenter.cs" />
     <Compile Include="Presenters\INodePresenter.cs" />
     <Compile Include="IPropertyProviderViewModel.cs" />
-    <Compile Include="GraphViewModelNodeValueChanged.cs" />
-    <Compile Include="GraphViewModelConsistencyException.cs" />
+    <Compile Include="ViewModels\NodeViewModelValueChangedArgs.cs" />
     <Compile Include="GraphViewModelService.cs" />
     <Compile Include="Presenters\NodePresenterBase.cs" />
     <Compile Include="Presenters\NodePresenterException.cs" />
@@ -51,11 +48,11 @@
     <Compile Include="Presenters\RootNodePresenter.cs" />
     <Compile Include="Presenters\SyncNodePresenterCommandBase.cs" />
     <Compile Include="Presenters\VirtualNodePresenter.cs" />
-    <Compile Include="DebugExtensions.cs" />
-    <Compile Include="NodeViewModelDynamicMetaObject.cs" />
-    <Compile Include="GraphViewModel.cs" />
+    <Compile Include="ViewModels\NodeViewModelDynamicMetaObject.cs" />
+    <Compile Include="ViewModels\GraphViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SinglePropertyProvider.cs" />
+    <Compile Include="Presenters\ValueChangedEventArgs.cs" />
+    <Compile Include="Presenters\ValueChangingEventArgs.cs" />
     <Compile Include="View\DifferentValueToParam.cs" />
     <Compile Include="View\NodeViewModelTemplateProvider.cs" />
     <Compile Include="View\RangedValueTemplateProvider.cs" />

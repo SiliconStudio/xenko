@@ -17,7 +17,7 @@ namespace SiliconStudio.Quantum
     {
         protected readonly NodeContainer NodeContainer;
 
-        protected GraphNodeBase(NodeContainer nodeContainer, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
+        protected GraphNodeBase(NodeContainer nodeContainer, Guid guid, [NotNull] ITypeDescriptor descriptor, bool isPrimitive)
         {
             if (guid == Guid.Empty) throw new ArgumentException(@"The guid must be different from Guid.Empty.", nameof(guid));
             if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));

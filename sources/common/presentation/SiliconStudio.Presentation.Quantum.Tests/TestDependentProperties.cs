@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using SiliconStudio.Presentation.Quantum.Tests.Helpers;
+using SiliconStudio.Presentation.Quantum.ViewModels;
 using TestContext = SiliconStudio.Presentation.Quantum.Tests.Helpers.TestContext;
 
 namespace SiliconStudio.Presentation.Quantum.Tests
