@@ -74,9 +74,6 @@
     <Compile Include="AssetQuantumRegistry.cs" />
     <Compile Include="AssetToBaseNodeLinker.cs" />
     <Compile Include="Visitors\ClearObjectReferenceVisitor.cs" />
-    <Compile Include="Commands\AbstractNodeEntry.cs" />
-    <Compile Include="Commands\AbstractNodeType.cs" />
-    <Compile Include="Commands\AbstractNodeValue.cs" />
     <Compile Include="IBaseToDerivedRegistry.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="NodesToOwnerPartVisitor.cs" />
