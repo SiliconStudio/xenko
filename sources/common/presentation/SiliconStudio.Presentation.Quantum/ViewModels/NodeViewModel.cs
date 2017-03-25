@@ -60,15 +60,16 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         private readonly AutoUpdatingSortedObservableCollection<NodeViewModel> children = new AutoUpdatingSortedObservableCollection<NodeViewModel>(new AnonymousComparer<NodeViewModel>(CompareChildren), nameof(Name), nameof(Index), nameof(Order));
         private readonly ObservableCollection<NodePresenterCommandWrapper> commands = new ObservableCollection<NodePresenterCommandWrapper>();
         private readonly Dictionary<string, object> associatedData = new Dictionary<string, object>();
+        private List<NodeViewModel> initializingChildren = new List<NodeViewModel>();
         private readonly List<string> changingProperties = new List<string>();
+        private readonly GraphViewModel owner;
         private bool isVisible;
         private bool isReadOnly;
         private string displayName;
-        private int visibleChildrenCount;
-        private List<NodeViewModel> initializingChildren = new List<NodeViewModel>();
         private readonly List<INodePresenter> nodePresenters;
         private int? customOrder;
         private bool isHighlighted;
+
 
         public static readonly object DifferentValues = new DifferentValuesObject();
 
@@ -80,14 +81,12 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         protected internal NodeViewModel(GraphViewModel ownerViewModel, NodeViewModel parent, string baseName, Type nodeType, List<INodePresenter> nodePresenters)
             : base(ownerViewModel.ServiceProvider)
         {
-            DependentProperties.Add(nameof(Path), new[] { nameof(DisplayPath) });
-            Owner = ownerViewModel;
+            owner = ownerViewModel;
             Type = nodeType;
 
             if (baseName == null)
                 throw new ArgumentException("baseName and index can't be both null.");
 
-            CombineMode = CombineMode.CombineOnlyForAll;
             Name = EscapeName(baseName);
 
             this.nodePresenters = nodePresenters;
@@ -103,11 +102,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         }
 
         /// <summary>
-        /// Gets the <see cref="GraphViewModel"/> that owns this node.
-        /// </summary>
-        public GraphViewModel Owner { get; }
-
-        /// <summary>
         /// Gets the expected type of <see cref="NodeValue"/>.
         /// </summary>
         public Type Type { get; }
@@ -121,12 +115,6 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// Gets or sets the name used to display the node to the user.
         /// </summary>
         public string DisplayName { get { return displayName; } set { SetValue(ref displayName, value); } }
-
-        /// <summary>
-        /// Gets the path of this node. The path is constructed from the name of all nodes from the root to this one, separated by periods.
-        /// </summary>
-        [Obsolete]
-        public string Path => Parent != null ? Parent.Path + '.' + Name : Name;
 
         /// <summary>
         /// Gets the display path of this node. The path is constructed from the <see cref="DisplayName"/> of all nodes from the root to this one, separated by periods.
@@ -146,7 +134,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <summary>
         /// Gets or sets whether this node should be displayed in the view.
         /// </summary>
-        public bool IsVisible { get { return isVisible; } set { SetValue(ref isVisible, value, () => IsVisibleChanged?.Invoke(this, EventArgs.Empty)); } }
+        public bool IsVisible { get { return isVisible; } set { SetValue(ref isVisible, value); } }
 
         /// <summary>
         /// Gets or sets whether this node can be modified in the view.
@@ -180,7 +168,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// Gets the order number of this node in its parent.
         /// </summary>
         // FIXME
-        public int? Order => CustomOrder ?? NodePresenters.First().Order;
+        public int? Order => NodePresenters.First().CustomOrder ?? NodePresenters.First().Order;
 
         /// <summary>
         /// Gets the member info (if any).
@@ -201,29 +189,20 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <seealso cref="HasCollection"/>
         public bool HasDictionary => DictionaryDescriptor.IsDictionary(Type);
 
-        /// <inheritdoc/>
-        public int VisibleChildrenCount { get { return visibleChildrenCount; } private set { SetValue(ref visibleChildrenCount, value); } }
-
-        /// <inheritdoc/>
-        public event EventHandler<EventArgs> IsVisibleChanged;
-
         /// <summary>
-        /// Gets or sets the <see cref="CombineMode"/> of this single node.
+        /// Gets the number of visible children.
         /// </summary>
-        public CombineMode CombineMode { get; set; }
+        public int VisibleChildrenCount => Children.Count(x => x.IsVisible);
 
-        /// <summary>
-        /// Gets or sets a custom value for the <see cref="Order"/> of this node.
-        /// </summary>
-        // FIXME
-        public int? CustomOrder { get { return NodePresenters.First().CustomOrder; } set { SetValue(ref customOrder, value, nameof(CustomOrder), nameof(Order)); } }
-
-        /// <inheritdoc/>
         // TODO: generalize usage in the templates
         public bool IsHighlighted { get { return isHighlighted; } set { SetValue(ref isHighlighted, value); } }
 
-        /// <inheritdoc/>
         public IReadOnlyCollection<INodePresenter> NodePresenters => nodePresenters;
+
+        /// <summary>
+        /// Gets the path of this node. The path is constructed from the name of all nodes from the root to this one, separated by periods.
+        /// </summary>
+        private string Path => Parent != null ? Parent.Path + '.' + Name : Name;
 
         /// <summary>
         /// Indicates whether the given name is reserved for the name of a property in an <see cref="SiliconStudio.Presentation.Quantum.ViewModels.NodeViewModel"/>. Any children node with a colliding name will
@@ -466,7 +445,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         {
             foreach (var child in Children.ToList())
             {
-                RemoveChild((NodeViewModel)child);
+                RemoveChild(child);
             }
             foreach (var command in Commands.ToList())
             {
@@ -477,7 +456,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
                 RemoveAssociatedData(data.Key);
             }
 
-            Owner.GraphViewModelService.NodeViewModelFactory.GenerateChildren(Owner, this, nodePresenters);
+            owner.GraphViewModelService.NodeViewModelFactory.GenerateChildren(owner, this, nodePresenters);
             FinishInitialization();
         }
 
@@ -506,19 +485,12 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             {
                 initializingChildren.Add(child);
             }
-            if (child.IsVisible)
-                ++VisibleChildrenCount;
-            child.IsVisibleChanged += ChildVisibilityChanged;
         }
 
         protected void RemoveChild(NodeViewModel node)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (!Children.Contains(node)) throw new InvalidOperationException("The node is not in the children list of its parent.");
-
-            if (node.IsVisible)
-                --VisibleChildrenCount;
-            node.IsVisibleChanged -= ChildVisibilityChanged;
 
             if (initializingChildren == null)
             {
@@ -609,15 +581,18 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             }
         }
 
+#if DEBUG
         private static bool DebugQuantumPropertyChanges = true;
-
+#else
+        private static bool DebugQuantumPropertyChanges = false;
+#endif
         protected override void OnPropertyChanging(params string[] propertyNames)
         {
             if (DebugQuantumPropertyChanges && HasPropertyChangingSubscriber)
             {
                 foreach (var property in propertyNames)
                 {
-                    Owner.Logger.Debug($"Node Property changing: [{Path}].{property}");
+                    owner.Logger.Debug($"Node Property changing: [{Path}].{property}");
                 }
             }
             base.OnPropertyChanging(propertyNames);
@@ -629,7 +604,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             {
                 foreach (var property in propertyNames)
                 {
-                    Owner.Logger.Debug($"Node Property changed: [{Path}].{property}");
+                    owner.Logger.Debug($"Node Property changed: [{Path}].{property}");
                 }
             }
             if (DisplayNameProvider != null && DisplayNameDependentProperties != null)
@@ -647,35 +622,28 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             return Equals(value1, value2);
         }
 
-        private void ChildVisibilityChanged(object sender, EventArgs e)
-        {
-            var node = (NodeViewModel)sender;
-            if (node.IsVisible)
-                ++VisibleChildrenCount;
-            else
-                --VisibleChildrenCount;
-        }
-
         private void ValueChanging(object sender, ValueChangingEventArgs valueChangingEventArgs)
         {
-            ((NodeViewModel)Parent)?.NotifyPropertyChanging(Name);
+            Parent?.NotifyPropertyChanging(Name);
             OnPropertyChanging(nameof(NodeValue));
         }
 
         private void ValueChanged(object sender, ValueChangedEventArgs valueChangedEventArgs)
         {
-            ((NodeViewModel)Parent)?.NotifyPropertyChanged(Name);
+            Parent?.NotifyPropertyChanged(Name);
 
+            OnPropertyChanging(nameof(VisibleChildrenCount));
             // This node can have been disposed by its parent already (if its parent is being refreshed and share the same source node)
             // In this case, let's trigger the notifications gracefully before being discarded, but skip refresh
             if (!IsDestroyed)
             {
                 Refresh();
             }
+            UpdateViewModelProperties();
+            OnPropertyChanged(nameof(VisibleChildrenCount));
 
             OnPropertyChanged(nameof(NodeValue));
-            UpdateViewModelProperties();
-            Owner.NotifyNodeChanged(Path);
+            owner.NotifyNodeChanged(Path);
         }
 
         private void UpdateViewModelProperties()
