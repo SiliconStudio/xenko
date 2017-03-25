@@ -239,17 +239,28 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
             if (xenkoSdkDir == null)
                 return null;
 
-            var xenkoSdkBinDir = Path.Combine(xenkoSdkDir, @"Bin\Windows-Direct3D11");
+            var xenkoSdkBinDirectories = new[]
+            {
+                // Xenko 2.x
+                Path.Combine(xenkoSdkDir, @"Bin\Windows\Direct3D11"),
+                Path.Combine(xenkoSdkDir, @"Bin\Windows"),
+                // Backward compatibility with Xenko 1.x
+                Path.Combine(xenkoSdkDir, @"Bin\Windows-Direct3D11"),
+            };
 
-            // Try to load .dll/.exe from Xenko SDK directory
             var assemblyName = new AssemblyName(args.Name);
-            var assemblyFile = Path.Combine(xenkoSdkBinDir, assemblyName.Name + ".dll");
-            if (File.Exists(assemblyFile))
-                return LoadAssembly(assemblyFile);
 
-            assemblyFile = Path.Combine(xenkoSdkBinDir, assemblyName.Name + ".exe");
-            if (File.Exists(assemblyFile))
-                return LoadAssembly(assemblyFile);
+            foreach (var xenkoSdkBinDirectory in xenkoSdkBinDirectories)
+            {
+                // Try to load .dll/.exe from Xenko SDK directory
+                var assemblyFile = Path.Combine(xenkoSdkBinDirectory, assemblyName.Name + ".dll");
+                if (File.Exists(assemblyFile))
+                    return LoadAssembly(assemblyFile);
+
+                assemblyFile = Path.Combine(xenkoSdkBinDirectory, assemblyName.Name + ".exe");
+                if (File.Exists(assemblyFile))
+                    return LoadAssembly(assemblyFile);
+            }
 
             // PCL System assemblies are using version 2.0.5.0 while we have a 4.0
             // Redirect the PCL to use the 4.0 from the current app domain.

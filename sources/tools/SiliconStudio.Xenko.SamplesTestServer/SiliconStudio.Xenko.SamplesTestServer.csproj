@@ -10,7 +10,7 @@
     <RootNamespace>SiliconStudio.Xenko.SamplesTestServer</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.SamplesTestServer</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

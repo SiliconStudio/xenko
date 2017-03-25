@@ -1,25 +1,29 @@
-<!-- Build file pre-included by all Xenko projects -->
+﻿<!-- Build file pre-included by all Xenko projects -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <!-- Override SiliconStudioBuildDirectory only now so that SiliconStudio common projects still get build in obj without XenkoGraphicsApi -->
+    <!-- Override SiliconStudioBuildDirectory only now so that SiliconStudio common projects still get build in obj without SiliconStudioXenkoGraphicsApi -->
     <SiliconStudioAssemblyProcessorGlobal>true</SiliconStudioAssemblyProcessorGlobal>
     <!-- Define the location where to build assemblies. -->
-    <SiliconStudioBuildDirectory>$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioBuildDirectory>
-    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioBuildDirExtension)</SiliconStudioBuildDirectory>
+    <SiliconStudioBuildDirectory>$(SiliconStudioPlatformFullName)</SiliconStudioBuildDirectory>
     <SiliconStudioOutputCommonDir>$(SolutionDir)..\Bin\$(SiliconStudioBuildDirectory)\</SiliconStudioOutputCommonDir>
-    <OutputPath>$(SiliconStudioOutputCommonDir)</OutputPath>
+    <SiliconStudioOutputCommonDir>$([System.IO.Path]::GetFullPath('$(SiliconStudioOutputCommonDir)'))</SiliconStudioOutputCommonDir>
 
-    <XenkoDependenciesDir Condition="'$(XenkoDependenciesDir)' == ''">$(MSBuildThisFileDirectory)..\deps\</XenkoDependenciesDir>
+    <SiliconStudioAssemblyProcessorPath>$(SiliconStudioPackageXenko)\deps\AssemblyProcessor\SiliconStudio.AssemblyProcessor.exe</SiliconStudioAssemblyProcessorPath>
+
+    <SiliconStudioXenkoOutputPath Condition="'$(SiliconStudioXenkoOutputPath)' == ''">$(SiliconStudioOutputCommonDir)</SiliconStudioXenkoOutputPath>
+    <SiliconStudioXenkoOutputPath Condition="'$(SiliconStudioXenkoOutputFolder)' != ''">$(SiliconStudioXenkoOutputPath)$(SiliconStudioXenkoOutputFolder)\</SiliconStudioXenkoOutputPath>
+    <SiliconStudioXenkoOutputPath Condition="'$(SiliconStudioXenkoGraphicsApiDependent)' == 'true'">$(SiliconStudioXenkoOutputPath)$(SiliconStudioXenkoGraphicsApi)\</SiliconStudioXenkoOutputPath>
+    <OutputPath>$(SiliconStudioXenkoOutputPath)</OutputPath>
+    <OutDir>$(OutputPath)</OutDir>
+    
+    <XenkoDependenciesDir Condition="'$(XenkoDependenciesDir)' == ''">$(SiliconStudioPackageXenko)\deps\</XenkoDependenciesDir>
     <XenkoDependenciesDir Condition="'$(XenkoDependenciesDir)' != '' and !HasTrailingSlash('$(XenkoDependenciesDir)')">$(XenkoDependenciesDir)\</XenkoDependenciesDir>
-    <SharpDXSdkDir Condition="'$(SharpDXSdkDir)' == ''">$(SiliconStudioDependenciesDir)SharpDX</SharpDXSdkDir>
 
-    <SiliconStudioAssemblyProcessorPath>$(MSBuildThisFileDirectory)..\deps\AssemblyProcessor\SiliconStudio.AssemblyProcessor.exe</SiliconStudioAssemblyProcessorPath>
     <SiliconStudioCoreAssemblyPath>$(MSBuildThisFileDirectory)..\Bin\$(SiliconStudioBuildDirectory)\SiliconStudio.Core.dll</SiliconStudioCoreAssemblyPath>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
     <SiliconStudioShaderUseSharpDX>true</SiliconStudioShaderUseSharpDX>
-    <SharpDXSdkBinDir>$(SharpDXSdkDir)\Bin\Desktop</SharpDXSdkBinDir>
     <DefineConstants>FRAMEWORK_SHADER_USE_SHARPDX;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 </Project>

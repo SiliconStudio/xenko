@@ -4,7 +4,7 @@
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
     <XenkoNativeOutputName>libxenko</XenkoNativeOutputName>
   </PropertyGroup>
-  <Import Project="..\..\native\Xenko.Native.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -15,7 +15,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <Choose>
@@ -41,11 +41,6 @@
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
-      <Project>{fcf36d39-bffe-4719-b245-05640ee34c5f}</Project>
-      <Name>SiliconStudio.Core.Native</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>
@@ -53,20 +48,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="SiliconStudio.Xenko.Native.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <SiliconStudioContent Include="SiliconStudio.Xenko.Native.dll.config"/>
     <None Include="Xenko.Native.Libs.targets">
       <SubType>Designer</SubType>
     </None>
     <None Include="XenkoNative.h" />
-    <None Include="Sprite\SpriteBatchNative.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="DirectInput\XInputChecker.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="LinuxAllocator.cpp" />
+    <None Include="Sprite\SpriteBatchNative.c" />
+    <None Include="DirectInput\XInputChecker.cpp" />
+    <None Include="Lightprobes\predicates.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Navigation\Navigation.cpp" />
@@ -76,10 +66,8 @@
     <None Include="Navigation\NavigationMesh.cpp" />
     <None Include="Navigation\NavigationMesh.hpp" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Lightprobes\predicates.c" />
-  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <Import Project="..\..\native\Xenko.Native.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

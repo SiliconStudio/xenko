@@ -30,9 +30,10 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(TransformSRgbToColorSpace))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.10.0-alpha01", typeof(DescriptionUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-alpha01", TextureAssetVersion, typeof(CompressionUpgrader))]
     public sealed class TextureAsset : AssetWithSource, IAssetCompileTimeDependencies
     {
-        private const string TextureAssetVersion = "1.10.0-alpha01";
+        private const string TextureAssetVersion = "1.11.1.2";
 
         /// <summary>
         /// The default file extension used by the <see cref="TextureAsset"/>.
@@ -83,16 +84,15 @@ namespace SiliconStudio.Xenko.Assets.Textures
         public bool IsSizeInPercentage { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the texture format.
+        /// If Compressed, the final texture will be compressed to an appropriate format based on the target platform. The final texture size must be a multiple of 4.
         /// </summary>
-        /// <value>The texture format.</value>
         /// <userdoc>
-        /// The format to use for the texture. If Compressed, the final texture size must be a multiple of 4.
+        /// If Compressed, the final texture will be compressed to an appropriate format based on the target platform. The final texture size must be a multiple of 4.
         /// </userdoc>
         [DataMember(50)]
-        [DefaultValue(TextureFormat.Compressed)]
-        [Display(null, "Format")]
-        public TextureFormat Format { get; set; } = TextureFormat.Compressed;
+        [DefaultValue(true)]
+        [Display("Compress")]
+        public bool IsCompressed { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether to generate mipmaps.
@@ -132,6 +132,31 @@ namespace SiliconStudio.Xenko.Assets.Textures
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 // Code was removed intentionally. Backward compatibility before 1.4.0-beta is no longer supported
+            }
+        }
+
+        private class CompressionUpgrader : AssetUpgraderBase
+        {
+            // public TextureFormat Format { get; set; } = TextureFormat.Compressed;
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                if (asset.ContainsChild("Format"))
+                {
+                    if (asset.Format == "Compressed")
+                    {
+                        asset.IsCompressed = true;
+                    }
+                    else
+                    {
+                        asset.IsCompressed = false;
+                    }
+
+                    asset.RemoveChild("Format");
+                }
+                else
+                {
+                    asset.IsCompressed = true;
+                }
             }
         }
 

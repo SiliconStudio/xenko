@@ -4,8 +4,7 @@
     <SiliconStudioCommonPreSettingsName>Xenko</SiliconStudioCommonPreSettingsName>
 
     <!--  Defines the API used by Xenko - Values are Direct3D/Null/OpenGL/OpenGLES -->
-    <XenkoGraphicsApi Condition=" '$(XenkoGraphicsApi)' == '' ">Null</XenkoGraphicsApi>
-    <SiliconStudioXenkoGraphicsApi>$(XenkoGraphicsApi)</SiliconStudioXenkoGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi Condition=" '$(SiliconStudioXenkoGraphicsApi)' == '' ">Null</SiliconStudioXenkoGraphicsApi>
 
     <!-- Defines the platform used by Xenko - Values are Windows/WindowsStore/WindowsPhone/Android/iOS...etc. -->
     <SiliconStudioPlatform Condition=" '$(SiliconStudioPlatform)' == '' ">Windows</SiliconStudioPlatform>

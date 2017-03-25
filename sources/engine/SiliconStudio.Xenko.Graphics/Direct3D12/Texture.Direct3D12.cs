@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// Initializes from a native SharpDX.Texture
         /// </summary>
         /// <param name="texture">The texture.</param>
-        internal Texture InitializeFrom(SharpDX.Direct3D12.Resource texture, bool isSrgb)
+        internal Texture InitializeFromImpl(SharpDX.Direct3D12.Resource texture, bool isSrgb)
         {
             NativeDeviceChild = texture;
             var newTextureDescription = ConvertFromNativeDescription(texture.Description);
@@ -408,7 +408,7 @@ namespace SiliconStudio.Xenko.Graphics
                 return new CpuDescriptorHandle();
 
             // Check that the format is supported
-            if (ComputeShaderResourceFormatFromDepthFormat(ViewFormat) == SharpDX.DXGI.Format.Unknown)
+            if (ComputeShaderResourceFormatFromDepthFormat(ViewFormat) == PixelFormat.None)
                 throw new NotSupportedException("Depth stencil format [{0}] not supported".ToFormat(ViewFormat));
 
             // Setup the HasStencil flag
@@ -501,7 +501,7 @@ namespace SiliconStudio.Xenko.Graphics
             var viewFormat = (SharpDX.DXGI.Format)ViewFormat;
             if (IsDepthStencil)
             {
-                viewFormat = ComputeShaderResourceFormatFromDepthFormat(ViewFormat);
+                viewFormat = (SharpDX.DXGI.Format)ComputeShaderResourceFormatFromDepthFormat(ViewFormat);
             }
 
             return viewFormat;
@@ -597,27 +597,27 @@ namespace SiliconStudio.Xenko.Graphics
             return ResourceDescription.Texture2D(format, textureDescription.Width, textureDescription.Height, (short)textureDescription.ArraySize, (short)textureDescription.MipLevels, (short)textureDescription.MultiSampleLevel, 0, GetBindFlagsFromTextureFlags(flags));
         }
 
-        internal static SharpDX.DXGI.Format ComputeShaderResourceFormatFromDepthFormat(PixelFormat format)
+        internal static PixelFormat ComputeShaderResourceFormatFromDepthFormat(PixelFormat format)
         {
-            SharpDX.DXGI.Format viewFormat;
+            PixelFormat viewFormat;
 
             // Determine TypeLess Format and ShaderResourceView Format
             switch (format)
             {
                 case PixelFormat.D16_UNorm:
-                    viewFormat = SharpDX.DXGI.Format.R16_Float;
+                    viewFormat = PixelFormat.R16_Float;
                     break;
                 case PixelFormat.D32_Float:
-                    viewFormat = SharpDX.DXGI.Format.R32_Float;
+                    viewFormat = PixelFormat.R32_Float;
                     break;
                 case PixelFormat.D24_UNorm_S8_UInt:
-                    viewFormat = SharpDX.DXGI.Format.R24_UNorm_X8_Typeless;
+                    viewFormat = PixelFormat.R24_UNorm_X8_Typeless;
                     break;
                 case PixelFormat.D32_Float_S8X24_UInt:
-                    viewFormat = SharpDX.DXGI.Format.R32_Float_X8X24_Typeless;
+                    viewFormat = PixelFormat.R32_Float_X8X24_Typeless;
                     break;
                 default:
-                    viewFormat = SharpDX.DXGI.Format.Unknown;
+                    viewFormat = PixelFormat.None;
                     break;
             }
 
