@@ -1,6 +1,7 @@
-using SiliconStudio.Presentation.Quantum.Presenters;
+﻿using System;
+using System.Collections.Generic;
 
-namespace SiliconStudio.Presentation.Quantum
+namespace SiliconStudio.Presentation.Quantum.Presenters
 {
     public interface IInitializingNodePresenter : INodePresenter
     {

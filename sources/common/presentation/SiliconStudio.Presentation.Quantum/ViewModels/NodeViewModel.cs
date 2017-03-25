@@ -58,7 +58,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         protected Func<string> DisplayNameProvider;
         protected static readonly HashSet<string> ReservedNames = new HashSet<string>();
         private readonly AutoUpdatingSortedObservableCollection<NodeViewModel> children = new AutoUpdatingSortedObservableCollection<NodeViewModel>(new AnonymousComparer<NodeViewModel>(CompareChildren), nameof(Name), nameof(Index), nameof(Order));
-        private readonly ObservableCollection<INodeCommandWrapper> commands = new ObservableCollection<INodeCommandWrapper>();
+        private readonly ObservableCollection<NodePresenterCommandWrapper> commands = new ObservableCollection<NodePresenterCommandWrapper>();
         private readonly Dictionary<string, object> associatedData = new Dictionary<string, object>();
         private readonly List<string> changingProperties = new List<string>();
         private bool isVisible;
@@ -164,7 +164,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <summary>
         /// Gets the list of commands available in this node.
         /// </summary>
-        public IEnumerable<INodeCommandWrapper> Commands => commands;
+        public IEnumerable<NodePresenterCommandWrapper> Commands => commands;
 
         /// <summary>
         /// Gets additional data associated to this content. This can be used when the content itself does not contain enough information to be used as a view model.
@@ -403,6 +403,12 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             return new NodeViewModelDynamicMetaObject(parameter, this);
         }
 
+        [NotNull]
+        protected virtual NodePresenterCommandWrapper ConstructCommandWrapper(INodePresenterCommand command)
+        {
+            return new NodePresenterCommandWrapper(ServiceProvider, nodePresenters, command);
+        }
+
         internal void NotifyPropertyChanging(string propertyName)
         {
             if (!changingProperties.Contains(propertyName))
@@ -535,7 +541,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// Adds the provided <paramref name="command"/> to this node.
         /// </summary>
         /// <param name="command">The command to add.</param>
-        public void AddCommand([NotNull] INodeCommandWrapper command)
+        public void AddCommand([NotNull] NodePresenterCommandWrapper command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
 
@@ -551,7 +557,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// </summary>
         /// <param name="command">The command to remove.</param>
         /// <returns><c>true</c> if the command was sucessfully removed; otherwise, <c>false</c>.</returns>
-        public bool RemoveCommand([NotNull] INodeCommandWrapper command)
+        public bool RemoveCommand([NotNull] NodePresenterCommandWrapper command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
 
@@ -580,7 +586,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
                 memberNames.Add(child.Name);
             }
 
-            foreach (var command in Commands.OfType<NodeCommandWrapperBase>())
+            foreach (var command in Commands)
             {
                 if (string.IsNullOrWhiteSpace(command.Name))
                     throw new InvalidOperationException("This node has a command with a null or blank name {0}");
