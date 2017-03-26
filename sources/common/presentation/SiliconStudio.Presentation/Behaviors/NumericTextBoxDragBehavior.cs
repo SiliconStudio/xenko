@@ -125,7 +125,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
                 var deltaUsed = Math.Floor(mouseMoveDelta / NumericTextBox.DragSpeed);
                 mouseMoveDelta -= deltaUsed;
-                var newValue = AssociatedObject.Value + deltaUsed * AssociatedObject.SmallChange;
+                var newValue = (AssociatedObject.Value ?? 0.0) + deltaUsed * AssociatedObject.SmallChange;
 
                 AssociatedObject.SetCurrentValue(NumericTextBox.ValueProperty, newValue);
 

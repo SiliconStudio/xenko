@@ -61,6 +61,7 @@
     <Compile Include="Helpers\TestContext.cs" />
     <Compile Include="TestDependentProperties.cs" />
     <Compile Include="Helpers\Types.cs" />
+    <Compile Include="TestNodePresenterUpdates.cs" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
