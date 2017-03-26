@@ -45,8 +45,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override Type Type { get; }
 
-        public override bool IsPrimitive => Container.ItemReferences != null;
-
         public override bool IsEnumerable => Container.IsEnumerable;
 
         public override ITypeDescriptor Descriptor { get; }

@@ -37,8 +37,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override Type Type { get; }
 
-        public override bool IsPrimitive => false;
-
         public override bool IsEnumerable => false;
 
         public override Index Index => AssociatedNode.Node != null ? AssociatedNode.Index : Index.Empty;

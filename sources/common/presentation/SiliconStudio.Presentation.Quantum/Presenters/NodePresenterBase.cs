@@ -4,7 +4,6 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Presentation.Quantum.ViewModels;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
@@ -47,7 +46,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public abstract List<INodePresenterCommand> Commands { get; }
         public abstract Type Type { get; }
-        public abstract bool IsPrimitive { get; }
         public abstract bool IsEnumerable { get; }
 
         public bool IsVisible { get; set; } = true;

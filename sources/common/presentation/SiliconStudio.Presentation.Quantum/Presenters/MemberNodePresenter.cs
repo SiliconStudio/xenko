@@ -45,8 +45,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override Type Type => Member.Type;
 
-        public override bool IsPrimitive => Member.IsPrimitive;
-
         public override bool IsEnumerable => Member.Target?.IsEnumerable ?? false;
 
         public override Index Index => Index.Empty;

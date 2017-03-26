@@ -31,7 +31,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public sealed override List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
         public override Type Type => RootNode.Type;
         public override Index Index => Index.Empty;
-        public override bool IsPrimitive => false;
         public override bool IsEnumerable => RootNode.IsEnumerable;
         public override ITypeDescriptor Descriptor => RootNode.Descriptor;
         public override int? Order => null;

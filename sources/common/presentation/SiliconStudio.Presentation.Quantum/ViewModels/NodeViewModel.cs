@@ -215,7 +215,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
                 if (command.Key.CombineMode == CombineMode.CombineOnlyForAll && command.Value < nodePresenters.Count)
                     continue;
 
-                var commandWrapper = new NodePresenterCommandWrapper(ServiceProvider, nodePresenters, command.Key);
+                var commandWrapper = ConstructCommandWrapper(command.Key);
                 AddCommand(commandWrapper);
             }
 
@@ -319,8 +319,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
                 }
                 else
                 {
-                    // FIXME: handle object references at AssetNodeViewModel level
-                    if (currentValue?.GetType() != nodePresenter.Value?.GetType())
+                    if (!AreValueEquivalent(currentValue, nodePresenter.Value))
                         return DifferentValues;
                 }
                 isFirst = false;
@@ -428,9 +427,28 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             base.OnPropertyChanged(propertyNames);
         }
 
+        /// <summary>
+        /// Indicates whether two values of <see cref="INodePresenter"/> are considered equal.
+        /// This method is used to compare values of primitive types to decide if this view model should use <see cref="DifferentValues"/>.
+        /// </summary>
+        /// <param name="value1">The first value to compare.</param>
+        /// <param name="value2">The second value to compare.</param>
+        /// <returns>True if both values are considered equal, false otherwise.</returns>
         protected virtual bool AreValueEqual(object value1, object value2)
         {
             return Equals(value1, value2);
+        }
+
+        /// <summary>
+        /// Indicates whether two values of <see cref="INodePresenter"/> are considered equivalent.
+        /// This method is used to compare values that are not primitive types to decide if this view model should use <see cref="DifferentValues"/>.
+        /// </summary>
+        /// <param name="value1">The first value to compare.</param>
+        /// <param name="value2">The second value to compare.</param>
+        /// <returns>True if both values are considered equivalent, false otherwise.</returns>
+        protected virtual bool AreValueEquivalent(object value1, object value2)
+        {
+            return value1?.GetType() == value2?.GetType();
         }
 
         private void ValueChanging(object sender, ValueChangingEventArgs valueChangingEventArgs)

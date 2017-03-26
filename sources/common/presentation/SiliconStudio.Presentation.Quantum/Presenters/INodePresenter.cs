@@ -28,8 +28,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         Type Type { get; }
 
-        bool IsPrimitive { get; }
-
         bool IsEnumerable { get; }
 
         bool IsReadOnly { get; set; }

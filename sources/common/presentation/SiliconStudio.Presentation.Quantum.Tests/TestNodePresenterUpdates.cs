@@ -27,7 +27,6 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(1, presenter.Children.Count);
             var child = presenter.Children.Single();
             Assert.AreEqual("String", child.Name);
-            Assert.AreEqual(true, child.IsPrimitive);
             Assert.AreEqual(presenter, child.Parent);
             Assert.AreEqual(0, child.Children.Count);
             Assert.AreEqual(typeof(string), child.Type);
@@ -37,7 +36,6 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(1, presenter.Children.Count);
             child = presenter.Children.Single();
             Assert.AreEqual("String", child.Name);
-            Assert.AreEqual(true, child.IsPrimitive);
             Assert.AreEqual(presenter, child.Parent);
             Assert.AreEqual(0, child.Children.Count);
             Assert.AreEqual(typeof(string), child.Type);
