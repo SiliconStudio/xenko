@@ -10,13 +10,18 @@ namespace SiliconStudio.Presentation.Quantum.Tests
     [TestFixture]
     public class TestNodePresenterUpdates
     {
+        private struct TestContext
+        {
+            public IObjectNode RootNode;
+            public INodePresenterFactory Factory;
+        }
+
         [Test]
         public void TestPrimitiveMemberUpdate()
         {
             var instance = new Types.SimpleType { String = "aaa" };
-            var rootNode = BuildQuantumGraph(instance);
-            var factory = new NodePresenterFactory();
-            var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
+            var context = BuildContext(instance);
+            var presenter = context.Factory.CreateNodeHierarchy(context.RootNode, new GraphNodePath(context.RootNode));
 
             presenter.Children.Single().UpdateValue("bbb");
             Assert.AreEqual(1, presenter.Children.Count);
@@ -43,9 +48,8 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestReferenceMemberUpdate()
         {
             var instance = new Types.ClassWithRef { String = "aaa", Ref = new Types.ClassWithRef { String = "bbb" } };
-            var rootNode = BuildQuantumGraph(instance);
-            var factory = new NodePresenterFactory();
-            var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
+            var context = BuildContext(instance);
+            var presenter = context.Factory.CreateNodeHierarchy(context.RootNode, new GraphNodePath(context.RootNode));
 
             presenter.Children[1].UpdateValue(new Types.ClassWithRef { String = "ccc" });
             Assert.AreEqual(2, presenter.Children.Count);
@@ -76,16 +80,15 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestPrimitiveListUpdate()
         {
             var instance = new Types.ClassWithCollection { String = "aaa", List = { "bbb", "ccc" } };
-            var rootNode = BuildQuantumGraph(instance);
-            var factory = new NodePresenterFactory();
-            var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
+            var context = BuildContext(instance);
+            var presenter = context.Factory.CreateNodeHierarchy(context.RootNode, new GraphNodePath(context.RootNode));
 
+            presenter[nameof(Types.ClassWithCollection.List)].Children[1].UpdateValue("ddd");
             Assert.AreEqual(typeof(List<string>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(2, presenter.Children[1].Children.Count);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
             Assert.AreEqual("bbb", presenter.Children[1].Children[0].Value);
             Assert.AreEqual("ddd", presenter.Children[1].Children[1].Value);
             Assert.AreEqual(typeof(string), presenter.Children[1].Children[0].Type);
@@ -93,12 +96,12 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(instance.List[0], presenter.Children[1].Children[0].Value);
             Assert.AreEqual(instance.List[1], presenter.Children[1].Children[1].Value);
 
+            presenter[nameof(Types.ClassWithCollection.List)].Children[1].UpdateValue("eee");
             Assert.AreEqual(typeof(List<string>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(2, presenter.Children[1].Children.Count);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
             Assert.AreEqual("bbb", presenter.Children[1].Children[0].Value);
             Assert.AreEqual("eee", presenter.Children[1].Children[1].Value);
             Assert.AreEqual(typeof(string), presenter.Children[1].Children[0].Type);
@@ -106,12 +109,12 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(instance.List[0], presenter.Children[1].Children[0].Value);
             Assert.AreEqual(instance.List[1], presenter.Children[1].Children[1].Value);
 
+            presenter[nameof(Types.ClassWithCollection.List)].Children[0].UpdateValue("fff");
             Assert.AreEqual(typeof(List<string>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(2, presenter.Children[1].Children.Count);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
             Assert.AreEqual("fff", presenter.Children[1].Children[0].Value);
             Assert.AreEqual("eee", presenter.Children[1].Children[1].Value);
             Assert.AreEqual(typeof(string), presenter.Children[1].Children[0].Type);
@@ -124,17 +127,16 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestPrimitiveListAdd()
         {
             var instance = new Types.ClassWithCollection { String = "aaa", List = { "bbb", "ccc" } };
-            var rootNode = BuildQuantumGraph(instance);
-            var factory = new NodePresenterFactory();
-            var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
+            var context = BuildContext(instance);
+            var presenter = context.Factory.CreateNodeHierarchy(context.RootNode, new GraphNodePath(context.RootNode));
 
             presenter.Children[1].AddItem("ddd", new Index(2));
             Assert.AreEqual(typeof(List<string>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(3, presenter.Children[1].Children.Count);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("2", presenter.Children[1].Children[2].Name);
             Assert.AreEqual("bbb", presenter.Children[1].Children[0].Value);
             Assert.AreEqual("ccc", presenter.Children[1].Children[1].Value);
             Assert.AreEqual("ddd", presenter.Children[1].Children[2].Value);
@@ -149,9 +151,10 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(typeof(List<string>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(4, presenter.Children[1].Children.Count);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("2", presenter.Children[1].Children[2].Name);
+            Assert.AreEqual("3", presenter.Children[1].Children[3].Name);
             Assert.AreEqual("bbb", presenter.Children[1].Children[0].Value);
             Assert.AreEqual("eee", presenter.Children[1].Children[1].Value);
             Assert.AreEqual("ccc", presenter.Children[1].Children[2].Value);
@@ -169,9 +172,11 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(typeof(List<string>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(5, presenter.Children[1].Children.Count);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("2", presenter.Children[1].Children[2].Name);
+            Assert.AreEqual("3", presenter.Children[1].Children[3].Name);
+            Assert.AreEqual("4", presenter.Children[1].Children[4].Name);
             Assert.AreEqual("fff", presenter.Children[1].Children[0].Value);
             Assert.AreEqual("bbb", presenter.Children[1].Children[1].Value);
             Assert.AreEqual("eee", presenter.Children[1].Children[2].Value);
@@ -193,17 +198,17 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestPrimitiveListRemove()
         {
             var instance = new Types.ClassWithCollection { String = "aaa", List = { "bbb", "ccc", "ddd", "eee", "fff" } };
-            var rootNode = BuildQuantumGraph(instance);
-            var factory = new NodePresenterFactory();
-            var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
+            var context = BuildContext(instance);
+            var presenter = context.Factory.CreateNodeHierarchy(context.RootNode, new GraphNodePath(context.RootNode));
 
             presenter.Children[1].RemoveItem("fff", new Index(4));
             Assert.AreEqual(typeof(List<string>), presenter.Children[1].Type);
             Assert.AreEqual(4, presenter.Children[1].Children.Count);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("2", presenter.Children[1].Children[2].Name);
+            Assert.AreEqual("3", presenter.Children[1].Children[3].Name);
             Assert.AreEqual("bbb", presenter.Children[1].Children[0].Value);
             Assert.AreEqual("ccc", presenter.Children[1].Children[1].Value);
             Assert.AreEqual("ddd", presenter.Children[1].Children[2].Value);
@@ -221,9 +226,9 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(typeof(List<string>), presenter.Children[1].Type);
             Assert.AreEqual(3, presenter.Children[1].Children.Count);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("2", presenter.Children[1].Children[2].Name);
             Assert.AreEqual("ccc", presenter.Children[1].Children[0].Value);
             Assert.AreEqual("ddd", presenter.Children[1].Children[1].Value);
             Assert.AreEqual("eee", presenter.Children[1].Children[2].Value);
@@ -238,9 +243,8 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(typeof(List<string>), presenter.Children[1].Type);
             Assert.AreEqual(2, presenter.Children[1].Children.Count);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
             Assert.AreEqual("ccc", presenter.Children[1].Children[0].Value);
             Assert.AreEqual("eee", presenter.Children[1].Children[1].Value);
             Assert.AreEqual(typeof(string), presenter.Children[1].Children[0].Type);
@@ -252,9 +256,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(typeof(List<string>), presenter.Children[1].Type);
             Assert.AreEqual(1, presenter.Children[1].Children.Count);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
             Assert.AreEqual("ccc", presenter.Children[1].Children[0].Value);
             Assert.AreEqual(typeof(string), presenter.Children[1].Children[0].Type);
             Assert.AreEqual(instance.List[0], presenter.Children[1].Children[0].Value);
@@ -269,16 +271,15 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestReferenceListUpdate()
         {
             var instance = new Types.ClassWithRefCollection { String = "aaa", List = { new Types.SimpleType { String = "bbb" }, new Types.SimpleType { String = "ccc" } } };
-            var rootNode = BuildQuantumGraph(instance);
-            var factory = new NodePresenterFactory();
-            var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
+            var context = BuildContext(instance);
+            var presenter = context.Factory.CreateNodeHierarchy(context.RootNode, new GraphNodePath(context.RootNode));
 
+            presenter[nameof(Types.ClassWithRefCollection.List)].Children[1].UpdateValue(new Types.SimpleType { String = "ddd" });
             Assert.AreEqual(typeof(List<Types.SimpleType>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(2, presenter.Children[1].Children.Count);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
             Assert.AreEqual("bbb", presenter.Children[1].Children[0].Children[0].Value);
             Assert.AreEqual("ddd", presenter.Children[1].Children[1].Children[0].Value);
             Assert.AreEqual(typeof(Types.SimpleType), presenter.Children[1].Children[0].Type);
@@ -288,12 +289,12 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(instance.List[0], presenter.Children[1].Children[0].Value);
             Assert.AreEqual(instance.List[1], presenter.Children[1].Children[1].Value);
 
+            presenter[nameof(Types.ClassWithRefCollection.List)].Children[1].UpdateValue(new Types.SimpleType { String = "eee" });
             Assert.AreEqual(typeof(List<Types.SimpleType>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(2, presenter.Children[1].Children.Count);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
             Assert.AreEqual("bbb", presenter.Children[1].Children[0].Children[0].Value);
             Assert.AreEqual("eee", presenter.Children[1].Children[1].Children[0].Value);
             Assert.AreEqual(typeof(Types.SimpleType), presenter.Children[1].Children[0].Type);
@@ -303,12 +304,12 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(instance.List[0], presenter.Children[1].Children[0].Value);
             Assert.AreEqual(instance.List[1], presenter.Children[1].Children[1].Value);
 
+            presenter[nameof(Types.ClassWithRefCollection.List)].Children[0].UpdateValue(new Types.SimpleType { String = "fff" });
             Assert.AreEqual(typeof(List<Types.SimpleType>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(2, presenter.Children[1].Children.Count);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
             Assert.AreEqual("fff", presenter.Children[1].Children[0].Children[0].Value);
             Assert.AreEqual("eee", presenter.Children[1].Children[1].Children[0].Value);
             Assert.AreEqual(typeof(Types.SimpleType), presenter.Children[1].Children[0].Type);
@@ -323,17 +324,16 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestReferenceListAdd()
         {
             var instance = new Types.ClassWithRefCollection { String = "aaa", List = { new Types.SimpleType { String = "bbb" }, new Types.SimpleType { String = "ccc" } } };
-            var rootNode = BuildQuantumGraph(instance);
-            var factory = new NodePresenterFactory();
-            var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
+            var context = BuildContext(instance);
+            var presenter = context.Factory.CreateNodeHierarchy(context.RootNode, new GraphNodePath(context.RootNode));
 
             presenter.Children[1].AddItem(new Types.SimpleType { String = "ddd" }, new Index(2));
             Assert.AreEqual(typeof(List<Types.SimpleType>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(3, presenter.Children[1].Children.Count);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("2", presenter.Children[1].Children[2].Name);
             Assert.AreEqual("bbb", presenter.Children[1].Children[0].Children[0].Value);
             Assert.AreEqual("ccc", presenter.Children[1].Children[1].Children[0].Value);
             Assert.AreEqual("ddd", presenter.Children[1].Children[2].Children[0].Value);
@@ -351,9 +351,10 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(typeof(List<Types.SimpleType>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(4, presenter.Children[1].Children.Count);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("2", presenter.Children[1].Children[2].Name);
+            Assert.AreEqual("3", presenter.Children[1].Children[3].Name);
             Assert.AreEqual("bbb", presenter.Children[1].Children[0].Children[0].Value);
             Assert.AreEqual("eee", presenter.Children[1].Children[1].Children[0].Value);
             Assert.AreEqual("ccc", presenter.Children[1].Children[2].Children[0].Value);
@@ -375,9 +376,11 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(typeof(List<Types.SimpleType>), presenter.Children[1].Type);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
             Assert.AreEqual(5, presenter.Children[1].Children.Count);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("2", presenter.Children[1].Children[2].Name);
+            Assert.AreEqual("3", presenter.Children[1].Children[3].Name);
+            Assert.AreEqual("4", presenter.Children[1].Children[4].Name);
             Assert.AreEqual("fff", presenter.Children[1].Children[0].Children[0].Value);
             Assert.AreEqual("bbb", presenter.Children[1].Children[1].Children[0].Value);
             Assert.AreEqual("eee", presenter.Children[1].Children[2].Children[0].Value);
@@ -404,17 +407,15 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestReferenceListRemove()
         {
             var instance = new Types.ClassWithRefCollection { String = "aaa", List = { new Types.SimpleType { String = "bbb" }, new Types.SimpleType { String = "ccc" }, new Types.SimpleType { String = "ddd" }, new Types.SimpleType { String = "eee" }, new Types.SimpleType { String = "fff" }, } };
-            var rootNode = BuildQuantumGraph(instance);
-            var factory = new NodePresenterFactory();
-            var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
+            var context = BuildContext(instance);
+            var presenter = context.Factory.CreateNodeHierarchy(context.RootNode, new GraphNodePath(context.RootNode));
 
             presenter.Children[1].RemoveItem(instance.List[4], new Index(4));
             Assert.AreEqual(typeof(List<Types.SimpleType>), presenter.Children[1].Type);
             Assert.AreEqual(4, presenter.Children[1].Children.Count);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
             Assert.AreEqual("bbb", presenter.Children[1].Children[0].Children[0].Value);
             Assert.AreEqual("ccc", presenter.Children[1].Children[1].Children[0].Value);
             Assert.AreEqual("ddd", presenter.Children[1].Children[2].Children[0].Value);
@@ -436,9 +437,9 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(typeof(List<Types.SimpleType>), presenter.Children[1].Type);
             Assert.AreEqual(3, presenter.Children[1].Children.Count);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("2", presenter.Children[1].Children[2].Name);
             Assert.AreEqual("ccc", presenter.Children[1].Children[0].Children[0].Value);
             Assert.AreEqual("ddd", presenter.Children[1].Children[1].Children[0].Value);
             Assert.AreEqual("eee", presenter.Children[1].Children[2].Children[0].Value);
@@ -456,9 +457,8 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(typeof(List<Types.SimpleType>), presenter.Children[1].Type);
             Assert.AreEqual(2, presenter.Children[1].Children.Count);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
+            Assert.AreEqual("1", presenter.Children[1].Children[1].Name);
             Assert.AreEqual("ccc", presenter.Children[1].Children[0].Children[0].Value);
             Assert.AreEqual("eee", presenter.Children[1].Children[1].Children[0].Value);
             Assert.AreEqual(typeof(Types.SimpleType), presenter.Children[1].Children[0].Type);
@@ -472,9 +472,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(typeof(List<Types.SimpleType>), presenter.Children[1].Type);
             Assert.AreEqual(1, presenter.Children[1].Children.Count);
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
-            // TODO: Name is undefined yet
-            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
-            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("0", presenter.Children[1].Children[0].Name);
             Assert.AreEqual("ccc", presenter.Children[1].Children[0].Children[0].Value);
             Assert.AreEqual(typeof(Types.SimpleType), presenter.Children[1].Children[0].Type);
             Assert.AreEqual(typeof(string), presenter.Children[1].Children[0].Children[0].Type);
@@ -486,11 +484,12 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
         }
 
-        private static IObjectNode BuildQuantumGraph(object instance)
+        private static TestContext BuildContext(object instance)
         {
             var container = new NodeContainer();
             var node = container.GetOrCreateNode(instance);
-            return node;
+            var factory = new NodePresenterFactory(container.NodeBuilder, new INodePresenterCommand[] { }, new INodePresenterUpdater[] { });
+            return new TestContext { RootNode = node, Factory = factory };
         }
     }
 }

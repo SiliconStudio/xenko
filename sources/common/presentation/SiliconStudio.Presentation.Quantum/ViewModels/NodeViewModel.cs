@@ -474,7 +474,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             return TypeDescriptor.GetConverter(Type).ConvertFrom(value);
         }
 
-        private void AddChild([NotNull] NodeViewModel child) => ChangeAndNotify(() => ((ICollection<NodeViewModel>)initializingChildren ?? children).Remove(child), $"{GraphViewModel.HasChildPrefix}{child.Name}", child.Name);
+        private void AddChild([NotNull] NodeViewModel child) => ChangeAndNotify(() => ((ICollection<NodeViewModel>)initializingChildren ?? children).Add(child), $"{GraphViewModel.HasChildPrefix}{child.Name}", child.Name);
 
         private void RemoveChild([NotNull] NodeViewModel child) => ChangeAndNotify(() => ((ICollection<NodeViewModel>)initializingChildren ?? children).Remove(child), $"{GraphViewModel.HasChildPrefix}{child.Name}", child.Name);
 
