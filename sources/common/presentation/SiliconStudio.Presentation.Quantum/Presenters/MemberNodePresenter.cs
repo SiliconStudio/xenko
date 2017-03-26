@@ -51,8 +51,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override ITypeDescriptor Descriptor => Member.Descriptor;
 
-        public override int? Order { get; }
-
         public override object Value => Member.Retrieve();
 
         [NotNull]

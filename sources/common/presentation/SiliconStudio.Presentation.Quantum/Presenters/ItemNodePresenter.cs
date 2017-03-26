@@ -49,8 +49,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override ITypeDescriptor Descriptor { get; }
 
-        public override int? Order => null;
-
         public override object Value => Container.Retrieve(Index);
 
         protected override IObjectNode ParentingNode => Container.ItemReferences != null ? Container.IndexedTarget(Index) : null;

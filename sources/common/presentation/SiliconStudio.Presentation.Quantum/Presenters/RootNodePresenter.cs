@@ -33,7 +33,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public override Index Index => Index.Empty;
         public override bool IsEnumerable => RootNode.IsEnumerable;
         public override ITypeDescriptor Descriptor => RootNode.Descriptor;
-        public override int? Order => null;
         public override object Value => RootNode.Retrieve();
 
         protected override IObjectNode ParentingNode => RootNode;

@@ -50,11 +50,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public bool IsVisible { get; set; } = true;
         public bool IsReadOnly { get; set; }
+        public int? Order { get; set; }
 
         public abstract Index Index { get; }
         public abstract ITypeDescriptor Descriptor { get; }
-        public int? CustomOrder { get; set; }
-        public abstract int? Order { get; }
         public abstract object Value { get; }
         public string CombineKey { get; set; }
         public PropertyContainerClass AttachedProperties { get; } = new PropertyContainerClass();

@@ -43,8 +43,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override ITypeDescriptor Descriptor { get; }
 
-        public override int? Order { get; }
-
         public override object Value => getter();
 
         public IReadOnlyList<Attribute> MemberAttributes => memberAttributes;

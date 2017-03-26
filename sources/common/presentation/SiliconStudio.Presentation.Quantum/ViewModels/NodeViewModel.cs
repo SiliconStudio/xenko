@@ -176,7 +176,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <summary>
         /// Gets the order number of this node in its parent.
         /// </summary>
-        protected int? Order => NodePresenters.First().CustomOrder ?? NodePresenters.First().Order;
+        protected int? Order => NodePresenters.First().Order;
 
         public void FinishInitialization()
         {

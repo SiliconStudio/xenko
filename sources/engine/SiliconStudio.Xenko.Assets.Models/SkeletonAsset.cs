@@ -1,9 +1,10 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
@@ -61,6 +62,8 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// Nodes should be preserved in order to be animated or linked to entities.
         /// </userdoc>
         [DataMember(20)]
+        [MemberCollection(ReadOnly = true)]
+        [Display(Expand = ExpandRule.Once)]
         public List<NodeInformation> Nodes { get; } = new List<NodeInformation>();
 
         [DataMemberIgnore]
