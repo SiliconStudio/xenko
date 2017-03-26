@@ -31,8 +31,6 @@
     <RootNamespace>SiliconStudio.Xenko.VisualStudio</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.VisualStudio.Package</AssemblyName>
     <TargetVsixContainerName>SiliconStudio.Xenko.vsix</TargetVsixContainerName>
-    <TargetVsixPath>$(SiliconStudioPackageXenkoBin)\VSIX</TargetVsixPath>
-    <TargetVsixContainer>$(TargetVsixPath)\$(TargetVsixContainerName)</TargetVsixContainer>
     <SiliconStudioXenkoOutputPath>bin\$(Configuration)\</SiliconStudioXenkoOutputPath>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
@@ -313,9 +311,6 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-  </Target>
-  <Target Name="_CreateVsixContainerPath" Condition="$(CreateVsixContainer) and !Exists('$(TargetVsixPath)')" BeforeTargets="CreateVsixContainer">
-    <MakeDir Directories="$(TargetVsixPath)" ContinueOnError="true" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
