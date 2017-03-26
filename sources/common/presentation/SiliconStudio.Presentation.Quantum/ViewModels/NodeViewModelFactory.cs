@@ -20,8 +20,28 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             {
                 if (ShouldConstructViewModel(child))
                 {
-                    // TODO: properly compute the type
-                    CreateNodeViewModel(owner, parent, child.First().Type, child);
+                    Type type = null;
+                    var typeMatch = true;
+                    foreach (var childPresenter in child)
+                    {
+                        if (type == null)
+                        {
+                            type = childPresenter.Type;
+                        }
+                        else if (type != childPresenter.Type && type.IsAssignableFrom(childPresenter.Type))
+                        {
+                            type = childPresenter.Type;
+                        }
+                        else if (type != childPresenter.Type)
+                        {
+                            typeMatch = false;
+                            break;
+                        }
+                    }
+                    if (typeMatch)
+                    {
+                        CreateNodeViewModel(owner, parent, child.First().Type, child);
+                    }
                 }
             }
         }
