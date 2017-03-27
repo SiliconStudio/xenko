@@ -2,6 +2,10 @@
 Id: e50d6079-dc5b-43a9-a1aa-75cf370f1fc3
 Tags: []
 Scene: 961e35a8-ba9a-47b4-82c6-2a2450282c00:MainScene
+BoundingBox:
+    Minimum: {X: -10.0, Y: -10.0, Z: -10.0}
+    Maximum: {X: 10.0, Y: 10.0, Z: 10.0}
+AutoGenerateBoundingBox: true
 IncludedCollisionGroups: CustomFilter1
 BuildSettings:
     CellHeight: 0.1

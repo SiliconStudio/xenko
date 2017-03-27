@@ -1,6 +1,6 @@
 !GameSettingsAsset
 Id: 2eabc4de-eca3-4407-83d7-8640d12f8b1c
-SerializedVersion: {Xenko: 1.11.0}
+SerializedVersion: {Xenko: 1.9.3-alpha01}
 Tags: []
 DefaultScene: b1ceb6db-e76e-4c37-be81-72941ddd6b9a:DynamicScene
 GraphicsCompositor: ce13d5ed-a9d2-46c0-97d0-e52f7482d0c6:GraphicsCompositor
@@ -23,24 +23,6 @@ Defaults:
         FixedTimeStep: 0.0166666675
     - !SiliconStudio.Xenko.Audio.AudioEngineSettings,SiliconStudio.Xenko.Audio
         HrtfSupport: false
-    - !SiliconStudio.Xenko.Navigation.NavigationSettings,SiliconStudio.Xenko.Navigation
-        EnableDynamicNavigationMesh: false
-        IncludedCollisionGroups: AllFilter
-        BuildSettings:
-            CellHeight: 0.2
-            CellSize: 0.3
-            TileSize: 32
-            MinRegionArea: 2
-            RegionMergeArea: 20
-            MaxEdgeLen: 12.0
-            MaxEdgeError: 1.3
-            DetailSamplingDistance: 6.0
-            MaxDetailSamplingError: 1.0
-        NavigationMeshAgentSettings:
-            -   Height: 1.0
-                Radius: 0.5
-                MaxClimb: 0.25
-                MaxSlope: {Radians: 0.7853982}
 Overrides: []
 PlatformFilters:
     - PowerVR SGX 54[0-9]
