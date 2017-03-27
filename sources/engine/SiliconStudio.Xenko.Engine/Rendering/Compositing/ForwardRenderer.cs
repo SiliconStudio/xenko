@@ -34,6 +34,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         protected Texture ViewDepthStencil;
         protected Texture ViewDepthStencilNoMSAA;
 
+        protected int ViewCount { get; private set; }
+
+        protected int ViewIndex { get; private set; }
+
         public ClearRenderer Clear { get; set; } = new ClearRenderer();
 
         /// <summary>
@@ -471,8 +475,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 // Draw [main view | main stage]
                 if (OpaqueRenderStage != null)
                 {
-                    //renderSystem.PlugTargets(drawContext, OpaqueRenderStage);
-
                     renderSystem.Draw(drawContext, context.RenderView, OpaqueRenderStage);
                 }
 
@@ -558,7 +560,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         //make sure we don't use any default targets!
                         drawContext.CommandList.SetRenderTargets(null, null);
 
-                        PrepareRenderTargetTextures(drawContext, new Size2(VRSettings.VRDevice.ActualRenderFrameSize.Width / 2, VRSettings.VRDevice.ActualRenderFrameSize.Height));
+                        PrepareRenderTargets(drawContext, new Size2(VRSettings.VRDevice.ActualRenderFrameSize.Width / 2, VRSettings.VRDevice.ActualRenderFrameSize.Height));
 
                         //also prepare the final VR target
                         var vrFullSurface = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
@@ -572,12 +574,16 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             drawContext.CommandList.SetViewport(new Viewport(0.0f, 0.0f, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2.0f, VRSettings.VRDevice.ActualRenderFrameSize.Height));
                             drawContext.CommandList.SetRenderTargets(ViewDepthStencil, renderOutputValidator.RenderTargets.Count, currentRenderTargets.Items);
 
+                            ViewCount = 2;
+
                             for (var i = 0; i < 2; i++)
                             {
                                 using (context.PushRenderViewAndRestore(VRSettings.RenderViews[i]))
                                 {
                                     // Clear render target and depth stencil
                                     Clear?.Draw(drawContext);
+
+                                    ViewIndex = 0;
 
                                     DrawView(context, drawContext);
                                     drawContext.CommandList.CopyRegion(ViewOutputTarget, 0, null, vrFullSurface, 0, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2 * i);
@@ -613,7 +619,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 }
                 else
                 {
-                    PrepareRenderTargetTextures(drawContext, new Size2((int)viewport.Width, (int)viewport.Height));
+                    PrepareRenderTargets(drawContext, new Size2((int)viewport.Width, (int)viewport.Height));
+
+                    ViewCount = 1;
+                    ViewIndex = 0;
 
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
@@ -688,7 +697,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// </summary>
         /// <param name="drawContext">The current draw context</param>
         /// <param name="renderTargetsSize"></param>
-        protected virtual void PrepareRenderTargetTextures(RenderDrawContext drawContext, Size2 renderTargetsSize)
+        protected virtual void PrepareRenderTargets(RenderDrawContext drawContext, Size2 renderTargetsSize)
         {
             var currentRenderTarget = drawContext.CommandList.RenderTarget;
             if (drawContext.CommandList.RenderTargetCount == 0)
