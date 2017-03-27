@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 14.0.23107.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "90-Tools", "90-Tools", "{1AE1AC60-5D2F-4CA7-AE20-888F44551185}"
 EndProject
@@ -433,6 +433,8 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.VisualStudio.Debugging", "..\sources\tools\SiliconStudio.VisualStudio.Debugging\SiliconStudio.VisualStudio.Debugging.shproj", "{991E796A-D1D1-48B8-B9AA-95C2744FE112}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.Assets.Yaml", "..\sources\assets\SiliconStudio.Assets.Yaml\SiliconStudio.Assets.Yaml.shproj", "{FB9ED2C4-94A0-4004-A498-3F29A9D5BB5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Mathematics.Tests", "..\sources\common\core\SiliconStudio.Core.Mathematics.Tests\SiliconStudio.Core.Mathematics.Tests.csproj", "{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -2623,6 +2625,30 @@ Global
 		{3C855DB2-EEA3-415C-A0A8-C834DEC40531}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{3C855DB2-EEA3-415C-A0A8-C834DEC40531}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{3C855DB2-EEA3-415C-A0A8-C834DEC40531}.Testing|Win32.Build.0 = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.AppStore|Win32.ActiveCfg = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.AppStore|Win32.Build.0 = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Debug|Win32.Build.0 = Debug|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Release|Win32.ActiveCfg = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Release|Win32.Build.0 = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Testing|Any CPU.ActiveCfg = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Testing|Any CPU.Build.0 = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Testing|Win32.ActiveCfg = Release|Any CPU
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}.Testing|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2743,5 +2769,6 @@ Global
 		{3C855DB2-EEA3-415C-A0A8-C834DEC40531} = {1AE1AC60-5D2F-4CA7-AE20-888F44551185}
 		{991E796A-D1D1-48B8-B9AA-95C2744FE112} = {E4508D15-6503-4A29-ADC4-27B3A5E99545}
 		{FB9ED2C4-94A0-4004-A498-3F29A9D5BB5D} = {A2A4342E-024B-4063-B10C-1DA96CA3046D}
+		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B} = {22ADD4CD-092E-4ADC-A21E-64CF42230152}
 	EndGlobalSection
 EndGlobal

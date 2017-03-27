@@ -27,23 +27,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        static unsafe void CopyMemoryRGBA16(IntPtr dest, IntPtr src, int sizeInBytesToCopy)
-        {
-            if (sizeInBytesToCopy % 4 != 0)
-                throw new ArgumentException("Should be a multiple of 4.", nameof(sizeInBytesToCopy));
-
-            var bufferSize = sizeInBytesToCopy / 4;
-            var srcPtr = (Half4*)src;
-            var destPtr = (int*)dest;
-            for (int i = 0; i < bufferSize; i++)
-            {
-                var value = *srcPtr++;
-                var rgba16 = (Vector4)value;
-                var rgba8 = new Color(rgba16);
-                *destPtr++ = rgba8.ToArgb();
-            }
-        }
-
         static unsafe void CopyMemoryRRR1(IntPtr dest, IntPtr src, int sizeInBytesToCopy)
         {
             var bufferSize = sizeInBytesToCopy;
