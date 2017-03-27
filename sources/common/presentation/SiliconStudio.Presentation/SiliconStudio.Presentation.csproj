@@ -8,6 +8,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Presentation</RootNamespace>
     <AssemblyName>SiliconStudio.Presentation</AssemblyName>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
@@ -168,6 +169,7 @@
     <Compile Include="ValueConverters\ConverterHelper.cs" />
     <Compile Include="ValueConverters\DegreeAngleSingle.cs" />
     <Compile Include="ValueConverters\EmptyStringToBool.cs" />
+    <Compile Include="ValueConverters\UDirectoryToString.cs" />
     <Compile Include="ValueConverters\ValueToUnset.cs" />
     <Compile Include="ValueConverters\ToLower.cs" />
     <Compile Include="ValueConverters\StringConcat.cs" />
@@ -290,7 +292,6 @@
     <Compile Include="ValueConverters\ToDouble.cs" />
     <Compile Include="ValueConverters\UFileToFileName.cs" />
     <Compile Include="ValueConverters\UFileToFileNameWithExt.cs" />
-    <Compile Include="ValueConverters\UFileToString.cs" />
     <Compile Include="ValueConverters\UFileToUri.cs" />
     <Compile Include="ValueConverters\UnderlyingType.cs" />
     <Compile Include="ValueConverters\NullToUnset.cs" />
@@ -303,7 +304,7 @@
     <Compile Include="ValueConverters\OrMultiConverter.cs" />
     <Compile Include="ValueConverters\ObjectToFullTypeName.cs" />
     <Compile Include="ValueConverters\TrimString.cs" />
-    <Compile Include="ValueConverters\UPathToString.cs" />
+    <Compile Include="ValueConverters\UFileToString.cs" />
     <Compile Include="ValueConverters\ValueConverterBase.cs" />
     <Compile Include="ValueConverters\XOrMultiConverter.cs" />
     <Compile Include="ViewModel\DirtiableEditableViewModel.cs" />

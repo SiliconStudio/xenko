@@ -38,7 +38,6 @@
     <ProjectGuid>{43A6E62E-1B1C-4630-ABB8-C3F716004645}</ProjectGuid>
     <Keyword>ManagedCProj</Keyword>
     <RootNamespace>SiliconStudio.Xenko.Importer.Common</RootNamespace>
-    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">

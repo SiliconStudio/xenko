@@ -28,7 +28,7 @@ namespace SiliconStudio.Core
     /// </remarks>
     [DataContract]
     [DataSerializer(typeof(DictionaryAllSerializer<PropertyContainer, PropertyKey, object>))]
-    public struct PropertyContainer : IDictionary<PropertyKey, object>
+    public struct PropertyContainer : IDictionary<PropertyKey, object>, IReadOnlyDictionary<PropertyKey, object>
     {
         private static readonly Dictionary<Type, List<PropertyKey>> AccessorProperties = new Dictionary<Type, List<PropertyKey>>();
         private Dictionary<PropertyKey, object> properties;
@@ -608,7 +608,11 @@ namespace SiliconStudio.Core
         {
             return Remove(item.Key);
         }
-        
+
+        IEnumerable<PropertyKey> IReadOnlyDictionary<PropertyKey, object>.Keys => Keys;
+
+        IEnumerable<object> IReadOnlyDictionary<PropertyKey, object>.Values => Values;
+
         internal abstract class ValueHolder
         {
             public abstract object ObjectValue { get; }

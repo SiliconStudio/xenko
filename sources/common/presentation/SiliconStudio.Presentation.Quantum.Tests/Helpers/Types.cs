@@ -1,15 +1,18 @@
-﻿using SiliconStudio.Quantum;
+﻿using System.Collections.Generic;
+using SiliconStudio.Core;
+using SiliconStudio.Presentation.Quantum.Presenters;
+using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
 {
     public static class Types
     {
-        public class TestPropertiesProvider : IPropertiesProviderViewModel
+        public class TestPropertyProvider : IPropertyProviderViewModel
         {
             private readonly IObjectNode rootNode;
 
-            public TestPropertiesProvider(IObjectNode rootNode)
+            public TestPropertyProvider(IObjectNode rootNode)
             {
                 this.rootNode = rootNode;
             }
@@ -20,10 +23,9 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
                 return rootNode;
             }
 
-            public ExpandReferencePolicy ShouldConstructChildren(IGraphNode graphNode, Index index) => ExpandReferencePolicy.Full;
+            bool IPropertyProviderViewModel.ShouldConstructMember(IMemberNode member) => true;
 
-            public bool ShouldConstructMember(IMemberNode member, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
-            public bool ShouldConstructItem(IObjectNode collection, Index index, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
+            bool IPropertyProviderViewModel.ShouldConstructItem(IObjectNode collection, Index index) => true;
         }
 
         public class SimpleObject
@@ -38,6 +40,35 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
             public string Title { get; set; }
 
             public SimpleObject Instance { get; set; }
+        }
+
+        public class SimpleType
+        {
+            public string String { get; set; }
+        }
+
+        public class ClassWithRef
+        {
+            [Display(1)]
+            public string String { get; set; }
+            [Display(2)]
+            public ClassWithRef Ref { get; set; }
+        }
+
+        public class ClassWithCollection
+        {
+            [Display(1)]
+            public string String { get; set; }
+            [Display(2)]
+            public List<string> List { get; set; } = new List<string>();
+        }
+
+        public class ClassWithRefCollection
+        {
+            [Display(1)]
+            public string String { get; set; }
+            [Display(2)]
+            public List<SimpleType> List { get; set; } = new List<SimpleType>();
         }
     }
 }

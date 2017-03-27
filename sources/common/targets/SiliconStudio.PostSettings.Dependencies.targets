@@ -31,6 +31,7 @@
         <Type>$([System.Text.RegularExpressions.Regex]::Match('%(Identity)', `(.*);(.*);(.*)`).get_Groups().get_Item(1).ToString())</Type>
         <SourcePath>$([System.Text.RegularExpressions.Regex]::Match('%(Identity)', `(.*);(.*);(.*)`).get_Groups().get_Item(2).ToString())</SourcePath>
         <Link>$([System.Text.RegularExpressions.Regex]::Match('%(Identity)', `(.*);(.*);(.*)`).get_Groups().get_Item(3).ToString())</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </_SiliconStudioDependencyLocal>
       <_SiliconStudioDependencyContent Include="@(_SiliconStudioDependencyLocal->'$(_SiliconStudioSourceDir)%(SourcePath)')" Condition="'%(_SiliconStudioDependencyLocal.Type)' == 'Content'"/>
       <_SiliconStudioDependencyNativeLib Include="@(_SiliconStudioDependencyLocal->'$(_SiliconStudioSourceDir)%(SourcePath)')" Condition="'%(_SiliconStudioDependencyLocal.Type)' == 'NativeLib'"/>

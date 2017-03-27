@@ -10,18 +10,19 @@ namespace SiliconStudio.Presentation.ValueConverters
     public class CharToString : ValueConverterBase<CharToString>
     {
         /// <inheritdoc/>
-        [NotNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return ((char?)value)?.ToString() ?? string.Empty;
+            return value is char ? value.ToString() : string.Empty;
         }
 
         /// <inheritdoc/>
-        [NotNull]
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var str = value as string;
-            return !string.IsNullOrEmpty(str) ? str[0] : default(char);
+            if (!string.IsNullOrEmpty(str))
+                return str[0];
+
+            return targetType == typeof(char) ? (object)default(char) : null;
         }
     }
 }

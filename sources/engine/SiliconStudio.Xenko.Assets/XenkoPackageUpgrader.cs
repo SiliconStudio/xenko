@@ -845,7 +845,7 @@ namespace SiliconStudio.Xenko.Assets
                             {
                                 // Use first skybox component
                                 var skyboxInfo = skyboxInfos.First();
-
+                                
                                 // Combine light and skybox intensity into light intensity
                                 var lightIntensity = lightComponent.Intensity;
                                 var skyboxIntensity = skyboxInfo.Component.Intensity;
@@ -855,6 +855,13 @@ namespace SiliconStudio.Xenko.Assets
 
                                 // Copy skybox assignment
                                 lightComponent.Type["Skybox"] = (string)skyboxInfo.Component.Skybox;
+
+                                // Check if this light is now referencing a removed skybox asset
+                                string referenceId = ((string)skyboxInfo.Component.Skybox)?.Split('/').Last().Split(':').First();
+                                if (referenceId == null || !skyboxAssetInfos.ContainsKey(referenceId) || skyboxAssetInfos[referenceId].Deleted)
+                                {
+                                    lightComponent.Type["Skybox"] = "null";
+                                }
 
                                 // 1 light per entity max.
                                 break;
@@ -912,25 +919,27 @@ namespace SiliconStudio.Xenko.Assets
                     }
                     rootMapping.AddChild("CubeMap", cubemapReference);
                     var splitReference = cubemapReference.Split('/'); // TODO
-
-                    bool isBackground = root.Usage == null ||
-                                        (string)root.Usage == "Background" ||
-                                        (string)root.Usage == "LightingAndBackground";
-                    skyboxAssetInfos.Add((string)root.Id, new SkyboxAssetInfo
-                    {
-                        TextureReference = splitReference.Last(),
-                        IsBackground = isBackground
-                    });
                     
                     // We will remove skyboxes that are only used as a background
                     if (root.Usage != null && (string)root.Usage == "Background")
                     {
                         skyboxAsset.Deleted = true;
                     }
+
                     else if (root.Usage == null || (string)root.Usage == "LightingAndBackground")
                     {
                         root.Usage = "Lighting";
                     }
+                    
+                    bool isBackground = root.Usage == null ||
+                                        (string)root.Usage == "Background" ||
+                                        (string)root.Usage == "LightingAndBackground";
+                    skyboxAssetInfos.Add((string)root.Id, new SkyboxAssetInfo
+                    {
+                        TextureReference = splitReference.Last(),
+                        IsBackground = isBackground,
+                        Deleted = skyboxAsset.Deleted,
+                    });
                 }
             }
 
@@ -1010,6 +1019,7 @@ namespace SiliconStudio.Xenko.Assets
             {
                 public string TextureReference;
                 public bool IsBackground;
+                public bool Deleted;
             }
 
             private struct ComponentInfo
