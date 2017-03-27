@@ -17,15 +17,9 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [AssetCompiler(typeof(GraphicsCompositorAsset), typeof(AssetCompilationContext))]
     public class GraphicsCompositorAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
-        {
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(GraphicsCompositorAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //archetype
-        }
-
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (GraphicsCompositorAsset)assetItem.Asset;
-            // TODO: We should ignore game settings stored in dependencies
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
                 new GraphicsCompositorCompileCommand(targetUrlInStorage, asset, assetItem.Package),
