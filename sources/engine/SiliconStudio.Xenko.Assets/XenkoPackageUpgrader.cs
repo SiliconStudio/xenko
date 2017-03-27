@@ -767,13 +767,10 @@ namespace SiliconStudio.Xenko.Assets
 
                     // Replace agent settings with group reference on the navigation mesh
                     navigationMesh.DynamicRootNode.NavigationMeshAgentSettings = DynamicYamlEmpty.Default;
-                    navigationMesh.DynamicRootNode.SelectedGroups = new DynamicYamlMapping(new YamlMappingNode());
+                    navigationMesh.DynamicRootNode.SelectedGroups = new DynamicYamlArray(new YamlSequenceNode());
                     foreach (var selectedGroup in selectedGroups)
                     {
-                        dynamic group = new DynamicYamlMapping(new YamlMappingNode());
-                        group.Id = selectedGroup.ToGuid().ToString("D");
-                        group.AgentSettings = agentSettings[selectedGroup];
-                        navigationMesh.DynamicRootNode.SelectedGroups[Guid.NewGuid().ToString("N")] = group;
+                        navigationMesh.DynamicRootNode.SelectedGroups.Add(selectedGroup.ToGuid().ToString("D"));
                     }
                 }
             }
