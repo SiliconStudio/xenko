@@ -36,26 +36,6 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyPropertyKey TrimmedTextPropertyKey = DependencyProperty.RegisterReadOnly("TrimmedText", typeof(string), typeof(TextBox), new PropertyMetadata(""));
 
         /// <summary>
-        /// Identifies the <see cref="WatermarkContent"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty WatermarkContentProperty = DependencyProperty.Register("WatermarkContent", typeof(object), typeof(TextBox), new PropertyMetadata(null));
-
-        /// <summary>
-        /// Identifies the <see cref="WatermarkContentTemplate"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty WatermarkContentTemplateProperty = DependencyProperty.Register("WatermarkContentTemplate", typeof(DataTemplate), typeof(TextBox), new PropertyMetadata(null));
-
-        /// <summary>
-        /// Identifies the <see cref="TextTrimming"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty TextTrimmingProperty = DependencyProperty.Register("TextTrimming", typeof(TextTrimming), typeof(TextBox), new PropertyMetadata(TextTrimming.None));
-
-        /// <summary>
-        /// Identifies the <see cref="TrimmingSource"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty TrimmingSourceProperty = DependencyProperty.Register("TrimmingSource", typeof(TrimmingSource), typeof(TextBox), new PropertyMetadata(TrimmingSource.End));
-
-        /// <summary>
         /// Identifies the <see cref="TrimmedText"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty TrimmedTextProperty = TrimmedTextPropertyKey.DependencyProperty;
@@ -94,16 +74,6 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets the trimmed text to display when the control does not have the focus, depending of the value of the <see cref="TextTrimming"/> property.
         /// </summary>
         public string TrimmedText { get { return (string)GetValue(TrimmedTextPropertyKey.DependencyProperty); } private set { SetValue(TrimmedTextPropertyKey, value); } }
-
-        /// <summary>
-        /// Gets or sets the content to display when the TextBox is empty.
-        /// </summary>
-        public object WatermarkContent { get { return GetValue(WatermarkContentProperty); } set { SetValue(WatermarkContentProperty, value); } }
-
-        /// <summary>
-        /// Gets or sets the template of the content to display when the TextBox is empty.
-        /// </summary>
-        public DataTemplate WatermarkContentTemplate { get { return (DataTemplate)GetValue(WatermarkContentTemplateProperty); } set { SetValue(WatermarkContentTemplateProperty, value); } }
 
         /// <inheritdoc/>
         public override void OnApplyTemplate()

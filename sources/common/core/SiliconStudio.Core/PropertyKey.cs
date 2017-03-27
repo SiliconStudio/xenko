@@ -120,6 +120,11 @@ namespace SiliconStudio.Core
             return string.Compare(Name, key.Name, StringComparison.OrdinalIgnoreCase);
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
         protected virtual void SetupMetadatas()
         {
             foreach (var metadata in Metadatas)

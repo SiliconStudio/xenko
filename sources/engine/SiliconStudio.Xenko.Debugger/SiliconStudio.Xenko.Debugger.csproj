@@ -12,7 +12,7 @@
     <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />

@@ -109,8 +109,6 @@ namespace SiliconStudio.Quantum
                 if (content.IsReference)
                     referenceContents.Add(content);
 
-                AvailableCommands.Where(x => x.CanAttach(currentDescriptor, null)).ForEach(rootNode.AddCommand);
-
                 PushContextNode(rootNode);
             }
 
@@ -171,8 +169,6 @@ namespace SiliconStudio.Quantum
                 Visit(content.Retrieve());
             }
             PopContextNode();
-
-            AvailableCommands.Where(x => x.CanAttach(content.Descriptor, (MemberDescriptorBase)member)).ForEach(content.AddCommand);
 
             content.Seal();
         }

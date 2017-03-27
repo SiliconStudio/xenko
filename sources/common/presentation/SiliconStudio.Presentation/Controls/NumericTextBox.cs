@@ -72,7 +72,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="Value"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(nameof(Value), typeof(double), typeof(NumericTextBox), new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValuePropertyChanged, null, true, UpdateSourceTrigger.Explicit));
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(nameof(Value), typeof(double?), typeof(NumericTextBox), new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValuePropertyChanged, null, true, UpdateSourceTrigger.Explicit));
 
         /// <summary>
         /// Identifies the <see cref="DecimalPlaces"/> dependency property.
@@ -194,7 +194,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets the current value of the <see cref="NumericTextBox"/>.
         /// </summary>
-        public double Value { get { return (double)GetValue(ValueProperty); } set { SetValue(ValueProperty, value); } }
+        public double? Value { get { return (double?)GetValue(ValueProperty); } set { SetValue(ValueProperty, value); } }
 
         /// <summary>
         /// Gets or sets the number of decimal places displayed in the <see cref="NumericTextBox"/>.
@@ -286,7 +286,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Raised when the <see cref="Value"/> property has changed.
         /// </summary>
-        protected virtual void OnValueChanged(double oldValue, double newValue)
+        protected virtual void OnValueChanged(double? oldValue, double? newValue)
         {
         }
 
@@ -311,7 +311,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <inheritdoc/>
         protected sealed override void OnValidated()
         {
-            double value;
+            double? value;
             try
             {
                 value = double.Parse(Text, CultureInfo.InvariantCulture);
@@ -331,7 +331,7 @@ namespace SiliconStudio.Presentation.Controls
         protected override string CoerceTextForValidation(string baseValue)
         {
             baseValue = base.CoerceTextForValidation(baseValue);
-            double value;
+            double? value;
             try
             {
                 value = double.Parse(baseValue, CultureInfo.InvariantCulture);
@@ -354,10 +354,13 @@ namespace SiliconStudio.Presentation.Controls
         }
 
         [NotNull]
-        protected string FormatValue(double value)
+        protected string FormatValue(double? value)
         {
+            if (!value.HasValue)
+                return string.Empty;
+
             var decimalPlaces = DecimalPlaces;
-            var coercedValue = decimalPlaces < 0 ? value : Math.Round(value, decimalPlaces);
+            var coercedValue = decimalPlaces < 0 ? value.Value : Math.Round(value.Value, decimalPlaces);
             return coercedValue.ToString(CultureInfo.InvariantCulture);
         }
 
@@ -373,15 +376,15 @@ namespace SiliconStudio.Presentation.Controls
                 RaiseEvent(new RepeatButtonPressedRoutedEventArgs(RepeatButtons.DecreaseButton, repeatButton.IsPressed ? RepeatButtonPressedEvent : RepeatButtonReleasedEvent));
             }
         }
-        
-        private void OnValuePropertyChanged(double oldValue, double newValue)
+
+        private void OnValuePropertyChanged(double? oldValue, double? newValue)
         {
-            if (newValue > Maximum)
+            if (newValue.HasValue && newValue.Value > Maximum)
             {
                 SetCurrentValue(ValueProperty, Maximum);
                 return;
             }
-            if (newValue < Minimum)
+            if (newValue.HasValue && newValue.Value < Minimum)
             {
                 SetCurrentValue(ValueProperty, Minimum);
                 return;
@@ -390,10 +393,10 @@ namespace SiliconStudio.Presentation.Controls
             var textValue = FormatValue(newValue);
             updatingValue = true;
             SetCurrentValue(TextProperty, textValue);
-            SetCurrentValue(ValueRatioProperty, MathUtil.InverseLerp(Minimum, Maximum, newValue));
+            SetCurrentValue(ValueRatioProperty, newValue.HasValue ? MathUtil.InverseLerp(Minimum, Maximum, newValue.Value) : 0.0);
             updatingValue = false;
 
-            RaiseEvent(new RoutedPropertyChangedEventArgs<double>(oldValue, newValue, ValueChangedEvent));
+            RaiseEvent(new RoutedPropertyChangedEventArgs<double?>(oldValue, newValue, ValueChangedEvent));
             OnValueChanged(oldValue, newValue);
         }
 
@@ -407,7 +410,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private static void OnValuePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            ((NumericTextBox)sender).OnValuePropertyChanged((double)e.OldValue, (double)e.NewValue);
+            ((NumericTextBox)sender).OnValuePropertyChanged((double?)e.OldValue, (double?)e.NewValue);
         }
         
         private static void OnDecimalPlacesPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
@@ -433,7 +436,7 @@ namespace SiliconStudio.Presentation.Controls
 
             // Do not overwrite the Value, it is already correct!
             numericInput.updatingValue = true;
-            numericInput.SetCurrentValue(ValueRatioProperty, MathUtil.InverseLerp(numericInput.Minimum, numericInput.Maximum, numericInput.Value));
+            numericInput.SetCurrentValue(ValueRatioProperty, numericInput.Value.HasValue ? MathUtil.InverseLerp(numericInput.Minimum, numericInput.Maximum, numericInput.Value.Value) : 0.0);
             numericInput.updatingValue = false;
 
             if (needValidation)
@@ -459,7 +462,7 @@ namespace SiliconStudio.Presentation.Controls
 
             // Do not overwrite the Value, it is already correct!
             numericInput.updatingValue = true;
-            numericInput.SetCurrentValue(ValueRatioProperty, MathUtil.InverseLerp(numericInput.Minimum, numericInput.Maximum, numericInput.Value));
+            numericInput.SetCurrentValue(ValueRatioProperty, numericInput.Value.HasValue ? MathUtil.InverseLerp(numericInput.Minimum, numericInput.Maximum, numericInput.Value.Value) : 0.0);
             numericInput.updatingValue = false;
       
             if (needValidation)
@@ -490,22 +493,22 @@ namespace SiliconStudio.Presentation.Controls
 
         private static void OnLargeIncreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
-            UpdateValueCommand(sender, x => x.Value + x.LargeChange);
+            UpdateValueCommand(sender, x => x.Value ?? x.Minimum + x.LargeChange);
         }
 
         private static void OnLargeDecreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
-            UpdateValueCommand(sender, x => x.Value - x.LargeChange);
+            UpdateValueCommand(sender, x => x.Value ?? x.Maximum - x.LargeChange);
         }
 
         private static void OnSmallIncreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
-            UpdateValueCommand(sender, x => x.Value + x.SmallChange);
+            UpdateValueCommand(sender, x => x.Value ?? x.Minimum + x.SmallChange);
         }
 
         private static void OnSmallDecreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
-            UpdateValueCommand(sender, x => x.Value - x.SmallChange);
+            UpdateValueCommand(sender, x => x.Value ?? x.Maximum - x.SmallChange);
         }
 
         private static void OnResetValueCommand([NotNull] object sender, ExecutedRoutedEventArgs e)

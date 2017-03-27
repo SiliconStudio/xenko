@@ -52,18 +52,18 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
         [Ignore("Need check")]
-        [TestCase(Module.PathToAtlasImages+@"stones256.png", Module.PathToAtlasImages+@"square256.png")]
+        [TestCase("stones256.png", "square256.png")]
         public void CreateArrayTest(string file1, string file2)
         {
             var list = new List<TexImage>();
             for (int i = 0; i < 5; ++i)
             {
                 var temp = new TexImage();
-                fiLib.Execute(temp, new LoadingRequest(file1, false));
+                fiLib.Execute(temp, new LoadingRequest(Module.PathToAtlasImages + file1, false));
                 list.Add(temp);
 
                 temp = new TexImage();
-                fiLib.Execute(temp, new LoadingRequest(file2, false));
+                fiLib.Execute(temp, new LoadingRequest(Module.PathToAtlasImages + file2, false));
                 list.Add(temp);
             }
 
@@ -212,18 +212,18 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
         [Ignore("Need check")]
-        [TestCase(Module.PathToAtlasImages+"stones256.png", Module.PathToAtlasImages + @"square256.png")]
+        [TestCase("stones256.png", "square256.png")]
         public void CreateCubeTest(string file1, string file2)
         {
             var list = new List<TexImage>();
             for (int i = 0; i < 3; ++i)
             {
                 var temp = new TexImage();
-                fiLib.Execute(temp, new LoadingRequest(file1, false));
+                fiLib.Execute(temp, new LoadingRequest(Module.PathToAtlasImages + file1, false));
                 list.Add(temp);
 
                 temp = new TexImage();
-                fiLib.Execute(temp, new LoadingRequest(file2, false));
+                fiLib.Execute(temp, new LoadingRequest(Module.PathToAtlasImages + file2, false));
                 list.Add(temp);
             }
 

@@ -464,16 +464,28 @@ namespace SiliconStudio.Xenko.Particles
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    for (int i = 0; i < module.RequiredFields.Count; i++)
+                    module.AddFieldDescription = AddRequiredField;
+                    module.RemoveFieldDescription = RemoveRequiredField;
+
+                    if (module.Enabled)
                     {
-                        AddRequiredField(module.RequiredFields[i]);
+                        for (int i = 0; i < module.RequiredFields.Count; i++)
+                        {
+                            AddRequiredField(module.RequiredFields[i]);
+                        }
                     }
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
-                    for (int i = 0; i < module.RequiredFields.Count; i++)
+                    module.AddFieldDescription = null;
+                    module.RemoveFieldDescription = null;
+
+                    if (module.Enabled)
                     {
-                        RemoveRequiredField(module.RequiredFields[i]);
+                        for (int i = 0; i < module.RequiredFields.Count; i++)
+                        {
+                            RemoveRequiredField(module.RequiredFields[i]);
+                        }
                     }
                     break;
             }

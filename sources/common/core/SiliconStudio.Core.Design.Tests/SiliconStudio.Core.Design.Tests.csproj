@@ -12,14 +12,12 @@
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
+    <SiliconStudioXenkoOutputFolder>Tests\$(AssemblyName)</SiliconStudioXenkoOutputFolder>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="nunit.core.interfaces">
-      <HintPath>$(SiliconStudioDependenciesDir)NUnit\addins\nunit.core.interfaces.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>
     </Reference>
@@ -40,7 +38,6 @@
     <Compile Include="TestShadowObject.cs" />
     <Compile Include="TestTypeConverter.cs" />
     <Compile Include="TestUPath.cs" />
-    <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Transactions\OrderedOperation.cs" />
     <Compile Include="Transactions\SimpleOperation.cs" />
@@ -53,37 +50,30 @@
     <ProjectReference Include="..\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
       <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
       <Name>SiliconStudio.Core.MicroThreading</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
       <Project>{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}</Project>
       <Name>SiliconStudio.Core.Reflection</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
       <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
       <Name>SiliconStudio.Core.Serialization</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
       <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
       <Name>SiliconStudio.Core.Yaml</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
       <Name>SiliconStudio.Core</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
       <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
       <Name>SiliconStudio.Core.Design</Name>
-      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

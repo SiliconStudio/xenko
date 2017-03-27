@@ -7,32 +7,32 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.Controls
 {
-    public class Vector4Editor : VectorEditor<Vector4>
+    public class Vector4Editor : VectorEditor<Vector4?>
     {
         /// <summary>
         /// Identifies the <see cref="X"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty XProperty = DependencyProperty.Register("X", typeof(float), typeof(Vector4Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
+        public static readonly DependencyProperty XProperty = DependencyProperty.Register("X", typeof(float?), typeof(Vector4Editor), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="Y"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty YProperty = DependencyProperty.Register("Y", typeof(float), typeof(Vector4Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
+        public static readonly DependencyProperty YProperty = DependencyProperty.Register("Y", typeof(float?), typeof(Vector4Editor), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="Z"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ZProperty = DependencyProperty.Register("Z", typeof(float), typeof(Vector4Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
+        public static readonly DependencyProperty ZProperty = DependencyProperty.Register("Z", typeof(float?), typeof(Vector4Editor), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="W"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty WProperty = DependencyProperty.Register("W", typeof(float), typeof(Vector4Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
+        public static readonly DependencyProperty WProperty = DependencyProperty.Register("W", typeof(float?), typeof(Vector4Editor), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="Length"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty LengthProperty = DependencyProperty.Register("Length", typeof(float), typeof(Vector4Editor), new FrameworkPropertyMetadata(0.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceLengthValue));
+        public static readonly DependencyProperty LengthProperty = DependencyProperty.Register("Length", typeof(float?), typeof(Vector4Editor), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceLengthValue));
 
         static Vector4Editor()
         {
@@ -42,68 +42,71 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets the X component (in Cartesian coordinate system) of the <see cref="Vector4"/> associated to this control.
         /// </summary>
-        public float X { get { return (float)GetValue(XProperty); } set { SetValue(XProperty, value); } }
+        public float? X { get { return (float?)GetValue(XProperty); } set { SetValue(XProperty, value); } }
 
         /// <summary>
         /// Gets or sets the Y component (in Cartesian coordinate system) of the <see cref="Vector4"/> associated to this control.
         /// </summary>
-        public float Y { get { return (float)GetValue(YProperty); } set { SetValue(YProperty, value); } }
+        public float? Y { get { return (float?)GetValue(YProperty); } set { SetValue(YProperty, value); } }
 
         /// <summary>
         /// Gets or sets the Z component (in Cartesian coordinate system) of the <see cref="Vector4"/> associated to this control.
         /// </summary>
-        public float Z { get { return (float)GetValue(ZProperty); } set { SetValue(ZProperty, value); } }
+        public float? Z { get { return (float?)GetValue(ZProperty); } set { SetValue(ZProperty, value); } }
 
         /// <summary>
         /// Gets or sets the W component (in Cartesian coordinate system) of the <see cref="Vector4"/> associated to this control.
         /// </summary>
-        public float W { get { return (float)GetValue(WProperty); } set { SetValue(WProperty, value); } }
+        public float? W { get { return (float?)GetValue(WProperty); } set { SetValue(WProperty, value); } }
 
         /// <summary>
         /// The length (in polar coordinate system) of the <see cref="Vector4"/> associated to this control.
         /// </summary>
-        public float Length { get { return (float)GetValue(LengthProperty); } set { SetValue(LengthProperty, value); } }
+        public float? Length { get { return (float?)GetValue(LengthProperty); } set { SetValue(LengthProperty, value); } }
 
         /// <inheritdoc/>
-        protected override void UpdateComponentsFromValue(Vector4 value)
+        protected override void UpdateComponentsFromValue(Vector4? value)
         {
-            SetCurrentValue(XProperty, value.X);
-            SetCurrentValue(YProperty, value.Y);
-            SetCurrentValue(ZProperty, value.Z);
-            SetCurrentValue(WProperty, value.W);
-            SetCurrentValue(LengthProperty, value.Length());
+            if (value != null)
+            {
+                SetCurrentValue(XProperty, value.Value.X);
+                SetCurrentValue(YProperty, value.Value.Y);
+                SetCurrentValue(ZProperty, value.Value.Z);
+                SetCurrentValue(WProperty, value.Value.W);
+                SetCurrentValue(LengthProperty, value.Value.Length());
+            }
         }
 
         /// <inheritdoc/>
-        protected override Vector4 UpdateValueFromComponent(DependencyProperty property)
+        protected override Vector4? UpdateValueFromComponent(DependencyProperty property)
         {
             switch (EditingMode)
             {
                 case VectorEditingMode.Normal:
                     if (property == XProperty)
-                        return new Vector4(X, Value.Y, Value.Z, Value.W);
+                        return X.HasValue && Value.HasValue ? (Vector4?)new Vector4(X.Value, Value.Value.Y, Value.Value.Z, Value.Value.W) : null;
                     if (property == YProperty)
-                        return new Vector4(Value.X, Y, Value.Z, Value.W);
+                        return Y.HasValue && Value.HasValue ? (Vector4?)new Vector4(Value.Value.X, Y.Value, Value.Value.Z, Value.Value.W) : null;
                     if (property == ZProperty)
-                        return new Vector4(Value.X, Value.Y, Z, Value.W);
+                        return Z.HasValue && Value.HasValue ? (Vector4?)new Vector4(Value.Value.X, Value.Value.Y, Z.Value, Value.Value.W) : null;
                     if (property == WProperty)
-                        return new Vector4(Value.X, Value.Y, Value.Z, W);
+                        return W.HasValue && Value.HasValue ? (Vector4?)new Vector4(Value.Value.X, Value.Value.Y, Value.Value.Z, W.Value) : null;
                     break;
 
                 case VectorEditingMode.AllComponents:
                     if (property == XProperty)
-                        return new Vector4(X);
+                        return X.HasValue ? (Vector4?)new Vector4(X.Value) : null;
                     if (property == YProperty)
-                        return new Vector4(Y);
+                        return Y.HasValue ? (Vector4?)new Vector4(Y.Value) : null;
                     if (property == ZProperty)
-                        return new Vector4(Z);
+                        return Z.HasValue ? (Vector4?)new Vector4(Z.Value) : null;
                     if (property == WProperty)
-                        return new Vector4(W);
+                        return W.HasValue ? (Vector4?)new Vector4(W.Value) : null;
                     break;
 
                 case VectorEditingMode.Length:
                     if (property == LengthProperty)
-                        return FromLength(Value, Length);
+                        return Length.HasValue ? (Vector4?)FromLength(Value ?? Vector4.One, Length.Value) : null;
                     break;
 
                 default:
@@ -114,7 +117,7 @@ namespace SiliconStudio.Presentation.Controls
         }
 
         /// <inheritdoc/>
-        protected override Vector4 UpateValueFromFloat(float value)
+        protected override Vector4? UpateValueFromFloat(float value)
         {
             return new Vector4(value);
         }
