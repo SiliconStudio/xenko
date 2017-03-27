@@ -95,11 +95,11 @@ namespace SiliconStudio.Assets
             packages.Remove(package);
         }
 
-        private void Session_AssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
+        private void Session_AssetDirtyChanged(AssetItem asset, bool oldValue, bool newValue)
         {
             // TODO: Don't update the source tracker while saving (cf AssetSourceTracker)
 
-            NotifyAssetChanged(asset);
+            NotifyAssetChanged(asset.Asset);
         }
 
         private void Packages_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

@@ -16,7 +16,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetContentType(typeof(Prefab))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
-    [AssetCompiler(typeof(PrefabAssetCompiler))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.7.0-beta01", typeof(SpriteComponentUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta01", "1.7.0-beta02", typeof(UIComponentRenamingResolutionUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta02", "1.7.0-beta03", typeof(ParticleColorAnimationUpgrader))]

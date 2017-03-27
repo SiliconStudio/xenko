@@ -19,7 +19,16 @@ namespace SiliconStudio.Assets.Quantum
             NodeBuilder.RegisterPrimitiveType(typeof(Color));
             NodeBuilder.RegisterPrimitiveType(typeof(Color3));
             NodeBuilder.RegisterPrimitiveType(typeof(Color4));
+            NodeBuilder.RegisterPrimitiveType(typeof(Vector2));
+            NodeBuilder.RegisterPrimitiveType(typeof(Vector3));
+            NodeBuilder.RegisterPrimitiveType(typeof(Vector4));
+            NodeBuilder.RegisterPrimitiveType(typeof(Int2));
+            NodeBuilder.RegisterPrimitiveType(typeof(Int3));
+            NodeBuilder.RegisterPrimitiveType(typeof(Int4));
             NodeBuilder.RegisterPrimitiveType(typeof(Quaternion));
+            NodeBuilder.RegisterPrimitiveType(typeof(RectangleF));
+            NodeBuilder.RegisterPrimitiveType(typeof(Rectangle));
+            NodeBuilder.RegisterPrimitiveType(typeof(Matrix));
             NodeBuilder.RegisterPrimitiveType(typeof(UPath));
             NodeBuilder.RegisterPrimitiveType(typeof(AngleSingle));
             // Register content types as primitive so they are not processed by Quantum

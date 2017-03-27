@@ -18,12 +18,9 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("PrefabModelAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Model))]
-    [AssetCompiler(typeof(PrefabModelAssetCompiler))]
     [Display(1855, "Prefab Model")]
     public sealed class PrefabModelAsset : Asset, IModelAsset, IAssetCompileTimeDependencies
     {
-        protected override int InternalBuildOrder => 0xFFFF; //make sure we build after Models
-
         /// <summary>
         /// The default file extension used by the <see cref="ProceduralModelAsset"/>.
         /// </summary>
@@ -41,8 +38,9 @@ namespace SiliconStudio.Xenko.Assets.Models
             {
                 // Return the prefab itself
                 yield return Prefab;
+
                 // Then we need to return used models and materials because they affects how the meshes are generated
-                var prefab = session.FindAsset(Prefab.Location)?.Asset as PrefabAsset;
+                var prefab = session.FindAsset(Prefab.Location)?.Asset as EntityHierarchyAssetBase;
                 if (prefab != null)
                 {
                     // Use a dictionary to ensure each reference is yielded only once
@@ -57,6 +55,17 @@ namespace SiliconStudio.Xenko.Assets.Models
                             var model = session.FindAsset(modelReference.Url)?.Asset as IModelAsset;
                             if (model != null)
                             {
+                                references[modelReference.Id] = modelReference;
+
+                                var enumerableModel = model as IAssetCompileTimeDependencies;
+                                if (enumerableModel != null)
+                                {
+                                    foreach (var enumerateCompileTimeDependency in enumerableModel.EnumerateCompileTimeDependencies(session))
+                                    {
+                                        references[enumerateCompileTimeDependency.Id] = enumerateCompileTimeDependency;
+                                    }
+                                }
+
                                 // Build the list of material for this model
                                 var materialList = model.Materials.Select(x => x.MaterialInstance.Material).ToList();
                                 for (var i = 0; i < modelComponent.Materials.Count && i < materialList.Count; i++)
@@ -79,6 +88,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                             }
                         }
                     }
+
                     // Finally return all the referenced models and materials
                     foreach (var reference in references.Values)
                     {

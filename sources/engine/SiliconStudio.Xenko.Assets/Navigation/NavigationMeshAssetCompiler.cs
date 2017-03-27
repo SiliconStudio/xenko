@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Extensions;
@@ -23,42 +24,67 @@ using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Assets.Navigation
 {
+    [AssetCompiler(typeof(NavigationMeshAsset), typeof(AssetCompilationContext))]
     class NavigationMeshAssetCompiler : AssetCompilerBase
-    {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+    { 
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        {
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SceneAsset), BuildDependencyType.CompileAsset);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ColliderShapeAsset), BuildDependencyType.CompileContent);
+        }
+
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
         {
             var asset = (NavigationMeshAsset)assetItem.Asset;
-            result.BuildSteps = new ListBuildStep();
-            
-            // Add navigation mesh dependencies
-            foreach (var dep in asset.EnumerateCompileTimeDependencies(assetItem.Package.Session))
+            if (asset.Scene != null)
             {
-                var colliderAssetItem = assetItem.Package.Session.FindAsset(dep.Id);
-                var colliderShapeAsset = colliderAssetItem.Asset as ColliderShapeAsset;
-                if (colliderShapeAsset != null)
+                string sceneUrl = AttachedReferenceManager.GetUrl(asset.Scene);
+                var sceneAsset = (SceneAsset)assetItem.Package.Session.FindAsset(sceneUrl)?.Asset;
+                if(sceneAsset == null)
+                    yield break;
+
+                var sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
+                foreach (var entity in sceneEntities)
                 {
-                    // Compile the collider assets first
-                    result.BuildSteps.Add(new AssetBuildStep(colliderAssetItem)
+                    var collider = entity.Get<StaticColliderComponent>();
+
+                    // Only process enabled colliders
+                    bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & asset.IncludedCollisionGroups) != 0 && collider.Enabled;
+                    if (colliderEnabled) // Removed or disabled
                     {
-                        new ColliderShapeAssetCompiler.ColliderShapeCombineCommand(colliderAssetItem.Location, colliderShapeAsset, assetItem.Package)
-                    });
+                        foreach (var desc in collider.ColliderShapes)
+                        {
+                            var shapeAssetDesc = desc as ColliderShapeAssetDesc;
+                            if (shapeAssetDesc?.Shape != null)
+                            {
+                                var assetReference = AttachedReferenceManager.GetAttachedReference(shapeAssetDesc.Shape);
+                                if (assetReference != null)
+                                {
+                                    yield return new ObjectUrl(UrlType.Content, assetReference.Url);
+                                }
+                            }
+                        }
+                    }
                 }
             }
+        }
 
-            result.BuildSteps.Add(new WaitBuildStep());
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        {
+            var asset = (NavigationMeshAsset)assetItem.Asset;
 
             // Compile the navigation mesh itself
-            result.BuildSteps.Add(new AssetBuildStep(assetItem)
+            result.BuildSteps = new AssetBuildStep(assetItem)
             {
                 new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context)
-            });
-
-            result.ShouldWaitForPreviousBuilds = true;
+                {
+                    InputFilesGetter = () => GetInputFiles(context, assetItem)
+                }
+            };
         }
 
         private class NavmeshBuildCommand : AssetCommand<NavigationMeshAsset>
         {
-            private readonly Package package;
             private readonly ContentManager contentManager = new ContentManager();
             private readonly Dictionary<string, PhysicsColliderShape> loadedColliderShapes = new Dictionary<string, PhysicsColliderShape>();
 
@@ -78,22 +104,11 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             private List<BoundingBox> boundingBoxes = new List<BoundingBox>();
 
             public NavmeshBuildCommand(string url, AssetItem assetItem, NavigationMeshAsset value, AssetCompilerContext context)
-                : base(url, value)
+                : base(url, value, assetItem.Package)
             {
                 gameSettingsAsset = context.GetGameSettingsAsset();
                 asset = value;
-                package = assetItem.Package;
                 assetUrl = url;
-            }
-
-            protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
-            {
-                foreach (var compileTimeDependency in asset.EnumerateCompileTimeDependencies(package.Session))
-                {
-                    yield return new ObjectUrl(UrlType.ContentLink, compileTimeDependency.Location);
-                }
-
-                // TODO: Fix dependency on game settings
             }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
@@ -229,7 +244,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     if (asset.Scene != null)
                     {
                         string sceneUrl = AttachedReferenceManager.GetUrl(asset.Scene);
-                        var sceneAsset = (SceneAsset)package.Session.FindAsset(sceneUrl)?.Asset;
+                        var sceneAsset = (SceneAsset)Package.Session.FindAsset(sceneUrl)?.Asset;
 
                         // Clone scene asset because we update the world transformation matrices
                         clonedSceneAsset = (SceneAsset)AssetCloner.Clone(sceneAsset);

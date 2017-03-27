@@ -32,7 +32,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [AssetContentType(typeof(GraphicsCompositor))]
     [AssetDescription(FileExtension)]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
-    [AssetCompiler(typeof(GraphicsCompositorAssetCompiler))]
     // TODO: remove this upgrader (and turn it back protected) before releasing 1.10 or above (needed only for internal upgrades)
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.10.0-beta01", typeof(AssetComposite.FixPartReferenceUpgrader))]
     public class GraphicsCompositorAsset : Asset
