@@ -60,7 +60,7 @@ namespace SiliconStudio.Assets.Compiler
             }
 
             dependenciesCompiler.AssetCompiled += OnAssetCompiled;
-            result = dependenciesCompiler.Prepare(compilerContext, assets);
+            result = dependenciesCompiler.PrepareMany(compilerContext, assets);
 
             return result;
         }

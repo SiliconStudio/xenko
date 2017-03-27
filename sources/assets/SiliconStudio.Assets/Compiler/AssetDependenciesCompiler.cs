@@ -34,7 +34,7 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="context">The AssetCompilerContext</param>
         /// <param name="assetItems">The assets to prepare for build</param>
         /// <returns></returns>
-        public AssetCompilerResult Prepare(AssetCompilerContext context, List<AssetItem> assetItems)
+        public AssetCompilerResult PrepareMany(AssetCompilerContext context, List<AssetItem> assetItems)
         {
             var finalResult = new AssetCompilerResult();
             var addedBuildSteps = new Dictionary<AssetId, AssetCompilerResult>(); // a cache of build steps in order to link and reuse
@@ -50,12 +50,13 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         /// <param name="context">The AssetCompilerContext</param>
         /// <param name="assetItem">The asset to build</param>
+        /// <param name="allowDependencyExclusion">If the process should allow asset compilers to remove unused dependency types to speed up the process</param>
         /// <returns></returns>
-        public AssetCompilerResult Prepare(AssetCompilerContext context, AssetItem assetItem)
+        public AssetCompilerResult Prepare(AssetCompilerContext context, AssetItem assetItem, bool allowDependencyExclusion = true)
         {
             var finalResult = new AssetCompilerResult();
             var addedBuildSteps = new Dictionary<AssetId, AssetCompilerResult>(); // a cache of build steps in order to link and reuse
-            var filters = new HashSet<Type>(); //the types to filter out, this is incremental between prepares
+            var filters = allowDependencyExclusion ? new HashSet<Type>() : null; //the types to filter out, this is incremental between prepares
             Prepare(addedBuildSteps, finalResult, context, assetItem, filters);
             return finalResult;
         }
