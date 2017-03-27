@@ -11,23 +11,18 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     {
         private static readonly Dictionary<Type, IRenderTargetSemantic> semanticsPool = new Dictionary<Type, IRenderTargetSemantic>();
 
-        // Recycle an instance when needed. It is possible as long as implementations respect the stateless contract.
-        internal static IRenderTargetSemantic ScoopSemantic(Type semanticType)
+        internal static void Add<T>(this RenderTargetSetup composition)
+            where T : IRenderTargetSemantic, new()
         {
-            if (semanticsPool.ContainsKey(semanticType))
-                return semanticsPool[semanticType];
-
-            IRenderTargetSemantic semantic = (IRenderTargetSemantic)Activator.CreateInstance(semanticType);
-            semanticsPool[semanticType] = semantic;
-
-            return semantic;
-        }
-
-        internal static void AddTargetTo<TSemantic>(this RenderTargetSetup composition)
-        {
-            composition.AddTarget(new RenderTarget()
+            IRenderTargetSemantic semantic;
+            if (!semanticsPool.TryGetValue(typeof(T), out semantic))
             {
-                Description = new RenderTargetDesc() { Semantic = ScoopSemantic(typeof(TSemantic)) }
+                semantic = new T();
+            }
+
+            composition.AddTarget(new RenderTarget
+            {
+                Description = new RenderTargetDesc { Semantic = semantic }
             });
         }
     }

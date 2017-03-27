@@ -354,11 +354,6 @@ namespace SiliconStudio.Xenko.Rendering
             return new EffectPermutationSlot(slot);
         }
 
-        protected ShaderSourceCollection GetMRTExtensionsShaderSourceCollection(RenderStage renderStage)
-        {
-            return renderStage?.RenderTargetComposition?.MixinCollection;
-        }
-
         /// <summary>
         /// This is a subpart of effect permutation preparation:
         ///  set the shader classes that are going to be responsible to compute extended render target colors.
@@ -383,9 +378,9 @@ namespace SiliconStudio.Xenko.Rendering
                 if (renderEffect != null)
                 {
                     var renderStage = renderNode.RenderStage;
-                    var sources = GetMRTExtensionsShaderSourceCollection(renderStage);
+                    var sources = renderStage.RenderTargetComposition?.ShaderSources;
                     if (sources != null)
-                        renderEffect.EffectValidator.ValidateParameter(XenkoMRTKeys.RenderTargetExtensions, sources);
+                        renderEffect.EffectValidator.ValidateParameter(XenkoEffectBaseKeys.RenderTargetExtensions, sources);
                 }
             }
 

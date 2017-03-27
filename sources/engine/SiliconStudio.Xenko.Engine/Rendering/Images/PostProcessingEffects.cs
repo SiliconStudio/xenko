@@ -251,7 +251,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var colorInputActive = inputTargetsComposition.IsActive(typeof(ColorTargetSemantic));
             if (!colorInputActive) return;
 
-            var fullComposition = inputTargetsComposition.TexturesComposition;
+            var fullComposition = inputTargetsComposition.RenderTargets;
 
             SetInput(0, fullComposition[0]);
             SetInput(1, inputDepthStencil);

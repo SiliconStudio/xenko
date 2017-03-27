@@ -182,7 +182,6 @@
     <Compile Include="Rendering\Compositing\RenderTextureSceneRenderer.cs" />
     <Compile Include="Rendering\Compositing\SceneCameraRenderer.cs" />
     <Compile Include="Rendering\Compositing\SceneRendererCollection.cs" />
-    <Compile Include="Rendering\Compositing\SetPolicy.cs" />
     <Compile Include="Rendering\Compositing\SingleStageRenderer.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
     <Compile Include="Rendering\Compositing\VRRendererSettings.cs" />
@@ -780,13 +779,6 @@
     <Compile Include="Rendering\ViewResourceGroupLayout.cs" />
     <Compile Include="Rendering\VisibilityGroup.cs" />
     <Compile Include="Rendering\WireframePipelineProcessor.cs" />
-    <Compile Include="Rendering\XenkoMRT.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>XenkoMRT.xkfx</DependentUpon>
-    </Compile>
-    <Compile Include="Rendering\XenkoMRTKeys.cs" />
     <Compile Include="Shaders.Compiler\RemoteEffectCompiler.cs" />
     <Compile Include="Engine\Processors\BackgroundComponentProcessor.cs" />
     <Compile Include="Engine\AnimationComponent.cs" />
@@ -3785,10 +3777,6 @@
       <LastGenOutput>PickingShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\XenkoDefaultFont.xkfnt" />
-    <None Include="Rendering\XenkoMRT.xkfx">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>XenkoMRT.cs</LastGenOutput>
-    </None>
     <None Include="Rendering\XenkoWireframeShadingEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>XenkoWireframeShadingEffect.cs</LastGenOutput>
