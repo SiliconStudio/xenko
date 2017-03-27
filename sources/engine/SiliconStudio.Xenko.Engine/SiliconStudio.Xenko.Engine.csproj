@@ -105,14 +105,6 @@
     <Compile Include="Engine\LightShaftComponent.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
-    <Compile Include="Engine\NavigationComponent.cs" />
-    <Compile Include="Engine\NavigationMesh.cs" />
-    <Compile Include="Engine\NavigationAgentSettings.cs" />
-    <Compile Include="Engine\NavigationMeshBuildSettings.cs" />
-    <Compile Include="Engine\NavigationMeshlayer.cs" />
-    <Compile Include="Engine\NavigationMeshTile.cs" />
-    <Compile Include="Engine\NavigationQuerySettings.cs" />
-    <Compile Include="Engine\NavigationRaycastResult.cs" />
     <Compile Include="Engine\Network\ClientRouterMessage.cs" />
     <Compile Include="Engine\Network\ExceptionMessage.cs" />
     <Compile Include="Engine\Network\SimpleSocketException.cs" />
@@ -134,7 +126,6 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
     <Compile Include="Engine\Processors\ModelTransformProcessor.cs" />
     <Compile Include="Engine\Prefab.cs" />
-    <Compile Include="Engine\Processors\NavigationProcessor.cs" />
     <Compile Include="Engine\StartupScript.cs" />
     <Compile Include="Engine\TransformLink.cs" />
     <Compile Include="Engine\TransformOperation.cs" />

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
@@ -235,6 +235,11 @@
       <Name>SiliconStudio.Xenko.Native</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Navigation\SiliconStudio.Xenko.Navigation.csproj">
+      <Project>{fbe1fa7b-e699-4bb2-9c8f-41f4c9f3f088}</Project>
+      <Name>SiliconStudio.Xenko.Navigation</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj">
       <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
       <Name>SiliconStudio.Xenko.Physics</Name>
@@ -324,11 +329,7 @@
     <Compile Include="Entities\SceneAssetFactories.cs" />
     <Compile Include="Rendering\GraphicsCompositorAsset.cs" />
     <Compile Include="Navigation\NavigationMeshAsset.cs" />
-    <Compile Include="Navigation\NavigationMeshCachedBuild.cs" />
-    <Compile Include="Navigation\NavigationMeshCachedBuildObject.cs" />
-    <Compile Include="Navigation\NavigationMeshBuildUtils.cs" />
     <Compile Include="Navigation\NavigationMeshFactory.cs" />
-    <Compile Include="Navigation\NavigationMeshInputBuilder.cs" />
     <Compile Include="Textures\ColorTextureType.cs" />
     <Compile Include="Textures\GrayscaleTextureType.cs" />
     <Compile Include="Textures\ITextureType.cs" />

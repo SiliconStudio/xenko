@@ -4,16 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Settings;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Assets.Textures;
@@ -21,26 +19,27 @@ using SiliconStudio.Xenko.Data;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Physics;
 using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Assets
-{ 
+{
     /// <summary>
     /// Settings for a game with the default scene, resolution, graphics profile...
     /// </summary>
     [DataContract("GameSettingsAsset")]
     [AssetDescription(FileExtensions, AlwaysMarkAsRoot = true, AllowArchetype = false)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
+    [AssetContentType(typeof(GameSettings))]
     [Display(10000, "Game Settings")]
     [NonIdentifiableCollectionItems]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.6.0-beta", typeof(UpgraderPlatformsConfiguration))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.6.0-beta", "1.6.1-alpha01", typeof(UpgradeNewGameSettings))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.6.1-alpha01", "1.9.3-alpha01", typeof(UpgradeAddAudioSettings))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.3-alpha01", "1.11.0.0", typeof(UpgradeAddNavigationSettings))]
     public class GameSettingsAsset : Asset
     {
-        private const string CurrentVersion = "1.9.3-alpha01";
+        private const string CurrentVersion = "1.11.0.0";
 
         /// <summary>
         /// The default file extension used by the <see cref="GameSettingsAsset"/>.
@@ -73,7 +72,7 @@ namespace SiliconStudio.Xenko.Assets
 
         [DataMember(4000)]
         [Category]
-        public List<string> PlatformFilters { get; } = new List<string>(); 
+        public List<string> PlatformFilters { get; } = new List<string>();
 
         public T GetOrCreate<T>(string profile = null) where T : Configuration, new()
         {
@@ -92,7 +91,7 @@ namespace SiliconStudio.Xenko.Assets
                             first = x;
                             break;
                         }
-                    } 
+                    }
                 }
             }
             if (first == null)
@@ -108,7 +107,7 @@ namespace SiliconStudio.Xenko.Assets
             }
             var settings = (T)first;
             if (settings != null) return settings;
-            settings = new T();
+            settings = ObjectFactoryRegistry.NewInstance<T>();
             Defaults.Add(settings);
             return settings;
         }
@@ -150,7 +149,8 @@ namespace SiliconStudio.Xenko.Assets
 
         internal class UpgraderPlatformsConfiguration : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
             {
                 int backBufferWidth = asset.BackBufferWidth ?? 1280;
                 asset.RemoveChild("BackBufferWidth");
@@ -213,7 +213,8 @@ namespace SiliconStudio.Xenko.Assets
 
         internal class UpgradeNewGameSettings : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
             {
                 var addRendering = true;
                 var addEditor = true;
@@ -255,10 +256,40 @@ namespace SiliconStudio.Xenko.Assets
 
         internal class UpgradeAddAudioSettings : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
             {
                 dynamic setting = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Audio.AudioEngineSettings,SiliconStudio.Xenko.Audio" });
                 asset.Defaults.Add(setting);
+            }
+        }
+
+        internal class UpgradeAddNavigationSettings : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
+            {
+                dynamic settings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Navigation.NavigationSettings,SiliconStudio.Xenko.Navigation" });
+
+                // Default build settings
+                dynamic buildSettings = new DynamicYamlMapping(new YamlMappingNode());
+                buildSettings.CellHeight = 0.2f;
+                buildSettings.CellSize = 0.3f;
+                buildSettings.TileSize = 32;
+                buildSettings.MinRegionArea = 2;
+                buildSettings.RegionMergeArea = 20;
+                buildSettings.MaxEdgeLen = 12.0f;
+                buildSettings.MaxEdgeError = 1.3f;
+                buildSettings.DetailSamplingDistance = 6.0f;
+                buildSettings.MaxDetailSamplingError = 1.0f;
+                settings.BuildSettings = buildSettings;
+
+                var groups = new DynamicYamlArray(new YamlSequenceNode());
+                
+                // Agent settings array
+                settings.Groups = groups;
+
+                asset.Defaults.Add(settings);
             }
         }
     }
