@@ -712,7 +712,10 @@ namespace SiliconStudio.Xenko.Assets
                             dynamic boxComponent = new DynamicYamlMapping(new YamlMappingNode());
                             boxComponent.Id = Guid.NewGuid().ToString();
                             boxComponent.Node.Tag = "!SiliconStudio.Xenko.Navigation.NavigationBoundingBoxComponent,SiliconStudio.Xenko.Navigation";
-                            boxComponent.Size = boundingBoxSize;
+                            boxComponent.Size = new DynamicYamlMapping(new YamlMappingNode
+                            {
+                                { "X", $"{boundingBoxSize.X}" }, { "Y", $"{boundingBoxSize.Y}" }, { "Z", $"{boundingBoxSize.Z}" }
+                            }); ;
                             components.AddChild(Guid.NewGuid().ToString("N"), boxComponent);
 
                             newEntity.Components = components;
@@ -767,10 +770,10 @@ namespace SiliconStudio.Xenko.Assets
 
                     // Replace agent settings with group reference on the navigation mesh
                     navigationMesh.DynamicRootNode.NavigationMeshAgentSettings = DynamicYamlEmpty.Default;
-                    navigationMesh.DynamicRootNode.SelectedGroups = new DynamicYamlArray(new YamlSequenceNode());
+                    dynamic selectedGroupsMapping = navigationMesh.DynamicRootNode.SelectedGroups = new DynamicYamlMapping(new YamlMappingNode());
                     foreach (var selectedGroup in selectedGroups)
                     {
-                        navigationMesh.DynamicRootNode.SelectedGroups.Add(selectedGroup.ToGuid().ToString("D"));
+                        selectedGroupsMapping.AddChild(Guid.NewGuid().ToString("N"), selectedGroup.ToGuid().ToString("D"));
                     }
                 }
             }
