@@ -27,6 +27,10 @@ RenderStages:
         Name: GBuffer
         EffectSlotName: GBuffer
         SortMode: !FrontToBackSortMode {}
+    a765dbf1c1459c8966ca69da16445df7*:
+        Id: e139baa9-6bb0-42db-8bcb-4732c127c8e1
+        Name: UIRenderStage
+        EffectSlotName: Main
 RenderFeatures:
     d8fb80b0e7995140a46bca8dc36ee8a2: !SiliconStudio.Xenko.Rendering.MeshRenderFeature,SiliconStudio.Xenko.Engine
         RenderStageSelectors:
@@ -77,7 +81,7 @@ RenderFeatures:
     93933ad00d0c357d4915ad462cbfd04c: !SiliconStudio.Xenko.Rendering.UI.UIRenderFeature,SiliconStudio.Xenko.UI
         RenderStageSelectors:
             14a071694411235038a102ac3794bb4d: !SiliconStudio.Xenko.Rendering.SimpleGroupToRenderStageSelector,SiliconStudio.Xenko.Engine
-                RenderStage: ref!! 0fa30591-02ee-486d-9347-2b6aee83d035
+                RenderStage*: ref!! e139baa9-6bb0-42db-8bcb-4732c127c8e1
                 EffectName: Test
     9013eab3ea0ef6c98bf133b86c173d45: !SiliconStudio.Xenko.Particles.Rendering.ParticleEmitterRenderFeature,SiliconStudio.Xenko.Particles
         RenderStageSelectors:
@@ -107,7 +111,15 @@ SharedRenderers:
                 52966a5cf2c1adabab391689b4b3bc35*: Oculus
                 26aad065c7126df1f9428d7f4cbd4e8e*: OpenVR
             ResolutionScale: 1.0
+            Overlays:
+                ad67969a3c195a685d2a7f55b9d05528*:
+                    Texture: f9768e6e-2d83-470e-925e-8a1db9342c5d:UIRenderTexture
+                    LocalPosition: {X: 0.1, Y: 0.05, Z: -0.25}
+                    LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                    SurfaceSize: {X: 0.1, Y: 0.1}
+                    FollowsHeadRotation: true
         MSAALevel*: X4
+        MSAAResolver: {}
     e4fdc03ab99242b3b516df183f259aad*: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine
         Id: 7e02cd29-ca10-41f1-88d1-0ec22e083549
         Clear:
@@ -126,7 +138,9 @@ SharedRenderers:
             IgnoreCameraRotation: false
             RequiredApis: {}
             ResolutionScale: 1.0
+            Overlays: {}
         MSAALevel: None
+        MSAAResolver: {}
     1bb079da57cd9ac93c46e238091dcef5*: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine
         Id: 70e4e095-41b2-4ebc-95f9-2d81f39632c9
         Clear:
@@ -144,11 +158,22 @@ SharedRenderers:
             Enabled: false
             RequiredApis: {}
             ResolutionScale: 1.0
+            Overlays: {}
         MSAALevel: X4
+        MSAAResolver: {}
     34ecb9b2633eacfc439ba8744fe05102: ~(Deleted)
 Game: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
     Camera: {Index: 0}
-    Child: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+    Child*: !SiliconStudio.Xenko.Rendering.Compositing.SceneRendererCollection,SiliconStudio.Xenko.Engine
+        Id: 00705c6a-f385-4c7a-934a-3f4319865af8
+        Children:
+            147eda7bb7d3de25068724ddb6164bdb: !SiliconStudio.Xenko.Rendering.Compositing.RenderTextureSceneRenderer,SiliconStudio.Xenko.Engine
+                Id: c42caad0-f1aa-4e35-a363-8decaa4114f9
+                RenderTexture: f9768e6e-2d83-470e-925e-8a1db9342c5d:UIRenderTexture
+                Child: !SiliconStudio.Xenko.Rendering.Compositing.SingleStageRenderer,SiliconStudio.Xenko.Engine
+                    Id: 049f47f4-7822-408e-abfb-c79a6e655d8b
+                    RenderStage: ref!! e139baa9-6bb0-42db-8bcb-4732c127c8e1
+            84a6bfcd78a3b1f6483626029c0a14d7: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
 SingleView*: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 7e02cd29-ca10-41f1-88d1-0ec22e083549
 Editor*: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 70e4e095-41b2-4ebc-95f9-2d81f39632c9
