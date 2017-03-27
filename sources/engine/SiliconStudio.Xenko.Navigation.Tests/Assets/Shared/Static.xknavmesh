@@ -13,4 +13,6 @@ BuildSettings:
     MaxEdgeError: 1.3
     DetailSamplingDistance: 6.0
     MaxDetailSamplingError: 1.0
-SelectedGroups: [96e03f92-65b1-42e8-afcb-9426356f2d7f, cccfde63-cea2-4113-8a11-a07cc6d7f36e]
+SelectedGroups:
+    90cc238435bc29984810f26d38941efb: 96e03f92-65b1-42e8-afcb-9426356f2d7f
+    c53c41850f83ccbd388cd33816e8d35d: cccfde63-cea2-4113-8a11-a07cc6d7f36e

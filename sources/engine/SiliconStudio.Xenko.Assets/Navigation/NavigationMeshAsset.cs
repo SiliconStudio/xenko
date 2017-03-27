@@ -65,9 +65,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
         public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
         {
-            var gameSettings = session.FindAsset(GameSettingsAsset.GameSettingsLocation);
-            yield return new AssetReference(gameSettings.Id, gameSettings.Location);
-
             if (Scene != null)
             {
                 var reference = AttachedReferenceManager.GetAttachedReference(Scene);

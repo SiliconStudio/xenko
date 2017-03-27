@@ -28,8 +28,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (NavigationMeshAsset)assetItem.Asset;
-            result.BuildSteps = new ListBuildStep(); 
-
+            result.BuildSteps = new ListBuildStep();
+            
             // Add navigation mesh dependencies
             foreach (var dep in asset.EnumerateCompileTimeDependencies(assetItem.Package.Session))
             {
@@ -69,6 +69,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
             private int sceneHash = 0;
             private SceneAsset clonedSceneAsset;
+            private GameSettingsAsset gameSettingsAsset;
             private bool sceneCloned = false; // Used so that the scene is only cloned once when ComputeParameterHash or DoCommand is called
 
             // Automatically calculated bounding box
@@ -79,6 +80,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             public NavmeshBuildCommand(string url, AssetItem assetItem, NavigationMeshAsset value, AssetCompilerContext context)
                 : base(url, value)
             {
+                gameSettingsAsset = context.GetGameSettingsAsset();
                 asset = value;
                 package = assetItem.Package;
                 assetUrl = url;
@@ -90,6 +92,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 {
                     yield return new ObjectUrl(UrlType.ContentLink, compileTimeDependency.Location);
                 }
+
+                // TODO: Fix dependency on game settings
             }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
@@ -99,9 +103,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 EnsureClonedSceneAndHash();
                 writer.Write(sceneHash);
                 writer.Write(asset.SelectedGroups);
-
-                var gameSettings = (GameSettingsAsset)package.Session.FindAsset(GameSettingsAsset.GameSettingsLocation)?.Asset;
-                var navigationSettings = gameSettings.GetOrCreate<NavigationSettings>();
+                
+                var navigationSettings = gameSettingsAsset.GetOrCreate<NavigationSettings>();
                 writer.Write(navigationSettings.Groups);
             }
             
@@ -115,9 +118,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 foreach (var colliderData in staticColliderDatas)
                     navigationMeshBuilder.Add(colliderData);
-
-                var gameSettings = (GameSettingsAsset)package.Session.FindAsset(GameSettingsAsset.GameSettingsLocation)?.Asset;
-                var navigationSettings = gameSettings.GetOrCreate<NavigationSettings>();
+                
+                var navigationSettings = gameSettingsAsset.GetOrCreate<NavigationSettings>();
                 var groupsLookup = navigationSettings.Groups.ToDictionary(x => x.Id, x => x);
 
                 var groups = new List<NavigationMeshGroup>();
