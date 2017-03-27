@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("ScriptComponent", Inherited = true)]
     [DefaultEntityComponentProcessor(typeof(ScriptProcessor), ExecutionMode = ExecutionMode.Runtime)]
-    [Display("Script", Expand = ExpandRule.Once)]
+    [Display(Expand = ExpandRule.Once)]
     [AllowMultipleComponents]
     [ComponentOrder(1000)]
     public abstract class ScriptComponent : EntityComponent, IScriptContext

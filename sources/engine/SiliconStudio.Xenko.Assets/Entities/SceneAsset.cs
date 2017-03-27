@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         /// <userdoc>The parent scene.</userdoc>
         [DataMember(20)]
-        [Display(Browsable = false)] // FIXME: make it visible in the property grid, but readonly.
+        [Display(Browsable = false)] // TODO: make it visible in the property grid, but readonly.
         [DefaultValue(null)]
         public Scene Parent { get; set; }
 

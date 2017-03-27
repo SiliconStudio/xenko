@@ -21,9 +21,6 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CombineMode.cs" />
-    <Compile Include="Commands\ChangeValueCommand.cs" />
-    <Compile Include="Commands\NodeCommandBase.cs" />
-    <Compile Include="Commands\SyncNodeCommandBase.cs" />
     <Compile Include="Internal\Content.cs" />
     <Compile Include="GraphNodeExtensions.cs" />
     <Compile Include="IInitializingGraphNode.cs" />
@@ -44,6 +41,7 @@
     <Compile Include="INotifyContentValueChange.cs" />
     <Compile Include="INotifyItemChange.cs" />
     <Compile Include="IObjectNode.cs" />
+    <Compile Include="NodeAccessor.cs" />
     <Compile Include="QuantumConsistencyException.cs" />
     <Compile Include="GraphNodePath.cs" />
     <Compile Include="BoxedNode.cs" />

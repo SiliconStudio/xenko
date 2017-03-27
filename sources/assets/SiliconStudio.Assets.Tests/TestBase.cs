@@ -9,7 +9,7 @@ namespace SiliconStudio.Assets.Tests
 {
     public class TestBase
     {
-        public readonly string DirectoryTestBase = Path.Combine(AssemblyDirectory, @"data\SiliconStudio.Assets.Tests\");
+        public readonly string DirectoryTestBase = Path.Combine(AssemblyDirectory, @"data\");
 
         public static void GenerateAndCompare(string title, string outputFilePath, string referenceFilePath, Asset asset)
         {

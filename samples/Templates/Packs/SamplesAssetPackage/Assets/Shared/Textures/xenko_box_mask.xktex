@@ -1,6 +1,6 @@
 !Texture
 Id: aebdd268-c404-4639-ba4b-0aaab560fbd6
-SerializedVersion: {Xenko: 1.10.0-alpha01}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../Resources/Textures/xenko_box_mask_mark.png
 Type: !ColorTextureType

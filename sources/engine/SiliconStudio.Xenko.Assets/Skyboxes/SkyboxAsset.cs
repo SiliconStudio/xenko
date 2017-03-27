@@ -1,15 +1,15 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Reflection;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Skyboxes;
 
@@ -21,9 +21,13 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
     [DataContract("SkyboxAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Skybox))]
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
+    [AssetUpgrader(XenkoConfig.PackageName, "0", "1.11.1.1", typeof(RemoveSkyboxUsage))]
     [Display(1000, "Skybox")]
     public sealed class SkyboxAsset : Asset
     {
+        private const string CurrentVersion = "1.11.1.1";
+
         /// <summary>
         /// The default file extension used by the <see cref="SkyboxAsset"/>.
         /// </summary>
@@ -34,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         /// </summary>
         public SkyboxAsset()
         {
-            Usage = SkyboxUsage.Lighting;
+            IsSpecularOnly = false;
             DiffuseSHOrder = SkyboxPreFilteringDiffuseOrder.Order3;
             SpecularCubeMapSize = 256;
         }
@@ -49,12 +53,15 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         public Texture CubeMap { get; set; }
 
         /// <summary>
-        /// Gets or sets the usge of this skybox
+        /// Gets or set if this skybox affects specular only, if <c>false</c> this skybox will affect ambient lighting
         /// </summary>
-        /// <userdoc>The usage of this skybox</userdoc>
+        /// <userdoc>
+        /// Use the skybox only for specular lighting
+        /// </userdoc>
         [DataMember(15)]
-        [DefaultValue(SkyboxUsage.Lighting)]
-        public SkyboxUsage Usage { get; set; }
+        [DefaultValue(false)]
+        [Display("Specular Only")]
+        public bool IsSpecularOnly { get; set; }
 
         /// <summary>
         /// Gets or sets the diffuse sh order.
@@ -83,6 +90,22 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             {
                 var reference = AttachedReferenceManager.GetAttachedReference(CubeMap);
                 yield return new AssetReference(reference.Id, reference.Url);
+            }
+        }
+
+        class RemoveSkyboxUsage : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                if (asset.Usage != null)
+                {
+                    if (asset.Usage == "SpecularLighting")
+                    {
+                        asset.IsSpecularOnly = true;
+                    }
+                }
+                
+                asset.Usage = DynamicYamlEmpty.Default;
             }
         }
     }

@@ -130,7 +130,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             // Get the msdfgen.exe location
             var installationDir = DirectoryHelper.GetPackageDirectory("Xenko");
             var binDir = UPath.Combine(installationDir, new UDirectory("Bin"));
-            binDir = UPath.Combine(binDir, new UDirectory("Windows-Direct3D11"));
+            binDir = UPath.Combine(binDir, new UDirectory("Windows"));
             var msdfgen = UPath.Combine(binDir, new UFile("msdfgen.exe"));
             if (!File.Exists(msdfgen))
             {

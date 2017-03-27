@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -18,7 +18,6 @@ namespace SiliconStudio.Quantum
     public class ObjectNode : GraphNodeBase, IInitializingObjectNode, IGraphNodeInternal
     {
         private readonly HybridDictionary<string, IMemberNode> childrenMap = new HybridDictionary<string, IMemberNode>();
-        private readonly List<IMemberNode> children = new List<IMemberNode>();
         private object value;
 
         public ObjectNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
@@ -279,14 +278,13 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         void IInitializingObjectNode.AddMember(IMemberNode member, bool allowIfReference)
         {
-            if (isSealed)
+            if (IsSealed)
                 throw new InvalidOperationException("Unable to add a child to a GraphNode that has been sealed");
 
             // ReSharper disable once HeuristicUnreachableCode - this code is reachable only at the specific moment we call this method!
             if (ItemReferences != null && !allowIfReference)
                 throw new InvalidOperationException("A GraphNode cannot have children when its content hold a reference.");
 
-            children.Add(member);
             childrenMap.Add(member.Name, (MemberNode)member);
         }
     }

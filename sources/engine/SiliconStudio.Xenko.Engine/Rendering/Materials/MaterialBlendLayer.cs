@@ -55,6 +55,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <userdoc>The reference to the material asset to layer.</userdoc>
         [DefaultValue(null)]
         [DataMember(30)]
+        [InlineProperty]
         public Material Material { get; set; }
 
         /// <summary>

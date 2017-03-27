@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// Enable clipping of the animation duration, constraining start and end frames.
         /// </userdoc>
         [DataMember(0)]
-        [Display("Clip duration")]
+        [Display("Clip duration", Expand = ExpandRule.Always)]
         public AnimationAssetDuration ClipDuration { get; set; }
 
         // This property is marked as hidden by the AnimationViewModel

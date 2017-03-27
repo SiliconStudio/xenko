@@ -70,8 +70,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir Condition="'$(Platform)' == 'Win32'">$(XenkoNativeOutputDir)\x86\</OutDir>
-    <OutDir Condition="'$(Platform)' == 'x64'">$(XenkoNativeOutputDir)\x64\</OutDir>
+    <IntermediateOutputPath>$(XenkoNativeProjectObjFolder)\</IntermediateOutputPath>
+    <IntDir>$(IntermediateOutputPath)</IntDir>
+    <OutDir>$(XenkoNativeOutputDir)\</OutDir>
     <TargetName>$(XenkoNativeOutputName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">

@@ -62,6 +62,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// <inheritdoc/>
         [DataMember(40)]
         [MemberCollection(ReadOnly = true)]
+        [Category]
         public List<ModelMaterial> Materials { get; } = new List<ModelMaterial>();
 
         /// <summary>

@@ -12,7 +12,7 @@
     <RootNamespace>SiliconStudio.Xenko.ConnectionRouter</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.ConnectionRouter</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <Prefer32Bit>false</Prefer32Bit>
@@ -47,6 +47,9 @@
     </Compile>
     <Compile Include="..\..\shared\Process\AndroidDeviceEnumerator.cs">
       <Link>AndroidDeviceEnumerator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\shared\ToolAssemblyResolveModuleInitializer.cs">
+      <Link>ToolAssemblyResolveModuleInitializer.cs</Link>
     </Compile>
     <Compile Include="ConnectedDevice.cs" />
     <Compile Include="DeviceHelper.cs" />

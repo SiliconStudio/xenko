@@ -12,7 +12,7 @@
     <RootNamespace>SiliconStudio.Xenko.ProjectGenerator</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.ProjectGenerator</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -105,13 +105,7 @@
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>ResharperDotSettings.cs</LastGenOutput>
     </None>
-    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.Android.csproj.t4">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.csproj.t4" />
-    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.iOS.csproj.t4">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.Shared.targets.t4" />
     <None Include="Templates\Common.Imports.targets.t4">
       <SubType>Designer</SubType>

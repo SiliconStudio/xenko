@@ -9,11 +9,11 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
     {
         public TestContext()
         {
-            GraphViewModelService = new GraphViewModelService();
+            NodeContainer = new NodeContainer();
+            GraphViewModelService = new GraphViewModelService(NodeContainer);
             ServiceProvider = new ViewModelServiceProvider();
             ServiceProvider.RegisterService(new DispatcherService(Dispatcher.CurrentDispatcher));
             ServiceProvider.RegisterService(GraphViewModelService);
-            NodeContainer = new NodeContainer();
         }
 
         public ViewModelServiceProvider ServiceProvider { get; }

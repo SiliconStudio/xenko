@@ -1,4 +1,4 @@
-<!-- Build file pre-included by all Silicon Studio projects -->
+﻿<!-- Build file pre-included by all Silicon Studio projects -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Setup this part according to your project if you want your .csproj to compile individually without going through the .sln file -->
   <PropertyGroup>
@@ -6,13 +6,14 @@
     <SolutionName Condition=" '$(SolutionName)' == '' ">Xenko</SolutionName>
     <SolutionPath Condition=" '$(SolutionPath)' == '' ">$(SolutionDir)$(SolutionName).sln</SolutionPath>
   </PropertyGroup>
-  
+
   <!--Import Local Pre Settings for the solution being loaded -->
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
   <Import Project="$(SolutionDir)SiliconStudio.PreSettings.Local.targets" Condition="Exists('$(SolutionDir)SiliconStudio.PreSettings.Local.targets')" />
 
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <GenerateProjectSpecificOutputFolder>false</GenerateProjectSpecificOutputFolder>
 
     <!-- Defines the language of the project being compiled CSharp or Cpp - defined by default to CSharp, must be overriden to Cpp in a Cpp project -->
     <SiliconStudioProjectType Condition="'$(SiliconStudioProjectType)' == ''">CSharp</SiliconStudioProjectType>
@@ -24,6 +25,8 @@
     <SiliconStudioPlatform Condition=" '$(SiliconStudioPlatform)' == '' ">Windows</SiliconStudioPlatform>
     <SiliconStudioUI Condition="'$(SiliconStudioUI)' == '' AND '$(SiliconStudioPlatform)' == 'Windows'">SDL;WINFORMS;WPF</SiliconStudioUI>
 
+    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioPlatformFullName)' == ''">$(SiliconStudioPlatform)</SiliconStudioPlatformFullName>
+    
     <SiliconStudioGlobalSettingsTargets Condition="'$(SiliconStudioGlobalSettingsTargets)' == ''">$(MSBuildThisFileDirectory)SiliconStudio.GlobalSettings.targets</SiliconStudioGlobalSettingsTargets>
     <SiliconStudioPostSettingsTargets Condition="'$(SiliconStudioPostSettingsTargets)' == ''">$(MSBuildThisFileDirectory)SiliconStudio.PostSettings.targets</SiliconStudioPostSettingsTargets>
   </PropertyGroup>
@@ -47,8 +50,4 @@
 
   <!--Import Global Settings-->
   <Import Project="$(SiliconStudioGlobalSettingsTargets)"/>
-
-  <!--Import Local Pre Settings for the solution being loaded -->
-  <Import Project="$(SolutionDir)$(SolutionName).PostSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PostSettings.Local.targets')" />
-  <Import Project="$(SolutionDir)SiliconStudio.PostSettings.Local.targets" Condition="Exists('$(SolutionDir)SiliconStudio.PostSettings.Local.targets')" />
 </Project>

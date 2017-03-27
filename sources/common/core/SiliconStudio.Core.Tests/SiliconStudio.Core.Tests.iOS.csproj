@@ -26,7 +26,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
-    <XenkoBuildTags>Windows;Android;iOS</XenkoBuildTags>
+    <SiliconStudioBuildTags>Windows;Android;iOS</SiliconStudioBuildTags>
+    <SiliconStudioXenkoOutputFolder>Tests\$(AssemblyName)</SiliconStudioXenkoOutputFolder>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioSkipUnitTests)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
@@ -42,7 +43,6 @@
     <Compile Include="TestObjectIdBuilder.cs" />
     <Compile Include="TestPriorityLinkedQueue.cs" />
     <Compile Include="MemoryFileProvider.cs" />
-    <Compile Include="Module.cs" />
     <Compile Include="TestPriorityQueue.cs" />
     <Compile Include="TestProfiler.cs" />
     <Compile Include="TestSerialization.StructLayout.cs" />
@@ -71,6 +71,9 @@
       <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
       <Name>SiliconStudio.Core.Serialization</Name>
     </ProjectReference>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libcore">
+      <Visible>false</Visible>
+    </SiliconStudioEmbeddedNativeLibrary>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
