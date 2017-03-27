@@ -20,8 +20,6 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [ModuleInitializer]
         internal static void Initialize()
         {
-            if (!PlatformFolders.IsVirtualFileSystemInitialized)
-                PlatformFolders.ApplicationDataSubDirectory = typeof(Module).Assembly.GetName().Name;
             AssemblyRegistry.Register(typeof(Module).Assembly, AssemblyCommonCategories.Assets);
             AssetQuantumRegistry.RegisterAssembly(typeof(Module).Assembly);
             RuntimeHelpers.RunModuleConstructor(typeof(Asset).Module.ModuleHandle);

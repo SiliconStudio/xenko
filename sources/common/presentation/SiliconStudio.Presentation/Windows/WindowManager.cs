@@ -330,6 +330,7 @@ namespace SiliconStudio.Presentation.Windows
                     Logger.Verbose($"Main window ({MainWindow.Hwnd}) enabled because no more modal nor blocking windows are visible.");
                     MainWindow.IsDisabled = false;
                 }
+                ActivateMainWindow();
             }
             else
             {
@@ -352,10 +353,13 @@ namespace SiliconStudio.Presentation.Windows
                             Logger.Verbose($"Main window ({MainWindow.Hwnd}) enabled because no more modal nor blocking windows are visible.");
                             MainWindow.IsDisabled = false;
                         }
+                        // re-activate only after all popups have closed, since some popups are spawned from popups themselves,
+                        // when their original parent closes, reactivating the main window causes the still living children to close.
+                        ActivateMainWindow();
                     }
+                    ActivateMainWindow();
                 }
             }
-            ActivateMainWindow();
         }
 
         [CanBeNull]

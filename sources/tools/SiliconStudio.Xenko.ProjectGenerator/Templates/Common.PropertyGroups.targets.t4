@@ -1,11 +1,8 @@
 ﻿<#@ template inherits="ProjectTemplateTransformation" language="C#" #>
   <PropertyGroup>
     <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)<#= Properties.Package.Meta.Name #>.xkpkg</SiliconStudioCurrentPackagePath>
-    <OutputPath>..\..\..\Bin\$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</OutputPath>
-    <OutputPath Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(OutputPath)-$(SiliconStudioBuildDirExtension)</OutputPath>
-    <IntermediateOutputPath>obj\$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</IntermediateOutputPath>
-    <IntermediateOutputPath Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(IntermediateOutputPath)-$(SiliconStudioBuildDirExtension)</IntermediateOutputPath>
-    <IntermediateOutputPath>$(IntermediateOutputPath)\$(Configuration)</IntermediateOutputPath>
+    <OutputPath><#= Properties.XenkoSdkRelativeDir #>\Bin\$(SiliconStudioPlatformFullName)\$(SiliconStudioXenkoOutputFolder)\</OutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(SiliconStudioPlatformFullName)-$(SiliconStudioXenkoGraphicsApi)\$(Configuration)</IntermediateOutputPath>
   </PropertyGroup>
 <#
 var currentPlatform = (SiliconStudio.Core.PlatformType)System.Enum.Parse(typeof(SiliconStudio.Core.PlatformType), Properties.CurrentPlatform);

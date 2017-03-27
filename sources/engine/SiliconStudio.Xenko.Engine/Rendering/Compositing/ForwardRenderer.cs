@@ -138,6 +138,17 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     vrSystem.PreviousUseCustomProjectionMatrix = camera.UseCustomProjectionMatrix;
                     vrSystem.PreviousUseCustomViewMatrix = camera.UseCustomViewMatrix;
                     vrSystem.PreviousCameraProjection = camera.ProjectionMatrix;
+
+                    if (VRSettings.VRDevice.SupportsOverlays)
+                    {
+                        foreach (var overlay in VRSettings.Overlays)
+                        {
+                            if (overlay != null && overlay.Texture != null)
+                            {
+                                overlay.Overlay = VRSettings.VRDevice.CreateOverlay(overlay.Texture.Width, overlay.Texture.Height, overlay.Texture.MipLevels, (int)overlay.Texture.MultiSampleLevel);
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -270,6 +281,20 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             LightShafts?.Collect(context);
 
                             PostEffects?.Collect(context);
+                        }
+                    }
+
+                    if (VRSettings.VRDevice.SupportsOverlays)
+                    {
+                        foreach (var overlay in VRSettings.Overlays)
+                        {
+                            if (overlay != null && overlay.Texture != null)
+                            {
+                                overlay.Overlay.Position = overlay.LocalPosition;
+                                overlay.Overlay.Rotation = overlay.LocalRotation;
+                                overlay.Overlay.SurfaceSize = overlay.SurfaceSize;
+                                overlay.Overlay.FollowHeadRotation = overlay.FollowsHeadRotation;
+                            }
                         }
                     }
                 }
@@ -514,6 +539,17 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                                     DrawView(context, drawContext);
                                     drawContext.CommandList.CopyRegion(ViewOutputTarget, 0, null, vrFullSurface, 0, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2 * i);
+                                }
+                            }
+
+                            if (VRSettings.VRDevice.SupportsOverlays)
+                            {
+                                foreach (var overlay in VRSettings.Overlays)
+                                {
+                                    if (overlay != null && overlay.Texture != null)
+                                    {
+                                        overlay.Overlay.UpdateSurface(drawContext.CommandList, overlay.Texture);
+                                    }
                                 }
                             }
 

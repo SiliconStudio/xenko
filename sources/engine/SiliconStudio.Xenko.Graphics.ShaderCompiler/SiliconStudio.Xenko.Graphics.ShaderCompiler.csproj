@@ -11,17 +11,17 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Xenko.Graphics.ShaderCompiler</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.Graphics.ShaderCompiler</AssemblyName>
-    <XenkoBuildTags>EffectCompiler</XenkoBuildTags>
+    <SiliconStudioBuildTags>EffectCompiler</SiliconStudioBuildTags>
     <SiliconStudioCompilerTargetsEnable Condition=" '$(XenkoEffectCompiler)' != 'true' ">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+      <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.D3DCompiler">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
+      <HintPath>$(SharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
