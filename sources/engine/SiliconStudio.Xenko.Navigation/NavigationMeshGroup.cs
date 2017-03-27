@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Navigation
     {
         [DataMember(-10)]
         [Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; } = Guid.NewGuid();
 
         /// <summary>t
