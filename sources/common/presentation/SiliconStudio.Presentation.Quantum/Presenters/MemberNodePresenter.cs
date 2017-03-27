@@ -85,10 +85,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
-                RaiseValueChanging(Value);
                 Member.Target.Add(value);
                 Refresh();
-                RaiseValueChanged(Value);
             }
             catch (Exception e)
             {
@@ -103,10 +101,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
-                RaiseValueChanging(Value);
                 Member.Target.Add(value, index);
                 Refresh();
-                RaiseValueChanged(Value);
             }
             catch (Exception e)
             {
@@ -121,10 +117,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
-                RaiseValueChanging(Value);
                 Member.Target.Remove(value, index);
                 Refresh();
-                RaiseValueChanged(Value);
             }
             catch (Exception e)
             {
