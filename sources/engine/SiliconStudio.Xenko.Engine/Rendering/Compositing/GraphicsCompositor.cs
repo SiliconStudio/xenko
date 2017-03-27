@@ -232,10 +232,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 PostEffects = postProcessingEffects,
             };
 
-            // TODO
-            var clusteredPointSpotGroupRenderer = new LightClusteredPointSpotGroupRenderer();
-
-
             var forwardLighting = graphicsProfile >= GraphicsProfile.Level_10_0
                 ? new ForwardLightingRenderFeature
                 {
@@ -244,8 +240,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         new LightAmbientRenderer(),
                         new LightSkyboxRenderer(),
                         new LightDirectionalGroupRenderer(),
-                        new LightPointGroupRenderer { NonShadowRenderer = clusteredPointSpotGroupRenderer },
-                        new LightSpotGroupRenderer { NonShadowRenderer = clusteredPointSpotGroupRenderer },
+                        new LightPointGroupRenderer(),
+                        new LightSpotGroupRenderer(),
+                        new LightClusteredPointSpotGroupRenderer(),
                     },
                     ShadowMapRenderer = new ShadowMapRenderer
                     {
