@@ -22,13 +22,13 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// <inheritdoc/>
         protected override bool ShouldVisitMemberTarget(IMemberNode member)
         {
-            return !PropertyGraph.IsObjectReference(member, Index.Empty) && base.ShouldVisitMemberTarget(member);
+            return !PropertyGraph.IsObjectReference(member, Index.Empty, member.Retrieve()) && base.ShouldVisitMemberTarget(member);
         }
 
         /// <inheritdoc/>
         protected override bool ShouldVisitTargetItem(IObjectNode collectionNode, Index index)
         {
-            return !PropertyGraph.IsObjectReference(collectionNode, index) && base.ShouldVisitTargetItem(collectionNode, index);
+            return !PropertyGraph.IsObjectReference(collectionNode, index, collectionNode.Retrieve(index)) && base.ShouldVisitTargetItem(collectionNode, index);
         }
     }
 }
