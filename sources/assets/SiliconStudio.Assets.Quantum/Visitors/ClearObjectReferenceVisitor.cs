@@ -35,7 +35,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
             if (!targetIds.Contains(identifiable.Id))
                 return;
 
-            if (PropertyGraph.IsObjectReference(node, index, node.Retrieve(index)))
+            if (PropertyGraph.IsObjectReference(node, index))
             {
                 if (shouldClearReference?.Invoke(node, index) ?? true)
                 {

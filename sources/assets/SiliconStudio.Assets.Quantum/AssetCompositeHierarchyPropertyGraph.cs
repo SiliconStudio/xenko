@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Quantum.Visitors;
@@ -325,19 +325,20 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         /// <inheritdoc/>
-        public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
+        public override bool IsObjectReference(IGraphNode targetNode, Index index)
         {
             if (targetNode is IObjectNode && index.IsEmpty)
-                return base.IsObjectReference(targetNode, index, value);
+                return base.IsObjectReference(targetNode, index);
 
-            if (value is TAssetPart)
+            var valueType = index != Index.Empty ? targetNode.Descriptor.GetInnerCollectionType() : targetNode.Type;
+            if (typeof(TAssetPart).IsAssignableFrom(valueType))
             {
                 // Check if we're the part referenced by a part design - other cases are references
                 var member = targetNode as IMemberNode;
                 return member == null || member.Parent.Type != typeof(TAssetPartDesign);
             }
 
-            return base.IsObjectReference(targetNode, index, value);
+            return base.IsObjectReference(targetNode, index);
         }
 
         /// <inheritdoc/>
