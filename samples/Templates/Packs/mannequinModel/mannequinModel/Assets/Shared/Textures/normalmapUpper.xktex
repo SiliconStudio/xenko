@@ -1,6 +1,6 @@
 !Texture
 Id: f58eebb2-12f7-460a-9523-7a3f27fadab1
-SerializedVersion: {Xenko: 1.10.0-alpha01}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../Resources/Textures/normalmapUpper.png
 Type: !NormalMapTextureType {}

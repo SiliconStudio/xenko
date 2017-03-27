@@ -1,6 +1,6 @@
 !Texture
 Id: 4ae36a31-e5f2-4cab-8143-e10f0ea7ab34
-SerializedVersion: {Xenko: 1.10.0-alpha01}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../Resources/Textures/Ring01.png
 Type: !ColorTextureType
