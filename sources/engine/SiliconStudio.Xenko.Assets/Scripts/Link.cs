@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
@@ -49,6 +50,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
 
         [DataMember(-100), Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; }
 
         /// <inheritdoc/>
