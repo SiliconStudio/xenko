@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="NavigationMeshGroup.cs" />
     <Compile Include="NavigationSettings.cs" />
+    <Compile Include="NavigationSettingsExtensions.cs" />
     <Compile Include="Processors\BoundingBoxProcessor.cs" />
     <Compile Include="NavigationBoundingBoxComponent.cs" />
     <Compile Include="DynamicNavigationMeshSystem.cs" />
