@@ -32,7 +32,6 @@ namespace SiliconStudio.Xenko.Assets
     [DataContract("GameSettingsAsset")]
     [AssetDescription(FileExtensions, AlwaysMarkAsRoot = true, AllowArchetype = false)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
-    [AssetCompiler(typeof(GameSettingsAssetCompiler))]
     [Display(10000, "Game Settings")]
     [NonIdentifiableCollectionItems]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]

@@ -20,7 +20,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetDescription(FileSceneExtension, AllowArchetype = false)]
     [AssetContentType(typeof(Scene))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
-    [AssetCompiler(typeof(SceneAssetCompiler))]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, 2, 3, typeof(RemoveModelDrawOrderUpgrader))]

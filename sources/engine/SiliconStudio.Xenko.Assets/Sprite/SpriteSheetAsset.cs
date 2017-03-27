@@ -30,7 +30,6 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.10.0-alpha01", typeof(SpriteSheetSRGBUpgrader))]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(SpriteSheet))]
-    [AssetCompiler(typeof(SpriteSheetAssetCompiler))]
     [Display(1600, "Sprite Sheet")]
     public class SpriteSheetAsset : Asset
     {

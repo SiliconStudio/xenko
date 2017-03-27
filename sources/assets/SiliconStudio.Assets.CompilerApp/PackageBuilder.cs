@@ -135,7 +135,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 var assetBuilder = new PackageCompiler(new RootPackageAssetEnumerator(package));
                 assetBuilder.AssetCompiled += RegisterBuildStepProcessedHandler;
 
-                var assetBuildResult = assetBuilder.Compile(context);
+                var assetBuildResult = assetBuilder.Prepare(context);
                 assetBuildResult.CopyTo(builderOptions.Logger);
                 if (assetBuildResult.HasErrors)
                     return BuildResultCode.BuildError;

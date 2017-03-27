@@ -8,7 +8,6 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Rendering;
@@ -22,7 +21,6 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("ProceduralModelAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Model))]
-    [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display(1850, "Procedural Model")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.9.0-beta01")]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 2, typeof(Upgrader))]
@@ -50,7 +48,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
         /// <inheritdoc/>
         [DataMemberIgnore]
-        public List<ModelMaterial> Materials => Type?.MaterialInstances.Select(x => new ModelMaterial { Name = x.Key, MaterialInstance = x.Value }).ToList() ?? new List<ModelMaterial>();
+        public List<ModelMaterial> Materials => Type.MaterialInstances.Select(x => new ModelMaterial { Name = x.Key, MaterialInstance = x.Value }).ToList();
 
         private class Upgrader : AssetUpgraderBase
         {

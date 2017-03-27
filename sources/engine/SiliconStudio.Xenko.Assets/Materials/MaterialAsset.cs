@@ -22,7 +22,6 @@ namespace SiliconStudio.Xenko.Assets.Materials
     [DataContract("MaterialAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Material))]
-    [AssetCompiler(typeof(MaterialAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.4.0-beta")]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RemoveParametersUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
@@ -42,8 +41,6 @@ namespace SiliconStudio.Xenko.Assets.Materials
             Attributes = new MaterialAttributes();
             Layers = new MaterialBlendLayers();
         }
-
-        protected override int InternalBuildOrder => 100;
 
         [DataMemberIgnore]
         public AssetId MaterialId => Id;
@@ -92,11 +89,6 @@ namespace SiliconStudio.Xenko.Assets.Materials
         /// <inheritdoc/>
         public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
         {
-            var gameSettings = session.CurrentPackage?.Assets.Find(GameSettingsAsset.GameSettingsLocation);
-            if (gameSettings != null)
-            {
-                yield return new AssetReference(gameSettings.Id, gameSettings.Location);
-            }
             foreach (var materialReference in FindMaterialReferences())
             {
                 yield return materialReference;

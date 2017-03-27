@@ -20,17 +20,14 @@ namespace SiliconStudio.Xenko.Assets.Physics
     [DataContract("ColliderShapeAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(PhysicsColliderShape))]
-    [AssetCompiler(typeof(ColliderShapeAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.4.0-beta")]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(UpgraderShapeDescriptions))]
     [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(Box2DRemovalUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     [Display("Collider Shape")]
-    public class ColliderShapeAsset : Asset, IAssetCompileTimeDependencies
+    public class ColliderShapeAsset : Asset
     {
         public const string FileExtension = ".xkphy;pdxphy";
-
-        protected override int InternalBuildOrder => 600; //make sure we build after Models
 
         /// <userdoc>
         /// The collection of shapes in this asset, a collection shapes will automatically generate a compound shape.
@@ -104,15 +101,6 @@ namespace SiliconStudio.Xenko.Assets.Physics
                     shape.Size.Y = shape.Size.Y;
                     shape.Size.Z = 0.01f;
                 }
-            }
-        }
-
-        public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
-        {
-            foreach (var shapeDesc in ColliderShapes.OfType<ConvexHullColliderShapeDesc>())
-            {
-                var reference = AttachedReferenceManager.GetAttachedReference(shapeDesc.Model);
-                yield return new AssetReference(reference.Id, reference.Url);
             }
         }
     }

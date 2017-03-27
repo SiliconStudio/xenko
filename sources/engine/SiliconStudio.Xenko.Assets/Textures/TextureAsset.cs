@@ -22,7 +22,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [DataContract("Texture")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Texture))]
-    [AssetCompiler(typeof(TextureAssetCompiler))]
     [Display(1055, "Texture")]
     [CategoryOrder(10, "Size")]
     [CategoryOrder(20, "Format")]
@@ -31,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.10.0-alpha01", typeof(DescriptionUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-alpha01", TextureAssetVersion, typeof(CompressionUpgrader))]
-    public sealed class TextureAsset : AssetWithSource, IAssetCompileTimeDependencies
+    public sealed class TextureAsset : AssetWithSource
     {
         private const string TextureAssetVersion = "1.11.1.2";
 
@@ -117,15 +116,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [NotNull]
         [Display(null, "Format", Expand = ExpandRule.Always)]
         public ITextureType Type { get; set; } = new ColorTextureType();
-
-        public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
-        {
-            var gameSettings = session.CurrentPackage?.Assets.Find(GameSettingsAsset.GameSettingsLocation);
-            if (gameSettings != null)
-            {
-                yield return new AssetReference(gameSettings.Id, gameSettings.Location);
-            }
-        }
 
         private class TransformSRgbToColorSpace : AssetUpgraderBase
         {
