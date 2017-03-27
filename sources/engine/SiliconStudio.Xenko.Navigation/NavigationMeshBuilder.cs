@@ -162,12 +162,12 @@ namespace SiliconStudio.Xenko.Navigation
             var inputIndices = sceneNavigationMeshInputBuilder.Indices.ToArray();
 
             // Enumerate over every layer, and build tiles for each of those layers using the provided agent settings
-            using (var agentSettingsEnumerator = groups.GetEnumerator())
+            using (var groupEnumerator = groups.NotNull().GetEnumerator())
             {
                 for (int layerIndex = 0; layerIndex < groups.Count; layerIndex++)
                 {
-                    agentSettingsEnumerator.MoveNext();
-                    var currentGroup = agentSettingsEnumerator.Current;
+                    groupEnumerator.MoveNext();
+                    var currentGroup = groupEnumerator.Current;
                     var currentAgentSettings = currentGroup.AgentSettings;
 
                     if (result.NavigationMesh.LayersInternal.ContainsKey(currentGroup.Id))

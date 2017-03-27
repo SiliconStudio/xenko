@@ -14,6 +14,7 @@ namespace SiliconStudio.Xenko.Navigation
     /// </summary>
     [DataContract]
     [ObjectFactory(typeof(NavigationMeshGroupFactory))]
+    [InlineProperty]
     public class NavigationMeshGroup : IIdentifiable
     {
         [DataMember(-10)]
@@ -24,7 +25,8 @@ namespace SiliconStudio.Xenko.Navigation
         /// Display name
         /// </summary>
         [DataMember(0)]
-        public string Name = "";
+        [InlineProperty]
+        public string Name { get; set; }
 
         /// <summary>
         /// Agent settings for this group
@@ -58,7 +60,7 @@ namespace SiliconStudio.Xenko.Navigation
 
         public override string ToString()
         {
-            return $"{Name} {{{Id}}}";
+            return $"{Name}";
         }
     }
     
@@ -68,6 +70,7 @@ namespace SiliconStudio.Xenko.Navigation
         {
             return new NavigationMeshGroup
             {
+                Name = "New group",
                 AgentSettings = ObjectFactoryRegistry.NewInstance<NavigationAgentSettings>(),
             };
         }
