@@ -2,6 +2,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Navigation;
 using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Assets
@@ -28,6 +29,7 @@ namespace SiliconStudio.Xenko.Assets
             asset.GetOrCreate<TextureSettings>();
             asset.GetOrCreate<PhysicsSettings>();
             asset.GetOrCreate<AudioEngineSettings>();
+            asset.GetOrCreate<NavigationSettings>();
 
             return asset;
         }

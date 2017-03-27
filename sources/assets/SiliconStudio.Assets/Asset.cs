@@ -42,11 +42,6 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Gets the build order, currently per type (replaces BuildOrder). Later, we want per asset dependencies to improve parallelism
-        /// </summary>
-        protected internal virtual int InternalBuildOrder => 0;
-
-        /// <summary>
         /// Gets or sets the unique identifier of this asset.
         /// </summary>
         /// <value>The identifier.</value>

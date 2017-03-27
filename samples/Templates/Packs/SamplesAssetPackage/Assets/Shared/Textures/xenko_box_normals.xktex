@@ -1,6 +1,6 @@
 !Texture
 Id: 13ad1467-0e79-4492-a615-41f43d953864
-SerializedVersion: {Xenko: 1.10.0-alpha01}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../Resources/Textures/xenko_box_normals.png
 Type: !NormalMapTextureType {}

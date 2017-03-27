@@ -1,6 +1,6 @@
 !Texture
 Id: cf628a7c-f4ca-4fc7-aa7d-27882f030380
-SerializedVersion: {Xenko: 1.10.0-alpha01}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../Resources/skybox_texture_hdr.dds
 Type: !ColorTextureType

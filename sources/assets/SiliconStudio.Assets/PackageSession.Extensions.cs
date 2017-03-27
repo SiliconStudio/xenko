@@ -21,6 +21,8 @@ namespace SiliconStudio.Assets
         {
             // create the compile root package and package session
             var assetPackageCloned = new Package();
+            //the following line is necessary to attach a session to the package
+            // ReSharper disable once UnusedVariable
             var compilePackageSession = new PackageSession(assetPackageCloned);
 
             AddAssetToCompilePackage(session, originalAssetItem, assetPackageCloned);

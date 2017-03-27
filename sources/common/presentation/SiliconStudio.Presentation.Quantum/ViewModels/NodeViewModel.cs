@@ -279,20 +279,20 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             return new NodeViewModelDynamicMetaObject(parameter, this);
         }
 
-        internal void NotifyPropertyChanging(string propertyName)
+        protected void NotifyPropertyChanging(string propertyName)
         {
             if (!changingProperties.Contains(propertyName))
             {
                 changingProperties.Add(propertyName);
-                OnPropertyChanging(propertyName, GraphViewModel.HasChildPrefix + propertyName);
+                OnPropertyChanging(propertyName);
             }
         }
 
-        internal void NotifyPropertyChanged(string propertyName)
+        protected void NotifyPropertyChanged(string propertyName)
         {
             if (changingProperties.Remove(propertyName))
             {
-                OnPropertyChanged(propertyName, GraphViewModel.HasChildPrefix + propertyName);
+                OnPropertyChanged(propertyName);
             }
         }
 
@@ -509,12 +509,14 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             if (changeAction == null) throw new ArgumentNullException(nameof(changeAction));
             if (initializingChildren == null)
             {
-                OnPropertyChanging(propertyNames);
+                foreach (var propertyName in propertyNames)
+                    NotifyPropertyChanging(propertyName);
             }
             changeAction();
             if (initializingChildren == null)
             {
-                OnPropertyChanged(propertyNames);
+                foreach (var propertyName in propertyNames)
+                    NotifyPropertyChanged(propertyName);
             }
         }
 

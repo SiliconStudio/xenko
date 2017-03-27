@@ -1,8 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
@@ -17,9 +20,15 @@ namespace SiliconStudio.Xenko.Assets.Textures
     /// <summary>
     /// Texture asset compiler.
     /// </summary>
+    [AssetCompiler(typeof(TextureAsset), typeof(AssetCompilationContext))]
     public class TextureAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        {
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(GameSettingsAsset), BuildDependencyType.CompileAsset);
+        }
+
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (TextureAsset)assetItem.Asset;
             // Get absolute path of asset source on disk
@@ -29,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
             var colorSpace = context.GetColorSpace();
 
             var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), gameSettingsAsset.GetOrCreate<RenderingSettings>(context.Platform).DefaultGraphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);
-            result.BuildSteps = new AssetBuildStep(assetItem) { new TextureConvertCommand(targetUrlInStorage, parameter) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new TextureConvertCommand(targetUrlInStorage, parameter, assetItem.Package) };
         }
 
         /// <summary>
@@ -37,12 +46,13 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         public class TextureConvertCommand : AssetCommand<TextureConvertParameters>
         {
-            public TextureConvertCommand(string url, TextureConvertParameters description)
-                : base(url, description)
+            public TextureConvertCommand(string url, TextureConvertParameters description, Package package)
+                : base(url, description, package)
             {
+                InputFilesGetter = GetInputFilesImpl;
             }
 
-            protected override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFilesImpl()
+            private IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
                 // TODO dependency not working
                 yield return new ObjectUrl(UrlType.File, Parameters.SourcePathFromDisk);
@@ -63,6 +73,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
             protected override void ComputeAssemblyHash(BinarySerializationWriter writer)
             {
                 writer.Write(DataSerializer.BinaryFormatVersion);
+                writer.Write(Parameters.SourcePathFromDisk);
 
                 // Since Image format is quite stable, we want to manually control it's assembly hash here
                 writer.Write(1);

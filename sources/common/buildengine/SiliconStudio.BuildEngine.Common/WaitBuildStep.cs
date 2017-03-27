@@ -18,7 +18,7 @@ namespace SiliconStudio.BuildEngine
         }
         
         /// <inheritdoc />
-        public override string Title { get { return ToString(); } }
+        public override string Title => ToString();
 
         public override BuildStep Clone()
         {

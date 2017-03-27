@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Assets.Compiler
@@ -9,10 +11,6 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public class AssetCompilerContext : CompilerContext
     {
-        public AssetCompilerContext()
-        {
-        }
-
         /// <summary>
         /// Gets or sets the name of the profile being built.
         /// </summary>
@@ -28,5 +26,10 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         /// <value>The platform.</value>
         public PlatformType Platform { get; set; }
+
+        /// <summary>
+        /// The compilation context type of this compiler context
+        /// </summary>
+        public Type CompilationContext;
     }
 }

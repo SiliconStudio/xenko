@@ -13,6 +13,6 @@ shader NormalFromNormalMapping : Transformation, NormalBase, NormalStream
 
     override float3x3 GetTangentWorldTransform()
     {
-        return (float3x3)World;
+        return (float3x3)WorldInverseTranspose;
     }
 };
