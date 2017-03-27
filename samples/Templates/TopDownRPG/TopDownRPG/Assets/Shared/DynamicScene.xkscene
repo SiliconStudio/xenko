@@ -6,6 +6,7 @@ ChildrenIds:
     - 805ec36b-feab-40fb-93cd-8f5083937659
     - cd7db7bc-2d8e-45be-a6d9-4b7e9008e949
     - 7cdb3d4a-151d-4851-a736-fec1bba593d3
+    - 2152f16c-c38c-46ba-b7ab-e52ec025e982
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
@@ -92,6 +93,9 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
+                    1e3af8c1be6874220e9c16a04d1cd170: !TopDownRPG.Gameplay.MusicScript,TopDownRPG.Game
+                        Id: 06342166-223b-4d30-9d63-5b55e2940404
+                        SoundMusic: null
         -   Entity:
                 Id: 4bee36d8-5cb2-4c41-9f7d-c32e44b969f2
                 Name: CameraTarget

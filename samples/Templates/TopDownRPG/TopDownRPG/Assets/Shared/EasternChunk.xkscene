@@ -1,0 +1,149 @@
+!SceneAsset
+Id: 2152f16c-c38c-46ba-b7ab-e52ec025e982
+SerializedVersion: {Xenko: 1.10.0-beta03}
+Tags: []
+ChildrenIds: []
+Parent: b1ceb6db-e76e-4c37-be81-72941ddd6b9a:DynamicScene
+Offset: {X: -20.0, Y: 0.0, Z: 0.0}
+Hierarchy:
+    RootPartIds:
+        - d8147836-1379-4c09-b9eb-c1c3d962c4bd
+        - 50f05982-95ae-47cb-815f-49d9f0c2f345
+        - 9716359b-0c92-4681-9415-11411bd1ad4e
+        - 280dcd68-8b44-4e28-a0a8-d9644f415db6
+    Parts:
+        -   Entity:
+                Id: 280dcd68-8b44-4e28-a0a8-d9644f415db6
+                Name: GridBase10x10
+                Components:
+                    4eecb3c27affe3478bcc584553d59e41: !TransformComponent
+                        Id: ee859a99-6e4b-4957-9a99-50350811881b
+                        Position*: {X: 5.0, Y: 0.0, Z: 5.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
+                    7c901dfed21c864283aa0639481520b1: !ModelComponent
+                        Id: 963ac045-675e-4bc8-852f-5084907fdc64
+                        Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
+                        Materials: {}
+                    e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
+                        Id: 65629151-f7a8-48b0-a1ad-45bae4447cf9
+                        CanSleep: true
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        ColliderShapes:
+                            6f9d4e7e5147bf47ad510aa5f27d122b: !BoxColliderShapeDesc
+                                Is2D: false
+                                Size: {X: 10.0, Y: 0.3, Z: 10.0}
+                                LocalOffset: {X: 0.0, Y: -0.15, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+            Folder: null
+            Base:
+                BasePartAsset: faca3ec7-598e-40b0-bdd4-7a6dfd9635b0:BlocksPrefabs/GridBase10x10
+                BasePartId: b045349c-565e-4488-9130-a795b0e3b229
+                InstanceId: 0ee179f5-c15c-45ac-a1f7-5d3dc88ad20f
+        -   Entity:
+                Id: 50f05982-95ae-47cb-815f-49d9f0c2f345
+                Name: GridBase10x10
+                Components:
+                    4eecb3c27affe3478bcc584553d59e41: !TransformComponent
+                        Id: 23e6930c-a466-443f-81a8-ffabed02cb95
+                        Position*: {X: 5.0, Y: 0.0, Z: 5.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
+                    7c901dfed21c864283aa0639481520b1: !ModelComponent
+                        Id: da45c208-94b9-4445-9cb6-141ef4e7bacd
+                        Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
+                        Materials: {}
+                    e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
+                        Id: 035fd2cd-4551-424f-9a8d-fd0178a46940
+                        CanSleep: true
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        ColliderShapes:
+                            6f9d4e7e5147bf47ad510aa5f27d122b: !BoxColliderShapeDesc
+                                Is2D: false
+                                Size: {X: 10.0, Y: 0.3, Z: 10.0}
+                                LocalOffset: {X: 0.0, Y: -0.15, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+            Folder: null
+            Base:
+                BasePartAsset: faca3ec7-598e-40b0-bdd4-7a6dfd9635b0:BlocksPrefabs/GridBase10x10
+                BasePartId: b045349c-565e-4488-9130-a795b0e3b229
+                InstanceId: 83ab2258-a419-4cc8-b82b-8abe30cc94a2
+        -   Entity:
+                Id: 9716359b-0c92-4681-9415-11411bd1ad4e
+                Name: GridBase10x10
+                Components:
+                    4eecb3c27affe3478bcc584553d59e41: !TransformComponent
+                        Id: 86b5af23-0903-40c1-a600-b58b72a75e4f
+                        Position*: {X: 5.0, Y: 0.0, Z: 5.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
+                    7c901dfed21c864283aa0639481520b1: !ModelComponent
+                        Id: f4bad9b5-ad10-4cf1-8ade-f78e93a84d36
+                        Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
+                        Materials: {}
+                    e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
+                        Id: 652b3e0c-aac2-40a5-9dd3-4b905b182859
+                        CanSleep: true
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        ColliderShapes:
+                            6f9d4e7e5147bf47ad510aa5f27d122b: !BoxColliderShapeDesc
+                                Is2D: false
+                                Size: {X: 10.0, Y: 0.3, Z: 10.0}
+                                LocalOffset: {X: 0.0, Y: -0.15, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+            Folder: null
+            Base:
+                BasePartAsset: faca3ec7-598e-40b0-bdd4-7a6dfd9635b0:BlocksPrefabs/GridBase10x10
+                BasePartId: b045349c-565e-4488-9130-a795b0e3b229
+                InstanceId: f2fc5603-2062-4069-b06b-108ad009d66e
+        -   Entity:
+                Id: d8147836-1379-4c09-b9eb-c1c3d962c4bd
+                Name: GridBase10x10
+                Components:
+                    4eecb3c27affe3478bcc584553d59e41: !TransformComponent
+                        Id: 42256fd5-519f-401b-8692-00269cb0d50f
+                        Position*: {X: 5.0, Y: 0.0, Z: 5.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
+                    7c901dfed21c864283aa0639481520b1: !ModelComponent
+                        Id: 056e556e-7da0-41ea-bbfc-8460a25b9bcd
+                        Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
+                        Materials: {}
+                    e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
+                        Id: 9b30e5ed-4b46-440b-b854-7b848df209ae
+                        CanSleep: true
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        ColliderShapes:
+                            6f9d4e7e5147bf47ad510aa5f27d122b: !BoxColliderShapeDesc
+                                Is2D: false
+                                Size: {X: 10.0, Y: 0.3, Z: 10.0}
+                                LocalOffset: {X: 0.0, Y: -0.15, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+            Base:
+                BasePartAsset: faca3ec7-598e-40b0-bdd4-7a6dfd9635b0:BlocksPrefabs/GridBase10x10
+                BasePartId: b045349c-565e-4488-9130-a795b0e3b229
+                InstanceId: f7372007-c7d6-4929-8a52-be6d7ffdaa67
