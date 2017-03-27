@@ -6,7 +6,8 @@ ChildrenIds:
     - 805ec36b-feab-40fb-93cd-8f5083937659
     - cd7db7bc-2d8e-45be-a6d9-4b7e9008e949
     - 7cdb3d4a-151d-4851-a736-fec1bba593d3
-    - 2152f16c-c38c-46ba-b7ab-e52ec025e982
+    - feaab56f-3f56-48e0-83be-dfe2f38f65a6
+    - 465718fa-96e7-4d3b-897d-8e7075b1a9ae
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
@@ -18,6 +19,8 @@ Hierarchy:
         - c3648c46-3fef-42fd-a935-6c2663254381
         - c209d00b-1c57-4f36-97b3-bb81facd00a1
         - 3113203c-2276-420b-bf0d-fce00d95dc58
+        - 2b57370f-e61c-41c5-b8c4-df6619837e29
+        - 88b61bbb-5855-43b2-959d-b5393a6bfe7f
     Parts:
         -   Entity:
                 Id: 1ff1c9b8-7a14-4338-b9a1-e4bd7ebcf24e
@@ -44,6 +47,44 @@ Hierarchy:
                                 BiasParameters: {}
                         Intensity: 5.0
             Folder: GlobalLights
+        -   Entity:
+                Id: 2b57370f-e61c-41c5-b8c4-df6619837e29
+                Name: EasternChunkLoading
+                Components:
+                    7a46f842d9b46727fc1ff8e879e12913: !TransformComponent
+                        Id: 64044078-cf46-4c78-8937-e72b05cf6ec9
+                        Position: {X: -20.0, Y: 1.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
+                    0f5a078e7c288bdabbfd0c78f0c7f52a: !RigidbodyComponent
+                        Id: 00eee251-501b-4d85-b1b2-cdf1d7608ee4
+                        CollisionGroup: CustomFilter10
+                        CanCollideWith: CharacterFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: true
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            a75542f5626ada7100185d195096639f: !BoxColliderShapeDesc
+                                Is2D: false
+                                Size: {X: 24.0, Y: 3.0, Z: 24.0}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                    2eac96e8c90a836d8754e3f24fa1a99e: !Gameplay.SceneStreaming,TopDownRPG.Game
+                        Id: 5b6e2307-e465-4da0-8d84-b9624682ef9f
+                        Url: EasternChunk
+                        Trigger: !RigidbodyComponent ref!! 00eee251-501b-4d85-b1b2-cdf1d7608ee4
         -   Entity:
                 Id: 3113203c-2276-420b-bf0d-fce00d95dc58
                 Name: SouthernChunkLoading
@@ -82,7 +123,6 @@ Hierarchy:
                         Id: 276ff6f0-dcc0-4945-b13e-f2dd2664b4e0
                         Url: SouthernChunk
                         Trigger: !RigidbodyComponent ref!! 52032222-a039-47be-9d21-4a6c3adca582
-            Folder: null
         -   Entity:
                 Id: 36396dfa-6aa4-4489-a7f5-e45f569bb082
                 Name: GameLogic
@@ -93,9 +133,6 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
-                    1e3af8c1be6874220e9c16a04d1cd170: !TopDownRPG.Gameplay.MusicScript,TopDownRPG.Game
-                        Id: 06342166-223b-4d30-9d63-5b55e2940404
-                        SoundMusic: null
         -   Entity:
                 Id: 4bee36d8-5cb2-4c41-9f7d-c32e44b969f2
                 Name: CameraTarget
@@ -214,6 +251,45 @@ Hierarchy:
                                 Radius: 0.2
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
         -   Entity:
+                Id: 88b61bbb-5855-43b2-959d-b5393a6bfe7f
+                Name: WesternChunkLoading
+                Components:
+                    7a46f842d9b46727fc1ff8e879e12913: !TransformComponent
+                        Id: ea3a6d2e-2718-4653-9884-6b45bbed38d7
+                        Position: {X: 20.0, Y: 1.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
+                    0f5a078e7c288bdabbfd0c78f0c7f52a: !RigidbodyComponent
+                        Id: 06ed6375-b5de-40e6-88e8-16ba15e8f474
+                        CollisionGroup: CustomFilter10
+                        CanCollideWith: CharacterFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: true
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            a75542f5626ada7100185d195096639f: !BoxColliderShapeDesc
+                                Is2D: false
+                                Size: {X: 24.0, Y: 3.0, Z: 24.0}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                    2eac96e8c90a836d8754e3f24fa1a99e: !Gameplay.SceneStreaming,TopDownRPG.Game
+                        Id: 0d6efc2a-7d05-4295-aa27-1438d51972c0
+                        Url: WesternChunk
+                        Trigger: !RigidbodyComponent ref!! 06ed6375-b5de-40e6-88e8-16ba15e8f474
+            Folder: null
+        -   Entity:
                 Id: 9112d7e8-fdb1-477e-acd6-58dd61783773
                 Name: Skybox
                 Components:
@@ -298,7 +374,6 @@ Hierarchy:
                         Id: 1f7da7c0-2b66-4b6b-b5c2-924baea7652c
                         Url: NorthernChunk
                         Trigger: !RigidbodyComponent ref!! 34034a61-5c72-4401-8c28-f112ab89f36b
-            Folder: null
         -   Entity:
                 Id: c3648c46-3fef-42fd-a935-6c2663254381
                 Name: CentralChunkLoading
