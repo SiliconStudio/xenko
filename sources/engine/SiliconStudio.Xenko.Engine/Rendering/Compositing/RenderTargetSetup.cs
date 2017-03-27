@@ -1,3 +1,6 @@
+// Copyright(c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Collections;
@@ -6,58 +9,6 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
-    /// <summary>
-    /// Type type itself represents a semantic for a render target
-    /// </summary>
-    /// <remarks>Please implement stateless, so that objects can be recycled.</remarks>
-    public interface IRenderTargetSemantic
-    {
-        string ShaderClass { get; }
-    }
-
-    public struct RenderTargetTextureCreationParams
-    {
-        public PixelFormat PixelFormat { get; set; }
-        public TextureFlags TextureFlags { get; set; }
-        public MSAALevel MSAALevel { get; set; }
-    }
-
-    public struct RenderTargetDesc
-    {
-        public IRenderTargetSemantic Semantic;
-        public RenderTargetTextureCreationParams RenderTargetTextureParams;
-    }
-
-    public struct RenderTarget
-    {
-        public RenderTargetDesc Description;
-        public Texture Texture { get; set; }
-    }
-
-    public interface IRenderTargetCompositionQueriable
-    {
-        string GetShaderClass(Type semanticType);
-        Texture[] TexturesComposition { get; }
-        ShaderSourceCollection MixinCollection { get; }
-    }
-
-    public enum SetPolicy
-    {
-        DefendSilentlyIfSemanticKeyNotFound,
-        ThrowOnSemanticKeyNotFound
-    }
-
-    /// <summary>
-    /// Number of renderings per frame.
-    /// </summary>
-    /// <remarks>It can represent split viewports, like VR eyes, or multiplayer...</remarks>
-    public interface IMultipleRenderViews
-    {
-        int ViewsCount { get; set; }
-
-        int ViewsIndex { get; set; }
-    }
-
     /// <summary>
     /// Represents how we setup the graphics pipeline output targets.
     /// </summary>

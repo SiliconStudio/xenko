@@ -150,7 +150,7 @@
     </Compile>
     <Compile Include="Rendering\BackToFrontSortMode.cs" />
     <Compile Include="Rendering\Compositing\ClearRenderer.cs" />
-    <Compile Include="Rendering\Compositing\DefaultRenderTargets.cs" />
+    <Compile Include="Rendering\Compositing\CompositionExtension.cs" />
     <Compile Include="Rendering\Compositing\EditorTopLevelCompositor.cs" />
     <Compile Include="Rendering\Compositing\DelegateSceneRenderer.cs" />
     <Compile Include="Rendering\Compositing\ForceAspectRatioSceneRenderer.cs" />
@@ -158,7 +158,9 @@
     <Compile Include="Rendering\Compositing\ForwardRenderer.LightProbes.cs" />
     <Compile Include="Rendering\Compositing\ForwardRenderer.VRUtils.cs" />
     <Compile Include="Rendering\Compositing\GraphicsCompositor.cs" />
-    <Compile Include="Rendering\Compositing\ForwardRenderer.MRT.cs" />
+    <Compile Include="Rendering\Compositing\IMultipleRenderViews.cs" />
+    <Compile Include="Rendering\Compositing\IRenderTargetCompositionQueriable.cs" />
+    <Compile Include="Rendering\Compositing\IRenderTargetSemantic.cs" />
     <Compile Include="Rendering\Compositing\MSAAResolver.cs" />
     <None Include="Rendering\Compositing\MSAAResolverEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -176,9 +178,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MSAAResolverShader.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Compositing\RenderTarget.cs" />
+    <Compile Include="Rendering\Compositing\RenderTargetDesc.cs" />
+    <Compile Include="Rendering\Compositing\RenderTargetTextureCreationParams.cs" />
     <Compile Include="Rendering\Compositing\RenderTextureSceneRenderer.cs" />
     <Compile Include="Rendering\Compositing\SceneCameraRenderer.cs" />
     <Compile Include="Rendering\Compositing\SceneRendererCollection.cs" />
+    <Compile Include="Rendering\Compositing\SetPolicy.cs" />
     <Compile Include="Rendering\Compositing\SingleStageRenderer.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
     <Compile Include="Rendering\Compositing\VRRendererSettings.cs" />
@@ -260,7 +266,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>VolumeMinMaxShader.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\Compositing\RenderTargets.cs" />
+    <Compile Include="Rendering\Compositing\RenderTargetSetup.cs" />
     <Compile Include="Rendering\RenderViewFlags.cs" />
     <Compile Include="Rendering\Skyboxes\CubemapSceneRenderer.cs" />
     <Compile Include="Rendering\Lights\LightPointShadowMap.cs" />
