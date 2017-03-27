@@ -13,20 +13,4 @@ BuildSettings:
     MaxEdgeError: 1.3
     DetailSamplingDistance: 6.0
     MaxDetailSamplingError: 1.0
-SelectedGroups:
-    d29e7650c2f8e239f73da70fc6d60968:
-        Id: 96e03f92-65b1-42e8-afcb-9426356f2d7f
-        Name: Small
-        AgentSettings:
-            Height: 0.2
-            Radius: 0.1
-            MaxClimb: 0.25
-            MaxSlope: {Radians: 0.7853982}
-    6100d8f81fe684e6a5167d21aa056f60:
-        Id: cccfde63-cea2-4113-8a11-a07cc6d7f36e
-        Name: Large
-        AgentSettings:
-            Height: 0.4
-            Radius: 0.2
-            MaxClimb: 0.25
-            MaxSlope: {Radians: 0.7853982}
+SelectedGroups: [96e03f92-65b1-42e8-afcb-9426356f2d7f, cccfde63-cea2-4113-8a11-a07cc6d7f36e]

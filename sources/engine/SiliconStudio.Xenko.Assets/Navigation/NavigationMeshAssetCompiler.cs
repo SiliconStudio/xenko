@@ -13,13 +13,11 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Assets.Physics;
-using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Navigation;
 using SiliconStudio.Xenko.Physics;
 
@@ -101,6 +99,10 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 EnsureClonedSceneAndHash();
                 writer.Write(sceneHash);
                 writer.Write(asset.SelectedGroups);
+
+                var gameSettings = (GameSettingsAsset)package.Session.FindAsset(GameSettingsAsset.GameSettingsLocation)?.Asset;
+                var navigationSettings = gameSettings.GetOrCreate<NavigationSettings>();
+                writer.Write(navigationSettings.Groups);
             }
             
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -114,9 +116,26 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 foreach (var colliderData in staticColliderDatas)
                     navigationMeshBuilder.Add(colliderData);
 
-                var groupsFiltered = asset.SelectedGroups.NotNull().ToList();
+                var gameSettings = (GameSettingsAsset)package.Session.FindAsset(GameSettingsAsset.GameSettingsLocation)?.Asset;
+                var navigationSettings = gameSettings.GetOrCreate<NavigationSettings>();
+                var groupsLookup = navigationSettings.Groups.ToDictionary(x => x.Id, x => x);
 
-                var result = navigationMeshBuilder.Build(asset.BuildSettings, groupsFiltered, asset.IncludedCollisionGroups, boundingBoxes, CancellationToken.None);
+                var groups = new List<NavigationMeshGroup>();
+                // Resolve groups
+                foreach (var groupId in asset.SelectedGroups)
+                {
+                    NavigationMeshGroup group;
+                    if (groupsLookup.TryGetValue(groupId, out group))
+                    {
+                        groups.Add(group);
+                    }
+                    else
+                    {
+                        commandContext.Logger.Warning($"Group not defined in game settings {{{groupId}}}");
+                    }
+                }
+
+                var result = navigationMeshBuilder.Build(asset.BuildSettings, groups, asset.IncludedCollisionGroups, boundingBoxes, CancellationToken.None);
                 
                 // Unload loaded collider shapes
                 foreach (var pair in loadedColliderShapes)

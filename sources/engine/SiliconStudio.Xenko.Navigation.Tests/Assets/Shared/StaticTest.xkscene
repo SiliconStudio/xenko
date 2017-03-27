@@ -72,14 +72,7 @@ Hierarchy:
                     62ded340d0c4ca5f62438d6c84e2e787: !NavigationComponent
                         Id: 5c19e611-6400-42e5-a570-55488a7f9e84
                         NavigationMesh: 4c2a6d1a-b9ff-4c90-8f25-c215bb91fbdc:Static
-                        Group:
-                            Id: cccfde63-cea2-4113-8a11-a07cc6d7f36e
-                            Name: Large
-                            AgentSettings:
-                                Height: 0.4
-                                Radius: 0.2
-                                MaxClimb: 0.25
-                                MaxSlope: {Radians: 0.7853982}
+                        GroupId: cccfde63-cea2-4113-8a11-a07cc6d7f36e
             Folder: null
         -   Entity:
                 Id: 34f86ef3-d3af-4d5e-9dbb-3b8c6e7a856c
@@ -437,11 +430,4 @@ Hierarchy:
                     a7a40f1179efdbbe79f7ff2e12742b69: !NavigationComponent
                         Id: 799543a5-cb13-475c-bed9-aca10f66789c
                         NavigationMesh: 4c2a6d1a-b9ff-4c90-8f25-c215bb91fbdc:Static
-                        Group:
-                            Id: 96e03f92-65b1-42e8-afcb-9426356f2d7f
-                            Name: Small
-                            AgentSettings:
-                                Height: 0.2
-                                Radius: 0.1
-                                MaxClimb: 0.25
-                                MaxSlope: {Radians: 0.7853982}
+                        GroupId: 96e03f92-65b1-42e8-afcb-9426356f2d7f

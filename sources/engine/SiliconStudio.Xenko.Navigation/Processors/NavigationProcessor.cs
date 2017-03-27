@@ -148,8 +148,8 @@ namespace SiliconStudio.Xenko.Navigation.Processors
                 // Load dynamic navigation mesh when no navigation mesh is specified on the component
                 navigationMeshToLoad = dynamicNavigationMeshSystem?.CurrentNavigationMesh;
             }
-
-            NavigationMeshGroupData loadedGroup = Load(navigationMeshToLoad, data.Component.Group);
+            
+            NavigationMeshGroupData loadedGroup = Load(navigationMeshToLoad, data.Component.GroupId);
             if (data.LoadedGroup != null)
                 Unload(data.LoadedGroup);
 
@@ -182,9 +182,9 @@ namespace SiliconStudio.Xenko.Navigation.Processors
         /// Loads or references a <see cref="RecastNavigationMesh"/> for a group of a navigation mesh
         /// </summary>
         [CanBeNull]
-        private NavigationMeshGroupData Load(NavigationMesh mesh, NavigationMeshGroup group)
+        private NavigationMeshGroupData Load(NavigationMesh mesh, Guid groupId)
         {
-            if (mesh == null || group == null)
+            if (mesh == null || groupId == Guid.Empty)
                 return null;
 
             NavigationMeshData data;
@@ -197,17 +197,17 @@ namespace SiliconStudio.Xenko.Navigation.Processors
             }
 
             NavigationMeshGroupData groupData;
-            if (!data.LoadedGroups.TryGetValue(group.Id, out groupData))
+            if (!data.LoadedGroups.TryGetValue(groupId, out groupData))
             {
                 NavigationMeshLayer layer;
-                if (!mesh.Layers.TryGetValue(group.Id, out layer))
+                if (!mesh.Layers.TryGetValue(groupId, out layer))
                     return null; // Group not present in navigation mesh
 
-                data.LoadedGroups.Add(group.Id, groupData = new NavigationMeshGroupData
+                data.LoadedGroups.Add(groupId, groupData = new NavigationMeshGroupData
                 {
                     Data = data,
                     RecastNavigationMesh = new RecastNavigationMesh(mesh),
-                    Id = group.Id,
+                    Id = groupId,
                 });
 
                 // Add initial tiles to the navigation mesh

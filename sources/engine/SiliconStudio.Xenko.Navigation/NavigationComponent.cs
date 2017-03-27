@@ -22,9 +22,10 @@ namespace SiliconStudio.Xenko.Navigation
     {
         [DataMemberIgnore] internal RecastNavigationMesh RecastNavigationMesh;
         [DataMemberIgnore] internal Vector3 SceneOffset;
-        
+        [DataMemberIgnore] internal NavigationMeshGroup Group;
+
         private NavigationMesh navigationMesh;
-        private NavigationMeshGroup group;
+        private Guid groupId;
 
         /// <summary>
         /// The navigation mesh which is being used. Setting this to <c>null</c> will load the dynamic navigation mesh for the current game (if enabled)
@@ -44,12 +45,13 @@ namespace SiliconStudio.Xenko.Navigation
         /// The navigation mesh group to use
         /// </summary>
         [DataMember(20)]
-        public NavigationMeshGroup Group
+        [Display("Group")]
+        public Guid GroupId
         {
-            get { return group; }
+            get { return groupId; }
             set
             {
-                group = value;
+                groupId = value;
                 NavigationMeshChanged?.Invoke(this, null);
             }
         }

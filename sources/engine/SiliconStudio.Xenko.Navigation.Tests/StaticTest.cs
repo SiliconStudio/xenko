@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.Navigation.Tests
                 controllerB.TryMove(targetA).ContinueWith(x => { Assert.IsFalse(x.Result.Success); }));
 
             // Change group of A to the group that B has
-            controllerA.Navigation.Group = controllerB.Navigation.Group;
+            controllerA.Navigation.GroupId = controllerB.Navigation.GroupId;
 
             // Move A to it's spawn (should fail with the new group)
             await controllerA.TryMove(controllerA.SpawnPosition).ContinueWith(x => { Assert.IsFalse(x.Result.Success); });

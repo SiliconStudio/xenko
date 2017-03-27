@@ -329,14 +329,7 @@ Hierarchy:
                     62ded340d0c4ca5f62438d6c84e2e787: !NavigationComponent
                         Id: b5aa46de-3c8b-4f1f-a5b2-30294cccc20a
                         NavigationMesh: null
-                        Group:
-                            Id: cccfde63-cea2-4113-8a11-a07cc6d7f36e
-                            Name: Large
-                            AgentSettings:
-                                Height: 0.4
-                                Radius: 0.2
-                                MaxClimb: 0.25
-                                MaxSlope: {Radians: 0.7853982}
+                        GroupId: cccfde63-cea2-4113-8a11-a07cc6d7f36e
             Folder: null
         -   Entity:
                 Id: ddad8031-c1f2-40e4-a4c9-4b55cebe869e
@@ -375,14 +368,7 @@ Hierarchy:
                     a7a40f1179efdbbe79f7ff2e12742b69: !NavigationComponent
                         Id: 5b46eac2-d77e-4d22-91ce-61be0c73d254
                         NavigationMesh: null
-                        Group:
-                            Id: 96e03f92-65b1-42e8-afcb-9426356f2d7f
-                            Name: Small
-                            AgentSettings:
-                                Height: 0.2
-                                Radius: 0.1
-                                MaxClimb: 0.25
-                                MaxSlope: {Radians: 0.7853982}
+                        GroupId: 96e03f92-65b1-42e8-afcb-9426356f2d7f
         -   Entity:
                 Id: def9210d-1964-4693-ae93-dcdbc2260fe5
                 Name: Ambient light

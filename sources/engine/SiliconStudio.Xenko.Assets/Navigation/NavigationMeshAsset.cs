@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -8,7 +8,6 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets.Entities;
@@ -49,7 +48,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         /// Groups that this navigation mesh should be built for
         /// </summary>
         [DataMember(40)]
-        public List<NavigationMeshGroup> SelectedGroups { get; private set; } = new List<NavigationMeshGroup>();
+        public List<Guid> SelectedGroups { get; private set; } = new List<Guid>();
 
         public override int GetHashCode()
         {
@@ -66,6 +65,9 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
         public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
         {
+            var gameSettings = session.FindAsset(GameSettingsAsset.GameSettingsLocation);
+            yield return new AssetReference(gameSettings.Id, gameSettings.Location);
+
             if (Scene != null)
             {
                 var reference = AttachedReferenceManager.GetAttachedReference(Scene);
