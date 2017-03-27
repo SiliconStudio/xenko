@@ -29,6 +29,11 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             member.Changing += OnMemberChanging;
             member.Changed += OnMemberChanged;
 
+            if (member.Target != null)
+            {
+                member.Target.ItemChanging += OnItemChanging;
+                member.Target.ItemChanged += OnItemChanged;
+            }
             var displayAttribute = memberAttributes.OfType<DisplayAttribute>().FirstOrDefault();
             Order = displayAttribute?.Order ?? member.MemberDescriptor.Order;
 
@@ -135,9 +140,30 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         private void OnMemberChanging(object sender, MemberNodeChangeEventArgs e)
         {
             RaiseValueChanging(Value);
+            if (Member.Target != null)
+            {
+                Member.Target.ItemChanging -= OnItemChanging;
+                Member.Target.ItemChanged -= OnItemChanged;
+            }
         }
 
         private void OnMemberChanged(object sender, MemberNodeChangeEventArgs e)
+        {
+            Refresh();
+            if (Member.Target != null)
+            {
+                Member.Target.ItemChanging += OnItemChanging;
+                Member.Target.ItemChanged += OnItemChanged;
+            }
+            RaiseValueChanged(Value);
+        }
+
+        private void OnItemChanging(object sender, ItemChangeEventArgs e)
+        {
+            RaiseValueChanging(Value);
+        }
+
+        private void OnItemChanged(object sender, ItemChangeEventArgs e)
         {
             Refresh();
             RaiseValueChanged(Value);
