@@ -73,7 +73,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
             protected override void ComputeAssemblyHash(BinarySerializationWriter writer)
             {
                 writer.Write(DataSerializer.BinaryFormatVersion);
-                writer.Write(Parameters.Texture.Source);
 
                 // Since Image format is quite stable, we want to manually control it's assembly hash here
                 writer.Write(1);
