@@ -378,12 +378,11 @@ namespace SiliconStudio.Xenko.Rendering
                 if (renderEffect != null)
                 {
                     var renderStage = renderNode.RenderStage;
-                    var sources = renderStage.RenderTargetComposition?.ShaderSources;
+                    var sources = renderStage.OutputValidator?.ShaderSources;
                     if (sources != null)
                         renderEffect.EffectValidator.ValidateParameter(XenkoEffectBaseKeys.RenderTargetExtensions, sources);
                 }
             }
-
         }
 
         /// <summary>

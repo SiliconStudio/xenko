@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {
         void Collect(RenderContext context);
 
-        void Draw(RenderDrawContext drawContext, RenderTargetSetup renderTargetsComposition, Texture inputDepthStencil, Texture outputTarget);
+        void Draw(RenderDrawContext drawContext, Texture input, Texture inputDepthStencil, Texture outputTarget);
 
         bool RequiresVelocityBuffer { get; }
 

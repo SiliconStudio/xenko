@@ -245,13 +245,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        public void Draw(RenderDrawContext drawContext, RenderTargetSetup inputTargetsComposition, Texture inputDepthStencil, Texture outputTarget)
+        public void Draw(RenderDrawContext drawContext, Texture inputDepthStencil, Texture output)
         {
-            var colorInputActive = inputTargetsComposition.IsActive(typeof(ColorTargetSemantic));
-            if (!colorInputActive) return;
-
             SetInput(0, inputDepthStencil);
-            SetOutput(inputTargetsComposition.GetRenderTarget(typeof(ColorTargetSemantic)).Texture);
+            SetOutput(output);
             Draw(drawContext);
         }
 

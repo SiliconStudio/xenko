@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Rendering
         public RenderOutputDescription Output;
 
         [DataMemberIgnore]
-        public RenderTargetSetup RenderTargetComposition;
+        public RenderOutputValidator OutputValidator;
 
         /// <summary>
         /// Index in <see cref="RenderSystem.RenderStages"/>.
