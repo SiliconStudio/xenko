@@ -195,6 +195,10 @@
       <Project>{53782603-3096-40c2-abd3-f8f311bae4be}</Project>
       <Name>SiliconStudio.Xenko.VirtualReality</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Navigation\SiliconStudio.Xenko.Navigation.csproj">
+      <Project>{fbe1fa7b-e699-4bb2-9c8f-41f4c9f3f088}</Project>
+      <Name>SiliconStudio.Xenko.Navigation</Name>
+    </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Compile Include="Build\TestBuilder.cs" />
