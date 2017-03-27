@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public class AssetDependenciesCompiler
     {
-        private readonly BuildDependencyManager buildDependencyManager;
+        public readonly BuildDependencyManager BuildDependencyManager;
 
         /// <summary>
         /// Raised when a single asset has been compiled.
@@ -25,7 +25,7 @@ namespace SiliconStudio.Assets.Compiler
             if(!typeof(ICompilationContext).IsAssignableFrom(compilationContext))
                 throw new InvalidOperationException($"{nameof(compilationContext)} should inherit from ICompilationContext");
 
-            buildDependencyManager = new BuildDependencyManager(compilationContext);
+            BuildDependencyManager = new BuildDependencyManager(compilationContext);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace SiliconStudio.Assets.Compiler
         private void Prepare(Dictionary<AssetId, AssetCompilerResult> resultsCache, AssetCompilerResult finalResult, AssetCompilerContext context, AssetItem assetItem, HashSet<Type> filterOutTypes, BuildStep parentBuildStep = null, 
             BuildDependencyType dependencyType = BuildDependencyType.Runtime)
         {
-            var assetNode = buildDependencyManager.FindOrCreateNode(assetItem, dependencyType);
+            var assetNode = BuildDependencyManager.FindOrCreateNode(assetItem, dependencyType);
 
             assetNode.Analyze(context, filterOutTypes);
 
@@ -73,7 +73,7 @@ namespace SiliconStudio.Assets.Compiler
             var inCache = true;
             if (!resultsCache.TryGetValue(assetItem.Id, out cachedResult))
             {
-                var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(assetItem.Asset.GetType(), buildDependencyManager.CompilationContext);
+                var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(assetItem.Asset.GetType(), BuildDependencyManager.CompilationContext);
                 if (mainCompiler == null) return;
 
                 cachedResult = mainCompiler.Prepare(context, assetItem);
