@@ -108,10 +108,6 @@ namespace SiliconStudio.Assets.Compiler
                 // Assign module string to all command build steps
                 SetAssetLogger(resultPerAssetType.BuildSteps, assetItem.Package, assetItem.ToReference(), assetItem.FullPath.ToWindowsPath());
 
-                // Add a wait command to the build steps if required by the item build
-                if (resultPerAssetType.ShouldWaitForPreviousBuilds)
-                    compilationResult.BuildSteps.Add(new WaitBuildStep());
-
                 foreach (var buildStep in resultPerAssetType.BuildSteps)
                 {
                     buildStep.Priority = latestPriority++;

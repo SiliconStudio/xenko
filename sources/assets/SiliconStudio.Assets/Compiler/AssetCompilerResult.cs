@@ -25,11 +25,6 @@ namespace SiliconStudio.Assets.Compiler
         }
 
         /// <summary>
-        /// Gets or sets the value indicating if the result build steps must wait previous items to be built before being executed.
-        /// </summary>
-        public bool ShouldWaitForPreviousBuilds { get; set; }
-
-        /// <summary>
         /// Gets or sets the build steps generated for the build engine. This can be null if <see cref="LoggerResult.HasErrors"/> is true.
         /// </summary>
         /// <value>The build step.</value>

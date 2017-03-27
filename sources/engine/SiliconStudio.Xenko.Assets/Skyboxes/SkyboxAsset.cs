@@ -39,8 +39,6 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             SpecularCubeMapSize = 256;
         }
 
-        protected override int InternalBuildOrder => 500;
-
         /// <summary>
         /// Gets or sets the type of skybox.
         /// </summary>

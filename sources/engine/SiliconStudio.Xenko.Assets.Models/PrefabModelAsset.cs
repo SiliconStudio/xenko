@@ -21,8 +21,6 @@ namespace SiliconStudio.Xenko.Assets.Models
     [Display(1855, "Prefab Model")]
     public sealed class PrefabModelAsset : Asset, IModelAsset, IAssetCompileTimeDependencies
     {
-        protected override int InternalBuildOrder => 0xFFFF; //make sure we build after Models
-
         /// <summary>
         /// The default file extension used by the <see cref="ProceduralModelAsset"/>.
         /// </summary>

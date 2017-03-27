@@ -24,7 +24,5 @@ namespace SiliconStudio.Xenko.Assets.Effect
         /// The default file extension used by the <see cref="EffectLogAsset"/>.
         /// </summary>
         public const string FileExtension = ".xkeffectlog;.pdxeffectlog";
-
-        protected override int InternalBuildOrder => 100;
     }
 }

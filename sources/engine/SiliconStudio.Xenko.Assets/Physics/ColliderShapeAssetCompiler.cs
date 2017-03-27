@@ -70,8 +70,6 @@ namespace SiliconStudio.Xenko.Assets.Physics
             {
                 new ColliderShapeCombineCommand(targetUrlInStorage, asset, assetItem.Package)
             };
-
-            result.ShouldWaitForPreviousBuilds = asset.ColliderShapes.Any(shape => shape != null && shape.GetType() == typeof(ConvexHullColliderShapeDesc));
         }
 
         public class ColliderShapeCombineCommand : AssetCommand<ColliderShapeAsset>

@@ -42,8 +42,6 @@ namespace SiliconStudio.Xenko.Assets.Materials
             Layers = new MaterialBlendLayers();
         }
 
-        protected override int InternalBuildOrder => 100;
-
         [DataMemberIgnore]
         public AssetId MaterialId => Id;
 

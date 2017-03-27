@@ -38,7 +38,6 @@ namespace SiliconStudio.Xenko.Assets.Materials
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (MaterialAsset)assetItem.Asset;
-            result.ShouldWaitForPreviousBuilds = true;
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
                 new MaterialCompileCommand(targetUrlInStorage, assetItem, asset, context)

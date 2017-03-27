@@ -29,8 +29,6 @@ namespace SiliconStudio.Xenko.Assets.Physics
     {
         public const string FileExtension = ".xkphy;pdxphy";
 
-        protected override int InternalBuildOrder => 600; //make sure we build after Models
-
         /// <userdoc>
         /// The collection of shapes in this asset, a collection shapes will automatically generate a compound shape.
         /// </userdoc>

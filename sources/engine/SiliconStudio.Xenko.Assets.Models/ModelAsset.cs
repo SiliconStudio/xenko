@@ -76,8 +76,6 @@ namespace SiliconStudio.Xenko.Assets.Models
         [DataMemberIgnore]
         public override UFile MainSource => Source;
 
-        protected override int InternalBuildOrder => -100; // We want Model to be scheduled early since they tend to take the longest (bad concurrency at end of build)
-
         /// <inheritdoc/>
         public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
         {
