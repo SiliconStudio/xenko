@@ -6,6 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     public enum SetPolicy
     {
         DefendSilentlyIfSemanticKeyNotFound,
+
         ThrowOnSemanticKeyNotFound
     }
 }

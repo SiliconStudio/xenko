@@ -16,8 +16,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         {
             if (semanticsPool.ContainsKey(semanticType))
                 return semanticsPool[semanticType];
+
             IRenderTargetSemantic semantic = (IRenderTargetSemantic)Activator.CreateInstance(semanticType);
             semanticsPool[semanticType] = semantic;
+
             return semantic;
         }
 

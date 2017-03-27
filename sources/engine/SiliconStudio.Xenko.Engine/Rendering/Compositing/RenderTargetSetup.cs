@@ -12,18 +12,70 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     /// <summary>
     /// Represents how we setup the graphics pipeline output targets.
     /// </summary>
-    public sealed class RenderTargetSetup : IRenderTargetCompositionQueriable, IMultipleRenderViews
+    public sealed class RenderTargetSetup
     {
+        private readonly Dictionary<int, ShaderSourceCollection> shaderSourceCache = new Dictionary<int, ShaderSourceCollection>();
+
         private readonly FastList<RenderTarget> list = new FastList<RenderTarget>();
+
         // composition is a cache to communicate textures to the graphic device interface
         private readonly FastList<Texture> composition = new FastList<Texture>();
 
-        private int FindIndexBySemantic(Type semanticType)
+        // represents the number of viewport renderings per frame
+        public int ViewsCount { get; set; }
+
+        public int ViewsIndex { get; set; }
+
+        public IReadOnlyList<RenderTarget> List => list;
+
+        public int CompositionCount => list.Count;
+
+        public Texture[] TexturesComposition
         {
-            for (int i = 0; i < list.Count; ++i)
-                if (list[i].Description.Semantic.GetType() == semanticType)
-                    return i;
-            return -1;
+            get
+            {
+                if (composition.Count == 0)
+                {
+                    foreach (var renderTarget in list)
+                        composition.Add(renderTarget.Texture);
+                }
+
+                return composition.Items;
+            }
+        }
+
+        public ShaderSourceCollection MixinCollection
+        {
+            get
+            {
+                int shaderSourceHash = 0;
+
+                // start at slot 1, to mirror what XenkoMRT.xkfx expects.
+                for (int renderTargetIndex = 1; renderTargetIndex < list.Count; renderTargetIndex++)
+                {
+                    if (List[renderTargetIndex].Description.Semantic == null)
+                        continue;
+
+                    string classToMixin = List[renderTargetIndex].Description.Semantic.ShaderClass;
+                    int nameHash = classToMixin.GetHashCode();
+                    shaderSourceHash = HashCombine(shaderSourceHash, nameHash);
+                }
+
+                ShaderSourceCollection shaderSources;
+                shaderSourceCache.TryGetValue(shaderSourceHash, out shaderSources);
+                if (shaderSources == null)
+                {
+                    shaderSources = new ShaderSourceCollection();
+                    for (int renderTargetIndex = 1; renderTargetIndex < list.Count; renderTargetIndex++)
+                    {
+                        string shaderSource = List[renderTargetIndex].Description.Semantic?.ShaderClass;
+                        shaderSources.Add(shaderSource != null ? new ShaderClassSource(shaderSource) : null);
+                    }
+                    shaderSourceCache.Add(shaderSourceHash, shaderSources);
+                }
+
+                return shaderSources;
+            }
         }
 
         /// <summary>
@@ -40,6 +92,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             list.Add(target);
             if (list.Count - 1 != FindIndexBySemantic(target.Description.Semantic.GetType()))
                 throw new InvalidOperationException("Uniquely inserted semantics invariant would be broken");
+
             // cache invalidation:
             composition.Clear();
         }
@@ -47,8 +100,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         public void Copy(RenderTargetSetup source)
         {
             Clear();
+
             foreach (var sourceTarget in source.List)
                 AddTarget(sourceTarget);
+
             ViewsCount = source.ViewsCount;
             ViewsIndex = source.ViewsIndex;
         }
@@ -61,14 +116,17 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         public void SetTarget(RenderTarget target, SetPolicy policy = SetPolicy.ThrowOnSemanticKeyNotFound)
         {
             if (target.Description.Semantic == null)
-                throw new ArgumentNullException("Must fill-in the semantic for slot location");
+                throw new ArgumentNullException(nameof(target), "Must fill-in the semantic for slot location");
+
             int index = FindIndexBySemantic(target.Description.Semantic.GetType());
             if (index == -1)
             {
                 if (policy == SetPolicy.ThrowOnSemanticKeyNotFound)
                     throw new KeyNotFoundException("No such semantic found");
+
                 return;
             }
+
             list[index] = target;
         }
 
@@ -83,8 +141,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 if (policy == SetPolicy.ThrowOnSemanticKeyNotFound)
                     throw new KeyNotFoundException("No such semantic found");
+
                 return;
             }
+
             list.Items[index].Description.RenderTargetTextureParams = creationParams;
         }
 
@@ -99,12 +159,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 if (policy == SetPolicy.ThrowOnSemanticKeyNotFound)
                     throw new KeyNotFoundException("No such semantic found");
+
                 return;
             }
+
             list.Items[index].Texture = texture;
         }
-
-        public IReadOnlyList<RenderTarget> List => list;
 
         /// <summary>
         /// Queries the mapping between the given semantic and the shader source class name.
@@ -129,65 +189,24 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             var foundAt = FindIndexBySemantic(semanticType);
             if (foundAt == -1)
                 throw new KeyNotFoundException($"{semanticType}");
+
             return list[foundAt];
         }
 
-        public int CompositionCount => list.Count;
-
-        public Texture[] TexturesComposition
+        private int FindIndexBySemantic(Type semanticType)
         {
-            get
+            for (int index = 0; index < list.Count; ++index)
             {
-                if (composition.Count == 0)
-                {
-                    foreach (var target in list)
-                        composition.Add(target.Texture);
-                }
-                return composition.Items;
+                if (list[index].Description.Semantic.GetType() == semanticType)
+                    return index;
             }
-        }
 
-        private readonly Dictionary<int, ShaderSourceCollection> mrtExtensionsSourceCache = new Dictionary<int, ShaderSourceCollection>();
+            return -1;
+        }
 
         private static int HashCombine(int hash1, int hash2)
         {
             return hash1 ^ (hash2 + 1327217884 + (hash1 << 6) + (hash1 >> 2));
         }
-
-        public ShaderSourceCollection MixinCollection
-        {
-            get
-            {
-                int sourcesCompositionHash = 0;
-                // start at slot 1, to mirror what XenkoMRT.xkfx expects.
-                for (int rt = 1; rt < CompositionCount; ++rt)
-                {
-                    if (List[rt].Description.Semantic == null)
-                        continue;
-                    string classToMixin = List[rt].Description.Semantic.ShaderClass;
-                    int nameHash = classToMixin.GetHashCode();
-                    sourcesCompositionHash = HashCombine(sourcesCompositionHash, nameHash);
-                }
-
-                ShaderSourceCollection ssc;
-                mrtExtensionsSourceCache.TryGetValue(sourcesCompositionHash, out ssc);
-                if (ssc == null)
-                {
-                    ssc = new ShaderSourceCollection();
-                    for (int rt = 1; rt < CompositionCount; ++rt)
-                    {
-                        string classToMixin = List[rt].Description.Semantic?.ShaderClass;
-                        ssc.Add(classToMixin != null ? new ShaderClassSource(classToMixin) : null);
-                    }
-                    mrtExtensionsSourceCache.Add(sourcesCompositionHash, ssc);
-                }
-                return ssc;
-            }
-        }
-
-
-        // represents the number of viewport renderings per frame
-        public int ViewsCount { get; set; }
-        public int ViewsIndex { get; set; }
     }
 }

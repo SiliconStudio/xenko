@@ -8,6 +8,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     public struct RenderTarget
     {
         public RenderTargetDesc Description;
+
         public Texture Texture { get; set; }
     }
 }

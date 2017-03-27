@@ -158,8 +158,6 @@
     <Compile Include="Rendering\Compositing\ForwardRenderer.LightProbes.cs" />
     <Compile Include="Rendering\Compositing\ForwardRenderer.VRUtils.cs" />
     <Compile Include="Rendering\Compositing\GraphicsCompositor.cs" />
-    <Compile Include="Rendering\Compositing\IMultipleRenderViews.cs" />
-    <Compile Include="Rendering\Compositing\IRenderTargetCompositionQueriable.cs" />
     <Compile Include="Rendering\Compositing\IRenderTargetSemantic.cs" />
     <Compile Include="Rendering\Compositing\MSAAResolver.cs" />
     <None Include="Rendering\Compositing\MSAAResolverEffect.xkfx">

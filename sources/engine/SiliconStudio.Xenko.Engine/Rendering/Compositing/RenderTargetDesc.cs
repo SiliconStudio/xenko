@@ -6,6 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     public struct RenderTargetDesc
     {
         public IRenderTargetSemantic Semantic;
+
         public RenderTargetTextureCreationParams RenderTargetTextureParams;
     }
 }

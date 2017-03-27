@@ -8,7 +8,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     public struct RenderTargetTextureCreationParams
     {
         public PixelFormat PixelFormat { get; set; }
+
         public TextureFlags TextureFlags { get; set; }
+
         public MSAALevel MSAALevel { get; set; }
     }
 }
