@@ -73,6 +73,16 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             parent?.AddChild(this);
         }
 
+        public override void Destroy()
+        {
+            foreach (var nodePresenter in nodePresenters)
+            {
+                nodePresenter.ValueChanging -= ValueChanging;
+                nodePresenter.ValueChanged -= ValueChanged;
+            }
+            base.Destroy();
+        }
+
         /// <summary>
         /// Gets or sets the name of this node. Note that the name can be used to access this node from its parent using a dynamic object.
         /// </summary>
@@ -349,6 +359,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             foreach (var child in Children.ToList())
             {
                 RemoveChild(child);
+                child.Destroy();
             }
             foreach (var command in Commands.ToList())
             {
