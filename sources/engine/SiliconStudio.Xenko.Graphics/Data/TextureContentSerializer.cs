@@ -26,7 +26,9 @@ namespace SiliconStudio.Xenko.Graphics.Data
                 // TODO: Error handling?
                 using (var textureData = Image.Load(stream.NativeStream))
                 {
-                    texture.OnDestroyed(); //Allows fast reloading todo review maybe?
+                    if(texture.GraphicsDevice != null)
+                        texture.OnDestroyed(); //Allows fast reloading todo review maybe?
+
                     texture.AttachToGraphicsDevice(graphicsDeviceService.GraphicsDevice);
                     texture.InitializeFrom(textureData.Description, new TextureViewDescription(), textureData.ToDataBox());
 
