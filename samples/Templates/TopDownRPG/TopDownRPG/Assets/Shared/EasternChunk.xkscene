@@ -12,6 +12,7 @@ Hierarchy:
         - 01a2ad3a-6a87-42e5-a2ff-a169d03925cd
         - 355edb94-f32d-41ed-adc1-b8204b367e54
         - 3b8cbd7a-511f-4f35-af27-04d5067f18bc
+        - d6ba94c0-c166-4cc5-b0d6-fde08063375a
     Parts:
         -   Entity:
                 Id: 01a2ad3a-6a87-42e5-a2ff-a169d03925cd
@@ -220,3 +221,16 @@ Hierarchy:
                                 Size: {X: 10.0, Y: 0.3, Z: 10.0}
                                 LocalOffset: {X: 0.0, Y: -0.15, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: d6ba94c0-c166-4cc5-b0d6-fde08063375a
+                Name: Navigation bounding box
+                Components:
+                    e257202654128b0dd07b39eca887ac88: !TransformComponent
+                        Id: 5da753db-6560-4558-a36f-1b7cbb901477
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
+                    ac68af4b33b31a5cdb4abbb40a2779fa: !SiliconStudio.Xenko.Navigation.NavigationBoundingBoxComponent,SiliconStudio.Xenko.Navigation
+                        Id: f2d7142a-1536-468a-821c-361008f0a6de
+                        Size: {X: 12.0, Y: 4.0, Z: 12.0}

@@ -12,6 +12,7 @@ Hierarchy:
         - 3ca8812d-29c6-485a-b7c2-b1def1734bdf
         - 196fe837-f83c-4cc1-a3eb-006e0780f3ce
         - c5193802-2294-48e4-92d6-4b35284b3bfb
+        - d2e42a5f-b5dc-41c8-9cbb-ea37037707a4
     Parts:
         -   Entity:
                 Id: 129e968e-fbac-43fb-ab69-f79174e22621
@@ -176,6 +177,19 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
                             b66152b9b68a35c91b4a47f6c21a6c2c: ref!! bf87a2a1-295f-4db3-b256-d576487dc894
+        -   Entity:
+                Id: d2e42a5f-b5dc-41c8-9cbb-ea37037707a4
+                Name: Navigation bounding box
+                Components:
+                    b165f046bfbfea5b222bd766c250a3e1: !TransformComponent
+                        Id: 3a541b86-27bd-4195-a5e6-e4e65068eff2
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
+                    81483b085694cb985a403d7c2ab113a9: !SiliconStudio.Xenko.Navigation.NavigationBoundingBoxComponent,SiliconStudio.Xenko.Navigation
+                        Id: 393987e8-088c-499a-8eda-8af0fc97235a
+                        Size: {X: 12.0, Y: 4.0, Z: 12.0}
         -   Entity:
                 Id: e07c1bec-b108-41ff-a840-7f7829ee443a
                 Name: LootBox

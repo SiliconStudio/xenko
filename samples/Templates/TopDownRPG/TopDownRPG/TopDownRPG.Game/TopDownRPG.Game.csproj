@@ -114,6 +114,7 @@
     <Compile Include="Core\InputManagerExtensions.cs" />
     <Compile Include="Core\Utils.cs" />
     <Compile Include="Gameplay\CrateScript.cs" />
+    <Compile Include="Gameplay\EnableDynamicNavigation.cs" />
     <Compile Include="Gameplay\LootCoinScript.cs" />
     <Compile Include="Gameplay\MusicScript.cs" />
     <Compile Include="Gameplay\SceneStreaming.cs" />

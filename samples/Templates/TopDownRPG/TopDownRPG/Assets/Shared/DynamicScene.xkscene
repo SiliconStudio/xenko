@@ -195,8 +195,11 @@ Hierarchy:
                         ClickEffect: 154d2027-e615-463b-a0e4-71b20f452eb1:VFXPrefabs/vfx-ClickEffect
                     46ae7b6257b0c84e8a26b517d4b95492: !NavigationComponent
                         Id: 96bc18b0-3cef-4327-b945-5919437fe4d3
-                        NavigationMesh: e50d6079-dc5b-43a9-a1aa-75cf370f1fc3:NavigationMesh
-                        NavigationMeshLayer: 0
+                        NavigationMesh: null
+                        GroupId: 9398904c-72b7-ca9b-e966-23346704ae98
+                    9de419e9d8df993a86667389e26853fb: !Gameplay.EnableDynamicNavigation,TopDownRPG.Game
+                        Id: 7635d00b-9365-4fac-afb7-bfb87a7d0041
+                        Priority: 20000
         -   Entity:
                 Id: 6c7778b3-439b-4d70-a265-0b61a0c38c99
                 Name: Highlight

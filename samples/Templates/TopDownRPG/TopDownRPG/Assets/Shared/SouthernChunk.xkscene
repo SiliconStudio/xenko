@@ -11,6 +11,7 @@ Hierarchy:
         - ec3ffd0a-e18e-41d1-adcb-0c7af8b3a7ad
         - 1844178d-5f9a-495e-a07b-fc5fe6d15fef
         - 169a784c-d31e-4cf2-848d-e43998cc8439
+        - 5f4d6e71-89b8-4151-b1bf-157c6c743bd0
     Parts:
         -   Entity:
                 Id: 169a784c-d31e-4cf2-848d-e43998cc8439
@@ -104,6 +105,19 @@ Hierarchy:
                                 Size: {X: 10.0, Y: 0.3, Z: 10.0}
                                 LocalOffset: {X: 0.0, Y: -0.15, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: 5f4d6e71-89b8-4151-b1bf-157c6c743bd0
+                Name: Navigation bounding box
+                Components:
+                    97d6f98ba9e6a497a3e3d6467d1cafd1: !TransformComponent
+                        Id: 3290a101-ef6c-4e14-9852-3ddfe002540b
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
+                    f346bf1d1295a52c9e792fa3a6707ba7: !SiliconStudio.Xenko.Navigation.NavigationBoundingBoxComponent,SiliconStudio.Xenko.Navigation
+                        Id: ea42173a-a825-4097-96d2-fbcabbdedca0
+                        Size: {X: 12.0, Y: 4.0, Z: 12.0}
         -   Entity:
                 Id: ec3ffd0a-e18e-41d1-adcb-0c7af8b3a7ad
                 Name: GridBase10x10
