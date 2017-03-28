@@ -21,61 +21,6 @@ UsedParameters:
                                 GenericArguments: [Material.DiffuseValue]
                     - !ShaderMixinSource
                         Mixins:
-                            -   ClassName: MaterialSurfaceGlossinessMap
-                                GenericArguments: [false]
-                        Compositions:
-                            glossinessMap: !ShaderClassSource
-                                ClassName: ComputeColorConstantFloatLink
-                                GenericArguments: [Material.GlossinessValue]
-                    - !ShaderMixinSource
-                        Mixins:
-                            -   ClassName: MaterialSurfaceMetalness
-                        Compositions:
-                            metalnessMap: !ShaderClassSource
-                                ClassName: ComputeColorConstantFloatLink
-                                GenericArguments: [Material.MetalnessValue]
-                    - !ShaderMixinSource
-                        Mixins:
-                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
-                                GenericArguments: [matAmbientOcclusion, r]
-                        Compositions:
-                            computeColorSource: !ShaderClassSource
-                                ClassName: ComputeColorConstantFloatLink
-                                GenericArguments: [Material.AmbientOcclusionValue]
-                    - !ShaderMixinSource
-                        Mixins:
-                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
-                                GenericArguments: [matAmbientOcclusionDirectLightingFactor, r]
-                        Compositions:
-                            computeColorSource: !ShaderClassSource
-                                ClassName: ComputeColorConstantFloatLink
-                                GenericArguments: [Material.AmbientOcclusionDirectLightingFactorValue]
-                    - !ShaderMixinSource
-                        Mixins:
-                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
-                                GenericArguments: [matCavity, r]
-                        Compositions:
-                            computeColorSource: !ShaderClassSource
-                                ClassName: ComputeColorConstantFloatLink
-                                GenericArguments: [Material.CavityValue]
-                    - !ShaderMixinSource
-                        Mixins:
-                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
-                                GenericArguments: [matCavityDiffuse, r]
-                        Compositions:
-                            computeColorSource: !ShaderClassSource
-                                ClassName: ComputeColorConstantFloatLink
-                                GenericArguments: [Material.CavityDiffuseValue]
-                    - !ShaderMixinSource
-                        Mixins:
-                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
-                                GenericArguments: [matCavitySpecular, r]
-                        Compositions:
-                            computeColorSource: !ShaderClassSource
-                                ClassName: ComputeColorConstantFloatLink
-                                GenericArguments: [Material.CavitySpecularValue]
-                    - !ShaderMixinSource
-                        Mixins:
                             -   ClassName: MaterialSurfaceLightingAndShading
                         Compositions:
                             surfaces: !ShaderArraySource
@@ -83,16 +28,6 @@ UsedParameters:
                                     - !ShaderClassSource
                                         ClassName: MaterialSurfaceShadingDiffuseLambert
                                         GenericArguments: [false]
-                                    - !ShaderMixinSource
-                                        Mixins:
-                                            -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
-                                        Compositions:
-                                            fresnelFunction: !ShaderClassSource
-                                                ClassName: MaterialSpecularMicrofacetFresnelSchlick
-                                            geometricShadowingFunction: !ShaderClassSource
-                                                ClassName: MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-                                            normalDistributionFunction: !ShaderClassSource
-                                                ClassName: MaterialSpecularMicrofacetNormalDistributionGGX
     Material.PixelStageStreamInitializer: !ShaderMixinSource
         Mixins:
             -   ClassName: MaterialStream
@@ -196,7 +131,7 @@ UsedParameters:
                     - !ShaderMixinSource
                         Mixins:
                             -   ClassName: MaterialSurfaceNormalMap
-                                GenericArguments: [false, true, true]
+                                GenericArguments: [false, true]
                         Compositions:
                             normalMap: !ShaderClassSource
                                 ClassName: ComputeColorTextureScaledOffsetDynamicSampler
@@ -357,6 +292,61 @@ UsedParameters:
                                 GenericArguments: [Material.DiffuseValue]
                     - !ShaderMixinSource
                         Mixins:
+                            -   ClassName: MaterialSurfaceGlossinessMap
+                                GenericArguments: [false]
+                        Compositions:
+                            glossinessMap: !ShaderClassSource
+                                ClassName: ComputeColorConstantFloatLink
+                                GenericArguments: [Material.GlossinessValue]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceMetalness
+                        Compositions:
+                            metalnessMap: !ShaderClassSource
+                                ClassName: ComputeColorConstantFloatLink
+                                GenericArguments: [Material.MetalnessValue]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
+                                GenericArguments: [matAmbientOcclusion, r]
+                        Compositions:
+                            computeColorSource: !ShaderClassSource
+                                ClassName: ComputeColorConstantFloatLink
+                                GenericArguments: [Material.AmbientOcclusionValue]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
+                                GenericArguments: [matAmbientOcclusionDirectLightingFactor, r]
+                        Compositions:
+                            computeColorSource: !ShaderClassSource
+                                ClassName: ComputeColorConstantFloatLink
+                                GenericArguments: [Material.AmbientOcclusionDirectLightingFactorValue]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
+                                GenericArguments: [matCavity, r]
+                        Compositions:
+                            computeColorSource: !ShaderClassSource
+                                ClassName: ComputeColorConstantFloatLink
+                                GenericArguments: [Material.CavityValue]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
+                                GenericArguments: [matCavityDiffuse, r]
+                        Compositions:
+                            computeColorSource: !ShaderClassSource
+                                ClassName: ComputeColorConstantFloatLink
+                                GenericArguments: [Material.CavityDiffuseValue]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
+                                GenericArguments: [matCavitySpecular, r]
+                        Compositions:
+                            computeColorSource: !ShaderClassSource
+                                ClassName: ComputeColorConstantFloatLink
+                                GenericArguments: [Material.CavitySpecularValue]
+                    - !ShaderMixinSource
+                        Mixins:
                             -   ClassName: MaterialSurfaceLightingAndShading
                         Compositions:
                             surfaces: !ShaderArraySource
@@ -364,6 +354,16 @@ UsedParameters:
                                     - !ShaderClassSource
                                         ClassName: MaterialSurfaceShadingDiffuseLambert
                                         GenericArguments: [false]
+                                    - !ShaderMixinSource
+                                        Mixins:
+                                            -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
+                                        Compositions:
+                                            fresnelFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetFresnelSchlick
+                                            geometricShadowingFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
+                                            normalDistributionFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetNormalDistributionGGX
     Material.PixelStageStreamInitializer: !ShaderMixinSource
         Mixins:
             -   ClassName: MaterialStream
@@ -376,3 +376,7 @@ UsedParameters:
     Lighting.EnvironmentLights:
         - !ShaderClassSource
             ClassName: LightSimpleAmbient
+---
+!EffectCompileRequest
+EffectName: BackgroundShader
+UsedParameters: {}

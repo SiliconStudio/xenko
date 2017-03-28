@@ -4,7 +4,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Events;
-using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Navigation;
 using SiliconStudio.Xenko.Physics;
 using TopDownRPG.Core;
 
