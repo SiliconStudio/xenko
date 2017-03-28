@@ -108,9 +108,14 @@ SharedRenderers:
             Enabled*: true
             IgnoreCameraRotation*: false
             RequiredApis:
-                52966a5cf2c1adabab391689b4b3bc35*: Oculus
-                26aad065c7126df1f9428d7f4cbd4e8e*: OpenVR
-            ResolutionScale: 1.0
+                e54e77659c7d764b872af6789f118f45*:
+                    Api: Oculus
+                    ResolutionScale: 1.0
+                0ab34c4183f45b0246cd106c551cd65b*:
+                    Api: OpenVR
+                    ResolutionScale: 1.2
+                52966a5cf2c1adabab391689b4b3bc35: ~(Deleted)
+                26aad065c7126df1f9428d7f4cbd4e8e: ~(Deleted)
             Overlays:
                 ad67969a3c195a685d2a7f55b9d05528*:
                     Texture: f9768e6e-2d83-470e-925e-8a1db9342c5d:UIRenderTexture
@@ -137,7 +142,6 @@ SharedRenderers:
             Enabled: false
             IgnoreCameraRotation: false
             RequiredApis: {}
-            ResolutionScale: 1.0
             Overlays: {}
         MSAALevel: None
         MSAAResolver: {}
@@ -157,7 +161,6 @@ SharedRenderers:
         VRSettings:
             Enabled: false
             RequiredApis: {}
-            ResolutionScale: 1.0
             Overlays: {}
         MSAALevel: X4
         MSAAResolver: {}
