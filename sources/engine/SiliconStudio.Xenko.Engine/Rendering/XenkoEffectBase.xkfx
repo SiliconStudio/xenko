@@ -130,7 +130,6 @@ namespace SiliconStudio.Xenko.Rendering
                         case 5: mixin compose ShadingColor5 = (renderTargetExtension); break;
                         case 6: mixin compose ShadingColor6 = (renderTargetExtension); break;
                         case 7: mixin compose ShadingColor7 = (renderTargetExtension); break;
-                        case 8: mixin compose ShadingColor8 = (renderTargetExtension); break;
                     }
                 }
             }

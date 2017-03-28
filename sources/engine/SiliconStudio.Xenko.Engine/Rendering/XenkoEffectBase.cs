@@ -196,16 +196,6 @@ namespace SiliconStudio.Xenko.Rendering
                                         context.PopComposition();
                                     }
                                     break;
-                                case 8:
-
-                                    {
-                                        var __mixinToCompose__ = (renderTargetExtension);
-                                        var __subMixin = new ShaderMixinSource();
-                                        context.PushComposition(mixin, "ShadingColor8", __subMixin);
-                                        context.Mixin(__subMixin, __mixinToCompose__);
-                                        context.PopComposition();
-                                    }
-                                    break;
                             }
                         }
                     }
