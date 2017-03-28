@@ -35,7 +35,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             internal readonly List<ActiveLightGroupRenderer> ActiveRenderers;
 
             public readonly List<LightComponent> VisibleLights;
-
             public readonly List<LightComponent> VisibleLightsWithShadows;
 
             public readonly Dictionary<LightComponent, LightShadowMapTexture> LightComponentsWithShadows;
@@ -68,13 +67,21 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private readonly TrackingCollection<LightGroupRendererBase> lightRenderers = new TrackingCollection<LightGroupRendererBase>();
 
+        /// <summary>
+        /// List of renderers that can handle a specific light type by light type
+        /// </summary>
+        private readonly Dictionary<Type, List<LightGroupRendererBase>> lightRenderersByType = new Dictionary<Type, List<LightGroupRendererBase>>();
+
         private readonly Dictionary<RenderView, RenderViewLightData> renderViewDatas = new Dictionary<RenderView, RenderViewLightData>();
+
         // Preallocted for CollectVisibleLights
         private readonly HashSet<RenderView> processedRenderViews = new HashSet<RenderView>();
 
         private readonly FastList<RenderView> renderViews = new FastList<RenderView>();
 
         private readonly Dictionary<ShaderSourceCollection, ShaderSourceCollection> shaderSourcesReadonlyCache = new Dictionary<ShaderSourceCollection, ShaderSourceCollection>();
+
+        private readonly List<int> lightIndicesToProcess = new List<int>();
 
         private LogicalGroupReference viewLightingKey;
         private LogicalGroupReference drawLightingKey;
@@ -134,6 +141,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             {
                 lightRenderer.Initialize(Context);
             }
+            EvaluateLightTypes();
+
             // Track changes
             lightRenderers.CollectionChanged += LightRenderers_CollectionChanged;
 
@@ -487,18 +496,15 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 var viewData = renderViewData.Value;
                 viewData.ActiveRenderers.Clear();
 
-                foreach (var lightRenderer in lightRenderers)
+                foreach (var p in lightRenderersByType)
                 {
-                    foreach (var lightType in lightRenderer.LightTypes)
+                    LightComponentCollectionGroup lightGroup;
+                    viewData.ActiveLightGroups.TryGetValue(p.Key, out lightGroup);
+                    
+                    if (lightGroup != null && lightGroup.Count > 0)
                     {
-                        LightComponentCollectionGroup lightGroup;
-                        viewData.ActiveLightGroups.TryGetValue(lightType, out lightGroup);
-
-                        var renderer = lightRenderer;
-                        if (lightGroup != null && lightGroup.Count > 0)
-                        {
-                            viewData.ActiveRenderers.Add(new ActiveLightGroupRenderer(renderer, lightGroup));
-                        }
+                        var activeLightGroup = new ActiveLightGroupRenderer(lightGroup, p.Value);
+                        viewData.ActiveRenderers.Add(activeLightGroup);
                     }
                 }
             }
@@ -593,31 +599,40 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             processedRenderViews.Clear();
         }
 
-        private static void PrepareLightGroups(RenderDrawContext context, FastList<RenderView> renderViews, RenderView renderView, RenderViewLightData renderViewData, IShadowMapRenderer shadowMapRenderer, RenderGroup group)
+        private void PrepareLightGroups(RenderDrawContext context, FastList<RenderView> renderViews, RenderView renderView, RenderViewLightData renderViewData, IShadowMapRenderer shadowMapRenderer, RenderGroup group)
         {
             var viewIndex = renderViews.IndexOf(renderView);
 
             foreach (var activeRenderer in renderViewData.ActiveRenderers)
             {
                 // Find lights
-                var lightRenderer = activeRenderer.LightRenderer;
                 var lightCollection = activeRenderer.LightGroup.FindLightCollectionByGroup(group);
 
-                var processLightsParameters = new LightGroupRendererBase.ProcessLightsParameters
+                // Indices of lights in lightCollection that need processing
+                lightIndicesToProcess.Clear();
+                for (int i = 0; i < lightCollection.Count; i++)
+                    lightIndicesToProcess.Add(i);
+                
+                // Loop over all the renderers in order
+                int rendererIndex = 0;
+                foreach (var renderer in activeRenderer.Renderers)
                 {
-                    Context = context,
-                    ViewIndex = viewIndex,
-                    View = renderView,
-                    Views = renderViews,
-                    LightCollection = lightCollection,
-                    LightType = activeRenderer.LightGroup.LightType,
-                    LightStart = 0,
-                    LightEnd = lightCollection.Count,
-                    ShadowMapRenderer = shadowMapRenderer,
-                    ShadowMapTexturesPerLight = renderViewData.LightComponentsWithShadows,
-                };
-
-                lightRenderer.ProcessLights(processLightsParameters);
+                    var processLightsParameters = new LightGroupRendererBase.ProcessLightsParameters
+                    {
+                        Context = context,
+                        ViewIndex = viewIndex,
+                        View = renderView,
+                        Views = renderViews,
+                        Renderers = activeRenderer.Renderers,
+                        RendererIndex = rendererIndex++,
+                        LightCollection = lightCollection,
+                        LightIndices = lightIndicesToProcess,
+                        LightType = activeRenderer.LightGroup.LightType,
+                        ShadowMapRenderer = shadowMapRenderer,
+                        ShadowMapTexturesPerLight = renderViewData.LightComponentsWithShadows,
+                    };
+                    renderer.ProcessLights(processLightsParameters);
+                }
             }
         }
 
@@ -670,6 +685,22 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     break;
                 }
             }
+            EvaluateLightTypes();
+        }
+        
+        private void EvaluateLightTypes()
+        {
+            lightRenderersByType.Clear();
+            foreach (var renderer in lightRenderers)
+            {
+                foreach (var lightType in renderer.LightTypes)
+                {
+                    List<LightGroupRendererBase> renderers;
+                    if (!lightRenderersByType.TryGetValue(lightType, out renderers))
+                        lightRenderersByType.Add(lightType, renderers = new List<LightGroupRendererBase>());
+                    renderers.Add(renderer);
+                }
+            }
         }
 
         public class LightShaderPermutationEntry
@@ -712,13 +743,16 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         internal struct ActiveLightGroupRenderer
         {
-            public ActiveLightGroupRenderer(LightGroupRendererBase lightRenderer, LightComponentCollectionGroup lightGroup)
+            public ActiveLightGroupRenderer(LightComponentCollectionGroup lightGroup, IEnumerable<LightGroupRendererBase> lightGroupRenderers)
             {
-                LightRenderer = lightRenderer;
                 LightGroup = lightGroup;
+                Renderers = lightGroupRenderers.ToArray();
             }
 
-            public readonly LightGroupRendererBase LightRenderer;
+            /// <summary>
+            /// List of renderers that can render lights in this group
+            /// </summary>
+            public readonly LightGroupRendererBase[] Renderers;
 
             public readonly LightComponentCollectionGroup LightGroup;
         }

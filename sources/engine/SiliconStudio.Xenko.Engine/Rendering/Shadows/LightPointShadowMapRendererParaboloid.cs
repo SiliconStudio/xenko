@@ -18,16 +18,19 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     public class LightPointShadowMapRendererParaboloid : LightShadowMapRendererBase
     {
         private PoolListStruct<ShaderData> shaderDataPool;
+        private PoolListStruct<ShadowMapTexture> shadowMaps;
 
         public LightPointShadowMapRendererParaboloid()
         {
             shaderDataPool = new PoolListStruct<ShaderData>(4, () => new ShaderData());
+            shadowMaps = new PoolListStruct<ShadowMapTexture>(16, () => new ShadowMapTexture());
         }
 
         public override void Reset(RenderContext context)
         {
             base.Reset(context);
 
+            shadowMaps.Clear();
             shaderDataPool.Clear();
         }
 
@@ -49,10 +52,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public override LightShadowMapTexture CreateShadowMapTexture(RenderView renderView, LightComponent lightComponent, IDirectLight light, int shadowMapSize)
         {
-            var shadowMapTexture = base.CreateShadowMapTexture(renderView, lightComponent, light, shadowMapSize);
-            shadowMapTexture.CascadeCount = 2; // 2 faces
-            return shadowMapTexture;
+            var shadowMap = shadowMaps.Add();
+            shadowMap.Initialize(renderView, lightComponent, light, light.Shadow, shadowMapSize, this);
+            shadowMap.CascadeCount = 2; // 2 faces
+            return shadowMap;
         }
+
         public override void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, LightShadowMapTexture shadowMapTexture)
         {
             parameters.Set(ShadowMapCasterParaboloidProjectionKeys.DepthParameters, GetShadowMapDepthParameters(shadowMapTexture));
@@ -61,7 +66,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         public override void Collect(RenderContext context, RenderView sourceView, LightShadowMapTexture lightShadowMap)
         {
             CalculateViewDirection(lightShadowMap);
-            
+
             var shaderData = shaderDataPool.Add();
             lightShadowMap.ShaderData = shaderData;
             shaderData.Texture = lightShadowMap.Atlas.Texture;
@@ -72,14 +77,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             Rectangle frontRectangle = lightShadowMap.GetRectangle(0);
 
             // Coordinates have 1 border pixel so that the shadow receivers don't accidentally sample outside of the texture area
-            shaderData.FaceSize = new Vector2(frontRectangle.Width-2, frontRectangle.Height-2) / atlasSize;
-            shaderData.Offset = new Vector2(frontRectangle.Left+1, frontRectangle.Top+1) / atlasSize;
+            shaderData.FaceSize = new Vector2(frontRectangle.Width - 2, frontRectangle.Height - 2) / atlasSize;
+            shaderData.Offset = new Vector2(frontRectangle.Left + 1, frontRectangle.Top + 1) / atlasSize;
 
             Rectangle backRectangle = lightShadowMap.GetRectangle(1);
-            shaderData.BackfaceOffset = new Vector2(backRectangle.Left+1, backRectangle.Top+1) / atlasSize - shaderData.Offset;
-            
+            shaderData.BackfaceOffset = new Vector2(backRectangle.Left + 1, backRectangle.Top + 1) / atlasSize - shaderData.Offset;
+
             shaderData.DepthParameters = GetShadowMapDepthParameters(lightShadowMap);
-            
+
             for (int i = 0; i < 2; i++)
             {
                 // Allocate shadow render view
@@ -189,7 +194,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             /// Offset from fromnt to back face in normalized texture coordinates in the atlas
             /// </summary>
             public Vector2 BackfaceOffset;
-            
+
             /// <summary>
             /// Size of a single face of the shadow map
             /// </summary>
@@ -204,14 +209,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             /// Radius of the point light, used to determine the range of the depth buffer
             /// </summary>
             public Vector2 DepthParameters;
-            
+
             public float DepthBias;
         }
 
         private class ShaderGroupData : LightShadowMapShaderGroupDataBase
         {
             private const string ShaderName = "ShadowMapReceiverPointParaboloid";
-            
+
             private Texture shadowMapTexture;
             private Vector2 shadowMapTextureSize;
             private Vector2 shadowMapTextureTexelSize;
@@ -242,7 +247,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 return new ShaderClassSource(ShaderName, lightCurrentCount);
             }
-            
+
             public override void UpdateLayout(string compositionName)
             {
                 shadowMapTextureKey = ShadowMapKeys.Texture.ComposeWith(compositionName);
@@ -295,7 +300,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                             if (shadowMapTexture != null)
                             {
                                 shadowMapTextureSize = new Vector2(shadowMapTexture.Width, shadowMapTexture.Height);
-                                shadowMapTextureTexelSize = 1.0f/shadowMapTextureSize;
+                                shadowMapTextureTexelSize = 1.0f / shadowMapTextureSize;
                             }
                             shadowMapCreated = true;
                         }
