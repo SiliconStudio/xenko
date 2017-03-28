@@ -81,6 +81,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private readonly Dictionary<ShaderSourceCollection, ShaderSourceCollection> shaderSourcesReadonlyCache = new Dictionary<ShaderSourceCollection, ShaderSourceCollection>();
 
+        private readonly List<int> lightIndicesToProcess = new List<int>();
+
         private LogicalGroupReference viewLightingKey;
         private LogicalGroupReference drawLightingKey;
         private IShadowMapRenderer shadowMapRenderer;
@@ -597,19 +599,19 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             processedRenderViews.Clear();
         }
 
-        private static void PrepareLightGroups(RenderDrawContext context, FastList<RenderView> renderViews, RenderView renderView, RenderViewLightData renderViewData, IShadowMapRenderer shadowMapRenderer, RenderGroup group)
+        private void PrepareLightGroups(RenderDrawContext context, FastList<RenderView> renderViews, RenderView renderView, RenderViewLightData renderViewData, IShadowMapRenderer shadowMapRenderer, RenderGroup group)
         {
             var viewIndex = renderViews.IndexOf(renderView);
-            
-            List<int> lightIndices = new List<int>();
+
             foreach (var activeRenderer in renderViewData.ActiveRenderers)
             {
                 // Find lights
                 var lightCollection = activeRenderer.LightGroup.FindLightCollectionByGroup(group);
-                
+
                 // Indices of lights in lightCollection that need processing
+                lightIndicesToProcess.Clear();
                 for (int i = 0; i < lightCollection.Count; i++)
-                    lightIndices.Add(i);
+                    lightIndicesToProcess.Add(i);
                 
                 // Loop over all the renderers in order
                 int rendererIndex = 0;
@@ -624,16 +626,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         Renderers = activeRenderer.Renderers,
                         RendererIndex = rendererIndex++,
                         LightCollection = lightCollection,
-                        LightIndices = lightIndices,
+                        LightIndices = lightIndicesToProcess,
                         LightType = activeRenderer.LightGroup.LightType,
                         ShadowMapRenderer = shadowMapRenderer,
                         ShadowMapTexturesPerLight = renderViewData.LightComponentsWithShadows,
                     };
                     renderer.ProcessLights(processLightsParameters);
                 }
-
-                // Ignore unhandled lights for now
-                lightIndices.Clear();
             }
         }
 

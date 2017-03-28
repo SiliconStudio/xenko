@@ -22,6 +22,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </remarks>
     public class LightClusteredPointSpotGroupRenderer : LightGroupRendererBase
     {
+        private readonly List<int> selectedLightIndices = new List<int>();
+
         private PointLightShaderGroupData pointGroup;
         private PointSpotShaderGroupData spotGroup;
 
@@ -29,6 +31,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private Buffer lightIndicesBuffer;
         private Buffer pointLightsBuffer;
         private Buffer spotLightsBuffer;
+
 
         public override Type[] LightTypes { get; } = { typeof(LightPoint), typeof(LightSpot) };
 
@@ -84,7 +87,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             bool hasNextRenderer = parameters.RendererIndex < (parameters.Renderers.Length - 1);
 
             // First, evaluate how many any which light we want to render (store them in selectedLightIndices)
-            List<int> selectedLightIndices = new List<int>();
+            selectedLightIndices.Clear();
             for (int i = 0; i < parameters.LightIndices.Count;)
             {
                 int index = parameters.LightIndices[i];
