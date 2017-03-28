@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
@@ -25,6 +26,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
                 // TODO: Error handling?
                 using (var textureData = Image.Load(stream.NativeStream))
                 {
+                    texture.OnDestroyed(); //Allows fast reloading todo review maybe?
                     texture.AttachToGraphicsDevice(graphicsDeviceService.GraphicsDevice);
                     texture.InitializeFrom(textureData.Description, new TextureViewDescription(), textureData.ToDataBox());
 

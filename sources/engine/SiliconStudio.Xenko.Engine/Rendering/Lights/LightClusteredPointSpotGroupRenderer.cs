@@ -87,9 +87,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             List<int> selectedLightIndices = new List<int>();
             for (int i = 0; i < parameters.LightIndices.Count;)
             {
-                var light = parameters.LightCollection[i];
+                int index = parameters.LightIndices[i];
+                var light = parameters.LightCollection[index];
 
-                // Check if there might be a renderer that supports shadows instead after this
+                // Check if there might be a renderer that supports shadows instead (in that case skip the light)
                 LightShadowMapTexture shadowMap;
                 if (hasNextRenderer && parameters.ShadowMapTexturesPerLight.TryGetValue(light, out shadowMap))
                 {
@@ -98,8 +99,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 }
                 else
                 {
-                    selectedLightIndices.Add(i);
-                    parameters.LightIndices.Remove(i);
+                    selectedLightIndices.Add(index);
+                    parameters.LightIndices.RemoveAt(i);
                 }
             }
 
@@ -283,9 +284,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 {
                     var light = clusteredGroupRenderer.spotGroup.Lights[i].Light;
                     var spotLight = (LightSpot)light.Type;
-
-                    if (spotLight.Shadow != null && spotLight.Shadow.Enabled)
-                        throw new InvalidOperationException("Clustered renderer does not support shadows");
 
                     // Create spot light data
                     var spotLightData = new SpotLightData

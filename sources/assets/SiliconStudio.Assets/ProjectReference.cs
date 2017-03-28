@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Assets
@@ -39,6 +40,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The identifier.</value>
         [DataMember(10)]
+        [NonOverridable]
         public Guid Id { get; set; }
 
         /// <summary>

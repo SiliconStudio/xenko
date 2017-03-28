@@ -63,6 +63,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             shadowComparer.ShadowMapTexturesPerLight = parameters.ShadowMapTexturesPerLight;
             parameters.LightCollection.Sort(0, parameters.LightCollection.Count, shadowComparer);
 
+            // Loop over the number of lights + 1 where the last iteration will always flush the last batch of lights
             for(int j = 0; j < parameters.LightIndices.Count+1;)
             {
                 LightShadowType nextShadowType = 0;
