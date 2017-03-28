@@ -7,6 +7,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 using SiliconStudio.Xenko.Shaders;
 
@@ -77,6 +78,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public override void VisitFeature(MaterialGeneratorContext context)
         {
+            EmissiveMap.ClampFloat4(Vector4.Zero, new Vector4(float.MaxValue));
+            Intensity.ClampFloat(0, float.MaxValue);
+
             context.SetStream(EmissiveStream.Stream, EmissiveMap, MaterialKeys.EmissiveMap, MaterialKeys.EmissiveValue);
             context.SetStream("matEmissiveIntensity", Intensity, MaterialKeys.EmissiveIntensityMap, MaterialKeys.EmissiveIntensity);
 

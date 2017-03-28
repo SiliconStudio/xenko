@@ -56,6 +56,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             var alpha = Alpha ?? new ComputeFloat(0.5f);
             var tint = Tint ?? new ComputeColor(Color.White);
 
+            alpha.ClampFloat(0.0f, 1.0f);
+
             // Use pre-multiplied alpha to support both additive and alpha blending
             var blendDesc = new BlendStateDescription(Blend.One, Blend.InverseSourceAlpha);
             context.Material.HasTransparency = true;

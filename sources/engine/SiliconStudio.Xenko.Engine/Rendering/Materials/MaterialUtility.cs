@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Shaders;
@@ -12,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Class MaterialUtility.
     /// </summary>
-    internal class MaterialUtility
+    internal static class MaterialUtility
     {
         public const string BackgroundCompositionName = "color1";
 
@@ -134,6 +135,20 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 default:
                     throw new ArgumentOutOfRangeException("Asked for " + i + " but no more than 10 default textures are currently supported");
             }
+        }
+
+        public static void ClampFloat([NotNull] this IComputeScalar key, float min, float max)
+        {
+            var asFloat = key as ComputeColors.ComputeFloat;
+            if (asFloat != null)
+                asFloat.Value = MathUtil.Clamp(asFloat.Value, min, max);
+        }
+
+        public static void ClampFloat4([NotNull] this IComputeColor key, Vector4 min, Vector4 max)
+        {
+            var asFloat4 = key as ComputeColors.ComputeFloat4;
+            if (asFloat4 != null)
+                asFloat4.Value = Vector4.Clamp(asFloat4.Value, min, max);
         }
     }
 }

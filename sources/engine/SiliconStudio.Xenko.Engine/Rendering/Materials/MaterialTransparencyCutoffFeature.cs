@@ -43,6 +43,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public override void VisitFeature(MaterialGeneratorContext context)
         {
             var alpha = Alpha ?? new ComputeFloat(DefaultAlpha);
+            alpha.ClampFloat(0.0f, 1.0f);
             context.SetStream(AlphaDiscardStream.Stream, alpha, MaterialKeys.AlphaDiscardMap, MaterialKeys.AlphaDiscardValue, new Color(DefaultAlpha));
 
             if (!context.Tags.Get(HasFinalCallback))
