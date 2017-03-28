@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.IO;
 using NUnit.Framework;
 using SiliconStudio.Core;
@@ -16,7 +18,8 @@ namespace SiliconStudio.Assets.Tests
             // Initialize a default package manager that will use the 
             var packageManager = PackageStore.Instance;
 
-            var installationPath = (UDirectory)Path.GetFullPath(Path.Combine(Path.GetDirectoryName(typeof(TestPackageStore).Assembly.Location), @"..\.."));
+            // Build output is Bin\Windows\Tests\SiliconStudio.Assets.Tests, so need to go to parent 4 times
+            var installationPath = (UDirectory)Path.GetFullPath(Path.Combine(Path.GetDirectoryName(typeof(TestPackageStore).Assembly.Location), @"..\..\..\.."));
 
             Assert.AreEqual(installationPath, packageManager.InstallationPath);
 

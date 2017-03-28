@@ -20,7 +20,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetDescription(FileSceneExtension, AllowArchetype = false)]
     [AssetContentType(typeof(Scene))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
-    [AssetCompiler(typeof(SceneAssetCompiler))]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, 2, 3, typeof(RemoveModelDrawOrderUpgrader))]
@@ -79,7 +78,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         /// <userdoc>The parent scene.</userdoc>
         [DataMember(20)]
-        [Display(Browsable = false)] // FIXME: make it visible in the property grid, but readonly.
+        [Display(Browsable = false)] // TODO: make it visible in the property grid, but readonly.
         [DefaultValue(null)]
         public Scene Parent { get; set; }
 

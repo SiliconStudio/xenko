@@ -21,6 +21,8 @@ using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -30,7 +32,7 @@ using SiliconStudio.Xenko.Rendering.Skyboxes;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.11.1.1")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.11.1.2")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public static readonly string DefaultGraphicsCompositorLevel9Url = "Compositing/DefaultGraphicsCompositorLevel9";
@@ -320,6 +322,8 @@ namespace SiliconStudio.Xenko.Assets
                 var gameSettings = assetFiles.FirstOrDefault(x => x.AssetLocation == GameSettingsAsset.GameSettingsLocation);
                 if (gameSettings != null)
                 {
+                    RunAssetUpgradersUntilVersion(log, dependentPackage, dependency.Name, gameSettings.Yield().ToList(), new PackageVersion("1.10.0-alpha02"));
+
                     using (var gameSettingsYaml = gameSettings.AsYamlAsset())
                     {
                         // Figure out graphics profile; default is Level_10_0 (which is same as GraphicsCompositor default)
@@ -376,6 +380,7 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
+
             if (dependency.Version.MinVersion < new PackageVersion("1.11.1.0"))
             {
                 ConvertNormalMapsInvertY(assetFiles);
@@ -397,7 +402,23 @@ namespace SiliconStudio.Xenko.Assets
                     }
                 }
             }
+            
+            if (dependency.Version.MinVersion < new PackageVersion("1.11.1.2"))
+            {
+                var navigationMeshAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xknavmesh");
+                var scenes = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkscene");
+                UpgradeNavigationBoundingBox(navigationMeshAssets, scenes);
 
+                // Upgrade game settings to have groups for navigation meshes
+                var gameSettingsAsset = assetFiles.FirstOrDefault(x => x.AssetLocation == GameSettingsAsset.GameSettingsLocation);
+                if (gameSettingsAsset != null)
+                {
+                    // Upgrade the game settings first to contain navigation mesh settings entry
+                    RunAssetUpgradersUntilVersion(log, dependentPackage, dependency.Name, gameSettingsAsset.Yield().ToList(), new PackageVersion("1.11.1.2"));
+
+                    UpgradeNavigationMeshGroups(navigationMeshAssets, gameSettingsAsset);
+                }
+            }
 
             return true;
         }
@@ -502,6 +523,7 @@ namespace SiliconStudio.Xenko.Assets
             var serializer = AssetFileSerializer.FindSerializer(assetFileExtension);
             return serializer is YamlAssetSerializer;
         }
+
         /// <summary>
         /// Base interface for code upgrading
         /// </summary>
@@ -638,6 +660,147 @@ namespace SiliconStudio.Xenko.Assets
             }
         }
 
+        private void UpgradeNavigationBoundingBox(IEnumerable<PackageLoadingAssetFile> navigationMeshes, IEnumerable<PackageLoadingAssetFile> scenes)
+        {
+            foreach (var navigationMesh in navigationMeshes)
+            {
+                using (var navmeshYamlAsset = navigationMesh.AsYamlAsset())
+                {
+                    var navmeshAsset = navmeshYamlAsset.DynamicRootNode;
+                    var sceneId = (string)navmeshAsset.Scene;
+                    var sceneName = sceneId.Split(':').Last();
+                    var matchingScene = scenes.Where(x => x.AssetLocation == sceneName).FirstOrDefault();
+                    if (matchingScene != null)
+                    {
+                        var boundingBox = navmeshAsset.BoundingBox;
+                        var boundingBoxMin = new Vector3((float)boundingBox.Minimum.X, (float)boundingBox.Minimum.Y, (float)boundingBox.Minimum.Z);
+                        var boundingBoxMax = new Vector3((float)boundingBox.Maximum.X, (float)boundingBox.Maximum.Y, (float)boundingBox.Maximum.Z);
+                        var boundingBoxSize = (boundingBoxMax - boundingBoxMin) * 0.5f;
+                        var boundingBoxCenter = boundingBoxSize + boundingBoxMin;
+                            
+                        using (var matchingSceneYamlAsset = matchingScene.AsYamlAsset())
+                        {
+                            var sceneAsset = matchingSceneYamlAsset.DynamicRootNode;
+                            var parts = (DynamicYamlArray)sceneAsset.Hierarchy.Parts;
+                            var rootParts = (DynamicYamlArray)sceneAsset.Hierarchy.RootPartIds;
+                            dynamic newEntity = new DynamicYamlMapping(new YamlMappingNode());
+                            newEntity.Id = Guid.NewGuid().ToString();
+                            newEntity.Name = "Navigation bounding box";
+                                
+                            var components = new DynamicYamlMapping(new YamlMappingNode());
+
+                            // Transform component
+                            dynamic transformComponent = new DynamicYamlMapping(new YamlMappingNode());
+                            transformComponent.Node.Tag = "!TransformComponent";
+                            transformComponent.Id = Guid.NewGuid().ToString();
+                            transformComponent.Position = new DynamicYamlMapping(new YamlMappingNode
+                            {
+                                { "X", $"{boundingBoxCenter.X}" }, { "Y", $"{boundingBoxCenter.Y}" }, { "Z", $"{boundingBoxCenter.Z}" }
+                            });
+                            transformComponent.Rotation = new DynamicYamlMapping(new YamlMappingNode
+                            {
+                                { "X", "0.0" }, { "Y", "0.0"}, { "Z", "0.0" }, { "W", "0.0" }
+                            });
+                            transformComponent.Scale = new DynamicYamlMapping(new YamlMappingNode
+                            {
+                                { "X", "1.0" }, { "Y", "1.0" }, { "Z", "1.0" }
+                            });
+                            transformComponent.Children = new DynamicYamlMapping(new YamlMappingNode());
+                            components.AddChild(Guid.NewGuid().ToString("N"), transformComponent);
+
+                            // Bounding box component
+                            dynamic boxComponent = new DynamicYamlMapping(new YamlMappingNode());
+                            boxComponent.Id = Guid.NewGuid().ToString();
+                            boxComponent.Node.Tag = "!SiliconStudio.Xenko.Navigation.NavigationBoundingBoxComponent,SiliconStudio.Xenko.Navigation";
+                            boxComponent.Size = new DynamicYamlMapping(new YamlMappingNode
+                            {
+                                { "X", $"{boundingBoxSize.X}" }, { "Y", $"{boundingBoxSize.Y}" }, { "Z", $"{boundingBoxSize.Z}" }
+                            }); ;
+                            components.AddChild(Guid.NewGuid().ToString("N"), boxComponent);
+
+                            newEntity.Components = components;
+
+                            dynamic part = new DynamicYamlMapping(new YamlMappingNode());
+                            part.Entity = newEntity;
+                            parts.Add(part);
+                            rootParts.Add((string)newEntity.Id);
+
+                            // Currently need to sort children by Id
+                            List<YamlNode> partsList = (List<YamlNode>)parts.Node.Children;
+                            var entityKey = new YamlScalarNode("Entity");
+                            var idKey = new YamlScalarNode("Id");
+                            partsList.Sort((x,y) =>
+                            {
+                                var entityA = (YamlMappingNode)((YamlMappingNode)x).Children[entityKey];
+                                var entityB = (YamlMappingNode)((YamlMappingNode)y).Children[entityKey];
+                                var guidA =  new Guid(((YamlScalarNode)entityA.Children[idKey]).Value);
+                                var guidB = new Guid(((YamlScalarNode)entityB.Children[idKey]).Value);
+                                return guidA.CompareTo(guidB);
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        private void UpgradeNavigationMeshGroups(IEnumerable<PackageLoadingAssetFile> navigationMeshAssets, PackageLoadingAssetFile gameSettingsAsset)
+        {
+            // Collect all unique groups from all navigation mesh assets
+            Dictionary<ObjectId, YamlMappingNode> agentSettings = new Dictionary<ObjectId, YamlMappingNode>();
+            foreach (var navigationMeshAsset in navigationMeshAssets)
+            {
+                using (var navigationMesh = navigationMeshAsset.AsYamlAsset())
+                {
+                    HashSet<ObjectId> selectedGroups = new HashSet<ObjectId>();
+                    foreach (var setting in navigationMesh.DynamicRootNode.NavigationMeshAgentSettings)
+                    {
+                        var currentAgentSettings = setting.Value;
+                        using (DigestStream digestStream = new DigestStream(Stream.Null))
+                        {
+                            BinarySerializationWriter writer = new BinarySerializationWriter(digestStream);
+                            writer.Write((float)currentAgentSettings.Height);
+                            writer.Write((float)currentAgentSettings.Radius);
+                            writer.Write((float)currentAgentSettings.MaxClimb);
+                            writer.Write((float)currentAgentSettings.MaxSlope.Radians);
+                            if (!agentSettings.ContainsKey(digestStream.CurrentHash))
+                                agentSettings.Add(digestStream.CurrentHash, currentAgentSettings.Node);
+                            selectedGroups.Add(digestStream.CurrentHash);
+                        }
+                    }
+
+                    // Replace agent settings with group reference on the navigation mesh
+                    navigationMesh.DynamicRootNode.NavigationMeshAgentSettings = DynamicYamlEmpty.Default;
+                    dynamic selectedGroupsMapping = navigationMesh.DynamicRootNode.SelectedGroups = new DynamicYamlMapping(new YamlMappingNode());
+                    foreach (var selectedGroup in selectedGroups)
+                    {
+                        selectedGroupsMapping.AddChild(Guid.NewGuid().ToString("N"), selectedGroup.ToGuid().ToString("D"));
+                    }
+                }
+            }
+
+            // Add them to the game settings
+            int groupIndex = 0;
+            using (var gameSettings = gameSettingsAsset.AsYamlAsset())
+            {
+                var defaults = gameSettings.DynamicRootNode.Defaults;
+                foreach (var setting in defaults)
+                {
+                    if (setting.Node.Tag == "!SiliconStudio.Xenko.Navigation.NavigationSettings,SiliconStudio.Xenko.Navigation")
+                    {
+                        var groups = setting.Groups as DynamicYamlArray;
+                        foreach (var groupToAdd in agentSettings)
+                        {
+                            dynamic newGroup = new DynamicYamlMapping(new YamlMappingNode());
+                            newGroup.Id = groupToAdd.Key.ToGuid().ToString("D");
+                            newGroup.Name = $"Group {groupIndex++}";
+                            newGroup.AgentSettings = groupToAdd.Value;
+                            groups.Add(newGroup);
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Splits skybox lighting functionality from background functionality
         /// </summary>
@@ -682,7 +845,7 @@ namespace SiliconStudio.Xenko.Assets
                             {
                                 // Use first skybox component
                                 var skyboxInfo = skyboxInfos.First();
-
+                                
                                 // Combine light and skybox intensity into light intensity
                                 var lightIntensity = lightComponent.Intensity;
                                 var skyboxIntensity = skyboxInfo.Component.Intensity;
@@ -692,6 +855,13 @@ namespace SiliconStudio.Xenko.Assets
 
                                 // Copy skybox assignment
                                 lightComponent.Type["Skybox"] = (string)skyboxInfo.Component.Skybox;
+
+                                // Check if this light is now referencing a removed skybox asset
+                                string referenceId = ((string)skyboxInfo.Component.Skybox)?.Split('/').Last().Split(':').First();
+                                if (referenceId == null || !skyboxAssetInfos.ContainsKey(referenceId) || skyboxAssetInfos[referenceId].Deleted)
+                                {
+                                    lightComponent.Type["Skybox"] = "null";
+                                }
 
                                 // 1 light per entity max.
                                 break;
@@ -749,25 +919,27 @@ namespace SiliconStudio.Xenko.Assets
                     }
                     rootMapping.AddChild("CubeMap", cubemapReference);
                     var splitReference = cubemapReference.Split('/'); // TODO
-
-                    bool isBackground = root.Usage == null ||
-                                        (string)root.Usage == "Background" ||
-                                        (string)root.Usage == "LightingAndBackground";
-                    skyboxAssetInfos.Add((string)root.Id, new SkyboxAssetInfo
-                    {
-                        TextureReference = splitReference.Last(),
-                        IsBackground = isBackground
-                    });
                     
                     // We will remove skyboxes that are only used as a background
                     if (root.Usage != null && (string)root.Usage == "Background")
                     {
                         skyboxAsset.Deleted = true;
                     }
+
                     else if (root.Usage == null || (string)root.Usage == "LightingAndBackground")
                     {
                         root.Usage = "Lighting";
                     }
+                    
+                    bool isBackground = root.Usage == null ||
+                                        (string)root.Usage == "Background" ||
+                                        (string)root.Usage == "LightingAndBackground";
+                    skyboxAssetInfos.Add((string)root.Id, new SkyboxAssetInfo
+                    {
+                        TextureReference = splitReference.Last(),
+                        IsBackground = isBackground,
+                        Deleted = skyboxAsset.Deleted,
+                    });
                 }
             }
 
@@ -847,6 +1019,7 @@ namespace SiliconStudio.Xenko.Assets
             {
                 public string TextureReference;
                 public bool IsBackground;
+                public bool Deleted;
             }
 
             private struct ComponentInfo

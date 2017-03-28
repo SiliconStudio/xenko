@@ -5,6 +5,25 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
+    public abstract class VROverlay
+    {
+        public Vector3 Position;
+
+        public Quaternion Rotation;
+
+        public Vector2 SurfaceSize;
+
+        public bool FollowHeadRotation;
+
+        public int Width { get; protected set; }
+
+        public int Height { get; protected set; }
+
+        public abstract void Dispose();
+
+        public abstract void UpdateSurface(CommandList commandList, Texture texture);
+    }
+
     public abstract class VRDevice : IDisposable
     {
         public GameBase Game { get; internal set; }
@@ -36,6 +55,8 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract TouchController RightHand { get; }
 
+        public VRApi VRApi { get; protected set; }
+
         /// <summary>
         /// Allows you to scale the view, effectively it will change the size of the player in respect to the world, turning it into a giant or a tiny ant.
         /// </summary>
@@ -43,6 +64,17 @@ namespace SiliconStudio.Xenko.VirtualReality
         public float ViewScaling { get; set; }
 
         public abstract bool CanInitialize { get; }
+
+        public bool SupportsOverlays { get; protected set; } = false;
+
+        public virtual VROverlay CreateOverlay(int width, int height, int mipLevels, int sampleCount)
+        {
+            return null;
+        }
+
+        public virtual void ReleaseOverlay(VROverlay overlay)
+        {         
+        }
 
         public abstract void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror, int mirrorWidth, int mirrorHeight);
 

@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: e13cbc01-7701-438b-b6d4-c97e66098dd8
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta02}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -24,7 +24,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: e0469824-7ddd-422e-b3d4-ae12e49a206e/2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! 2e3ef041-2f80-4db2-95a7-74c7f12119bd
         -   Entity:
                 Id: 20f0b8d6-078b-4730-888a-952995ea18bd
                 Name: crate
@@ -115,7 +115,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 7a37fbd2-3272-4fc1-bf78-c5225a874603/881e2e74-9e4e-4c20-9479-ed4e916a7466
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! 881e2e74-9e4e-4c20-9479-ed4e916a7466
         -   Entity:
                 Id: 4ef8e448-3dd6-4213-b207-f35a39e330fb
                 Name: KinematicCrate (6)
@@ -126,7 +126,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: b16f0192-ec59-457c-990e-daabd7ee1ee5/499cdbde-fe1e-48d4-b976-b4691f59a884
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! 499cdbde-fe1e-48d4-b976-b4691f59a884
         -   Entity:
                 Id: 50ff9733-2722-4321-844f-de2f0edae01b
                 Name: crate
@@ -177,7 +177,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 50ff9733-2722-4321-844f-de2f0edae01b/9efe95b5-e351-44e6-a14c-e25353a8177d
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! 9efe95b5-e351-44e6-a14c-e25353a8177d
         -   Entity:
                 Id: 769a01e5-b682-4acf-a8db-57dc660118a1
                 Name: crate
@@ -308,7 +308,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 769a01e5-b682-4acf-a8db-57dc660118a1/b2fe828c-c5d7-444b-a2ce-195ac8381f82
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! b2fe828c-c5d7-444b-a2ce-195ac8381f82
         -   Entity:
                 Id: a3b24894-59b3-47d9-88eb-783d547ae444
                 Name: KinematicCrate (4)
@@ -319,7 +319,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 2c240e0b-bfb6-4bc0-8100-d1bbf919ed93/2a4e1531-64cb-42bb-98be-95311cd95c3d
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! 2a4e1531-64cb-42bb-98be-95311cd95c3d
         -   Entity:
                 Id: b16f0192-ec59-457c-990e-daabd7ee1ee5
                 Name: crate
@@ -370,7 +370,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 809e9207-27e0-431b-9dbc-071e76f17c73/9025202c-5595-464c-b117-aa5f02508a2d
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! 9025202c-5595-464c-b117-aa5f02508a2d
         -   Entity:
                 Id: bf3d076e-5eb6-4072-aeab-fab508f82166
                 Name: KinematicCrate (7)
@@ -381,7 +381,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: c559ed70-639a-4df5-b6c8-182f13c95a57/813224ea-8a87-451e-939a-cfe81898b1de
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! 813224ea-8a87-451e-939a-cfe81898b1de
         -   Entity:
                 Id: c3724f85-5c97-40f5-9705-4df71886b546
                 Name: KinematicCrate (3)
@@ -392,7 +392,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 20f0b8d6-078b-4730-888a-952995ea18bd/79454641-47c3-4b2a-a81e-ec901592355c
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! 79454641-47c3-4b2a-a81e-ec901592355c
         -   Entity:
                 Id: c559ed70-639a-4df5-b6c8-182f13c95a57
                 Name: crate

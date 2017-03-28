@@ -2,14 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Shadows;
 using SiliconStudio.Xenko.VirtualReality;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering.Images;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
@@ -123,11 +121,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 if (VRSettings.Enabled)
                 {
-                    vrSystem.PreferredApis = VRSettings.RequiredApis.ToArray();
+                    var requiredDescs = VRSettings.RequiredApis.ToArray();
+                    vrSystem.PreferredApis = requiredDescs.Select(x => x.Api).ToArray();
+                    vrSystem.PreferredScalings = requiredDescs.ToDictionary(x => x.Api, x => x.ResolutionScale);
                     vrSystem.RequireMirror = true;
                     vrSystem.MirrorWidth = GraphicsDevice.Presenter.BackBuffer.Width;
                     vrSystem.MirrorHeight = GraphicsDevice.Presenter.BackBuffer.Height;
-                    vrSystem.ResolutionScale = VRSettings.ResolutionScale;
 
                     vrSystem.Enabled = true; //careful this will trigger the whole chain of initialization!
                     vrSystem.Visible = true;
@@ -137,6 +136,17 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     vrSystem.PreviousUseCustomProjectionMatrix = camera.UseCustomProjectionMatrix;
                     vrSystem.PreviousUseCustomViewMatrix = camera.UseCustomViewMatrix;
                     vrSystem.PreviousCameraProjection = camera.ProjectionMatrix;
+
+                    if (VRSettings.VRDevice.SupportsOverlays)
+                    {
+                        foreach (var overlay in VRSettings.Overlays)
+                        {
+                            if (overlay != null && overlay.Texture != null)
+                            {
+                                overlay.Overlay = VRSettings.VRDevice.CreateOverlay(overlay.Texture.Width, overlay.Texture.Height, overlay.Texture.MipLevels, (int)overlay.Texture.MultiSampleLevel);
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -266,6 +276,20 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             LightShafts?.Collect(context);
 
                             PostEffects?.Collect(context);
+                        }
+                    }
+
+                    if (VRSettings.VRDevice.SupportsOverlays)
+                    {
+                        foreach (var overlay in VRSettings.Overlays)
+                        {
+                            if (overlay != null && overlay.Texture != null)
+                            {
+                                overlay.Overlay.Position = overlay.LocalPosition;
+                                overlay.Overlay.Rotation = overlay.LocalRotation;
+                                overlay.Overlay.SurfaceSize = overlay.SurfaceSize;
+                                overlay.Overlay.FollowHeadRotation = overlay.FollowsHeadRotation;
+                            }
                         }
                     }
                 }
@@ -650,6 +674,17 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                                     DrawView(context, drawContext);
                                     drawContext.CommandList.CopyRegion(ViewOutputTarget, 0, null, vrFullSurface, 0, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2 * i);
+                                }
+                            }
+
+                            if (VRSettings.VRDevice.SupportsOverlays)
+                            {
+                                foreach (var overlay in VRSettings.Overlays)
+                                {
+                                    if (overlay != null && overlay.Texture != null)
+                                    {
+                                        overlay.Overlay.UpdateSurface(drawContext.CommandList, overlay.Texture);
+                                    }
                                 }
                             }
 

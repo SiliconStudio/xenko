@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Quantum.Visitors;
@@ -347,6 +347,13 @@ namespace SiliconStudio.Assets.Quantum
             UpdateAssetPartBases();
         }
 
+        /// <inheritdoc/>
+        public override void RefreshBase(IAssetNode node, IAssetNode baseNode)
+        {
+            base.RefreshBase(node, baseNode);
+            UpdateAssetPartBases();
+        }
+
         /// <summary>
         /// Retrieves the Quantum <see cref="IGraphNode"/> instances containing the child parts. These contents can be collections or single values.
         /// </summary>
@@ -474,9 +481,9 @@ namespace SiliconStudio.Assets.Quantum
                     {
                         var sibling = baseAsset.GetChild(newBasePartParent, i);
                         var instanceSibling = Asset.Hierarchy.Parts.FirstOrDefault(x => x.Base?.InstanceId == instanceId && x.Base?.BasePartId == sibling.Id);
-                        // This sibling still exists instance-side, let's before after it
+                        // This sibling still exists instance-side, let's insert before it
                         if (instanceSibling != null)
-                            insertIndex = i + 1;
+                            insertIndex = i - 1;
                     }
 
                     // Default position is first index
@@ -530,14 +537,59 @@ namespace SiliconStudio.Assets.Quantum
         }
         private void UpdateAssetPartBases()
         {
+            // Unregister to current base part events
             foreach (var basePartAsset in basePartAssets.Keys)
             {
                 basePartAsset.PartAdded -= PartAddedInBaseAsset;
                 basePartAsset.PartRemoved -= PartRemovedInBaseAsset;
             }
 
-            UpdatePartBases();
+            // Clear collections tracking bases
+            basePartAssets.Clear();
+            instancesCommonAncestors.Clear();
 
+            foreach (var part in Asset.Hierarchy.Parts.Where(x => x.Base != null))
+            {
+                var baseAssetGraph = Container.GetGraph(part.Base.BasePartAsset.Id) as AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>;
+                if (baseAssetGraph != null)
+                {
+                    HashSet<Guid> instanceIds;
+                    if (!basePartAssets.TryGetValue(baseAssetGraph, out instanceIds))
+                    {
+                        instanceIds = new HashSet<Guid>();
+                        basePartAssets.Add(baseAssetGraph, instanceIds);
+                    }
+                    instanceIds.Add(part.Base.InstanceId);
+                }
+
+                // Update mapping
+                baseInstanceMapping[Tuple.Create(part.Base.BasePartId, part.Base.InstanceId)] = part.Part;
+
+                // Update common ancestors
+                Guid ancestorId;
+                if (!instancesCommonAncestors.TryGetValue(part.Base.InstanceId, out ancestorId))
+                {
+                    instancesCommonAncestors[part.Base.InstanceId] = Asset.GetParent(part.Part)?.Id ?? Guid.Empty;
+                }
+                else
+                {
+                    var parent = ancestorId;
+                    var parents = new HashSet<Guid>();
+                    while (parent != Guid.Empty)
+                    {
+                        parents.Add(parent);
+                        parent = Asset.GetParent(Asset.Hierarchy.Parts[parent].Part)?.Id ?? Guid.Empty;
+                    }
+                    ancestorId = Asset.GetParent(part.Part)?.Id ?? Guid.Empty;
+                    while (ancestorId != Guid.Empty && !parents.Contains(ancestorId))
+                    {
+                        ancestorId = Asset.GetParent(Asset.Hierarchy.Parts[ancestorId].Part)?.Id ?? Guid.Empty;
+                    }
+                    instancesCommonAncestors[part.Base.InstanceId] = ancestorId;
+                }
+            }
+
+            // Register to new base part events
             foreach (var basePartAsset in basePartAssets.Keys)
             {
                 basePartAsset.PartAdded += PartAddedInBaseAsset;
@@ -545,56 +597,6 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-
-        private void UpdatePartBases()
-        {
-            basePartAssets.Clear();
-            instancesCommonAncestors.Clear();
-
-            foreach (var part in Asset.Hierarchy.Parts)
-            {
-                if (part.Base != null)
-                {
-                    var baseAssetGraph = Container.GetGraph(part.Base.BasePartAsset.Id) as AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>;
-                    if (baseAssetGraph != null)
-                    {
-                        HashSet<Guid> instanceIds;
-                        if (!basePartAssets.TryGetValue(baseAssetGraph, out instanceIds))
-                        {
-                            instanceIds = new HashSet<Guid>();
-                            basePartAssets.Add(baseAssetGraph, instanceIds);
-                        }
-                        instanceIds.Add(part.Base.InstanceId);
-                    }
-
-                    // Update mapping
-                    baseInstanceMapping[Tuple.Create(part.Base.BasePartId, part.Base.InstanceId)] = part.Part;
-
-                    // Update common ancestors
-                    Guid ancestorId;
-                    if (!instancesCommonAncestors.TryGetValue(part.Base.InstanceId, out ancestorId))
-                    {
-                        instancesCommonAncestors[part.Base.InstanceId] = Asset.GetParent(part.Part)?.Id ?? Guid.Empty;
-                    }
-                    else
-                    {
-                        var parent = ancestorId;
-                        var parents = new HashSet<Guid>();
-                        while (parent != Guid.Empty)
-                        {
-                            parents.Add(parent);
-                            parent = Asset.GetParent(Asset.Hierarchy.Parts[parent].Part)?.Id ?? Guid.Empty;
-                        }
-                        ancestorId = Asset.GetParent(part.Part)?.Id ?? Guid.Empty;
-                        while (ancestorId != Guid.Empty && !parents.Contains(ancestorId))
-                        {
-                            ancestorId = Asset.GetParent(Asset.Hierarchy.Parts[ancestorId].Part)?.Id ?? Guid.Empty;
-                        }
-                        instancesCommonAncestors[part.Base.InstanceId] = ancestorId;
-                    }
-                }
-            }
-        }
 
         private void PartAddedInBaseAsset(object sender, AssetPartChangeEventArgs e)
         {
@@ -697,11 +699,13 @@ namespace SiliconStudio.Assets.Quantum
 
         private void NotifyPartAdded(Guid partId)
         {
+            UpdateAssetPartBases();
             PartAdded?.Invoke(this, new AssetPartChangeEventArgs(AssetItem, partId));
         }
 
         private void NotifyPartRemoved(Guid partId)
         {
+            UpdateAssetPartBases();
             PartRemoved?.Invoke(this, new AssetPartChangeEventArgs(AssetItem, partId));
         }
 

@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 var startupScript = script as StartupScript;
                 if (startupScript != null)
                 {
-                    Scheduler.Add(startupScript.Start, startupScript.Priority);
+                    startupScript.StartSchedulerNode = Scheduler.Add(startupScript.Start, startupScript.Priority);
                 }
                 else
                 {
@@ -108,6 +108,13 @@ namespace SiliconStudio.Xenko.Engine.Processors
             // Flag scripts as not being live reloaded after starting/executing them for the first time
             foreach (var script in scriptsToStartCopy)
             {
+                // Remove the start node after it got executed
+                var startupScript = script as StartupScript;
+                if (startupScript != null)
+                {
+                    startupScript.StartSchedulerNode = null;
+                }
+
                 if (script.IsLiveReloading)
                     script.IsLiveReloading = false;
             }
@@ -196,11 +203,23 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 asyncScript?.MicroThread.Cancel();
             }
 
-            var syncScript = script as SyncScript;
-            if (syncScript != null)
+            // Remove script from the scheduler, in case it was removed during scheduler execution
+            var startupScript = script as StartupScript;
+            if (startupScript != null)
             {
-                syncScripts.Remove(syncScript);
-                syncScript.UpdateSchedulerNode = null;
+                if (startupScript.StartSchedulerNode != null)
+                {
+                    Scheduler?.Unschedule(startupScript.StartSchedulerNode);
+                    startupScript.StartSchedulerNode = null;
+                }
+
+                var syncScript = script as SyncScript;
+                if (syncScript != null)
+                {
+                    syncScripts.Remove(syncScript);
+                    Scheduler?.Unschedule(syncScript.UpdateSchedulerNode);
+                    syncScript.UpdateSchedulerNode = null;
+                }
             }
         }
 

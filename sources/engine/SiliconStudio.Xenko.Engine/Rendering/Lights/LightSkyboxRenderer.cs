@@ -44,10 +44,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <inheritdoc/>
         public override void ProcessLights(ProcessLightsParameters parameters)
         {
-            for (int lightIndex = parameters.LightStart; lightIndex < parameters.LightEnd; lightIndex++)
+            foreach (var index in parameters.LightIndices)
             {
                 // For now, we allow only one cubemap at once
-                var light = parameters.LightCollection[lightIndex];
+                var light = parameters.LightCollection[index];
 
                 // Prepare LightSkyBoxShaderGroup
                 LightSkyBoxShaderGroup lightShaderGroup;
@@ -59,6 +59,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     lightShaderGroupsPerSkybox.Add(light, lightShaderGroup);
                 }
             }
+
+            // Consume all the lights
+            parameters.LightIndices.Clear();
         }
 
         public override void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry)

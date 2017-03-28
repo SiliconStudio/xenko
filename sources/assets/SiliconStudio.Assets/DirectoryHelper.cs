@@ -34,29 +34,30 @@ namespace SiliconStudio.Assets
         /// Gets the directory of the package from which the <see cref="SiliconStudio.Assets"/> assembly has been loaded.
         /// </summary>
         /// <param name="packageName">The name of the expected package.</param>
-        /// <returns>A string representing the path of the package directory, or null if the <see cref="SiliconStudio.Assets"/> assembly has been loaded from memory.</returns>
+        /// <returns>A string representing the path of the package directory.</returns>
         /// <exception cref="InvalidOperationException">The package from which the <see cref="SiliconStudio.Assets"/> assembly has been loaded does not match the <paramref name="packageName"/>.</exception>
         public static string GetPackageDirectory(string packageName)
         {
             if (PackageDirectoryOverride != null)
                 return PackageDirectoryOverride;
-
+            
             var appDomain = AppDomain.CurrentDomain;
-            var binDirectory = new DirectoryInfo(appDomain.BaseDirectory);
-            var defaultPackageDirectoryTemp = binDirectory.Parent?.Parent;
+            var baseDirectory = new DirectoryInfo(appDomain.BaseDirectory);
+            var defaultPackageDirectoryTemp = baseDirectory.Parent?.Parent;
             // If we have a root directory, then store it as the default package directory
             if ((defaultPackageDirectoryTemp != null) && IsPackageDirectory(defaultPackageDirectoryTemp.FullName, packageName))
             {
                 return defaultPackageDirectoryTemp.FullName;
             }
-            return null;
+
+            throw new InvalidOperationException($"The current AppDomain.BaseDirectory [{baseDirectory}] is not part of the package [{packageName}]");
         }
 
         /// <summary>
         /// Gets the installation directory from which the <see cref="SiliconStudio.Assets"/> assembly has been loaded.
         /// </summary>
         /// <param name="packageName">The name of the package from which the <see cref="SiliconStudio.Assets"/> assembly has been loaded..</param>
-        /// <returns>A string representing the path of the package directory, or null if the <see cref="SiliconStudio.Assets"/> assembly has been loaded from memory.</returns>
+        /// <returns>A string representing the path of the package directory.</returns>
         /// <remarks>When executing from a development build, this method returns the root directory of the repository.</remarks>
         /// <exception cref="InvalidOperationException">The package from which the <see cref="SiliconStudio.Assets"/> assembly has been loaded does not match the <paramref name="packageName"/>.</exception>
         public static string GetInstallationDirectory(string packageName)

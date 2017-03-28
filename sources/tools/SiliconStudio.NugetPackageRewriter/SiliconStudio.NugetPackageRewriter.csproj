@@ -14,8 +14,8 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
-    <OutputPath>$(SiliconStudioOutputCommonDir)\Tools\$(AssemblyName)</OutputPath>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
+    <SiliconStudioXenkoOutputFolder>Tools\$(AssemblyName)</SiliconStudioXenkoOutputFolder>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Options">

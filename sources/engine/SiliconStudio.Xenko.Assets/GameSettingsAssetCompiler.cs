@@ -17,9 +17,10 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
 {
+    [AssetCompiler(typeof(GameSettingsAsset), typeof(AssetCompilationContext))]
     public class GameSettingsAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (GameSettingsAsset)assetItem.Asset;
             // TODO: We should ignore game settings stored in dependencies
@@ -31,14 +32,12 @@ namespace SiliconStudio.Xenko.Assets
 
         private class GameSettingsCompileCommand : AssetCommand<GameSettingsAsset>
         {
-            private readonly Package package;
             private readonly PlatformType platform;
             private readonly CompilationMode compilationMode;
 
             public GameSettingsCompileCommand(string url, Package package, PlatformType platform, CompilationMode compilationMode, GameSettingsAsset asset)
-                : base(url, asset)
+                : base(url, asset, package)
             {
-                this.package = package;
                 this.platform = platform;
                 this.compilationMode = compilationMode;
             }
@@ -48,9 +47,9 @@ namespace SiliconStudio.Xenko.Assets
                 base.ComputeParameterHash(writer);
 
                 // Hash used parameters from package
-                writer.Write(package.Id);
-                writer.Write(package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation));
-                writer.Write(package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects));
+                writer.Write(Package.Id);
+                writer.Write(Package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation));
+                writer.Write(Package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects));
                 writer.Write(compilationMode);
 
                 // Hash platform
@@ -61,8 +60,8 @@ namespace SiliconStudio.Xenko.Assets
             {
                 var result = new GameSettings
                 {
-                    PackageId = package.Id,
-                    PackageName = package.Meta.Name,
+                    PackageId = Package.Id,
+                    PackageName = Package.Meta.Name,
                     DefaultSceneUrl = Parameters.DefaultScene != null ? AttachedReferenceManager.GetUrl(Parameters.DefaultScene) : null,
                     DefaultGraphicsCompositorUrl = Parameters.GraphicsCompositor != null ? AttachedReferenceManager.GetUrl(Parameters.GraphicsCompositor) : null,
                     SplashScreenUrl = Parameters.SplashScreen != null && compilationMode > CompilationMode.Debug ? AttachedReferenceManager.GetUrl(Parameters.SplashScreen) : null,
@@ -92,7 +91,7 @@ namespace SiliconStudio.Xenko.Assets
                 result.Configurations.PlatformFilters = Parameters.PlatformFilters;
 
                 //make sure we modify platform specific files to set the wanted orientation
-                SetPlatformOrientation(package, platform, Parameters.GetOrCreate<RenderingSettings>().DisplayOrientation);
+                SetPlatformOrientation(Package, platform, Parameters.GetOrCreate<RenderingSettings>().DisplayOrientation);
 
                 var assetManager = new ContentManager();
                 assetManager.Save(Url, result);

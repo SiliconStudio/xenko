@@ -32,7 +32,7 @@ namespace SiliconStudio.Assets
         private AssetDependencyManager dependencies;
         private AssetSourceTracker sourceTracker;
 
-        public event DirtyFlagChangedDelegate<Asset> AssetDirtyChanged;
+        public event DirtyFlagChangedDelegate<AssetItem> AssetDirtyChanged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageSession"/> class.
@@ -819,7 +819,7 @@ namespace SiliconStudio.Assets
             IsDirty = true;
         }
 
-        private void OnAssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
+        private void OnAssetDirtyChanged(AssetItem asset, bool oldValue, bool newValue)
         {
             AssetDirtyChanged?.Invoke(asset, oldValue, newValue);
         }

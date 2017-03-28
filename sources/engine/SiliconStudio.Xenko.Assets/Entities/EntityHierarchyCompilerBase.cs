@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     public abstract class EntityHierarchyCompilerBase<T> : AssetCompilerBase where T : EntityHierarchyAssetBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (T)assetItem.Asset;
             foreach (var entityData in asset.Hierarchy.Parts)
@@ -46,9 +46,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
             }
 
-            result.BuildSteps = new AssetBuildStep(assetItem) { Create(targetUrlInStorage, asset) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { Create(targetUrlInStorage, asset, assetItem.Package) };
         }
 
-        protected abstract AssetCommand<T> Create(string url, T assetParameters);
+        protected abstract AssetCommand<T> Create(string url, T assetParameters, Package package);
     }
 }

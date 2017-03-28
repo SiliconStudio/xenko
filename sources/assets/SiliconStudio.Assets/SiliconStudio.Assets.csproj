@@ -51,6 +51,9 @@
     <Compile Include="Analysis\AssetReferenceAnalysis.cs" />
     <Compile Include="Analysis\AssetReferenceLink.cs" />
     <Compile Include="Analysis\AssetPartsAnalysis.cs" />
+    <Compile Include="Analysis\BuildAssetNode.cs" />
+    <Compile Include="Analysis\BuildDependencyManager.cs" />
+    <Compile Include="Analysis\BuildDependencyType.cs" />
     <Compile Include="Analysis\CollectionItemIdsAnalysis.cs" />
     <Compile Include="Analysis\IAssetDependencyManager.cs" />
     <Compile Include="Analysis\IdentifiableObjectAnalysis.cs" />
@@ -65,15 +68,11 @@
     <Compile Include="AssetTracker.cs" />
     <Compile Include="BasePart.cs" />
     <Compile Include="CollectionIdGenerator.cs" />
+    <Compile Include="Compiler\AssetCompilationContext.cs" />
+    <Compile Include="Compiler\AssetCompilerAttribute.cs" />
+    <Compile Include="Compiler\ICompilationContext.cs" />
     <Compile Include="Diagnostics\AssetSerializableLogMessage.cs" />
-    <Compile Include="DynamicYaml\DynamicYaml.cs" />
-    <Compile Include="DynamicYaml\DynamicYamlArray.cs" />
-    <Compile Include="DynamicYaml\DynamicYamlEmpty.cs" />
     <Compile Include="DynamicYaml\DynamicYamlExtensions.cs" />
-    <Compile Include="DynamicYaml\DynamicYamlMapping.cs" />
-    <Compile Include="DynamicYaml\DynamicYamlObject.cs" />
-    <Compile Include="DynamicYaml\DynamicYamlScalar.cs" />
-    <Compile Include="DynamicYaml\IDynamicYamlNode.cs" />
     <Compile Include="IAssetFinder.cs" />
     <Compile Include="IAssetPartDesign.cs" />
     <Compile Include="IProjectAsset.cs" />
@@ -108,9 +107,7 @@
     <Compile Include="Reflection\CollectionItemIdHelper.cs" />
     <Compile Include="Reflection\IdentifiableHelper.cs" />
     <Compile Include="Reflection\ItemId.cs" />
-    <Compile Include="Reflection\OverridePostfixes.cs" />
     <Compile Include="Reflection\OverrideTarget.cs" />
-    <Compile Include="Reflection\OverrideType.cs" />
     <Compile Include="Reflection\ShadowId.cs" />
     <Compile Include="Serializers\AssetPartContainedAttribute.cs" />
     <Compile Include="Serializers\FixupObjectReferences.cs" />
@@ -168,7 +165,6 @@
     <Compile Include="FileVersionManager.cs" />
     <Compile Include="Compiler\AssetCommand.cs" />
     <Compile Include="Compiler\AssetCompiledArgs.cs" />
-    <Compile Include="Compiler\AssetCompilerAttribute.cs" />
     <Compile Include="Compiler\AssetCompilerBase.cs" />
     <Compile Include="Compiler\AssetCompilerContext.cs" />
     <Compile Include="Compiler\AssetCompilerRegistry.cs" />
@@ -201,7 +197,6 @@
     <Compile Include="SolutionPlatformCollection.cs" />
     <Compile Include="SourceFileMemberAttribute.cs" />
     <Compile Include="TemplateFolder.cs" />
-    <Compile Include="Templates\SessionTemplateGenerator.cs" />
     <Compile Include="Templates\TemplateAssetDescription.cs" />
     <Compile Include="Templates\TemplateGeneratorBase.cs" />
     <Compile Include="Templates\TemplateSampleDescription.cs" />
@@ -297,6 +292,11 @@
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
+      <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
+      <Name>SiliconStudio.Core.MicroThreading</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
       <Project>{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}</Project>
       <Name>SiliconStudio.Core.Reflection</Name>
@@ -352,6 +352,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\..\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems" Label="Shared" />
+  <Import Project="..\SiliconStudio.Assets.Yaml\SiliconStudio.Assets.Yaml.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

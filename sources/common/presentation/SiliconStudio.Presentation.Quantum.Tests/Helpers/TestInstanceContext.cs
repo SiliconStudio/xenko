@@ -1,4 +1,5 @@
-﻿using SiliconStudio.Quantum;
+﻿using SiliconStudio.Presentation.Quantum.ViewModels;
+using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
 {
@@ -10,16 +11,16 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
         {
             this.context = context;
             RootNode = rootNode;
-            PropertiesProvider = new Types.TestPropertiesProvider(rootNode);
+            PropertyProvider = new Types.TestPropertyProvider(rootNode);
         }
 
-        public IPropertiesProviderViewModel PropertiesProvider { get; }
+        public IPropertyProviderViewModel PropertyProvider { get; }
 
         public IObjectNode RootNode { get; }
 
         public GraphViewModel CreateViewModel()
         {
-            return GraphViewModel.Create(context.ServiceProvider, PropertiesProvider);
+            return GraphViewModel.Create(context.ServiceProvider, new[] { PropertyProvider });
         }
     }
 }

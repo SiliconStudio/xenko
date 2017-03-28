@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Code.Tests
         {
             var log = new LoggerResult();
             log.ActivateLog(LogMessageType.Error);
-            if (!FixProjectReference.ProcessCopyLocals(log, @"..\..\build\Xenko.sln", false))
+            if (!FixProjectReference.ProcessCopyLocals(log, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\build\Xenko.sln"), false))
                 Assert.Fail($"Found some dependencies between Xenko projects that are not set to CopyLocal=false; please run SiliconStudio.Xenko.FixProjectReferences:\r\n{log.ToText()}");
         }
     }

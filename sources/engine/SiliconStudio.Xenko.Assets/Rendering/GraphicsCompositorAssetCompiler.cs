@@ -1,8 +1,11 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization.Contents;
@@ -11,21 +14,21 @@ using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Assets.Rendering
 {
+    [AssetCompiler(typeof(GraphicsCompositorAsset), typeof(AssetCompilationContext))]
     public class GraphicsCompositorAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (GraphicsCompositorAsset)assetItem.Asset;
-            // TODO: We should ignore game settings stored in dependencies
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new GraphicsCompositorCompileCommand(targetUrlInStorage, asset),
+                new GraphicsCompositorCompileCommand(targetUrlInStorage, asset, assetItem.Package),
             };
         }
 
         internal class GraphicsCompositorCompileCommand : AssetCommand<GraphicsCompositorAsset>
         {
-            public GraphicsCompositorCompileCommand(string url, GraphicsCompositorAsset asset) : base(url, asset)
+            public GraphicsCompositorCompileCommand(string url, GraphicsCompositorAsset asset, Package assetItemPackage) : base(url, asset, assetItemPackage)
             {
             }
 

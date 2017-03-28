@@ -16,7 +16,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [DataContract("RenderTexture")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Texture))]
-    [AssetCompiler(typeof(RenderTextureAssetCompiler))]
     [Display(1058, "Render Texture")]
     public sealed class RenderTextureAsset : Asset
     {

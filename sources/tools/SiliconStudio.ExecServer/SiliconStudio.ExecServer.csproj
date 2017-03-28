@@ -9,7 +9,6 @@
     <RootNamespace>SiliconStudio.ExecServer</RootNamespace>
     <AssemblyName>SiliconStudio.ExecServer</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>
@@ -36,7 +35,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Native\NativeLibraryInternal.cs">
+    <Compile Include="..\..\common\core\SiliconStudio.Core\Native\NativeLibraryInternal.cs">
       <Link>NativeLibraryInternal.cs</Link>
     </Compile>
     <Compile Include="AppDomainShadow.cs" />

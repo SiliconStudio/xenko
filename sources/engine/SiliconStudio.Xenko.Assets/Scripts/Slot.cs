@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
@@ -27,6 +28,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public Block Owner { get; internal set; }
 
         [DataMember(-100), Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; }
 
         // TODO: Internal setter when serialization supports it

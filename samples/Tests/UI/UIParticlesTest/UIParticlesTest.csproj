@@ -31,44 +31,44 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SiliconStudio.Core">
-      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Core.dll</HintPath>
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows\SiliconStudio.Core.dll</HintPath>
     </Reference>
     <Reference Include="SiliconStudio.Core.IO">
-      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Core.IO.dll</HintPath>
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows\SiliconStudio.Core.IO.dll</HintPath>
     </Reference>
     <Reference Include="SiliconStudio.Core.Mathematics, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Core.Mathematics.dll</HintPath>
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows\SiliconStudio.Core.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="SiliconStudio.Core.Serialization">
-      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Core.Serialization.dll</HintPath>
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows\SiliconStudio.Core.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="SiliconStudio.Xenko">
-      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Xenko.dll</HintPath>
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows\SiliconStudio.Xenko.dll</HintPath>
     </Reference>
     <Reference Include="SiliconStudio.Xenko.ConnectionRouter">
-      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ConnectionRouter.exe</HintPath>
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows\SiliconStudio.Xenko.ConnectionRouter.exe</HintPath>
     </Reference>
     <Reference Include="SiliconStudio.Xenko.Engine">
-      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Engine.dll</HintPath>
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows\SiliconStudio.Xenko.Engine.dll</HintPath>
     </Reference>
     <Reference Include="SiliconStudio.Xenko.Input">
-      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Input.dll</HintPath>
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows\Direct3D11\SiliconStudio.Xenko.Input.dll</HintPath>
     </Reference>
     <Reference Include="SiliconStudio.Xenko.Particles">
-      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Particles.dll</HintPath>
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows\SiliconStudio.Xenko.Particles.dll</HintPath>
     </Reference>
     <Reference Include="SiliconStudio.Xenko.Games.Testing">
-      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Games.Testing.dll</HintPath>
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows\SiliconStudio.Xenko.Games.Testing.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="nunit.core.interfaces">
-      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\nunit.core.interfaces.dll</HintPath>
+      <HintPath>$(SiliconStudioXenkoDir)\sources\common\deps\NUnit\addins\nunit.core.interfaces.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\nunit.framework.dll</HintPath>
+      <HintPath>$(SiliconStudioXenkoDir)\sources\common\deps\NUnit\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

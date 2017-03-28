@@ -64,12 +64,15 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
 
         public override void ProcessLights(ProcessLightsParameters parameters)
         {
-            lightprobeGroup.AddView(parameters.ViewIndex, parameters.View, parameters.LightEnd - parameters.LightStart);
+            lightprobeGroup.AddView(parameters.ViewIndex, parameters.View, parameters.LightIndices.Count);
 
-            for (int index = parameters.LightStart; index < parameters.LightEnd; index++)
+            foreach(var index in parameters.LightIndices)
             {
                 lightprobeGroup.AddLight(parameters.LightCollection[index], null);
             }
+
+            // Consume all the lights
+            parameters.LightIndices.Clear();
         }
 
         public override void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry)
