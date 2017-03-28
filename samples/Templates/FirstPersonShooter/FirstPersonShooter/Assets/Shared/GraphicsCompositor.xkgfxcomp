@@ -22,6 +22,16 @@ RenderStages:
         Name: ShadowMapCaster
         EffectSlotName: ShadowMapCaster
         SortMode: !FrontToBackSortMode {}
+    5a50638f5c514dc490c8c4f57cc88b57:
+        Id: 9c51229d-d259-46dd-bf48-77578cd01f97
+        Name: ShadowMapCasterParaboloid
+        EffectSlotName: ShadowMapCasterParaboloid
+        SortMode: !FrontToBackSortMode {}
+    bc1a77d2ab254a6e920f86cff65cd75e:
+        Id: 738e433b-332b-437c-8d19-d4e99be09069
+        Name: ShadowMapCasterCubeMap
+        EffectSlotName: ShadowMapCasterCubeMap
+        SortMode: !FrontToBackSortMode {}
 RenderFeatures:
     d8fb80b0e7995140a46bca8dc36ee8a2: !SiliconStudio.Xenko.Rendering.MeshRenderFeature,SiliconStudio.Xenko.Engine
         RenderStageSelectors:
@@ -32,28 +42,46 @@ RenderFeatures:
             6f7224048750e7260ea87c444f74b32c: !SiliconStudio.Xenko.Rendering.Shadows.ShadowMapRenderStageSelector,SiliconStudio.Xenko.Engine
                 ShadowMapRenderStage: ref!! c0524e55-4061-464d-84dd-7c4c70f70e0e
                 EffectName: XenkoForwardShadingEffect.ShadowMapCaster
+            b60663d7cb46417a94341a39c3bc1a12: !SiliconStudio.Xenko.Rendering.Shadows.ShadowMapRenderStageSelector,SiliconStudio.Xenko.Engine
+                ShadowMapRenderStage: ref!! 9c51229d-d259-46dd-bf48-77578cd01f97
+                EffectName: XenkoForwardShadingEffect.ShadowMapCasterParaboloid
+            f5533b1249b942df8a8aba311cd79532: !SiliconStudio.Xenko.Rendering.Shadows.ShadowMapRenderStageSelector,SiliconStudio.Xenko.Engine
+                ShadowMapRenderStage: ref!! 738e433b-332b-437c-8d19-d4e99be09069
+                EffectName: XenkoForwardShadingEffect.ShadowMapCasterCubeMap
         PipelineProcessors:
             d70f5aee0616e4ab25081ceaf643290c: !SiliconStudio.Xenko.Rendering.MeshPipelineProcessor,SiliconStudio.Xenko.Engine
                 TransparentRenderStage: ref!! 0fa30591-02ee-486d-9347-2b6aee83d035
             26c899b17f88c21ab13bf60a7220ccd1: !SiliconStudio.Xenko.Rendering.ShadowMeshPipelineProcessor,SiliconStudio.Xenko.Engine
                 ShadowMapRenderStage: ref!! c0524e55-4061-464d-84dd-7c4c70f70e0e
+            ff51170a7d1a4761b73ef6a5c9f0cba2: !SiliconStudio.Xenko.Rendering.ShadowMeshPipelineProcessor,SiliconStudio.Xenko.Engine
+                ShadowMapRenderStage: ref!! 9c51229d-d259-46dd-bf48-77578cd01f97
+                DepthClipping: true
+            ae4336b0a9514e8488e8e0ccbcef25f4: !SiliconStudio.Xenko.Rendering.ShadowMeshPipelineProcessor,SiliconStudio.Xenko.Engine
+                ShadowMapRenderStage: ref!! 738e433b-332b-437c-8d19-d4e99be09069
+                DepthClipping: true
         RenderFeatures:
             86b959cbdf51a1438d4973177c77c627: !SiliconStudio.Xenko.Rendering.TransformRenderFeature,SiliconStudio.Xenko.Engine {}
             8e0351fee9883922648a11016224b195: !SiliconStudio.Xenko.Rendering.SkinningRenderFeature,SiliconStudio.Xenko.Engine {}
             f5a2017030ba4b28784e804807ce7628: !SiliconStudio.Xenko.Rendering.Materials.MaterialRenderFeature,SiliconStudio.Xenko.Engine {}
+            83fea7526ebe4893a5bad953d0502bfd: !SiliconStudio.Xenko.Rendering.Shadows.ShadowCasterRenderFeature,SiliconStudio.Xenko.Engine {}
             65743b4380f4cc43b2b4bdc23cd0c07c: !SiliconStudio.Xenko.Rendering.Lights.ForwardLightingRenderFeature,SiliconStudio.Xenko.Engine
                 LightRenderers:
                     7ac2775468f53c4399b2f3f6357c85c9: !SiliconStudio.Xenko.Rendering.Lights.LightAmbientRenderer,SiliconStudio.Xenko.Engine {}
-                    7b68f9cd17404a4ba9e5f7df72e3b48d: !SiliconStudio.Xenko.Rendering.Lights.LightDirectionalGroupRenderer,SiliconStudio.Xenko.Engine
-                        NonShadowRenderer: null
+                    7b68f9cd17404a4ba9e5f7df72e3b48d: !SiliconStudio.Xenko.Rendering.Lights.LightDirectionalGroupRenderer,SiliconStudio.Xenko.Engine {}
                     411fdcfb9fc388449a0443173dfa3f27: !SiliconStudio.Xenko.Rendering.Lights.LightSkyboxRenderer,SiliconStudio.Xenko.Engine {}
-                    dd1f1a507851fc458e94f428ac7ae06d: !SiliconStudio.Xenko.Rendering.Lights.LightClusteredPointSpotGroupRenderer,SiliconStudio.Xenko.Engine {}
+                    facdcd5b543cf1c6bdf2138aab6cc473: !SiliconStudio.Xenko.Rendering.Lights.LightClusteredPointSpotGroupRenderer,SiliconStudio.Xenko.Engine {}
+                    79582329a9cf466e960f8920f579de9b: !SiliconStudio.Xenko.Rendering.Lights.LightPointGroupRenderer,SiliconStudio.Xenko.Engine {}
+                    cf0c6bd4198b4cc4aaaab5b54870bdfd: !SiliconStudio.Xenko.Rendering.Lights.LightSpotGroupRenderer,SiliconStudio.Xenko.Engine {}
                 ShadowMapRenderer: !SiliconStudio.Xenko.Rendering.Shadows.ShadowMapRenderer,SiliconStudio.Xenko.Engine
                     Renderers:
                         7c3d3d4c86834c3551bacde2527b3836: !SiliconStudio.Xenko.Rendering.Shadows.LightDirectionalShadowMapRenderer,SiliconStudio.Xenko.Engine
                             ShadowCasterRenderStage: ref!! c0524e55-4061-464d-84dd-7c4c70f70e0e
                         1c204b09435636256a3fcfd6f9ddb347: !SiliconStudio.Xenko.Rendering.Shadows.LightSpotShadowMapRenderer,SiliconStudio.Xenko.Engine
                             ShadowCasterRenderStage: ref!! c0524e55-4061-464d-84dd-7c4c70f70e0e
+                        7c8c69ce27034b4c8bbcab0bcdfe954b: !SiliconStudio.Xenko.Rendering.Shadows.LightPointShadowMapRendererParaboloid,SiliconStudio.Xenko.Engine
+                            ShadowCasterRenderStage: ref!! 9c51229d-d259-46dd-bf48-77578cd01f97
+                        d59ef45dd99e49d3af3887763d153aa7: !SiliconStudio.Xenko.Rendering.Shadows.LightPointShadowMapRendererCubeMap,SiliconStudio.Xenko.Engine
+                            ShadowCasterRenderStage: ref!! 738e433b-332b-437c-8d19-d4e99be09069
     28e9bf54a5adbe063f59fb17acb2723e: !SiliconStudio.Xenko.Rendering.Sprites.SpriteRenderFeature,SiliconStudio.Xenko.Engine
         RenderStageSelectors:
             d74665cff080638a2439c4422e542d85: !SiliconStudio.Xenko.Rendering.Sprites.SpriteTransparentRenderStageSelector,SiliconStudio.Xenko.Engine
@@ -94,8 +122,9 @@ SharedRenderers:
         VRSettings:
             Enabled: false
             RequiredApis: {}
-            ResolutionScale: 1.0
+            Overlays: {}
         MSAALevel: None
+        MSAAResolver: {}
     34ecb9b2633eacfc439ba8744fe05102: !PostProcessingEffects
         Id: 608bf04d-8640-469d-b710-1ecf6a46f794
         AmbientOcclusion:

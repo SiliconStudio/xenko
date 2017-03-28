@@ -1,6 +1,6 @@
 !Texture
 Id: 1c43b885-fb7f-4a23-a8a9-9ce3b3370103
-SerializedVersion: {Xenko: 1.10.0-alpha01}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../Resources/Crosshair256.png
 Type: !ColorTextureType
