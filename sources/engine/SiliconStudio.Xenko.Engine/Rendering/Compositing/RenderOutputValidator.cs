@@ -17,7 +17,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     {
         private readonly FastList<RenderTargetDescription> descriptions = new FastList<RenderTargetDescription>();
 
-        private ShaderSourceCollection shaderSources;
         private int validatedTargetCount;
         private bool hasChanged;
 
@@ -64,10 +63,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 descriptions.Resize(validatedTargetCount, false);
 
                 // Recalculate shader sources
-                shaderSources = new ShaderSourceCollection();
+                ShaderSources = new ShaderSourceCollection();
                 foreach (var description in descriptions)
                 {
-                    shaderSources.Add(new ShaderClassSource(description.Semantic.ShaderClass));
+                    ShaderSources.Add(new ShaderClassSource(description.Semantic.ShaderClass));
                 }
             }
         }
