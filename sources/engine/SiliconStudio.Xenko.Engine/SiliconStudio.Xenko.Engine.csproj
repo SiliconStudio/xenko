@@ -171,6 +171,7 @@
     <Compile Include="Rendering\Compositing\SceneRendererCollection.cs" />
     <Compile Include="Rendering\Compositing\SingleStageRenderer.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
+    <Compile Include="Rendering\Compositing\VROverlayRenderer.cs" />
     <Compile Include="Rendering\Compositing\VRRendererSettings.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoCompute.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoComputeEffect.cs">

@@ -2,14 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Shadows;
 using SiliconStudio.Xenko.VirtualReality;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering.Images;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
@@ -123,11 +121,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 if (VRSettings.Enabled)
                 {
-                    vrSystem.PreferredApis = VRSettings.RequiredApis.ToArray();
+                    var requiredDescs = VRSettings.RequiredApis.ToArray();
+                    vrSystem.PreferredApis = requiredDescs.Select(x => x.Api).ToArray();
+                    vrSystem.PreferredScalings = requiredDescs.ToDictionary(x => x.Api, x => x.ResolutionScale);
                     vrSystem.RequireMirror = true;
                     vrSystem.MirrorWidth = GraphicsDevice.Presenter.BackBuffer.Width;
                     vrSystem.MirrorHeight = GraphicsDevice.Presenter.BackBuffer.Height;
-                    vrSystem.ResolutionScale = VRSettings.ResolutionScale;
 
                     vrSystem.Enabled = true; //careful this will trigger the whole chain of initialization!
                     vrSystem.Visible = true;

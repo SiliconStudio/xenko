@@ -23,6 +23,11 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override bool CanInitialize => OpenVR.InitDone || OpenVR.Init();
 
+        public OpenVRHmd()
+        {
+            VRApi = VRApi.OpenVR;
+        }
+
         public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror, int mirrorWidth, int mirrorHeight)
         {
             var width = (int)(OptimalRenderFrameSize.Width * RenderFrameScaling);
