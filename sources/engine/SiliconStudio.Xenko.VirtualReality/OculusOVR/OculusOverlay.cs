@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+
+using System;
 using SharpDX.Direct3D11;
 using SiliconStudio.Xenko.Graphics;
 using CommandList = SiliconStudio.Xenko.Graphics.CommandList;
@@ -49,3 +51,5 @@ namespace SiliconStudio.Xenko.VirtualReality
         }
     }
 }
+
+#endif
