@@ -104,6 +104,17 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                             computeColor.Value = DefaultNormalColor;
                         }
                     }
+                    else
+                    {
+                        var computeFloat4 = normalMap as ComputeFloat4;
+                        if (computeFloat4 != null)
+                        {
+                            if (computeFloat4.Value == Vector4.Zero)
+                            {
+                                computeFloat4.Value = DefaultNormalColor.ToVector4();
+                            }
+                        }
+                    }
                 }
 
                 var computeColorSource = NormalMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.NormalMap, MaterialKeys.NormalValue, DefaultNormalColor, false));
