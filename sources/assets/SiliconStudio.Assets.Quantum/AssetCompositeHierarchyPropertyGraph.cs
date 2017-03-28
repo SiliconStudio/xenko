@@ -481,9 +481,9 @@ namespace SiliconStudio.Assets.Quantum
                     {
                         var sibling = baseAsset.GetChild(newBasePartParent, i);
                         var instanceSibling = Asset.Hierarchy.Parts.FirstOrDefault(x => x.Base?.InstanceId == instanceId && x.Base?.BasePartId == sibling.Id);
-                        // This sibling still exists instance-side, let's before after it
+                        // This sibling still exists instance-side, let's insert before it
                         if (instanceSibling != null)
-                            insertIndex = i + 1;
+                            insertIndex = i - 1;
                     }
 
                     // Default position is first index
