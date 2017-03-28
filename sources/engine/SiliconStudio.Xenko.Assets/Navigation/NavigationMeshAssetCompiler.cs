@@ -109,6 +109,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 gameSettingsAsset = context.GetGameSettingsAsset();
                 asset = value;
                 assetUrl = url;
+                
+                Version = 1; // Removed separate debug model stored in the navigation mesh
             }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
