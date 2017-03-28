@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Presentation.Quantum.Tests.Helpers;
 using SiliconStudio.Quantum;
 
@@ -10,12 +9,6 @@ namespace SiliconStudio.Presentation.Quantum.Tests
     [TestFixture]
     public class TestNodePresenterUpdates
     {
-        private struct TestContext
-        {
-            public IObjectNode RootNode;
-            public INodePresenterFactory Factory;
-        }
-
         [Test]
         public void TestPrimitiveMemberUpdate()
         {
@@ -482,12 +475,10 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual(instance.List, presenter.Children[1].Value);
         }
 
-        private static TestContext BuildContext(object instance)
+        private static TestInstanceContext BuildContext(object instance)
         {
-            var container = new NodeContainer();
-            var node = container.GetOrCreateNode(instance);
-            var factory = new NodePresenterFactory(container.NodeBuilder, new INodePresenterCommand[] { }, new INodePresenterUpdater[] { });
-            return new TestContext { RootNode = node, Factory = factory };
+            var context = new TestContainerContext();
+            return context.CreateInstanceContext(instance);
         }
     }
 }
