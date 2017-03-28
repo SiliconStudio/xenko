@@ -246,22 +246,23 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
         }
 
-        public void Draw(RenderDrawContext drawContext, Texture input, Texture inputDepthStencil, Texture outputTarget)
+        public void Draw(RenderDrawContext drawContext, RenderOutputValidator outputValidator, Texture[] inputs, Texture inputDepthStencil, Texture outputTarget)
         {
-            //var colorInputActive = inputTargetsComposition.IsActive(typeof(ColorTargetSemantic));
-            //if (!colorInputActive) return;
-
-            //var fullComposition = inputTargetsComposition.RenderTargets;
-
-            //SetInput(0, fullComposition[0]);
-            SetInput(0, input);
+            var colorIndex = outputValidator.Find<ColorTargetSemantic>();
+            if (colorIndex < 0)
+                return;
+            
+            SetInput(0, inputs[colorIndex]);
             SetInput(1, inputDepthStencil);
 
-            //for (int i = 1; i < fullComposition.Length; ++i)
-            //{
-            //    SetInput(i + 1, fullComposition[i]);
-            //}
-
+            var reflectionIndex0 = outputValidator.Find<OctahedronNormalSpecularColorTargetSemantic>();
+            var reflectionIndex1 = outputValidator.Find<EnvironmentLightRoughnessTargetSemantic>();
+            if (reflectionIndex0 >= 0 && reflectionIndex1 >= 0)
+            {
+                SetInput(2, inputs[reflectionIndex0]);
+                SetInput(3, inputs[reflectionIndex1]);
+            }
+            
             SetOutput(outputTarget);
             Draw(drawContext);
         }

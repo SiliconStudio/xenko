@@ -208,8 +208,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                 if (PostEffects.RequiresSsrGBuffers)
                 {
-                    renderOutputValidator.Add<OctaNormalSpecColorTargetSemantic>(PixelFormat.R16G16B16A16_Float);
-                    renderOutputValidator.Add<EnvlightRoughnessTargetSemantic>(PixelFormat.R16G16B16A16_Float);
+                    renderOutputValidator.Add<OctahedronNormalSpecularColorTargetSemantic>(PixelFormat.R16G16B16A16_Float);
+                    renderOutputValidator.Add<EnvironmentLightRoughnessTargetSemantic>(PixelFormat.R16G16B16A16_Float);
                 }
             }
         }
@@ -522,7 +522,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     LightShafts?.Draw(drawContext, depthStencil, ViewOutputTarget);
 
                     // Run post effects
-                    PostEffects.Draw(drawContext, renderTargets[colorTargetIndex], depthStencil, ViewOutputTarget);
+                    PostEffects.Draw(drawContext, renderOutputValidator, renderTargets.Items, depthStencil, ViewOutputTarget);
                 }
                 else
                 {

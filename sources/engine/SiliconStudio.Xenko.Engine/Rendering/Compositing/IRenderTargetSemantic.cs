@@ -4,11 +4,13 @@
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     /// <summary>
-    /// Type type itself represents a semantic for a render target
+    /// The usage of a render target
     /// </summary>
-    /// <remarks>Please implement stateless, so that objects can be recycled.</remarks>
     public interface IRenderTargetSemantic
     {
+        /// <summary>
+        /// The shader class deriving from ComputeColor that is used as a composition to output to the render target
+        /// </summary>
         string ShaderClass { get; }
     }
 
@@ -27,12 +29,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         public string ShaderClass { get; } = null;
     }
 
-    public class OctaNormalSpecColorTargetSemantic : IRenderTargetSemantic
+    public class OctahedronNormalSpecularColorTargetSemantic : IRenderTargetSemantic
     {
         public string ShaderClass { get; } = "GBufferOutputNormalSpec";
     }
 
-    public class EnvlightRoughnessTargetSemantic : IRenderTargetSemantic
+    public class EnvironmentLightRoughnessTargetSemantic : IRenderTargetSemantic
     {
         public string ShaderClass { get; } = "GBufferOutputIblRoughness";
     }

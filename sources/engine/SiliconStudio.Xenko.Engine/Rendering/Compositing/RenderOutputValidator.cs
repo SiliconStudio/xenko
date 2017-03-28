@@ -82,5 +82,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             return -1;
         }
+
+        public int Find<T>()
+            where T : IRenderTargetSemantic
+        {
+            return Find(typeof(T));
+        }
     }
 }
