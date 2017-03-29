@@ -137,6 +137,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
         }
 
+        /// <summary>
+        /// Clamps <see cref="ComputeColors.ComputeFloat"/> value within a specified range [min; max].
+        /// </summary>
+        /// <param name="key">Input scalar.</param>
+        /// <param name="min">The minimum value.</param>
+        /// <param name="max">The maximum value.</param>
         public static void ClampFloat([NotNull] this IComputeScalar key, float min, float max)
         {
             var asFloat = key as ComputeColors.ComputeFloat;
@@ -144,6 +150,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 asFloat.Value = MathUtil.Clamp(asFloat.Value, min, max);
         }
 
+        /// <summary>
+        /// Clamps <see cref="ComputeColors.ComputeFloat4"/> value within a specified range [min; max].
+        /// </summary>
+        /// <param name="key">Input scalar.</param>
+        /// <param name="min">The minimum value.</param>
+        /// <param name="max">The maximum value.</param>
         public static void ClampFloat4([NotNull] this IComputeColor key, Vector4 min, Vector4 max)
         {
             var asFloat4 = key as ComputeColors.ComputeFloat4;
