@@ -150,6 +150,7 @@
     <Compile Include="Rendering\Compositing\ForwardRenderer.VRUtils.cs" />
     <Compile Include="Rendering\Compositing\GraphicsCompositor.cs" />
     <Compile Include="Rendering\Compositing\MSAAResolver.cs" />
+    <None Include="packages.config" />
     <None Include="Rendering\Compositing\MSAAResolverEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MSAAResolverEffect.cs</LastGenOutput>
@@ -2808,9 +2809,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Starter\XenkoApplicationDelegate.iOS.cs" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Rendering\BRDF\BRDFMicrofacet.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BRDFMicrofacet.cs</LastGenOutput>
@@ -4075,7 +4073,6 @@
   <ItemGroup>
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\build\packages\System.Threading.Tasks.Dataflow.4.6.0\lib\netstandard1.1\System.Threading.Tasks.Dataflow.dll</HintPath>
-      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <Import Project="..\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems" Label="Shared" />
