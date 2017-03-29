@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Assets
                     PackageName = Package.Meta.Name,
                     DefaultSceneUrl = Parameters.DefaultScene != null ? AttachedReferenceManager.GetUrl(Parameters.DefaultScene) : null,
                     DefaultGraphicsCompositorUrl = Parameters.GraphicsCompositor != null ? AttachedReferenceManager.GetUrl(Parameters.GraphicsCompositor) : null,
-                    SplashScreenUrl = Parameters.SplashScreen != null && compilationMode > CompilationMode.Debug ? AttachedReferenceManager.GetUrl(Parameters.SplashScreen) : null,
+                    SplashScreenUrl = Parameters.SplashScreen != null && (compilationMode == CompilationMode.Release || compilationMode == CompilationMode.AppStore) ? AttachedReferenceManager.GetUrl(Parameters.SplashScreen) : null,
                     EffectCompilation = Package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation),
                     RecordUsedEffects = Package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects),
                     Configurations = new PlatformConfigurations(),
