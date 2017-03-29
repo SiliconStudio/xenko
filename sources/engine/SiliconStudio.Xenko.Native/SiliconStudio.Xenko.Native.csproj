@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
@@ -32,7 +32,6 @@
     </Compile>
     <Compile Include="DirectInput\XInputChecker.cs" />
     <Compile Include="NativeInvoke.cs" />
-    <Compile Include="Navigation\Navigation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -57,14 +56,6 @@
     <None Include="Sprite\SpriteBatchNative.c" />
     <None Include="DirectInput\XInputChecker.cpp" />
     <None Include="Lightprobes\predicates.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Navigation\Navigation.cpp" />
-    <None Include="Navigation\Navigation.hpp" />
-    <None Include="Navigation\NavigationBuilder.cpp" />
-    <None Include="Navigation\NavigationBuilder.hpp" />
-    <None Include="Navigation\NavigationMesh.cpp" />
-    <None Include="Navigation\NavigationMesh.hpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="..\..\native\Xenko.Native.targets" />

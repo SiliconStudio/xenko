@@ -73,6 +73,16 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             parent?.AddChild(this);
         }
 
+        public override void Destroy()
+        {
+            foreach (var nodePresenter in nodePresenters)
+            {
+                nodePresenter.ValueChanging -= ValueChanging;
+                nodePresenter.ValueChanged -= ValueChanged;
+            }
+            base.Destroy();
+        }
+
         /// <summary>
         /// Gets or sets the name of this node. Note that the name can be used to access this node from its parent using a dynamic object.
         /// </summary>
@@ -279,20 +289,20 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             return new NodeViewModelDynamicMetaObject(parameter, this);
         }
 
-        internal void NotifyPropertyChanging(string propertyName)
+        protected void NotifyPropertyChanging(string propertyName)
         {
             if (!changingProperties.Contains(propertyName))
             {
                 changingProperties.Add(propertyName);
-                OnPropertyChanging(propertyName, GraphViewModel.HasChildPrefix + propertyName);
+                OnPropertyChanging(propertyName);
             }
         }
 
-        internal void NotifyPropertyChanged(string propertyName)
+        protected void NotifyPropertyChanged(string propertyName)
         {
             if (changingProperties.Remove(propertyName))
             {
-                OnPropertyChanged(propertyName, GraphViewModel.HasChildPrefix + propertyName);
+                OnPropertyChanged(propertyName);
             }
         }
 
@@ -349,6 +359,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             foreach (var child in Children.ToList())
             {
                 RemoveChild(child);
+                child.Destroy();
             }
             foreach (var command in Commands.ToList())
             {
@@ -509,12 +520,14 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             if (changeAction == null) throw new ArgumentNullException(nameof(changeAction));
             if (initializingChildren == null)
             {
-                OnPropertyChanging(propertyNames);
+                foreach (var propertyName in propertyNames)
+                    NotifyPropertyChanging(propertyName);
             }
             changeAction();
             if (initializingChildren == null)
             {
-                OnPropertyChanged(propertyNames);
+                foreach (var propertyName in propertyNames)
+                    NotifyPropertyChanged(propertyName);
             }
         }
 

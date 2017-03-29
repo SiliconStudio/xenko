@@ -120,6 +120,8 @@
         <Type>NativeLib</Type>
         <Destination>$(OutDir)%(TargetPath)</Destination>
       </_SiliconStudioDependencyToCopy>
+	  
+	  <_SiliconStudioDependencyToCopy Remove="@(_SiliconStudioNativeLibAssigned)" Condition=" '$(SiliconStudioPackageBuild)' == 'true' And '%(_SiliconStudioNativeLibAssigned.Extension)' == '.pdb' "/>
     </ItemGroup>
 
     <!-- Copy files -->

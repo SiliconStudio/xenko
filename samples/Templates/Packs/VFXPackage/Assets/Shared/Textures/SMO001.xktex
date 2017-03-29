@@ -1,6 +1,6 @@
 !Texture
 Id: fa1018e4-c74d-4495-9535-134f5a06e4cd
-SerializedVersion: {Xenko: 1.10.0-alpha01}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../Resources/Textures/Smoke01/SMO001.png
 Type: !ColorTextureType

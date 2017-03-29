@@ -20,7 +20,6 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("Model")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetContentType(typeof(Model))]
-    [AssetCompiler(typeof(ModelAssetCompiler))]
     [Display(1900, "Model")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha02")]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 2, typeof(Upgrader))]
@@ -77,8 +76,6 @@ namespace SiliconStudio.Xenko.Assets.Models
 
         [DataMemberIgnore]
         public override UFile MainSource => Source;
-
-        protected override int InternalBuildOrder => -100; // We want Model to be scheduled early since they tend to take the longest (bad concurrency at end of build)
 
         /// <inheritdoc/>
         public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)

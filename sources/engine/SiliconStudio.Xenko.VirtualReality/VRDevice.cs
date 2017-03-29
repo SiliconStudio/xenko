@@ -55,6 +55,8 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract TouchController RightHand { get; }
 
+        public VRApi VRApi { get; protected set; }
+
         /// <summary>
         /// Allows you to scale the view, effectively it will change the size of the player in respect to the world, turning it into a giant or a tiny ant.
         /// </summary>

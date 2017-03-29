@@ -1,33 +1,19 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.VirtualReality;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     [DataContract]
-    public class VROverlayRenderer
+    public class VRDeviceDescription
     {
         [DataMember(10)]
-        public Texture Texture;
+        public VRApi Api { get; set; }
 
         [DataMember(20)]
-        public Vector3 LocalPosition;
-
-        [DataMember(30)]
-        public Quaternion LocalRotation = Quaternion.Identity;
-
-        [DataMember(40)]
-        public Vector2 SurfaceSize = Vector2.One;
-
-        [DataMember(50)]
-        public bool FollowsHeadRotation;
-
-        [DataMemberIgnore]
-        public VROverlay Overlay;
+        public float ResolutionScale { get; set; } = 1.0f;
     }
 
     [DataContract]
@@ -41,12 +27,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         public bool IgnoreCameraRotation { get; set; } = true;
 
         [DataMember(30)]
-        public List<VRApi> RequiredApis { get; } = new List<VRApi>();
+        public List<VRDeviceDescription> RequiredApis { get; } = new List<VRDeviceDescription>();
 
         [DataMember(40)]
-        public float ResolutionScale { get; set; } = 1.0f;
-
-        [DataMember(50)]
         public List<VROverlayRenderer> Overlays { get; } = new List<VROverlayRenderer>();
 
         [DataMemberIgnore]

@@ -2,6 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -93,7 +96,7 @@ namespace SiliconStudio.Assets
         /// Gets the attached metadata for YAML serialization.
         /// </summary>
         [DataMemberIgnore]
-        public AttachedYamlAssetMetadata YamlMetadata { get; internal set; } = new AttachedYamlAssetMetadata();
+        public AttachedYamlAssetMetadata YamlMetadata { get; } = new AttachedYamlAssetMetadata();
 
         /// <summary>
         /// Converts this item to a reference.
@@ -124,6 +127,7 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Clones this instance without the attached package.
         /// </summary>
+        /// <param name="keepPackage"></param>
         /// <param name="newLocation">The new location that will be used in the cloned <see cref="AssetItem" />. If this parameter
         /// is null, it keeps the original location of the asset.</param>
         /// <param name="newAsset">The new asset that will be used in the cloned <see cref="AssetItem" />. If this parameter
@@ -142,6 +146,7 @@ namespace SiliconStudio.Assets
                 isDirty = isDirty,
                 SourceFolder = SourceFolder,
                 SourceProject = SourceProject,
+                version = Version
             };
             YamlMetadata.CopyInto(item.YamlMetadata);
             return item;
@@ -211,6 +216,23 @@ namespace SiliconStudio.Assets
         /// </remarks>
         public DateTime ModifiedTime { get; internal set; }
 
+        private long version;
+
+        /// <summary>
+        /// Gets the asset version incremental counter, increased everytime the asset is edited.
+        /// </summary>
+        public long Version
+        {
+            get
+            {
+                return Interlocked.Read(ref version);
+            }
+            internal set
+            {
+                Interlocked.Exchange(ref version, value);
+            }
+        } 
+
         /// <summary>
         /// Gets or sets a value indicating whether this instance is dirty. See remarks.
         /// </summary>
@@ -231,9 +253,11 @@ namespace SiliconStudio.Assets
                     ModifiedTime = DateTime.Now;
                 }
 
+                Interlocked.Increment(ref version);
+
                 var oldValue = isDirty;
                 isDirty = value;
-                Package?.OnAssetDirtyChanged(asset, oldValue, value);
+                Package?.OnAssetDirtyChanged(this, oldValue, value);
             }
         }
 

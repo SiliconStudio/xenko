@@ -1,9 +1,10 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Compositing;
 
@@ -18,6 +19,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         /// <inheritdoc/>
         [DataMember(-100), Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; }
 
         /// <summary>

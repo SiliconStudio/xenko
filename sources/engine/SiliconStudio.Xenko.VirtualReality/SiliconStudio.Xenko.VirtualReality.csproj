@@ -110,6 +110,7 @@
     <Compile Include="Fove\FoveHmd.cs" />
     <Compile Include="GoogleVR\GoogleVR.cs" />
     <Compile Include="GoogleVR\GoogleVrHmd.cs" />
+    <Compile Include="OculusOVR\OculusOverlay.cs" />
     <Compile Include="OculusOVR\OculusTouchController.cs" />
     <Compile Include="VRDevice.cs" />
     <Compile Include="VRApi.cs" />
@@ -154,7 +155,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-	<SiliconStudioContent Include="SiliconStudio.Xenko.VirtualReality.dll.config"/>
+    <SiliconStudioContent Include="SiliconStudio.Xenko.VirtualReality.dll.config" />
     <None Include="Xenko.Native.Libs.targets">
       <SubType>Designer</SubType>
     </None>

@@ -20,16 +20,20 @@
     <WindowsSdkDir_81 Condition="'$(WindowsSdkDir_81)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v8.1@InstallationFolder)</WindowsSdkDir_81>
     <WindowsSdkDir_81 Condition="'$(WindowsSdkDir_81)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\Windows\v8.1@InstallationFolder)</WindowsSdkDir_81>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' Or '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
-    <Reference Include="SharpDX">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.D3DCompiler">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(SharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+  <Choose>
+	<When Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' Or '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
+		<ItemGroup>
+			<Reference Include="SharpDX">
+			  <SpecificVersion>False</SpecificVersion>
+			  <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
+			</Reference>
+			<Reference Include="SharpDX.D3DCompiler">
+			  <SpecificVersion>False</SpecificVersion>
+			  <HintPath>$(SharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
+			</Reference>
+	  </ItemGroup>
+	</When>
+  </Choose>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
       <ItemGroup>

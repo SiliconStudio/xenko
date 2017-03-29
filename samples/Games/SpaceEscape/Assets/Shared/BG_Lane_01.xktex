@@ -1,7 +1,8 @@
 !Texture
 Id: 4295cd02-fb08-42a6-bde1-26b590fc20ba
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../Resources/model/BG/sourceimages/BG_Lane_01.jpg
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-PremultiplyAlpha: false
+Type: !ColorTextureType
+    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+    PremultiplyAlpha: false

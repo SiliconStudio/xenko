@@ -51,6 +51,9 @@
     <Compile Include="Analysis\AssetReferenceAnalysis.cs" />
     <Compile Include="Analysis\AssetReferenceLink.cs" />
     <Compile Include="Analysis\AssetPartsAnalysis.cs" />
+    <Compile Include="Analysis\BuildAssetNode.cs" />
+    <Compile Include="Analysis\BuildDependencyManager.cs" />
+    <Compile Include="Analysis\BuildDependencyType.cs" />
     <Compile Include="Analysis\CollectionItemIdsAnalysis.cs" />
     <Compile Include="Analysis\IAssetDependencyManager.cs" />
     <Compile Include="Analysis\IdentifiableObjectAnalysis.cs" />
@@ -65,6 +68,9 @@
     <Compile Include="AssetTracker.cs" />
     <Compile Include="BasePart.cs" />
     <Compile Include="CollectionIdGenerator.cs" />
+    <Compile Include="Compiler\AssetCompilationContext.cs" />
+    <Compile Include="Compiler\AssetCompilerAttribute.cs" />
+    <Compile Include="Compiler\ICompilationContext.cs" />
     <Compile Include="Diagnostics\AssetSerializableLogMessage.cs" />
     <Compile Include="DynamicYaml\DynamicYamlExtensions.cs" />
     <Compile Include="IAssetFinder.cs" />
@@ -159,7 +165,6 @@
     <Compile Include="FileVersionManager.cs" />
     <Compile Include="Compiler\AssetCommand.cs" />
     <Compile Include="Compiler\AssetCompiledArgs.cs" />
-    <Compile Include="Compiler\AssetCompilerAttribute.cs" />
     <Compile Include="Compiler\AssetCompilerBase.cs" />
     <Compile Include="Compiler\AssetCompilerContext.cs" />
     <Compile Include="Compiler\AssetCompilerRegistry.cs" />
@@ -192,7 +197,6 @@
     <Compile Include="SolutionPlatformCollection.cs" />
     <Compile Include="SourceFileMemberAttribute.cs" />
     <Compile Include="TemplateFolder.cs" />
-    <Compile Include="Templates\SessionTemplateGenerator.cs" />
     <Compile Include="Templates\TemplateAssetDescription.cs" />
     <Compile Include="Templates\TemplateGeneratorBase.cs" />
     <Compile Include="Templates\TemplateSampleDescription.cs" />
@@ -286,6 +290,11 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
+      <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
+      <Name>SiliconStudio.Core.MicroThreading</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">

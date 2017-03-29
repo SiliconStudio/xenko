@@ -21,7 +21,6 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
     [DataContract("SkyboxAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Skybox))]
-    [AssetCompiler(typeof(SkyboxAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.11.1.1", typeof(RemoveSkyboxUsage))]
     [Display(1000, "Skybox")]
@@ -42,11 +41,6 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             IsSpecularOnly = false;
             DiffuseSHOrder = SkyboxPreFilteringDiffuseOrder.Order3;
             SpecularCubeMapSize = 256;
-        }
-
-        protected override int InternalBuildOrder
-        {
-            get { return 500; }
         }
 
         /// <summary>

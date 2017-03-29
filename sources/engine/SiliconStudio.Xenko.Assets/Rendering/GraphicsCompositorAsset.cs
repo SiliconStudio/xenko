@@ -32,7 +32,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [AssetContentType(typeof(GraphicsCompositor))]
     [AssetDescription(FileExtension)]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
-    [AssetCompiler(typeof(GraphicsCompositorAssetCompiler))]
     // TODO: remove this upgrader (and turn it back protected) before releasing 1.10 or above (needed only for internal upgrades)
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.10.0-beta01", typeof(AssetComposite.FixPartReferenceUpgrader))]
     public class GraphicsCompositorAsset : Asset
@@ -58,7 +57,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// </summary>
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        //[AssetPartContained(typeof(RenderStage))]
         public RenderStageCollection RenderStages { get; } = new RenderStageCollection();
 
         /// <summary>
@@ -66,7 +64,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// </summary>
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        //[AssetPartContained(typeof(RootRenderFeature))]
         public List<RootRenderFeature> RenderFeatures { get; } = new List<RootRenderFeature>();
 
         /// <summary>
@@ -74,7 +71,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// </summary>
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        //[AssetPartContained(typeof(ISharedRenderer))]
         public SharedRendererCollection SharedRenderers { get; } = new SharedRendererCollection();
 
         /// <summary>

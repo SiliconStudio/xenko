@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Compositing;
@@ -67,6 +68,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         /// <inheritdoc/>
         [DataMember(-100), Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; } = Guid.NewGuid();
 
         /// <summary>

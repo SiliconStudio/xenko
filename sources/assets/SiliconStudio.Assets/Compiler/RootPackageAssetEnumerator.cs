@@ -32,7 +32,7 @@ namespace SiliconStudio.Assets.Compiler
             packageAnalysis.Run(assetCompilerResult);
             if (assetCompilerResult.HasErrors)
             {
-                return Enumerable.Empty<AssetItem>();
+                yield break;
             }
 
             // Compute list of assets to compile and their dependencies
@@ -40,10 +40,10 @@ namespace SiliconStudio.Assets.Compiler
             var assetsReferenced = new HashSet<AssetItem>();
             CollectReferences(package, assetsReferenced, packagesProcessed);
 
-            var assets = assetsReferenced.ToList();
-            assets.Sort((item1, item2) => item1.Asset != null && item2.Asset != null ? item1.Asset.InternalBuildOrder.CompareTo(item2.Asset.InternalBuildOrder) : 0);
-
-            return assets;
+            foreach (var assetItem in assetsReferenced)
+            {
+                yield return assetItem;
+            }
         }
 
         /// <summary>

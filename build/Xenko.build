@@ -281,6 +281,7 @@ Example of use:
       <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.10_0.Windows"/>
       <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.11_0.Windows"/>
       <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.Windows"/>
+      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Navigation.Tests.Windows"/>
       <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Input.Tests.Windows"/>
       <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Particles.Tests.Windows"/>
       <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Physics.Tests.Windows"/>

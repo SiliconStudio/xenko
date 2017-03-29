@@ -36,8 +36,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             using (var pngImage = Image.Load(pngStream, GraphicsDevice.ColorSpace == ColorSpace.Linear))
                 png = Texture.New(GraphicsDevice, pngImage);
 
+            var camera = new Entity { new CameraComponent() };
             var plane = new Entity { new BackgroundComponent { Texture = png } };
             Scene.Entities.Add(plane);
+            Scene.Entities.Add(camera);
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
         }
@@ -46,6 +48,14 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         public void TestFixedRatio()
         {
             RunGameTest(new FixedAspectRatioTests());
+        }
+
+        public static void Main(string[] args)
+        {
+            using (Game game = new FixedAspectRatioTests())
+            {
+                game.Run();
+            }
         }
 
         protected override void RegisterTests()

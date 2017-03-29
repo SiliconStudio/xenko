@@ -20,18 +20,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private FastListStruct<LightDynamicEntry> processedLights = new FastListStruct<LightDynamicEntry>(8);
 
         public abstract LightShaderGroupDynamic CreateLightShaderGroup(RenderDrawContext context, ILightShadowMapShaderGroupData shadowGroup);
-
-        /// <summary>
-        /// Next light renderer we can send our unprocessed lights to.
-        /// </summary>
-        [DataMember]
-        public LightGroupRendererBase NonShadowRenderer { get; set; }
-
+        
         public override void Initialize(RenderContext context)
         {
             base.Initialize(context);
-
-            NonShadowRenderer?.Initialize(context);
         }
 
         public override void Reset()
@@ -44,8 +36,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             {
                 lightShaderGroup.Value.Reset();
             }
-
-            NonShadowRenderer?.Reset();
         }
 
         public override void SetViews(FastList<RenderView> views)
@@ -56,8 +46,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             {
                 lightShaderGroup.Value.SetViews(views);
             }
-
-            NonShadowRenderer?.SetViews(views);
         }
 
         public override void ProcessLights(ProcessLightsParameters parameters)
@@ -65,23 +53,27 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             if (parameters.LightCollection.Count == 0)
                 return;
 
+            // Check if we have a fallback renderer next in the chain, in case we don't need shadows
+            bool hasNextRenderer = parameters.RendererIndex < (parameters.Renderers.Length - 1);
+
             ILightShadowMapRenderer currentShadowRenderer = null;
             LightShadowType currentShadowType = 0;
 
             // Start by filtering/sorting what can be processed
             shadowComparer.ShadowMapTexturesPerLight = parameters.ShadowMapTexturesPerLight;
-            parameters.LightCollection.Sort(parameters.LightStart, parameters.LightEnd - parameters.LightStart, shadowComparer);
+            parameters.LightCollection.Sort(0, parameters.LightCollection.Count, shadowComparer);
 
-            for (int index = parameters.LightStart; index <= parameters.LightEnd; index++)
+            // Loop over the number of lights + 1 where the last iteration will always flush the last batch of lights
+            for(int j = 0; j < parameters.LightIndices.Count+1;)
             {
                 LightShadowType nextShadowType = 0;
                 ILightShadowMapRenderer nextShadowRenderer = null;
 
                 LightShadowMapTexture nextShadowTexture = null;
                 LightComponent nextLight = null;
-                if (index < parameters.LightEnd)
+                if (j < parameters.LightIndices.Count)
                 {
-                    nextLight = parameters.LightCollection[index];
+                    nextLight = parameters.LightCollection[parameters.LightIndices[j]];
 
                     if (parameters.ShadowMapRenderer != null
                         && parameters.ShadowMapTexturesPerLight.TryGetValue(nextLight, out nextShadowTexture)
@@ -93,7 +85,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 }
 
                 // Flush current group
-                if (index == parameters.LightEnd || currentShadowType != nextShadowType || currentShadowRenderer != nextShadowRenderer)
+                if (j == parameters.LightIndices.Count || currentShadowType != nextShadowType || currentShadowRenderer != nextShadowRenderer)
                 {
                     if (processedLights.Count > 0)
                     {
@@ -137,18 +129,21 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     currentShadowRenderer = nextShadowRenderer;
                 }
 
-                if (index < parameters.LightEnd)
+
+                if (j < parameters.LightIndices.Count)
                 {
                     // Do we need to process non shadowing lights or defer it to something else?
-                    if (nextShadowTexture == null && NonShadowRenderer != null)
+                    if (nextShadowTexture == null && hasNextRenderer)
                     {
-                        parameters.LightStart = index;
-                        NonShadowRenderer.ProcessLights(parameters);
+                        // Break out so the remaining lights can be handled by the next renderer
                         break;
                     }
 
+                    parameters.LightIndices.RemoveAt(j);
                     processedLights.Add(new LightDynamicEntry(nextLight, nextShadowTexture));
                 }
+                else
+                    j++;
             }
 
             processedLights.Clear();
@@ -166,8 +161,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 else
                     shaderEntry.DirectLightGroups.Add(lightShaderGroup.Value);
             }
-
-            NonShadowRenderer?.UpdateShaderPermutationEntry(shaderEntry);
         }
 
         class LightShaderGroupComparer : Comparer<LightShaderGroupEntry>
