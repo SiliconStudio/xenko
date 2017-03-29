@@ -332,8 +332,8 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             if (graph.ContainsVertex(node))
             {
                 // TODO Need a better way to removing incoming edges
-                IEnumerable<EdgeControl> controls = AssociatedObject.EdgesList.Values.Where(x => ((NodeEdge)x.Edge).Target == node);
-                foreach (var control in controls)
+                var edgesToRemove = AssociatedObject.EdgesList.Values.Where(x => ((NodeEdge)x.Edge).Target == node).ToList();
+                foreach (var control in edgesToRemove)
                 {
                     var edge = (NodeEdge)control.Edge;
                     graph.RemoveEdge(edge);
