@@ -44,6 +44,11 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         {
             Member.Changing -= OnMemberChanging;
             Member.Changed -= OnMemberChanged;
+            if (Member.Target != null)
+            {
+                Member.Target.ItemChanging -= OnItemChanging;
+                Member.Target.ItemChanged -= OnItemChanged;
+            }
         }
 
         public sealed override List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
