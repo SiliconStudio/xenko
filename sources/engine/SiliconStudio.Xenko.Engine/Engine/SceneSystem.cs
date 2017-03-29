@@ -173,13 +173,27 @@ namespace SiliconStudio.Xenko.Engine
 
                 if (splashScreenTexture != null)
                 {
+                    int width;
+                    int height;
+                    if (Game.GraphicsContext.CommandList.RenderTarget.Height > Game.GraphicsContext.CommandList.RenderTarget.Width) //portrait
+                    {
+                        width = height = Game.GraphicsContext.CommandList.RenderTarget.Width;
+                    }
+                    else //landscape
+                    {
+                        width = height = Game.GraphicsContext.CommandList.RenderTarget.Height;
+                    }
+
                     var viewport = Game.GraphicsContext.CommandList.Viewport;
-                    var x = -splashScreenTexture.Width / 2;
-                    var y = -splashScreenTexture.Height / 2;
+
+                    var x = -width / 2;
+                    var y = -height / 2;
                     x += Game.GraphicsContext.CommandList.RenderTarget.Width / 2;
                     y += Game.GraphicsContext.CommandList.RenderTarget.Height / 2;
-                    Game.GraphicsContext.CommandList.SetViewport(new Viewport(x, y, splashScreenTexture.Width, splashScreenTexture.Height));
+                    Game.GraphicsContext.CommandList.SetViewport(new Viewport(x, y, width, height));
+
                     Game.GraphicsContext.DrawTexture(splashScreenTexture);
+
                     Game.GraphicsContext.CommandList.SetViewport(viewport);
                 }
             }
