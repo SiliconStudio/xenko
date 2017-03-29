@@ -250,6 +250,8 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
+        public RenderGroup ColliderShapesRenderGroup { get; set; } = RenderGroup.Group0;
+
         internal void AddCollider(PhysicsComponent component, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
         {
             collisionWorld.AddCollisionObject(component.NativeCollisionObject, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
