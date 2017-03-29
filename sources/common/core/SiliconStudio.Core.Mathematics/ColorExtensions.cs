@@ -9,6 +9,16 @@ namespace SiliconStudio.Core.Mathematics
     public static class ColorExtensions
     {
         /// <summary>
+        /// Indicates if the given string can be converted to an <see cref="uint"/> RGBA value using <see cref="StringToRgba"/>.
+        /// </summary>
+        /// <param name="stringColor">The string to convert.</param>
+        /// <returns>True if the string can be converted, false otherwise.</returns>
+        public static bool CanConvertStringToRgba([CanBeNull] string stringColor)
+        {
+            return stringColor?.StartsWith("#") ?? false;
+        }
+
+        /// <summary>
         /// Converts the given string to an <see cref="uint"/> RGBA value.
         /// </summary>
         /// <param name="stringColor">The string to convert.</param>
