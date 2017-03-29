@@ -578,7 +578,6 @@
     <Compile Include="Rendering\ResourceGroupEntry.cs" />
     <Compile Include="Rendering\RootEffectRenderFeature.cs" />
     <Compile Include="Rendering\RootRenderFeature.cs" />
-    <Compile Include="Rendering\RootRenderFeatureFilter.cs" />
     <Compile Include="Rendering\ShadowMeshPipelineProcessor.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapShaderData.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapShaderGroupData.cs" />
