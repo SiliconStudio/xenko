@@ -65,6 +65,19 @@ namespace SiliconStudio.Presentation.Graph.Controls
         }
         #endregion
 
+        #region Overriden Methods
+
+        public override void Clean()
+        {
+            if (Source != null)
+                ((NodeVertexControl)Source).Connectors.CollectionChanged -= UpdateSourceConnectors;
+            if (Target != null)
+                ((NodeVertexControl)Target).Connectors.CollectionChanged -= UpdateTargetConnectors;
+            base.Clean();
+        }
+
+        #endregion
+
         #region Event Handlers
 
         public override void OnApplyTemplate()
@@ -146,6 +159,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
                 {
                     // Somehow the slot is not loaded yet
                     // Let's wait for a change in the Connectors collection and trigger UpdateEdge() again
+                    ((NodeVertexControl)Source).Connectors.CollectionChanged -= UpdateSourceConnectors;
                     ((NodeVertexControl)Source).Connectors.CollectionChanged += UpdateSourceConnectors;
                     Visibility = Visibility.Collapsed;
                     return;
@@ -170,6 +184,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
                 }
                 else
                 {
+                    ((NodeVertexControl)Target).Connectors.CollectionChanged -= UpdateTargetConnectors;
                     ((NodeVertexControl)Target).Connectors.CollectionChanged += UpdateTargetConnectors;
                     Visibility = Visibility.Collapsed;
                     return;
