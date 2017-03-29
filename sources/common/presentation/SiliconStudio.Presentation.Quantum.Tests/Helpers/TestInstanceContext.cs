@@ -1,13 +1,14 @@
-﻿using SiliconStudio.Presentation.Quantum.ViewModels;
+﻿using SiliconStudio.Presentation.Quantum.Presenters;
+using SiliconStudio.Presentation.Quantum.ViewModels;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
 {
     public class TestInstanceContext
     {
-        private readonly TestContext context;
+        private readonly TestContainerContext context;
 
-        public TestInstanceContext(TestContext context, IObjectNode rootNode)
+        public TestInstanceContext(TestContainerContext context, IObjectNode rootNode)
         {
             this.context = context;
             RootNode = rootNode;
@@ -17,6 +18,8 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
         public IPropertyProviderViewModel PropertyProvider { get; }
 
         public IObjectNode RootNode { get; }
+
+        public INodePresenterFactory Factory => context.GraphViewModelService.NodePresenterFactory;
 
         public GraphViewModel CreateViewModel()
         {

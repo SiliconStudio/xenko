@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
@@ -76,8 +76,14 @@ namespace SiliconStudio.Core.TypeConverters
             var str = value as string;
             if (str != null)
             {
-                var colorValue = ColorExtensions.StringToRgba(str);
-                return new Color3(colorValue);
+                // First try to convert using StringToRgba
+                if (ColorExtensions.CanConvertStringToRgba(str))
+                {
+                    var colorValue = ColorExtensions.StringToRgba(str);
+                    return new Color3(colorValue);
+                }
+                // If we can't, use the default ConvertFromString method.
+                return ConvertFromString<Color3, float>(context, culture, value);
             }
             return base.ConvertFrom(context, culture, value);
         }

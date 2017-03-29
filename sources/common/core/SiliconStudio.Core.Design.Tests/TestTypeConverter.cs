@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.ComponentModel;
 using System.Globalization;
@@ -18,7 +18,7 @@ namespace SiliconStudio.Core.Design.Tests
     [TestFixture]
     public class TestTypeConverter
     {
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Initialize()
         {
             RuntimeHelpers.RunModuleConstructor(typeof(BaseConverter).Assembly.ManifestModule.ModuleHandle);
@@ -28,6 +28,12 @@ namespace SiliconStudio.Core.Design.Tests
         public void TestColor()
         {
             TestConversionMultipleCultures(new Color(10, 20, 30, 40));
+        }
+
+        [Test]
+        public void TestColor3()
+        {
+            TestConversionMultipleCultures(new Color3(0.25f, 50.0f, -4.9f));
         }
 
         [Test]

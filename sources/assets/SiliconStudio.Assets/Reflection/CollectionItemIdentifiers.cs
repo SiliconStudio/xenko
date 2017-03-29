@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -127,85 +127,6 @@ namespace SiliconStudio.Core.Reflection
 
             if (ids.Count != keyToIdMap.Count + deletedItems.Count)
                 throw new InvalidOperationException("An id is both marked as deleted and associated to a key of the collection.");
-        }
-
-        /// <summary>
-        /// Find the id that is present in the given <paramref name="baseIds"/> collection but absent from this instance.
-        /// </summary>
-        /// <param name="baseIds">The collection of id that contains one id missing in this collection.</param>
-        /// <returns>The id present in <paramref name="baseIds"/> that is absent from this instance.</returns>
-        /// <exception cref="InvalidOperationException">Multiple ids are missing in this instance.</exception>
-        public ItemId FindMissingId(CollectionItemIdentifiers baseIds)
-        {
-            // Create an hashset with all ids, deleted or active, from this instance.
-            var hashSet = new HashSet<ItemId>(deletedItems);
-            foreach (var item in keyToIdMap)
-            {
-                hashSet.Add(item.Value);
-            }
-
-            var missingId = ItemId.Empty;
-            foreach (var item in baseIds.keyToIdMap)
-            {
-                // Find an active id present in the baseIds that is not part of the hashset for this.
-                if (!hashSet.Contains(item.Value))
-                {
-                    // TODO: if we have scenario where this is ok, I guess we can just return the first one.
-                    if (missingId != ItemId.Empty)
-                        throw new InvalidOperationException("Multiple ids are missing.");
-
-                    missingId = item.Value;
-                }
-            }
-
-            // Find an deleted instance id in the baseIds that is not part of the hashset for this.
-            foreach (var item in baseIds.deletedItems)
-            {
-                if (!hashSet.Contains(item))
-                {
-                    // TODO: if we have scenario where this is ok, I guess we can just return the first one.
-                    if (missingId != ItemId.Empty)
-                        throw new InvalidOperationException("Multiple ids are missing.");
-
-                    missingId = item;
-                }
-            }
-
-            return missingId;
-        }
-
-        /// <summary>
-        /// Find the id that is present in the given <paramref name="baseIds"/> collection but absent from this instance.
-        /// </summary>
-        /// <param name="baseIds">The collection of id that contains one id missing in this collection.</param>
-        /// <returns>The id present in <paramref name="baseIds"/> that is absent from this instance.</returns>
-        /// <exception cref="InvalidOperationException">Multiple ids are missing in this instance.</exception>
-        public IEnumerable<ItemId> FindMissingIds(CollectionItemIdentifiers baseIds)
-        {
-            // Create an hashset with all ids, deleted or active, from this instance.
-            var hashSet = new HashSet<ItemId>(deletedItems);
-            foreach (var item in keyToIdMap)
-            {
-                hashSet.Add(item.Value);
-            }
-
-            foreach (var item in baseIds.keyToIdMap)
-            {
-                // Find an active id present in the baseIds that is not part of the hashset for this.
-                if (!hashSet.Contains(item.Value))
-                {
-                    yield return item.Value;
-                }
-            }
-
-            foreach (var item in baseIds.deletedItems)
-            {
-                // Find a deleted instance id in the baseIds that is not part of the hashset for this.
-                if (!hashSet.Contains(item))
-                {
-                    yield return item;
-                }
-            }
         }
 
         public object GetKey(ItemId itemId)

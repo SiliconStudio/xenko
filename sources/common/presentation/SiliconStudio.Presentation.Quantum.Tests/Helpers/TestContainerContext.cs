@@ -5,9 +5,9 @@ using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
 {
-    public class TestContext
+    public class TestContainerContext
     {
-        public TestContext()
+        public TestContainerContext()
         {
             NodeContainer = new NodeContainer();
             GraphViewModelService = new GraphViewModelService(NodeContainer);

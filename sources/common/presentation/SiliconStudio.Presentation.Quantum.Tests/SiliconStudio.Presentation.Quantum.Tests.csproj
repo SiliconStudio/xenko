@@ -58,9 +58,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\TestInstanceContext.cs" />
-    <Compile Include="Helpers\TestContext.cs" />
+    <Compile Include="Helpers\TestContainerContext.cs" />
     <Compile Include="TestDependentProperties.cs" />
     <Compile Include="Helpers\Types.cs" />
+    <Compile Include="TestNodePresenterProperties.cs" />
     <Compile Include="TestNodePresenterUpdates.cs" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

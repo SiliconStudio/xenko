@@ -57,7 +57,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// </summary>
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        //[AssetPartContained(typeof(RenderStage))]
         public RenderStageCollection RenderStages { get; } = new RenderStageCollection();
 
         /// <summary>
@@ -65,7 +64,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// </summary>
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        //[AssetPartContained(typeof(RootRenderFeature))]
         public List<RootRenderFeature> RenderFeatures { get; } = new List<RootRenderFeature>();
 
         /// <summary>
@@ -73,7 +71,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// </summary>
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        //[AssetPartContained(typeof(ISharedRenderer))]
         public SharedRendererCollection SharedRenderers { get; } = new SharedRendererCollection();
 
         /// <summary>
