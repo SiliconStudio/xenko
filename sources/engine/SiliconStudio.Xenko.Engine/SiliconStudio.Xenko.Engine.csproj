@@ -141,6 +141,7 @@
     </Compile>
     <Compile Include="Rendering\BackToFrontSortMode.cs" />
     <Compile Include="Rendering\Compositing\ClearRenderer.cs" />
+    <Compile Include="Rendering\Compositing\DebugRenderer.cs" />
     <Compile Include="Rendering\Compositing\DefaultRenderTargets.cs" />
     <Compile Include="Rendering\Compositing\EditorTopLevelCompositor.cs" />
     <Compile Include="Rendering\Compositing\DelegateSceneRenderer.cs" />
