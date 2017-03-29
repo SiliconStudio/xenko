@@ -1,7 +1,7 @@
 !Texture
 Id: 7962709a-db22-416d-9057-183bdffb5c41
-SerializedVersion: {Xenko: 1.10.0-alpha01}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../Resources/layer_mask_2.png
-Format: Color32Bits
+IsCompressed: false
 Type: !GrayscaleTextureType {}
