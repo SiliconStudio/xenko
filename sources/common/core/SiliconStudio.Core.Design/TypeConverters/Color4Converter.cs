@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under MIT License. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -126,8 +126,14 @@ namespace SiliconStudio.Core.TypeConverters
             var str = value as string;
             if (str != null)
             {
-                var colorValue = ColorExtensions.StringToRgba(str);
-                return new Color4(colorValue);
+                // First try to convert using StringToRgba
+                if (ColorExtensions.CanConvertStringToRgba(str))
+                {
+                    var colorValue = ColorExtensions.StringToRgba(str);
+                    return new Color4(colorValue);
+                }
+                // If we can't, use the default ConvertFromString method.
+                return ConvertFromString<Color4, float>(context, culture, value);
             }
             return base.ConvertFrom(context, culture, value);
         }
