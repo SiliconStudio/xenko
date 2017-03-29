@@ -22,7 +22,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         public SpriteRenderer3DTests()
         {
-            CurrentVersion = 4;
+            //CurrentVersion = 4;
+            CurrentVersion = 5; // Build machine changed
             GraphicsDeviceManager.PreferredBackBufferWidth = ScreenWidth;
             GraphicsDeviceManager.PreferredBackBufferHeight = ScreenHeight;
         }
