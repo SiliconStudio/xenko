@@ -39,7 +39,7 @@ namespace SiliconStudio.Assets
         /// Initializes a new instance of the <see cref="PackageStore"/> class.
         /// </summary>
         /// <exception cref="System.InvalidOperationException">Unable to find a valid Xenko installation path</exception>
-        private PackageStore(string installationPath = null, string defaultPackageName = "Xenko", string defaultPackageVersion = XenkoVersion.CurrentAsText)
+        private PackageStore(string installationPath = null, string defaultPackageName = "Xenko", string defaultPackageVersion = XenkoVersion.NuGetVersionSimple)
         {
             // TODO: these are currently hardcoded to Xenko
             DefaultPackageName = defaultPackageName;
@@ -115,7 +115,7 @@ namespace SiliconStudio.Assets
         /// Gets the default package version.
         /// </summary>
         /// <value>The default package version.</value>
-        public PackageVersion DefaultPackageVersion { get; private set; }
+        public PackageVersion DefaultPackageVersion { get; }
 
         /// <summary>
         /// Gets the default package.

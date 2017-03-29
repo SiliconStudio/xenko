@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Assets
         private const string UniversalWindowsPlatformRuntimeBuild = @"MSBuild\Microsoft\WindowsXaml\v14.0\8.2\Microsoft.Windows.UI.Xaml.Common.Targets";
         private static readonly string ProgramFilesX86 = Environment.GetEnvironmentVariable(Environment.Is64BitOperatingSystem ? "ProgramFiles(x86)" : "ProgramFiles");
 
-        public static readonly PackageVersion LatestPackageVersion = new PackageVersion(XenkoVersion.CurrentAsText);
+        public static readonly PackageVersion LatestPackageVersion = new PackageVersion(XenkoVersion.NuGetVersionSimple);
 
         public static PackageDependency GetLatestPackageDependency()
         {

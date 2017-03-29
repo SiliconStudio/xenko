@@ -1,4 +1,4 @@
-# Build
+﻿# Build
 
 ## Overview
 
@@ -17,6 +17,16 @@ Example:
 * `Windows\OpenGL`: contains OpenGL-specific assemblies
 * `Android`: contains most of the assemblies for the Android platform
 * `Android\OpenGLES`: contains OpenGLES-specific assemblies
+
+## Versioning
+
+We have 3 places with versions:
+- Xenko package version (.xkpkg)
+- Assembly version (SharedAssemblyInfo.cs) -- should be kept in sync with Xenko package version (note: package build will report an error if versions are not matching)
+- NuGet package version (.nupkg) -- automatically derived from the Xenko package version
+
+During package build, if `SiliconStudioOfficialBuild` is not set to true, NuGet package suffix will be automatically generated with `-beta<commits_count_since_last_version_change>-g<git_hash>`
+Also, `AssemblyInformationalVersion` will also contain the same information (or at least the git hash for official builds).
 
 ## Assembly processor
 

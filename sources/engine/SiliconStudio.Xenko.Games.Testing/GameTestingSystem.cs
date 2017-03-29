@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Games.Testing
         {
             var game = (Game)Game;
 
-            var url = $"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe";
+            var url = $"/service/{XenkoVersion.NuGetVersion}/SiliconStudio.Xenko.SamplesTestServer.exe";
 
             var socketContext = await RouterClient.RequestServer(url);
 

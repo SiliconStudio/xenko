@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.TestRunner
                 var parameters = new StringBuilder();
                 parameters.Append("-s "); parameters.Append(device.Serial);
                 parameters.Append(@" shell am start -a android.intent.action.MAIN -n " + packageName + "/nunitlite.tests.MainActivity");
-                AddAndroidParameter(parameters, Graphics.Regression.TestRunner.XenkoVersion, XenkoVersion.CurrentAsText);
+                AddAndroidParameter(parameters, Graphics.Regression.TestRunner.XenkoVersion, XenkoVersion.NuGetVersion);
                 AddAndroidParameter(parameters, Graphics.Regression.TestRunner.XenkoBuildNumber, buildNumber.ToString());
                 if (!IsNullOrEmpty(branchName))
                     AddAndroidParameter(parameters, Graphics.Regression.TestRunner.XenkoBranchName, branchName);
