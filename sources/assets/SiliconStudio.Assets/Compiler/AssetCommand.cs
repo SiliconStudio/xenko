@@ -27,6 +27,7 @@ namespace SiliconStudio.Assets.Compiler
     public abstract class AssetCommand<T> : AssetCommand
     {
         protected readonly Package Package;
+        protected int Version;
 
         protected AssetCommand(string url, T parameters, Package package)
             : base (url)
@@ -71,6 +72,8 @@ namespace SiliconStudio.Assets.Compiler
         protected override void ComputeParameterHash(BinarySerializationWriter writer)
         {
             base.ComputeParameterHash(writer);
+
+            writer.Serialize(ref Version);
             
             var url = Url;
             var assetParameters = Parameters;
