@@ -102,12 +102,6 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 DragStartPoint = new Point();
                 return;
             }
-            
-            var currentPos = AssociatedObject.PointToScreen(e.GetPosition(AssociatedObject));
-            if ((currentPos - DragStartPoint).Length <= SystemParameters.MinimumHorizontalDragDistance)
-            {
-                return;
-            }
 
             DraggedUIElement.GiveFeedback += OnGiveFeedback;
             DraggedUIElement.QueryContinueDrag += OnQueryContinueDrag;
