@@ -172,7 +172,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                                         if (fileData != null)
                                         {
                                             // Replace path with a local path
-                                            shaderSource.Path = Path.Combine(Directory.GetCurrentDirectory(), shaderSourcePath);
+                                            shaderSource.Path = Path.Combine(Path.GetDirectoryName(PlatformFolders.GetApplicationExecutablePath()), shaderSourcePath);
                                             shaderSource.Hash = ObjectId.FromBytes(fileData);
 
                                             // Note: we can't use Encoding.UTF8.GetString directly because there might be the UTF8 BOM at the beginning of the file

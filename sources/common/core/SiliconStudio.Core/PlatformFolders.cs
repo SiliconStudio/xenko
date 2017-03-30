@@ -151,7 +151,10 @@ namespace SiliconStudio.Core
 #endif
         }
         
-        private static string GetApplicationExecutablePath()
+        /// <summary>
+        /// Get the path to the application executable.
+        /// </summary>
+        public static string GetApplicationExecutablePath()
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_MONO_MOBILE || SILICONSTUDIO_PLATFORM_UNIX
             var currentAssembly = Assembly.GetEntryAssembly();
