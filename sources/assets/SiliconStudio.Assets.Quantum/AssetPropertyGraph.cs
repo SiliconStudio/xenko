@@ -715,19 +715,26 @@ namespace SiliconStudio.Assets.Quantum
             {
                 if (ShouldReconcileMember(memberNode, reconcileObjectReference, nodesToReset))
                 {
-                    memberNode.ResettingOverride = true;
-                    object clonedValue;
-                    // Object references
-                    if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty, memberNode.BaseNode.Retrieve()))
-                        clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseValue, memberNode);
-                    else
-                        clonedValue = CloneValueFromBase(baseValue, assetNode);
+                    // If we have no setter, we cannot reconcile this property. Usually it means that the value is already correct (eg. it's an instance of the correct type,
+                    // or it's a value that cannot change), so we'll just keep going and try to reconcile the children of this member.
+                    if (memberNode.MemberDescriptor.HasSet)
+                    {
+                        memberNode.ResettingOverride = true;
 
-                    // Clear override, in case we are resetting it during this reconciliation.
-                    memberNode.Update(clonedValue);
-                    memberNode.OverrideContent(false);
+                        object clonedValue;
+                        // Object references
+                        if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty, memberNode.BaseNode.Retrieve()))
+                            clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseValue, memberNode);
+                        else
+                            clonedValue = CloneValueFromBase(baseValue, assetNode);
+
+                        // Clear override, in case we are resetting it during this reconciliation.
+                        memberNode.Update(clonedValue);
+                        memberNode.OverrideContent(false);
+
+                        memberNode.ResettingOverride = false;
+                    }
                 }
-                memberNode.ResettingOverride = false;
             }
             if (objectNode != null)
             {
