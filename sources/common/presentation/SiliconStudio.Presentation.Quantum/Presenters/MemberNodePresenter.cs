@@ -51,8 +51,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        public sealed override List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
-
         public override Type Type => Member.Type;
 
         public override bool IsEnumerable => Member.Target?.IsEnumerable ?? false;
@@ -75,7 +73,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 Member.Update(newValue);
-                Refresh();
             }
             catch (Exception e)
             {
@@ -91,7 +88,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 Member.Target.Add(value);
-                Refresh();
             }
             catch (Exception e)
             {
@@ -107,7 +103,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 Member.Target.Add(value, index);
-                Refresh();
             }
             catch (Exception e)
             {
@@ -123,7 +118,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 Member.Target.Remove(value, index);
-                Refresh();
             }
             catch (Exception e)
             {

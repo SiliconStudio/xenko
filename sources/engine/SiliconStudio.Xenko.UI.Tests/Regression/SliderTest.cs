@@ -27,7 +27,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public SliderTest()
         {
-            CurrentVersion = 4;
+            //CurrentVersion = 4;
+            CurrentVersion = 5; // Texture assets set to uncompressed, build machine changed
         }
 
         protected override async Task LoadContent()

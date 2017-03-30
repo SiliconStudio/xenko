@@ -1,6 +1,6 @@
 !Texture
 Id: 63cb5503-4a49-4ceb-bc54-c98886a2017f
-SerializedVersion: {Xenko: 1.10.0-alpha01}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../Resources/stone4_cav.jpeg
 Type: !ColorTextureType

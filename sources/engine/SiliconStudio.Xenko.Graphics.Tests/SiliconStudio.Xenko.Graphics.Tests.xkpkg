@@ -1,7 +1,6 @@
 !Package
 Id: 04ed1618-1a06-4a69-ac34-1006a978af11
-SerializedVersion: {Assets: 0.0.3}
-Tags: []
+SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: SiliconStudio.Xenko.Graphics.Tests
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.7.4-beta
+            Version: 1.11.1.2
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -19,7 +18,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Shared
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
                 Location: SiliconStudio.Xenko.Graphics.Tests.Windows.csproj
@@ -30,7 +28,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Windows
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
                 Location: SiliconStudio.Xenko.Graphics.Tests.Windows.csproj
@@ -41,7 +38,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Linux
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
                 Location: SiliconStudio.Xenko.Graphics.Tests.Linux.csproj
@@ -52,7 +48,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/macOS
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
                 Location: SiliconStudio.Xenko.Graphics.Tests.macOS.csproj
@@ -63,7 +58,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Android
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
                 Location: SiliconStudio.Xenko.Graphics.Tests.Android.csproj
@@ -74,7 +68,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/iOS
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
                 Location: SiliconStudio.Xenko.Graphics.Tests.iOS.csproj

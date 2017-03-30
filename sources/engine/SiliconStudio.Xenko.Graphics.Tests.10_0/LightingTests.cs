@@ -44,7 +44,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public LightingTests()
         {
-            CurrentVersion = 11;
+            //CurrentVersion = 11;
+            CurrentVersion = 12; // Build machine changed
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
         }
 

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
 using SiliconStudio.Packages;
 using SiliconStudio.Xenko.Engine.Network;
 
@@ -116,7 +117,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     var routerAssemblyFileVersionInfo = FileVersionInfo.GetVersionInfo(routerAssemblyLocation);
 
                     // Check that current router is at least as good as the one of latest found Xenko
-                    if (new Version(routerAssemblyFileVersionInfo.FileVersion) <= new Version(runningRouterVersion.FileVersion))
+                    if (new PackageVersion(routerAssemblyFileVersionInfo.FileVersion) <= new PackageVersion(runningRouterVersion.FileVersion))
                         return true;
                 }
 

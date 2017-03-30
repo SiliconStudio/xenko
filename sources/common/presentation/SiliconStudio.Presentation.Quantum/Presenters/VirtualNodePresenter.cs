@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Presentation.Quantum.ViewModels;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
@@ -32,8 +31,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             AttachCommands();
         }
-
-        public sealed override List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
 
         public override Type Type { get; }
 

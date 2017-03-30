@@ -1,34 +1,10 @@
 !SceneAsset
 Id: ad1acc09-3637-40e7-b185-3bfdfb77a891
-SerializedVersion: {Xenko: 1.8.3-beta01}
+SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
-SceneSettings:
-    ~Id: 91f8e314-1b1c-40f8-87eb-b0a854e6b075
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: 4aea9593-b951-4a33-b806-ac337989dab9
-        Cameras:
-            -   ~Id: bf4a833a-653a-4502-96b2-d0c26e1866fb
-                Name: null
-                Camera: b2be5192-5dfb-4fc1-9cb3-0690ea5171dd/911190ba-9d46-4100-9a68-6d5db1a0d8c4
-        Layers: []
-        Master:
-            ~Id: 59e970d4-3fa6-437f-b04a-aa9ac1374a34
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                - !ClearRenderFrameRenderer
-                    ~Id: 64c7b0be-78de-4050-8eb8-ca239fcfad2c
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-    EditorSettings:
-        ~Id: 8a8c9bff-4426-4228-96ce-16af2d0fc689
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: ee65c47c-8a91-4dd7-8b25-e19614bf82eb
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    ~Id: eecc85e7-d97e-4fef-8b43-1a62e6ee0fb7
     RootPartIds:
         - b2be5192-5dfb-4fc1-9cb3-0690ea5171dd
     Parts:
@@ -36,12 +12,14 @@ Hierarchy:
                 Id: b2be5192-5dfb-4fc1-9cb3-0690ea5171dd
                 Name: Camera
                 Components:
-                    - !TransformComponent
-                        ~Id: 7cb9d254-75fa-43fa-958a-4db8e83d054b
-                        Children: []
+                    54d2b97cfa75fa43958a4db8e83d054b: !TransformComponent
+                        Id: 7cb9d254-75fa-43fa-958a-4db8e83d054b
                         Position: {X: 0.0, Y: 0.0, Z: 2.215951}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !CameraComponent
-                        ~Id: 911190ba-9d46-4100-9a68-6d5db1a0d8c4
+                        Children: {}
+                    ba901191469d00419a686d5db1a0d8c4: !CameraComponent
+                        Id: 911190ba-9d46-4100-9a68-6d5db1a0d8c4
+                        Name: null
                         Projection: Perspective
+                        Slot: {Index: 0}
