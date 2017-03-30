@@ -9,6 +9,7 @@ using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Compositing;
 
@@ -17,6 +18,12 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [AssetCompiler(typeof(GraphicsCompositorAsset), typeof(AssetCompilationContext))]
     public class GraphicsCompositorAssetCompiler : AssetCompilerBase
     {
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        {
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(RenderTextureAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
+        }
+
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (GraphicsCompositorAsset)assetItem.Asset;
