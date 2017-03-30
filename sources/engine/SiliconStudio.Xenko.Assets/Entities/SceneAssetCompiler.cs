@@ -1,23 +1,12 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Linq;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Assets;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Xenko.Animations;
-using SiliconStudio.Xenko.Assets.Audio;
-using SiliconStudio.Xenko.Assets.Materials;
-using SiliconStudio.Xenko.Assets.Sprite;
-using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Extensions;
-using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {

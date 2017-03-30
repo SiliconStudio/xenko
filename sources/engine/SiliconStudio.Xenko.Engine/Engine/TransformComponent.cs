@@ -308,7 +308,7 @@ namespace SiliconStudio.Xenko.Engine
 
             item.parent = this;
 
-            Entity?.Owner?.OnHierarchyChanged(item.Entity);
+            Entity?.EntityManager?.OnHierarchyChanged(item.Entity);
         }
 
         private void RemoveItem(TransformComponent item)
@@ -318,7 +318,7 @@ namespace SiliconStudio.Xenko.Engine
 
             item.parent = null;
 
-            Entity?.Owner?.OnHierarchyChanged(item.Entity);
+            Entity?.EntityManager?.OnHierarchyChanged(item.Entity);
         }
 
         private void ChildrenCollectionChanged(object sender, TrackingCollectionChangedEventArgs e)

@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             //populate the valid property
             component.ValidityCheck();
 
-            entity.Owner.HierarchyChanged += component.OnHierarchyChanged;
+            entity.EntityManager.HierarchyChanged += component.OnHierarchyChanged;
         }
 
         protected override void OnEntityComponentRemoved(Entity entity, ModelNodeLinkComponent component, ModelNodeLinkComponent data)
@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             if (entity.Transform.TransformLink is ModelNodeTransformLink)
                 entity.Transform.TransformLink = null;
 
-            entity.Owner.HierarchyChanged -= component.OnHierarchyChanged;
+            entity.EntityManager.HierarchyChanged -= component.OnHierarchyChanged;
         }
 
         public override void Draw(RenderContext context)
