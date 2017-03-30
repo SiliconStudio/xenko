@@ -30,7 +30,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestSpriteBatch3D()
         {
-            CurrentVersion = 3;
+            //CurrentVersion = 3;
+            CurrentVersion = 4; // Texture assets set to uncompressed
             GraphicsDeviceManager.PreferredBackBufferWidth = 640;
             GraphicsDeviceManager.PreferredBackBufferHeight = 640;
         }

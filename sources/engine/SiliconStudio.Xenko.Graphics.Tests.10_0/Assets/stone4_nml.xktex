@@ -1,7 +1,7 @@
 !Texture
 Id: 8cac95be-69ee-40bf-9fa6-389a2c023f25
-SerializedVersion: {Xenko: 1.10.0-alpha01}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../Resources/stone4_nml.jpeg
-Format: Color32Bits
+IsCompressed: false
 Type: !NormalMapTextureType {}

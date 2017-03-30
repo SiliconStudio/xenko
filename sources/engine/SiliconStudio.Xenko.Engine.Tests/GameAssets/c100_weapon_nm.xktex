@@ -1,8 +1,6 @@
 !Texture
 Id: a8a31df9-250d-4b60-bfe3-f35042efc094
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../data/tests/knight/sourceimages/c100_weapon_nm.jpg
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Hint: NormalMap
-PremultiplyAlpha: false
+Type: !NormalMapTextureType {}
