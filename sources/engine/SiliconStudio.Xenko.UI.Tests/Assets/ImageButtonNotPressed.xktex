@@ -3,5 +3,6 @@ Id: cccf5d15-cf6e-4a6b-a759-faacaff0ec6c
 SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../data/tests/ImageButtonNotPressed.dds
+IsCompressed: false
 Type: !ColorTextureType
     ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
