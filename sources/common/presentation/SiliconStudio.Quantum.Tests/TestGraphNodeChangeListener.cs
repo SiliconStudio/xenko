@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using SiliconStudio.Core.Annotations;
@@ -458,7 +458,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.NotNull(nodeOwner);
             Assert.AreEqual(type, e.ChangeType);
             Assert.AreEqual(nodeOwner, e.Node);
-            Assert.AreEqual(index, e.Index);
+            Assert.AreEqual(index, (e as ItemChangeEventArgs)?.Index ?? Index.Empty);
             Assert.AreEqual(newValue, e.NewValue);
             Assert.AreEqual(oldValue, e.OldValue);
             if (type == ContentChangeType.ValueChange)
