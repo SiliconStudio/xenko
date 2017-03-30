@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace SiliconStudio.Quantum
 {
@@ -10,7 +10,7 @@ namespace SiliconStudio.Quantum
             if (memberNode != null)
             {
                 var eventHandler = new EventHandler<MemberNodeChangeEventArgs>(handler);
-                memberNode.Changing += eventHandler;
+                memberNode.ValueChanging += eventHandler;
             }
             var objectNode = node as IObjectNode;
             if (objectNode != null)
@@ -26,7 +26,7 @@ namespace SiliconStudio.Quantum
             if (memberNode != null)
             {
                 var eventHandler = new EventHandler<MemberNodeChangeEventArgs>(handler);
-                memberNode.Changed += eventHandler;
+                memberNode.ValueChanged += eventHandler;
             }
             var objectNode = node as IObjectNode;
             if (objectNode != null)
@@ -42,7 +42,7 @@ namespace SiliconStudio.Quantum
             if (memberNode != null)
             {
                 var eventHandler = new EventHandler<MemberNodeChangeEventArgs>(handler);
-                memberNode.Changing -= eventHandler;
+                memberNode.ValueChanging -= eventHandler;
             }
             var objectNode = node as IObjectNode;
             if (objectNode != null)
@@ -58,7 +58,7 @@ namespace SiliconStudio.Quantum
             if (memberNode != null)
             {
                 var eventHandler = new EventHandler<MemberNodeChangeEventArgs>(handler);
-                memberNode.Changed -= eventHandler;
+                memberNode.ValueChanged -= eventHandler;
             }
             var objectNode = node as IObjectNode;
             if (objectNode != null)

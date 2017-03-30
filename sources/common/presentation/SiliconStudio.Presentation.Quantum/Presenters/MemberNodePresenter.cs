@@ -26,8 +26,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             IsReadOnly = !Member.MemberDescriptor.HasSet;
             memberAttributes.AddRange(TypeDescriptorFactory.Default.AttributeRegistry.GetAttributes(member.MemberDescriptor.MemberInfo));
 
-            member.Changing += OnMemberChanging;
-            member.Changed += OnMemberChanged;
+            member.ValueChanging += OnMemberChanging;
+            member.ValueChanged += OnMemberChanged;
 
             if (member.Target != null)
             {
@@ -42,8 +42,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override void Dispose()
         {
-            Member.Changing -= OnMemberChanging;
-            Member.Changed -= OnMemberChanged;
+            Member.ValueChanging -= OnMemberChanging;
+            Member.ValueChanged -= OnMemberChanged;
             if (Member.Target != null)
             {
                 Member.Target.ItemChanging -= OnItemChanging;

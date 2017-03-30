@@ -73,8 +73,8 @@ namespace SiliconStudio.Assets.Quantum
             var overrides = assetItem.YamlMetadata?.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
             ApplyOverrides(RootNode, overrides);
             nodeListener = new AssetGraphNodeChangeListener(RootNode, this);
-            nodeListener.Changing += AssetContentChanging;
-            nodeListener.Changed += AssetContentChanged;
+            nodeListener.ValueChanging += AssetContentChanging;
+            nodeListener.ValueChanged += AssetContentChanged;
             nodeListener.ItemChanging += AssetItemChanging;
             nodeListener.ItemChanged += AssetItemChanged;
 
@@ -84,8 +84,8 @@ namespace SiliconStudio.Assets.Quantum
 
         public virtual void Dispose()
         {
-            nodeListener.Changing -= AssetContentChanging;
-            nodeListener.Changed -= AssetContentChanged;
+            nodeListener.ValueChanging -= AssetContentChanging;
+            nodeListener.ValueChanged -= AssetContentChanged;
             nodeListener.ItemChanging -= AssetItemChanging;
             nodeListener.ItemChanged -= AssetItemChanged;
             nodeListener.Dispose();
@@ -119,7 +119,7 @@ namespace SiliconStudio.Assets.Quantum
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
         /// </summary>
-        public event EventHandler<MemberNodeChangeEventArgs> Changing { add { nodeListener.Changing += value; } remove { nodeListener.Changing -= value; } }
+        public event EventHandler<MemberNodeChangeEventArgs> Changing { add { nodeListener.ValueChanging += value; } remove { nodeListener.ValueChanging -= value; } }
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
@@ -535,7 +535,7 @@ namespace SiliconStudio.Assets.Quantum
                     if (member != null)
                     {
                         valueChange = (s, e) => OnBaseContentChanged(e, currentNode);
-                        member.Changed += valueChange;
+                        member.ValueChanged += valueChange;
                     }
                     var objectNode = assetNode.BaseNode as IObjectNode;
                     if (objectNode != null)
@@ -558,7 +558,7 @@ namespace SiliconStudio.Assets.Quantum
                 var member = assetNode.BaseNode as IMemberNode;
                 if (member != null)
                 {
-                    member.Changed -= linkedNode.ValueChange;
+                    member.ValueChanged -= linkedNode.ValueChange;
                 }
                 var objectNode = assetNode.BaseNode as IObjectNode;
                 if (objectNode != null)
@@ -576,7 +576,7 @@ namespace SiliconStudio.Assets.Quantum
                 var member = linkedNode.Key.BaseNode as IMemberNode;
                 if (member != null)
                 {
-                    member.Changed -= linkedNode.Value.ValueChange;
+                    member.ValueChanged -= linkedNode.Value.ValueChange;
                 }
                 var objectNode = linkedNode.Key.BaseNode as IObjectNode;
                 if (objectNode != null)

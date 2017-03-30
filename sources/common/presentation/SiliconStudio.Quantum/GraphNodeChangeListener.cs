@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -30,12 +30,12 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Raised before one of the node referenced by the related root node changes.
         /// </summary>
-        public event EventHandler<MemberNodeChangeEventArgs> Changing;
+        public event EventHandler<MemberNodeChangeEventArgs> ValueChanging;
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
         /// </summary>
-        public event EventHandler<MemberNodeChangeEventArgs> Changed;
+        public event EventHandler<MemberNodeChangeEventArgs> ValueChanged;
 
         public event EventHandler<ItemChangeEventArgs> ItemChanging;
 
@@ -59,8 +59,8 @@ namespace SiliconStudio.Quantum
                 var memberNode = node as IMemberNode;
                 if (memberNode != null)
                 {
-                    memberNode.Changing += ContentChanging;
-                    memberNode.Changed += ContentChanged;
+                    memberNode.ValueChanging += OnValueChanging;
+                    memberNode.ValueChanged += OnValueChanged;
                 }
                 var objectNode = node as IObjectNode;
                 if (objectNode != null)
@@ -83,8 +83,8 @@ namespace SiliconStudio.Quantum
                 var memberNode = node as IMemberNode;
                 if (memberNode != null)
                 {
-                    memberNode.Changing -= ContentChanging;
-                    memberNode.Changed -= ContentChanged;
+                    memberNode.ValueChanging -= OnValueChanging;
+                    memberNode.ValueChanged -= OnValueChanged;
                 }
                 var objectNode = node as IObjectNode;
                 if (objectNode != null)
@@ -180,14 +180,14 @@ namespace SiliconStudio.Quantum
             }
         }
 
-        private void ContentChanging(object sender, MemberNodeChangeEventArgs e)
+        private void OnValueChanging(object sender, MemberNodeChangeEventArgs e)
         {
-            Changing?.Invoke(sender, e);
+            ValueChanging?.Invoke(sender, e);
         }
 
-        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
+        private void OnValueChanged(object sender, MemberNodeChangeEventArgs e)
         {
-            Changed?.Invoke(sender, e);
+            ValueChanged?.Invoke(sender, e);
         }
 
         private void OnItemChanging(object sender, ItemChangeEventArgs e)
