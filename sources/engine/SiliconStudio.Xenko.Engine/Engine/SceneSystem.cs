@@ -4,6 +4,7 @@
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
@@ -61,14 +62,32 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         public string SplashScreenUrl { get; set; }
 
+        /// <summary>
+        /// Splash screen background color
+        /// </summary>
+        public Color4 SplashScreenColor { get; set; }
+
         public GraphicsCompositor GraphicsCompositor { get; set; }
 
         private Task<Scene> sceneTask;
         private Task<GraphicsCompositor> compositorTask;
 
         private const double MinSplashScreenTime = 3.0f;
+        private const float SplashScreenFadeTime = 1.0f;
 
+        private double fadeTime;
+        private bool fadingOut;
         private Texture splashScreenTexture;
+
+        public enum SplashScreenState
+        {
+            Invalid,
+            FadingIn,
+            Showing,
+            FadingOut
+        }
+
+        private SplashScreenState splashScreenState = SplashScreenState.Invalid;
 
         protected override void LoadContent()
         {
@@ -89,6 +108,7 @@ namespace SiliconStudio.Xenko.Engine
             if (SplashScreenUrl != null && content.Exists(SplashScreenUrl))
             {
                 splashScreenTexture = content.Load<Texture>(SplashScreenUrl);
+                splashScreenState = splashScreenTexture != null ? SplashScreenState.FadingIn : SplashScreenState.Invalid;
             }
 
             // Create the drawing context
@@ -150,51 +170,130 @@ namespace SiliconStudio.Xenko.Engine
                 GraphicsCompositor?.Draw(renderDrawContext);
             }
 
-            //do this here, make sure GC and Scene are updated/rendered the next frame!
+            //do this here, make sure GCompositor and Scene are updated/rendered the next frame!
             if (sceneTask != null && compositorTask != null)
             {
-                if (gameTime.Total.TotalSeconds > MinSplashScreenTime || splashScreenTexture == null) //load asap if no splash screen is here
+                switch (splashScreenState)
                 {
-                    if (sceneTask.IsCompleted && compositorTask.IsCompleted)
-                    {
-                        SceneInstance = new SceneInstance(Services, sceneTask.Result);
-                        GraphicsCompositor = compositorTask.Result;
-                        sceneTask = null;
-                        compositorTask = null;
-
-                        if (splashScreenTexture != null)
+                    case SplashScreenState.Invalid:
+                        if (sceneTask.IsCompleted && compositorTask.IsCompleted)
                         {
-                            var content = Services.GetSafeServiceAs<ContentManager>();
-                            content.Unload(splashScreenTexture);
-                            splashScreenTexture = null;
+                            SceneInstance = new SceneInstance(Services, sceneTask.Result);
+                            GraphicsCompositor = compositorTask.Result;
+                            sceneTask = null;
+                            compositorTask = null;
                         }
-                    }
-                }
+                        break;
+                    case SplashScreenState.FadingIn:
+                        {
+                            Game.GraphicsContext.CommandList.Clear(Game.GraphicsContext.CommandList.RenderTarget, SplashScreenColor);
 
-                if (splashScreenTexture != null)
-                {
-                    int width;
-                    int height;
-                    if (Game.GraphicsContext.CommandList.RenderTarget.Height > Game.GraphicsContext.CommandList.RenderTarget.Width) //portrait
-                    {
-                        width = height = Game.GraphicsContext.CommandList.RenderTarget.Width;
-                    }
-                    else //landscape
-                    {
-                        width = height = Game.GraphicsContext.CommandList.RenderTarget.Height;
-                    }
+                            int width;
+                            int height;
+                            if (Game.GraphicsContext.CommandList.RenderTarget.Height > Game.GraphicsContext.CommandList.RenderTarget.Width) //portrait
+                            {
+                                width = height = Game.GraphicsContext.CommandList.RenderTarget.Width;
+                            }
+                            else //landscape
+                            {
+                                width = height = Game.GraphicsContext.CommandList.RenderTarget.Height;
+                            }
 
-                    var viewport = Game.GraphicsContext.CommandList.Viewport;
+                            var viewport = Game.GraphicsContext.CommandList.Viewport;
 
-                    var x = -width / 2;
-                    var y = -height / 2;
-                    x += Game.GraphicsContext.CommandList.RenderTarget.Width / 2;
-                    y += Game.GraphicsContext.CommandList.RenderTarget.Height / 2;
-                    Game.GraphicsContext.CommandList.SetViewport(new Viewport(x, y, width, height));
+                            var x = -width / 2;
+                            var y = -height / 2;
+                            x += Game.GraphicsContext.CommandList.RenderTarget.Width / 2;
+                            y += Game.GraphicsContext.CommandList.RenderTarget.Height / 2;
+                            Game.GraphicsContext.CommandList.SetViewport(new Viewport(x, y, width, height));
 
-                    Game.GraphicsContext.DrawTexture(splashScreenTexture);
+                            var color = Color4.White;
+                            var factor = MathUtil.SmoothStep((float)fadeTime / SplashScreenFadeTime);
+                            color *= factor;
+                            if (factor >= 1.0f)
+                            {
+                                splashScreenState = SplashScreenState.Showing;
+                            }
 
-                    Game.GraphicsContext.CommandList.SetViewport(viewport);
+                            fadeTime += gameTime.Elapsed.TotalSeconds;
+
+                            Game.GraphicsContext.DrawTexture(splashScreenTexture, color, BlendStates.AlphaBlend);
+
+                            Game.GraphicsContext.CommandList.SetViewport(viewport);
+                        }
+                        break;
+                    case SplashScreenState.Showing:
+                        {
+                            Game.GraphicsContext.CommandList.Clear(Game.GraphicsContext.CommandList.RenderTarget, SplashScreenColor);
+
+                            int width;
+                            int height;
+                            if (Game.GraphicsContext.CommandList.RenderTarget.Height > Game.GraphicsContext.CommandList.RenderTarget.Width) //portrait
+                            {
+                                width = height = Game.GraphicsContext.CommandList.RenderTarget.Width;
+                            }
+                            else //landscape
+                            {
+                                width = height = Game.GraphicsContext.CommandList.RenderTarget.Height;
+                            }
+
+                            var viewport = Game.GraphicsContext.CommandList.Viewport;
+
+                            var x = -width / 2;
+                            var y = -height / 2;
+                            x += Game.GraphicsContext.CommandList.RenderTarget.Width / 2;
+                            y += Game.GraphicsContext.CommandList.RenderTarget.Height / 2;
+                            Game.GraphicsContext.CommandList.SetViewport(new Viewport(x, y, width, height));
+
+                            Game.GraphicsContext.DrawTexture(splashScreenTexture);
+
+                            Game.GraphicsContext.CommandList.SetViewport(viewport);
+
+                            if (gameTime.Total.TotalSeconds > MinSplashScreenTime && sceneTask.IsCompleted && compositorTask.IsCompleted)
+                            {
+                                splashScreenState = SplashScreenState.FadingOut;
+                                fadeTime = 0.0f;
+                            }
+                        }
+                        break;
+                    case SplashScreenState.FadingOut:
+                        {
+                            Game.GraphicsContext.CommandList.Clear(Game.GraphicsContext.CommandList.RenderTarget, SplashScreenColor);
+
+                            int width;
+                            int height;
+                            if (Game.GraphicsContext.CommandList.RenderTarget.Height > Game.GraphicsContext.CommandList.RenderTarget.Width) //portrait
+                            {
+                                width = height = Game.GraphicsContext.CommandList.RenderTarget.Width;
+                            }
+                            else //landscape
+                            {
+                                width = height = Game.GraphicsContext.CommandList.RenderTarget.Height;
+                            }
+
+                            var viewport = Game.GraphicsContext.CommandList.Viewport;
+
+                            var x = -width / 2;
+                            var y = -height / 2;
+                            x += Game.GraphicsContext.CommandList.RenderTarget.Width / 2;
+                            y += Game.GraphicsContext.CommandList.RenderTarget.Height / 2;
+                            Game.GraphicsContext.CommandList.SetViewport(new Viewport(x, y, width, height));
+
+                            var color = Color4.White;
+                            var factor = (MathUtil.SmoothStep((float)fadeTime / SplashScreenFadeTime) * -1) + 1;
+                            color *= factor;
+                            if (factor <= 0.0f)
+                            {
+                                splashScreenState = SplashScreenState.Invalid;
+                            }
+
+                            fadeTime += gameTime.Elapsed.TotalSeconds;
+
+                            Game.GraphicsContext.DrawTexture(splashScreenTexture, color, BlendStates.AlphaBlend);
+
+                            Game.GraphicsContext.CommandList.SetViewport(viewport);
+                        }
+                        break;
                 }
             }
         }

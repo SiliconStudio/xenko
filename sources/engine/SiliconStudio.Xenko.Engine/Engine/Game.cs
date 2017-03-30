@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Audio;
@@ -258,6 +259,7 @@ namespace SiliconStudio.Xenko.Engine
                     SceneSystem.InitialSceneUrl = Settings?.DefaultSceneUrl;
                     SceneSystem.InitialGraphicsCompositorUrl = Settings?.DefaultGraphicsCompositorUrl;
                     SceneSystem.SplashScreenUrl = Settings?.SplashScreenUrl;
+                    SceneSystem.SplashScreenColor = Settings?.SplashScreenColor ?? Color4.Black;
                 }
             }
         }

@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Data;
 using SiliconStudio.Xenko.Graphics;
@@ -32,6 +33,8 @@ namespace SiliconStudio.Xenko.Engine.Design
         public string DefaultGraphicsCompositorUrl { get; set; }
 
         public string SplashScreenUrl { get; set; }
+
+        public Color4 SplashScreenColor { get; set; }
 
         /// <summary>
         /// Gets or sets the compilation mode used.
