@@ -134,6 +134,34 @@ namespace SiliconStudio.Xenko.Engine
             SceneInstance?.Update(gameTime);
         }
 
+        private void RenderSplashScreen(Color4 color, BlendStateDescription blendState)
+        {
+            Game.GraphicsContext.CommandList.Clear(Game.GraphicsContext.CommandList.RenderTarget, SplashScreenColor);
+
+            int width;
+            int height;
+            if (Game.GraphicsContext.CommandList.RenderTarget.Height > Game.GraphicsContext.CommandList.RenderTarget.Width) //portrait
+            {
+                width = height = Game.GraphicsContext.CommandList.RenderTarget.Width;
+            }
+            else //landscape
+            {
+                width = height = Game.GraphicsContext.CommandList.RenderTarget.Height;
+            }
+
+            var viewport = Game.GraphicsContext.CommandList.Viewport;
+
+            var x = -width / 2;
+            var y = -height / 2;
+            x += Game.GraphicsContext.CommandList.RenderTarget.Width / 2;
+            y += Game.GraphicsContext.CommandList.RenderTarget.Height / 2;
+            Game.GraphicsContext.CommandList.SetViewport(new Viewport(x, y, width, height));
+
+            Game.GraphicsContext.DrawTexture(splashScreenTexture, color, blendState);
+
+            Game.GraphicsContext.CommandList.SetViewport(viewport);
+        }
+
         public override void Draw(GameTime gameTime)
         {
             // Reset the context
@@ -186,27 +214,6 @@ namespace SiliconStudio.Xenko.Engine
                         break;
                     case SplashScreenState.FadingIn:
                         {
-                            Game.GraphicsContext.CommandList.Clear(Game.GraphicsContext.CommandList.RenderTarget, SplashScreenColor);
-
-                            int width;
-                            int height;
-                            if (Game.GraphicsContext.CommandList.RenderTarget.Height > Game.GraphicsContext.CommandList.RenderTarget.Width) //portrait
-                            {
-                                width = height = Game.GraphicsContext.CommandList.RenderTarget.Width;
-                            }
-                            else //landscape
-                            {
-                                width = height = Game.GraphicsContext.CommandList.RenderTarget.Height;
-                            }
-
-                            var viewport = Game.GraphicsContext.CommandList.Viewport;
-
-                            var x = -width / 2;
-                            var y = -height / 2;
-                            x += Game.GraphicsContext.CommandList.RenderTarget.Width / 2;
-                            y += Game.GraphicsContext.CommandList.RenderTarget.Height / 2;
-                            Game.GraphicsContext.CommandList.SetViewport(new Viewport(x, y, width, height));
-
                             var color = Color4.White;
                             var factor = MathUtil.SmoothStep((float)fadeTime / SplashScreenFadeTime);
                             color *= factor;
@@ -217,37 +224,12 @@ namespace SiliconStudio.Xenko.Engine
 
                             fadeTime += gameTime.Elapsed.TotalSeconds;
 
-                            Game.GraphicsContext.DrawTexture(splashScreenTexture, color, BlendStates.AlphaBlend);
-
-                            Game.GraphicsContext.CommandList.SetViewport(viewport);
+                            RenderSplashScreen(color, BlendStates.AlphaBlend);
                         }
                         break;
                     case SplashScreenState.Showing:
                         {
-                            Game.GraphicsContext.CommandList.Clear(Game.GraphicsContext.CommandList.RenderTarget, SplashScreenColor);
-
-                            int width;
-                            int height;
-                            if (Game.GraphicsContext.CommandList.RenderTarget.Height > Game.GraphicsContext.CommandList.RenderTarget.Width) //portrait
-                            {
-                                width = height = Game.GraphicsContext.CommandList.RenderTarget.Width;
-                            }
-                            else //landscape
-                            {
-                                width = height = Game.GraphicsContext.CommandList.RenderTarget.Height;
-                            }
-
-                            var viewport = Game.GraphicsContext.CommandList.Viewport;
-
-                            var x = -width / 2;
-                            var y = -height / 2;
-                            x += Game.GraphicsContext.CommandList.RenderTarget.Width / 2;
-                            y += Game.GraphicsContext.CommandList.RenderTarget.Height / 2;
-                            Game.GraphicsContext.CommandList.SetViewport(new Viewport(x, y, width, height));
-
-                            Game.GraphicsContext.DrawTexture(splashScreenTexture);
-
-                            Game.GraphicsContext.CommandList.SetViewport(viewport);
+                            RenderSplashScreen(Color4.White, BlendStates.Default);
 
                             if (gameTime.Total.TotalSeconds > MinSplashScreenTime && sceneTask.IsCompleted && compositorTask.IsCompleted)
                             {
@@ -258,27 +240,6 @@ namespace SiliconStudio.Xenko.Engine
                         break;
                     case SplashScreenState.FadingOut:
                         {
-                            Game.GraphicsContext.CommandList.Clear(Game.GraphicsContext.CommandList.RenderTarget, SplashScreenColor);
-
-                            int width;
-                            int height;
-                            if (Game.GraphicsContext.CommandList.RenderTarget.Height > Game.GraphicsContext.CommandList.RenderTarget.Width) //portrait
-                            {
-                                width = height = Game.GraphicsContext.CommandList.RenderTarget.Width;
-                            }
-                            else //landscape
-                            {
-                                width = height = Game.GraphicsContext.CommandList.RenderTarget.Height;
-                            }
-
-                            var viewport = Game.GraphicsContext.CommandList.Viewport;
-
-                            var x = -width / 2;
-                            var y = -height / 2;
-                            x += Game.GraphicsContext.CommandList.RenderTarget.Width / 2;
-                            y += Game.GraphicsContext.CommandList.RenderTarget.Height / 2;
-                            Game.GraphicsContext.CommandList.SetViewport(new Viewport(x, y, width, height));
-
                             var color = Color4.White;
                             var factor = (MathUtil.SmoothStep((float)fadeTime / SplashScreenFadeTime) * -1) + 1;
                             color *= factor;
@@ -289,9 +250,7 @@ namespace SiliconStudio.Xenko.Engine
 
                             fadeTime += gameTime.Elapsed.TotalSeconds;
 
-                            Game.GraphicsContext.DrawTexture(splashScreenTexture, color, BlendStates.AlphaBlend);
-
-                            Game.GraphicsContext.CommandList.SetViewport(viewport);
+                            RenderSplashScreen(color, BlendStates.AlphaBlend);
                         }
                         break;
                 }
