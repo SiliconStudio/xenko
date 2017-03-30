@@ -21,12 +21,14 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CombineMode.cs" />
+    <Compile Include="ContentChangeType.cs" />
     <Compile Include="Internal\Content.cs" />
     <Compile Include="GraphNodeExtensions.cs" />
     <Compile Include="IInitializingGraphNode.cs" />
     <Compile Include="IInitializingObjectNode.cs" />
     <Compile Include="IMemberNode.cs" />
     <Compile Include="INodeChangeEventArgs.cs" />
+    <Compile Include="ItemChangeEventArgs.cs" />
     <Compile Include="MemberNodeChangeEventArgs.cs" />
     <Compile Include="DefaultNodeFactory.cs" />
     <Compile Include="DynamicNode.cs" />

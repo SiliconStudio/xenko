@@ -613,7 +613,7 @@ namespace SiliconStudio.Assets.Quantum
         private void AssetItemChanging(object sender, ItemChangeEventArgs e)
         {
             var overrideValue = OverrideType.Base;
-            var node = (AssetObjectNode)e.Node;
+            var node = (AssetObjectNode)e.Collection;
             var collection = node.Retrieve();
             // For value change and remove, we store the current override state.
             if (CollectionItemIdHelper.HasCollectionItemIds(collection))
@@ -625,20 +625,20 @@ namespace SiliconStudio.Assets.Quantum
                     var ids = CollectionItemIdHelper.GetCollectionItemIds(collection);
                     ItemId itemId;
                     ids.TryGet(e.Index.Value, out itemId);
-                    removedItemIds[e.Node] = itemId;
+                    removedItemIds[e.Collection] = itemId;
                 }
             }
-            previousOverrides[e.Node] = overrideValue;
+            previousOverrides[e.Collection] = overrideValue;
         }
 
         private void AssetItemChanged(object sender, ItemChangeEventArgs e)
         {
-            var previousOverride = previousOverrides[e.Node];
-            previousOverrides.Remove(e.Node);
+            var previousOverride = previousOverrides[e.Collection];
+            previousOverrides.Remove(e.Collection);
 
             var itemId = ItemId.Empty;
             var overrideValue = OverrideType.Base;
-            var node = (IAssetObjectNodeInternal)e.Node;
+            var node = (IAssetObjectNodeInternal)e.Collection;
             var collection = node.Retrieve();
             if (e.ChangeType == ContentChangeType.CollectionUpdate || e.ChangeType == ContentChangeType.CollectionAdd)
             {
@@ -658,8 +658,8 @@ namespace SiliconStudio.Assets.Quantum
                 if (CollectionItemIdHelper.HasCollectionItemIds(collection))
                 {
                     overrideValue = node.BaseNode != null && !UpdatingPropertyFromBase ? OverrideType.New : OverrideType.Base;
-                    itemId = removedItemIds[e.Node];
-                    removedItemIds.Remove(e.Node);
+                    itemId = removedItemIds[e.Collection];
+                    removedItemIds.Remove(e.Collection);
                 }
             }
 

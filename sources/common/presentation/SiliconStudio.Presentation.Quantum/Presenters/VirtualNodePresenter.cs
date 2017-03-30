@@ -117,12 +117,12 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         private void AssociatedNodeChanging(object sender, INodeChangeEventArgs e)
         {
-            RaiseNodeChanging(e.NewValue, e.ChangeType, e.Index);
+            RaiseNodeChanging(e.NewValue, e.ChangeType, (e as ItemChangeEventArgs)?.Index ?? Index.Empty);
         }
 
         private void AssociatedNodeChanged(object sender, INodeChangeEventArgs e)
         {
-            RaiseNodeChanged(e.OldValue, e.ChangeType, e.Index);
+            RaiseNodeChanged(e.OldValue, e.ChangeType, (e as ItemChangeEventArgs)?.Index ?? Index.Empty);
         }
 
         private void RaiseNodeChanging(object newValue, ContentChangeType changeType, Index index)

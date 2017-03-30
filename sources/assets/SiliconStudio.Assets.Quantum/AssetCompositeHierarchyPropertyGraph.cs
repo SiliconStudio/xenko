@@ -516,7 +516,7 @@ namespace SiliconStudio.Assets.Quantum
 
         protected override void OnItemChanged(ItemChangeEventArgs args)
         {
-            RelinkToOwnerPart((IAssetNode)args.Node, args.NewValue);
+            RelinkToOwnerPart((IAssetNode)args.Collection, args.NewValue);
             base.OnItemChanged(args);
         }
 

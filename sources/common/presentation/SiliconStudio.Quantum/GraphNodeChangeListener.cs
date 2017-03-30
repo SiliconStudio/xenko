@@ -125,7 +125,7 @@ namespace SiliconStudio.Quantum
                 case ContentChangeType.CollectionRemove:
                     if (node.IsReference && e.OldValue != null)
                     {
-                        var removedNode = (node as IObjectNode)?.ItemReferences[e.Index].TargetNode;
+                        var removedNode = (node as IObjectNode)?.ItemReferences[((ItemChangeEventArgs)e).Index].TargetNode;
                         if (removedNode != null)
                         {
                             // TODO: review this
@@ -156,10 +156,11 @@ namespace SiliconStudio.Quantum
                     {
                         IGraphNode addedNode;
                         Index index;
-                        if (!e.Index.IsEmpty)
+                        var arg = (ItemChangeEventArgs)e;
+                        if (!arg.Index.IsEmpty)
                         {
-                            index = e.Index;
-                            addedNode = (e.Node as IObjectNode)?.ItemReferences[e.Index].TargetNode;
+                            index = arg.Index;
+                            addedNode = (e.Node as IObjectNode)?.ItemReferences[arg.Index].TargetNode;
                         }
                         else
                         {
