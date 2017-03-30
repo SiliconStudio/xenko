@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.FixProjectReferences
             foreach (var solutionProject in solution.Projects.ToArray())
             {
                 // Is it really a project?
-                if (!solutionProject.FullPath.EndsWith(".csproj"))
+                if (!solutionProject.FullPath.EndsWith(".csproj") && !solutionProject.FullPath.EndsWith(".vcxproj"))
                     continue;
 
                 // Load XML project
@@ -92,8 +92,9 @@ namespace SiliconStudio.Xenko.FixProjectReferences
                 var ns = doc.Root.Name.Namespace;
                 var allElements = doc.DescendantNodes().OfType<XElement>().ToList();
 
-                bool hasOutputPath = allElements.Any(element => element.Name.LocalName == "OutputPath");
-                if (!hasOutputPath)
+                var hasOutputPath = allElements.Any(element => element.Name.LocalName == "OutputPath" || element.Name.LocalName == "SiliconStudioXenkoOutputPath");
+                var isTest = allElements.Any(element => element.Name.LocalName == "SiliconStudioXenkoOutputFolder" && element.Value.StartsWith("Tests"));
+                if (!hasOutputPath && !isTest)
                 {
                     bool projectUpdated = false;
                     //doc.Save(solutionProject.FullPath);
@@ -102,7 +103,7 @@ namespace SiliconStudio.Xenko.FixProjectReferences
                     foreach (var referenceNode in allElements.Where(element => element.Name.LocalName == "ProjectReference"))
                     {
                         var attr = referenceNode.Attribute("Include");
-                        if (attr != null && attr.Value.EndsWith("csproj"))
+                        if (attr != null && (attr.Value.EndsWith(".csproj") || attr.Value.EndsWith(".vcxproj")))
                         {
                             var isPrivate = referenceNode.DescendantNodes().OfType<XElement>().FirstOrDefault(element => element.Name.LocalName == "Private");
                             bool referenceUpdated = false;

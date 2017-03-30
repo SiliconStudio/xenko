@@ -29,16 +29,14 @@ UsedParameters:
             -   ClassName: MaterialStream
             -   ClassName: MaterialPixelShadingStream
     Lighting.DirectLightGroups:
-        - !ShaderClassSource
-            ClassName: LightClusteredPointGroup
-            GenericArguments: [64]
-        - !ShaderClassSource
-            ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
                     GenericArguments: [8]
+        - !ShaderClassSource
+            ClassName: LightClusteredPointGroup
+        - !ShaderClassSource
+            ClassName: LightClusteredSpotGroup
     Lighting.EnvironmentLights:
         - !ShaderClassSource
             ClassName: LightSimpleAmbient
@@ -66,7 +64,7 @@ UsedParameters:
                     - !ShaderMixinSource
                         Mixins:
                             -   ClassName: MaterialSurfaceNormalMap
-                                GenericArguments: [false, true, true]
+                                GenericArguments: [false, true]
                         Compositions:
                             normalMap: !ShaderClassSource
                                 ClassName: ComputeColorTextureScaledOffsetDynamicSampler
@@ -112,16 +110,14 @@ UsedParameters:
             -   ClassName: MaterialPixelShadingStream
     Material.HasNormalMap: true
     Lighting.DirectLightGroups:
-        - !ShaderClassSource
-            ClassName: LightClusteredPointGroup
-            GenericArguments: [64]
-        - !ShaderClassSource
-            ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
                     GenericArguments: [8]
+        - !ShaderClassSource
+            ClassName: LightClusteredPointGroup
+        - !ShaderClassSource
+            ClassName: LightClusteredSpotGroup
     Lighting.EnvironmentLights:
         - !ShaderClassSource
             ClassName: LightSimpleAmbient
@@ -133,3 +129,89 @@ UsedParameters:
     ParticleBase.BaseColor: !ShaderClassSource
         ClassName: ComputeColorTextureScaledOffsetDynamicSampler
         GenericArguments: [ParticleBase.EmissiveMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
+---
+!EffectCompileRequest
+EffectName: BackgroundShader
+UsedParameters: {}
+---
+!EffectCompileRequest
+EffectName: RangeCompressorShader
+UsedParameters: {}
+---
+!EffectCompileRequest
+EffectName: FXAAShaderEffect
+UsedParameters:
+    FXAAEffect.GreenAsLumaKey: 0
+    FXAAEffect.QualityKey: 15
+---
+!EffectCompileRequest
+EffectName: RangeDecompressorShader
+UsedParameters: {}
+---
+!EffectCompileRequest
+EffectName: LuminanceLogShader
+UsedParameters: {}
+---
+!EffectCompileRequest
+EffectName: ImageScalerEffect
+UsedParameters: {}
+---
+!EffectCompileRequest
+EffectName: GaussianBlurEffect
+UsedParameters:
+    GaussianBlur.VerticalBlur: false
+    GaussianBlur.Count: 3
+---
+!EffectCompileRequest
+EffectName: GaussianBlurEffect
+UsedParameters:
+    GaussianBlur.VerticalBlur: true
+    GaussianBlur.Count: 3
+---
+!EffectCompileRequest
+EffectName: BrightFilterShader
+UsedParameters: {}
+---
+!EffectCompileRequest
+EffectName: ImageSuperSamplerScalerEffect
+UsedParameters: {}
+---
+!EffectCompileRequest
+EffectName: GaussianBlurEffect
+UsedParameters:
+    GaussianBlur.VerticalBlur: false
+    GaussianBlur.Count: 5
+---
+!EffectCompileRequest
+EffectName: GaussianBlurEffect
+UsedParameters:
+    GaussianBlur.VerticalBlur: true
+    GaussianBlur.Count: 5
+---
+!EffectCompileRequest
+EffectName: LightStreakEffect
+UsedParameters:
+    LightStreak.Count: 4
+    LightStreak.AnamorphicCount: 1
+---
+!EffectCompileRequest
+EffectName: ColorCombinerEffect
+UsedParameters:
+    ColorCombiner.FactorCount: 1
+---
+!EffectCompileRequest
+EffectName: FlareArtifactEffect
+UsedParameters:
+    FlareArtifact.Count: 8
+---
+!EffectCompileRequest
+EffectName: FlareReplicate
+UsedParameters: {}
+---
+!EffectCompileRequest
+EffectName: ColorTransformGroupEffect
+UsedParameters:
+    ColorTransformGroup.Transforms:
+        - !ToneMap
+            Operator: !ToneMapHejl2Operator {}
+        - !LuminanceToChannelTransform {}

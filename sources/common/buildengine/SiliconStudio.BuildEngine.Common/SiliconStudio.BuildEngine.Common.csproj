@@ -13,6 +13,9 @@
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -26,7 +29,6 @@
     <Compile Include="BuildResultCode.cs" />
     <Compile Include="BuildStepExtensions.cs" />
     <Compile Include="BuildThreadMonitor.cs" />
-    <Compile Include="CommandDependsOnAttribute.cs" />
     <Compile Include="BuildStepLogger.cs" />
     <Compile Include="DatabaseMountInfo.cs" />
     <Compile Include="BuildScript.cs" />
@@ -117,6 +119,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>-->
   </ItemGroup>
+  <Import Project="..\..\..\tools\SiliconStudio.VisualStudio.Debugging\SiliconStudio.VisualStudio.Debugging.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

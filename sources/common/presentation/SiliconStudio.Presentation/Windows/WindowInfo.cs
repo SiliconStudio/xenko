@@ -1,7 +1,7 @@
 using System;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Interop;
 
 namespace SiliconStudio.Presentation.Windows
@@ -18,7 +18,7 @@ namespace SiliconStudio.Presentation.Windows
         /// Initializes a new instance of the <see cref="WindowInfo"/> class.
         /// </summary>
         /// <param name="window">The window represented by this object.</param>
-        public WindowInfo(Window window)
+        public WindowInfo([NotNull] Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             Window = window;
@@ -69,6 +69,11 @@ namespace SiliconStudio.Presentation.Windows
         }
 
         /// <summary>
+        /// Gets whether the corresponding window is a blocking window.
+        /// </summary>
+        public bool IsBlocking { get; internal set; }
+
+        /// <summary>
         /// Gets whether the corresponding window is currently modal.
         /// </summary>
         /// <remarks>
@@ -79,6 +84,9 @@ namespace SiliconStudio.Presentation.Windows
         {
             get
             {
+                if (IsBlocking)
+                    return false;
+
                 if (Hwnd == IntPtr.Zero)
                     return false;
 
@@ -94,13 +102,9 @@ namespace SiliconStudio.Presentation.Windows
         }
 
         /// <summary>
-        /// Gets whether the corresponding window is currently visible
-        /// </summary>
-        public bool IsVisible => HwndHelper.HasStyleFlag(Hwnd, NativeHelper.WS_VISIBLE);
-
-        /// <summary>
         /// Gets the owner of this window.
         /// </summary>
+        [CanBeNull]
         public WindowInfo Owner
         {
             get
@@ -108,8 +112,10 @@ namespace SiliconStudio.Presentation.Windows
                 if (!IsShown)
                     return null;
 
-                if (Window != null)
+                if (Window?.Owner != null)
+                {
                     return WindowManager.Find(ToHwnd(Window.Owner));
+                }
 
                 var owner = HwndHelper.GetOwner(Hwnd);
                 return owner != IntPtr.Zero ? (WindowManager.Find(owner) ?? new WindowInfo(owner)) : null;
@@ -118,15 +124,6 @@ namespace SiliconStudio.Presentation.Windows
             {
                 if (value == Owner)
                     return;
-
-                //if (Window == null)
-                //    throw new NotSupportedException("Cannot change the owner of this window because it is not a WPF window.");
-
-                //if (value != null && value.Window == null)
-                //    throw new NotSupportedException("Cannot change the owner of this window because the new owner is not a WPF window.");
-
-                //if (ReferenceEquals(value?.Window, Window))
-                //    throw new NotSupportedException("Cannot set a window to be its own owner.");
 
                 if (Window != null)
                 {
@@ -145,18 +142,10 @@ namespace SiliconStudio.Presentation.Windows
                 }
                 else
                 {
-                    HwndHelper.SetOwner(Hwnd, value.Hwnd);
+                    HwndHelper.SetOwner(Hwnd, value?.Hwnd ?? IntPtr.Zero);
                 }
-
-                //Window.Owner = value?.Window;
-
-                //// This code does not work unfortunately.
-                //var ownerHwnd = value?.Hwnd ?? IntPtr.Zero;
-                //HwndHelper.SetOwner(Hwnd, ownerHwnd);
             }
         }
-
-        internal TaskCompletionSource<int> WindowClosed { get; } = new TaskCompletionSource<int>();
 
         /// <inheritdoc/>
         public override bool Equals(object obj)
@@ -198,7 +187,7 @@ namespace SiliconStudio.Presentation.Windows
         /// <inheritdoc/>
         public bool Equals(WindowInfo other)
         {
-            return Equals(other.Window) && Equals(other.Hwnd);
+            return other != null && Equals(other.Window) && Equals(other.Hwnd);
         }
 
         /// <inheritdoc/>
@@ -217,7 +206,7 @@ namespace SiliconStudio.Presentation.Windows
         {
             return window != null ? new WindowInteropHelper(window).Handle : IntPtr.Zero;
         }
-
+        
         internal static Window FromHwnd(IntPtr hwnd)
         {
             return hwnd != IntPtr.Zero ? HwndSource.FromHwnd(hwnd)?.RootVisual as Window : null;

@@ -59,9 +59,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        protected override void PreDrawCore(RenderDrawContext context)
+        protected override void UpdateParameters()
         {
-            base.PreDrawCore(context);
+            base.UpdateParameters();
             int value = InputCount;
             Parameters.Set(FactorCount, value);
             Parameters.Set(ColorCombinerShaderKeys.Factors, factors);

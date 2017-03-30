@@ -1,49 +1,13 @@
 !SceneAsset
 Id: 8da52091-f3ce-45a3-8f1b-01fbf1a19f42
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
-SceneSettings:
-    Id: 378e55f2-9ab1-4c47-84f4-0e858f46db13
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras: {}
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                5cd490de6104bb43b48c71f2bb6f53e6: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                0bf63557ea6bdb4aabe9398a0dba0b18: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
-        - 818ea3cc-e643-45c6-bff5-bd54c2730c76
         - 95d80bd6-50e5-4984-92ae-7b8eeec651a6
     Parts:
-        -   Entity:
-                Id: 818ea3cc-e643-45c6-bff5-bd54c2730c76
-                Name: Background
-                Components:
-                    0e0d50874190f548924e8c9cdd0039ef: !TransformComponent
-                        Id: 87500d0e-9041-48f5-924e-8c9cdd0039ef
-                        Position: {X: 0.0, Y: 0.0, Z: -2.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: {}
-                    07a4cd26293bbb42b3698191eebff7a5: !BackgroundComponent
-                        Id: 26cda407-3b29-42bb-b369-8191eebff7a5
-                        Texture: c70d3cb5-77d2-4400-a715-382d092a2e19:XenkoBackground
         -   Entity:
                 Id: 95d80bd6-50e5-4984-92ae-7b8eeec651a6
                 Name: FontUI

@@ -46,7 +46,7 @@ namespace SiliconStudio.BuildEngine
             newWorkAvailable.Set();
         }
 
-        public async override Task<ResultStatus> Execute(IExecuteContext executeContext, BuilderContext builderContext)
+        public override async Task<ResultStatus> Execute(IExecuteContext executeContext, BuilderContext builderContext)
         {
             var buildStepsToWait = new List<BuildStep>();
 

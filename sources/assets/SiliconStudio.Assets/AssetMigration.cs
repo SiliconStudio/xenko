@@ -4,11 +4,11 @@
 using System;
 using System.Globalization;
 using System.IO;
-using System.Text;
+using System.Linq;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Yaml;
-using System.Linq;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 
@@ -173,7 +173,7 @@ namespace SiliconStudio.Assets
                         throw new InvalidOperationException($"Asset of type {assetType} was migrated, but still its new version {newSerializedVersion} doesn't match expected version {expectedVersion}.");
                     }
 
-                    context.Log.Info($"{Path.GetFullPath(assetFullPath)} updated from version {serializedVersion} to version {expectedVersion}");
+                    context.Log.Verbose($"{Path.GetFullPath(assetFullPath)} updated from version {serializedVersion} to version {expectedVersion}");
                 }
 
                 return true;

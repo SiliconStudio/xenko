@@ -4,5 +4,4 @@ SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
 FontSource: !FileFontProvider
     Source: ../../Resources/Fonts/SourceHanSans-Light.otf
-FontType: !RuntimeRasterizedSpriteFontType
-    Size: 18.66667
+FontType: !RuntimeRasterizedSpriteFontType {}

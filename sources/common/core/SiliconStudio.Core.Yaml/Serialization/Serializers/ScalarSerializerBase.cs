@@ -69,20 +69,25 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             var scalar = new ScalarEventInfo(value, typeOfValue)
             {
                 IsPlainImplicit = isSchemaImplicitTag,
-                Style = ScalarStyle.Plain,
+                Style = objectContext.ScalarStyle,
                 Anchor = objectContext.Anchor,
                 Tag = objectContext.Tag,
             };
 
 
-            // Parse default types 
-            switch (Type.GetTypeCode(typeOfValue))
+            if (scalar.Style == ScalarStyle.Any)
             {
-                case TypeCode.Object:
-                case TypeCode.String:
-                case TypeCode.Char:
-                    scalar.Style = ScalarStyle.Any;
-                    break;
+                // Parse default types 
+                switch (Type.GetTypeCode(typeOfValue))
+                {
+                    case TypeCode.Object:
+                    case TypeCode.String:
+                    case TypeCode.Char:
+                        break;
+                    default:
+                        scalar.Style = ScalarStyle.Plain;
+                        break;
+                }
             }
 
             scalar.RenderedValue = ConvertTo(ref objectContext);

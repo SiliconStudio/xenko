@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 311ff46f-bf71-4dd0-aa39-230dbf355536
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.10.0-beta02}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -26,7 +26,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            10db886720bc454393b4832b921c743c: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d/6788db10-bc20-4345-93b4-832b921c743c
+                            10db886720bc454393b4832b921c743c: ref!! 6788db10-bc20-4345-93b4-832b921c743c
         -   Entity:
                 Id: 1f576934-655a-4878-8388-3ff907555fdb
                 Name: ProceduralModel
@@ -63,23 +63,23 @@ Hierarchy:
                 Name: Entity (2)
                 Components:
                     c5488496f3e6234381c7620bea800bdb: !TransformComponent
-                        Id: 968448c5-e6f3-4323-81c7-620bea800bdb
+                        Id: 41037f75-9bc4-41e7-ba93-4dd488fa23da
                         Position: {X: 0.0, Y: 10.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.707106769, W: 0.707106769}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            10db886720bc454393b4832b921c743c: 771289b2-0bf6-47f1-afef-aab30a29b874/6788db10-bc20-4345-93b4-832b921c743c
+                            10db886720bc454393b4832b921c743c: ref!! 78496005-acd1-44bc-8147-a29331c21c71
         -   Entity:
                 Id: 4d184225-610c-40fd-96a8-1409ca9f8729
                 Name: Entity (3)
                 Components:
                     c5488496f3e6234381c7620bea800bdb: !TransformComponent
-                        Id: 968448c5-e6f3-4323-81c7-620bea800bdb
+                        Id: 70ac22a8-e0df-4002-8cb5-5a67efc67479
                         Position: {X: 0.0, Y: 10.0, Z: 0.0}
                         Rotation: {X: 0.442723542, Y: -0.0456308872, Z: -0.09181118, W: 0.890777349}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            10db886720bc454393b4832b921c743c: 735bf6ce-0f55-46ee-8a86-44b04c0c814d/6788db10-bc20-4345-93b4-832b921c743c
+                            10db886720bc454393b4832b921c743c: ref!! 17c071e8-5339-4c75-9aa1-151efcbf99c1
         -   Entity:
                 Id: 577fd387-7fd3-40d7-8780-14695cc57730
                 Name: LightningRod
@@ -90,12 +90,12 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 0.2, Y: 0.2, Z: 0.2}
                         Children:
-                            a894a8ad36fe9347b6b79270face9828: 1f576934-655a-4878-8388-3ff907555fdb/ada894a8-fe36-4793-b6b7-9270face9828
-                            c5488496f3e6234381c7620bea800bdb: 4d184225-610c-40fd-96a8-1409ca9f8729/968448c5-e6f3-4323-81c7-620bea800bdb
-                            a325f7caaf833255c71ed29c5cd8f489: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4/968448c5-e6f3-4323-81c7-620bea800bdb
-                            ceb9cd1b0942d4539c677c5afbd69885: 11531b59-2e60-415e-82cf-81bdfafeb1d6/968448c5-e6f3-4323-81c7-620bea800bdb
-                            570439de20c4b84999a86528b5971e83: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6/de390457-c420-49b8-99a8-6528b5971e83
-                            dcea92004f6e9542b138a52d7b0fc079: 04e87e84-9c4f-4b69-85f2-8fbac0028df2/0092eadc-6e4f-4295-b138-a52d7b0fc079
+                            a894a8ad36fe9347b6b79270face9828: ref!! ada894a8-fe36-4793-b6b7-9270face9828
+                            c5488496f3e6234381c7620bea800bdb: ref!! 70ac22a8-e0df-4002-8cb5-5a67efc67479
+                            a325f7caaf833255c71ed29c5cd8f489: ref!! 41037f75-9bc4-41e7-ba93-4dd488fa23da
+                            ceb9cd1b0942d4539c677c5afbd69885: ref!! 968448c5-e6f3-4323-81c7-620bea800bdb
+                            570439de20c4b84999a86528b5971e83: ref!! de390457-c420-49b8-99a8-6528b5971e83
+                            dcea92004f6e9542b138a52d7b0fc079: ref!! 0092eadc-6e4f-4295-b138-a52d7b0fc079
         -   Entity:
                 Id: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
                 Name: Sphere
@@ -115,13 +115,13 @@ Hierarchy:
                 Name: MetalRing
                 Components:
                     10db886720bc454393b4832b921c743c: !TransformComponent
-                        Id: 6788db10-bc20-4345-93b4-832b921c743c
+                        Id: 17c071e8-5339-4c75-9aa1-151efcbf99c1
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
-                        Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
+                        Id: 61ffe044-d4f5-4726-954e-c842e2431d5a
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials: {}
                     e479bb1aeeefad42b8d6c82c459c0472: !ParticlesSample.RotationScript,ParticlesSample.Game
@@ -132,13 +132,13 @@ Hierarchy:
                 Name: MetalRing
                 Components:
                     10db886720bc454393b4832b921c743c: !TransformComponent
-                        Id: 6788db10-bc20-4345-93b4-832b921c743c
+                        Id: 78496005-acd1-44bc-8147-a29331c21c71
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
-                        Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
+                        Id: 84899c6e-d282-478e-8d57-84877024530a
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials: {}
                     f8123cfc0fcc2948afd19f08fadd32c8: !ParticlesSample.RotationScript,ParticlesSample.Game

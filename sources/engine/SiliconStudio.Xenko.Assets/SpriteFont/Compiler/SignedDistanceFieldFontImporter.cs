@@ -41,41 +41,50 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         /// <returns></returns>
         private Bitmap LoadSDFBitmap(char c, int width, int height, int offsetx, int offsety)
         {
-            var characterCode = "0x" + Convert.ToUInt32(c).ToString("x4");
+            try
+            {
+
+                var characterCode = "0x" + Convert.ToUInt32(c).ToString("x4");
 #if DEBUG
-            var outputFile = $"{tempDir}{characterCode}_{Guid.NewGuid()}.bmp";
+                var outputFile = $"{tempDir}{characterCode}_{Guid.NewGuid()}.bmp";
 #else
-            var outputFile = Path.GetTempFileName();
+                var outputFile = Path.GetTempFileName();
 #endif
-            var exportSize = $" -size {width} {height} ";
-            var translate = $" -translate {offsetx} {offsety} ";
+                var exportSize = $" -size {width} {height} ";
+                var translate = $" -translate {offsetx} {offsety} ";
 
-            var startInfo = new ProcessStartInfo
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = msdfgenExe,
+                    Arguments = $"msdf -font \"{fontSource}\" {characterCode} -o \"{outputFile}\" -format bmp {exportSize} {translate} -autoframe",
+                    CreateNoWindow = true,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    RedirectStandardError = true,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false
+                };
+                var msdfgenProcess = Process.Start(startInfo);
+
+                if (msdfgenProcess == null)
+                    return null;
+
+                msdfgenProcess.WaitForExit();
+
+                if (File.Exists(outputFile))
+                {
+                    var bitmap = (Bitmap)Image.FromFile(outputFile);
+
+                    Normalize(bitmap);
+
+                    return bitmap;
+                }
+            }
+            catch
             {
-                FileName = msdfgenExe,
-                Arguments = $"msdf -font \"{fontSource}\" {characterCode} -o \"{outputFile}\" -format bmp {exportSize} {translate} -autoframe",
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden,
-                RedirectStandardError = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false
-            };
-            var msdfgenProcess = Process.Start(startInfo);
-
-            if (msdfgenProcess == null)
-                return null;
-
-            msdfgenProcess.WaitForExit();
-
-            if (File.Exists(outputFile))
-            {
-                var bitmap = (Bitmap)Image.FromFile(outputFile);
-
-                Normalize(bitmap);
-
-                return bitmap;
+                // ignore exception
             }
 
+            // If font generation failed for any reason, ignore it and return an empty glyph
             return new Bitmap(1, 1, PixelFormat.Format32bppArgb);
         }
 
@@ -121,7 +130,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             // Get the msdfgen.exe location
             var installationDir = DirectoryHelper.GetPackageDirectory("Xenko");
             var binDir = UPath.Combine(installationDir, new UDirectory("Bin"));
-            binDir = UPath.Combine(binDir, new UDirectory("Windows-Direct3D11"));
+            binDir = UPath.Combine(binDir, new UDirectory("Windows"));
             var msdfgen = UPath.Combine(binDir, new UFile("msdfgen.exe"));
             if (!File.Exists(msdfgen))
             {

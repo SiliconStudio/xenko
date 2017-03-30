@@ -175,24 +175,23 @@ namespace SiliconStudio.Xenko.Graphics
 
             foreach (var shaderBytecode in effectBytecode.Stages)
             {
-                var bytecodeRaw = shaderBytecode.Data;
                 var reflection = effectBytecode.Reflection;
 
                 // TODO CACHE Shaders with a bytecode hash
                 switch (shaderBytecode.Stage)
                 {
                     case ShaderStage.Vertex:
-                        vertexShader = pipelineStateCache.VertexShaderCache.Instantiate(bytecodeRaw);
+                        vertexShader = pipelineStateCache.VertexShaderCache.Instantiate(shaderBytecode);
                         // Note: input signature can be reused when reseting device since it only stores non-GPU data,
                         // so just keep it if it has already been created before.
                         if (inputSignature == null)
-                            inputSignature = bytecodeRaw;
+                            inputSignature = shaderBytecode;
                         break;
                     case ShaderStage.Domain:
-                        domainShader = pipelineStateCache.DomainShaderCache.Instantiate(bytecodeRaw);
+                        domainShader = pipelineStateCache.DomainShaderCache.Instantiate(shaderBytecode);
                         break;
                     case ShaderStage.Hull:
-                        hullShader = pipelineStateCache.HullShaderCache.Instantiate(bytecodeRaw);
+                        hullShader = pipelineStateCache.HullShaderCache.Instantiate(shaderBytecode);
                         break;
                     case ShaderStage.Geometry:
                         if (reflection.ShaderStreamOutputDeclarations != null && reflection.ShaderStreamOutputDeclarations.Count > 0)
@@ -210,18 +209,18 @@ namespace SiliconStudio.Xenko.Graphics
                             }
                             var soElements = new SharpDX.Direct3D11.StreamOutputElement[0]; // TODO CREATE StreamOutputElement from bytecode.Reflection.ShaderStreamOutputDeclarations
                             // TODO GRAPHICS REFACTOR better cache
-                            geometryShader = new SharpDX.Direct3D11.GeometryShader(GraphicsDevice.NativeDevice, bytecodeRaw, soElements, soStrides.ToArray(), reflection.StreamOutputRasterizedStream);
+                            geometryShader = new SharpDX.Direct3D11.GeometryShader(GraphicsDevice.NativeDevice, shaderBytecode, soElements, soStrides.ToArray(), reflection.StreamOutputRasterizedStream);
                         }
                         else
                         {
-                            geometryShader = pipelineStateCache.GeometryShaderCache.Instantiate(bytecodeRaw);
+                            geometryShader = pipelineStateCache.GeometryShaderCache.Instantiate(shaderBytecode);
                         }
                         break;
                     case ShaderStage.Pixel:
-                        pixelShader = pipelineStateCache.PixelShaderCache.Instantiate(bytecodeRaw);
+                        pixelShader = pipelineStateCache.PixelShaderCache.Instantiate(shaderBytecode);
                         break;
                     case ShaderStage.Compute:
-                        computeShader = pipelineStateCache.ComputeShaderCache.Instantiate(bytecodeRaw);
+                        computeShader = pipelineStateCache.ComputeShaderCache.Instantiate(shaderBytecode);
                         break;
                 }
             }
@@ -320,12 +319,12 @@ namespace SiliconStudio.Xenko.Graphics
         // Caches
         private class DevicePipelineStateCache : IDisposable
         {
-            public readonly GraphicsCache<byte[], ObjectId, SharpDX.Direct3D11.VertexShader> VertexShaderCache;
-            public readonly GraphicsCache<byte[], ObjectId, SharpDX.Direct3D11.PixelShader> PixelShaderCache;
-            public readonly GraphicsCache<byte[], ObjectId, SharpDX.Direct3D11.GeometryShader> GeometryShaderCache;
-            public readonly GraphicsCache<byte[], ObjectId, SharpDX.Direct3D11.HullShader> HullShaderCache;
-            public readonly GraphicsCache<byte[], ObjectId, SharpDX.Direct3D11.DomainShader> DomainShaderCache;
-            public readonly GraphicsCache<byte[], ObjectId, SharpDX.Direct3D11.ComputeShader> ComputeShaderCache;
+            public readonly GraphicsCache<ShaderBytecode, ObjectId, SharpDX.Direct3D11.VertexShader> VertexShaderCache;
+            public readonly GraphicsCache<ShaderBytecode, ObjectId, SharpDX.Direct3D11.PixelShader> PixelShaderCache;
+            public readonly GraphicsCache<ShaderBytecode, ObjectId, SharpDX.Direct3D11.GeometryShader> GeometryShaderCache;
+            public readonly GraphicsCache<ShaderBytecode, ObjectId, SharpDX.Direct3D11.HullShader> HullShaderCache;
+            public readonly GraphicsCache<ShaderBytecode, ObjectId, SharpDX.Direct3D11.DomainShader> DomainShaderCache;
+            public readonly GraphicsCache<ShaderBytecode, ObjectId, SharpDX.Direct3D11.ComputeShader> ComputeShaderCache;
             public readonly GraphicsCache<BlendStateDescription, BlendStateDescription, SharpDX.Direct3D11.BlendState> BlendStateCache;
             public readonly GraphicsCache<RasterizerStateDescription, RasterizerStateDescription, SharpDX.Direct3D11.RasterizerState> RasterizerStateCache;
             public readonly GraphicsCache<DepthStencilStateDescription, DepthStencilStateDescription, SharpDX.Direct3D11.DepthStencilState> DepthStencilStateCache;
@@ -333,12 +332,12 @@ namespace SiliconStudio.Xenko.Graphics
             public DevicePipelineStateCache(GraphicsDevice graphicsDevice)
             {
                 // Shaders
-                VertexShaderCache = new GraphicsCache<byte[], ObjectId, SharpDX.Direct3D11.VertexShader>(source => ObjectId.FromBytes(source), source => new SharpDX.Direct3D11.VertexShader(graphicsDevice.NativeDevice, source));
-                PixelShaderCache = new GraphicsCache<byte[], ObjectId, SharpDX.Direct3D11.PixelShader>(source => ObjectId.FromBytes(source), source => new SharpDX.Direct3D11.PixelShader(graphicsDevice.NativeDevice, source));
-                GeometryShaderCache = new GraphicsCache<byte[], ObjectId, SharpDX.Direct3D11.GeometryShader>(source => ObjectId.FromBytes(source), source => new SharpDX.Direct3D11.GeometryShader(graphicsDevice.NativeDevice, source));
-                HullShaderCache = new GraphicsCache<byte[], ObjectId, SharpDX.Direct3D11.HullShader>(source => ObjectId.FromBytes(source), source => new SharpDX.Direct3D11.HullShader(graphicsDevice.NativeDevice, source));
-                DomainShaderCache = new GraphicsCache<byte[], ObjectId, SharpDX.Direct3D11.DomainShader>(source => ObjectId.FromBytes(source), source => new SharpDX.Direct3D11.DomainShader(graphicsDevice.NativeDevice, source));
-                ComputeShaderCache = new GraphicsCache<byte[], ObjectId, SharpDX.Direct3D11.ComputeShader>(source => ObjectId.FromBytes(source), source => new SharpDX.Direct3D11.ComputeShader(graphicsDevice.NativeDevice, source));
+                VertexShaderCache = new GraphicsCache<ShaderBytecode, ObjectId, SharpDX.Direct3D11.VertexShader>(source => source.Id, source => new SharpDX.Direct3D11.VertexShader(graphicsDevice.NativeDevice, source));
+                PixelShaderCache = new GraphicsCache<ShaderBytecode, ObjectId, SharpDX.Direct3D11.PixelShader>(source => source.Id, source => new SharpDX.Direct3D11.PixelShader(graphicsDevice.NativeDevice, source));
+                GeometryShaderCache = new GraphicsCache<ShaderBytecode, ObjectId, SharpDX.Direct3D11.GeometryShader>(source => source.Id, source => new SharpDX.Direct3D11.GeometryShader(graphicsDevice.NativeDevice, source));
+                HullShaderCache = new GraphicsCache<ShaderBytecode, ObjectId, SharpDX.Direct3D11.HullShader>(source => source.Id, source => new SharpDX.Direct3D11.HullShader(graphicsDevice.NativeDevice, source));
+                DomainShaderCache = new GraphicsCache<ShaderBytecode, ObjectId, SharpDX.Direct3D11.DomainShader>(source => source.Id, source => new SharpDX.Direct3D11.DomainShader(graphicsDevice.NativeDevice, source));
+                ComputeShaderCache = new GraphicsCache<ShaderBytecode, ObjectId, SharpDX.Direct3D11.ComputeShader>(source => source.Id, source => new SharpDX.Direct3D11.ComputeShader(graphicsDevice.NativeDevice, source));
 
                 // States
                 BlendStateCache = new GraphicsCache<BlendStateDescription, BlendStateDescription, SharpDX.Direct3D11.BlendState>(source => source, source => new SharpDX.Direct3D11.BlendState(graphicsDevice.NativeDevice, CreateBlendState(source)));

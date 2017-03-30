@@ -22,7 +22,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         public SpriteRenderer3DTests()
         {
-            CurrentVersion = 4;
+            //CurrentVersion = 4;
+            CurrentVersion = 5; // Build machine changed
             GraphicsDeviceManager.PreferredBackBufferWidth = ScreenWidth;
             GraphicsDeviceManager.PreferredBackBufferHeight = ScreenHeight;
         }
@@ -95,7 +96,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             // add all the entities to the scene
             foreach (var entity in entities)
-                SceneSystem.SceneInstance.Scene.Entities.Add(entity);
+                SceneSystem.SceneInstance.RootScene.Entities.Add(entity);
 
             cameraScript = new TestCamera();
             CameraComponent = cameraScript.Camera;

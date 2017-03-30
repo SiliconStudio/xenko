@@ -59,8 +59,8 @@ namespace SiliconStudio.Xenko.Assets
             Services = new ServiceRegistry();
             ContentManager = new ContentManager(Services);
 
-            var renderingSettings = gameSettings.Get<RenderingSettings>();
-            GraphicsDevice = GraphicsDevice.New(DeviceCreationFlags.None, new[] { renderingSettings.DefaultGraphicsProfile });
+            var renderingSettings = gameSettings.GetOrCreate<RenderingSettings>();
+            GraphicsDevice = GraphicsDevice.New(DeviceCreationFlags.Debug, new[] { renderingSettings.DefaultGraphicsProfile });
 
             var graphicsDeviceService = new GraphicsDeviceServiceLocal(Services, GraphicsDevice);
             EffectSystem = new EffectSystem(Services);
@@ -84,13 +84,14 @@ namespace SiliconStudio.Xenko.Assets
                     renderingSettings.ColorSpace == ColorSpace.Linear ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget),
                 PixelFormat.D24_UNorm_S8_UInt);
 
-            SceneSystem.MainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.Presenter.BackBuffer, GraphicsDevice.Presenter.DepthStencilBuffer);
+            GraphicsContext.CommandList.SetRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
         }
 
         public void Dispose()
         {
             GraphicsDevice.Presenter.Dispose();
             GameSystems.Dispose();
+            GraphicsDevice.Dispose();
         }
     }
 }

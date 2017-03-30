@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Reflection
@@ -27,7 +28,7 @@ namespace SiliconStudio.Core.Reflection
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
         /// </summary>
-        public ObjectDescriptor(ITypeDescriptorFactory factory, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+        public ObjectDescriptor(ITypeDescriptorFactory factory, [NotNull] Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
         {
             if (factory == null) throw new ArgumentNullException(nameof(factory));
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -50,10 +51,25 @@ namespace SiliconStudio.Core.Reflection
                     Style = styleAttribute.Style;
                 }
             }
+
+            // Get DefaultMemberMode from DataContract
+            DefaultMemberMode = DataMemberMode.Default;
+            var currentType = type;
+            while (currentType != null)
+            {
+                var dataContractAttribute = AttributeRegistry.GetAttribute<DataContractAttribute>(currentType);
+                if (dataContractAttribute != null && (dataContractAttribute.Inherited || currentType == type))
+                {
+                    DefaultMemberMode = dataContractAttribute.DefaultMemberMode;
+                    break;
+                }
+                currentType = currentType.BaseType;
+            }
         }
 
         protected IAttributeRegistry AttributeRegistry => factory.AttributeRegistry;
 
+        [NotNull]
         public Type Type { get; }
 
         public IEnumerable<IMemberDescriptor> Members => members;
@@ -76,6 +92,8 @@ namespace SiliconStudio.Core.Reflection
         public List<Attribute> Attributes { get; }
 
         public DataStyle Style { get; }
+
+        public DataMemberMode DefaultMemberMode { get; }
 
         public bool IsCompilerGenerated { get; }
 
@@ -206,18 +224,18 @@ namespace SiliconStudio.Core.Reflection
         {
             var memberType = member.Type;
 
-            // The default mode is Content, which will not use the setter to restore value if the object is a class (but behave like Assign for value types)
-            member.Mode = DataMemberMode.Content;
-            if (!member.HasSet && (memberType == typeof(string) || !memberType.IsClass) && !memberType.IsInterface && !Type.IsAnonymous())
-            {
-                // If there is no setter, and the value is a string or a value type, we won't write the object at all.
-                member.Mode = DataMemberMode.Never;
-            }
+            // Start with DataContractAttribute.DefaultMemberMode (if set)
+            member.Mode = DefaultMemberMode;
+            member.Mask = 1;
+
 
             // Gets the style
             var styleAttribute = AttributeRegistry.GetAttribute<DataStyleAttribute>(member.MemberInfo);
-            member.Style = styleAttribute?.Style ?? DataStyle.Any;
-            member.Mask = 1;
+            if (styleAttribute != null)
+            {
+                member.Style = styleAttribute.Style;
+                member.ScalarStyle = styleAttribute.ScalarStyle;
+            }
 
             // Handle member attribute
             var memberAttribute = AttributeRegistry.GetAttribute<DataMemberAttribute>(member.MemberInfo);
@@ -231,11 +249,20 @@ namespace SiliconStudio.Core.Reflection
                         throw new ArgumentException($"{memberType.FullName} {member.OriginalName} is not writeable by {memberAttribute.Mode.ToString()}.");
                 }
 
-                if (memberAttribute.Mode != DataMemberMode.Default)
-                {
-                    member.Mode = memberAttribute.Mode;
-                }
+                member.Mode = memberAttribute.Mode;
                 member.Order = memberAttribute.Order;
+            }
+
+            // If mode is Default, let's resolve to the actual mode depending on getter/setter existence and object type
+            if (member.Mode == DataMemberMode.Default)
+            {
+                // The default mode is Content, which will not use the setter to restore value if the object is a class (but behave like Assign for value types)
+                member.Mode = DataMemberMode.Content;
+                if (!member.HasSet && (memberType == typeof(string) || !memberType.IsClass) && !memberType.IsInterface && !Type.IsAnonymous())
+                {
+                    // If there is no setter, and the value is a string or a value type, we won't write the object at all.
+                    member.Mode = DataMemberMode.Never;
+                }
             }
 
             // Process all attributes just once instead of getting them one by one
@@ -299,8 +326,16 @@ namespace SiliconStudio.Core.Reflection
             {
                 object defaultValue = defaultValueAttribute.Value;
                 Type defaultType = defaultValue?.GetType();
-                if (defaultType.IsNumeric() && defaultType != memberType)
-                    defaultValue = memberType.CastToNumericType(defaultValue);
+                if (defaultType != null && defaultType.IsNumeric() && defaultType != memberType)
+                {
+                    try
+                    {
+                        defaultValue = Convert.ChangeType(defaultValue, memberType);
+                    }
+                    catch (InvalidCastException)
+                    {
+                    }
+                }
                 member.ShouldSerialize = obj => !Equals(defaultValue, member.Get(obj));
             }
 

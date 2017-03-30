@@ -151,18 +151,23 @@ namespace SiliconStudio.Assets
                 return projs;
             });
 
-            foreach (var proj in allProjs)
+            await RestoreNugetPackagesNonRecursive(logger, solutionFullPath, force, allProjs.Select(x => x.DirectoryPath));
+        }
+
+        public static async Task RestoreNugetPackagesNonRecursive(ILogger logger, string solutionFullPath, bool force, IEnumerable<string> projectPaths)
+        {
+            foreach (var projectPath in projectPaths)
             {
                 // TODO: We directly find the project.json rather than the solution file (otherwise NuGet reports an error if the solution didn't contain a project.json or if solution is not saved yet)
                 // However, the problem is that if Game was referencing another assembly with a project.json, it won't be updated
                 // At some point we should find all project.json of the full solution, and keep regenerating them if any of them changed
-                var projectJson = Path.Combine(proj.DirectoryPath, "project.json");
+                var projectJson = Path.Combine(projectPath, "project.json");
 
                 // Nothing to do if there is no project.json
                 if (!File.Exists(projectJson)) continue;
 
                 // Check if project.json is newer than project.lock.json (GetLastWriteTimeUtc returns year 1601 if file doesn't exist so it will also generate it)
-                var projectLockJson = Path.Combine(proj.DirectoryPath, "project.lock.json");
+                var projectLockJson = Path.Combine(projectPath, "project.lock.json");
                 if (force || File.GetLastWriteTimeUtc(projectJson) > File.GetLastWriteTimeUtc(projectLockJson))
                 {
                     // Check if it needs to be regenerated

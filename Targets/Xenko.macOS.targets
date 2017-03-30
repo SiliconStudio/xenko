@@ -1,48 +1,33 @@
-<!-- Build file post-included by all Xenko projects -->
+﻿<!-- Build file post-included by all Xenko projects -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
     <SiliconStudioNETFrameworkVersion>v4.5</SiliconStudioNETFrameworkVersion>
   </PropertyGroup>
-  
-  <!-- Embed native libraries -->
+
   <ItemGroup>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libxenko.dylib"/>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libbulletc.dylib"/>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libcore.dylib"/>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\*.config"/>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libSDL2-2.0.0.dylib"/>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libfreetype.dylib"/>
-    <!-- Users custom native libraries -->
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\**\*.dylib" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libSDL2-2.0.0"/>
+
+    <None Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'" Include="$(SiliconStudioPackageXenkoPlatformBin)\CoreCLRSetup.sh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'" Include="$(SiliconStudioPackageXenkoPlatformBin)\runtimeconfig.json">
+      <Link>%(RecursiveDir)$(AssemblyName).runtimeconfig.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
-  <!-- On macOS platform automatically add the following references -->
-  <Choose>
-    <When Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
-      <ItemGroup>
-        <Content Include="@(SiliconStudioEmbeddedNativeLibrary)">
-          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-          <Visible>False</Visible>
-        </Content>
-        <None Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'" Include="$(SiliconStudioPackageXenkoPlatformBin)\CoreCLRSetup.sh">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'" Include="$(SiliconStudioPackageXenkoPlatformBin)\runtimeconfig.json">
-          <Link>%(RecursiveDir)$(AssemblyName).runtimeconfig.json</Link>
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-      </ItemGroup>
-	  </When>
-  </Choose>
+  <!-- Copy native libraries to output -->
+  <Target Name="_SiliconStudioSetupNativeLibraries" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <None Include="@(_SiliconStudioDependencyNativeLib)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+  </Target>
 
-  <!-- On Vulkan embed the SPIR-V shader compiler -->
-  <Target Name="EmbedShaderCompiler" BeforeTargets="SiliconStudioUpdateGraphicsPlatform" Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan'">
-    <Copy Condition="Exists('$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator')" SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
-  </Target>  
-  
-  <UsingTask TaskName="PackageDeployTask" AssemblyFile="$(SiliconStudioPackageXenko)\bin\Windows-Direct3D11\SiliconStudio.Xenko.Assets.dll"/>
+  <UsingTask TaskName="PackageDeployTask" AssemblyFile="$(SiliconStudioPackageXenko)\bin\Windows\SiliconStudio.Xenko.Assets.dll"/>
 
   <Target Name="DeployOnmacOS" AfterTargets="SiliconStudioCompileAsset" Condition="('$(SiliconStudioIsExecutable)' == 'true') AND ('$(SiliconStudioUnitTest)' != 'true') AND ('$(SiliconStudioDeploy)' == 'true')">
     <PackageDeployTask

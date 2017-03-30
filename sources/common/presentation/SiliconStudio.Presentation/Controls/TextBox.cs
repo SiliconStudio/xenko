@@ -6,6 +6,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -22,7 +23,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="UseTimedValidation"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty UseTimedValidationProperty = DependencyProperty.Register("UseTimedValidation", typeof(bool), typeof(TextBox), new PropertyMetadata(false, OnUseTimedValidationPropertyChanged));
+        public static readonly DependencyProperty UseTimedValidationProperty = DependencyProperty.Register("UseTimedValidation", typeof(bool), typeof(TextBox), new PropertyMetadata(BooleanBoxes.FalseBox, OnUseTimedValidationPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="ValidationDelay"/> dependency property.
@@ -35,26 +36,6 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyPropertyKey TrimmedTextPropertyKey = DependencyProperty.RegisterReadOnly("TrimmedText", typeof(string), typeof(TextBox), new PropertyMetadata(""));
 
         /// <summary>
-        /// Identifies the <see cref="WatermarkContent"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty WatermarkContentProperty = DependencyProperty.Register("WatermarkContent", typeof(object), typeof(TextBox), new PropertyMetadata(null));
-
-        /// <summary>
-        /// Identifies the <see cref="WatermarkContentTemplate"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty WatermarkContentTemplateProperty = DependencyProperty.Register("WatermarkContentTemplate", typeof(DataTemplate), typeof(TextBox), new PropertyMetadata(null));
-
-        /// <summary>
-        /// Identifies the <see cref="TextTrimming"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty TextTrimmingProperty = DependencyProperty.Register("TextTrimming", typeof(TextTrimming), typeof(TextBox), new PropertyMetadata(TextTrimming.None));
-
-        /// <summary>
-        /// Identifies the <see cref="TrimmingSource"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty TrimmingSourceProperty = DependencyProperty.Register("TrimmingSource", typeof(TrimmingSource), typeof(TextBox), new PropertyMetadata(TrimmingSource.End));
-
-        /// <summary>
         /// Identifies the <see cref="TrimmedText"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty TrimmedTextProperty = TrimmedTextPropertyKey.DependencyProperty;
@@ -62,7 +43,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Clears the current <see cref="System.Windows.Controls.TextBox.Text"/> of a text box.
         /// </summary>
-        public static RoutedCommand ClearTextCommand { get; private set; }
+        public static RoutedCommand ClearTextCommand { get; }
         
         static TextBox()
         {
@@ -80,7 +61,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether the text should be automatically validated after a delay defined by the <see cref="ValidationDelay"/> property.
         /// </summary>
-        public bool UseTimedValidation { get { return (bool)GetValue(UseTimedValidationProperty); } set { SetValue(UseTimedValidationProperty, value); } }
+        public bool UseTimedValidation { get { return (bool)GetValue(UseTimedValidationProperty); } set { SetValue(UseTimedValidationProperty, value.Box()); } }
 
         /// <summary>
         /// Gets or sets the amount of time before a validation of input text happens, in milliseconds.
@@ -93,16 +74,6 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets the trimmed text to display when the control does not have the focus, depending of the value of the <see cref="TextTrimming"/> property.
         /// </summary>
         public string TrimmedText { get { return (string)GetValue(TrimmedTextPropertyKey.DependencyProperty); } private set { SetValue(TrimmedTextPropertyKey, value); } }
-
-        /// <summary>
-        /// Gets or sets the content to display when the TextBox is empty.
-        /// </summary>
-        public object WatermarkContent { get { return GetValue(WatermarkContentProperty); } set { SetValue(WatermarkContentProperty, value); } }
-
-        /// <summary>
-        /// Gets or sets the template of the content to display when the TextBox is empty.
-        /// </summary>
-        public DataTemplate WatermarkContentTemplate { get { return (DataTemplate)GetValue(WatermarkContentTemplateProperty); } set { SetValue(WatermarkContentTemplateProperty, value); } }
 
         /// <inheritdoc/>
         public override void OnApplyTemplate()

@@ -1,19 +1,10 @@
 !Texture
 Id: 39070e2f-ef25-4600-86f8-309c7081b6bb
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../data/tests/Sphere.png
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: Color32Bits
-Alpha: Interpolated
+IsCompressed: false
+Type: !ColorTextureType
+    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+    Alpha: Interpolated
 GenerateMipmaps: false
-~Base:
-    ~Id: 13389391-25de-4929-8543-dc8403414819
-    Location: --import--
-    Asset: !Texture
-        Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: {Xenko: 1.4.0-beta}
-        Tags: []
-        Source: 
-        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
-        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

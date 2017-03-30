@@ -1,10 +1,11 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Engine.Processors;
@@ -65,7 +66,6 @@ namespace SiliconStudio.Xenko.Engine
         {
             Model = model;
             IsShadowCaster = true;
-            IsShadowReceiver = true;
         }
 
         /// <summary>
@@ -100,6 +100,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>The list of materials to use with the model. This list overrides the default materials of the model.</userdoc>
         [DataMember(20)]
         [Category]
+        [MemberCollection(ReadOnly =  true)]
         public IndexingDictionary<Material> Materials { get; } = new IndexingDictionary<Material>();
 
         [DataMemberIgnore, DataMemberUpdatable]
@@ -139,14 +140,11 @@ namespace SiliconStudio.Xenko.Engine
         public bool IsShadowCaster { get; set; }
 
         /// <summary>
-        /// Gets or sets a boolean indicating if this model component is receiving shadows.
+        /// The render group for this component.
         /// </summary>
-        /// <value>A boolean indicating if this model component is receiving shadows.</value>
-        /// <userdoc>If checked, the model can be covered by the shadow of another model.</userdoc>
-        [DataMember(40)]
-        [DefaultValue(true)]
-        [Display("Receive Shadows?")]
-        public bool IsShadowReceiver { get; set; }
+        [DataMember(50)]
+        [DefaultValue(RenderGroup.Group0)]
+        public RenderGroup RenderGroup { get; set; }
 
         /// <summary>
         /// Gets the bounding box in world space.

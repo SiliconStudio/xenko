@@ -28,19 +28,20 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         /// <param name="name">The name.</param>
         /// <exception cref="System.ArgumentNullException">context</exception>
-        protected ImageEffect(string name)
+        protected ImageEffect(string name, bool supersample = false)
             : base(name)
         {
             inputTextures = new Texture[128];
             maxInputTextureIndex = -1;
             EnableSetRenderTargets = true;
+            SamplingPattern = supersample ? SamplingPattern.Expanded : SamplingPattern.Linear;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffect" /> class.
         /// </summary>
         protected ImageEffect()
-            : this(null)
+            : this(null, false)
         {
         }
 
@@ -61,7 +62,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         /// <value>A boolean to enable GraphicsDevice.SetDepthAndRenderTargets from output. Default is <c>true</c></value>
         protected bool EnableSetRenderTargets { get; set; }
-        
+
         /// <summary>
         /// Sets an input texture
         /// </summary>
@@ -161,22 +162,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
                         createdOutputRenderTargetViews[i] = outputRenderTargetView.ToTextureView(ViewType.Single, i, 0);
 
                     context.CommandList.SetRenderTargetsAndViewport(createdOutputRenderTargetViews);
-
-                    if (viewport.HasValue)
-                    {
-                        for (int i = 0; i < createdOutputRenderTargetViews.Length; i++)
-                        {
-                            context.CommandList.SetViewport(i, viewport.Value);
-                        }
-                    }
                 }
                 else
                 {
                     context.CommandList.SetRenderTargetAndViewport(null, outputRenderTargetView);
-                    if (viewport.HasValue)
-                    {
-                        context.CommandList.SetViewport(viewport.Value);
-                    }
                 }
             }
             else if (outputRenderTargetViews != null)
@@ -186,14 +175,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     context.CommandList.ResourceBarrierTransition(renderTarget, GraphicsResourceState.RenderTarget);
 
                 context.CommandList.SetRenderTargetsAndViewport(outputRenderTargetViews);
+            }
 
-                if (viewport.HasValue)
-                {
-                    for (int i = 0; i < outputRenderTargetViews.Length; i++)
-                    {
-                        context.CommandList.SetViewport(i, viewport.Value);
-                    }
-                }
+            if (viewport.HasValue)
+            {
+                context.CommandList.SetViewport(viewport.Value);
             }
         }
 

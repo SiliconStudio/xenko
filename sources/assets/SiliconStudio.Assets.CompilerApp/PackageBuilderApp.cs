@@ -17,6 +17,7 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.VisualStudio.Debugging;
 using SiliconStudio.Xenko.Assets.Models;
 using SiliconStudio.Xenko.Assets.SpriteFont;
 using SiliconStudio.Xenko.Graphics;
@@ -148,6 +149,22 @@ namespace SiliconStudio.Assets.CompilerApp
                         }
                     }
                 }
+                },
+                {
+                    "reattach-debugger=", "Reattach to a Visual Studio debugger", v =>
+                    {
+                        int debuggerProcessId;
+                        if (!string.IsNullOrEmpty(v) && int.TryParse(v, out debuggerProcessId))
+                        {
+                            if (!Debugger.IsAttached)
+                            {
+                                using (var debugger = VisualStudioDebugger.GetByProcess(debuggerProcessId))
+                                {
+                                    debugger?.Attach();
+                                }
+                            }
+                        }
+                    }
                 },
             };
 

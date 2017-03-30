@@ -6,7 +6,6 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Assets.UI
@@ -14,18 +13,18 @@ namespace SiliconStudio.Xenko.Assets.UI
     public abstract class UIAssetCompilerBase<T> : AssetCompilerBase
         where T : UIAssetBase
     {
-        protected sealed override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected sealed override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (T)assetItem.Asset;
-            result.BuildSteps = new AssetBuildStep(assetItem) { Create(targetUrlInStorage, asset) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { Create(targetUrlInStorage, asset, assetItem.Package) };
         }
 
-        protected abstract UIConvertCommand Create(string url, T parameters);
+        protected abstract UIConvertCommand Create(string url, T parameters, Package package);
 
         protected abstract class UIConvertCommand : AssetCommand<T>
         {
-            protected UIConvertCommand(string url, T parameters)
-                : base(url, parameters)
+            protected UIConvertCommand(string url, T parameters, Package package)
+                : base(url, parameters, package)
             {
             }
 

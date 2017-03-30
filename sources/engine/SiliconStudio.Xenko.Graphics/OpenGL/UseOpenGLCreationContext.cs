@@ -34,6 +34,10 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly bool tegraWorkaround;
 #endif
 
+#if SILICONSTUDIO_PLATFORM_IOS
+        private OpenGLES.EAGLContext previousContext;
+#endif
+
         public bool UseDeviceCreationContext => useDeviceCreationContext;
 
         public UseOpenGLCreationContext(GraphicsDevice graphicsDevice)
@@ -65,14 +69,21 @@ namespace SiliconStudio.Xenko.Graphics
                     graphicsDevice.AsyncPendingTaskWaiting = false;
 #endif
 
+
+#if SILICONSTUDIO_PLATFORM_IOS
+                previousContext = OpenGLES.EAGLContext.CurrentContext;
+                var localContext = graphicsDevice.ThreadLocalContext.Value;
+                OpenGLES.EAGLContext.SetCurrentContext(localContext);
+#else
                 // Bind the context
                 deviceCreationContext = graphicsDevice.deviceCreationContext;
                 deviceCreationContext.MakeCurrent(graphicsDevice.deviceCreationWindowInfo);
+#endif
             }
             else
             {
                 // TODO Hardcoded to the fact it uses only one command list, this should be fixed
-                CommandList = graphicsDevice.MainCommandList;
+                CommandList = graphicsDevice.InternalMainCommandList;
             }
         }
 
@@ -84,8 +95,13 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     GL.Flush();
 
+#if SILICONSTUDIO_PLATFORM_IOS
+                    if(previousContext != null)
+                        OpenGLES.EAGLContext.SetCurrentContext(previousContext);
+#else
                     // Restore graphics context
                     GraphicsDevice.UnbindGraphicsContext(deviceCreationContext);
+#endif
                 }
             }
             finally

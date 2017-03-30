@@ -75,17 +75,14 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
         {
             var obj = new ClassWithDictionaries();
             var container = new NodeContainer();
-            IGraphNode model = container.GetOrCreateNode(obj);
-            Helper.PrintModelContainerContent(container, model);
+            var model = container.GetOrCreateNode(obj);
 
-            Assert.That(model.TryGetChild("StringIntDic").Children.Count, Is.EqualTo(0));
-            Assert.That(model.TryGetChild("StringIntDic").Content.Value, Is.SameAs(obj.StringIntDic));
-            Assert.That(model.TryGetChild("StringIntDic").Content.IsReference, Is.False);
-            Assert.That(model.TryGetChild("StringClassDic").Children.Count, Is.EqualTo(0));
-            Assert.That(model.TryGetChild("StringClassDic").Content.Value, Is.SameAs(obj.StringClassDic));
-            Assert.That(model.TryGetChild("StringClassDic").Content.Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
+            Assert.That(model["StringIntDic"].Retrieve(), Is.SameAs(obj.StringIntDic));
+            Assert.That(model["StringIntDic"].IsReference, Is.False);
+            Assert.That(model["StringClassDic"].Retrieve(), Is.SameAs(obj.StringClassDic));
+            //Assert.That(model["StringClassDic"].Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
             var enumerator = obj.StringClassDic.GetEnumerator();
-            foreach (var reference in model.TryGetChild("StringClassDic").Content.Reference.AsEnumerable)
+            foreach (var reference in model["StringClassDic"].Target.ItemReferences)
             {
                 enumerator.MoveNext();
                 var keyValuePair = enumerator.Current;
@@ -122,15 +119,12 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
         {
             var obj = new ClassWithDictionaries();
             var container = new NodeContainer();
-            IGraphNode model = container.GetOrCreateNode(obj);
-            Helper.PrintModelContainerContent(container, model);
-            ((Dictionary<string, int>)model.TryGetChild("StringIntDic").Content.Value)["b"] = 42;
-            ((Dictionary<string, int>)model.TryGetChild("StringIntDic").Content.Value).Add("d", 26);
+            var model = container.GetOrCreateNode(obj);
+            ((Dictionary<string, int>)model["StringIntDic"].Retrieve())["b"] = 42;
+            ((Dictionary<string, int>)model["StringIntDic"].Retrieve()).Add("d", 26);
             Assert.That(obj.StringIntDic.Count, Is.EqualTo(4));
             Assert.That(obj.StringIntDic["b"], Is.EqualTo(42));
             Assert.That(obj.StringIntDic["d"], Is.EqualTo(26));
-            Helper.PrintModelContainerContent(container, model);
-            Helper.ConsistencyCheck(container, obj);
         }
 
     }

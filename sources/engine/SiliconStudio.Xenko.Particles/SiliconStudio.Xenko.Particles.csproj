@@ -11,7 +11,7 @@
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
     <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -58,7 +58,6 @@
     <Compile Include="Module.cs" />
     <Compile Include="ParticleSystemSettings.cs" />
     <Compile Include="ParticleTransform.cs" />
-    <Compile Include="Rendering\ParticleEmitterPipelinePlugin.cs" />
     <Compile Include="Rendering\ParticleEmitterTransparentRenderStageSelector.cs" />
     <Compile Include="Rendering\ParticleSystemRenderProcessor.cs" />
     <Compile Include="Rendering\ParticleEmitterRenderFeature.cs" />

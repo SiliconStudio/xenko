@@ -1,8 +1,9 @@
 !GameSettingsAsset
 Id: 8b386f9f-7a68-4d71-afd8-5f10c3cbdaf5
-SerializedVersion: {Xenko: 1.6.1-alpha01}
+SerializedVersion: {Xenko: 1.11.0.0}
 Tags: []
 DefaultScene: 86fed268-baa8-4929-9eba-4d14cf3a0e68:Raycasting
+GraphicsCompositor: d0f9813f-8924-4b77-a91e-51be4084acf7:GraphicsCompositor
 Defaults:
     - !SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics
         DefaultBackBufferWidth: 1280
@@ -20,6 +21,22 @@ Defaults:
         Flags: None
         MaxSubSteps: 1
         FixedTimeStep: 0.0166666675
+    - !SiliconStudio.Xenko.Audio.AudioEngineSettings,SiliconStudio.Xenko.Audio
+        HrtfSupport: false
+    - !SiliconStudio.Xenko.Navigation.NavigationSettings,SiliconStudio.Xenko.Navigation
+        EnableDynamicNavigationMesh: false
+        IncludedCollisionGroups: AllFilter
+        BuildSettings:
+            CellHeight: 0.2
+            CellSize: 0.3
+            TileSize: 32
+            MinRegionArea: 2
+            RegionMergeArea: 20
+            MaxEdgeLen: 12.0
+            MaxEdgeError: 1.3
+            DetailSamplingDistance: 6.0
+            MaxDetailSamplingError: 1.0
+        Groups: []
 Overrides: []
 PlatformFilters:
     - PowerVR SGX 54[0-9]

@@ -67,6 +67,11 @@ namespace SiliconStudio.Core.Reflection
         public DataStyle Style { get; set; }
 
         /// <summary>
+        /// Gets the default style attached to this member.
+        /// </summary>
+        public ScalarStyle ScalarStyle { get; set; }
+
+        /// <summary>
         /// Gets the member information.
         /// </summary>
         /// <value>The member information.</value>

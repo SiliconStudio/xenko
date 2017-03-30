@@ -1,7 +1,6 @@
 !Package
 Id: 49e75772-2004-4975-a2ca-fac7fcb12e70
-SerializedVersion: {Assets: 0.0.3}
-Tags: []
+SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: MaterialShader
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.7.0-alpha03
+            Version: 1.11.1.2
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -20,7 +19,6 @@ Profiles:
             -   Path: Assets/Shared
             -   Path: MaterialShader.Game/Effects
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: b77b0b3f-c7fc-401e-a289-73be6aebb49e
                 Location: MaterialShader.Game/MaterialShader.Game.csproj
@@ -31,8 +29,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Windows
         OutputGroupDirectories: {}
-        Properties:
-            Xenko.GraphicsPlatform: Direct3D11
         ProjectReferences:
             -   Id: f4f74eb3-d2b6-405b-b483-1835e81a3a40
                 Location: MaterialShader.Windows/MaterialShader.Windows.csproj

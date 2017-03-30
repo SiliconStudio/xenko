@@ -9,7 +9,7 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Graphics.Font
 {
-    [DataSerializerGlobal(typeof(ReferenceSerializer<SignedDistanceFieldSpriteFont>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<SignedDistanceFieldSpriteFont>), Profile = "Content")]
     [ContentSerializer(typeof(SignedDistanceFieldSpriteFontContentSerializer))]
     [DataSerializer(typeof(SignedDistanceFieldSpriteFontSerializer))]
     internal class SignedDistanceFieldSpriteFont : SpriteFont

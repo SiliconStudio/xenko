@@ -2,14 +2,16 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
 using SiliconStudio.Xenko.Input;
@@ -34,7 +36,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestMultipleRenderTargets(bool rotateModel)
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5;
             this.rotateModel = rotateModel;
         }
 
@@ -103,45 +105,32 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             const int TargetWidth = 800;
             const int TargetHeight = 480;
 
-            // Create render targets
-            textures = new []
+            textures = new[]
             {
                 Texture.New2D(GraphicsDevice, TargetWidth, TargetHeight, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
                 Texture.New2D(GraphicsDevice, TargetWidth, TargetHeight, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
                 Texture.New2D(GraphicsDevice, TargetWidth, TargetHeight, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource)
             };
 
-            var depthBuffer = Texture.New2D(GraphicsDevice, TargetWidth, TargetHeight, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil);
-
-            var multipleRenderFrames = new DirectRenderFrameProvider(RenderFrame.FromTexture(textures, depthBuffer));
-
             // Setup the default rendering pipeline
-            scene = new Scene
-            {
-                Settings =
-                {
-                    GraphicsCompositor = new SceneGraphicsCompositorLayers
-                    {
-                        Cameras = { mainCamera.Get<CameraComponent>() },
-                        ModelEffect = "MultipleRenderTargetsEffect",
-                        Master =
-                        {
-                            Renderers =
-                            {
-                                new ClearRenderFrameRenderer { Color = Color.Lavender, Output = multipleRenderFrames },
-                                new SceneCameraRenderer { Mode = new CameraRendererModeForward(), Output = multipleRenderFrames}, 
-                                new ClearRenderFrameRenderer { Output = new MasterRenderFrameProvider() },
-                                new SceneDelegateRenderer(DisplayGBuffer) { Name = "DisplayGBuffer" },
-                            }
-                        }
-                    }
-                }
-            };
-
+            scene = new Scene();
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);
+
+            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(false, "MultipleRenderTargetsEffect", mainCamera.Get<CameraComponent>(), Color.Lavender);
+            SceneSystem.GraphicsCompositor.Game = new SceneRendererCollection
+            {
+                new RenderTargetRenderer
+                {
+                    Child = SceneSystem.GraphicsCompositor.Game,
+                    RenderTargets = { textures[0], textures[1], textures[2] },
+                    DepthStencil = Texture.New2D(GraphicsDevice, TargetWidth, TargetHeight, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil),
+                },
+                new ClearRenderer(),
+                new DelegateSceneRenderer(DisplayGBuffer),
+            };
         }
 
-        private void DisplayGBuffer(RenderDrawContext context, RenderFrame frame)
+        private void DisplayGBuffer(RenderDrawContext context)
         {
             GraphicsContext.DrawTexture(textures[renderTargetToDisplayIndex]);
         }
@@ -175,5 +164,58 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             RunGameTest(new TestMultipleRenderTargets(false));
         }
+    }
+
+    // TODO: Maybe we could move this type and make it public at some point? (and maybe merge it with RenderTextureSceneRenderer)
+    class RenderTargetRenderer : SceneRendererBase
+    {
+        public FastList<Texture> RenderTargets { get; set; } = new FastList<Texture>();
+
+        public Texture DepthStencil { get; set; }
+
+        public ISceneRenderer Child { get; set; }
+
+        protected override unsafe void CollectCore(RenderContext context)
+        {
+            base.CollectCore(context);
+
+            var firstTexture = DepthStencil ?? (RenderTargets.Count > 0 ? RenderTargets[0] : null);
+            if (firstTexture == null)
+                return;
+
+            using (context.SaveRenderOutputAndRestore())
+            using (context.SaveViewportAndRestore())
+            {
+                context.RenderOutput.RenderTargetCount = RenderTargets.Count;
+                fixed (PixelFormat* renderTargetFormat0 = &context.RenderOutput.RenderTargetFormat0)
+                {
+                    var renderTargetFormat = renderTargetFormat0;
+                    for (int i = 0; i < RenderTargets.Count; ++i)
+                    {
+                        *renderTargetFormat++ = RenderTargets[i].ViewFormat;
+                    }
+                }
+                context.RenderOutput.DepthStencilFormat = DepthStencil.ViewFormat;
+
+                context.ViewportState.Viewport0 = new Viewport(0, 0, firstTexture.ViewWidth, firstTexture.ViewHeight);
+
+                Child?.Collect(context);
+            }
+        }
+
+        protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
+        {
+            var firstTexture = DepthStencil ?? (RenderTargets.Count > 0 ? RenderTargets[0] : null);
+            if (firstTexture == null)
+                return;
+
+            using (drawContext.PushRenderTargetsAndRestore())
+            {
+                drawContext.CommandList.SetRenderTargetsAndViewport(DepthStencil, RenderTargets.Count, RenderTargets.Items);
+
+                Child?.Draw(drawContext);
+            }
+        }
+
     }
 }

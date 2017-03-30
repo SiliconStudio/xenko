@@ -160,6 +160,7 @@ namespace SiliconStudio.Xenko.Graphics
         private AndroidGameView gameWindow;
 #elif SILICONSTUDIO_PLATFORM_IOS
         private iPhoneOSGameView gameWindow;
+        public ThreadLocal<OpenGLES.EAGLContext> ThreadLocalContext { get; private set; }
 #endif
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
@@ -190,7 +191,6 @@ namespace SiliconStudio.Xenko.Graphics
         };
 
         internal Buffer SquareBuffer;
-        internal CommandList MainCommandList; // temporary because of state changes done during UseOpenGLCreationContext
 
         /// <summary>
         /// Gets the status of this device.
@@ -448,7 +448,8 @@ namespace SiliconStudio.Xenko.Graphics
             if (EglGetCurrentContext() == IntPtr.Zero)
                 throw new InvalidOperationException("No OpenGL context bound.");
 #else
-            if (OpenTK.Graphics.GraphicsContext.CurrentContext == null)
+            var context = OpenTK.Graphics.GraphicsContext.CurrentContext; //static cannot be debugged easy
+            if (context == null)
                 throw new InvalidOperationException("No OpenGL context bound.");
 #endif
         }
@@ -778,6 +779,7 @@ namespace SiliconStudio.Xenko.Graphics
             gameWindow = (AndroidGameView)windowHandle.NativeWindow;
 #elif SILICONSTUDIO_PLATFORM_IOS
             gameWindow = (iPhoneOSGameView)windowHandle.NativeWindow;
+            ThreadLocalContext = new ThreadLocal<OpenGLES.EAGLContext>(() => new OpenGLES.EAGLContext(IsOpenGLES2 ? OpenGLES.EAGLRenderingAPI.OpenGLES2 : OpenGLES.EAGLRenderingAPI.OpenGLES3, gameWindow.EAGLContext.ShareGroup));
 #endif
 
             windowInfo = gameWindow.WindowInfo;
@@ -916,7 +918,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
             // Create the main command list
-            InternalMainCommandList = new CommandList(this);
+            InternalMainCommandList = CommandList.New(this);
         }
 
         private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)

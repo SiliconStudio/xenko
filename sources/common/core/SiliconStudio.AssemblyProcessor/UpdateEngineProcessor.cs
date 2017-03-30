@@ -70,12 +70,12 @@ namespace SiliconStudio.AssemblyProcessor
             // Get some useful Cecil objects from SiliconStudio.Core
             var siliconStudioCoreAssembly = context.Assembly.Name.Name == "SiliconStudio.Core"
                     ? context.Assembly
-                    : context.Assembly.MainModule.AssemblyResolver.Resolve("SiliconStudio.Core");
+                    : context.Assembly.MainModule.AssemblyResolver.Resolve(new AssemblyNameReference("SiliconStudio.Core", null));
             var siliconStudioCoreModule = siliconStudioCoreAssembly.MainModule;
 
             var siliconStudioXenkoEngineAssembly = context.Assembly.Name.Name == "SiliconStudio.Xenko.Engine"
                     ? context.Assembly
-                    : context.Assembly.MainModule.AssemblyResolver.Resolve("SiliconStudio.Xenko.Engine");
+                    : context.Assembly.MainModule.AssemblyResolver.Resolve(new AssemblyNameReference("SiliconStudio.Xenko.Engine", null));
             var siliconStudioXenkoEngineModule = siliconStudioXenkoEngineAssembly.MainModule;
 
             // Generate IL for SiliconStudio.Core
@@ -122,7 +122,7 @@ namespace SiliconStudio.AssemblyProcessor
 
             // Make sure it is called at module startup
             var moduleInitializerAttribute = siliconStudioCoreModule.GetType("SiliconStudio.Core.ModuleInitializerAttribute");
-            var ctorMethod = moduleInitializerAttribute.GetConstructors().Single(x => !x.IsStatic);
+            var ctorMethod = moduleInitializerAttribute.GetConstructors().Single(x => !x.IsStatic && !x.HasParameters);
             pclVisitor.VisitMethod(ctorMethod);
             mainPrepareMethod.CustomAttributes.Add(new CustomAttribute(context.Assembly.MainModule.ImportReference(ctorMethod)));
 

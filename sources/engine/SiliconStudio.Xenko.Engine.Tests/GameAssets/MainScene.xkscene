@@ -1,26 +1,9 @@
 !SceneAsset
-Id: 629b95b0-5c22-4f4f-805e-3ad9543be1ff
-SerializedVersion: {Xenko: 1.6.0-beta03}
+Id: ca673f3d-7267-45a8-bdc9-47fab2ae5e4f
+SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    ~Id: 293e4498-0657-40a4-93c1-3c7e7acdb544
-    RootEntities: []
-    Entities: []
-SceneSettings:
-    ~Id: 62ecd57f-a6ab-4a48-b39b-7c5e038e141a
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: 4d0b88b3-fab9-4a34-8cc9-570ee8d82d8b
-        Cameras: []
-        Layers: []
-        Master:
-            ~Id: a9613bc1-6bb7-4762-b85e-482f7c641ddd
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers: []
-    EditorSettings:
-        ~Id: bfb45faf-2691-42dd-8581-2b6746ea8c08
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: e2acc833-6101-4c8f-856e-68f91bfcd23f
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+    RootPartIds: []
+    Parts: []

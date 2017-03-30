@@ -7,8 +7,10 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -49,7 +51,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="IsAlternative"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IsAlternativeProperty =
-            DependencyProperty.Register("IsAlternative", typeof(bool), typeof(SearchComboBox), new PropertyMetadata(false));
+            DependencyProperty.Register("IsAlternative", typeof(bool), typeof(SearchComboBox), new PropertyMetadata(BooleanBoxes.FalseBox));
         /// <summary>
         /// Identifies the <see cref="IsDropDownOpen"/> dependency property.
         /// </summary>
@@ -114,7 +116,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether to clear the text after the selection.
         /// </summary>
-        public bool ClearTextAfterSelection { get { return (bool)GetValue(ClearTextAfterSelectionProperty); } set { SetValue(ClearTextAfterSelectionProperty, value); } }
+        public bool ClearTextAfterSelection { get { return (bool)GetValue(ClearTextAfterSelectionProperty); } set { SetValue(ClearTextAfterSelectionProperty, value.Box()); } }
         /// <summary>
         /// Gets or Sets the command that is invoked once a selection has been made. The parameter of the command is the current <see cref="Selector.SelectedValue"/>.
         /// </summary>
@@ -122,15 +124,15 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether to open the dropdown when the control got the focus.
         /// </summary>
-        public bool OpenDropDownOnFocus { get { return (bool)GetValue(OpenDropDownOnFocusProperty); } set { SetValue(OpenDropDownOnFocusProperty, value); } }
+        public bool OpenDropDownOnFocus { get { return (bool)GetValue(OpenDropDownOnFocusProperty); } set { SetValue(OpenDropDownOnFocusProperty, value.Box()); } }
         /// <summary>
         /// 
         /// </summary>
-        public bool IsAlternative { get { return (bool)GetValue(IsAlternativeProperty); } set { SetValue(IsAlternativeProperty, value); } }
+        public bool IsAlternative { get { return (bool)GetValue(IsAlternativeProperty); } set { SetValue(IsAlternativeProperty, value.Box()); } }
         /// <summary>
         /// Gets or sets whether the drop down is open.
         /// </summary>
-        public bool IsDropDownOpen { get { return (bool)GetValue(IsDropDownOpenProperty); } set { SetValue(IsDropDownOpenProperty, value); } }
+        public bool IsDropDownOpen { get { return (bool)GetValue(IsDropDownOpenProperty); } set { SetValue(IsDropDownOpenProperty, value.Box()); } }
         /// <summary>
         /// Gets or sets the search text of this <see cref="SearchComboBox"/>
         /// </summary>
@@ -212,7 +214,7 @@ namespace SiliconStudio.Presentation.Controls
             Clear();
         }
 
-        private void EditableTextBoxPreviewKeyDown(object sender, KeyEventArgs e)
+        private void EditableTextBoxPreviewKeyDown(object sender, [NotNull] KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
             {
@@ -276,7 +278,7 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        private void EditableTextBoxPreviewKeyUp(object sender, KeyEventArgs e)
+        private void EditableTextBoxPreviewKeyUp(object sender, [NotNull] KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {

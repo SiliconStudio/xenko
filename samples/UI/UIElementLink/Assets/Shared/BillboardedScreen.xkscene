@@ -1,34 +1,9 @@
 !SceneAsset
 Id: a140a866-a7b3-4c89-8953-5f7adc428c0a
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
-SceneSettings:
-    Id: 8dfe4154-403a-48cb-9020-dbc029d08503
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            a36901b603845145a598391b2a68c9ea:
-                Name: null
-                Camera: d9876ddf-0675-4113-8dc5-5d363fbae7f6/2f657057-5b7b-4b74-a75d-9271f7f7d086
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                727ee29bf027c14bb0b06d8ef2ba7d96: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                5ffd842d31dbbb44b106459cf1fa3820: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - 820d34a8-2971-4381-abfa-2965d94ec672
@@ -60,13 +35,13 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            73a8deb2501818499f67a5f9322ae8ef: ef08d60e-261c-480b-abf4-c7b8ba929ca6/b2dea873-1850-4918-9f67-a5f9322ae8ef
-                            b44583a0509fef459a6f3a2c09d17047: 98d284d2-cf3d-4f34-a7e8-009146c3d708/a08345b4-9f50-45ef-9a6f-3a2c09d17047
-                            8e725c73bf8cc14aaa3c11a07720791b: d2d6bd43-72ac-4cbc-99bc-5e0ea20663e4/735c728e-8cbf-4ac1-aa3c-11a07720791b
+                            73a8deb2501818499f67a5f9322ae8ef: ref!! b2dea873-1850-4918-9f67-a5f9322ae8ef
+                            b44583a0509fef459a6f3a2c09d17047: ref!! a08345b4-9f50-45ef-9a6f-3a2c09d17047
+                            8e725c73bf8cc14aaa3c11a07720791b: ref!! 735c728e-8cbf-4ac1-aa3c-11a07720791b
                     858f6b9792accb4c8fada41701ea56d0: !UIElementLinkComponent
                         Id: 976b8f85-ac92-4ccb-8fad-a41701ea56d0
-                        Target: 820d34a8-2971-4381-abfa-2965d94ec672/a8b1b6f6-8ad4-4580-bd94-0370455f3450
-                        Camera: d9876ddf-0675-4113-8dc5-5d363fbae7f6/2f657057-5b7b-4b74-a75d-9271f7f7d086
+                        Target: ref!! a8b1b6f6-8ad4-4580-bd94-0370455f3450
+                        Camera: ref!! 2f657057-5b7b-4b74-a75d-9271f7f7d086
                         NodeName: ElementName
         -   Entity:
                 Id: 60ccfaa1-a808-415b-9fdf-d9a149bb964e
@@ -234,13 +209,6 @@ Hierarchy:
                         Id: 5dd54ab6-b683-4231-a555-3396fa1fe1e8
                         Animations:
                             02e43a0b0a19d6459045f27c12de752e~Default: 4fc92370-763a-4adc-b117-1874582a31d6:Knight/he03_run Animation
-                        PlayingAnimations:
-                            68b69714351e3d4c8cdaeb8cc50b90f3:
-                                Name: null
-                                Clip: 4fc92370-763a-4adc-b117-1874582a31d6:Knight/he03_run Animation
-                                RepeatMode: LoopInfinite
-                                BlendOperation: LinearBlend
-                                CurrentTime: 0:00:00:00.0000000
         -   Entity:
                 Id: d9876ddf-0675-4113-8dc5-5d363fbae7f6
                 Name: UICamera
@@ -253,10 +221,12 @@ Hierarchy:
                         Children: {}
                     5770652f7b5b744ba75d9271f7f7d086: !CameraComponent
                         Id: 2f657057-5b7b-4b74-a75d-9271f7f7d086
+                        Name: null
                         Projection: Perspective
                         VerticalFieldOfView: 60.0
                         OrthographicSize: 720.0
                         AspectRatio: 1.777778
+                        Slot: {Index: 0}
         -   Entity:
                 Id: ef08d60e-261c-480b-abf4-c7b8ba929ca6
                 Name: Ball

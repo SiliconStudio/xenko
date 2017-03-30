@@ -14,7 +14,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -34,7 +34,6 @@
     <Compile Include="SpriteStudioNodeLinkComponent.cs" />
     <Compile Include="SpriteStudioNodeLinkProcessor.cs" />
     <Compile Include="SpriteStudioNodeState.cs" />
-    <Compile Include="SpriteStudioPipelinePlugin.cs" />
     <Compile Include="SpriteStudioProcessor.cs" />
     <Compile Include="SpriteStudioRendererProcessor.cs" />
     <Compile Include="SpriteStudioRenderFeature.cs" />

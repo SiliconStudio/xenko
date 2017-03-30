@@ -1,4 +1,5 @@
 ﻿using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -68,7 +69,7 @@ namespace SiliconStudio.Core
             }
         }
 
-        public void Read(T[] destination, int offset = 0)
+        public void Read([NotNull] T[] destination, int offset = 0)
         {
             if (offset + destination.Length > Length)
             {
@@ -96,7 +97,7 @@ namespace SiliconStudio.Core
             }
         }
 
-        public void Write(T[] source, int offset = 0)
+        public void Write([NotNull] T[] source, int offset = 0)
         {
             if (offset + source.Length > Length)
             {

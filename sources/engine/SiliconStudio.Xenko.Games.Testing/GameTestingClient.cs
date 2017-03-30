@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Games.Testing
             if (gamePath == null) throw new ArgumentNullException(nameof(gamePath));
 
             xenkoDir = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
-            if(xenkoDir.IsNullOrEmpty()) throw new NullReferenceException("Could not find SiliconStudioXenkoDir, make sure the environment variable is set.");
+            if(string.IsNullOrEmpty(xenkoDir)) throw new NullReferenceException("Could not find SiliconStudioXenkoDir, make sure the environment variable is set.");
 
             gameName = Path.GetFileNameWithoutExtension(gamePath);
             switch (platform)
@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Games.Testing
                     break;
             }
 
-            var url = $"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe";
+            var url = $"/service/{XenkoVersion.NuGetVersion}/SiliconStudio.Xenko.SamplesTestServer.exe";
 
             var socketContext = RouterClient.RequestServer(url).Result;
 

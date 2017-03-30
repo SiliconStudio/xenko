@@ -464,16 +464,28 @@ namespace SiliconStudio.Xenko.Particles
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    for (int i = 0; i < module.RequiredFields.Count; i++)
+                    module.AddFieldDescription = AddRequiredField;
+                    module.RemoveFieldDescription = RemoveRequiredField;
+
+                    if (module.Enabled)
                     {
-                        AddRequiredField(module.RequiredFields[i]);
+                        for (int i = 0; i < module.RequiredFields.Count; i++)
+                        {
+                            AddRequiredField(module.RequiredFields[i]);
+                        }
                     }
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
-                    for (int i = 0; i < module.RequiredFields.Count; i++)
+                    module.AddFieldDescription = null;
+                    module.RemoveFieldDescription = null;
+
+                    if (module.Enabled)
                     {
-                        RemoveRequiredField(module.RequiredFields[i]);
+                        for (int i = 0; i < module.RequiredFields.Count; i++)
+                        {
+                            RemoveRequiredField(module.RequiredFields[i]);
+                        }
                     }
                     break;
             }
@@ -955,7 +967,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         /// <param name="sharedBufferPtr">The shared vertex buffer position where the particle data should be output</param>
         /// <param name="invViewMatrix">The current camera's inverse view matrix</param>
-        public void BuildVertexBuffer(IntPtr sharedBufferPtr, ref Matrix invViewMatrix)
+        public void BuildVertexBuffer(IntPtr sharedBufferPtr, ref Matrix invViewMatrix, ref Matrix viewProj)
         {
             // Get camera-space X and Y axes for billboard expansion and sort the particles if needed
             var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
@@ -986,7 +998,7 @@ namespace SiliconStudio.Xenko.Particles
             ParticleBufferState bufferState = new ParticleBufferState(sharedBufferPtr, VertexBuilder);
 
             ShapeBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
-            ShapeBuilder.BuildVertexBuffer(ref bufferState, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ref sortedList);
+            ShapeBuilder.BuildVertexBuffer(ref bufferState, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ref sortedList, ref viewProj);
 
             bufferState.StartOver();
             Material.PatchVertexBuffer(ref bufferState, unitX, unitY, ref sortedList);

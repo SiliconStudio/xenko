@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -66,7 +67,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="logMessage">The log message.</param>
         /// <returns><c>true</c> if the log should be flushed, <c>false</c> otherwise</returns>
-        protected virtual bool ShouldFlush(ILogMessage logMessage)
+        protected virtual bool ShouldFlush([NotNull] ILogMessage logMessage)
         {
             // By default flush if we have more than the level info (Warning, Error, Fatal)
             return (logMessage.Type > LogMessageType.Info) || (LogMessageCount % LogCountFlushLimit) == 0;
@@ -101,17 +102,18 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="message">The log message.</param>
         /// <returns>A textual representation of the exception, or <see cref="string.Empty"/> if no exception is associated to this log message.</returns>
-        protected virtual string GetExceptionText(ILogMessage message)
+        [NotNull]
+        protected virtual string GetExceptionText([NotNull] ILogMessage message)
         {
             var serializableLogMessage = message as SerializableLogMessage;
             if (serializableLogMessage != null)
             {
-                return serializableLogMessage.ExceptionInfo != null ? serializableLogMessage.ExceptionInfo.ToString() : string.Empty;
+                return serializableLogMessage.ExceptionInfo?.ToString() ?? string.Empty;
             }
             var logMessage = message as LogMessage;
             if (logMessage != null)
             {
-                return logMessage.Exception != null ? logMessage.Exception.ToString() : string.Empty;
+                return logMessage.Exception?.ToString() ?? string.Empty;
             }
             throw new ArgumentException("Unsupported log message.");
         }
@@ -121,12 +123,13 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="logListener">The log listener.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Action<ILogMessage>(LogListener logListener)
+        [NotNull]
+        public static implicit operator Action<ILogMessage>([NotNull] LogListener logListener)
         {
             return logListener.OnLogInternal;
         }
 
-        private void OnLogInternal(ILogMessage logMessage)
+        private void OnLogInternal([NotNull] ILogMessage logMessage)
         {
             OnLog(logMessage);
             LogMessageCount++;

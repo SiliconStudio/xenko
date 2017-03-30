@@ -1,19 +1,8 @@
 !Texture
 Id: 388c59e4-a742-44c1-9940-30cbe60a62ea
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../../data/tests/Cube/Untitled.png
-ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Alpha: Interpolated
-~Base:
-    ~Id: 31d4b421-410f-47cd-a987-435d4168807e
-    Location: --import--
-    Asset: !Texture
-        Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: {Xenko: 1.4.0-beta}
-        Tags: []
-        Source: 
-        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
-        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-        PremultiplyAlpha: false
+Type: !ColorTextureType
+    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+    Alpha: Interpolated

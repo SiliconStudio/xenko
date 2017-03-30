@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+    <SiliconStudioXenkoGraphicsApiDependent>true</SiliconStudioXenkoGraphicsApiDependent>
   </PropertyGroup>
   <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
@@ -14,7 +15,7 @@
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <DefineConstants>$(DefineConstants);SILICONSTUDIO_XENKO_GRAPHICS_NO_DESCRIPTOR_COPIES</DefineConstants>
   </PropertyGroup>
   <Choose>
@@ -27,43 +28,43 @@
   </Choose>
   <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets" />
   <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' Or '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
         </Reference>
         <Reference Include="SharpDX.D3DCompiler">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
         </Reference>
         <Reference Include="SharpDX.DXGI">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' ">
       <ItemGroup>
         <Reference Include="SharpDX.Direct3D11">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D12' ">
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
       <ItemGroup>
         <Reference Include="SharpDX.Direct3D12">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Vulkan' ">
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan' ">
       <Choose>
         <When Condition=" '$(SiliconStudioPlatform)' == 'Windows'">
           <ItemGroup>
@@ -87,18 +88,20 @@
   <Choose>
     <When Condition="$(SiliconStudioUI.Contains('SDL'))">
       <ItemGroup>
-        <Content Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\*SDL2*">
-          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+        <SiliconStudioNativeLib Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\*SDL2*">
+          <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
+        </SiliconStudioNativeLib>
       </ItemGroup>
     </When>
   </Choose>
   <ItemGroup>
-    <None Include="$(XenkoDependenciesDir)\freetype\$(SiliconStudioPlatform)\**\*.*">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    <SiliconStudioNativeLib Include="$(XenkoDependenciesDir)\freetype\$(SiliconStudioPlatform)\**\*.*">
+      <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </SiliconStudioNativeLib>
   </ItemGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
     <Reference Include="SharpFont">
@@ -124,6 +127,14 @@
     <Compile Include="Direct3D12\CompiledCommandList.Direct3D12.cs" />
     <Compile Include="Direct3D\SharpDXInterop.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFont.cs" />
+    <Compile Include="Null\CommandList.Null.cs" />
+    <Compile Include="Null\DescriptorPool.Null.cs" />
+    <Compile Include="Null\DescriptorSet.Null.cs" />
+    <Compile Include="Null\DescriptorSetLayout.Null.cs" />
+    <Compile Include="Null\GraphicsOutput.Null.cs" />
+    <Compile Include="Null\NullHelper.cs" />
+    <Compile Include="Null\PipelineState.Null.cs" />
+    <Compile Include="Null\SwapChainGraphicsPresenter.Null.cs" />
     <Compile Include="OpenGL\GraphicsResource.OpenGL.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFontContentSerializer.cs" />
     <Compile Include="OpenGL\MappedResource.OpenGL.cs" />
@@ -192,38 +203,34 @@
     <Compile Include="SDL\FormWindowState.cs" />
     <Compile Include="SDL\SDLMessageLoop.cs" />
     <Compile Include="SDL\Window.cs" />
-    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Direct3D11.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGL.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGLES.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Vulkan.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\BackgroundEffect.Extensions.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.Null.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.Vulkan.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.Null.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.Vulkan.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteEffect.bytecode.Null.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteEffect.bytecode.Vulkan.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\UIEffect.bytecode.Null.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecode.Vulkan.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.Null.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.Extensions.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.Vulkan.Level_9_1.cs" />
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Direct3D11.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Null.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.Extensions.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Direct3D11.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Null.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
-    <Compile Include="Shaders\BackgroundEffect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>BackgroundEffect.xksl</DependentUpon>
-    </Compile>
     <Compile Include="Shaders\ColorUtility.cs">
       <DependentUpon>ColorUtility.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -247,6 +254,12 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SpriteSignedDistanceFieldFontShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\SpriteSuperSampler.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SpriteSuperSampler.xksl</DependentUpon>
     </Compile>
     <Compile Include="Shaders\UIEffect.cs">
       <DependentUpon>UIEffect.xkfx</DependentUpon>
@@ -385,15 +398,12 @@
     <Compile Include="OpenGL\UseOpenGLCreationContext.cs" />
     <Compile Include="RenderTargetGraphicsPresenter.cs" />
     <Compile Include="Direct3D\GraphicsResource.Direct3D.cs" />
-    <Compile Include="Null\EffectProgram.Null.cs" />
-    <Compile Include="Null\Shader.Null.cs" />
     <Compile Include="OpenGL\EffectProgram.OpenGL.cs" />
     <Compile Include="OpenGL\OpenGLShaderBytecodeData.cs" />
     <Compile Include="Direct3D\GraphicsDeviceFeatures.Direct3D.cs" />
     <Compile Include="FormatSupport.cs" />
     <Compile Include="GraphicsDeviceFeatures.cs" />
     <Compile Include="Null\GraphicsDeviceFeatures.Null.cs" />
-    <Compile Include="Null\Texture2DBase.Null.cs" />
     <Compile Include="OpenGL\GraphicsDeviceFeatures.OpenGL.cs" />
     <Compile Include="Rational.cs" />
     <Compile Include="Direct3D\SwapChainGraphicsPresenter.Direct3D.cs" />
@@ -448,24 +458,13 @@
   </ItemGroup>
   <!-- Files for Null device -->
   <ItemGroup>
-    <Compile Include="Null\BlendState.Null.cs" />
     <Compile Include="Null\Buffer.Null.cs" />
-    <Compile Include="Null\DepthStencilBuffer.Null.cs" />
-    <Compile Include="Null\DepthStencilState.Null.cs" />
     <Compile Include="Null\GraphicsAdapter.Null.cs" />
     <Compile Include="Null\GraphicsAdapterFactory.Null.cs" />
     <Compile Include="Null\GraphicsDevice.Null.cs" />
-    <Compile Include="Null\GraphicsDeviceContext.Null.cs" />
     <Compile Include="Null\GraphicsResourceBase.Null.cs" />
-    <Compile Include="Null\RasterizerState.Null.cs" />
-    <Compile Include="Null\RenderTarget.Null.cs" />
     <Compile Include="Null\SamplerState.Null.cs" />
     <Compile Include="Null\Texture.Null.cs" />
-    <Compile Include="Null\Texture1D.Null.cs" />
-    <Compile Include="Null\Texture2D.Null.cs" />
-    <Compile Include="Null\Texture3D.Null.cs" />
-    <Compile Include="Null\TextureCube.Null.cs" />
-    <Compile Include="Null\VertexArrayObject.Null.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="OpenGL\BlendState.OpenGL.cs" />
@@ -550,11 +549,6 @@
     <Compile Include="ViewType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
-      <Project>{fcf36d39-bffe-4719-b245-05640ee34c5f}</Project>
-      <Name>SiliconStudio.Core.Native</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>
@@ -606,10 +600,6 @@
     <None Include="Shaders.Bytecodes\CompileShaders.cmd" />
     <None Include="Shaders.Bytecodes\Graphics.xkpkg" />
     <None Include="Shaders.Bytecodes\Shaders.xkeffectlog" />
-    <None Include="Shaders\BackgroundEffect.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>BackgroundEffect.cs</LastGenOutput>
-    </None>
     <None Include="Shaders\SignedDistanceFieldFontShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SignedDistanceFieldFontShader.cs</LastGenOutput>
@@ -621,6 +611,10 @@
     <None Include="Shaders\SpriteSignedDistanceFieldFontShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SpriteSignedDistanceFieldFontShader.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SpriteSuperSampler.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SpriteSuperSampler.cs</LastGenOutput>
     </None>
     <None Include="Shaders\UIEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>

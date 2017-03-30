@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// Initializes from a native SharpDX.Texture
         /// </summary>
         /// <param name="texture">The texture.</param>
-        internal Texture InitializeFrom(Texture2D texture, bool isSrgb)
+        internal Texture InitializeFromImpl(Texture2D texture, bool isSrgb)
         {
             NativeDeviceChild = texture;
             var newTextureDescription = ConvertFromNativeDescription(texture.Description);
@@ -99,6 +99,11 @@ namespace SiliconStudio.Xenko.Graphics
                 newTextureDescription.Format = newTextureDescription.Format.ToSRgb();
 
             return InitializeFrom(newTextureDescription);
+        }
+
+        internal Texture InitializeFromImpl(ShaderResourceView srv)
+        {
+            return InitializeFromImpl(new Texture2D(srv.Resource.NativePointer), false);
         }
 
         private void InitializeFromImpl(DataBox[] dataBoxes = null)
@@ -427,7 +432,7 @@ namespace SiliconStudio.Xenko.Graphics
                 return null;
 
             // Check that the format is supported
-            if (ComputeShaderResourceFormatFromDepthFormat(ViewFormat) == SharpDX.DXGI.Format.Unknown)
+            if (ComputeShaderResourceFormatFromDepthFormat(ViewFormat) == PixelFormat.None)
                 throw new NotSupportedException("Depth stencil format [{0}] not supported".ToFormat(ViewFormat));
 
             // Setup the HasStencil flag
@@ -524,7 +529,7 @@ namespace SiliconStudio.Xenko.Graphics
             var viewFormat = (SharpDX.DXGI.Format)ViewFormat;
             if (IsDepthStencil)
             {
-                viewFormat = ComputeShaderResourceFormatFromDepthFormat(ViewFormat);
+                viewFormat = (SharpDX.DXGI.Format)ComputeShaderResourceFormatFromDepthFormat(ViewFormat);
             }
 
             return viewFormat;
@@ -617,13 +622,16 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
+            int quality = 0;
+            if(GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_1 && textureDescription.IsMultiSample)
+                quality = (int)StandardMultisampleQualityLevels.StandardMultisamplePattern;
+
             var desc = new Texture2DDescription()
             {
                 Width = textureDescription.Width,
                 Height = textureDescription.Height,
                 ArraySize = textureDescription.ArraySize,
-                // TODO calculate appropriate MultiSamples
-                SampleDescription = new SharpDX.DXGI.SampleDescription((int)textureDescription.MultiSampleLevel, 0),
+                SampleDescription = new SharpDX.DXGI.SampleDescription((int)textureDescription.MultiSampleLevel, quality),
                 BindFlags = GetBindFlagsFromTextureFlags(flags),
                 Format = format,
                 MipLevels = textureDescription.MipLevels,
@@ -638,27 +646,27 @@ namespace SiliconStudio.Xenko.Graphics
             return desc;
         }
 
-        internal static SharpDX.DXGI.Format ComputeShaderResourceFormatFromDepthFormat(PixelFormat format)
+        internal static PixelFormat ComputeShaderResourceFormatFromDepthFormat(PixelFormat format)
         {
-            SharpDX.DXGI.Format viewFormat;
+            PixelFormat viewFormat;
 
             // Determine TypeLess Format and ShaderResourceView Format
             switch (format)
             {
                 case PixelFormat.D16_UNorm:
-                    viewFormat = SharpDX.DXGI.Format.R16_Float;
+                    viewFormat = PixelFormat.R16_Float;
                     break;
                 case PixelFormat.D32_Float:
-                    viewFormat = SharpDX.DXGI.Format.R32_Float;
+                    viewFormat = PixelFormat.R32_Float;
                     break;
                 case PixelFormat.D24_UNorm_S8_UInt:
-                    viewFormat = SharpDX.DXGI.Format.R24_UNorm_X8_Typeless;
+                    viewFormat = PixelFormat.R24_UNorm_X8_Typeless;
                     break;
                 case PixelFormat.D32_Float_S8X24_UInt:
-                    viewFormat = SharpDX.DXGI.Format.R32_Float_X8X24_Typeless;
+                    viewFormat = PixelFormat.R32_Float_X8X24_Typeless;
                     break;
                 default:
-                    viewFormat = SharpDX.DXGI.Format.Unknown;
+                    viewFormat = PixelFormat.None;
                     break;
             }
 

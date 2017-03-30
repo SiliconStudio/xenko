@@ -1,4 +1,4 @@
----
+﻿---
 !EffectCompileRequest
 EffectName: XenkoForwardShadingEffect
 UsedParameters:
@@ -100,12 +100,6 @@ UsedParameters:
             -   ClassName: MaterialPixelShadingStream
     Material.HasNormalMap: true
     Lighting.DirectLightGroups:
-        - !ShaderClassSource
-            ClassName: LightClusteredPointGroup
-            GenericArguments: [64]
-        - !ShaderClassSource
-            ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -113,3 +107,7 @@ UsedParameters:
     Lighting.EnvironmentLights:
         - !ShaderClassSource
             ClassName: LightSimpleAmbient
+---
+!EffectCompileRequest
+EffectName: BackgroundShader
+UsedParameters: {}

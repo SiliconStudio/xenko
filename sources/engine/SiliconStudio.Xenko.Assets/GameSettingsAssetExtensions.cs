@@ -1,4 +1,6 @@
-using System.Linq;
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Graphics;
@@ -64,7 +66,7 @@ namespace SiliconStudio.Xenko.Assets
         /// <returns>The color space of the current package of the session, or <see cref="RenderingSettings.DefaultColorSpace"/>.</returns>
         public static ColorSpace GetReferenceColorSpace(this PackageSession session, PlatformType platform)
         {
-            return GetGameSettingsAssetOrDefault(session).Get<RenderingSettings>(platform).ColorSpace;
+            return GetGameSettingsAssetOrDefault(session).GetOrCreate<RenderingSettings>(platform).ColorSpace;
         }
     }
 }

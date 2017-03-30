@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Engine
     /// <summary>
     /// Manage a collection of entities.
     /// </summary>
-    public abstract class EntityManager : ComponentBase, IReadOnlySet<Entity>, IEntityComponentNotify
+    public abstract class EntityManager : ComponentBase, IReadOnlySet<Entity>
     {
         // TODO: Make this class threadsafe (current locks aren't sufficients)
 
@@ -154,7 +154,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Removes the entity from the <see cref="EntityManager" />.
         /// It works weither entity has a parent or not.
-        /// In conjonction with <see cref="HierarchicalProcessor" />, it will remove children entities as well.
+        /// In conjonction with <see cref="HierarchicalProcessor" />, it will remove child entities as well.
         /// </summary>
         /// <param name="entity">The entity.</param>
         public void Remove(Entity entity)
@@ -219,13 +219,13 @@ namespace SiliconStudio.Xenko.Engine
             if (entities.Contains(entity))
                 return;
 
-            if (entity.Owner != null)
+            if (entity.EntityManager != null)
             {
                 throw new InvalidOperationException("Cannot add an entity to this entity manager when it is already used by another entity manager");
             }
 
             // Add this entity to our internal hashset
-            entity.Owner = this;
+            entity.EntityManager = this;
             entities.Add(entity);
             entity.AddReferenceInternal();
 
@@ -285,7 +285,7 @@ namespace SiliconStudio.Xenko.Engine
 
             entity.ReleaseInternal();
 
-            entity.Owner = null;
+            entity.EntityManager = null;
 
             OnEntityRemoved(entity);
         }
@@ -586,11 +586,6 @@ namespace SiliconStudio.Xenko.Engine
         public void OnHierarchyChanged(Entity entity)
         {
             HierarchyChanged?.Invoke(this, entity);
-        }
-
-        void IEntityComponentNotify.OnComponentChanged(Entity entity, int index, EntityComponent oldComponent, EntityComponent newComponent)
-        {
-            NotifyComponentChanged(entity, index, oldComponent, newComponent);
         }
 
         /// <summary>

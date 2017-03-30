@@ -1,53 +1,9 @@
 !SceneAsset
 Id: 84efeed8-fdd2-4e9b-9cfb-d4ea3e5aa6aa
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
-SceneSettings:
-    Id: 8d53bdc7-e8e9-4787-b777-58a26278b79a
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            1e943c0f201da4438a9aec90fce3acbf:
-                Name: null
-                Camera: 94061a3c-bbe5-4ad6-b55c-5905873264e1/726ee955-8359-4410-8a78-03690aca1931
-            36076ef145181346bf3d83899ed0d181:
-                Name: null
-                Camera: 14088c66-6d9b-4e26-a601-9784ff3ae859/07c9ff4c-26fb-4945-9fd1-899f98a86e77
-        Layers:
-            39c40a237a6a7b468126b0a05aa620b8:
-                Name: SceneGraphicsLayer
-                Output: !SharedRenderFrameProvider
-                    RenderFrame: 2355d4e2-1680-48ca-8ad6-34d291c1489d:RenderFrame
-                Renderers:
-                    cc0dc916e06bbf41bcda8a8a7ae607d6: !ClearRenderFrameRenderer
-                        Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                        Output: !CurrentRenderFrameProvider {}
-                    0f946cb8f4a9b24cb576f6c2f7e0a763: !SceneCameraRenderer
-                        Mode: !CameraRendererModeForward {}
-                        Camera:
-                            Index: 1
-                        CullingMask: Group0
-                        Output: !CurrentRenderFrameProvider {}
-                        Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                        ForceAspectRatio: false
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                4f4e9074b9d1eb499d0f746490d4c18d: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                a6b25dd8e5caa344bb6ee3b96b13abcd: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - 883e544b-9579-48c0-b731-9b8de2d287e4
@@ -73,12 +29,13 @@ Hierarchy:
                         Children: {}
                     4cffc907fb2645499fd1899f98a86e77: !CameraComponent
                         Id: 07c9ff4c-26fb-4945-9fd1-899f98a86e77
+                        Name: null
                         Projection: Perspective
                         AspectRatio: 0.56
+                        Slot: {Index: 1}
         -   Entity:
                 Id: 1c1ced43-f10b-4f46-93e7-9f75eb681c5e
                 Name: RenderToTexture
-                Group: Group1
                 Components:
                     d8db6c5da878184da0683a2cef4e0a19: !TransformComponent
                         Id: 5d6cdbd8-78a8-4d18-a068-3a2cef4e0a19
@@ -86,13 +43,10 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
-                    1f8e1dc3f2536a45a02655ebe9720de5: !AnimatedModel.SetSpriteSource,AnimatedModel.Game
-                        Id: c31d8e1f-53f2-456a-a026-55ebe9720de5
-                        RenderFrame: 2355d4e2-1680-48ca-8ad6-34d291c1489d:RenderFrame
                     18d30692ec0eaa4bac05b1cd6e893efa: !SpriteComponent
                         Id: 9206d318-0eec-4baa-ac05-b1cd6e893efa
                         SpriteProvider: !SpriteFromTexture
-                            Texture: 99561296-5d13-4f43-b743-4f4c9bcf5502:Placeholder
+                            Texture: 2355d4e2-1680-48ca-8ad6-34d291c1489d:RenderTexture
                             PixelsPerUnit: 450.0
                             Center: {X: 0.0, Y: 0.0}
                             CenterFromMiddle: false
@@ -126,8 +80,10 @@ Hierarchy:
                         Children: {}
                     55e96e72598310448a7803690aca1931: !CameraComponent
                         Id: 726ee955-8359-4410-8a78-03690aca1931
+                        Name: null
                         Projection: Perspective
                         AspectRatio: 0.56
+                        Slot: {Index: 0}
         -   Entity:
                 Id: aa9f45b3-a8f2-4b7c-8723-446504667459
                 Name: Front light
@@ -165,21 +121,17 @@ Hierarchy:
         -   Entity:
                 Id: cbaa8520-30cd-4b52-a6cb-f55adc4dab16
                 Name: RenderToTextureTilted
-                Group: Group1
                 Components:
                     d8db6c5da878184da0683a2cef4e0a19: !TransformComponent
-                        Id: 5d6cdbd8-78a8-4d18-a068-3a2cef4e0a19
+                        Id: 41ca3886-2abb-4396-8ea5-49a22c6a12d8
                         Position: {X: -1.0, Y: 0.5, Z: -1.4}
                         Rotation: {X: 0.0, Y: 0.382683456, Z: 0.0, W: 0.9238795}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
-                    1f8e1dc3f2536a45a02655ebe9720de5: !AnimatedModel.SetSpriteSource,AnimatedModel.Game
-                        Id: c31d8e1f-53f2-456a-a026-55ebe9720de5
-                        RenderFrame: 2355d4e2-1680-48ca-8ad6-34d291c1489d:RenderFrame
                     18d30692ec0eaa4bac05b1cd6e893efa: !SpriteComponent
-                        Id: 9206d318-0eec-4baa-ac05-b1cd6e893efa
+                        Id: 80d6e9aa-4d05-4132-90c1-3ed633fbbaac
                         SpriteProvider: !SpriteFromTexture
-                            Texture: 99561296-5d13-4f43-b743-4f4c9bcf5502:Placeholder
+                            Texture: 2355d4e2-1680-48ca-8ad6-34d291c1489d:RenderTexture
                             PixelsPerUnit: 450.0
                             Center: {X: 0.0, Y: 0.0}
                             CenterFromMiddle: false
@@ -209,7 +161,6 @@ Hierarchy:
         -   Entity:
                 Id: df07ee24-de65-4561-8f4a-da086654e07b
                 Name: UI
-                Group: Group1
                 Components:
                     ad02fad211f25846b2ba715ede26d312: !TransformComponent
                         Id: d2fa02ad-f211-4658-b2ba-715ede26d312
@@ -223,9 +174,10 @@ Hierarchy:
                         Resolution: {X: 1136.0, Y: 640.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
                         ResolutionStretch: FixedWidthFixedHeight
+                        RenderGroup: Group1
                     c4d0e397bc7bc2468a2cdc3bd4190c90: !AnimatedModel.UIScript,AnimatedModel.Game
                         Id: 97e3d0c4-7bbc-46c2-8a2c-dc3bd4190c90
-                        Knight: f63efa01-c45a-4b81-ad59-e49391a813e4
+                        Knight: ref!! f63efa01-c45a-4b81-ad59-e49391a813e4
                         Font: dc5e460a-ac52-45b9-a69f-cc5a5a5f9cf7:Font
         -   Entity:
                 Id: f63efa01-c45a-4b81-ad59-e49391a813e4
@@ -242,13 +194,6 @@ Hierarchy:
                         Animations:
                             32dcc5bc35e03f4a9e71163f7ad1735b~Idle: b692bb69-eff0-4ca2-871e-a70cee4e7353:Animations/Idle
                             6bf5123a5efd8b49a0aa5f4e6a0b65d7~Run: 79c55d71-b446-46f3-8c23-e722f3e734b3:Animations/Run
-                        PlayingAnimations:
-                            72e1a8709bd1f643b6510c4ce8d231d6:
-                                Name: null
-                                Clip: 79c55d71-b446-46f3-8c23-e722f3e734b3:Animations/Run
-                                RepeatMode: LoopInfinite
-                                BlendOperation: LinearBlend
-                                CurrentTime: 0:00:00:00.0000000
                     d7056203248a9441a48427af5acff6e0: !ModelComponent
                         Id: 036205d7-8a24-4194-a484-27af5acff6e0
                         Model: cfb9a357-ac8d-4b98-b49b-923308cf386d:Models/mannequinModel

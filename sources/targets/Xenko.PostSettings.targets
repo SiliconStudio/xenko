@@ -1,11 +1,11 @@
-<!-- Build file post-included by all Silicon Studio projects -->
+﻿<!-- Build file post-included by all Silicon Studio projects -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- Include platform dependent assembly when specified -->
   <Choose>
     <When Condition="'$(XenkoProjectPlatformDependentWindows)' == 'true'">
       <Choose>
-        <When Condition=" '$(XenkoGraphicsApi)' == 'OpenGL' Or '$(XenkoGraphicsApi)' == 'OpenGLES' ">
+        <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'OpenGL' Or '$(SiliconStudioXenkoGraphicsApi)' == 'OpenGLES' ">
           <Choose>
             <When Condition="('$(SiliconStudioPlatform)' == 'Linux') or ('$(SiliconStudioPlatform)' == 'macOS')">
               <ItemGroup>
@@ -37,11 +37,11 @@
       <Choose>
         <When  Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
           <Choose>
-            <When Condition="'$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12'">
+            <When Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' Or '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12'">
               <ItemGroup>
                 <Reference Include="SharpDX">
                   <SpecificVersion>False</SpecificVersion>
-                  <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+                  <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
                 </Reference>
               </ItemGroup>
             </When>
@@ -86,144 +86,36 @@
   <PropertyGroup>
     <!-- Process by default scripts with AssemblyProcessor -->
     <SiliconStudioAssemblyProcessor Condition="'$(XenkoScript)' == 'true'">true</SiliconStudioAssemblyProcessor>
-    
+
+    <SiliconStudioIsExecutable Condition=" '$(OutputType)' == 'Exe'">true</SiliconStudioIsExecutable>
+    <SiliconStudioIsExecutable Condition=" '$(OutputType)' == 'WinExe'">true</SiliconStudioIsExecutable>
+
     <!--By default, use AssemblyProcessor from solution, unless this is a user build-->
-    <XenkoSdkToolsDir Condition="'$(XenkoSdkToolsDir)' == ''">$(SolutionDir)Bin\Windows-Direct3D11\</XenkoSdkToolsDir>
-    <XenkoSdkToolsDir Condition="'$(XenkoUserBuild)' == 'true'">$(XenkoSdkDir)\Bin\Windows-Direct3D11\</XenkoSdkToolsDir>
+    <XenkoSdkToolsDir Condition="'$(XenkoSdkToolsDir)' == ''">$(SolutionDir)Bin\Windows\Tools\</XenkoSdkToolsDir>
+    <XenkoSdkToolsDir Condition="'$(XenkoUserBuild)' == 'true'">$(XenkoSdkDir)\Bin\Windows\Tools\</XenkoSdkToolsDir>
     <XenkoAssetCompilerCommand>$(XenkoSdkToolsDir)SiliconStudio.Assets.CompilerApp.exe</XenkoAssetCompilerCommand>
   </PropertyGroup>
 
-  <!--Import Xenko settings-->
+  <!--Import Silicon Studio common settings-->
   <Import Project="$(MSBuildThisFileDirectory)..\common\targets\SiliconStudio.PostSettings.targets"/>
   
-  <!--Temporary build targets for Build Engine-->
-
-  <!--Temporary define the Build Engine output path-->
+  <!-- If it exists, replace SharedAssemblyInfo.cs with the Package one (which contain NuGet and git versions) -->
   <PropertyGroup>
-    <BuildEngineBuildDir Condition="'$(BuildEngineBuildDir)' == ''">$(ProjectDir)$(BaseIntermediateOutputPath)\data</BuildEngineBuildDir>
-  </PropertyGroup>
-  
-  <!-- Add XenkoProject build action -->
-  <ItemGroup>
-    <AvailableItemName Include="XenkoProject"/>
-  </ItemGroup>
-
-  <PropertyGroup>
-    <CleanDependsOn>
-      XenkoProjectCleanTarget;
-      $(CleanDependsOn);
-    </CleanDependsOn>
+    <PrepareResourcesDependsOn>
+      SiliconStudioXenkoReplaceVersionInfo;
+      $(PrepareResourcesDependsOn)
+    </PrepareResourcesDependsOn>
   </PropertyGroup>
 
-  <!-- Target used to compile content (Font/Fx files...) -->
-  <Target Name="XenkoProjectBuildTarget">
-    <Exec Condition="'@(XenkoProject)' != '' and Exists('$(XenkoAssetCompilerCommand)') and '$(XenkoDisableAssetCompiler)' == ''" WorkingDirectory="$(TargetDir)" Command="$(XenkoAssetCompilerCommand) --monitor-pipe=&quot;$(XenkoBuildToolMonitorPipeUrl)&quot; --profile=$(SiliconStudioPlatform) &quot;@(XenkoProject->'%(rootdir)%(directory)%(filename)%(extension)')&quot;" />
-  </Target>
-
-  <!-- Target used to clean content (Font/Fx files...) -->
-  <Target Name="XenkoProjectCleanTarget" DependsOnTargets="FindBuildEngineOutputDir">
-    <RemoveDir Condition="'@(XenkoProject)' != '' and Exists('$(BuildEngineOutputDirectory)')" ContinueOnError="true"  Directories="$(BuildEngineOutputDirectory)"/>
-    
-    <!-- Should be done separately from VS menu, but it will still be executed if XenkoProjectIntermediateCleanTargetEnabled is true -->
-    <RemoveDir Condition="'@(XenkoProject)' != '' and Exists('$(BuildEngineBuildDir)') and '$(XenkoProjectIntermediateCleanTargetEnabled)' == 'true'" ContinueOnError="true"  Directories="$(BuildEngineBuildDir)"/>
-  </Target>
-
-  <Target Name="XenkoProjectIntermediateCleanTarget" DependsOnTargets="FindBuildEngineOutputDir">
-    <RemoveDir Condition="'@(XenkoProject)' != '' and Exists('$(BuildEngineBuildDir)')" ContinueOnError="true"  Directories="$(BuildEngineBuildDir)"/>
-  </Target>
-  
-  <!-- Deploy the Assets -->
-
-  <!-- Set the default assets deployment mode on Android -->
-  <PropertyGroup>
-    <AndroidDeploymentMode Condition="'$(AndroidDeploymentMode)' == ''">AndroidAPKDeployment</AndroidDeploymentMode>
-  </PropertyGroup>
-
-  <!-- Register Android asset deployment task -->
-  <PropertyGroup Condition="'$(SiliconStudioPlatform)' == 'Android'">
-    <PrepareForRunDependsOn>
-      $(PrepareForRunDependsOn);
-      DeployAssetsAndroid
-    </PrepareForRunDependsOn>
-  </PropertyGroup>
-  
-  <!-- Plugs all compilers in PrepareForRunDependsOn -->
-  <PropertyGroup>
-    <PrepareForRunDependsOn>
-      $(PrepareForRunDependsOn);
-      XenkoProjectBuildTarget;
-    </PrepareForRunDependsOn>
-  </PropertyGroup>
-
-  <UsingTask AssemblyFile="$(XenkoSdkToolsDir)BuildTasks\SiliconStudio.Xenko.VisualStudio.BuildTasks.exe" TaskName="SiliconStudio.Xenko.VisualStudio.BuildTasks.FindBuildEngineOutputDirTask" />
-
-  <Target Name="FindBuildEngineOutputDir">
-    <!-- Get the build engine output directory -->
-    <FindBuildEngineOutputDirTask Condition="'@(XenkoProject)' != '' and Exists('$(XenkoSdkToolsDir)BuildTasks\SiliconStudio.Xenko.VisualStudio.BuildTasks.exe')" XenkoProjectPaths="@(XenkoProject)" ProfileName="$(SiliconStudioPlatform)">
-      <Output TaskParameter="BuildOutputDirectory" PropertyName="BuildEngineOutputDirectory" />
-    </FindBuildEngineOutputDirTask>
-  </Target>
-  
-  <Target Name="CreateAssetToDeployList" DependsOnTargets="XenkoProjectBuildTarget;FindBuildEngineOutputDir" Condition="'@(XenkoProject)' != ''">
-    
-    <!-- Define the Assets to deploy -->
-    <ItemGroup Condition="'$(BuildEngineOutputDirectory)' != ''">
-      <AssetsToDeploy Include="$(BuildEngineOutputDirectory)\**\*.*"/>
-    </ItemGroup>
-    
-  </Target>
-  
-  
-  <!-- iOS: Ensure assets have been deployed before calling _CollectBundleResources -->
-  <Target Name="DeployAssetsiOS" BeforeTargets="_GenerateBundleContentDir" Condition="'$(SiliconStudioPlatform)' == 'iOS' and '@(XenkoProject)' != ''" DependsOnTargets="CreateAssetToDeployList">
-    <!-- Add all game data as content on iphone. Note that "Link" doesn't work but Xamarin seems to use a similar "LogicalName" property. -->
+  <Target Name="SiliconStudioXenkoReplaceVersionInfo" Condition="'$(SiliconStudioPackageBuild)' == 'true'">
+    <Error Condition="!Exists('$(MSBuildThisFileDirectory)..\shared\SharedAssemblyInfo.NuGet.cs')" Text="File SharedAssemblyInfo.NuGet.cs doesn't seem to have been generated. Please make sure Xenko.build PackageEnvironment target has been run succesfully."/>
     <ItemGroup>
-      <_BundleResourceWithLogicalName Include="@(AssetsToDeploy)">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <LogicalName>data\%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
-      </_BundleResourceWithLogicalName>
+      <XenkoSharedAssemblyFile Include="@(Compile)" Condition="'%(Compile.FullPath)' == '$([System.IO.Path]::GetFullPath(`$(MSBuildThisFileDirectory)..\shared\SharedAssemblyInfo.cs`))'"/>
+      <Compile Remove="@(XenkoSharedAssemblyFile)" />
+      <Compile Include="@(XenkoSharedAssemblyFile->'$(MSBuildThisFileDirectory)..\shared\SharedAssemblyInfo.NuGet.cs')" />
     </ItemGroup>
   </Target>
   
-  <Target Name="DeployAssetsAndroid" DependsOnTargets="CreateAssetToDeployList" Condition="'@(XenkoProject)' != ''">
-    <!-- Add .bundle to list of uncompressed extensions -->
-    <PropertyGroup>
-      <AndroidStoreUncompressedFileExtensions>$(AndroidStoreUncompressedFileExtensions);.bundle</AndroidStoreUncompressedFileExtensions>
-    </PropertyGroup>
-    
-    <!-- Android - mode 2 : directly copy assets to external storage -->
-
-    <!--<GetAndroidPackageName  Condition="'$(AndroidDeploymentMode)' == 'AndroidFastDeployment'" ManifestFile="$(_AndroidManifestAbs)" AssemblyName="$(AssemblyName)">
-      <Output TaskParameter="PackageName" PropertyName="XenkoAndroidPackage" />
-    </GetAndroidPackageName>
-
-    <AndroidFastDeploymentTask  Condition="'$(AndroidDeploymentMode)' == 'AndroidFastDeployment'"
-      AndroidPackageName="$(XenkoAndroidPackage)"
-      BuildEngineOutputDir="$(BuildEngineOutputDirectory)"
-      CurrentDeviceName ="$(AdbTarget)"
-    />-->
-  </Target>
-
-  <!-- For MonoTouch executable projects, we redefine the target SetMtouchExtraArgs and add linking to both core and freetype native libraries
-       Note: this target can be redefined to add link other libraries -->
-  <Target Name="SetMtouchExtraArgs" Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
-    <PropertyGroup>
-      <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags "-L%24{ProjectDir}/source -lstdc++ -lcore -force_load %24{ProjectDir}/source/libcore.a -lfreetype -force_load %24{ProjectDir}/source/libfreetype.a"</MtouchExtraArgs>
-    </PropertyGroup>
-  </Target>
-  
-  <!-- For MonoTouch executable projects, we add a target that copies the xenko native libraries to link in the project root directory -->
-  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
-    <BuildDependsOn>
-      CopyXenkoNativeLibraries;
-      $(BuildDependsOn);
-    </BuildDependsOn>
-  </PropertyGroup>
-
-  <!-- Copy the libfreetype.a libraries to the project root directory for future native link.
-       Note: this target is redefined in References.targets for user projects -->
-  <Target Name="CopyXenkoNativeLibraries" Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
-    <Copy SourceFiles="$(XenkoDependenciesDir)freetype\$(SiliconStudioPlatform)\libfreetype.a" DestinationFolder="$(ProjectDir)"/>
-  </Target>
-
+  <!-- Import target to handle ProjectReference for executables -->
+  <Import Project="$(MSBuildThisFileDirectory)Xenko.InternalReferences.targets"/>
 </Project>

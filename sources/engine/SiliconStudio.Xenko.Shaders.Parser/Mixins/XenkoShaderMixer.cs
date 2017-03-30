@@ -1276,13 +1276,15 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         private void RemoveUselessVariables()
         {
             var variablesUsages = MixedShader.Members.OfType<Variable>().ToDictionary(variable => variable, variable => false);
-            
+
+            // Scan cbuffer
             foreach (var constantBuffer in MixedShader.Members.OfType<ConstantBuffer>())
             {
                 foreach (var variable in constantBuffer.Members.OfType<Variable>().ToList())
                     variablesUsages.Add(variable, false);
             }
 
+            // Remove "extern" variables
             MixedShader.Members.RemoveAll(x => x is Variable && (x as Variable).Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Extern));
             
             var variableUsageVisitor = new XenkoVariableUsageVisitor(variablesUsages);
@@ -1290,6 +1292,14 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
             foreach (var variable in MixedShader.Members.OfType<Variable>().ToList())
             {
+                // Ignore variable with logical groups
+                if (variable.GetTag(XenkoTags.LogicalGroup) != null)
+                    continue;
+
+                // Don't remove resources since they need to consistent between resource group layouts. The EffectCompiler will clean up reflection if possible
+                if (variable.Type.IsSamplerType() || variable.Type is TextureType || variable.Type.ResolveType() is ObjectType)
+                    continue;
+
                 bool used;
                 if (variablesUsages.TryGetValue(variable, out used))
                 {
@@ -1329,7 +1339,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             var variables = mainModuleMixin.ClassReferences.VariablesReferences.OrderBy(x => ((ConstantBuffer)x.Key.GetTag(XenkoTags.ConstantBuffer))?.Name.Text).ToList();
 
             // Recreate cbuffer with proper logical groups
-            var constantBuffers = new List<ConstantBuffer>();
+            var constantBuffers = new Dictionary<ConstantBuffer, ConstantBuffer>();
             foreach (var variable in variables)
             {
                 var cbuffer = (ConstantBuffer)variable.Key.GetTag(XenkoTags.ConstantBuffer);
@@ -1345,32 +1355,43 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 var cbufferLogicalGroupName = cbufferNameSplit != -1 ? cbuffer.Name.Text.Substring(cbufferNameSplit + 1) : null;
 
                 // Find or create a matching cbuffer
-                var realCBuffer = constantBuffers.FirstOrDefault(x => x.Name.Text == cbufferName && x.Type == cbuffer.Type);
+                ConstantBuffer realCBuffer;
+                constantBuffers.TryGetValue(cbuffer, out realCBuffer);
                 if (realCBuffer == null)
                 {
                     // First time, let's create it
                     realCBuffer = new ConstantBuffer { Name = cbufferName, Type = cbuffer.Type };
-                    constantBuffers.Add(realCBuffer);
+                    constantBuffers.Add(cbuffer, realCBuffer);
                 }
+
+                realCBuffer.Members.Add(variable.Key);
 
                 // Set cbuffer and logical groups
                 variable.Key.SetTag(XenkoTags.ConstantBuffer, realCBuffer);
+                variable.Key.SetTag(XenkoTags.ConstantBufferIndex, realCBuffer.Members.Count - 1);
                 variable.Key.SetTag(XenkoTags.LogicalGroup, cbufferLogicalGroupName);
             }
 
-            var usefulVars = variables.Select(x => x.Key).Where(KeepVariableInCBuffer);
+            var usefulVars = variables.Select(x => x.Key).Where(KeepVariableInCBuffer).ToList();
             var varList = usefulVars.Where(x => x.ContainsTag(XenkoTags.ConstantBuffer)).ToList();
-            var groupedVarList = varList.GroupBy(x =>
+            var groupedVarList = varList.GroupBy(x => (ConstantBuffer)x.GetTag(XenkoTags.ConstantBuffer)).Select(cbuffer => new
             {
-                var constantBuffer = x.GetTag(XenkoTags.ConstantBuffer) as ConstantBuffer;
-                return (constantBuffer != null) ? constantBuffer.Name.Text : null;
-            }).Select(x => x.ToList()).ToList();
+                Buffer = cbuffer.Key,
+                Members = cbuffer.OrderBy(x => (int)x.GetTag(XenkoTags.ConstantBufferIndex)).ToList(),
+            }
+            ).GroupBy(cbuffer => cbuffer.Buffer.Name.Text);
 
+            // For each cbuffer name
             foreach (var group in groupedVarList)
             {
-                var originalCbuffer = (ConstantBuffer)group.First().GetTag(XenkoTags.ConstantBuffer);
-                var cbuffer = new ConstantBuffer { Type = originalCbuffer.Type, Name = originalCbuffer.Name.Text };
-                cbuffer.Members.AddRange(group);
+                var originalCbuffer = group.First().Buffer;
+                var cbuffer = new ConstantBuffer { Type = originalCbuffer.Type, Name = group.Key };
+
+                // For each cbuffer group that will be merged
+                foreach (var groupVariables in group)
+                {
+                    cbuffer.Members.AddRange(groupVariables.Members);
+                }
 
                 MixedShader.Members.Add(cbuffer);
             }
@@ -1413,7 +1434,10 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                         var cbuffer = variable.ContainsTag(XenkoTags.ConstantBuffer) ? variable.GetTag(XenkoTags.ConstantBuffer) as ConstantBuffer : null;
                         var newcbuffer = sameSemVar.ContainsTag(XenkoTags.ConstantBuffer) ? sameSemVar.GetTag(XenkoTags.ConstantBuffer) as ConstantBuffer : null;
                         if (cbuffer != null ^ newcbuffer != null)
+                        {
                             variable.SetTag(XenkoTags.ConstantBuffer, cbuffer ?? newcbuffer);
+                            variable.SetTag(XenkoTags.ConstantBufferIndex, (cbuffer != null ? variable : sameSemVar).GetTag(XenkoTags.ConstantBufferIndex));
+                        }
                         else if (cbuffer != null && cbuffer != newcbuffer)
                         {
                             log.Error(XenkoMessageCode.ErrorSemanticCbufferConflict, variable.Span, variable, sourceMixinName, sameSemVar, newMixinName, semantic, cbuffer, newcbuffer);

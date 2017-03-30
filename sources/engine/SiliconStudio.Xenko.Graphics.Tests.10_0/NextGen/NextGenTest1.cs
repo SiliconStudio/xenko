@@ -13,7 +13,7 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Tests;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Colors;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Skyboxes;
 using SiliconStudio.Xenko.Rendering.Sprites;
@@ -25,7 +25,6 @@ namespace SiliconStudio.Xenko.Engine.NextGen
         private TestCamera camera;
         protected Scene Scene;
         protected Entity Camera = new Entity();
-        private SceneGraphicsCompositorLayers graphicsCompositor;
 
         private Model model;
         private Material material1, material2;
@@ -36,7 +35,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             set
             {
                 Camera.Add(value);
-                graphicsCompositor.Cameras[0] = value;
+                SceneSystem.GraphicsCompositor.Cameras[0] = value;
             }
         }
 
@@ -76,11 +75,11 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                     {
                         var position = new Vector3((i - cubeWidth / 2) * 2.4f, (j - cubeWidth / 2) * 2.4f, (k - cubeWidth / 2) * 2.4f);
                         //var material = (k/4)%2 == 0 ? material1 : material2;
-                        var isShadowReceiver = (k / 2) % 2 == 0;
+                        //var isShadowReceiver = (k / 2) % 2 == 0;
 
                         var entity = new Entity
                         {
-                            new ModelComponent { Model = model, Materials = { { 0, material1 } }, IsShadowReceiver = isShadowReceiver },
+                            new ModelComponent { Model = model, Materials = { { 0, material1 } } },
                         };
                         entity.Transform.Position = position;
                         Scene.Entities.Add(entity);
@@ -106,21 +105,10 @@ namespace SiliconStudio.Xenko.Engine.NextGen
 
         private void SetupScene()
         {
-            graphicsCompositor = new SceneGraphicsCompositorLayers
-            {
-                Cameras = { Camera.Get<CameraComponent>() },
-                Master =
-                {
-                    Renderers =
-                    {
-                        new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
-                        //new SceneCameraRenderer { Mode = new CameraRendererModeForward { Name = "Camera renderer", ModelEffect = "XenkoForwardShadingEffect" } },
-                        new SceneCameraRenderer { Mode = new CameraRendererModeForward { Name = "Camera renderer" } },
-                    }
-                }
-            };
+            // Load default graphics compositor
+            SceneSystem.GraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
-            Scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
+            Scene = new Scene();
             Scene.Entities.Add(Camera);
 
             //var ambientLight = new Entity { new LightComponent { Type = new LightAmbient { Color = new ColorRgbProvider(Color.White) }, Intensity = 1 } };
@@ -168,11 +156,14 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                     (float)rand.NextDouble() * 20.0f - 10.0f,
                     (float)rand.NextDouble() * 20.0f - 10.0f
                     );
-                Scene.Entities.Add(pointLight1);
+                //Scene.Entities.Add(pointLight1);
             }
 
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
+
+            // Load default graphics compositor
+            SceneSystem.GraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
             camera = new TestCamera();
             CameraComponent = camera.Camera;

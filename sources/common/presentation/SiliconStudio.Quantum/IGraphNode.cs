@@ -1,54 +1,53 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum
 {
     /// <summary>
-    /// The <see cref="IGraphNode"/> interface extends the <see cref="IContentNode"/> by giving access to the <see cref="Parent"/> of this node
-    /// representing the container object of its content, as well as its <see cref="Children"/> nodes representing the members of its content.
+    /// The <see cref="IGraphNode"/> interface represents a node in a Quantum object graph. This node can represent an object or a member of an object.
     /// </summary>
-    public interface IGraphNode : IContentNode
+    public interface IGraphNode
     {
         /// <summary>
-        /// Gets the child corresponding to the given name.
+        /// Gets or sets the <see cref="System.Guid"/>.
         /// </summary>
-        /// <param name="name">The name of the child to retrieves.</param>
-        /// <returns>The child corresponding to the given name.</returns>
-        /// <exception cref="KeyNotFoundException">This node has no child that matches the given name.</exception>
-        IGraphNode this[string name] { get; }
+        Guid Guid { get; }
 
         /// <summary>
-        /// Gets or sets the parent node.
+        /// Gets the expected type of for the content of this node.
         /// </summary>
-        IGraphNode Parent { get; }
+        /// <remarks>The actual type of the content can be different, for example it could be a type inheriting from this type.</remarks>
+        [NotNull]
+        Type Type { get; }
 
         /// <summary>
-        /// Gets the children collection.
+        /// Gets whether this node hold a primitive type value.
         /// </summary>
-        IReadOnlyCollection<IGraphNode> Children { get; }
+        /// <remarks>Types registered as primitive types in the <see cref="INodeBuilder"/> used to build this content are taken in account by this property.</remarks>
+        bool IsPrimitive { get; }
 
         /// <summary>
-        /// Gets the target of this node, if this node contains a reference to another node. 
+        /// Gets or sets the type descriptor of this content
         /// </summary>
-        /// <exception cref="InvalidOperationException">The node does not contain a reference to another node.</exception>
-        IGraphNode Target { get; }
+        [NotNull]
+        ITypeDescriptor Descriptor { get; }
 
         /// <summary>
-        /// Gets the target of this node corresponding to the given index, if this node contains a sequence of references to some other nodes. 
+        /// Gets wheither this node holds a reference or is a direct value.
         /// </summary>
-        /// <exception cref="InvalidOperationException">The node does not contain a sequence of references to some other nodes.</exception>
-        /// <exception cref="ArgumentException">The index is empty.</exception>
-        /// <exception cref="KeyNotFoundException">The index does not exist.</exception>
-        IGraphNode IndexedTarget(Index index);
+        bool IsReference { get; }
 
         /// <summary>
-        /// Attempts to retrieve the child node of this <see cref="IGraphNode"/> that matches the given name.
+        /// Retrieves the value of this node.
         /// </summary>
-        /// <param name="name">The name of the child to retrieve.</param>
-        /// <returns>The child node that matches the given name, or <c>null</c> if no child matches.</returns>
-        IGraphNode TryGetChild(string name);
+        object Retrieve();
+
+        /// <summary>
+        /// Retrieves the value of one of the item of this node, if it holds a collection.
+        /// </summary>
+        /// <param name="index">The index to use to retrieve the value.</param>
+        object Retrieve(Index index);
     }
 }

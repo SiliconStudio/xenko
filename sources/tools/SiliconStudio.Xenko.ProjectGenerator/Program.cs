@@ -16,6 +16,7 @@ using Microsoft.Build.Evaluation;
 using Mono.Options;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Templates;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
@@ -256,8 +257,8 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
                     bool b;
-                    Dictionary<YamlAssetPath, OverrideType> o;
-                    var asset = AssetFileSerializer.Default.Load(stream, filePath, null, out b, out o) as Asset;
+                    AttachedYamlAssetMetadata o;
+                    var asset = AssetFileSerializer.Default.Load(stream, filePath, null, false, out b, out o) as Asset;
                     if (asset != null)
                     {
                         guid = (Guid)asset.Id;
@@ -420,12 +421,12 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 bool shouldKeep = false;
 
                 // Check XenkoSupportedPlatforms
-                var xenkoBuildTagsNode = doc.XPathSelectElement("/x:Project/x:PropertyGroup/x:XenkoBuildTags", mgr);
-                if (xenkoBuildTagsNode != null)
+                var buildTagsNode = doc.XPathSelectElement("/x:Project/x:PropertyGroup/x:SiliconStudioBuildTags", mgr);
+                if (buildTagsNode != null)
                 {
-                    var xenkoBuildTags = xenkoBuildTagsNode.Value;
-                    if (xenkoBuildTags == "*" ||
-                        xenkoBuildTags.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Contains(platform))
+                    var buildTags = buildTagsNode.Value;
+                    if (buildTags == "*" ||
+                        buildTags.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Contains(platform))
                         shouldKeep = true;
                 }
 

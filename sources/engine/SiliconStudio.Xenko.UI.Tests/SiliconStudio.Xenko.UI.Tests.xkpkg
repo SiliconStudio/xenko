@@ -1,7 +1,6 @@
 !Package
 Id: b18707e8-1d26-49fc-9911-3834506d8149
-SerializedVersion: {Assets: 0.0.3}
-Tags: []
+SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: SiliconStudio.Xenko.UI.Tests
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.7.0-alpha03
+            Version: 1.11.1.2
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -19,7 +18,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: e7b1b17f-d04b-4978-b504-a6bb3ee846c9
                 Location: SiliconStudio.Xenko.UI.Tests.Windows.csproj
@@ -30,7 +28,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Windows
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: e7b1b17f-d04b-4978-b504-a6bb3ee846c9
                 Location: SiliconStudio.Xenko.UI.Tests.Windows.csproj
@@ -41,7 +38,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Android
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: e7b1b17f-d04b-4978-b504-a6bb3ee846c9
                 Location: SiliconStudio.Xenko.UI.Tests.Android.csproj
@@ -52,7 +48,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/iPhone
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: e7b1b17f-d04b-4978-b504-a6bb3ee846c9
                 Location: SiliconStudio.Xenko.UI.Tests.iOS.csproj

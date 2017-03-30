@@ -25,7 +25,7 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
 
             SiliconStudioCoreAssembly = assembly.Name.Name == "SiliconStudio.Core"
                 ? assembly
-                : assembly.MainModule.AssemblyResolver.Resolve("SiliconStudio.Core");
+                : assembly.MainModule.AssemblyResolver.Resolve(new AssemblyNameReference("SiliconStudio.Core", null));
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
 
         public AssemblyDefinition SiliconStudioCoreAssembly { get; private set; }
 
-        public Dictionary<string, TypeDefinition> DataContractAliases { get; } = new Dictionary<string, TypeDefinition>();
+        public List<Tuple<string, TypeDefinition, bool>> DataContractAliases { get; } = new List<Tuple<string, TypeDefinition, bool>>();
 
         /// <summary>
         /// Gets the list of serializable type grouped by profile.

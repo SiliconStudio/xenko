@@ -16,14 +16,15 @@ using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Assets.Audio
 {
+    [AssetCompiler(typeof(SoundAsset), typeof(AssetCompilationContext))]
     public class SoundAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (SoundAsset)assetItem.Asset;
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new DecodeSoundFileCommand(targetUrlInStorage, asset)
+                new DecodeSoundFileCommand(targetUrlInStorage, asset, assetItem.Package)
             };
         }
 
@@ -31,7 +32,8 @@ namespace SiliconStudio.Xenko.Assets.Audio
         {
             private readonly TagSymbol disableCompressionSymbol;
 
-            public DecodeSoundFileCommand(string url, SoundAsset asset) : base(url, asset)
+            public DecodeSoundFileCommand(string url, SoundAsset asset, Package package) 
+                : base(url, asset, package)
             {
                 disableCompressionSymbol = RegisterTag(Builder.DoNotCompressTag, () => Builder.DoNotCompressTag);
             }
@@ -73,7 +75,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
 
                 var installationDir = DirectoryHelper.GetPackageDirectory("Xenko");
                 var binDir = UPath.Combine(installationDir, new UDirectory("Bin"));
-                binDir = UPath.Combine(binDir, new UDirectory("Windows-Direct3D11"));
+                binDir = UPath.Combine(binDir, new UDirectory("Windows"));
                 var ffmpeg = UPath.Combine(binDir, new UFile("ffmpeg.exe"));
                 if (!File.Exists(ffmpeg))
                 {

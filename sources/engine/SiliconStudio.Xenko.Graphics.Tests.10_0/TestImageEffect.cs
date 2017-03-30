@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestImageEffect()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
             GraphicsDeviceManager.PreferredBackBufferWidth = 760;
             GraphicsDeviceManager.PreferredBackBufferHeight = 1016;
         }
@@ -92,6 +92,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             GraphicsContext.CommandList.CopyRegion(hdrTexture, 0, null, hdrRenderTexture, 0);
 
             postProcessingEffects.SetInput(hdrRenderTexture);
+            postProcessingEffects.SetInput(1, null); // No depth
             postProcessingEffects.SetOutput(GraphicsContext.CommandList.RenderTarget);
             postProcessingEffects.Draw(context);
         }

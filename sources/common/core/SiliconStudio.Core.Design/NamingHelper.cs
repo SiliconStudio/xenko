@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core
@@ -16,7 +16,7 @@ namespace SiliconStudio.Core
     public static class NamingHelper
     {
         private static readonly Regex MatchIdentifier = new Regex("^[a-zA-Z_][a-zA-Z0-9_]*$");
-        const string DefaultNamePattern = "{0} ({1})";
+        private const string DefaultNamePattern = "{0} ({1})";
 
         /// <summary>
         /// Delegate to test if the specified location is already used.
@@ -30,7 +30,7 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="text">The namespace text.</param>
         /// <returns><c>true</c> if is a valid namespace identifier; otherwise, <c>false</c>.</returns>
-        public static bool IsValidNamespace(string text)
+        public static bool IsValidNamespace([NotNull] string text)
         {
             string error;
             return IsValidNamespace(text, out error);
@@ -42,7 +42,7 @@ namespace SiliconStudio.Core
         /// <param name="text">The namespace text.</param>
         /// <param name="error">The error if return is false.</param>
         /// <returns><c>true</c> if is a valid namespace identifier; otherwise, <c>false</c>.</returns>
-        public static bool IsValidNamespace(string text, out string error)
+        public static bool IsValidNamespace([NotNull] string text, out string error)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -53,7 +53,7 @@ namespace SiliconStudio.Core
             else
             {
                 var items = text.Split(new[] { '.' }, StringSplitOptions.None);
-                error = items.Where(s => !IsIdentifier(s)).Select(item => string.Format("[{0}]", item)).FirstOrDefault();
+                error = items.Where(s => !IsIdentifier(s)).Select(item => $"[{item}]").FirstOrDefault();
             }
             return error == null;
         }
@@ -64,7 +64,7 @@ namespace SiliconStudio.Core
         /// <param name="text">The text.</param>
         /// <returns><c>true</c> if the specified text is an identifier; otherwise, <c>false</c>.</returns>
         /// <exception cref="System.ArgumentNullException">text</exception>
-        public static bool IsIdentifier(string text)
+        public static bool IsIdentifier([NotNull] string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
             return MatchIdentifier.Match(text).Success;
@@ -79,7 +79,8 @@ namespace SiliconStudio.Core
         /// <param name="existingNameFunc">A function used to extract the name of an object of the given collection. If null, the <see cref="object.ToString"/> method will be used.</param>
         /// <param name="namePattern">The pattern used to generate the new name, when the base name is unavailable. This pattern must contains the token '{0}' that will be replaced by the base name, and the token '{1}' that will be replaced by the smallest numerical value that can generate an available name, starting from 2. If null, <see cref="DefaultNamePattern"/> will be used instead.</param>
         /// <returns><see cref="baseName"/> if no item of <see cref="existingItems"/> returns this value through <see cref="existingNameFunc"/>. Otherwise, a string formatted with <see cref="namePattern"/>, using <see cref="baseName"/> as token '{0}' and the smallest numerical value that can generate an available name, starting from 2</returns>
-        public static string ComputeNewName<T>(string baseName, IEnumerable<T> existingItems, Func<T, string> existingNameFunc = null, string namePattern = null)
+        [NotNull]
+        public static string ComputeNewName<T>([NotNull] string baseName, [NotNull] IEnumerable<T> existingItems, Func<T, string> existingNameFunc = null, string namePattern = null)
         {
             if (existingItems == null) throw new ArgumentNullException(nameof(existingItems));
             if (existingNameFunc == null)
@@ -96,7 +97,8 @@ namespace SiliconStudio.Core
         /// <param name="containsDelegate">The delegate used to determine if the asset is already existing</param>
         /// <param name="namePattern">The pattern used to generate the new name, when the base name is unavailable. This pattern must contains the token '{0}' that will be replaced by the base name, and the token '{1}' that will be replaced by the smallest numerical value that can generate an available name, starting from 2. If null, <see cref="DefaultNamePattern"/> will be used instead.</param>
         /// <returns><see cref="baseName"/> if the "contains predicate" returns false. Otherwise, a string formatted with <see cref="namePattern"/>, using <see cref="baseName"/> as token '{0}' and the smallest numerical value that can generate an available name, starting from 2</returns>
-        public static string ComputeNewName(string baseName, ContainsLocationDelegate containsDelegate, string namePattern = null)
+        [NotNull]
+        public static string ComputeNewName([NotNull] string baseName, [NotNull] ContainsLocationDelegate containsDelegate, string namePattern = null)
         {
             if (baseName == null) throw new ArgumentNullException(nameof(baseName));
             if (containsDelegate == null) throw new ArgumentNullException(nameof(containsDelegate));

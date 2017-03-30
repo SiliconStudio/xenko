@@ -1014,10 +1014,13 @@ namespace SiliconStudio.Xenko.Input
                             }
                             break;
                         case InputEventType.Up:
-                            activeKeys[key] = false;
-                            releasedKeysSet.Add(key);
-                            KeyEvents.Add(new KeyEvent(key, KeyEventType.Released));
-                            downKeysList.Remove(key);
+                            if (IsKeyDown(key))
+                            {
+                                activeKeys[key] = false;
+                                releasedKeysSet.Add(key);
+                                KeyEvents.Add(new KeyEvent(key, KeyEventType.Released));
+                                downKeysList.Remove(key);
+                            }
                             break;
                         default:
                             throw new NotSupportedException();
@@ -1029,6 +1032,12 @@ namespace SiliconStudio.Xenko.Input
 
             if (LostFocus)
             {
+                // Release keys/buttons when control focus is lost (this prevents some keys getting stuck when a focus loss happens)
+                foreach (var key in downKeysList)
+                {
+                    releasedKeysSet.Add(key);
+                    KeyEvents.Add(new KeyEvent(key, KeyEventType.Released));
+                }
                 activeKeys.Clear();
                 downKeysList.Clear();
             }

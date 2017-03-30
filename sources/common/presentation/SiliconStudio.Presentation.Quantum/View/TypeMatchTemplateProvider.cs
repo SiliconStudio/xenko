@@ -1,13 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Presentation.Quantum.ViewModels;
 
 namespace SiliconStudio.Presentation.Quantum.View
 {
     /// <summary>
-    /// An implementation of the <see cref="ObservableNodeTemplateProvider"/> that matches <see cref="IObservableNode"/> of a specific type.
+    /// An implementation of the <see cref="NodeViewModelTemplateProvider"/> that matches <see cref="SiliconStudio.Presentation.Quantum.ViewModels.NodeViewModel"/> of a specific type.
     /// </summary>
-    public class TypeMatchTemplateProvider : ObservableNodeTemplateProvider
+    public class TypeMatchTemplateProvider : NodeViewModelTemplateProvider
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TypeMatchTemplateProvider"/> class.
@@ -18,8 +19,8 @@ namespace SiliconStudio.Presentation.Quantum.View
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="Type"/> to match. This provider will accept any node that has either a <see cref="IObservableNode.Type"/>
-        /// or a <see cref="IObservableNode.Value"/> with a type that is assignable to the type represented in this property.
+        /// Gets or sets the <see cref="Type"/> to match. This provider will accept any node that has either a <see cref="SiliconStudio.Presentation.Quantum.ViewModels.NodeViewModel.Type"/>
+        /// or a <see cref="SiliconStudio.Presentation.Quantum.ViewModels.NodeViewModel.Value"/> with a type that is assignable to the type represented in this property.
         /// </summary>
         public Type Type { get; set; }
 
@@ -29,10 +30,10 @@ namespace SiliconStudio.Presentation.Quantum.View
         public bool AcceptNullable { get; set; }
 
         /// <inheritdoc/>
-        public override string Name { get { return Type.Name; } }
+        public override string Name => Type.Name;
 
         /// <inheritdoc/>
-        public override bool MatchNode(IObservableNode node)
+        public override bool MatchNode(NodeViewModel node)
         {
             if (Type == null)
                 return true;
@@ -42,7 +43,7 @@ namespace SiliconStudio.Presentation.Quantum.View
 
             if (AcceptNullable && Type.IsValueType)
             {
-                var nullableType = typeof(Nullable<>).MakeGenericType(new[] { Type });
+                var nullableType = typeof(Nullable<>).MakeGenericType(Type);
                 return MatchType(node, nullableType);
             }
 

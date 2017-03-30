@@ -46,7 +46,11 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml.Schemas;
 
 namespace SiliconStudio.Core.Yaml.Serialization
@@ -56,28 +60,25 @@ namespace SiliconStudio.Core.Yaml.Serialization
     /// </summary>
     internal class YamlAssemblyRegistry : ITagTypeRegistry
     {
+        private static readonly Logger Log = GlobalLogger.GetLogger("YamlAssemblyRegistry");
+
         private readonly IYamlSchema schema;
         private readonly Dictionary<string, MappedType> tagToType;
         private readonly Dictionary<Type, string> typeToTag;
         private readonly List<Assembly> lookupAssemblies;
         private readonly object lockCache = new object();
 
-        private static readonly List<Assembly> DefaultLookupAssemblies = new List<Assembly>()
-        {
-            typeof(int).Assembly,
-        };
-
         /// <summary>
         /// Initializes a new instance of the <see cref="YamlAssemblyRegistry"/> class.
         /// </summary>
         public YamlAssemblyRegistry(IYamlSchema schema)
         {
-            if (schema == null)
-                throw new ArgumentNullException("schema");
+            if (schema == null) throw new ArgumentNullException(nameof(schema));
             this.schema = schema;
             tagToType = new Dictionary<string, MappedType>();
             typeToTag = new Dictionary<Type, string>();
-            lookupAssemblies = new List<Assembly>();
+            lookupAssemblies = new List<Assembly> { typeof(int).Assembly };
+
             SerializableFactories = new List<IYamlSerializableFactory>();
         }
 
@@ -85,67 +86,60 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Gets the serializable factories.
         /// </summary>
         /// <value>The serializable factories.</value>
-        public List<IYamlSerializableFactory> SerializableFactories { get; private set; }
+        public List<IYamlSerializableFactory> SerializableFactories { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [use short type name].
         /// </summary>
         /// <value><c>true</c> if [use short type name]; otherwise, <c>false</c>.</value>
-        public bool UseShortTypeName { get; set; }
+        public bool UseShortTypeName { get; set; } = true;
 
         public void RegisterAssembly(Assembly assembly, IAttributeRegistry attributeRegistry)
         {
-            if (assembly == null)
-                throw new ArgumentNullException("assembly");
-            if (attributeRegistry == null)
-                throw new ArgumentNullException("attributeRegistry");
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+            if (attributeRegistry == null) throw new ArgumentNullException(nameof(attributeRegistry));
 
             // Add automatically the assembly for lookup
-            if (!DefaultLookupAssemblies.Contains(assembly) && !lookupAssemblies.Contains(assembly))
+            if (!lookupAssemblies.Contains(assembly))
             {
                 lookupAssemblies.Add(assembly);
 
-                var types = new Type[0];
-
                 // Register all tags automatically.
-                foreach (var type in assembly.GetTypes())
+                var assemblySerializers = DataSerializerFactory.GetAssemblySerializers(assembly);
+                if (assemblySerializers != null)
                 {
-                    var attributes = attributeRegistry.GetAttributes(type);
-                    foreach (var attribute in attributes)
+                    foreach (var dataContractAlias in assemblySerializers.DataContractAliases)
                     {
-                        string name = null;
-                        bool isAlias = false;
-                        var tagAttribute = attribute as DataContractAttribute;
-                        if (!string.IsNullOrWhiteSpace(tagAttribute?.Alias))
-                        {
-                            name = tagAttribute.Alias;
-                        }
-                        else
-                        {
-                            var yamlRemap = attribute as DataAliasAttribute;
-                            if (yamlRemap != null)
-                            {
-                                name = yamlRemap.Name;
-                                isAlias = true;
-                            }
-                        }
-                        if (!string.IsNullOrEmpty(name))
-                        {
-                            RegisterTagMapping(name, type, isAlias);
-                        }
+                        RegisterTagMapping(dataContractAlias.Name, dataContractAlias.Type, dataContractAlias.IsAlias);
                     }
+                }
+                else
+                {
+                    Log.Warning($"Assembly [{assembly}] has not been processed by assembly processor with --serialization flags. [DataContract] aliases won't be available.");
+                }
+                // Automatically register YamlSerializableFactory
+                var assemblyScanTypes = AssemblyRegistry.GetScanTypes(assembly);
+                if (assemblyScanTypes != null)
+                {
+                    List<Type> types;
 
-                    // Automatically register YamlSerializableFactory
-                    if (typeof(IYamlSerializableFactory).IsAssignableFrom(type) && type.GetConstructor(types) != null)
+                    // Register serializer factories
+                    if (assemblyScanTypes.Types.TryGetValue(typeof(IYamlSerializableFactory), out types))
                     {
-                        try
+                        foreach (var type in types)
                         {
-                            SerializableFactories.Add((IYamlSerializableFactory) Activator.CreateInstance(type));
-                        }
-                        catch
-                        {
-                            // Registrying an assembly should not fail, so we are silently discarding a factory if 
-                            // we are not able to load it.
+                            if (typeof(IYamlSerializableFactory).IsAssignableFrom(type) && type.GetConstructor(Type.EmptyTypes) != null)
+                            {
+                                try
+                                {
+                                    SerializableFactories.Add((IYamlSerializableFactory)Activator.CreateInstance(type));
+                                }
+                                catch
+                                {
+                                    // Registrying an assembly should not fail, so we are silently discarding a factory if 
+                                    // we are not able to load it.
+                                }
+                            }
                         }
                     }
                 }
@@ -160,10 +154,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <param name="alias"></param>
         public virtual void RegisterTagMapping(string tag, Type type, bool alias)
         {
-            if (tag == null)
-                throw new ArgumentNullException("tag");
-            if (type == null)
-                throw new ArgumentNullException("type");
+            if (tag == null) throw new ArgumentNullException(nameof(tag));
+            if (type == null) throw new ArgumentNullException(nameof(type));
 
             // Prefix all tags by !
             tag = Uri.EscapeUriString(tag);
@@ -257,64 +249,85 @@ namespace SiliconStudio.Core.Yaml.Serialization
                 {
                     // Else try to use schema tag for scalars
                     // Else use full name of the type
-                    var typeName = UseShortTypeName ? type.GetShortAssemblyQualifiedName() : type.AssemblyQualifiedName;
-                    tagName = schema.GetDefaultTag(type) ?? Uri.EscapeUriString(string.Format("!{0}", typeName));
+
+                    var typeName = GetShortAssemblyQualifiedName(type);
+                    if (!UseShortTypeName)
+                        throw new NotSupportedException("UseShortTypeName supports only True.");
+
+                    // TODO: either remove completely support of UseShortTypeName == false, or make it work in all scenario (with unit tests, etc.)
+                    //var typeName = UseShortTypeName ? type.GetShortAssemblyQualifiedName() : type.AssemblyQualifiedName;
+
+                    tagName = schema.GetDefaultTag(type) ?? $"!{typeName}";
                     typeToTag.Add(type, tagName);
                 }
             }
 
-            return tagName;
+            return Uri.EscapeUriString(tagName);
         }
 
         public virtual Type ResolveType(string typeName)
         {
-            var type = Type.GetType(typeName);
-            if (type == null)
+            if (typeName == null) throw new ArgumentNullException(nameof(typeName));
+            List<string> genericArguments;
+            int arrayNesting;
+            var resolvedTypeName = GetGenericArgumentsAndArrayDimension(typeName, out genericArguments, out arrayNesting);
+            var resolvedType = ResolveSingleType(resolvedTypeName);
+            if (genericArguments != null)
             {
-                string assemblyName = null;
-
-                // Find assembly name start (skip up to one space if needed)
-                // We ignore everything else (version, publickeytoken, etc...)
-                if (UseShortTypeName)
+                var genericTypes = new List<Type>();
+                foreach (var genericArgument in genericArguments)
                 {
-                    ParseType(typeName, out typeName, out assemblyName);
+                    var genericType = ResolveType(genericArgument);
+                    genericTypes.Add(genericType);
+                }
+                resolvedType = resolvedType.MakeGenericType(genericTypes.ToArray());
+            }
+            while (arrayNesting > 0)
+            {
+                resolvedType = resolvedType.MakeArrayType();
+                --arrayNesting;
+            }
+            return resolvedType;
+        }
+
+        private Type ResolveSingleType(string typeName)
+        {
+            string assemblyName;
+
+            // Find assembly name start (skip up to one space if needed)
+            // We ignore everything else (version, publickeytoken, etc...)
+            if (UseShortTypeName)
+            {
+                ParseType(typeName, out typeName, out assemblyName);
+            }
+            else
+            {
+                // TODO: either remove completely support of UseShortTypeName == false, or make it work in all scenario (with unit tests, etc.)
+                throw new NotSupportedException("UseShortTypeName supports only True.");
+            }
+
+            // Look for type in loaded assemblies
+            foreach (var assembly in lookupAssemblies)
+            {
+                if (assemblyName != null)
+                {
+                    // Check that assembly name match, by comparing up to the first comma
+                    var assemblyFullName = assembly.FullName;
+                    if (string.Compare(assemblyFullName, 0, assemblyName, 0, assemblyName.Length) != 0
+                        || !(assemblyFullName.Length == assemblyName.Length || assemblyFullName[assemblyName.Length] == ','))
+                    {
+                        continue;
+                    }
                 }
 
-                // Look for type in loaded assemblies
-                foreach (var assembly in lookupAssemblies)
+                var type = assembly.GetType(typeName);
+                if (type != null)
                 {
-                    if (assemblyName != null)
-                    {
-                        // Check that assembly name match, by comparing up to the first comma
-                        var assemblyFullName = assembly.FullName;
-                        if (string.Compare(assemblyFullName, 0, assemblyName, 0, assemblyName.Length) != 0
-                            || !(assemblyFullName.Length == assemblyName.Length || assemblyFullName[assemblyName.Length] == ','))
-                        {
-                            continue;
-                        }
-                    }
-
-                    type = assembly.GetType(typeName);
-                    if (type != null)
-                    {
-                        break;
-                    }
-                }
-
-                // No type found, let's try again ignoring assembly name (in case a type moved)
-                if (type == null && assemblyName != null)
-                {
-                    foreach (var assembly in lookupAssemblies)
-                    {
-                        type = assembly.GetType(typeName);
-                        if (type != null)
-                        {
-                            break;
-                        }
-                    }
+                    return type;
                 }
             }
-            return type;
+
+            return null;
         }
 
         public void ParseType(string typeFullName, out string typeName, out string assemblyName)
@@ -341,6 +354,151 @@ namespace SiliconStudio.Core.Yaml.Serialization
             }
         }
 
+        /// <summary>
+        /// Gets the assembly qualified name of the type, but without the assembly version or public token.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>The assembly qualified name of the type, but without the assembly version or public token.</returns>
+        /// <exception cref="InvalidOperationException">Unable to get an assembly qualified name for type.</exception>
+        /// <example>
+        ///     <list type="bullet">
+        ///         <item><c>typeof(string).GetShortAssemblyQualifiedName(); // System.String,mscorlib</c></item>
+        ///         <item><c>typeof(string[]).GetShortAssemblyQualifiedName(); // System.String[],mscorlib</c></item>
+        ///         <item><c>typeof(List&lt;string&gt;).GetShortAssemblyQualifiedName(); // System.Collection.Generics.List`1[[System.String,mscorlib]],mscorlib</c></item>
+        ///     </list>
+        /// </example>
+        private static string GetShortAssemblyQualifiedName(Type type)
+        {
+            if (type.AssemblyQualifiedName == null)
+                throw new InvalidOperationException($"Unable to get an assembly qualified name for type [{type}]");
+
+            var sb = new StringBuilder();
+            DoGetShortAssemblyQualifiedName(type, sb);
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Split the given short assembly-qualified type name into a generic definition type and a collection of generic argument types, and retrieve the dimension of the array if the type is an array type.
+        /// </summary>
+        /// <param name="shortAssemblyQualifiedName">The given short assembly-qualified type name to split.</param>
+        /// <param name="genericArguments">The generic argument types extracted, if the given type was generic. Otherwise null.</param>
+        /// <param name="arrayNesting">The number of arrays that are nested if the type is an array type.</param>
+        /// <returns>The corresponding generic definition type.</returns>
+        /// <remarks>If the given type is not generic, this method sets <paramref name="genericArguments"/> to null and returns <paramref name="shortAssemblyQualifiedName"/>.</remarks>
+        [NotNull]
+        private static string GetGenericArgumentsAndArrayDimension([NotNull] string shortAssemblyQualifiedName, [CanBeNull] out List<string> genericArguments, out int arrayNesting)
+        {
+            if (shortAssemblyQualifiedName == null) throw new ArgumentNullException(nameof(shortAssemblyQualifiedName));
+            var firstBracket = int.MaxValue;
+            var lastBracket = int.MinValue;
+            var bracketLevel = 0;
+            genericArguments = null;
+            arrayNesting = 0;
+            var startIndex = 0;
+            for (var i = 0; i < shortAssemblyQualifiedName.Length; ++i)
+            {
+                if (shortAssemblyQualifiedName[i] == '[')
+                {
+                    firstBracket = Math.Min(firstBracket, i);
+                    ++bracketLevel;
+                    if (bracketLevel == 2)
+                    {
+                        startIndex = i + 1;
+                    }
+                }
+                if (shortAssemblyQualifiedName[i] == ']')
+                {
+                    lastBracket = Math.Max(lastBracket, i);
+                    --bracketLevel;
+                    if (bracketLevel == 1)
+                    {
+                        if (genericArguments == null)
+                            genericArguments = new List<string>();
+
+                        genericArguments.Add(shortAssemblyQualifiedName.Substring(startIndex, i - startIndex));
+                    }
+                    if (bracketLevel == 0 && i > 0)
+                    {
+                        if (shortAssemblyQualifiedName[i - 1] == '[')
+                        {
+                            ++arrayNesting;
+                        }
+                    }
+                }
+            }
+            if (genericArguments != null || arrayNesting > 0)
+            {
+                var genericType = shortAssemblyQualifiedName.Substring(0, firstBracket) + shortAssemblyQualifiedName.Substring(lastBracket + 1);
+                return genericType;
+            }
+            return shortAssemblyQualifiedName;
+        }
+
+        private static void DoGetShortAssemblyQualifiedName(Type type, StringBuilder sb, bool appendAssemblyName = true)
+        {
+            // namespace
+            sb.Append(type.Namespace).Append(".");
+            // check if it's an array, store the information, and work on the element type
+            var arrayNesting = 0;
+            while (type.IsArray)
+            {
+                if (type.GetArrayRank() != 1)
+                    throw new NotSupportedException("Multi-dimensional arrays are not supported.");
+                type = type.GetElementType();
+                ++arrayNesting;
+            }
+            // nested declaring types
+            var declaringType = type.DeclaringType;
+            if (declaringType != null)
+            {
+                var declaringTypeName = string.Empty;
+                do
+                {
+                    declaringTypeName = declaringType.Name + "+" + declaringTypeName;
+                    declaringType = declaringType.DeclaringType;
+                } while (declaringType != null);
+                sb.Append(declaringTypeName);
+            }
+            // type
+            sb.Append(type.Name);
+            // generic arguments
+            if (type.IsGenericType)
+            {
+                sb.Append("[[");
+                var genericArguments = type.GetGenericArguments();
+                for (var i = 0; i < genericArguments.Length; i++)
+                {
+                    if (i > 0)
+                        sb.Append("],[");
+                    DoGetShortAssemblyQualifiedName(genericArguments[i], sb);
+                }
+                sb.Append("]]");
+            }
+            while (arrayNesting > 0)
+            {
+                --arrayNesting;
+                sb.Append("[]");
+            }
+            // assembly
+            if (appendAssemblyName)
+                sb.Append(",").Append(GetShortAssemblyName(type.Assembly));
+        }
+
+        /// <summary>
+        /// Gets the qualified name of the assembly, but without the assembly version or public token.
+        /// </summary>
+        /// <param name="assembly">The assembly.</param>
+        /// <returns>The qualified name of the assembly, but without the assembly version or public token.</returns>
+        private static string GetShortAssemblyName(Assembly assembly)
+        {
+            var assemblyName = assembly.FullName;
+            var indexAfterAssembly = assemblyName.IndexOf(',');
+            if (indexAfterAssembly >= 0)
+            {
+                assemblyName = assemblyName.Substring(0, indexAfterAssembly);
+            }
+            return assemblyName;
+        }
         struct MappedType
         {
             public MappedType(Type type, bool remapped)

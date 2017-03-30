@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization
@@ -73,11 +74,15 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         public DataStyle Style { get; set; }
 
+        public ScalarStyle ScalarStyle { get; set; }
+
         public Func<object, bool> ShouldSerialize { get; set; }
 
         public List<string> AlternativeNames { get; set; }
 
         public object Tag { get; set; }
+
+        public MemberInfo MemberInfo => null;
 
         public IEnumerable<T> GetCustomAttributes<T>(bool inherit) where T : Attribute
         {

@@ -1,21 +1,9 @@
 !SceneAsset
 Id: d5969c6e-1456-4aac-a656-598bf1e16c2d
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
-SceneSettings:
-    Id: c5f0fa26-3055-4ed6-96d9-d47af97d1caf
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras: {}
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers: {}
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - be0f7749-0809-4e50-931b-13570ea885ca
@@ -118,14 +106,14 @@ Hierarchy:
                         Children: {}
                     007120832d99ac45b9d2dd8f664b2baa: !SpaceEscape.Background.LevelGenerator,SpaceEscape.Game
                         Id: 83207100-992d-45ac-b9d2-dd8f664b2baa
-                        Background_a00: d594e60f-c93c-4ae2-add6-8f2fa6b7c170
-                        Background_b00: 375a70a7-8bd1-42c8-ba80-db8ccd698c28
-                        Background_b01: 4af9a192-21ff-4f1b-9c09-e7d80dae4e0a
-                        Background_b02: 1a63d9fd-0265-4837-8996-8c8f1cd0c17c
-                        Background_b03: 8ec3b5fc-a576-4cb1-89ae-1dea02261dfe
-                        Background_b04: cedaf0e3-3c28-49ef-b60f-05b755b85cdc
-                        Obstacle1: 422d91bc-cfe1-439e-a2d1-631886e95537
-                        Obstacle2: e322652e-175e-4563-9135-82ddef7c8973
+                        Background_a00: ref!! d594e60f-c93c-4ae2-add6-8f2fa6b7c170
+                        Background_b00: ref!! 375a70a7-8bd1-42c8-ba80-db8ccd698c28
+                        Background_b01: ref!! 4af9a192-21ff-4f1b-9c09-e7d80dae4e0a
+                        Background_b02: ref!! 1a63d9fd-0265-4837-8996-8c8f1cd0c17c
+                        Background_b03: ref!! 8ec3b5fc-a576-4cb1-89ae-1dea02261dfe
+                        Background_b04: ref!! cedaf0e3-3c28-49ef-b60f-05b755b85cdc
+                        Obstacle1: ref!! 422d91bc-cfe1-439e-a2d1-631886e95537
+                        Obstacle2: ref!! e322652e-175e-4563-9135-82ddef7c8973
         -   Entity:
                 Id: 8ec3b5fc-a576-4cb1-89ae-1dea02261dfe
                 Name: Background_b03
@@ -218,7 +206,6 @@ Hierarchy:
                         Id: 87f5648f-997c-4044-91e3-eb7bb5b39f1c
                         Animations:
                             dc2307ebe85ea9469bf44ecb5ac1d541~Idle: 8949a37d-83d4-4f0d-911d-bb15b79fe7b2:obj01_Anim
-                        PlayingAnimations: {}
                     f292fa10f4b3ce4999368d96538f7ed2: !SpaceEscape.PlayAnimationScript,SpaceEscape.Game
                         Id: 10fa92f2-b3f4-49ce-9936-8d96538f7ed2
                         AnimationName: Idle

@@ -37,14 +37,14 @@ namespace SiliconStudio.Xenko.ConnectionRouter
 
         public static bool CanProxy()
         {
-            var currentDir = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows-Direct3D11\\";
+            var currentDir = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows\\";
             var iosId = Path.Combine(currentDir, "iproxy.exe");
             return File.Exists(iosId);
         }
 
         internal Process SetupProxy(ConnectedDevice device)
         {
-            var currentDir = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows-Direct3D11\\";
+            var currentDir = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows\\";
             var iosId = Path.Combine(currentDir, "iproxy.exe");
 
             int testedLocalPort;
@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
 
         public async Task TrackDevices()
         {
-            var currentDir = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows-Direct3D11\\";
+            var currentDir = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows\\";
             var iosId = Path.Combine(currentDir, "idevice_id.exe");
 
             while (true)
@@ -113,8 +113,8 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     }
                 };
                 process.OutputDataReceived += (sender, args) =>
-                {               
-                    if (args.Data.IsNullOrEmpty()) return;
+                {
+                    if (string.IsNullOrEmpty(args.Data)) return;
 
                     thisRunDevices.Add(args.Data);
                     if (devices.ContainsKey(args.Data)) return;

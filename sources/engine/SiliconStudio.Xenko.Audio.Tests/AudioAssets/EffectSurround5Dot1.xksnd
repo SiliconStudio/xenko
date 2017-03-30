@@ -1,12 +1,6 @@
-!SoundEffect
+!Sound
 Id: 6909b9f2-f7cc-4f68-baf5-1fa221d48f5a
 Tags: []
 Source: ../../../data/tests/audio/90-bboc1-surround5.1.wav
-ImporterId: 634842fa-d1db-45c2-b13d-bc11486dae4d
-~Base:
-    ~Id: 50568e10-bcff-414c-afc6-b31dd553e10e
-    Location: --import--
-    Asset: !SoundEffect
-        Id: 00000000-0000-0000-0000-000000000000
-        Tags: []
-        Source: 
+StreamFromDisk: false
+Spatialized: true

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.IO;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core.Serialization
@@ -15,14 +16,13 @@ namespace SiliconStudio.Core.Serialization
         /// Initializes a new instance of the <see cref="BinarySerializationWriter"/> class.
         /// </summary>
         /// <param name="outputStream">The output stream.</param>
-        /// <param name="streamTags">The stream streamTags.</param>
-        public BinarySerializationWriter(Stream outputStream)
+        public BinarySerializationWriter([NotNull] Stream outputStream)
         {
             Writer = new BinaryWriter(outputStream);
             NativeStream = outputStream.ToNativeStream();
         }
 
-        private BinaryWriter Writer { get; set; }
+        private BinaryWriter Writer { get; }
 
         /// <inheritdoc />
         public override void Serialize(ref bool value)
@@ -31,14 +31,14 @@ namespace SiliconStudio.Core.Serialization
         }
 
         /// <inheritdoc />
-        public unsafe override void Serialize(ref float value)
+        public override unsafe void Serialize(ref float value)
         {
             fixed (float* valuePtr = &value)
                 NativeStream.Write(*(uint*)valuePtr);
         }
 
         /// <inheritdoc />
-        public unsafe override void Serialize(ref double value)
+        public override unsafe void Serialize(ref double value)
         {
             fixed (double* valuePtr = &value)
                 NativeStream.Write(*(ulong*)valuePtr);
@@ -105,7 +105,7 @@ namespace SiliconStudio.Core.Serialization
         }
 
         /// <inheritdoc />
-        public override void Serialize(byte[] values, int offset, int count)
+        public override void Serialize([NotNull] byte[] values, int offset, int count)
         {
             NativeStream.Write(values, offset, count);
         }

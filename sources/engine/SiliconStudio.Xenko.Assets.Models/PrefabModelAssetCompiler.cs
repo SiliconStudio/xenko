@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Assets.Entities;
+using SiliconStudio.Xenko.Assets.Materials;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Graphics;
@@ -18,29 +19,53 @@ using SiliconStudio.Xenko.Graphics.Data;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
+    [AssetCompiler(typeof(PrefabModelAsset), typeof(AssetCompilationContext))]
     internal class PrefabModelAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        {
+            //The following types will never make it to the game!
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(PrefabAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SceneAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ModelAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(PrefabModelAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ProceduralModelAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SkeletonAsset), BuildDependencyType.CompileAsset);
+
+            //Material are needed both in game and in compiler
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+        }
+
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (PrefabModelAsset)assetItem.Asset;
-            var renderingSettings = context.GetGameSettingsAsset().Get<RenderingSettings>();
-            result.BuildSteps = new ListBuildStep { new PrefabModelAssetCompileCommand(targetUrlInStorage, asset, assetItem, renderingSettings) };
-            result.ShouldWaitForPreviousBuilds = true;
+            var renderingSettings = context.GetGameSettingsAsset().GetOrCreate<RenderingSettings>();
+            result.BuildSteps = new AssetBuildStep(assetItem) { new PrefabModelAssetCompileCommand(targetUrlInStorage, asset, assetItem, renderingSettings) };
         }
 
         private class PrefabModelAssetCompileCommand : AssetCommand<PrefabModelAsset>
         {
-            private readonly Package package;
             private readonly RenderingSettings renderingSettings;
 
-            public PrefabModelAssetCompileCommand(string url, PrefabModelAsset parameters, AssetItem assetItem, RenderingSettings renderingSettings) 
-                : base(url, parameters)
+            public PrefabModelAssetCompileCommand(string url, PrefabModelAsset parameters, AssetItem assetItem, RenderingSettings renderingSettings)
+                : base(url, parameters, assetItem.Package)
             {
-                package = assetItem.Package;
                 this.renderingSettings = renderingSettings;
+            }
+
+            protected override void ComputeParameterHash(BinarySerializationWriter writer)
+            {
+                base.ComputeParameterHash(writer);
+
+                var prefabAsset = Package.Session.FindAsset(Parameters.Prefab.Location);
+                if (prefabAsset != null)
+                {
+                    writer.Write(prefabAsset.Version);
+                }
             }
 
             private class MeshData
@@ -57,18 +82,6 @@ namespace SiliconStudio.Xenko.Assets.Models
                 public Entity Entity;
                 public Model Model;
                 public int MaterialIndex;
-            }
-
-            protected override void ComputeParameterHash(BinarySerializationWriter writer)
-            {
-                base.ComputeParameterHash(writer);
-
-                if (Parameters.Prefab == null) return;
-
-                // We also want to serialize recursively the compile-time dependent assets
-                // (since they are not added as reference but actually embedded as part of the current asset)
-                // TODO: Ideally we would want to put that automatically in AssetCommand<>, but we would need access to package
-                ComputeCompileTimeDependenciesHash(package, writer, Parameters);
             }
 
             private static unsafe void ProcessMaterial(ContentManager manager, ICollection<EntityChunk> chunks, MaterialInstance material, Model prefabModel)
@@ -98,9 +111,9 @@ namespace SiliconStudio.Xenko.Assets.Models
                             {
                                 vertexData = ((BufferData)vertexBufferRef.Data).Content;
                             }
-                            else if (!vertexBufferRef.Url.IsNullOrEmpty())
+                            else if (!string.IsNullOrEmpty(vertexBufferRef.Url))
                             {
-                                var dataAsset = manager.Load<Graphics.Buffer>(vertexBufferRef.Url);
+                                var dataAsset = manager.Load<Buffer>(vertexBufferRef.Url);
                                 vertexData = dataAsset.GetSerializationData().Content;
                             }
                             else
@@ -120,7 +133,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                             //add to the big single array
                             var vertexes = vertexDataCopy
                                 .Skip(modelMesh.Draw.VertexBuffers[0].Offset)
-                                .Take(modelMesh.Draw.VertexBuffers[0].Count * modelMesh.Draw.VertexBuffers[0].Stride)
+                                .Take(modelMesh.Draw.VertexBuffers[0].Count*modelMesh.Draw.VertexBuffers[0].Stride)
                                 .ToArray();
 
                             mesh.VertexData.AddRange(vertexes);
@@ -132,9 +145,9 @@ namespace SiliconStudio.Xenko.Assets.Models
                             {
                                 indexData = ((BufferData)indexBufferRef.Data).Content;
                             }
-                            else if (!indexBufferRef.Url.IsNullOrEmpty())
+                            else if (!string.IsNullOrEmpty(indexBufferRef.Url))
                             {
-                                var dataAsset = manager.Load<Graphics.Buffer>(indexBufferRef.Url);
+                                var dataAsset = manager.Load<Buffer>(indexBufferRef.Url);
                                 indexData = dataAsset.GetSerializationData().Content;
                             }
                             else
@@ -143,27 +156,27 @@ namespace SiliconStudio.Xenko.Assets.Models
                             }
 
                             var indexSize = modelMesh.Draw.IndexBuffer.Is32Bit ? sizeof(uint) : sizeof(ushort);
-                            
+
                             byte[] indices;
-                            if(isScalingNegative)
+                            if (isScalingNegative)
                             {
                                 // Get reversed winding order
                                 modelMesh.Draw.GetReversedWindingOrder(out indices);
                                 indices = indices.Skip(modelMesh.Draw.IndexBuffer.Offset)
-                                .Take(modelMesh.Draw.IndexBuffer.Count * indexSize)
-                                .ToArray();
+                                    .Take(modelMesh.Draw.IndexBuffer.Count*indexSize)
+                                    .ToArray();
                             }
                             else
                             {
                                 // Get indices normally
                                 indices = indexData
                                     .Skip(modelMesh.Draw.IndexBuffer.Offset)
-                                    .Take(modelMesh.Draw.IndexBuffer.Count * indexSize)
+                                    .Take(modelMesh.Draw.IndexBuffer.Count*indexSize)
                                     .ToArray();
                             }
 
                             // Convert indices to 32 bits
-                            if(indexSize == sizeof(ushort))
+                            if (indexSize == sizeof(ushort))
                             {
                                 var uintIndices = new byte[indices.Length*2];
                                 fixed (byte* psrc = indices)
@@ -172,7 +185,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                                     var src = (ushort*)psrc;
                                     var dst = (uint*)pdst;
 
-                                    int numIndices = indices.Length / sizeof(ushort);
+                                    int numIndices = indices.Length/sizeof(ushort);
                                     for (var i = 0; i < numIndices; i++)
                                     {
                                         dst[i] = src[i];
@@ -186,7 +199,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                             {
                                 var dst = (uint*)pdst;
 
-                                int numIndices = indices.Length / sizeof(uint);
+                                int numIndices = indices.Length/sizeof(uint);
                                 for (var i = 0; i < numIndices; i++)
                                 {
                                     // Offset indices
@@ -229,7 +242,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                     Array.Copy(vertexArray, vertexBuffer.Content, vertexArray.Length);
                     Array.Copy(indexArray, indexBuffer.Content, indexArray.Length);
 
-                    gpuMesh.Draw.VertexBuffers = new VertexBufferBinding[1];                   
+                    gpuMesh.Draw.VertexBuffers = new VertexBufferBinding[1];
                     gpuMesh.Draw.VertexBuffers[0] = new VertexBufferBinding(vertexBufferSerializable, meshData.Key, vertexCount);
                     gpuMesh.Draw.IndexBuffer = new IndexBufferBinding(indexBufferSerializable, true, indexCount);
 
@@ -243,12 +256,10 @@ namespace SiliconStudio.Xenko.Assets.Models
                 {
                     Material = modelComponent.Materials.SafeGet(index) ?? baseInstance.Material ?? fallbackMaterial,
                     IsShadowCaster = modelComponent.IsShadowCaster,
-                    IsShadowReceiver = modelComponent.IsShadowReceiver
                 };
 
                 if (baseInstance != null)
                 {
-                    instance.IsShadowReceiver = instance.IsShadowReceiver && baseInstance.IsShadowReceiver;
                     instance.IsShadowCaster = instance.IsShadowCaster && baseInstance.IsShadowCaster;
                 }
 
@@ -257,7 +268,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             private static IEnumerable<T> IterateTree<T>(T root, Func<T, IEnumerable<T>> childrenF)
             {
-                var q = new List<T>() { root };
+                var q = new List<T> { root };
                 while (q.Any())
                 {
                     var c = q[0];
@@ -284,18 +295,36 @@ namespace SiliconStudio.Xenko.Assets.Models
 
                 var loadSettings = new ContentManagerLoaderSettings
                 {
-                    ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton), typeof(Material), typeof(Prefab))
+                    ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Material), typeof(Prefab), typeof(Scene))
                 };
 
-                Prefab prefab;
-                if (Parameters.Prefab == null)
+                IList<Entity> allEntities = new List<Entity>();
+                if (Parameters.Prefab != null)
                 {
-                    prefab = new Prefab();
-                }
-                else
-                {
-                    prefab = contentManager.Load<Prefab>(Parameters.Prefab.Location, loadSettings);
-                    if (prefab == null) throw new Exception("Failed to load prefab.");
+                    try
+                    {
+                        var prefab = contentManager.Load<Prefab>(Parameters.Prefab.Location, loadSettings);
+                        if(prefab != null)
+                            allEntities = prefab.Entities;
+                    }
+                    catch (Exception)
+                    {
+                        //ignored
+                    }
+
+                    if (allEntities.Count == 0)
+                    {
+                        try
+                        {
+                            var scene = contentManager.Load<Scene>(Parameters.Prefab.Location, loadSettings);
+                            if(scene != null)
+                                allEntities = scene.Entities;
+                        }
+                        catch (Exception)
+                        {
+                            //ignored
+                        }
+                    }
                 }
 
                 var prefabModel = new Model();
@@ -308,7 +337,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
                 var validEntities = new List<Entity>();
 
-                foreach (var rootEntity in prefab.Entities)
+                foreach (var rootEntity in allEntities)
                 {
                     //collect sub entities as well
                     var collected = IterateTree(rootEntity, subEntity => subEntity.GetChildren() ).ToArray();
@@ -319,7 +348,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                         //todo for now we collect everything with a model component
                         var modelComponent = subEntity.Get<ModelComponent>();
                         
-                        if (modelComponent?.Model == null || (modelComponent.Skeleton != null && modelComponent.Skeleton.Nodes.Length != 1))
+                        if (modelComponent?.Model == null || (modelComponent.Skeleton != null && modelComponent.Skeleton.Nodes.Length != 1) || !modelComponent.Enabled)
                             continue;
                         
                         var modelAsset = contentManager.Load<Model>(AttachedReferenceManager.GetUrl(modelComponent.Model), loadSettings);

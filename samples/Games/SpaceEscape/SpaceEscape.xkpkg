@@ -1,7 +1,6 @@
 !Package
 Id: 3665e984-37e5-4b32-b351-d4254f5e6d94
 SerializedVersion: {Assets: 0.0.4}
-Tags: []
 Meta:
     Name: SpaceEscape
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.11.1.2
             RootAssets: []
 LocalDependencies: []
 Profiles:

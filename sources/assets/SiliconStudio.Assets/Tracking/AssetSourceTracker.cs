@@ -341,7 +341,7 @@ namespace SiliconStudio.Assets.Tracking
             }
         }
 
-        private void Session_AssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
+        private void Session_AssetDirtyChanged(AssetItem asset, bool oldValue, bool newValue)
         {
             // Don't update the source tracker while saving
             if (!isSaving)

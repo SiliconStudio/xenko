@@ -1,18 +1,9 @@
 !Texture
 Id: 6e52ca68-ba84-4521-a20c-b780ea2831da
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../data/tests/GraceCathedral.dds
-ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: AsIs
+IsCompressed: false
+Type: !ColorTextureType
+    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 GenerateMipmaps: false
-~Base:
-    ~Id: 350355ee-b257-4e04-9e5b-c59051ac6581
-    Location: --import--
-    Asset: !Texture
-        Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: {Xenko: 1.4.0-beta}
-        Tags: []
-        Source: 
-        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

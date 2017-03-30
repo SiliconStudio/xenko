@@ -1,10 +1,9 @@
 !SpriteSheet
 Id: ae297c1f-91b7-45d3-8a13-fe64ddf8f9f2
-SerializedVersion: {Xenko: 1.5.0-alpha01}
+SerializedVersion: {Xenko: 1.10.0-alpha01}
 Tags: []
 Type: UI
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: Color32Bits
 Packing: {}
 Sprites:
     ba7501e76d1efa469215a136081ce682:

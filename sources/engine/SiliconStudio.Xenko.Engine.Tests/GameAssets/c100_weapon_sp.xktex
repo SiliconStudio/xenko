@@ -1,18 +1,8 @@
 !Texture
 Id: 9340a3e9-14b4-4367-8c24-a7a3f9f04610
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../data/tests/knight/sourceimages/c100_weapon_sp.jpg
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-PremultiplyAlpha: false
-~Base:
-    ~Id: c0742ef1-3cc4-4414-b455-c4c345b75bff
-    Location: --import--
-    Asset: !Texture
-        Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: {Xenko: 1.4.0-beta}
-        Tags: []
-        Source: 
-        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
-        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-        PremultiplyAlpha: false
+Type: !ColorTextureType
+    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+    PremultiplyAlpha: false

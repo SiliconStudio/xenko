@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
@@ -32,54 +30,48 @@ namespace SiliconStudio.Quantum
                 VisitedLinks.Add(sourceNode, targetNode);
             }
 
-            protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
+            protected override void VisitNode(IGraphNode node)
             {
                 var targetNode = linker.FindTarget(node);
                 // Override the target node, in case FindTarget returned a different one.
                 VisitedLinks[node] = targetNode;
                 linker.LinkNodes(node, targetNode);
-                base.VisitNode(node, currentPath);
+                base.VisitNode(node);
             }
 
-            protected override void VisitChildren(IGraphNode node, GraphNodePath currentPath)
+            protected override void VisitChildren(IObjectNode node)
             {
                 IGraphNode targetNodeParent;
                 if (VisitedLinks.TryGetValue(node, out targetNodeParent))
                 {
-                    foreach (var child in node.Children)
+                    foreach (var child in node.Members)
                     {
-                        if (ShouldVisitNode(child.Content as MemberContent, child))
-                        {
-                            string name = child.Name;
-                            VisitedLinks.Add(child, targetNodeParent?.TryGetChild(name));
-                        }
+                        string name = child.Name;
+                        VisitedLinks.Add(child, ((IObjectNode)targetNodeParent)?.TryGetChild(name));
                     }
                 }
-                base.VisitChildren(node, currentPath);
+                base.VisitChildren(node);
             }
 
-            protected override void VisitReference(IGraphNode referencer, ObjectReference reference, GraphNodePath targetPath)
+            protected override void VisitReference(IGraphNode referencer, ObjectReference reference)
             {
-                if (ShouldVisitNode(referencer.Content as MemberContent, reference.TargetNode))
+                if (reference.TargetNode != null)
                 {
-                    if (reference.TargetNode != null)
+                    // Prevent re-entrancy in the same object
+                    if (VisitedLinks.ContainsKey(reference.TargetNode))
+                        return;
+
+                    IGraphNode targetNode;
+                    if (VisitedLinks.TryGetValue(referencer, out targetNode))
                     {
-                        // Prevent re-entrancy in the same object
-                        if (VisitedLinks.ContainsKey(reference.TargetNode))
-                            return;
+                        ObjectReference targetReference = null;
+                        if (targetNode != null)
+                            targetReference = linker.FindTargetReference(referencer, targetNode, reference);
 
-                        IGraphNode targetNode;
-                        if (VisitedLinks.TryGetValue(referencer, out targetNode))
-                        {
-                            ObjectReference targetReference = null;
-                            if (targetNode != null)
-                                targetReference = linker.FindTargetReference(referencer, targetNode, reference);
-
-                            VisitedLinks.Add(reference.TargetNode, targetReference?.TargetNode);
-                        }
+                        VisitedLinks.Add(reference.TargetNode, targetReference?.TargetNode);
                     }
-                    base.VisitReference(referencer, reference, targetPath);
                 }
+                base.VisitReference(referencer, reference);
             }
         }
 
@@ -90,7 +82,11 @@ namespace SiliconStudio.Quantum
         /// </summary>
         public GraphNodeLinker()
         {
-            visitor = new GraphNodeLinkerVisitor(this) { ShouldVisit = ShouldVisitSourceNode };
+            visitor = new GraphNodeLinkerVisitor(this)
+            {
+                ShouldVisitMemberTargetNode = (member) => ShouldVisitMemberTarget(member),
+                ShouldVisitTargetItemNode = (collectionNode, index) => ShouldVisitTargetItem(collectionNode, index),
+            };
         }
 
         /// <summary>
@@ -109,13 +105,12 @@ namespace SiliconStudio.Quantum
             visitor.Visit(sourceNode);
         }
 
-        /// <summary>
-        /// Indicates whether the linker should visit the given source node.
-        /// </summary>
-        /// <param name="memberContent">The member content referencing the source node to evaluate.</param>
-        /// <param name="targetNode">The source node to evaluate. Can be the node holding the <paramref name="memberContent"/>, or one of its target node if this node contains a reference.</param>
-        /// <returns>True if the node should be visited, false otherwise.</returns>
-        protected virtual bool ShouldVisitSourceNode(MemberContent memberContent, IGraphNode targetNode)
+        protected virtual bool ShouldVisitMemberTarget(IMemberNode member)
+        {
+            return true;
+        }
+
+        protected virtual bool ShouldVisitTargetItem(IObjectNode collectionNode, Index index)
         {
             return true;
         }
@@ -156,17 +151,18 @@ namespace SiliconStudio.Quantum
         /// <param name="sourceReference">The reference in the source node for which to look for a correspondance in the target node.</param>
         /// <returns>A reference of the target node corresponding to the given reference in the source node, or null if there is no match.</returns>
         /// <remarks>
-        /// The source reference can either be directly the <see cref="IContent.Reference"/> of the source node if this reference is
-        /// an <see cref="ObjectReference"/>, or one of the reference contained inside <see cref="IContent.Reference"/> if this reference
-        /// is a <see cref="ReferenceEnumerable"/>. The <see cref="IReference.Index"/> property indicates the index of the reference in this case.
+        /// The source reference can either be directly the <see cref="IGraphNode.TargetReference"/> of the source node if this reference is
+        /// an <see cref="ObjectReference"/>, or one of the reference contained inside <see cref="IGraphNode.ItemReferences"/> if this reference
+        /// is a <see cref="ReferenceEnumerable"/>. The <see cref="Index"/> property indicates the index of the reference in this case.
         /// The default implementation returns a reference in the target node that matches the index of the source reference, if available.
         /// </remarks>
-        protected virtual ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
+        // TODO: turn back protected!
+        public virtual ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
         {
-            if (sourceReference.Index.IsEmpty)
-                return targetNode.Content.Reference as ObjectReference;
+            if (sourceNode is IMemberNode)
+                return (targetNode as IMemberNode)?.TargetReference;
 
-            var targetReference = targetNode.Content.Reference as ReferenceEnumerable;
+            var targetReference = (targetNode as IObjectNode)?.ItemReferences;
             return targetReference != null && targetReference.HasIndex(sourceReference.Index) ? targetReference[sourceReference.Index] : null;
         }
     }

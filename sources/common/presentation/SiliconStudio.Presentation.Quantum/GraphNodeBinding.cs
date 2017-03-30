@@ -1,6 +1,6 @@
 using System;
+using SiliconStudio.Presentation.Services;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -13,11 +13,12 @@ namespace SiliconStudio.Presentation.Quantum
     public class GraphNodeBinding<TTargetType, TContentType> : IDisposable
     {
         public delegate void PropertyChangeDelegate(string[] propertyNames);
-        private readonly IGraphNode node;
+        private readonly IMemberNode node;
         private readonly string propertyName;
         private readonly PropertyChangeDelegate propertyChanging;
         private readonly PropertyChangeDelegate propertyChanged;
-        private readonly Func<TContentType, TTargetType> converter;
+        private readonly Func<TTargetType, TContentType> converter;
+        private readonly IUndoRedoService actionService;
         private readonly bool notifyChangesOnly;
 
         /// <summary>
@@ -27,9 +28,10 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="propertyName">The name of the property of the view model that is bound to this instance.</param>
         /// <param name="propertyChanging">The delegate to invoke when the node content is about to change.</param>
         /// <param name="propertyChanged">The delegate to invoke when the node content has changed.</param>
-        /// <param name="converter">A converter function to convert between the content type and the property type.</param>
+        /// <param name="converter">A converter function to convert between the property type and the content type.</param>
+        /// <param name="actionService"></param>
         /// <param name="notifyChangesOnly">If <c>True</c>, delegates will be invoked only if the content of the node has actually changed. Otherwise, they will be invoked every time the node is updated, even if the new value is equal to the previous one.</param>
-        public GraphNodeBinding(IGraphNode node, string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, Func<TContentType, TTargetType> converter, bool notifyChangesOnly = true)
+        public GraphNodeBinding(IMemberNode node, string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, Func<TTargetType, TContentType> converter, IUndoRedoService actionService, bool notifyChangesOnly = true)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (converter == null) throw new ArgumentNullException(nameof(converter));
@@ -38,16 +40,19 @@ namespace SiliconStudio.Presentation.Quantum
             this.propertyChanging = propertyChanging;
             this.propertyChanged = propertyChanged;
             this.converter = converter;
+            this.actionService = actionService;
             this.notifyChangesOnly = notifyChangesOnly;
-            node.Content.Changing += ContentChanging;
-            node.Content.Changed += ContentChanged;
+            node.Changing += ContentChanging;
+            node.Changed += ContentChanged;
         }
 
         /// <inheritdoc/>
         public virtual void Dispose()
         {
-            node.Content.Changing -= ContentChanging;
-            node.Content.Changed -= ContentChanged;
+            node.UnregisterChanging(ContentChanging);
+            node.UnregisterChanged(ContentChanged);
+            node.Changing -= ContentChanging;
+            node.Changed -= ContentChanged;
         }
 
         /// <summary>
@@ -55,10 +60,10 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <returns>The current value of the graph node.</returns>
         /// <remarks>This method can be invoked from a property getter.</remarks>
-        public TTargetType GetNodeValue()
+        public TContentType GetNodeValue()
         {
-            var value = (TContentType)node.Content.Retrieve();
-            return converter(value);
+            var value = (TContentType)node.Retrieve();
+            return value;
         }
 
         /// <summary>
@@ -67,12 +72,16 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="value">The value to set for the graph node content.</param>
         /// <remarks>This method can be invoked from a property setter.</remarks>
         /// <remarks>This method will invoke the delegates passed to the constructor of this instance if the new value is different from the previous one.</remarks>
-        public void SetNodeValue(TContentType value)
+        public void SetNodeValue(TTargetType value)
         {
-            node.Content.Update(value);
+            using (var transaction = actionService?.CreateTransaction())
+            {
+                node.Update(converter(value));
+                actionService?.SetName(transaction, $"Update property {propertyName}");
+            }
         }
 
-        private void ContentChanging(object sender, ContentChangeEventArgs e)
+        private void ContentChanging(object sender, INodeChangeEventArgs e)
         {
             if (!notifyChangesOnly || !Equals(e.OldValue, e.NewValue))
             {
@@ -80,7 +89,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        private void ContentChanged(object sender, ContentChangeEventArgs e)
+        private void ContentChanged(object sender, INodeChangeEventArgs e)
         {
             if (!notifyChangesOnly || !Equals(e.OldValue,e.NewValue))
             {
@@ -105,9 +114,10 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="propertyName">The name of the property of the view model that is bound to this instance.</param>
         /// <param name="propertyChanging">The delegate to invoke when the node content is about to change.</param>
         /// <param name="propertyChanged">The delegate to invoke when the node content has changed.</param>
+        /// <param name="actionService"></param>
         /// <param name="notifyChangesOnly">If <c>True</c>, delegates will be invoked only if the content of the node has actually changed. Otherwise, they will be invoked every time the node is updated, even if the new value is equal to the previous one.</param>
-        public GraphNodeBinding(IGraphNode node, string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, bool notifyChangesOnly = true)
-            : base(node, propertyName, propertyChanging, propertyChanged, x => x, notifyChangesOnly)
+        public GraphNodeBinding(IMemberNode node, string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, IUndoRedoService actionService, bool notifyChangesOnly = true)
+            : base(node, propertyName, propertyChanging, propertyChanged, x => x, actionService, notifyChangesOnly)
         {
         }
 

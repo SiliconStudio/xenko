@@ -7,11 +7,10 @@ Attributes:
         DiffuseMap: !ComputeShaderClassColor
             MixinReference: ComputeColorFixed
             Generics:
-                TVALUE: !ComputeColorParameterFloat4
-                    ~Id: 47afcd60-7700-4aba-ac67-d79728232aff
+                60cdaf470077ba4aac67d79728232aff~TVALUE: !ComputeColorParameterFloat4
                     Value: {X: 0.0, Y: 0.2, Z: 1.0, W: 1.0}
             CompositionNodes: {}
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering
         private static int currentIndex;
 
         public bool Enabled = true;
-        public EntityGroup RenderGroup;
+        public RenderGroup RenderGroup;
 
         public BoundingBoxExt BoundingBox;
 

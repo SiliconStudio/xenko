@@ -12,7 +12,6 @@ Attributes:
             Offset: {X: 0.0, Y: 0.0}
             Swizzle: null
         IsXYNormal: true
-        InvertY: false
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
             Texture: 701a33e2-01a3-41ed-bb25-e1c6d8a883c8:Materials/iron_paint_blend/iron_paint_dif

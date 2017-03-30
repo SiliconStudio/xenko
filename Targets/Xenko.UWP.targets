@@ -23,41 +23,26 @@
     <AppxPackageTestDir>$(AppxPackageDir)Test\</AppxPackageTestDir>
     <AppxPackageName>$(AssemblyName)</AppxPackageName>
   </PropertyGroup>
-  
-  <!-- Embed native libraries -->
-  <ItemGroup>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\freetype.dll" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libcore.dll"/>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libbulletc.dll"/>
 
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libxenko.dll"/>
-    
-    <!-- Users custom native libraries -->
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\$(SiliconStudioCPU)\*.dll" />
-  </ItemGroup>
-
-  <!-- On Windows platform automatically add the following references -->
-  <Choose>
-    <When Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
-      <ItemGroup>
-        <Content Include="@(SiliconStudioEmbeddedNativeLibrary)">
-          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-          <Visible>False</Visible>
-        </Content>
-      </ItemGroup>
-	  </When>
-  </Choose>
+  <!-- Copy native libraries to output -->
+  <Target Name="_SiliconStudioSetupNativeLibraries" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <Content Include="@(_SiliconStudioDependencyNativeLib)" Condition="$([System.String]::Copy('%(_SiliconStudioDependencyNativeLib.Link)').StartsWith('$(SiliconStudioCPU)'))">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Link>$([System.String]::Copy('%(_SiliconStudioDependencyNativeLib.Link)').Replace('$(SiliconStudioCPU)\', ''))</Link>
+      </Content>
+    </ItemGroup>
+  </Target>
 
   <PropertyGroup>
     <PrepareResourcesDependsOn>
-      DeployAssetsWinRT;
+      DeployAssetsUWP;
       $(PrepareResourcesDependsOn)
     </PrepareResourcesDependsOn>
   </PropertyGroup>
 
   <!-- UWP: Transform Assets into Content -->
-  <Target Name="DeployAssetsWinRT" DependsOnTargets="SiliconStudioCompileAsset" Condition="'$(SiliconStudioIsExecutable)' == 'true'">
+  <Target Name="DeployAssetsUWP" DependsOnTargets="SiliconStudioCompileAsset" Condition="'$(SiliconStudioIsExecutable)' == 'true'">
     <ItemGroup>
       <!-- Define the Assets to deploy -->
       <AssetsToDeploy Include="$(SiliconStudioCompileAssetOutputPath)\**\*.*"/>

@@ -1,17 +1,8 @@
 !Texture
 Id: 7e5ae8dc-6417-40b8-a3d6-4f019fd7cc28
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../data/tests/AtriumNight.dds
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: AsIs
-~Base:
-    ~Id: 50b7d055-6828-471f-bc42-edd60ceba843
-    Location: --import--
-    Asset: !Texture
-        Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: {Xenko: 1.4.0-beta}
-        Tags: []
-        Source: 
-        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
-        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+IsCompressed: false
+Type: !ColorTextureType
+    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

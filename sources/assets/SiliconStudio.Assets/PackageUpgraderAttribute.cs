@@ -1,6 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets
 {
@@ -8,21 +12,23 @@ namespace SiliconStudio.Assets
     /// Attribute that describes what a package upgrader can do.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    [BaseTypeRequired(typeof(PackageUpgrader))]
+    [AssemblyScan]
     public class PackageUpgraderAttribute : Attribute
     {
-        private readonly PackageVersionRange packageUpdatedVersionRange;
+        private readonly PackageVersionRange updatedVersionRange;
         
         public string PackageName { get; private set; }
 
         public PackageVersion PackageMinimumVersion { get; private set; }
 
-        public PackageVersionRange PackageUpdatedVersionRange { get { return packageUpdatedVersionRange; } }
+        public PackageVersionRange UpdatedVersionRange { get { return updatedVersionRange; } }
 
         public PackageUpgraderAttribute(string packageName, string packageMinimumVersion, string packageUpdatedVersionRange)
         {
             PackageName = packageName;
             PackageMinimumVersion = new PackageVersion(packageMinimumVersion);
-            PackageVersionRange.TryParse(packageUpdatedVersionRange, out this.packageUpdatedVersionRange);
+            PackageVersionRange.TryParse(packageUpdatedVersionRange, out this.updatedVersionRange);
         }
     }
 }

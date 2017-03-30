@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Assets.Tasks
@@ -20,8 +21,6 @@ namespace SiliconStudio.Xenko.Assets.Tasks
 
         [Output]
         public string Version { get; set; }
-
-        public string SpecialVersion { get; set; }
 
         public override bool Execute()
         {
@@ -55,15 +54,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                 return false;
             }
 
-            var version = package.Meta.Version;
-
-            // Override version with task SpecialVersion (if specified by user)
-            if (!string.IsNullOrEmpty(SpecialVersion))
-            {
-                version = new PackageVersion(version.ToString().Split('-').First() + "-" + SpecialVersion);
-            }
-
-            Version = version.ToString();
+            Version = package.Meta.Version.ToString();
             return true;
         }
     }

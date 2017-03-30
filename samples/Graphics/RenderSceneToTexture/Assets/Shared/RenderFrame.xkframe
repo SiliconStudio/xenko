@@ -1,8 +1,0 @@
-!RenderFrame
-Id: e993c612-9d3f-4991-bdd1-d4d25f0cb4ca
-Tags: []
-Descriptor:
-    Mode: Fixed
-    Width: 320
-    Height: 568
-    DepthFormat: DepthAndStencil

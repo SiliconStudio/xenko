@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using NuGet;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Settings;
@@ -86,7 +85,10 @@ namespace SiliconStudio.Assets
         {
             if (name == null) throw new ArgumentNullException("name");
             Name = name;
-            AssetFolders.AddRange(folders);
+            foreach (var folder in folders)
+            {
+                AssetFolders.Add(folder);
+            }
         }
 
 

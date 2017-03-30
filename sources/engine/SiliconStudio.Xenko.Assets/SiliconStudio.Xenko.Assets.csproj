@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
@@ -42,9 +42,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="NuGet">
-      <HintPath>..\..\..\deps\Nuget\NuGet.core.dll</HintPath>
-    </Reference>
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\deps\SSH.NET\Renci.SshNet.dll</HintPath>
@@ -96,11 +93,11 @@
     <Reference Include="System.Drawing" />
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+      <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct2D1">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct2D1.dll</HintPath>
+      <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct2D1.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\..\build\packages\System.IO.Compression.4.1.0\lib\net46\System.IO.Compression.dll</HintPath>
@@ -183,6 +180,11 @@
       <Name>SiliconStudio.Assets</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\assets\SiliconStudio.Packages\SiliconStudio.Packages.csproj">
+      <Project>{acd2c831-bda2-4512-b4cc-75e8e1804f73}</Project>
+      <Name>SiliconStudio.Packages</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">
       <Project>{7732CB84-A39A-4ADF-B740-FD32A352FA8A}</Project>
       <Name>SiliconStudio.BuildEngine.Common</Name>
@@ -196,11 +198,6 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
       <Project>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</Project>
       <Name>SiliconStudio.Core.IO</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
-      <Project>{fcf36d39-bffe-4719-b245-05640ee34c5f}</Project>
-      <Name>SiliconStudio.Core.Native</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
@@ -236,6 +233,11 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
       <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
       <Name>SiliconStudio.Xenko.Native</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Navigation\SiliconStudio.Xenko.Navigation.csproj">
+      <Project>{fbe1fa7b-e699-4bb2-9c8f-41f4c9f3f088}</Project>
+      <Name>SiliconStudio.Xenko.Navigation</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj">
@@ -304,7 +306,6 @@
     <Compile Include="Audio\SoundFactories.cs" />
     <Compile Include="Audio\RawSoundAssetImporter.cs" />
     <Compile Include="Audio\SoundAsset.cs" />
-    <Compile Include="Effect\CompileDefaultSceneEffectCommand.cs" />
     <Compile Include="DefaultFactories.cs" />
     <Compile Include="EditorSettings.cs" />
     <Compile Include="Effect\EffectByteCodeToSourceCodeWriter.cs" />
@@ -315,7 +316,6 @@
     <Compile Include="Effect\EffectLogStore.cs" />
     <Compile Include="Effect\EffectShaderAssetCompiler.cs" />
     <Compile Include="Effect\EffectShaderAsset.cs" />
-    <Compile Include="Entities\EntityComponentReferenceSerializer.cs" />
     <Compile Include="Entities\EntityDesign.cs" />
     <Compile Include="Entities\EntityHierarchyAssetBase.Upgraders.cs" />
     <Compile Include="Entities\PrefabAsset.cs" />
@@ -324,16 +324,35 @@
     <Compile Include="Entities\EntityHierarchyDataExtensions.cs" />
     <Compile Include="Entities\EntityHierarchyCompilerBase.cs" />
     <Compile Include="Entities\SceneAssetCompiler.cs" />
-    <Compile Include="Entities\EntityComponentReference.cs" />
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
     <Compile Include="Entities\SceneAsset.Upgraders.cs" />
     <Compile Include="Entities\SceneAssetFactories.cs" />
+    <Compile Include="Rendering\GraphicsCompositorAsset.cs" />
     <Compile Include="Navigation\NavigationMeshAsset.cs" />
-    <Compile Include="Navigation\NavigationMeshCachedBuild.cs" />
-    <Compile Include="Navigation\NavigationMeshCachedBuildObject.cs" />
-    <Compile Include="Navigation\NavigationMeshBuildUtils.cs" />
     <Compile Include="Navigation\NavigationMeshFactory.cs" />
-    <Compile Include="Navigation\NavigationMeshInputBuilder.cs" />
+    <Compile Include="Textures\ColorTextureType.cs" />
+    <Compile Include="Textures\GrayscaleTextureType.cs" />
+    <Compile Include="Textures\ITextureType.cs" />
+    <Compile Include="Textures\NormalMapTextureType.cs" />
+    <Compile Include="Serializers\EntitySerializer.cs" />
+    <Compile Include="Rendering\GraphicsCompositorAssetCompiler.cs" />
+    <Compile Include="Scripts\Accessibility.cs" />
+    <Compile Include="Scripts\CustomExpression.cs" />
+    <Compile Include="Scripts\BlockDropTargetAttribute.cs" />
+    <Compile Include="Scripts\ForeachBlock.cs" />
+    <Compile Include="Scripts\Method.cs" />
+    <Compile Include="Scripts\Property.cs" />
+    <Compile Include="Scripts\Parameter.cs" />
+    <Compile Include="Scripts\ParameterRefKind.cs" />
+    <Compile Include="Scripts\RegenerateSlotsAttribute.cs" />
+    <Compile Include="Scripts\RegenerateTitleAttribute.cs" />
+    <Compile Include="Scripts\RoslynHelper.cs" />
+    <Compile Include="Scripts\ScriptCodeAttribute.cs" />
+    <Compile Include="Scripts\ScriptVariableReferenceAttribute.cs" />
+    <Compile Include="Scripts\SlotGeneratorContext.cs" />
+    <Compile Include="Scripts\VirtualModifier.cs" />
+    <Compile Include="Textures\RenderTextureAsset.cs" />
+    <Compile Include="Textures\RenderTextureAssetCompiler.cs" />
     <Compile Include="UI\UIAssetCompilerBase.cs" />
     <Compile Include="UI\UIElementDesign.cs" />
     <Compile Include="GameSettingsAsset.cs" />
@@ -350,8 +369,20 @@
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
     <Compile Include="Physics\ColliderShapeFactories.cs" />
+    <Compile Include="Scripts\Block.cs" />
+    <Compile Include="Scripts\BlockReference.cs" />
+    <Compile Include="Scripts\ConditionalBranchBlock.cs" />
+    <Compile Include="Scripts\CustomCodeBlock.cs" />
+    <Compile Include="Scripts\Link.cs" />
+    <Compile Include="Scripts\MethodCallBlock.cs" />
+    <Compile Include="Scripts\Slot.cs" />
+    <Compile Include="Scripts\SlotDefinition.cs" />
+    <Compile Include="Scripts\Symbol.cs" />
+    <Compile Include="Scripts\VariableGet.cs" />
+    <Compile Include="Scripts\VariableSet.cs" />
+    <Compile Include="Scripts\VisualScriptAsset.cs" />
+    <Compile Include="Scripts\VisualScriptCompiler.cs" />
     <Compile Include="SceneRenderer.cs" />
-    <Compile Include="Skyboxes\SkyboxUsage.cs" />
     <Compile Include="SpriteFont\Compiler\SignedDistanceFieldFontCompiler.cs" />
     <Compile Include="SpriteFont\Compiler\SignedDistanceFieldFontWriter.cs" />
     <Compile Include="SpriteFont\Compiler\SignedDistanceFieldFontImporter.cs" />
@@ -392,17 +423,12 @@
     <Compile Include="XenkoConfig.cs" />
     <Compile Include="Physics\ColliderShapeAsset.cs" />
     <Compile Include="Physics\ColliderShapeAssetCompiler.cs" />
-    <Compile Include="RenderFrames\RenderFrameAsset.cs" />
-    <Compile Include="RenderFrames\RenderFrameAssetCompiler.cs" />
     <Compile Include="Serializers\ParameterKeyDictionarySerializer.cs" />
-    <Compile Include="Skyboxes\ISkyboxModel.cs" />
     <Compile Include="Skyboxes\SkyboxAssetCompiler.cs" />
     <Compile Include="Skyboxes\SkyboxAsset.cs" />
-    <Compile Include="Skyboxes\SkyboxCubeMapModel.cs" />
     <Compile Include="Skyboxes\SkyboxGenerator.cs" />
     <Compile Include="Skyboxes\SkyboxPreFilteringDiffuseOrder.cs" />
     <Compile Include="Sprite\SpriteSheetType.cs" />
-    <Compile Include="Textures\TextureColorSpace.cs" />
     <Compile Include="Sprite\PackingAttributes.cs" />
     <Compile Include="Textures\Packing\AtlasTextureElement.cs" />
     <Compile Include="Textures\Packing\AtlasTextureLayout.cs" />
@@ -436,7 +462,6 @@
     <Compile Include="Textures\AlphaFormat.cs" />
     <Compile Include="Textures\TextureAsset.cs" />
     <Compile Include="Textures\TextureAssetCompiler.cs" />
-    <Compile Include="Textures\TextureFormat.cs" />
     <Compile Include="Textures\TextureImporter.cs" />
     <Compile Include="WindowsGameSettingsProfile.cs" />
   </ItemGroup>

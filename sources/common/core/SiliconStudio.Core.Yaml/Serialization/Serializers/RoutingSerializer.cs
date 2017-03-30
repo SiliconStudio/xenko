@@ -50,7 +50,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     /// <summary>
     /// This serializer is responsible to route to a specific serializer.
     /// </summary>
-    internal class RoutingSerializer : IYamlSerializable
+    public class RoutingSerializer : ChainedSerializer, IYamlSerializable
     {
         private readonly ISerializerFactorySelector serializerSelector;
 
@@ -60,7 +60,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             this.serializerSelector = serializerSelector;
         }
 
-        public object ReadYaml(ref ObjectContext objectContext)
+        public sealed override object ReadYaml(ref ObjectContext objectContext)
         {
             // If value is not null, use its TypeDescriptor otherwise use expected type descriptor
             var instance = objectContext.Instance;
@@ -70,7 +70,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             return serializer.ReadYaml(ref objectContext);
         }
 
-        public void WriteYaml(ref ObjectContext objectContext)
+        public sealed override void WriteYaml(ref ObjectContext objectContext)
         {
             var serializer = serializerSelector.GetSerializer(objectContext.SerializerContext, objectContext.Descriptor);
             serializer.WriteYaml(ref objectContext);

@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 74316bd3-3393-4654-850c-00837f64bac9
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.10.0-beta02}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -16,9 +16,9 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            51f86465a65560498c98b0e9d29427d8: a3ccc846-034e-409a-ac44-0626a1898680/6564f851-55a6-4960-8c98-b0e9d29427d8
-                            ee1a2849d1ef1641ba450cd50d2e2f44: 1fa0ec17-12a1-4c34-ae03-423318c62744/49281aee-efd1-4116-ba45-0cd50d2e2f44
-                            ad8bf0770ad89f4b82795209039a7bf0: c9ad1043-e5d2-440c-8df2-f7d5a7913c6a/77f08bad-d80a-4b9f-8279-5209039a7bf0
+                            51f86465a65560498c98b0e9d29427d8: ref!! 6564f851-55a6-4960-8c98-b0e9d29427d8
+                            ee1a2849d1ef1641ba450cd50d2e2f44: ref!! 49281aee-efd1-4116-ba45-0cd50d2e2f44
+                            ad8bf0770ad89f4b82795209039a7bf0: ref!! 77f08bad-d80a-4b9f-8279-5209039a7bf0
         -   Entity:
                 Id: 1fa0ec17-12a1-4c34-ae03-423318c62744
                 Name: BlueTube

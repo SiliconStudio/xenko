@@ -21,10 +21,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         private Vector2 distortion;
 
+        private bool stableConvolution;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Bloom"/> class.
         /// </summary>
         public Bloom()
+            : base(null, true)
         {
             Radius = 10;
             Amount = 0.3f;
@@ -32,6 +35,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             SigmaRatio = 3.5f;
             Distortion = new Vector2(1);
             afterimage = new Afterimage { Enabled = false };
+            EnableSetRenderTargets = false;
+            stableConvolution = true;
         }
 
         /// <summary>
@@ -95,6 +100,30 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
+        /// <summary>
+        /// Use the "stable bloom" rendering path.
+        /// </summary>
+        /// <userdoc>It reverses FXAA and bloom, as well as uses a richer convolution kernel during blurring. It helps reduce temporal shimmering.</userdoc>
+        [DataMember(60)]
+        [DefaultValue(true)]
+        [Display("Expanded filtering")]
+        public bool StableConvolution
+        {
+            get { return stableConvolution; }
+            set
+            {
+                var old = stableConvolution;
+                stableConvolution = value;
+                if (value != old)
+                {   
+                    multiScaler?.Dispose();
+                    multiScaler = null;
+                    if (Context != null)
+                        multiScaler = ToLoadAndUnload(new ImageMultiScaler(stableConvolution));
+                }
+            }
+        }
+
         [DataMemberIgnore]
         public bool ShowOnlyBloom { get; set; }
 
@@ -119,7 +148,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             base.InitializeCore();
 
-            multiScaler = ToLoadAndUnload(new ImageMultiScaler());
+            multiScaler = ToLoadAndUnload(new ImageMultiScaler(StableConvolution));
             blur = ToLoadAndUnload(new GaussianBlur());
             afterimage = ToLoadAndUnload(afterimage);
         }

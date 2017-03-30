@@ -9,7 +9,6 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// Used by <see cref="MeshRenderFeature"/> to render a <see cref="Rendering.Mesh"/>.
     /// </summary>
-    [DefaultPipelinePlugin(typeof(MeshPipelinePlugin))]
     public class RenderMesh : RenderObject
     {
         public MeshDraw ActiveMeshDraw;
@@ -29,8 +28,6 @@ namespace SiliconStudio.Xenko.Rendering
         internal MaterialRenderFeature.MaterialInfo MaterialInfo;
 
         public bool IsShadowCaster;
-
-        public bool IsShadowReceiver;
 
         public bool IsScalingNegative;
 

@@ -9,7 +9,7 @@ namespace SiliconStudio.Core.MicroThreading
     {
         public Action Action;
         public MicroThread MicroThread;
-        public int Priority;
+        public long Priority;
         public long SchedulerCounter;
         public object Token;
 
@@ -18,7 +18,7 @@ namespace SiliconStudio.Core.MicroThreading
             MicroThread = microThread;
         }
 
-        public SchedulerEntry(Action action, int priority) : this()
+        public SchedulerEntry(Action action, long priority) : this()
         {
             Action = action;
             Priority = priority;

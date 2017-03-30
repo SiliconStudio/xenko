@@ -2,9 +2,8 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Commands;
+using IReference = SiliconStudio.Core.Serialization.Contents.IReference;
 
 namespace SiliconStudio.Assets.Quantum
 {
@@ -12,12 +11,6 @@ namespace SiliconStudio.Assets.Quantum
     {
         public AssetNodeContainer()
         {
-            NodeBuilder.AvailableCommands.Add(new AddNewItemCommand());
-            NodeBuilder.AvailableCommands.Add(new AddPrimitiveKeyCommand());
-            NodeBuilder.AvailableCommands.Add(new CreateNewInstanceCommand());
-            NodeBuilder.AvailableCommands.Add(new RemoveItemCommand());
-            NodeBuilder.AvailableCommands.Add(new MoveItemCommand());
-            NodeBuilder.AvailableCommands.Add(new RenameStringKeyCommand());
             NodeBuilder.RegisterPrimitiveType(typeof(IReference));
             NodeBuilder.RegisterPrimitiveType(typeof(PropertyKey));
             NodeBuilder.RegisterPrimitiveType(typeof(TimeSpan));
@@ -43,7 +36,6 @@ namespace SiliconStudio.Assets.Quantum
             {
                 NodeBuilder.RegisterPrimitiveType(contentType);
             }
-            OverrideNodeFactory((name, content, guid) => new AssetNode(name, content, guid));
         }
     }
 }

@@ -1,9 +1,10 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
@@ -13,7 +14,6 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("Skeleton")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetContentType(typeof(Skeleton))]
-    [AssetCompiler(typeof(SkeletonAssetCompiler))]
     [Display(1800, "Skeleton", "A skeleton (node hierarchy)")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.7.8-beta")]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.7.8-beta", typeof(EnsureScaleNotZero))]
@@ -61,12 +61,12 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// Nodes should be preserved in order to be animated or linked to entities.
         /// </userdoc>
         [DataMember(20)]
+        [MemberCollection(ReadOnly = true)]
+        [Display(Expand = ExpandRule.Once)]
         public List<NodeInformation> Nodes { get; } = new List<NodeInformation>();
 
         [DataMemberIgnore]
         public override UFile MainSource => Source;
-
-        protected override int InternalBuildOrder => -200; // We want Model to be scheduled early since they tend to take the longest (bad concurrency at end of build)
 
         /// <summary>
         /// Gets or sets if the mesh will be compacted (meshes will be merged).

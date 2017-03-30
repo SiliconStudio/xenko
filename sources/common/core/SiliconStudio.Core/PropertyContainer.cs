@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
@@ -27,7 +28,7 @@ namespace SiliconStudio.Core
     /// </remarks>
     [DataContract]
     [DataSerializer(typeof(DictionaryAllSerializer<PropertyContainer, PropertyKey, object>))]
-    public struct PropertyContainer : IDictionary<PropertyKey, object>
+    public struct PropertyContainer : IDictionary<PropertyKey, object>, IReadOnlyDictionary<PropertyKey, object>
     {
         private static readonly Dictionary<Type, List<PropertyKey>> AccessorProperties = new Dictionary<Type, List<PropertyKey>>();
         private Dictionary<PropertyKey, object> properties;
@@ -120,7 +121,7 @@ namespace SiliconStudio.Core
         /// <typeparam name="T"></typeparam>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        public void Add<T>(PropertyKey<T> key, T value)
+        public void Add<T>([NotNull] PropertyKey<T> key, T value)
         {
             SetObject(key, value, true);
         }
@@ -132,7 +133,7 @@ namespace SiliconStudio.Core
         /// <returns>
         ///   <c>true</c> if the specified instance contains this key; otherwise, <c>false</c>.
         /// </returns>
-        public bool ContainsKey(PropertyKey key)
+        public bool ContainsKey([NotNull] PropertyKey key)
         {
             // If it's a key with AccessorMetadata, check if it has been registered to this type
             // Not very efficient... hopefully it should be rarely used. If not, it should be quite easy to optimize.
@@ -160,12 +161,12 @@ namespace SiliconStudio.Core
             return properties != null && properties.ContainsKey(key);
         }
 
-        void IDictionary<PropertyKey, object>.Add(PropertyKey key, object value)
+        void IDictionary<PropertyKey, object>.Add([NotNull] PropertyKey key, object value)
         {
             SetObject(key, value, true);
         }
 
-        public bool Remove(PropertyKey propertyKey)
+        public bool Remove([NotNull] PropertyKey propertyKey)
         {
             var removed = false;
 
@@ -194,7 +195,7 @@ namespace SiliconStudio.Core
             return removed;
         }
 
-        public object this[PropertyKey key]
+        public object this[[NotNull] PropertyKey key]
         {
             get
             {
@@ -239,12 +240,12 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="propertyKey">The tag property.</param>
         /// <returns>Value of the tag property</returns>
-        public object Get(PropertyKey propertyKey)
+        public object Get([NotNull] PropertyKey propertyKey)
         {
             return Get(propertyKey, false);
         }
 
-        private object Get(PropertyKey propertyKey, bool forceNotToKeep)
+        private object Get([NotNull] PropertyKey propertyKey, bool forceNotToKeep)
         {
             // First, check if there is an accessor
             if (propertyKey.AccessorMetadata != null)
@@ -287,7 +288,7 @@ namespace SiliconStudio.Core
         /// <returns>The value associated with this property key.</returns>
         /// <exception cref="System.ArgumentNullException">propertyKey</exception>
         /// <exception cref="System.ArgumentException">Unable to retrieve value for [{0}].ToFormat(propertyKey)</exception>
-        public T GetSafe<T>(PropertyKey<T> propertyKey)
+        public T GetSafe<T>([NotNull] PropertyKey<T> propertyKey)
         {
             if (propertyKey == null) throw new ArgumentNullException(nameof(propertyKey));
             if (propertyKey.IsValueType)
@@ -309,7 +310,7 @@ namespace SiliconStudio.Core
         /// <typeparam name="T">Type of the tag value</typeparam>
         /// <param name="propertyKey">The tag property.</param>
         /// <returns>Typed value of the tag property</returns>
-        public T Get<T>(PropertyKey<T> propertyKey)
+        public T Get<T>([NotNull] PropertyKey<T> propertyKey)
         {
             if (propertyKey == null) throw new ArgumentNullException(nameof(propertyKey));
             if (propertyKey.IsValueType)
@@ -377,7 +378,7 @@ namespace SiliconStudio.Core
         /// <param name="propertyKey">The tag property.</param>
         /// <param name="value">The value or default vaue if not found</param>
         /// <returns>Returns <c>true</c> if the was found; <c>false</c> otherwise</returns>
-        public bool TryGetValue<T>(PropertyKey<T> propertyKey, out T value)
+        public bool TryGetValue<T>([NotNull] PropertyKey<T> propertyKey, out T value)
         {
             if (ContainsKey(propertyKey))
             {
@@ -394,7 +395,7 @@ namespace SiliconStudio.Core
         /// <typeparam name="T">Type of the tag value</typeparam>
         /// <param name="propertyKey">The tag property.</param>
         /// <param name="tagValue">The tag value.</param>
-        public void Set<T>(PropertyKey<T> propertyKey, T tagValue)
+        public void Set<T>([NotNull] PropertyKey<T> propertyKey, T tagValue)
         {
             if (propertyKey.IsValueType)
             {
@@ -486,12 +487,12 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="propertyKey">The tag property.</param>
         /// <param name="tagValue">The tag value.</param>
-        public void SetObject(PropertyKey propertyKey, object tagValue)
+        public void SetObject([NotNull] PropertyKey propertyKey, object tagValue)
         {
             SetObject(propertyKey, tagValue, false);
         }
 
-        private void SetObject(PropertyKey propertyKey, object tagValue, bool tryToAdd)
+        private void SetObject([NotNull] PropertyKey propertyKey, object tagValue, bool tryToAdd)
         {
             var oldValue = Get(propertyKey, true);
 
@@ -536,7 +537,7 @@ namespace SiliconStudio.Core
             propertyKey.ObjectInvalidationMetadata?.Invalidate(Owner, propertyKey, oldValue);
         }
 
-        public static void AddAccessorProperty(Type type, PropertyKey propertyKey)
+        public static void AddAccessorProperty([NotNull] Type type, [NotNull] PropertyKey propertyKey)
         {
             if (!type.GetTypeInfo().IsClass)
                 throw new ArgumentException("Class type is expected.", nameof(type));
@@ -556,7 +557,7 @@ namespace SiliconStudio.Core
             PropertyUpdated?.Invoke(ref this, propertyKey, newValue, oldValue);
         }
 
-        private object GetNonRecursive(PropertyKey propertyKey)
+        private object GetNonRecursive([NotNull] PropertyKey propertyKey)
         {
             object value;
 
@@ -570,7 +571,7 @@ namespace SiliconStudio.Core
             return propertyKey.DefaultValueMetadata?.GetDefaultValue(ref this);
         }
 
-        private static bool ArePropertyValuesEqual(PropertyKey propertyKey, object propertyValue1, object propertyValue2)
+        private static bool ArePropertyValuesEqual([NotNull] PropertyKey propertyKey, object propertyValue1, object propertyValue2)
         {
             var propertyType = propertyKey.PropertyType;
 
@@ -607,7 +608,11 @@ namespace SiliconStudio.Core
         {
             return Remove(item.Key);
         }
-        
+
+        IEnumerable<PropertyKey> IReadOnlyDictionary<PropertyKey, object>.Keys => Keys;
+
+        IEnumerable<object> IReadOnlyDictionary<PropertyKey, object>.Values => Values;
+
         internal abstract class ValueHolder
         {
             public abstract object ObjectValue { get; }

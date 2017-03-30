@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
@@ -11,12 +13,22 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Assets.Materials;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
+    [AssetCompiler(typeof(AnimationAsset), typeof(AssetCompilationContext))]
     public class AnimationAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        public const string RefClipSuffix = "_reference_clip";
+        public const string SrcClipSuffix = "_source_clip";
+
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        {
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SkeletonAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+        }
+
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (AnimationAsset)assetItem.Asset;
             var assetAbsolutePath = assetItem.FullPath;
@@ -29,7 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             // Find skeleton asset, if any
             AssetItem skeleton = null;
             if (asset.Skeleton != null)
-                skeleton = assetItem.Package.FindAssetFromAttachedReference(asset.Skeleton);
+                skeleton = assetItem.Package.FindAssetFromProxyObject(asset.Skeleton);
 
             var sourceBuildStep = ImportModelCommand.Create(extension);
             if (sourceBuildStep == null)
@@ -38,22 +50,41 @@ namespace SiliconStudio.Xenko.Assets.Models
                 return;
             }
 
+            //sourceBuildStep.InputFilesGetter = () => GetInputFiles(context, assetItem);
             sourceBuildStep.Mode = ImportModelCommand.ExportMode.Animation;
             sourceBuildStep.SourcePath = assetSource;
             sourceBuildStep.Location = targetUrlInStorage;
             sourceBuildStep.AnimationRepeatMode = asset.RepeatMode;
             sourceBuildStep.AnimationRootMotion = asset.RootMotion;
+            if (asset.ClipDuration.Enabled)
+            {
+                sourceBuildStep.StartFrame = asset.ClipDuration.StartAnimationTime;
+                sourceBuildStep.EndFrame = asset.ClipDuration.EndAnimationTime;
+            }
+            else
+            {
+                sourceBuildStep.StartFrame = TimeSpan.Zero;
+                sourceBuildStep.EndFrame = AnimationAsset.LongestTimeSpan;
+            }
             sourceBuildStep.ScaleImport = asset.ScaleImport;
             sourceBuildStep.PivotPosition = asset.PivotPosition;
             sourceBuildStep.SkeletonUrl = skeleton?.Location;
 
-            var additiveAnimationAsset = asset as AdditiveAnimationAsset;
-            if (additiveAnimationAsset != null)
+            if (asset.Type.Type == AnimationAssetTypeEnum.AnimationClip)
             {
-                var baseUrlInStorage = targetUrlInStorage + "_animation_base";
-                var sourceUrlInStorage = targetUrlInStorage + "_animation_source";
+                // Import the main animation
+                buildStep.Add(sourceBuildStep);
+            }
+            else if (asset.Type.Type == AnimationAssetTypeEnum.DifferenceClip)
+            {
+                var diffAnimationAsset = ((DifferenceAnimationAssetType)asset.Type);
+                var referenceClip = diffAnimationAsset.BaseSource;
+                var rebaseMode = diffAnimationAsset.Mode;
 
-                var baseAssetSource = UPath.Combine(assetDirectory, additiveAnimationAsset.BaseSource);
+                var baseUrlInStorage = targetUrlInStorage + RefClipSuffix;
+                var sourceUrlInStorage = targetUrlInStorage + SrcClipSuffix;
+
+                var baseAssetSource = UPath.Combine(assetDirectory, referenceClip);
                 var baseExtension = baseAssetSource.GetFileExtension();
 
                 sourceBuildStep.Location = sourceUrlInStorage;
@@ -70,6 +101,18 @@ namespace SiliconStudio.Xenko.Assets.Models
                 baseBuildStep.Location = baseUrlInStorage;
                 baseBuildStep.AnimationRepeatMode = asset.RepeatMode;
                 baseBuildStep.AnimationRootMotion = asset.RootMotion;
+
+                if (diffAnimationAsset.ClipDuration.Enabled)
+                {
+                    baseBuildStep.StartFrame = diffAnimationAsset.ClipDuration.StartAnimationTimeBox;
+                    baseBuildStep.EndFrame = diffAnimationAsset.ClipDuration.EndAnimationTimeBox;
+                }
+                else
+                {
+                    baseBuildStep.StartFrame = TimeSpan.Zero;
+                    baseBuildStep.EndFrame = AnimationAsset.LongestTimeSpan;
+                }
+
                 baseBuildStep.ScaleImport = asset.ScaleImport;
                 baseBuildStep.PivotPosition = asset.PivotPosition;
                 baseBuildStep.SkeletonUrl = skeleton?.Location;
@@ -82,20 +125,21 @@ namespace SiliconStudio.Xenko.Assets.Models
                 buildStep.Add(new WaitBuildStep());
 
                 // Generate the diff of those two animations
-                buildStep.Add(new AdditiveAnimationCommand(targetUrlInStorage, new AdditiveAnimationParameters(baseUrlInStorage, sourceUrlInStorage, additiveAnimationAsset.Mode)));
+                buildStep.Add(new AdditiveAnimationCommand(targetUrlInStorage, new AdditiveAnimationParameters(baseUrlInStorage, sourceUrlInStorage, rebaseMode), assetItem.Package));
             }
             else
             {
-                // Import the main animation
-                buildStep.Add(sourceBuildStep);
+                throw new NotImplementedException("This type of animation asset is not supported yet!");
             }
+
 
             result.BuildSteps = buildStep;
         }
 
         internal class AdditiveAnimationCommand : AssetCommand<AdditiveAnimationParameters>
         {
-            public AdditiveAnimationCommand(string url, AdditiveAnimationParameters parameters) : base(url, parameters)
+            public AdditiveAnimationCommand(string url, AdditiveAnimationParameters parameters, Package package) : 
+                base(url, parameters, package)
             {
             }
 
@@ -108,7 +152,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 var sourceAnimation = assetManager.Load<AnimationClip>(Parameters.SourceUrl);
 
                 // Generate diff animation
-                var animation = SubtractAnimations(baseAnimation, sourceAnimation);
+                var animation = (baseAnimation == null) ? sourceAnimation : SubtractAnimations(baseAnimation, sourceAnimation);
 
                 // Optimize animation
                 animation.Optimize();
@@ -174,7 +218,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                     animationOperations.Clear();
                     animationOperations.Add(AnimationOperation.NewPush(sourceEvaluator, time));
                     animationOperations.Add(AnimationOperation.NewPush(baseEvaluator, baseTime));
-                    animationOperations.Add(AnimationOperation.NewBlend(AnimationBlendOperation.Subtract, 1.0f));
+                    animationOperations.Add(AnimationOperation.NewBlend(CoreAnimationOperation.Subtract, 1.0f));
                     animationOperations.Add(AnimationOperation.NewPop(resultEvaluator, time));
                     
                     // Compute

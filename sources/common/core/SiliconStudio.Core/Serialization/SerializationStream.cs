@@ -1,10 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core.Serialization
@@ -34,9 +33,9 @@ namespace SiliconStudio.Core.Serialization
         public NativeStream NativeStream { get; protected set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SerializationStreamBase"/> class.
+        /// Initializes a new instance of the <see cref="SerializationStream"/> class.
         /// </summary>
-        public SerializationStream()
+        protected SerializationStream()
         {
             Context = new SerializerContext();
         }

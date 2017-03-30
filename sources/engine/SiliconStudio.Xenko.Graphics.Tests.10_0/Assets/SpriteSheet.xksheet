@@ -1,13 +1,12 @@
 !SpriteSheet
 Id: f0bb4e18-b761-4e65-b1d5-f59b52cfef0f
-SerializedVersion: {Xenko: 1.5.0-alpha01}
+SerializedVersion: {Xenko: 1.10.0-alpha01}
 Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Packing:
-    ~Id: 7db6bc2d-4c92-4574-82f1-27548cf1a4b3
+Packing: {}
 Sprites:
-    -   ~Id: 07b24b64-561f-4fc7-96a3-2ad0a3fe6224
+    644bb2071f56c74f96a32ad0a3fe6224:
         Source: ../../../data/tests/small_uv.png
         Name: Frame 0
         TextureRegion: {X: 64, Y: 64, Width: 128, Height: 128}

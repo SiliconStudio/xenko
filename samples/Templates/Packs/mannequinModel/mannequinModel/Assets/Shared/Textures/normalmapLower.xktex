@@ -1,8 +1,6 @@
 !Texture
 Id: fb00449b-3472-4f9f-9713-dc96fabe2f8c
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../Resources/Textures/normalmapLower.png
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Hint: NormalMap
-Alpha: None
+Type: !NormalMapTextureType {}

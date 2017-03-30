@@ -1,7 +1,8 @@
-using SiliconStudio.Core;
+using System;
+using SiliconStudio.Assets.Quantum.Visitors;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum
 {
@@ -12,30 +13,16 @@ namespace SiliconStudio.Assets.Quantum
         {
         }
 
-        public override bool ShouldListenToTargetNode(MemberContent member, IGraphNode targetNode)
+        protected void LinkToOwnerPart([NotNull] IGraphNode node, object part)
         {
-            // Make sure it's actually a target (not a member) node.
-            return !IsReferencedPart(member, targetNode) && base.ShouldListenToTargetNode(member, targetNode);
+            if (node == null) throw new ArgumentNullException(nameof(node));
+            var visitor = new NodesToOwnerPartVisitor(this, Container.NodeContainer, part);
+            visitor.Visit(node);
         }
 
-        public virtual bool IsReferencedPart(MemberContent member, IGraphNode targetNode)
+        protected sealed override IBaseToDerivedRegistry CreateBaseToDerivedRegistry()
         {
-            return false;
-        }
-
-        public override GraphVisitorBase CreateReconcilierVisitor()
-        {
-            return new AssetCompositePartVisitor(this);
-        }
-
-        protected override bool ShouldReconcileItem(MemberContent member, IGraphNode targetNode, object localValue, object baseValue, bool isReference)
-        {
-            // Always reconcile referenced parts
-            if (isReference && IsReferencedPart(member, targetNode))
-            {
-                return true;
-            }
-            return base.ShouldReconcileItem(member, targetNode, localValue, baseValue, isReference);
+            return new AssetCompositeBaseToDerivedRegistry(this);
         }
     }
 }

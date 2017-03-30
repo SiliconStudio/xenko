@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Dirtiables
 {
     public sealed class EmptyDirtyingOperation : DirtyingOperation
     {
-        public EmptyDirtyingOperation(IEnumerable<IDirtiable> dirtiables)
+        public EmptyDirtyingOperation([NotNull] IEnumerable<IDirtiable> dirtiables)
             : base(dirtiables)
         {
         }

@@ -4,7 +4,7 @@
   <PropertyGroup>
     <SiliconStudioProjectType>Cpp</SiliconStudioProjectType>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
     <SiliconStudioAssemblyProcessorOptions />
   </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
@@ -147,9 +147,11 @@
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Assimp\SiliconStudio.Xenko.Assimp.csproj">
       <Project>{f61d86b5-7c3d-4441-957d-a0a6d2fa69ca}</Project>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

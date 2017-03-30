@@ -171,9 +171,6 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
                 /// <returns>A Geodesic sphere.</returns>
                 public unsafe GeometricMeshData<VertexPositionNormalTexture> Create(float radius = 0.5f, int tessellation = 3, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
                 {
-                    if (tessellation < 3)
-                        tessellation = 3;
-
                     subdividedEdges = new Dictionary<UndirectedEdge, int>();
 
                     // Start with an octahedron; copy the data into the vertex/index collection.

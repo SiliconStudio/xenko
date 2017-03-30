@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
             var asset = new TextureAsset { Source = rawAssetPath };
 
             // Creates the url to the texture
-            var textureUrl = new UFile(rawAssetPath.GetFileName());
+            var textureUrl = new UFile(rawAssetPath.GetFileNameWithoutExtension());
 
             yield return new AssetItem(textureUrl, asset);
         }

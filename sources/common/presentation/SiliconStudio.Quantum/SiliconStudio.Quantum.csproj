@@ -20,51 +20,44 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Commands\AddNewItemCommand.cs" />
-    <Compile Include="Commands\AddPrimitiveKeyCommand.cs" />
     <Compile Include="CombineMode.cs" />
-    <Compile Include="Commands\CreateNewInstanceCommand.cs" />
-    <Compile Include="Commands\ChangeValueCommand.cs" />
-    <Compile Include="Commands\MoveItemCommand.cs" />
-    <Compile Include="Commands\NodeCommandBase.cs" />
-    <Compile Include="Commands\RenameStringKeyCommand.cs" />
-    <Compile Include="Contents\Content.cs" />
-    <Compile Include="Contents\ContentChangeEventArgs.cs" />
-    <Compile Include="Contents\GraphContentChangeEventArgs.cs" />
-    <Compile Include="DefaultContentFactory.cs" />
+    <Compile Include="Internal\Content.cs" />
+    <Compile Include="GraphNodeExtensions.cs" />
+    <Compile Include="IInitializingGraphNode.cs" />
+    <Compile Include="IInitializingObjectNode.cs" />
+    <Compile Include="IMemberNode.cs" />
+    <Compile Include="INodeChangeEventArgs.cs" />
+    <Compile Include="MemberNodeChangeEventArgs.cs" />
+    <Compile Include="DefaultNodeFactory.cs" />
     <Compile Include="DynamicNode.cs" />
     <Compile Include="GraphNodeChangeListener.cs" />
     <Compile Include="GraphNodeLinker.cs" />
     <Compile Include="GraphVisitorBase.cs" />
-    <Compile Include="IContentFactory.cs" />
-    <Compile Include="IContentNode.cs" />
-    <Compile Include="IModelBuilderPlugin.cs" />
-    <Compile Include="IGuidContainer.cs" />
+    <Compile Include="INodeFactory.cs" />
+    <Compile Include="IGraphNode.cs" />
     <Compile Include="Index.cs" />
     <Compile Include="INodeBuilder.cs" />
     <Compile Include="INodeContainer.cs" />
-    <Compile Include="NodeConstructingArgs.cs" />
+    <Compile Include="INotifyContentValueChange.cs" />
+    <Compile Include="INotifyItemChange.cs" />
+    <Compile Include="IObjectNode.cs" />
+    <Compile Include="NodeAccessor.cs" />
     <Compile Include="QuantumConsistencyException.cs" />
-    <Compile Include="ModelConsistencyCheckVisitor.cs" />
     <Compile Include="GraphNodePath.cs" />
-    <Compile Include="Contents\BoxedContent.cs" />
+    <Compile Include="BoxedNode.cs" />
     <Compile Include="References\IReference.cs" />
     <Compile Include="Commands\INodeCommand.cs" />
+    <Compile Include="References\IReferenceInternal.cs" />
     <Compile Include="References\ObjectReference.cs" />
-    <Compile Include="Contents\IContent.cs" />
-    <Compile Include="Contents\MemberContent.cs" />
-    <Compile Include="Contents\ObjectContent.cs" />
-    <Compile Include="Contents\ContentBase.cs" />
-    <Compile Include="IGraphNode.cs" />
+    <Compile Include="MemberNode.cs" />
+    <Compile Include="ObjectNode.cs" />
+    <Compile Include="GraphNodeBase.cs" />
+    <Compile Include="Internal\IGraphNodeInternal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="References\Reference.cs" />
     <Compile Include="References\ReferenceEnumerable.cs" />
-    <Compile Include="Commands\RemoveItemCommand.cs" />
     <Compile Include="DefaultNodeBuilder.cs" />
     <Compile Include="NodeContainer.cs" />
-    <Compile Include="DebugExtensions.cs" />
-    <Compile Include="GuidContainer.cs" />
-    <Compile Include="GraphNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
@@ -91,6 +84,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -99,7 +100,7 @@ namespace SiliconStudio.Core
         /// <returns>DisplayAttribute.</returns>
         /// <exception cref="System.ArgumentNullException">memberInfo</exception>
         [Obsolete("Display attribute should be retrieved via an AttributeRegistry.")]
-        public static DisplayAttribute GetDisplay(MemberInfo memberInfo)
+        public static DisplayAttribute GetDisplay([NotNull] MemberInfo memberInfo)
         {
             if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
             lock (RegisteredDisplayAttributes)
@@ -114,8 +115,24 @@ namespace SiliconStudio.Core
             }
         }
 
+        /// <summary>
+        /// Gets the display name of the given type. The display name is the name of the type, or, if the <see cref="DisplayAttribute"/> is
+        /// applied on the type, value of the <see cref="DisplayAttribute.Name"/> property.
+        /// </summary>
+        /// <param name="type">The type for which to get the display name.</param>
+        /// <returns>A string representing the display name of the type.</returns>
         [Obsolete("Display attribute should be retrieved via an AttributeRegistry.")]
-        public static int? GetOrder(MemberInfo memberInfo)
+        public static string GetDisplayName(Type type)
+        {
+            if (type == null)
+                return null;
+
+            return GetDisplay(type.GetTypeInfo())?.Name ?? type.Name;
+        }
+
+
+        [Obsolete("Display attribute should be retrieved via an AttributeRegistry.")]
+        public static int? GetOrder([NotNull] MemberInfo memberInfo)
         {
             var display = GetDisplay(memberInfo);
             return display.Order;

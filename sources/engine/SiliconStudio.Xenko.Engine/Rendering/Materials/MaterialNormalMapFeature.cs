@@ -37,7 +37,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public MaterialNormalMapFeature(IComputeColor normalMap)
         {
             ScaleAndBias = true;
-            InvertY = true;
             NormalMap = normalMap;
         }
 
@@ -77,17 +76,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [Display("Reconstruct Z")]
         public bool IsXYNormal { get; set; }
 
-        /// <summary>
-        /// Indicating whether the Y-component of normals should be inverted, to compensate for a flipped tangent space.
-        /// </summary>
-        /// <userdoc>
-        /// Indicating whether the Y-component of normals should be inverted, to compensate for a flipped tangent space. This options depends on your normal maps generation tools.
-        /// </userdoc>
-        [DataMember(40)]
-        [DefaultValue(true)]
-        [Display("Y is up")]
-        public bool InvertY { get; set; }
-
         public override void VisitFeature(MaterialGeneratorContext context)
         {
             if (NormalMap != null)
@@ -116,11 +104,22 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                             computeColor.Value = DefaultNormalColor;
                         }
                     }
+                    else
+                    {
+                        var computeFloat4 = normalMap as ComputeFloat4;
+                        if (computeFloat4 != null)
+                        {
+                            if (computeFloat4.Value == Vector4.Zero)
+                            {
+                                computeFloat4.Value = DefaultNormalColor.ToVector4();
+                            }
+                        }
+                    }
                 }
 
                 var computeColorSource = NormalMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.NormalMap, MaterialKeys.NormalValue, DefaultNormalColor, false));
                 var mixin = new ShaderMixinSource();
-                mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", IsXYNormal, ScaleAndBias, InvertY));
+                mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", IsXYNormal, ScaleAndBias));
                 mixin.AddComposition("normalMap", computeColorSource);
                 context.AddShaderSource(MaterialShaderStage.Pixel, mixin);
             }

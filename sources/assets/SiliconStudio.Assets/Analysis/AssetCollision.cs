@@ -98,6 +98,22 @@ namespace SiliconStudio.Assets.Analysis
                     item.IsDirty = true;
                 }
 
+                // Fix base parts if there are any remap for them as well
+                // This has to be done before the default resolver below because this fix requires to rewrite the base part completely, since the base part asset is immutable
+                var assetComposite = item.Asset as IAssetComposite;
+                if (assetComposite != null)
+                {
+                    foreach (var basePart in assetComposite.CollectParts())
+                    {
+                        if (basePart.Base != null && idRemap.TryGetValue(basePart.Base.BasePartAsset.Id, out remap) && IsNewReference(remap, basePart.Base.BasePartAsset))
+                        {
+                            var newAssetReference = new AssetReference(remap.Item1, remap.Item2);
+                            basePart.UpdateBase(new BasePart(newAssetReference, basePart.Base.BasePartId, basePart.Base.InstanceId));
+                            item.IsDirty = true;
+                        }
+                    }
+                }
+
                 // The loop is a one or two-step. 
                 // - If there is no link to update, and the asset has not been cloned, we can exist immediately
                 // - If there is links to update, and the asset has not been cloned, we need to clone it and re-enter the loop
@@ -113,21 +129,6 @@ namespace SiliconStudio.Assets.Analysis
                     {
                         assetLink.UpdateReference(remap.Item1, remap.Item2);
                         item.IsDirty = true;
-                    }
-                }
-
-                // Fix base parts if there are any remap for them as well
-                var assetComposite = item.Asset as IAssetComposite;
-                if (assetComposite != null)
-                {
-                    foreach (var basePart in assetComposite.CollectParts())
-                    {
-                        if (basePart.Base != null && idRemap.TryGetValue(basePart.Base.BasePartAsset.Id, out remap) && IsNewReference(remap, basePart.Base.BasePartAsset))
-                        {
-                            var newAssetReference = new AssetReference(remap.Item1, remap.Item2);
-                            basePart.UpdateBase(new BasePart(newAssetReference, basePart.Base.BasePartId, basePart.Base.InstanceId));
-                            item.IsDirty = true;
-                        }
                     }
                 }
             }

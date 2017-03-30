@@ -1,7 +1,6 @@
 !Package
 Id: 35e18fe9-55f3-4286-bb27-47f977ba160a
 SerializedVersion: {Assets: 0.0.4}
-Tags: []
 Meta:
     Name: CustomEffect
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.11.1.2
             RootAssets: []
 LocalDependencies: []
 Profiles:

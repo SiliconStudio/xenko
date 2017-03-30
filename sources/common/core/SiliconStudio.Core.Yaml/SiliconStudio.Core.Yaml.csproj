@@ -12,7 +12,7 @@
     <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -148,7 +148,6 @@
     <Compile Include="Tokens\FlowSequenceStart.cs" />
     <Compile Include="Tokens\Key.cs" />
     <Compile Include="Tokens\Scalar.cs" />
-    <Compile Include="ScalarStyle.cs" />
     <Compile Include="Tokens\StreamEnd.cs" />
     <Compile Include="Tokens\StreamStart.cs" />
     <Compile Include="Tokens\Tag.cs" />
@@ -156,7 +155,6 @@
     <Compile Include="Tokens\Token.cs" />
     <Compile Include="Tokens\Value.cs" />
     <Compile Include="Tokens\VersionDirective.cs" />
-    <Compile Include="TypeExtensions.cs" />
     <Compile Include="Version.cs" />
     <Compile Include="YamlException.cs" />
   </ItemGroup>

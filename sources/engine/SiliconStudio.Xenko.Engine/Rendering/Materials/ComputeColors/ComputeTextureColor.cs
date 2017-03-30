@@ -67,6 +67,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
             }
         }
 
+        /// <summary>
+        /// Sets the channel swizzling for texture sampling.
+        /// </summary>
+        /// <userdoc>The default value is `rgba`.</userdoc>
         public string Swizzle { get; set; }
 
         /// <summary>
@@ -80,7 +84,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         protected override string GetTextureChannelAsString()
         {
             // Use all channels
-            return "rgba";
+            return string.IsNullOrEmpty(Swizzle) ? "rgba" : Swizzle;
         }
 
         public override ShaderSource GenerateShaderFromFallbackValue(ShaderGeneratorContext context, MaterialComputeColorKeys baseKeys)

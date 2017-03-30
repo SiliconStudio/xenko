@@ -65,8 +65,14 @@ namespace SiliconStudio.Xenko.Particles
         {
             foreach (var particleEmitter in Emitters)
             {
+                if (!particleEmitter.Enabled)
+                    continue;
+
                 foreach (var initializer in particleEmitter.Initializers)
                 {
+                    if (!initializer.Enabled)
+                        continue;
+
                     if (initializer.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale))
                     {
                         // Convert to world space if local
@@ -79,6 +85,9 @@ namespace SiliconStudio.Xenko.Particles
 
                 foreach (var updater in particleEmitter.Updaters)
                 {
+                    if (!updater.Enabled)
+                        continue;
+
                     if (updater.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale))
                     {
                         // Convert to world space if local
@@ -381,9 +390,9 @@ namespace SiliconStudio.Xenko.Particles
         /// <returns><see cref="ParticleEmitter"/> with the same <see cref="ParticleEmitter.EmitterName"/> or <c>null</c> if not found</returns>
         public ParticleEmitter GetEmitterByName(string name)
         {
-            return (name.IsNullOrEmpty()) ?
+            return string.IsNullOrEmpty(name) ?
                 null : 
-                Emitters.FirstOrDefault(e => !e.EmitterName.IsNullOrEmpty() && e.EmitterName.Equals(name));
+                Emitters.FirstOrDefault(e => !string.IsNullOrEmpty(e.EmitterName) && e.EmitterName.Equals(name));
         }
 
         #region Dispose

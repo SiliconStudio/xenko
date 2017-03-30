@@ -8,10 +8,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.IO;
-
 using System.Diagnostics;
 using System.ServiceModel;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.VisualStudio.Debugging;
 
 namespace SiliconStudio.BuildEngine
 {
@@ -115,11 +115,10 @@ namespace SiliconStudio.BuildEngine
             bool monitorExited = false;
             var status = ResultStatus.NotProcessed;
             // if any external input has changed since the last execution (or if we don't have a successful execution in cache, trigger the command
-            CommandResultEntry matchingResult = null;
-
+            CommandResultEntry matchingResult;
+            ObjectId commandHash;
             try
-            {
-                ObjectId commandHash;
+            {               
                 {
                     // try to retrieve result from one of the object store
                     commandHash = Command.ComputeCommandHash(executeContext);
@@ -211,7 +210,6 @@ namespace SiliconStudio.BuildEngine
                     RegisterCommandResult(commandResultEntries, matchingResult, status);
                 }
             }
-
 
             return status;
         }
@@ -323,7 +321,7 @@ namespace SiliconStudio.BuildEngine
                 var commandContext = new LocalCommandContext(executeContext, this, builderContext);
 
                 // Actually processing the command
-                if (Command.ShouldSpawnNewProcess() && builderContext.MaxParallelProcesses > 0)
+                if (Command.ShouldSpawnNewProcess() && builderContext.MaxParallelProcesses > 0 && builderContext.SlaveBuilderPath != null)
                 {
                     while (!builderContext.CanSpawnParallelProcess())
                     {
@@ -332,6 +330,14 @@ namespace SiliconStudio.BuildEngine
 
                     var address = "net.pipe://localhost/" + Guid.NewGuid();
                     var arguments = string.Format("--slave=\"{0}\" --build-path=\"{1}\" --profile=\"{2}\"", address, builderContext.BuildPath, builderContext.BuildProfile);
+
+                    using (var debugger = VisualStudioDebugger.GetAttached())
+                    {
+                        if (debugger != null)
+                        {
+                            arguments += $" --reattach-debugger={debugger.ProcessId}";
+                        }
+                    }
 
                     var startInfo = new ProcessStartInfo
                         {

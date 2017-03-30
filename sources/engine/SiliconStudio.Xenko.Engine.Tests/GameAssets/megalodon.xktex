@@ -1,18 +1,8 @@
 !Texture
 Id: 731de5a2-8804-4875-886f-51f5cc5cf439
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../data/tests/megalodon/megalodon.png
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-PremultiplyAlpha: false
-~Base:
-    ~Id: 5fbd8cc7-179b-4a24-a0d5-3548eddf4df0
-    Location: --import--
-    Asset: !Texture
-        Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: {Xenko: 1.4.0-beta}
-        Tags: []
-        Source: 
-        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
-        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-        PremultiplyAlpha: false
+Type: !ColorTextureType
+    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+    PremultiplyAlpha: false

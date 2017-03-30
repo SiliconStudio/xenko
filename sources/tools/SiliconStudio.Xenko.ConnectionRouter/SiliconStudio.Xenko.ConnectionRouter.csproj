@@ -12,7 +12,7 @@
     <RootNamespace>SiliconStudio.Xenko.ConnectionRouter</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.ConnectionRouter</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <Prefer32Bit>false</Prefer32Bit>
@@ -25,10 +25,6 @@
     <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Mono.Options">
       <HintPath>$(SiliconStudioDependenciesDir)Mono.Options\Mono.Options.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Core">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\deps\Nuget\NuGet.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,11 +45,11 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\..\assets\SiliconStudio.Assets\NugetStore.cs">
-      <Link>NugetStore.cs</Link>
-    </Compile>
     <Compile Include="..\..\shared\Process\AndroidDeviceEnumerator.cs">
       <Link>AndroidDeviceEnumerator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\shared\ToolAssemblyResolveModuleInitializer.cs">
+      <Link>ToolAssemblyResolveModuleInitializer.cs</Link>
     </Compile>
     <Compile Include="ConnectedDevice.cs" />
     <Compile Include="DeviceHelper.cs" />
@@ -76,6 +72,11 @@
     <ProjectReference Include="..\..\assets\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
       <Project>{1E54A9A2-4439-4444-AE57-6D2ED3C0DC47}</Project>
       <Name>SiliconStudio.Assets</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\assets\SiliconStudio.Packages\SiliconStudio.Packages.csproj">
+      <Project>{acd2c831-bda2-4512-b4cc-75e8e1804f73}</Project>
+      <Name>SiliconStudio.Packages</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">

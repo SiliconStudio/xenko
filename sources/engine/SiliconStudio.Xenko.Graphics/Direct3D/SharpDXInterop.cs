@@ -26,6 +26,16 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
+        /// Gets the native device context (DX11)
+        /// </summary>
+        /// <param name="device">The Xenko GraphicsDevice</param>
+        /// <returns></returns>
+        public static object GetNativeDeviceContext(GraphicsDevice device)
+        {
+            return GetNativeDeviceContextImpl(device);
+        }
+
+        /// <summary>
         /// Gets the native command queue (DX12 only)
         /// </summary>
         /// <param name="device">The Xenko GraphicsDevice</param>
@@ -43,6 +53,16 @@ namespace SiliconStudio.Xenko.Graphics
         public static object GetNativeResource(GraphicsResource resource)
         {
             return GetNativeResourceImpl(resource);
+        }
+
+        public static object GetNativeShaderResourceView(GraphicsResource resource)
+        {
+            return GetNativeShaderResourceViewImpl(resource);
+        }
+
+        public static object GetNativeRenderTargetView(Texture texture)
+        {
+            return GetNativeRenderTargetViewImpl(texture);
         }
 
         /// <summary>
@@ -73,6 +93,11 @@ namespace SiliconStudio.Xenko.Graphics
             return device.NativeDevice;
         }
 
+        private static DeviceContext GetNativeDeviceContextImpl(GraphicsDevice device)
+        {
+            return device.NativeDeviceContext;
+        }
+
         private static object GetNativeCommandQueueImpl(GraphicsDevice device)
         {
             return null;
@@ -86,6 +111,16 @@ namespace SiliconStudio.Xenko.Graphics
         private static Resource GetNativeResourceImpl(GraphicsResource resource)
         {
             return resource.NativeResource;
+        }
+
+        private static ShaderResourceView GetNativeShaderResourceViewImpl(GraphicsResource resource)
+        {
+            return resource.NativeShaderResourceView;
+        }
+
+        private static RenderTargetView GetNativeRenderTargetViewImpl(Texture texture)
+        {
+            return texture.NativeRenderTargetView;
         }
 
         /// <summary>
@@ -106,7 +141,7 @@ namespace SiliconStudio.Xenko.Graphics
                 unknown.AddReference();
             }
 
-            tex.InitializeFrom(dxTexture2D, false);
+            tex.InitializeFromImpl(dxTexture2D, false);
 
             return tex;
         }
@@ -122,6 +157,11 @@ namespace SiliconStudio.Xenko.Graphics
             return device.NativeDevice;
         }
 
+        private static object GetNativeDeviceContextImpl(GraphicsDevice device)
+        {
+            return null;
+        }
+
         private static CommandQueue GetNativeCommandQueueImpl(GraphicsDevice device)
         {
             return device.NativeCommandQueue;
@@ -135,6 +175,16 @@ namespace SiliconStudio.Xenko.Graphics
         private static Resource GetNativeResourceImpl(GraphicsResource resource)
         {
             return resource.NativeResource;
+        }
+
+        private static CpuDescriptorHandle GetNativeShaderResourceViewImpl(GraphicsResource resource)
+        {
+            return resource.NativeShaderResourceView;
+        }
+
+        private static CpuDescriptorHandle GetNativeRenderTargetViewImpl(Texture texture)
+        {
+            return texture.NativeRenderTargetView;
         }
 
         /// <summary>
@@ -155,7 +205,7 @@ namespace SiliconStudio.Xenko.Graphics
                 unknown.AddReference();
             }
 
-            tex.InitializeFrom(dxTexture2D, false);
+            tex.InitializeFromImpl(dxTexture2D, false);
 
             return tex;
         }

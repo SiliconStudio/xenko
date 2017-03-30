@@ -2,8 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum
 {
@@ -12,65 +12,23 @@ namespace SiliconStudio.Quantum
     /// </summary>
     public class NodeContainer : INodeContainer
     {
-        private readonly Dictionary<Guid, IGraphNode> nodesByGuid = new Dictionary<Guid, IGraphNode>();
-        private readonly IGuidContainer guidContainer;
         private readonly object lockObject = new object();
         private readonly ThreadLocal<HashSet<IGraphNode>> processedNodes = new ThreadLocal<HashSet<IGraphNode>>();
-        private NodeFactoryDelegate defaultNodeFactory = DefaultNodeFactory;
+        private ConditionalWeakTable<object, IObjectNode> nodesByObject = new ConditionalWeakTable<object, IObjectNode>();
 
         /// <summary>
         /// Creates a new instance of <see cref="NodeContainer"/> class.
         /// </summary>
         public NodeContainer()
-            : this(new GuidContainer())
         {
-        }
-
-        /// <summary>
-        /// Creates a new instance of <see cref="NodeContainer"/> class. This constructor allows to provide a custom implementation
-        /// of <see cref="IGuidContainer"/> in order to share <see cref="Guid"/> of objects.
-        /// </summary>
-        /// <param name="guidContainer">A <see cref="IGuidContainer"/> to use to ensure the unicity of guid associated to data objects. Cannot be <c>null</c></param>
-        public NodeContainer(IGuidContainer guidContainer)
-        {
-            if (guidContainer == null) throw new ArgumentNullException(nameof(guidContainer));
-            this.guidContainer = guidContainer;
             NodeBuilder = CreateDefaultNodeBuilder();
         }
 
         /// <inheritdoc/>
         public INodeBuilder NodeBuilder { get; set; }
 
-        /// <summary>
-        /// Gets an enumerable of the registered nodes.
-        /// </summary>
-        public IEnumerable<IGraphNode> Nodes => nodesByGuid.Values;
-
-        /// <summary>
-        /// Gets an enumerable of the registered node guids.
-        /// </summary>
-        public IEnumerable<Guid> Guids => nodesByGuid.Keys;
-
         /// <inheritdoc/>
-        public void OverrideNodeFactory(NodeFactoryDelegate nodeFactory)
-        {
-            lock (lockObject)
-            {
-                defaultNodeFactory = nodeFactory;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void RestoreDefaultNodeFactory()
-        {
-            lock (lockObject)
-            {
-                OverrideNodeFactory(DefaultNodeFactory);
-            }
-        }
-
-        /// <inheritdoc/>
-        public IGraphNode GetOrCreateNode(object rootObject)
+        public IObjectNode GetOrCreateNode(object rootObject)
         {
             if (rootObject == null)
                 return null;
@@ -80,7 +38,7 @@ namespace SiliconStudio.Quantum
                 if (!processedNodes.IsValueCreated)
                     processedNodes.Value = new HashSet<IGraphNode>();
 
-                var node = GetOrCreateNodeInternal(rootObject, defaultNodeFactory);
+                var node = GetOrCreateNodeInternal(rootObject);
 
                 processedNodes.Value.Clear();
                 return node;
@@ -88,7 +46,7 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public IGraphNode GetNode(object rootObject)
+        public IObjectNode GetNode(object rootObject)
         {
             lock (lockObject)
             {
@@ -126,8 +84,7 @@ namespace SiliconStudio.Quantum
         {
             lock (lockObject)
             {
-                guidContainer?.Clear();
-                nodesByGuid.Clear();
+                nodesByObject = new ConditionalWeakTable<object, IObjectNode>();
             }
         }
 
@@ -136,17 +93,15 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="rootObject">The data object.</param>
         /// <returns>The <see cref="IGraphNode"/> associated to the given object if available, or <c>null</c> otherwise.</returns>
-        internal IGraphNode GetNodeInternal(object rootObject)
+        internal IObjectNode GetNodeInternal(object rootObject)
         {
             lock (lockObject)
             {
-                if (guidContainer == null) throw new InvalidOperationException("This NodeContainer has no GuidContainer and can't retrieve Guid associated to a data object.");
-                var guid = guidContainer.GetGuid(rootObject);
-                if (guid == Guid.Empty)
+                if (rootObject == null)
                     return null;
 
-                IGraphNode node;
-                nodesByGuid.TryGetValue(guid, out node);
+                IObjectNode node;
+                nodesByObject.TryGetValue(rootObject, out node);
                 return node;
             }
         }
@@ -155,18 +110,15 @@ namespace SiliconStudio.Quantum
         /// Gets the node associated to a data object, if it exists, otherwise creates a new node for the object and its member recursively.
         /// </summary>
         /// <param name="rootObject">The data object.</param>
-        /// <param name="nodeFactory">The factory to use to create nodes.</param>
         /// <returns>The <see cref="IGraphNode"/> associated to the given object.</returns>
-        internal IGraphNode GetOrCreateNodeInternal(object rootObject, NodeFactoryDelegate nodeFactory)
+        internal IObjectNode GetOrCreateNodeInternal(object rootObject)
         {
-            if (nodeFactory == null) throw new ArgumentNullException(nameof(nodeFactory));
-
             if (rootObject == null)
                 return null;
 
             lock (lockObject)
             {
-                IGraphNode result;
+                IObjectNode result;
                 if (!rootObject.GetType().IsValueType)
                 {
                     result = GetNodeInternal(rootObject);
@@ -174,13 +126,15 @@ namespace SiliconStudio.Quantum
                         return result;
                 }
 
-                var guid = !rootObject.GetType().IsValueType ? guidContainer.GetOrCreateGuid(rootObject) : Guid.NewGuid();
-                result = NodeBuilder.Build(rootObject, guid, nodeFactory);
+                result = NodeBuilder.Build(rootObject, Guid.NewGuid());
 
                 if (result != null)
                 {
                     // Register reference objects
-                    nodesByGuid.Add(result.Guid, result);
+                    if (!(result is BoxedNode))
+                    {
+                        nodesByObject.Add(rootObject, result);
+                    }
                     // Create or update nodes of referenced objects
                     UpdateReferencesInternal(result);
                 }
@@ -204,16 +158,21 @@ namespace SiliconStudio.Quantum
                 processedNodes.Value.Add(node);
 
                 // If the node was holding a reference, refresh the reference
-                if (node.Content.IsReference)
+                if (node.IsReference)
                 {
-                    node.Content.Reference.Refresh(node, this, defaultNodeFactory);
+                    (node as IMemberNode)?.TargetReference?.Refresh(node, this);
+                    (node as IObjectNode)?.ItemReferences?.Refresh(node, this);
                 }
                 else
                 {
                     // Otherwise refresh potential references in its children.
-                    foreach (var child in node.Children)
+                    var objectNode = node as IObjectNode;
+                    if (objectNode != null)
                     {
-                        UpdateReferencesInternal(child);
+                        foreach (var child in objectNode.Members)
+                        {
+                            UpdateReferencesInternal(child);
+                        }
                     }
                 }
             }
@@ -223,11 +182,6 @@ namespace SiliconStudio.Quantum
         {
             var nodeBuilder = new DefaultNodeBuilder(this);
             return nodeBuilder;
-        }
-
-        private static IGraphNode DefaultNodeFactory(string name, IContent content, Guid guid)
-        {
-            return new GraphNode(name, content, guid);
         }
     }
 }

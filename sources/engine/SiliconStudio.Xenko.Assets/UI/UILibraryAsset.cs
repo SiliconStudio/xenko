@@ -8,7 +8,6 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.UI;
 
@@ -17,13 +16,13 @@ namespace SiliconStudio.Xenko.Assets.UI
     [DataContract("UILibraryAsset")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetContentType(typeof(UILibrary))]
-    [AssetCompiler(typeof(UILibraryAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [Display("UI Library")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.9.0-beta01", typeof(BasePartsRemovalComponentUpgrader))]    
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta01", "1.10.0-beta01", typeof(FixPartReferenceUpgrader))]    
     public class UILibraryAsset : UIAssetBase
     {
-        private const string CurrentVersion = "1.9.0-beta01";
+        private const string CurrentVersion = "1.10.0-beta01";
 
         /// <summary>
         /// The default file extension used by the <see cref="UILibraryAsset"/>.
@@ -45,7 +44,8 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// <param name="elementId">The id of the element to instantiate.</param>
         /// <returns>An <see cref="AssetCompositeHierarchyData{UIElementDesign, UIElement}"/> containing the cloned elements of </returns>
         /// <remarks>This method will update the <see cref="Asset.BaseParts"/> property of the <see paramref="targetContainer"/>.</remarks>
-        public AssetCompositeHierarchyData<UIElementDesign, UIElement> CreateElementInstance(UIAssetBase targetContainer, string targetLocation, Guid elementId)
+        [NotNull]
+        public AssetCompositeHierarchyData<UIElementDesign, UIElement> CreateElementInstance(UIAssetBase targetContainer, [NotNull] string targetLocation, Guid elementId)
         {
             Guid unused;
             return CreateElementInstance(targetContainer, targetLocation, elementId, out unused);
@@ -60,22 +60,23 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// <param name="instanceId">The identifier of the created instance.</param>
         /// <returns>An <see cref="AssetCompositeHierarchyData{UIElementDesign, UIElement}"/> containing the cloned elements of </returns>
         /// <remarks>This method will update the <see cref="Asset.BaseParts"/> property of the <see paramref="targetContainer"/>.</remarks>
-        public AssetCompositeHierarchyData<UIElementDesign, UIElement> CreateElementInstance(UIAssetBase targetContainer, string targetLocation, Guid elementId, out Guid instanceId)
+        [NotNull]
+        public AssetCompositeHierarchyData<UIElementDesign, UIElement> CreateElementInstance(UIAssetBase targetContainer, [NotNull] string targetLocation, Guid elementId, out Guid instanceId)
         {
             // TODO: make a common base method in AssetCompositeHierarchy - the beginning of the method is similar to CreatePrefabInstance
             var idRemapping = new Dictionary<Guid, Guid>();
-            var instance = (UILibraryAsset)CreateDerivedAsset(targetLocation, idRemapping);
+            var instance = (UILibraryAsset)CreateDerivedAsset(targetLocation, out idRemapping);
 
             var rootElementId = idRemapping[elementId];
             if (!instance.Hierarchy.RootPartIds.Contains(rootElementId))
                 throw new ArgumentException(@"The given id cannot be found in the root parts of this library.", nameof(elementId));
 
-            instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base.InstanceId ?? Guid.NewGuid();
+            instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
 
             var result = new AssetCompositeHierarchyData<UIElementDesign, UIElement>();
             result.RootPartIds.Add(rootElementId);
             result.Parts.Add(instance.Hierarchy.Parts[rootElementId]);
-            foreach (var element in EnumerateChildParts(instance.Hierarchy.Parts[rootElementId], instance.Hierarchy, true))
+            foreach (var element in this.EnumerateChildPartDesigns(instance.Hierarchy.Parts[rootElementId], instance.Hierarchy, true))
             {
                 result.Parts.Add(element);
             }

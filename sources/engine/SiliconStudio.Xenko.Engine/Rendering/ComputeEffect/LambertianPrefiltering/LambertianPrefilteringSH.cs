@@ -114,10 +114,6 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
                 if (secondPassOutputBuffer == null)
                     secondPassOutputBuffer = NewScopedTypedBuffer(coefficientsCount * sumsToPerfomRemaining, PixelFormat.R32G32B32A32_Float, true);
 
-                // Unset outputs on D3D11
-                // TODO: This should be done automatically on SetPipelineState
-                context.CommandList.UnsetReadWriteBuffers();
-
                 // draw pass 2
                 secondPassEffect.ThreadNumbers = new Int3(sumsCount, 1, 1);
                 secondPassEffect.ThreadGroupCounts = new Int3(groupCountX, groupCountY, coefficientsCount);

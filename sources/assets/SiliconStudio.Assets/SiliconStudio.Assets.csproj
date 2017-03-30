@@ -20,13 +20,6 @@
     <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="NuGet.Core">
-      <HintPath>..\..\..\deps\Nuget\NuGet.core.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDiff, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\deps\SharpDiff\SharpDiff.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -47,7 +40,6 @@
     <Compile Include="Analysis\AssetAnalysis.cs" />
     <Compile Include="Analysis\AssetAnalysisParameters.cs" />
     <Compile Include="Analysis\AssetBaseAnalysis.cs" />
-    <Compile Include="Analysis\AssetCompositePartReferenceCollector.cs" />
     <Compile Include="Analysis\AssetLink.cs" />
     <Compile Include="Analysis\AssetDependencyManager.cs" />
     <Compile Include="Analysis\AssetDependencies.cs" />
@@ -59,10 +51,16 @@
     <Compile Include="Analysis\AssetReferenceAnalysis.cs" />
     <Compile Include="Analysis\AssetReferenceLink.cs" />
     <Compile Include="Analysis\AssetPartsAnalysis.cs" />
+    <Compile Include="Analysis\BuildAssetNode.cs" />
+    <Compile Include="Analysis\BuildDependencyManager.cs" />
+    <Compile Include="Analysis\BuildDependencyType.cs" />
     <Compile Include="Analysis\CollectionItemIdsAnalysis.cs" />
+    <Compile Include="Analysis\IAssetDependencyManager.cs" />
+    <Compile Include="Analysis\IdentifiableObjectAnalysis.cs" />
     <Compile Include="AssetCollectionItemIdHelper.cs" />
     <Compile Include="AssetCompositeHierarchy.cs" />
     <Compile Include="AssetCompositeHierarchyData.cs" />
+    <Compile Include="AssetCompositeHierarchyExtensions.cs" />
     <Compile Include="AssetContentTypeAttribute.cs" />
     <Compile Include="AssetItemExtensions.cs" />
     <Compile Include="AssetLogger.cs" />
@@ -70,32 +68,57 @@
     <Compile Include="AssetTracker.cs" />
     <Compile Include="BasePart.cs" />
     <Compile Include="CollectionIdGenerator.cs" />
-    <Compile Include="DynamicYaml\DynamicYaml.cs" />
-    <Compile Include="DynamicYaml\DynamicYamlArray.cs" />
-    <Compile Include="DynamicYaml\DynamicYamlEmpty.cs" />
+    <Compile Include="Compiler\AssetCompilationContext.cs" />
+    <Compile Include="Compiler\AssetCompilerAttribute.cs" />
+    <Compile Include="Compiler\ICompilationContext.cs" />
+    <Compile Include="Diagnostics\AssetSerializableLogMessage.cs" />
     <Compile Include="DynamicYaml\DynamicYamlExtensions.cs" />
-    <Compile Include="DynamicYaml\DynamicYamlMapping.cs" />
-    <Compile Include="DynamicYaml\DynamicYamlObject.cs" />
-    <Compile Include="DynamicYaml\DynamicYamlScalar.cs" />
-    <Compile Include="DynamicYaml\IDynamicYamlNode.cs" />
+    <Compile Include="IAssetFinder.cs" />
     <Compile Include="IAssetPartDesign.cs" />
     <Compile Include="IProjectAsset.cs" />
     <Compile Include="IProjectFileGeneratorAsset.cs" />
+    <Compile Include="Package.Constants.cs" />
+    <Compile Include="Package.cs" />
+    <Compile Include="PackageAssetCollection.cs" />
+    <Compile Include="PackageBuildConfiguration.cs" />
+    <Compile Include="PackageCollection.cs" />
+    <Compile Include="PackageDependency.cs" />
+    <Compile Include="PackageExtensions.cs" />
+    <Compile Include="PackageLoadedAssembly.cs" />
+    <Compile Include="PackageLoadingAssetFile.cs" />
+    <Compile Include="PackageLoadParameters.cs" />
+    <Compile Include="PackageMeta.cs" />
+    <Compile Include="PackageProfile.cs" />
+    <Compile Include="PackageReference.cs" />
+    <Compile Include="PackageReferenceBase.cs" />
+    <Compile Include="PackageSaveParameters.cs" />
+    <Compile Include="PackageSession.cs" />
+    <Compile Include="PackageSession.Extensions.cs" />
+    <Compile Include="PackageSessionHelper.cs" />
+    <Compile Include="PackageSessionHelper.Solution.cs" />
+    <Compile Include="PackageSessionProfilingKeys.cs" />
+    <Compile Include="PackageSessionResult.cs" />
+    <Compile Include="PackageStore.cs" />
+    <Compile Include="PackageUpgrader.cs" />
+    <Compile Include="PackageUpgraderAttribute.cs" />
+    <Compile Include="PackageUserSettings.cs" />
+    <Compile Include="PackageVersionRangeExtensions.cs" />
     <Compile Include="Reflection\CollectionItemIdentifiers.cs" />
     <Compile Include="Reflection\CollectionItemIdHelper.cs" />
     <Compile Include="Reflection\IdentifiableHelper.cs" />
     <Compile Include="Reflection\ItemId.cs" />
-    <Compile Include="Reflection\OverridePostfixes.cs" />
     <Compile Include="Reflection\OverrideTarget.cs" />
-    <Compile Include="Reflection\OverrideType.cs" />
     <Compile Include="Reflection\ShadowId.cs" />
-    <Compile Include="Serializers\AssetCompositeVisitorContext.cs" />
-    <Compile Include="Serializers\AssetPartReferenceAttribute.cs" />
-    <Compile Include="Serializers\AssetCompositeSerializer.cs" />
+    <Compile Include="Serializers\AssetPartContainedAttribute.cs" />
+    <Compile Include="Serializers\FixupObjectReferences.cs" />
     <Compile Include="Serializers\IAssetPartReference.cs" />
     <Compile Include="Serializers\IdentifiableAssetPartReference.cs" />
     <Compile Include="Serializers\IdentifiableAssetPartReferenceSerializer.cs" />
+    <Compile Include="Serializers\IdentifiableObjectSerializer.cs" />
+    <Compile Include="Yaml\AttachedYamlAssetMetadata.cs" />
+    <Compile Include="Yaml\IYamlAssetMetadata.cs" />
     <Compile Include="Serializers\ScalarOrObjectSerializer.cs" />
+    <Compile Include="Yaml\YamlAssetMetadata.cs" />
     <Compile Include="Tracking\AssetSourceTracker.cs" />
     <Compile Include="Analysis\CommonAnalysis.cs" />
     <Compile Include="Analysis\IContentLink.cs" />
@@ -142,7 +165,6 @@
     <Compile Include="FileVersionManager.cs" />
     <Compile Include="Compiler\AssetCommand.cs" />
     <Compile Include="Compiler\AssetCompiledArgs.cs" />
-    <Compile Include="Compiler\AssetCompilerAttribute.cs" />
     <Compile Include="Compiler\AssetCompilerBase.cs" />
     <Compile Include="Compiler\AssetCompilerContext.cs" />
     <Compile Include="Compiler\AssetCompilerRegistry.cs" />
@@ -155,32 +177,8 @@
     <Compile Include="IFileSynchronizable.cs" />
     <Compile Include="Analysis\AssetResolver.cs" />
     <Compile Include="IO\FileExtensionCollection.cs" />
-    <Compile Include="NugetLogEventArgs.cs" />
-    <Compile Include="NugetStore.cs" />
     <Compile Include="AssetMigration.cs" />
     <Compile Include="OverrideUpgraderHint.cs" />
-    <Compile Include="Package.Constants.cs" />
-    <Compile Include="PackageLoadedAssembly.cs" />
-    <Compile Include="PackageDependency.cs" />
-    <Compile Include="PackageExtensions.cs" />
-    <Compile Include="PackageLoadingAssetFile.cs" />
-    <Compile Include="PackageReferenceBase.cs" />
-    <Compile Include="PackageSessionHelper.cs" />
-    <Compile Include="PackageSessionHelper.Solution.cs" />
-    <Compile Include="PackageLoadParameters.cs" />
-    <Compile Include="PackageUserSettings.cs" />
-    <Compile Include="PackageStore.cs" />
-    <Compile Include="PackageMeta.cs" />
-    <Compile Include="PackageReference.cs" />
-    <Compile Include="PackageStoreExtensions.cs" />
-    <Compile Include="PackageUpgrader.cs" />
-    <Compile Include="PackageUpgraderAttribute.cs" />
-    <Compile Include="PackageVersion.cs" />
-    <Compile Include="PackageVersionExtensions.cs" />
-    <Compile Include="PackageVersionRange.cs" />
-    <Compile Include="PackageVersionRangeExtensions.cs" />
-    <Compile Include="PackageBuildConfiguration.cs" />
-    <Compile Include="PackageProfile.cs" />
     <Compile Include="Compiler\CompilerAttribute.cs" />
     <Compile Include="Compiler\CompilerContext.cs" />
     <Compile Include="Compiler\CompilerRegistry.cs" />
@@ -189,12 +187,9 @@
     <Compile Include="Compiler\ImportStreamCommand.cs" />
     <Compile Include="Compiler\ItemListCompiler.cs" />
     <Compile Include="Compiler\PackageCompiler.cs" />
-    <Compile Include="PackageSessionProfilingKeys.cs" />
-    <Compile Include="PackageSessionResult.cs" />
     <Compile Include="ProjectFileGeneratorAsset.cs" />
     <Compile Include="ProjectSourceCodeAsset.cs" />
     <Compile Include="RawAsset.cs" />
-    <Compile Include="PackageSaveParameters.cs" />
     <Compile Include="RootAssetCollection.cs" />
     <Compile Include="Serializers\AssetItemSerializer.cs" />
     <Compile Include="Serializers\YamlAssetSerializer.cs" />
@@ -202,7 +197,6 @@
     <Compile Include="SolutionPlatformCollection.cs" />
     <Compile Include="SourceFileMemberAttribute.cs" />
     <Compile Include="TemplateFolder.cs" />
-    <Compile Include="Templates\SessionTemplateGenerator.cs" />
     <Compile Include="Templates\TemplateAssetDescription.cs" />
     <Compile Include="Templates\TemplateGeneratorBase.cs" />
     <Compile Include="Templates\TemplateSampleDescription.cs" />
@@ -221,9 +215,6 @@
     <Compile Include="Selectors\PathSelector.cs" />
     <Compile Include="Serializers\PackageVersionRangeSerializer.cs" />
     <Compile Include="Serializers\IAssetSerializer.cs" />
-    <Compile Include="PackageCollection.cs" />
-    <Compile Include="PackageSession.cs" />
-    <Compile Include="PackageSession.Extensions.cs" />
     <Compile Include="Serializers\ContentReferenceSerializer.cs" />
     <Compile Include="Serializers\PackageVersionSerializer.cs" />
     <Compile Include="Serializers\PropertyKeyYamlSerializer.cs" />
@@ -243,7 +234,6 @@
     <Compile Include="AssetException.cs" />
     <Compile Include="AssetDescriptionAttribute.cs" />
     <Compile Include="Asset.cs" />
-    <Compile Include="PackageAssetCollection.cs" />
     <Compile Include="AssetFileSerializer.cs" />
     <Compile Include="Diagnostics\AssetLoggerExtensions.cs" />
     <Compile Include="Diagnostics\AssetLogMessage.cs" />
@@ -261,7 +251,6 @@
     <Compile Include="AssetItem.cs" />
     <Compile Include="IO\FileUtility.cs" />
     <Compile Include="IAssetImporter.cs" />
-    <Compile Include="Package.cs" />
     <Compile Include="PropertyCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\SearchDirection.cs" />
@@ -303,6 +292,11 @@
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
+      <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
+      <Name>SiliconStudio.Core.MicroThreading</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
       <Project>{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}</Project>
       <Name>SiliconStudio.Core.Reflection</Name>
@@ -328,14 +322,9 @@
       <Name>SiliconStudio.Core.Serialization</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
-      <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
-      <Name>SiliconStudio.Xenko.Graphics</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
-      <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>
-      <Name>SiliconStudio.Xenko</Name>
+    <ProjectReference Include="..\SiliconStudio.Packages\SiliconStudio.Packages.csproj">
+      <Project>{acd2c831-bda2-4512-b4cc-75e8e1804f73}</Project>
+      <Name>SiliconStudio.Packages</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
@@ -354,7 +343,6 @@
     <None Include="packages.config" />
     <None Include="Diagrams\AssetsDiagram.cd" />
     <None Include="Diagrams\BuildCommands.cd" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\deps\Nuget\NuGet.exe">
@@ -364,6 +352,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\..\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems" Label="Shared" />
+  <Import Project="..\SiliconStudio.Assets.Yaml\SiliconStudio.Assets.Yaml.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

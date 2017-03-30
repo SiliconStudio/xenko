@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Dirtiables
 {
@@ -16,7 +17,7 @@ namespace SiliconStudio.Presentation.Dirtiables
         /// </summary>
         /// <param name="operations">A collection of <see cref="IDirtyingOperation"/> instances from which to extract those who are currently done.</param>
         /// <seealso cref="IDirtyingOperation.IsDone"/>
-        public DirtiableSnapshot(IEnumerable<IDirtyingOperation> operations)
+        public DirtiableSnapshot([NotNull] IEnumerable<IDirtyingOperation> operations)
         {
             operationsDone = new HashSet<IDirtyingOperation>(operations.Where(x => x.IsDone));
         }

@@ -4,6 +4,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -17,7 +18,17 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="IsDropDownOpen"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsDropDownOpenProperty = DependencyProperty.Register("IsDropDownOpen", typeof(bool), typeof(VectorEditorBase), new PropertyMetadata(false));
+        public static readonly DependencyProperty IsDropDownOpenProperty = DependencyProperty.Register("IsDropDownOpen", typeof(bool), typeof(VectorEditorBase), new PropertyMetadata(BooleanBoxes.FalseBox));
+
+        /// <summary>
+        /// Identifies the <see cref="WatermarkContent"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty WatermarkContentProperty = DependencyProperty.Register("WatermarkContent", typeof(object), typeof(VectorEditorBase), new PropertyMetadata(null));
+
+        /// <summary>
+        /// Identifies the <see cref="WatermarkContentTemplate"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty WatermarkContentTemplateProperty = DependencyProperty.Register("WatermarkContentTemplate", typeof(DataTemplate), typeof(VectorEditorBase), new PropertyMetadata(null));
 
         /// <summary>
         /// Gets or sets the number of decimal places displayed in the <see cref="NumericTextBox"/>.
@@ -27,7 +38,17 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets whether the drop-down of this vector editor is currently open
         /// </summary>
-        public bool IsDropDownOpen { get { return (bool)GetValue(IsDropDownOpenProperty); } set { SetValue(IsDropDownOpenProperty, value); } }
+        public bool IsDropDownOpen { get { return (bool)GetValue(IsDropDownOpenProperty); } set { SetValue(IsDropDownOpenProperty, value.Box()); } }
+
+        /// <summary>
+        /// Gets or sets the content to display when the TextBox is empty.
+        /// </summary>
+        public object WatermarkContent { get { return GetValue(WatermarkContentProperty); } set { SetValue(WatermarkContentProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets the template of the content to display when the TextBox is empty.
+        /// </summary>
+        public DataTemplate WatermarkContentTemplate { get { return (DataTemplate)GetValue(WatermarkContentTemplateProperty); } set { SetValue(WatermarkContentTemplateProperty, value); } }
 
         /// <summary>
         /// Sets the vector value of this vector editor from a single float value.
@@ -116,7 +137,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         private void OnValueValueChanged()
         {
-            bool isInitializing = !templateApplied && initializingProperty == null;
+            var isInitializing = !templateApplied && initializingProperty == null;
             if (isInitializing)
                 initializingProperty = ValueProperty;
 
@@ -134,7 +155,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private void OnComponentPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
-            bool isInitializing = !templateApplied && initializingProperty == null;
+            var isInitializing = !templateApplied && initializingProperty == null;
             if (isInitializing)
                 initializingProperty = e.Property;
 
@@ -159,9 +180,8 @@ namespace SiliconStudio.Presentation.Controls
         {
             if (dependencyProperty != initializingProperty)
             {
-                BindingExpression expression = GetBindingExpression(dependencyProperty);
-                if (expression != null)
-                    expression.UpdateSource();
+                var expression = GetBindingExpression(dependencyProperty);
+                expression?.UpdateSource();
             }
         }
 
@@ -173,8 +193,11 @@ namespace SiliconStudio.Presentation.Controls
 
         protected static object CoerceComponentValue(DependencyObject sender, object basevalue)
         {
+            if (basevalue == null)
+                return null;
+
             var editor = (VectorEditorBase<T>)sender;
-            int decimalPlaces = editor.DecimalPlaces;
+            var decimalPlaces = editor.DecimalPlaces;
             return decimalPlaces < 0 ? basevalue : (float)Math.Round((float)basevalue, decimalPlaces);
         }
 

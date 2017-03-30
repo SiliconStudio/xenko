@@ -1,6 +1,7 @@
 !Texture
 Id: da9b119e-ce87-4f7b-a4cc-2e93b158f137
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../Resources/Textures/Gradation01.png
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Type: !ColorTextureType
+    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

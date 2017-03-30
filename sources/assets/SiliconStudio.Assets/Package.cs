@@ -11,11 +11,14 @@ using Microsoft.Build.Evaluation;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Assets.Templates;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 
@@ -58,7 +61,7 @@ namespace SiliconStudio.Assets
     [AssetUpgrader("Assets", 1, 2, typeof(RenameSystemPackage))]
     [AssetUpgrader("Assets", 2, 3, typeof(RemoveWindowsStoreAndPhone))]
     [AssetUpgrader("Assets", 3, 4, typeof(RemoveProperties))]
-    public sealed partial class Package : IIdentifiable, IFileSynchronizable
+    public sealed partial class Package : IIdentifiable, IFileSynchronizable, IAssetFinder
     {
         private const int PackageFileVersion = 4;
 
@@ -87,7 +90,7 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Occurs when an asset dirty changed occurred.
         /// </summary>
-        public event DirtyFlagChangedDelegate<Asset> AssetDirtyChanged;
+        public event DirtyFlagChangedDelegate<AssetItem> AssetDirtyChanged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Package"/> class.
@@ -373,7 +376,29 @@ namespace SiliconStudio.Assets
             }
         }
 
-        internal UDirectory GetDefaultAssetFolder()
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst the current package and its dependencies.</remarks>
+        public AssetItem FindAsset(AssetId assetId)
+        {
+            return this.GetPackagesWithDependencies().Select(p => p.Assets.Find(assetId)).NotNull().FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst the current package and its dependencies.</remarks>
+        public AssetItem FindAsset(UFile location)
+        {
+            return this.GetPackagesWithDependencies().Select(p => p.Assets.Find(location)).NotNull().FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst the current package and its dependencies.</remarks>
+        public AssetItem FindAssetFromProxyObject(object proxyObject)
+        {
+            var attachedReference = AttachedReferenceManager.GetAttachedReference(proxyObject);
+            return attachedReference != null ? this.FindAsset(attachedReference) : null;
+        }
+
+        public UDirectory GetDefaultAssetFolder()
         {
             var sharedProfile = Profiles.FindSharedProfile();
             var folder = sharedProfile?.AssetFolders.FirstOrDefault();
@@ -452,7 +477,7 @@ namespace SiliconStudio.Assets
             PackageDirtyChanged?.Invoke(package, oldValue, newValue);
         }
 
-        internal void OnAssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
+        internal void OnAssetDirtyChanged(AssetItem asset, bool oldValue, bool newValue)
         {
             if (asset == null) throw new ArgumentNullException(nameof(asset));
             AssetDirtyChanged?.Invoke(asset, oldValue, newValue);
@@ -518,7 +543,7 @@ namespace SiliconStudio.Assets
 
                     try
                     {
-                        AssetFileSerializer.Save(FullPath, this);
+                        AssetFileSerializer.Save(FullPath, this, null);
 
                         // Move the package if the path has changed
                         if (previousPackagePath != null && previousPackagePath != packagePath)
@@ -596,7 +621,7 @@ namespace SiliconStudio.Assets
                                     new List<KeyValuePair<string, string>>
                                     {
                                     new KeyValuePair<string, string>("Generator", generatorAsset.Generator),
-                                    new KeyValuePair<string, string>("LastGenOutput", new UFile(generatedInclude).GetFileNameWithExtension())
+                                    new KeyValuePair<string, string>("LastGenOutput", new UFile(generatedInclude).GetFileName())
                                     });
 
                                 project.AddItem("Compile", generatedInclude,
@@ -605,7 +630,7 @@ namespace SiliconStudio.Assets
                                     new KeyValuePair<string, string>("AutoGen", "True"),
                                     new KeyValuePair<string, string>("DesignTime", "True"),
                                     new KeyValuePair<string, string>("DesignTimeSharedInput", "True"),
-                                    new KeyValuePair<string, string>("DependentUpon", new UFile(projectInclude).GetFileNameWithExtension())
+                                    new KeyValuePair<string, string>("DependentUpon", new UFile(projectInclude).GetFileName())
                                     });
                             }
                             else
@@ -658,7 +683,7 @@ namespace SiliconStudio.Assets
                 }
 
                 // Inject a copy of the base into the current asset when saving
-                AssetFileSerializer.Save(assetPath, asset.Asset, log, (Dictionary<YamlAssetPath, OverrideType>)asset.Overrides);
+                AssetFileSerializer.Save((string)assetPath, (object)asset.Asset, (AttachedYamlAssetMetadata)asset.YamlMetadata, log);
 
                 // Save generated asset (if necessary)
                 var codeGeneratorAsset = asset.Asset as IProjectFileGeneratorAsset;
@@ -899,6 +924,11 @@ namespace SiliconStudio.Assets
                     // Fix collection item ids
                     AssetCollectionItemIdHelper.GenerateMissingItemIds(item.Asset);
                     CollectionItemIdsAnalysis.FixupItemIds(item, log);
+
+                    // Fix duplicate identifiable objects
+                    var hasBeenModified = IdentifiableObjectAnalysis.Visit(item.Asset, true, log);
+                    if (hasBeenModified)
+                        item.IsDirty = true;
                 }
 
                 // Don't delete SourceCodeAssets as their files are handled by the package upgrader
@@ -959,7 +989,7 @@ namespace SiliconStudio.Assets
                 assetFiles.Sort(PackageLoadingAssetFile.FileSizeComparer.Default);
             }
 
-            var progressMessage = $"Loading Assets from Package [{FullPath.GetFileNameWithExtension()}]";
+            var progressMessage = $"Loading Assets from Package [{FullPath.GetFileName()}]";
 
             // Display this message at least once if the logger does not log progress (And it shouldn't in this case)
             var loggerResult = log as LoggerResult;
@@ -1034,14 +1064,14 @@ namespace SiliconStudio.Assets
                 AssetMigration.MigrateAssetIfNeeded(context, assetFile, PackageStore.Instance.DefaultPackageName);
 
                 // Try to load only if asset is not already in the package or assetRef.Asset is null
-                var assetPath = assetFile.AssetPath;
+                var assetPath = assetFile.AssetLocation;
 
                 var assetFullPath = fileUPath.ToWindowsPath();
                 var assetContent = assetFile.AssetContent;
 
                 bool aliasOccurred;
-                IDictionary<YamlAssetPath, OverrideType> overrides;
-                var asset = LoadAsset(context.Log, assetFullPath, assetPath.ToWindowsPath(), assetContent, out aliasOccurred, out overrides);
+                AttachedYamlAssetMetadata yamlMetadata;
+                var asset = LoadAsset(context.Log, assetFullPath, assetPath.ToWindowsPath(), assetContent, out aliasOccurred, out yamlMetadata);
 
                 // Create asset item
                 var assetItem = new AssetItem(assetPath, asset, this)
@@ -1049,8 +1079,8 @@ namespace SiliconStudio.Assets
                     IsDirty = assetContent != null || aliasOccurred,
                     SourceFolder = sourceFolder.MakeRelative(RootDirectory),
                     SourceProject = asset is IProjectAsset && assetFile.ProjectFile != null ? assetFile.ProjectFile : null,
-                    Overrides = overrides
                 };
+                yamlMetadata.CopyInto(assetItem.YamlMetadata);
 
                 // Set the modified time to the time loaded from disk
                 if (!assetItem.IsDirty)
@@ -1098,14 +1128,27 @@ namespace SiliconStudio.Assets
             LoadAssemblyReferencesForPackage(log, loadParameters);
         }
 
-        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty, out IDictionary<YamlAssetPath, OverrideType> overrides)
+        /// <summary>
+        /// Restore NuGet packages of all projects in this package.
+        /// </summary>
+        /// <param name="log">The log.</param>
+        /// <param name="force">True to ignore timestamp check of project.lock.json against project.json, false to check it.</param>
+        public void RestoreNugetPackages(ILogger log, bool force)
+        {
+            foreach (var profile in Profiles)
+            {
+                VSProjectHelper.RestoreNugetPackagesNonRecursive(log, Session?.SolutionPath, force, profile.ProjectReferences.Select(projectReference => UPath.Combine(RootDirectory, projectReference.Location.GetFullDirectory()).ToWindowsPath())).Wait();
+            }
+        }
+
+        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty, out AttachedYamlAssetMetadata yamlMetadata)
         {
             var loadResult = assetContent != null
                 ? AssetFileSerializer.Load<Asset>(new MemoryStream(assetContent), assetFullPath, log)
                 : AssetFileSerializer.Load<Asset>(assetFullPath, log);
 
             assetDirty = loadResult.AliasOccurred;
-            overrides = loadResult.Overrides;
+            yamlMetadata = loadResult.YamlMetadata;
 
             // Set location on source code asset
             var sourceCodeAsset = loadResult.Asset as SourceCodeAsset;
@@ -1205,7 +1248,7 @@ namespace SiliconStudio.Assets
                     if (asset.SourceFolder == null)
                     {
                         //var assetProjectFolder = asset.Location.FullPath;
-                        var lib = sharedProfile.ProjectReferences.FirstOrDefault(x => x.Type == ProjectType.Library && asset.Location.FullPath.StartsWith(x.Location.GetFileName()));
+                        var lib = sharedProfile.ProjectReferences.FirstOrDefault(x => x.Type == ProjectType.Library && asset.Location.FullPath.StartsWith(x.Location.GetFileNameWithoutExtension()));
                         if (lib != null)
                         {
                             asset.SourceProject = UPath.Combine(asset.Package.RootDirectory, lib.Location);

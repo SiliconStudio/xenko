@@ -6,7 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets
 {
@@ -14,7 +14,8 @@ namespace SiliconStudio.Assets
     /// Base class for Asset.
     /// </summary>
     [DataContract(Inherited = true)]
-    public abstract class Asset : IIdentifiable
+    [AssemblyScan]
+    public abstract class Asset
     {
         private AssetId id;
 
@@ -39,11 +40,6 @@ namespace SiliconStudio.Assets
                 SerializedVersion = new Dictionary<string, PackageVersion>(defaultPackageVersion);
             }
         }
-
-        /// <summary>
-        /// Gets the build order, currently per type (replaces BuildOrder). Later, we want per asset dependencies to improve parallelism
-        /// </summary>
-        protected internal virtual int InternalBuildOrder => 0;
 
         /// <summary>
         /// Gets or sets the unique identifier of this asset.
@@ -107,8 +103,18 @@ namespace SiliconStudio.Assets
         [DataMemberIgnore]
         public virtual UFile MainSource => null;
 
-        /// <inheritdoc/>
-        Guid IIdentifiable.Id { get { return (Guid)Id; } set { Id = (AssetId)value; } }
+        /// <summary>
+        /// Creates an asset that inherits from this asset.
+        /// </summary>
+        /// <param name="baseLocation">The location of this asset.</param>
+        /// <returns>An asset that inherits this asset instance</returns>
+        // TODO: turn internal protected and expose only AssetItem.CreateDerivedAsset()
+        [NotNull]
+        public Asset CreateDerivedAsset([NotNull] string baseLocation)
+        {
+            Dictionary<Guid, Guid> idRemapping;
+            return CreateDerivedAsset(baseLocation, out idRemapping);
+        }
 
         /// <summary>
         /// Creates an asset that inherits from this asset.
@@ -117,7 +123,8 @@ namespace SiliconStudio.Assets
         /// <param name="idRemapping">A dictionary in which will be stored all the <see cref="Guid"/> remapping done for the child asset.</param>
         /// <returns>An asset that inherits this asset instance</returns>
         // TODO: turn internal protected and expose only AssetItem.CreateDerivedAsset()
-        public virtual Asset CreateDerivedAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
+        [NotNull]
+        public virtual Asset CreateDerivedAsset([NotNull] string baseLocation, out Dictionary<Guid, Guid> idRemapping)
         {
             if (baseLocation == null) throw new ArgumentNullException(nameof(baseLocation));
 
@@ -125,7 +132,8 @@ namespace SiliconStudio.Assets
             AssetCollectionItemIdHelper.GenerateMissingItemIds(this);
 
             // Clone this asset without overrides (as we want all parameters to inherit from base)
-            var newAsset = AssetCloner.Clone(this);
+            var newAsset = AssetCloner.Clone(this, AssetClonerFlags.GenerateNewIdsForIdentifiableObjects, out idRemapping);
+            newAsset.RemapIdentifiableIds(idRemapping);
 
             // Create a new identifier for this asset
             var newId = AssetId.New();
@@ -142,12 +150,13 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Resolves the actual target of references to a part or base part of this asset. Depending on whether <paramref name="clearMissingReferences"/> is <c>true</c>,
-        /// missing references will be cleared, or left as-is.
+        /// Updates <see cref="Guid"/> properties of this asset representing references to <see cref="IIdentifiable"/> objects.
         /// </summary>
-        /// <param name="clearMissingReferences"><c>true</c> to clear missing references to parts or base parts; otherwise, <c>false</c>.</param>
-        public virtual void FixupPartReferences(bool clearMissingReferences = true)
+        /// <param name="remapping">The remapping to apply.</param>
+        [Obsolete("References by Guid will be forbidden and this method will be removed.")]
+        public virtual void RemapIdentifiableIds(Dictionary<Guid, Guid> remapping)
         {
+            // Do nothing by default.
         }
 
         public override string ToString()

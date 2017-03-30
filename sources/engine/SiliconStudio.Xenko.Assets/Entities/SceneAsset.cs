@@ -1,10 +1,14 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
@@ -16,7 +20,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetDescription(FileSceneExtension, AllowArchetype = false)]
     [AssetContentType(typeof(Scene))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
-    [AssetCompiler(typeof(SceneAssetCompiler))]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, 2, 3, typeof(RemoveModelDrawOrderUpgrader))]
@@ -51,23 +54,39 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta03", "1.9.0-beta04", typeof(BasePartsRemovalComponentUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta04", "1.9.0-beta05", typeof(MaterialFromModelComponentUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta05", "1.9.0-beta06", typeof(ParticleTrailEdgeUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta06", "1.10.0-beta01", typeof(RemoveSceneSettingsUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-beta01", "1.10.0-beta02", typeof(MoveRenderGroupInsideComponentUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-beta02", "1.10.0-beta03", typeof(FixPartReferenceUpgrader))]
     [Display(2000, "Scene")]
-    [AssetPartReference(typeof(SceneSettings))]
     public partial class SceneAsset : EntityHierarchyAssetBase
     {
-        private const string CurrentVersion = "1.9.0-beta06";
+        private const string CurrentVersion = "1.10.0-beta03";
 
         public const string FileSceneExtension = ".xkscene;.pdxscene";
 
-        public SceneAsset()
-        {
-            SceneSettings = new SceneSettings();
-        }
-
         /// <summary>
-        /// Gets the scene settings for this instance.
+        /// A collection of identifier of all the children of this scene..
         /// </summary>
         [DataMember(10)]
-        public SceneSettings SceneSettings { get; private set; }
+        [Display(Browsable = false)]
+        [NonIdentifiableCollectionItems]
+        [NotNull]
+        public List<AssetId> ChildrenIds { get; } = new List<AssetId>();
+
+        /// <summary>
+        /// The parent scene.
+        /// </summary>
+        /// <userdoc>The parent scene.</userdoc>
+        [DataMember(20)]
+        [Display(Browsable = false)] // TODO: make it visible in the property grid, but readonly.
+        [DefaultValue(null)]
+        public Scene Parent { get; set; }
+
+        /// <summary>
+        /// The translation offset relative to the <see cref="Parent"/> scene.
+        /// </summary>
+        /// <userdoc>The translation offset of the scene with regard to its parent scene, if any.</userdoc>
+        [DataMember(30)]
+        public Vector3 Offset { get; set; }
     }
 }

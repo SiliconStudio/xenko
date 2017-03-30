@@ -2,33 +2,62 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Linq;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Assets.Audio;
+using SiliconStudio.Xenko.Assets.Materials;
+using SiliconStudio.Xenko.Assets.Sprite;
+using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Extensions;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
+    [AssetCompiler(typeof(SceneAsset), typeof(AssetCompilationContext))]
     public class SceneAssetCompiler : EntityHierarchyCompilerBase<SceneAsset>
     {
-        protected override EntityHierarchyCommandBase Create(string url, SceneAsset assetParameters)
+        protected override AssetCommand<SceneAsset> Create(string url, SceneAsset assetParameters, Package package)
         {
-            return new SceneCommand(url, assetParameters);
+            return new SceneCommand(url, assetParameters, package);
         }
 
-        private class SceneCommand : EntityHierarchyCommandBase
+        private class SceneCommand : AssetCommand<SceneAsset>
         {
-            public SceneCommand(string url, SceneAsset parameters) : base(url, parameters)
-            {               
-            }
-
-            protected override PrefabBase Create(SceneAsset prefabAsset)
+            public SceneCommand(string url, SceneAsset parameters, Package package) : base(url, parameters, package)
             {
-                return new Scene(prefabAsset.SceneSettings);
+            }
+
+            protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
+            {
+                var assetManager = new ContentManager();
+
+                var scene = new Scene
+                {
+                    Parent = Parameters.Parent,
+                    Offset = Parameters.Offset
+                };
+
+                foreach (var rootEntity in Parameters.Hierarchy.RootPartIds)
+                {
+                    scene.Entities.Add(Parameters.Hierarchy.Parts[rootEntity].Entity);
+                }
+                assetManager.Save(Url, scene);
+
+                return Task.FromResult(ResultStatus.Successful);
+            }
+
+            public override string ToString()
+            {
+                return $"Scene command for asset '{Url}'.";
             }
         }
-
     }
 }

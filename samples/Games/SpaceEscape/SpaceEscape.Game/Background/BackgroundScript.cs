@@ -61,14 +61,14 @@ namespace SpaceEscape.Background
             SkyplaneModel.Meshes[0].Parameters.Set(GameParameters.EnableOnflyTextureUVChange, true);
 
             // Add skyPlane with LevelBlocks to EntitySystem
-            SceneSystem.SceneInstance.Scene.Entities.Add(skyplaneEntity);
+            SceneSystem.SceneInstance.RootScene.Entities.Add(skyplaneEntity);
             CreateStartLevelBlocks();
         }
 
         public override void Cancel()
         {
             Entity.Transform.Children.Clear();
-            SceneSystem.SceneInstance.Scene.Entities.Remove(skyplaneEntity);
+            SceneSystem.SceneInstance.RootScene.Entities.Remove(skyplaneEntity);
         }
 
         public override void Update()

@@ -13,6 +13,12 @@ using SiliconStudio.Xenko.Engine.Processors;
 
 namespace SiliconStudio.Xenko.Engine
 {
+    // TODO: temporary, will be removed once we have better way to detect when we're visiting this collection
+    [DataContract]
+    public class TransformChildrenCollection : TrackingCollection<TransformComponent>
+    {
+    }
+
     /// <summary>
     /// Defines Position, Rotation and Scale of its <see cref="Entity"/>.
     /// </summary>
@@ -85,7 +91,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         public TransformComponent()
         {
-            var children = new TrackingCollection<TransformComponent>();
+            var children = new TransformChildrenCollection();
             children.CollectionChanged += ChildrenCollectionChanged;
 
             Children = children;
@@ -111,10 +117,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Gets the children of this <see cref="TransformComponent"/>.
         /// </summary>
-        /// <value>
-        /// The children.
-        /// </value>
-        public FastCollection<TransformComponent> Children { get; private set; }
+        public FastCollection<TransformComponent> Children { get; }
 
         /// <summary>
         /// Gets or sets the euler rotation, with XYZ order.
@@ -206,10 +209,8 @@ namespace SiliconStudio.Xenko.Engine
                 if (oldParent == value)
                     return;
 
-                if (oldParent != null)
-                    oldParent.Children.Remove(this);
-                if (value != null)
-                    value.Children.Add(this);
+                oldParent?.Children.Remove(this);
+                value?.Children.Add(this);
             }
         }
 
@@ -222,6 +223,34 @@ namespace SiliconStudio.Xenko.Engine
             if (UseTRS)
             {
                 Matrix.Transformation(ref Scale, ref Rotation, ref Position, out LocalMatrix);
+            }
+        }
+
+        /// <summary>
+        /// Updates the local matrix based on the world matrix and the parent entity's or containing scene's world matrix.
+        /// </summary>
+        public void UpdateLocalFromWorld()
+        {
+            if (Parent == null)
+            {
+                var scene = Entity?.Scene;
+                if (scene != null)
+                {
+                    var inverseSceneTransform = scene.WorldMatrix;
+                    inverseSceneTransform.Invert();
+                    Matrix.Multiply(ref WorldMatrix, ref inverseSceneTransform, out LocalMatrix);
+                }
+                else
+                {
+                    LocalMatrix = WorldMatrix;
+                }
+            }
+            else
+            {
+                //We are not root so we need to derive the local matrix as well
+                var inverseParent = Parent.WorldMatrix;
+                inverseParent.Invert();
+                Matrix.Multiply(ref WorldMatrix, ref inverseParent, out LocalMatrix);
             }
         }
 
@@ -253,6 +282,17 @@ namespace SiliconStudio.Xenko.Engine
             else
             {
                 WorldMatrix = LocalMatrix;
+
+                var scene = Entity?.Scene;
+                if (scene != null)
+                {
+                    if (recursive)
+                    {
+                        scene.UpdateWorldMatrix();
+                    }
+
+                    Matrix.Multiply(ref WorldMatrix, ref scene.WorldMatrix, out WorldMatrix);
+                }
             }
 
             foreach (var transformOperation in PostOperations)

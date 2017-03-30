@@ -1,7 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Text.RegularExpressions;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Presentation.Core
 {
@@ -19,10 +24,20 @@ namespace SiliconStudio.Presentation.Core
         /// The index of the factor <c>1.0</c> in the <see cref="ZoomFactors"/> array.
         /// </summary>
         public static readonly int ZoomFactorIdentityIndex = 10;
-         
-        public static string SplitCamelCase(string input)
+
+        [NotNull]
+        public static string SplitCamelCase([NotNull] string input)
         {
             return Regex.Replace(input, "([a-z](?=[A-Z])|[A-Z](?=[A-Z][a-z]))", "$1 ");
+        }
+
+        public static Color4 GetUniqueColor(this Type type)
+        {
+            var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(type);
+            var hash = displayAttribute?.Name.GetHashCode() ?? type.Name.GetHashCode();
+            hash = hash >> 16 ^ hash;
+            var hue = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(type)?.CustomHue ?? hash % 360;
+            return new ColorHSV(hue, 0.75f + (hash % 101) / 400f, 0.5f + (hash % 151) / 300f, 1).ToColor();
         }
     }
 }

@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Markup;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -78,8 +79,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <param name="converter3">The third value converter.</param>
         /// <param name="converter4">The fourth value converter.</param>
         /// <param name="converter5">The fifth value converter.</param>
-        public Chained(IValueConverter converter1, IValueConverter converter2, IValueConverter converter3, IValueConverter converter4,
-                        IValueConverter converter5)
+        public Chained(IValueConverter converter1, IValueConverter converter2, IValueConverter converter3, IValueConverter converter4, IValueConverter converter5)
             : this(converter1, converter2, converter3, converter4, converter5, null, null, null)
         {
         }
@@ -93,8 +93,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <param name="converter4">The fourth value converter.</param>
         /// <param name="converter5">The fifth value converter.</param>
         /// <param name="converter6">The sixth value converter.</param>
-        public Chained(IValueConverter converter1, IValueConverter converter2, IValueConverter converter3, IValueConverter converter4,
-                        IValueConverter converter5, IValueConverter converter6)
+        public Chained(IValueConverter converter1, IValueConverter converter2, IValueConverter converter3, IValueConverter converter4, IValueConverter converter5, IValueConverter converter6)
             : this(converter1, converter2, converter3, converter4, converter5, converter6, null, null)
         {
         }
@@ -109,8 +108,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <param name="converter5">The fifth value converter.</param>
         /// <param name="converter6">The sixth value converter.</param>
         /// <param name="converter7">The seventh value converter.</param>
-        public Chained(IValueConverter converter1, IValueConverter converter2, IValueConverter converter3, IValueConverter converter4,
-                        IValueConverter converter5, IValueConverter converter6, IValueConverter converter7)
+        public Chained(IValueConverter converter1, IValueConverter converter2, IValueConverter converter3, IValueConverter converter4, IValueConverter converter5, IValueConverter converter6, IValueConverter converter7)
             : this(converter1, converter2, converter3, converter4, converter5, converter6, converter7, null)
         {
         }
@@ -126,8 +124,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <param name="converter6">The sixth value converter.</param>
         /// <param name="converter7">The seventh value converter.</param>
         /// <param name="converter8">The eighth value converter.</param>
-        public Chained(IValueConverter converter1, IValueConverter converter2, IValueConverter converter3, IValueConverter converter4,
-                                      IValueConverter converter5, IValueConverter converter6, IValueConverter converter7, IValueConverter converter8)
+        public Chained(IValueConverter converter1, IValueConverter converter2, IValueConverter converter3, IValueConverter converter4, IValueConverter converter5, IValueConverter converter6, IValueConverter converter7, IValueConverter converter8)
         {
             Converter1 = converter1;
             Converter2 = converter2;
@@ -243,6 +240,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         private readonly Type[] converterTargetType = new Type[MaxConverterCount];
 
         /// <inheritdoc/>
+        [NotNull]
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             return this;
@@ -266,7 +264,8 @@ namespace SiliconStudio.Presentation.ValueConverters
                 if (conversionEnded)
                     throw new InvalidOperationException($"Converter{i} is not null but previous Converter{i - 1} was null");
 
-                output = converters[i].Convert(input, converterTargetType[i] ?? typeof(object), converterParameters[i], culture);
+                var type = converterTargetType[i] ?? ((i == MaxConverterCount - 1) || converters[i + 1] == null ? targetType : typeof(object));
+                output = converters[i].Convert(input, type, converterParameters[i], culture);
             }
             return output;
         }
@@ -290,7 +289,8 @@ namespace SiliconStudio.Presentation.ValueConverters
 
                 conversionStarted = true;
 
-                output = converters[i].Convert(input, converterTargetType[i] ?? typeof(object), converterParameters[i], culture);
+                var type = converterTargetType[i] ?? (i == 0 ? targetType : typeof(object));
+                output = converters[i].ConvertBack(input, type, converterParameters[i], culture);
             }
             return output;
         }

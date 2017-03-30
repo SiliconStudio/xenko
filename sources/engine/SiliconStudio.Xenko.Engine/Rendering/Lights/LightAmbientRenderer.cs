@@ -17,6 +17,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     {
         private LightAmbientShaderGroup lightShaderGroup = new LightAmbientShaderGroup();
 
+        public override Type[] LightTypes { get; } = { typeof(LightAmbient) };
+
         public LightAmbientRenderer()
         {
             IsEnvironmentLight = true;
@@ -41,11 +43,14 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
             // Sum contribution from all lights
             var ambientColor = new Color3();
-            for (int index = parameters.LightStart; index < parameters.LightEnd; index++)
+            foreach (var index in parameters.LightIndices)
             {
                 var light = parameters.LightCollection[index];
                 ambientColor += light.Color;
             }
+
+            // Consume all the lights
+            parameters.LightIndices.Clear();
 
             // Store ambient sum for this view
             lightShaderGroup.AmbientColor[parameters.ViewIndex] = ambientColor;
@@ -53,6 +58,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public override void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry)
         {
+            // Always merge ambient lighting code to avoid shader permutations
             shaderEntry.EnvironmentLights.Add(lightShaderGroup);
         }
 
@@ -64,6 +70,18 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public LightAmbientShaderGroup()
                 : base(new ShaderClassSource("LightSimpleAmbient"))
             {
+            }
+
+            public override void Reset()
+            {
+                base.Reset();
+                if (AmbientColor != null)
+                {
+                    for (int i = 0; i < AmbientColor.Length; i++)
+                    {
+                        AmbientColor[i] = new Color3(0.0f);
+                    }
+                }
             }
 
             public override void UpdateLayout(string compositionName)
