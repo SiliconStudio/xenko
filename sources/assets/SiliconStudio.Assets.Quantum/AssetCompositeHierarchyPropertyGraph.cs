@@ -80,7 +80,15 @@ namespace SiliconStudio.Assets.Quantum
             registeredChildParts.ToList().ForEach(UnregisterChildPartNode);
             var partsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<IAssetPartDesign<IIdentifiable>, IIdentifiable>.Parts)].Target;
             partsNode.ItemChanged -= PartsChanged;
+
+            foreach (var basePartAsset in basePartAssets.Keys)
+            {
+                basePartAsset.PartAdded -= PartAddedInBaseAsset;
+                basePartAsset.PartRemoved -= PartRemovedInBaseAsset;
+            }
+            basePartAssets.Clear();
         }
+
         /// <inheritdoc/>
         public override void ClearReferencesToObjects(IEnumerable<Guid> objectIds)
         {

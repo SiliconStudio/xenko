@@ -58,6 +58,7 @@ namespace SiliconStudio.Assets.Quantum
         private readonly GraphNodeChangeListener nodeListener;
         private readonly Dictionary<IAssetNode, NodeChangeHandlers> baseLinkedNodes = new Dictionary<IAssetNode, NodeChangeHandlers>();
         private IBaseToDerivedRegistry baseToDerivedRegistry;
+        private bool isDisposed;
 
         public AssetPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
         {
@@ -89,6 +90,8 @@ namespace SiliconStudio.Assets.Quantum
             nodeListener.ItemChanging -= AssetItemChanging;
             nodeListener.ItemChanged -= AssetItemChanged;
             nodeListener.Dispose();
+            ClearAllBaseLinks();
+            isDisposed = true;
         }
 
         /// <summary>
@@ -221,10 +224,7 @@ namespace SiliconStudio.Assets.Quantum
             if (visitRoot != null)
             {
                 var visitor = new AssetGraphVisitorBase(this);
-                visitor.Visiting += (node, path) =>
-                {
-                    nodesToReset.Add(node, Index.Empty);
-                };
+                visitor.Visiting += (node, path) => nodesToReset.Add(node, Index.Empty);
                 visitor.Visit(rootNode);
             }
             // Then we reconcile (recursively) with the base.
