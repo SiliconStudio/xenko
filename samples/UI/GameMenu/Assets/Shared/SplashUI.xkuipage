@@ -1,6 +1,6 @@
 !UIPageAsset
 Id: 62c493c2-13ea-4fac-bbaf-578afafac104
-SerializedVersion: {Xenko: 1.9.0-beta01}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
 Design:
     Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
@@ -17,7 +17,7 @@ Hierarchy:
                 HorizontalAlignment: Center
                 Margin: {}
                 Padding: {Left: 35.0, Top: 15.0, Right: 35.0, Bottom: 25.0}
-                Content: !TextBlock 9fa422f6-c6a0-414e-9c68-5e34fbbf6fe2
+                Content: !TextBlock ref!! 9fa422f6-c6a0-414e-9c68-5e34fbbf6fe2
                 BackgroundImage: !SpriteFromSheet
                     Sheet: ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
                     CurrentFrame: 1
@@ -52,10 +52,10 @@ Hierarchy:
                 MaximumWidth: 600.0
                 MaximumHeight: 900.0
                 Children:
-                    82da850a9933864f8e7ccccae6c6e799: !ContentDecorator 0a85da82-3399-4f86-8e7c-cccae6c6e799
-                    9aead6489c39f74da62543db690bf6d2: !ContentDecorator 48d6ea9a-399c-4df7-a625-43db690bf6d2
-                    06919965976f36489160c7d0fd2192c8: !ImageElement 65999106-6f97-4836-9160-c7d0fd2192c8
-                    d466b3d7fc7ebc448df9a0e938b7febc: !ContentDecorator d7b366d4-7efc-44bc-8df9-a0e938b7febc
+                    82da850a9933864f8e7ccccae6c6e799: !ContentDecorator ref!! 0a85da82-3399-4f86-8e7c-cccae6c6e799
+                    9aead6489c39f74da62543db690bf6d2: !ContentDecorator ref!! 48d6ea9a-399c-4df7-a625-43db690bf6d2
+                    06919965976f36489160c7d0fd2192c8: !ImageElement ref!! 65999106-6f97-4836-9160-c7d0fd2192c8
+                    d466b3d7fc7ebc448df9a0e938b7febc: !ContentDecorator ref!! d7b366d4-7efc-44bc-8df9-a0e938b7febc
                 RowDefinitions:
                     c6c9ddcbd98c1e4c868d9f0de7dad89a:
                         Type: Auto
@@ -83,7 +83,7 @@ Hierarchy:
                 HorizontalAlignment: Center
                 Margin: {}
                 Padding: {Left: 15.0, Top: 4.0, Right: 15.0, Bottom: 7.0}
-                Content: !TextBlock 2ad3e2d4-7cd1-4577-aa93-7f1c0005cde8
+                Content: !TextBlock ref!! 2ad3e2d4-7cd1-4577-aa93-7f1c0005cde8
                 BackgroundImage: !SpriteFromSheet
                     Sheet: ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
                     CurrentFrame: 2
@@ -121,8 +121,8 @@ Hierarchy:
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Children:
-                    6ed8156387f6514dab9019a73d34dd7e: !ImageElement 6315d86e-f687-4d51-ab90-19a73d34dd7e
-                    6797a846c14ec741b7c0a12cd0fac7a1: !Grid 46a89767-4ec1-41c7-b7c0-a12cd0fac7a1
+                    6ed8156387f6514dab9019a73d34dd7e: !ImageElement ref!! 6315d86e-f687-4d51-ab90-19a73d34dd7e
+                    6797a846c14ec741b7c0a12cd0fac7a1: !Grid ref!! 46a89767-4ec1-41c7-b7c0-a12cd0fac7a1
         -   UIElement: !TextBlock
                 DependencyProperties: {}
                 Id: 9fa422f6-c6a0-414e-9c68-5e34fbbf6fe2
@@ -144,7 +144,7 @@ Hierarchy:
                 HorizontalAlignment: Center
                 Margin: {}
                 Padding: {Left: 30.0, Top: 20.0, Right: 30.0, Bottom: 25.0}
-                Content: !TextBlock 3d15fe1b-2814-43de-95b4-67dc1d49ceef
+                Content: !TextBlock ref!! 3d15fe1b-2814-43de-95b4-67dc1d49ceef
                 BackgroundImage: !SpriteFromSheet
                     Sheet: ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
                     CurrentFrame: 4
