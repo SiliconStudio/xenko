@@ -45,7 +45,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public string DisplayName { get; set; }
         public string Name { get; protected set; }
 
-        public abstract List<INodePresenterCommand> Commands { get; }
+        public List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
         public abstract Type Type { get; }
         public abstract bool IsEnumerable { get; }
 

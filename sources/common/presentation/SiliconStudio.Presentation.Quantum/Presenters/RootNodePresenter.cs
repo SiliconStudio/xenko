@@ -25,10 +25,11 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
                     Commands.Add(command);
             }
 
+            rootNode.ItemChanging += OnItemChanging;
+            rootNode.ItemChanged += OnItemChanged;
             AttachCommands();
         }
 
-        public sealed override List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
         public override Type Type => RootNode.Type;
         public override Index Index => Index.Empty;
         public override bool IsEnumerable => RootNode.IsEnumerable;
@@ -49,10 +50,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
-                RaiseValueChanging(Value);
                 RootNode.Add(value);
-                Refresh();
-                RaiseValueChanged(Value);
             }
             catch (Exception e)
             {
@@ -67,10 +65,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
-                RaiseValueChanging(Value);
                 RootNode.Add(value, index);
-                Refresh();
-                RaiseValueChanged(Value);
             }
             catch (Exception e)
             {
@@ -85,10 +80,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
-                RaiseValueChanging(Value);
                 RootNode.Remove(value, index);
-                Refresh();
-                RaiseValueChanged(Value);
             }
             catch (Exception e)
             {
@@ -99,6 +91,17 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public override NodeAccessor GetNodeAccessor()
         {
             return new NodeAccessor(RootNode, Index.Empty);
+        }
+
+        private void OnItemChanging(object sender, ItemChangeEventArgs e)
+        {
+            RaiseValueChanging(Value);
+        }
+
+        private void OnItemChanged(object sender, ItemChangeEventArgs e)
+        {
+            Refresh();
+            RaiseValueChanged(Value);
         }
     }
 }
