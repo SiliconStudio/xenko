@@ -23,7 +23,6 @@
     <Compile Include="CombineMode.cs" />
     <Compile Include="ContentChangeType.cs" />
     <Compile Include="Internal\Content.cs" />
-    <Compile Include="GraphNodeExtensions.cs" />
     <Compile Include="IInitializingGraphNode.cs" />
     <Compile Include="IInitializingObjectNode.cs" />
     <Compile Include="IMemberNode.cs" />

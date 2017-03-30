@@ -58,20 +58,39 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
                 throw new InvalidOperationException("A content has already been registered to this virtual node");
 
             AssociatedNode = associatedNodeAccessor;
-            AssociatedNode.Node.RegisterChanging(AssociatedNodeChanging);
-            AssociatedNode.Node.RegisterChanged(AssociatedNodeChanged);
+            var memberNode = AssociatedNode.Node as IMemberNode;
+            if (memberNode != null)
+            {
+                memberNode.ValueChanging += AssociatedNodeChanging;
+                memberNode.ValueChanged += AssociatedNodeChanged;
+            }
+            var objectNode = AssociatedNode.Node as IObjectNode;
+            if (objectNode != null)
+            {
+                objectNode.ItemChanging += AssociatedNodeChanging;
+                objectNode.ItemChanged += AssociatedNodeChanged;
+            }
         }
 
+        /// <inheritdoc/>
         public override void Dispose()
         {
-            if (AssociatedNode.Node != null)
+            var memberNode = AssociatedNode.Node as IMemberNode;
+            if (memberNode != null)
             {
-                AssociatedNode.Node.UnregisterChanging(AssociatedNodeChanging);
-                AssociatedNode.Node.UnregisterChanged(AssociatedNodeChanged);
+                memberNode.ValueChanging -= AssociatedNodeChanging;
+                memberNode.ValueChanged -= AssociatedNodeChanged;
+            }
+            var objectNode = AssociatedNode.Node as IObjectNode;
+            if (objectNode != null)
+            {
+                objectNode.ItemChanging -= AssociatedNodeChanging;
+                objectNode.ItemChanged -= AssociatedNodeChanged;
             }
             base.Dispose();
         }
 
+        /// <inheritdoc/>
         public override void UpdateValue(object newValue)
         {
             try
@@ -95,21 +114,25 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
+        /// <inheritdoc/>
         public override void AddItem(object value)
         {
             throw new NodePresenterException($"{nameof(AddItem)} cannot be used on a {nameof(VirtualNodePresenter)}.");
         }
 
+        /// <inheritdoc/>
         public override void AddItem(object value, Index index)
         {
             throw new NodePresenterException($"{nameof(AddItem)} cannot be used on a {nameof(VirtualNodePresenter)}.");
         }
 
+        /// <inheritdoc/>
         public override void RemoveItem(object value, Index index)
         {
             throw new NodePresenterException($"{nameof(RemoveItem)} cannot be used on a {nameof(VirtualNodePresenter)}.");
         }
 
+        /// <inheritdoc/>
         public override NodeAccessor GetNodeAccessor()
         {
             return default(NodeAccessor);

@@ -49,8 +49,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public virtual void Dispose()
         {
-            node.UnregisterChanging(ValueChanging);
-            node.UnregisterChanged(ValueChanged);
             node.ValueChanging -= ValueChanging;
             node.ValueChanged -= ValueChanged;
         }
