@@ -170,7 +170,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             var shaderId = ObjectId.FromBytes(Encoding.UTF8.GetBytes(shaderSourceText));
 
-            var logDir = Path.Combine(Path.GetDirectoryName(PlatformFolders.GetApplicationExecutablePath()), "log");
+            var logDir = Path.Combine(PlatformFolders.ApplicationBinaryDirectory, "log");
             if (!Directory.Exists(logDir))
             {
                 Directory.CreateDirectory(logDir);

@@ -68,6 +68,9 @@ namespace SiliconStudio.Core
         /// </summary>
         public static readonly string ApplicationBinaryDirectory = GetApplicationBinaryDirectory();
 
+        /// <summary>
+        /// Get the path to the application executable.
+        /// </summary>
         public static readonly string ApplicationExecutablePath = GetApplicationExecutablePath();
 
         private static string applicationDataSubDirectory = "";
@@ -151,10 +154,7 @@ namespace SiliconStudio.Core
 #endif
         }
         
-        /// <summary>
-        /// Get the path to the application executable.
-        /// </summary>
-        public static string GetApplicationExecutablePath()
+        private static string GetApplicationExecutablePath()
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_MONO_MOBILE || SILICONSTUDIO_PLATFORM_UNIX
             var currentAssembly = Assembly.GetEntryAssembly();
