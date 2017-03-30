@@ -137,7 +137,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         {
             if (ShouldRaiseEvent(changeType, index))
             {
-                RaiseValueChanged(Value);
+                RaiseValueChanged(oldValue);
             }
         }
 
