@@ -12,7 +12,7 @@ namespace SiliconStudio.Quantum
     /// A <see cref="GraphNodeChangeListener"/> will raise events on changes on any node that is either a child, or the
     /// target of a reference from the root node, recursively.
     /// </summary>
-    public class GraphNodeChangeListener : INotifyContentValueChange, INotifyItemChange, IDisposable
+    public class GraphNodeChangeListener : INotifyNodeValueChange, INotifyNodeItemChange, IDisposable
     {
         private readonly IGraphNode rootNode;
         private readonly Func<IMemberNode, bool> shouldRegisterMemberTarget;

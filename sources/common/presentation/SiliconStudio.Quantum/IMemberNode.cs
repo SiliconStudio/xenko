@@ -5,7 +5,7 @@ using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
-    public interface IMemberNode : IGraphNode, INotifyContentValueChange
+    public interface IMemberNode : IGraphNode, INotifyNodeValueChange
     {
         /// <summary>
         /// Gets the member name.
