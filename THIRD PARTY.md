@@ -21,7 +21,6 @@ Here is the list of products that we are using and their respective license:
 * [SharpDoc](https://github.com/xoofx/SharpDoc) (MIT License)
 * [SharpDiff](https://github.com/xoofx/SharpDiff) (New BSD License)
 * [SharpYaml](https://github.com/xoofx/SharpYaml) (MIT License)
-* [NAudio](http://naudio.codeplex.com/) (Ms-PL)
 * [ILRepack](https://github.com/gluck/il-repack) (Apache License 2.0)
 * [MarkdownSharp](https://code.google.com/p/markdownsharp/) (MIT License)
 * [MurmurHash](https://github.com/darrenkopp/murmurhash-net) (Apache License 2.0)
@@ -36,3 +35,4 @@ Here is the list of products that we are using and their respective license:
 * [WPFToolKit](http://wpftoolkit.codeplex.com/) (Ms-PL)
 * [AvalonDock](https://avalondock.codeplex.com/) (New BSD License)
 * [SocketsForPCL](https://github.com/rdavisau/sockets-for-pcl) (MIT License)
+* [NativePath] (https://github.com/sinkingsugar/NativePath) (MIT License)
