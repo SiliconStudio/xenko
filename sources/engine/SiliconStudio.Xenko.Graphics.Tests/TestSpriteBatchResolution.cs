@@ -23,7 +23,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestSpriteBatchResolution()
         {
-            CurrentVersion = 5; // Changes in font type/size
+            //CurrentVersion = 5; // Changes in font type/size
+            CurrentVersion = 6; // Texture assets set to uncompressed, build machine changed
         }
 
         protected override void RegisterTests()
