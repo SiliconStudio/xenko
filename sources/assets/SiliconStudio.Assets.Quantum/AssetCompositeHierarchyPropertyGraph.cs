@@ -557,8 +557,9 @@ namespace SiliconStudio.Assets.Quantum
             basePartAssets.Clear();
             instancesCommonAncestors.Clear();
 
-            // We want to enumerate parts that are actually "reachable", so we don't use Hierarchy.Parts but we iterate from the root parts instead
-            var currentParts = Asset.Hierarchy.RootPartIds.Select(x => Asset.Hierarchy.Parts[x]).DepthFirst(x => Asset.EnumerateChildPartDesigns(x, Asset.Hierarchy, false));
+            // We want to enumerate parts that are actually "reachable", so we don't use Hierarchy.Parts for iteration - we iterate from the root parts instead.
+            // We use Hierarchy.Parts at the end just to retrieve the part design from the actual part.
+            var currentParts = Asset.Hierarchy.RootPartIds.Select(x => Asset.Hierarchy.Parts[x].Part).DepthFirst(x => Asset.EnumerateChildParts(x, false)).Select(x => Asset.Hierarchy.Parts[x.Id]);
             foreach (var part in currentParts.Where(x => x.Base != null))
             {
                 var baseAssetGraph = Container.GetGraph(part.Base.BasePartAsset.Id) as AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>;
