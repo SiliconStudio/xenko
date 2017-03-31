@@ -13,7 +13,7 @@ using SiliconStudio;
 [assembly:AssemblyCulture("")]
 
 [assembly: AssemblyVersion(XenkoVersion.PublicVersion)]
-[assembly: AssemblyFileVersion(XenkoVersion.NuGetVersion)]
+[assembly: AssemblyFileVersion(XenkoVersion.PublicVersion)]
 
 [assembly: AssemblyInformationalVersion(XenkoVersion.AssemblyInformationalVersion)]
 

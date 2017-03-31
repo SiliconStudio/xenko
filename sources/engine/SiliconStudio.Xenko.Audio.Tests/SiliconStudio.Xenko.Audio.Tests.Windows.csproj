@@ -153,6 +153,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SiliconStudio.Xenko.Shared\Refactor\Refactor.cs" />
     <Compile Include="AudioTestGame.cs" />
     <Compile Include="BasicTest.cs" />
     <Compile Include="Engine\GameClassForTests.cs" />

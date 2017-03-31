@@ -8,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.10.0-alpha02
+            Version: 1.11.1.2
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -71,7 +71,6 @@ RootAssets:
     - 51144a89-25ee-4065-9f5b-34f57c7640a6:BasicDisplacementMap
     - 53b953af-1d02-459e-a96f-b40805964d59:knight Model
     - 5d8ecea5-50f2-49c1-8fe8-16e67dd65ab0:BallSprite1
-    - 629b95b0-5c22-4f4f-805e-3ad9543be1ff:MainScene
     - 6318256a-cbfa-43cf-a9ba-18b91e6ab350:DebugSpriteSheet
     - 6a238290-1a54-4690-b478-4eb4e5b7ea3a:FlatTessellation
     - 6bacdf7e-6538-4cfa-a035-0807aee89e2c:c100_chr_ch00_Knight_KINGHT_iron

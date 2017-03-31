@@ -925,11 +925,6 @@ namespace SiliconStudio.Xenko.Assets
                     {
                         skyboxAsset.Deleted = true;
                     }
-
-                    else if (root.Usage == null || (string)root.Usage == "LightingAndBackground")
-                    {
-                        root.Usage = "Lighting";
-                    }
                     
                     bool isBackground = root.Usage == null ||
                                         (string)root.Usage == "Background" ||
@@ -991,8 +986,7 @@ namespace SiliconStudio.Xenko.Assets
                     return (DynamicYamlArray)hierarchy.Parts; // > 1.6.0
                 return (DynamicYamlArray)hierarchy.Entities; // <= 1.6.0
             }
-
-            /// <returns>A tuple of (tag, id, component node)</returns>
+            
             private ComponentInfo GetComponentInfo(dynamic componentNode)
             {
                 if(componentNode.Key != null && componentNode.Value != null)

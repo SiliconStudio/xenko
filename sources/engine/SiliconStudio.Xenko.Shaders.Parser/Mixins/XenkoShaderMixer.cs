@@ -1296,6 +1296,10 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 if (variable.GetTag(XenkoTags.LogicalGroup) != null)
                     continue;
 
+                // Don't remove resources since they need to consistent between resource group layouts. The EffectCompiler will clean up reflection if possible
+                if (variable.Type.IsSamplerType() || variable.Type is TextureType || variable.Type.ResolveType() is ObjectType)
+                    continue;
+
                 bool used;
                 if (variablesUsages.TryGetValue(variable, out used))
                 {
