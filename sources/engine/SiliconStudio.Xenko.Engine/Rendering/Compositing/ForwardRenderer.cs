@@ -687,9 +687,16 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             for (int index = 0; index < renderOutputValidator.RenderTargets.Count; index++)
             {
-                var description = renderOutputValidator.RenderTargets[index];
-                var textureDescription = TextureDescription.New2D(currentRenderTarget.Width, currentRenderTarget.Height, 1, description.Format, TextureFlags.RenderTarget | TextureFlags.ShaderResource, 1, GraphicsResourceUsage.Default, actualMSAALevel);
-                currentRenderTargets[index] = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(textureDescription));
+                if (renderOutputValidator.RenderTargets[index].Semantic is ColorTargetSemantic)
+                {
+                    currentRenderTargets[index] = currentRenderTarget;
+                }
+                else
+                { 
+                    var description = renderOutputValidator.RenderTargets[index];
+                    var textureDescription = TextureDescription.New2D(currentRenderTarget.Width, currentRenderTarget.Height, 1, description.Format, TextureFlags.RenderTarget | TextureFlags.ShaderResource, 1, GraphicsResourceUsage.Default, actualMSAALevel);
+                    currentRenderTargets[index] = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(textureDescription));
+                }
             }
         }
 
