@@ -85,6 +85,7 @@ namespace SiliconStudio.Assets.Compiler
                 resultsCache.Add(assetItem.Id, cachedResult);
                 inCache = false;
                 AssetCompiled?.Invoke(this, new AssetCompiledArgs(assetItem, cachedResult));
+                cachedResult.CopyTo(finalResult);
             }
 
             //Go thru the dependencies of the node and prepare them as well
