@@ -77,15 +77,15 @@ namespace SiliconStudio.Assets.Compiler
                 if (mainCompiler == null) return;
 
                 cachedResult = mainCompiler.Prepare(context, assetItem);
+				cachedResult.CopyTo(finalResult);
                 if (cachedResult.HasErrors)
                 {
-                    finalResult.Error($"Failed to compile preview for asset {assetItem.Location}");
+                    finalResult.Error($"Failed to prepare asset {assetItem.Location}");
                     return;
                 }
                 resultsCache.Add(assetItem.Id, cachedResult);
                 inCache = false;
                 AssetCompiled?.Invoke(this, new AssetCompiledArgs(assetItem, cachedResult));
-                cachedResult.CopyTo(finalResult);
             }
 
             //Go thru the dependencies of the node and prepare them as well
