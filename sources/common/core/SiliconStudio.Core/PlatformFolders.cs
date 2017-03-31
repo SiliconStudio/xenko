@@ -68,6 +68,9 @@ namespace SiliconStudio.Core
         /// </summary>
         public static readonly string ApplicationBinaryDirectory = GetApplicationBinaryDirectory();
 
+        /// <summary>
+        /// Get the path to the application executable.
+        /// </summary>
         public static readonly string ApplicationExecutablePath = GetApplicationExecutablePath();
 
         private static string applicationDataSubDirectory = "";
