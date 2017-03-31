@@ -14,15 +14,7 @@ namespace SiliconStudio.Xenko.Engine
     [ComponentOrder(1500)]
     public sealed class ModelNodeLinkComponent : EntityComponent
     {
-        public void ValidityCheck()
-        {
-            IsValid =   Target == null ||
-                        Entity == null ||
-                        (Target.Entity.Id != Entity.Id
-                        && RecurseCheckChildren(Entity.Transform.Children, Target.Entity.Transform)
-                        && CheckParent(Target.Entity.Transform)
-                        );
-        }
+        private ModelComponent target;
 
         [DataMemberIgnore]
         public bool IsValid { get; private set; }
@@ -35,7 +27,18 @@ namespace SiliconStudio.Xenko.Engine
         /// </value>
         /// <userdoc>The reference to the target entity to which attach the current entity. If null, parent will be used.</userdoc>
         [Display("Target (Parent if not set)")]
-        public ModelComponent Target { get; set; }
+        public ModelComponent Target
+        {
+            get
+            {
+                return target;
+            }
+            set
+            {
+                ValidityCheck(value);
+                target = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the name of the node.
@@ -45,6 +48,28 @@ namespace SiliconStudio.Xenko.Engine
         /// </value>
         /// <userdoc>The name of node of the model of the target entity to which attach the current entity.</userdoc>
         public string NodeName { get; set; }
+
+        public void ValidityCheck()
+        {
+            ValidityCheck(target);
+        }
+
+        public void ValidityCheck(ModelComponent targetToValidate)
+        {
+            IsValid = targetToValidate == null ||
+                        Entity == null ||
+                        targetToValidate.Entity == null ||
+                        (targetToValidate.Entity.Id != Entity.Id
+                        && RecurseCheckChildren(Entity.Transform.Children, targetToValidate.Entity.Transform)
+                        && CheckParent(targetToValidate.Entity.Transform)
+                        );
+        }
+
+        internal void OnHierarchyChanged(object sender, Entity entity)
+        {
+            if (entity == null || entity.Id != Target?.Entity.Id) return;
+            ValidityCheck();
+        }
 
         private bool CheckParent(TransformComponent targetTransform)
         {
@@ -77,12 +102,6 @@ namespace SiliconStudio.Xenko.Engine
                 return false;
             }
             return true;
-        }
-
-        internal void OnHierarchyChanged(object sender, Entity entity)
-        {
-            if (entity == null || entity.Id != Target?.Entity.Id) return;
-            ValidityCheck();
         }
     }
 }
