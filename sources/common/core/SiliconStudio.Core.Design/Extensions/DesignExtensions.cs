@@ -264,7 +264,8 @@ namespace SiliconStudio.Core.Extensions
         }
 
         /// <summary>
-        /// Returns the value corresponding to the given key. If the key is absent from the dictionary, it is added with the default value of the TValue type.
+        /// Returns the value corresponding to the given key.
+        /// If the key is absent from the dictionary, it is added with the default value of the <typeparamref name="TValue"/> type.
         /// </summary>
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="key">The key of the value we are looking for.</param>
@@ -276,6 +277,25 @@ namespace SiliconStudio.Core.Extensions
             if (!dictionary.TryGetValue(key, out value))
             {
                 value = new TValue();
+                dictionary.Add(key, value);
+            }
+            return value;
+        }
+
+        /// <summary>
+        /// Returns the value corresponding to the given key.
+        /// If the key is absent from the dictionary, the method invokes a callback function to create a value that is bound to the specified key.
+        /// </summary>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <param name="key">The key of the value we are looking for.</param>
+        /// <param name="createValueFunc">A function that can create a value for the given key. It has a single parameter of type <typeparamref name="TKey"/>, and returns a value of type <typeparamref name="TValue"/>.</param>
+        /// <returns>The value attached to key, if key already exists in the table; otherwise, the new value returned by the <paramref name="createValueFunc"/>.</returns>
+        public static TValue GetOrCreateValue<TKey, TValue>([NotNull] this IDictionary<TKey, TValue> dictionary, [NotNull] TKey key, [NotNull] Func<TKey, TValue> createValueFunc)
+        {
+            TValue value;
+            if (!dictionary.TryGetValue(key, out value))
+            {
+                value = createValueFunc.Invoke(key);
                 dictionary.Add(key, value);
             }
             return value;
