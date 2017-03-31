@@ -1,8 +1,9 @@
 !SceneAsset
 Id: 9f7b9af0-3929-4c98-8fdc-c56ecb2add8c
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
-Parent: null
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - 6d2b02df-329f-4e05-b299-69f96d39c763
@@ -74,13 +75,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             RandomSize: {X: 0.5, Y: 0.5}
                                         0cef9e58c443c04bb99bd8a217838aae: !InitialVelocitySeed
                                             InheritPosition: true
@@ -91,10 +92,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
                                             VelocityMin: {X: 0.0, Y: 1.0, Z: -20.0}
                                             VelocityMax: {X: 0.0, Y: 1.0, Z: -20.0}
                                     Updaters: {}
@@ -103,13 +104,13 @@ Hierarchy:
                 Name: Purple (2)
                 Components:
                     6129a890a761df4183d99ebccfe57455: !TransformComponent
-                        Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                        Id: 0aab98ee-ab7f-4aa4-ba81-4ff27d7680c9
                         Position: {X: -0.9004129, Y: 0.5, Z: 0.4726212}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     8775358e263a8d4bb8f3aeca64a57dc3: !ParticleSystemComponent
-                        Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
+                        Id: 1a7f2468-2e86-43f1-b9cd-09fa9314200a
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -154,13 +155,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             RandomSize: {X: 0.5, Y: 0.5}
                                         0cef9e58c443c04bb99bd8a217838aae: !InitialVelocitySeed
                                             InheritPosition: true
@@ -171,10 +172,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
                                             VelocityMin: {X: 0.0, Y: 0.0, Z: -10.0}
                                             VelocityMax: {X: 0.0, Y: 0.0, Z: -10.0}
                                     Updaters: {}
@@ -183,13 +184,13 @@ Hierarchy:
                 Name: Purple (5)
                 Components:
                     6129a890a761df4183d99ebccfe57455: !TransformComponent
-                        Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                        Id: 47718601-83c0-42c2-82f5-ec44c5652624
                         Position: {X: 3.5, Y: 0.5, Z: 0.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     8775358e263a8d4bb8f3aeca64a57dc3: !ParticleSystemComponent
-                        Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
+                        Id: 8884110f-6fff-4032-942a-fad02aa35bd8
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -236,13 +237,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             RandomSize: {X: 0.5, Y: 0.5}
                                         0cef9e58c443c04bb99bd8a217838aae: !InitialVelocitySeed
                                             InheritPosition: true
@@ -253,10 +254,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
                                             VelocityMin: {X: 0.0, Y: 0.0, Z: -10.0}
                                             VelocityMax: {X: 0.0, Y: 0.0, Z: -10.0}
                                     Updaters: {}
@@ -265,13 +266,13 @@ Hierarchy:
                 Name: Purple
                 Components:
                     6129a890a761df4183d99ebccfe57455: !TransformComponent
-                        Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                        Id: c682539c-caec-459a-95ac-2526b863e244
                         Position: {X: -2.383112, Y: 0.5, Z: 0.4726212}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     8775358e263a8d4bb8f3aeca64a57dc3: !ParticleSystemComponent
-                        Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
+                        Id: 9eda237e-f347-4ee0-8c1d-7a4539249cc2
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -318,13 +319,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             RandomSize: {X: 0.5, Y: 0.5}
                                         0cef9e58c443c04bb99bd8a217838aae: !InitialVelocitySeed
                                             InheritPosition: true
@@ -335,10 +336,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
                                             VelocityMin: {X: 0.0, Y: 0.0, Z: -10.0}
                                             VelocityMax: {X: 0.0, Y: 0.0, Z: -10.0}
                                     Updaters: {}
@@ -376,13 +377,13 @@ Hierarchy:
                 Name: Purple (6)
                 Components:
                     6129a890a761df4183d99ebccfe57455: !TransformComponent
-                        Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                        Id: cd5cad72-c663-410a-84a0-cf326c49cee9
                         Position: {X: 4.5, Y: 0.5, Z: 0.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     8775358e263a8d4bb8f3aeca64a57dc3: !ParticleSystemComponent
-                        Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
+                        Id: e2db72ec-fd00-4fe4-80eb-050b1f963ac0
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -428,13 +429,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             RandomSize: {X: 0.5, Y: 0.5}
                                         0cef9e58c443c04bb99bd8a217838aae: !InitialVelocitySeed
                                             InheritPosition: true
@@ -445,10 +446,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
                                             VelocityMin: {X: 0.0, Y: 0.0, Z: -10.0}
                                             VelocityMax: {X: 0.0, Y: 0.0, Z: -10.0}
                                     Updaters: {}
@@ -457,13 +458,13 @@ Hierarchy:
                 Name: Numbers
                 Components:
                     6129a890a761df4183d99ebccfe57455: !TransformComponent
-                        Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                        Id: 3e06c75e-0c94-4f89-8252-0e46f5625331
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 0.300628841, Y: 0.300628841, Z: 0.300628841}
                         Children: {}
                     8775358e263a8d4bb8f3aeca64a57dc3: !ParticleSystemComponent
-                        Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
+                        Id: 493894b7-811b-4528-8e28-eb8103d87135
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -509,13 +510,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             RandomSize: {X: 0.5, Y: 0.5}
                                         0cef9e58c443c04bb99bd8a217838aae: !InitialVelocitySeed
                                             InheritPosition: true
@@ -526,10 +527,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
                                             VelocityMin: {X: 0.0, Y: 10.0, Z: 0.0}
                                             VelocityMax: {X: 0.0, Y: 10.0, Z: 0.0}
                                     Updaters: {}
@@ -538,13 +539,13 @@ Hierarchy:
                 Name: Purple (4)
                 Components:
                     6129a890a761df4183d99ebccfe57455: !TransformComponent
-                        Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                        Id: 45c5bb9d-969f-4046-9a4d-77d105e74b0a
                         Position: {X: 2.5, Y: 0.5, Z: 0.5}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     8775358e263a8d4bb8f3aeca64a57dc3: !ParticleSystemComponent
-                        Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
+                        Id: a80b11c0-421e-43c3-b50e-124f068de981
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -590,13 +591,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             RandomSize: {X: 0.5, Y: 0.5}
                                         0cef9e58c443c04bb99bd8a217838aae: !InitialVelocitySeed
                                             InheritPosition: true
@@ -607,10 +608,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
                                             VelocityMin: {X: 0.0, Y: 0.0, Z: -10.0}
                                             VelocityMax: {X: 0.0, Y: 0.0, Z: -10.0}
                                     Updaters: {}
@@ -634,13 +635,13 @@ Hierarchy:
                 Name: Purple (3)
                 Components:
                     6129a890a761df4183d99ebccfe57455: !TransformComponent
-                        Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                        Id: 6b7ed421-45a3-4f07-a206-2327b9f9eb53
                         Position: {X: 1.14284277, Y: 0.5, Z: 0.4726212}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     8775358e263a8d4bb8f3aeca64a57dc3: !ParticleSystemComponent
-                        Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
+                        Id: ca47fd92-847d-4f08-a2b8-589e7340efad
                         Control:
                             ResetSeconds: 5.0
                             Control: Play
@@ -687,13 +688,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             RandomSize: {X: 0.5, Y: 0.5}
                                         0cef9e58c443c04bb99bd8a217838aae: !InitialVelocitySeed
                                             InheritPosition: true
@@ -704,10 +705,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
                                             VelocityMin: {X: 0.0, Y: 0.0, Z: -10.0}
                                             VelocityMax: {X: 0.0, Y: 0.0, Z: -10.0}
                                     Updaters: {}

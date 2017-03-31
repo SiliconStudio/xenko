@@ -1,6 +1,7 @@
 !Texture
 Id: 0dadf977-1b26-4a5c-9fcb-3bdaddd0b7a8
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../data/tests/Particles/Gradient.png
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Type: !ColorTextureType
+    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

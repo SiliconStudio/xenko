@@ -1,6 +1,8 @@
 !Texture
 Id: 457f3a9f-4761-48d1-8eaf-bc741453070f
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../../data/tests/uv.dds
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+IsCompressed: false
+Type: !ColorTextureType
+    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

@@ -22,8 +22,6 @@ namespace SiliconStudio.Xenko.Assets.Tasks
         [Output]
         public string Version { get; set; }
 
-        public string SpecialVersion { get; set; }
-
         public override bool Execute()
         {
             var result = new LoggerResult();
@@ -56,15 +54,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                 return false;
             }
 
-            var version = package.Meta.Version;
-
-            // Override version with task SpecialVersion (if specified by user)
-            if (!string.IsNullOrEmpty(SpecialVersion))
-            {
-                version = new PackageVersion(version.ToString().Split('-').First() + "-" + SpecialVersion);
-            }
-
-            Version = version.ToString();
+            Version = package.Meta.Version.ToString();
             return true;
         }
     }

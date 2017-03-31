@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using SiliconStudio.Core.Annotations;
@@ -436,8 +436,8 @@ namespace SiliconStudio.Quantum.Tests
             var listener = new GraphNodeChangeListener(rootNode);
             int changingCount = 0;
             int changedCount = 0;
-            listener.Changing += (sender, e) => ++changingCount;
-            listener.Changed += (sender, e) => ++changedCount;
+            listener.ValueChanging += (sender, e) => ++changingCount;
+            listener.ValueChanged += (sender, e) => ++changedCount;
             obj0Node[nameof(SimpleClass.Member1)].Update(1);
             Assert.AreEqual(1, changingCount);
             Assert.AreEqual(1, changedCount);
@@ -458,7 +458,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.NotNull(nodeOwner);
             Assert.AreEqual(type, e.ChangeType);
             Assert.AreEqual(nodeOwner, e.Node);
-            Assert.AreEqual(index, e.Index);
+            Assert.AreEqual(index, (e as ItemChangeEventArgs)?.Index ?? Index.Empty);
             Assert.AreEqual(newValue, e.NewValue);
             Assert.AreEqual(oldValue, e.OldValue);
             if (type == ContentChangeType.ValueChange)
@@ -473,12 +473,12 @@ namespace SiliconStudio.Quantum.Tests
             var contentOwner = fetchNode();
             var changing = new EventHandler<MemberNodeChangeEventArgs>((sender, e) => { Assert.AreEqual(0, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, false); ++i; });
             var changed = new EventHandler<MemberNodeChangeEventArgs>((sender, e) => { Assert.AreEqual(1, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, true); ++i; });
-            listener.Changing += changing;
-            listener.Changed += changed;
+            listener.ValueChanging += changing;
+            listener.ValueChanged += changed;
             change(contentOwner);
             Assert.AreEqual(2, i);
-            listener.Changing -= changing;
-            listener.Changed -= changed;
+            listener.ValueChanging -= changing;
+            listener.ValueChanged -= changed;
         }
 
         private static void TestItemChange([NotNull] GraphNodeChangeListener listener, [NotNull] Func<IObjectNode> fetchNode, ContentChangeType type, Index index, object oldValue, object newValue, [NotNull] Action<IObjectNode> change)

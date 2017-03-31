@@ -80,7 +80,7 @@ Hierarchy:
                         CcdMotionThreshold: 0.0
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
-                        IsKinematic: false
+                        IsKinematic: true
                         Mass: 1.0
                         LinearDamping: 0.0
                         AngularDamping: 0.0

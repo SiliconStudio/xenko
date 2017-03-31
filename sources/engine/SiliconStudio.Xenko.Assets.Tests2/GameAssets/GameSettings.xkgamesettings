@@ -1,10 +1,51 @@
 !GameSettingsAsset
 Id: 486fcb3e-8351-4d97-82f4-579bf9a7572b
+SerializedVersion: {Xenko: 1.11.0.0}
 Tags: []
 DefaultScene: fb543f7c-e6a7-4bbc-9a75-47ae5db41968:MainScene
-BackBufferWidth: 800
-BackBufferHeight: 480
-DefaultGraphicsProfile: Level_9_1
-DisplayOrientation: Default
-TextureQuality: Fast
-ColorSpace: Gamma
+GraphicsCompositor: 2d00caf8-f724-404d-87cd-df814a78b252:GraphicsCompositor
+Defaults:
+    - !SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics
+        DefaultBackBufferWidth: 800
+        DefaultBackBufferHeight: 480
+        AdaptBackBufferToScreen: false
+        DefaultGraphicsProfile: Level_9_1
+        ColorSpace: Gamma
+        DisplayOrientation: Default
+        PreferredGraphicsPlatform: Default
+    - !SiliconStudio.Xenko.Assets.EditorSettings,SiliconStudio.Xenko.Assets
+        RenderingMode: HDR
+    - !SiliconStudio.Xenko.Assets.Textures.TextureSettings,SiliconStudio.Xenko.Assets
+        TextureQuality: Fast
+    - !SiliconStudio.Xenko.Physics.PhysicsSettings,SiliconStudio.Xenko.Physics
+        Flags: None
+        MaxSubSteps: 1
+        FixedTimeStep: 0.0166666675
+    - !SiliconStudio.Xenko.Audio.AudioEngineSettings,SiliconStudio.Xenko.Audio
+        HrtfSupport: false
+    - !SiliconStudio.Xenko.Navigation.NavigationSettings,SiliconStudio.Xenko.Navigation
+        EnableDynamicNavigationMesh: false
+        IncludedCollisionGroups: AllFilter
+        BuildSettings:
+            CellHeight: 0.2
+            CellSize: 0.3
+            TileSize: 32
+            MinRegionArea: 2
+            RegionMergeArea: 20
+            MaxEdgeLen: 12.0
+            MaxEdgeError: 1.3
+            DetailSamplingDistance: 6.0
+            MaxDetailSamplingError: 1.0
+        Groups: []
+Overrides: []
+PlatformFilters:
+    - PowerVR SGX 54[0-9]
+    - Adreno \(TM\) 2[0-9][0-9]
+    - Adreno (TM) 320
+    - Adreno (TM) 330
+    - Adreno \(TM\) 4[0-9][0-9]
+    - NVIDIA Tegra
+    - Intel(R) HD Graphics
+    - ^Mali\-4
+    - ^Mali\-T6
+    - ^Mali\-T7
