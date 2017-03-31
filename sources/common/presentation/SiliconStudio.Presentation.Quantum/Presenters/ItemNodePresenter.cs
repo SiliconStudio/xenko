@@ -128,7 +128,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        private bool IsValidChange([NotNull] INodeChangeEventArgs e)
+        private bool IsValidChange([NotNull] ItemChangeEventArgs e)
         {
             return IsValidChange(e.ChangeType, e.Index, Index);
         }

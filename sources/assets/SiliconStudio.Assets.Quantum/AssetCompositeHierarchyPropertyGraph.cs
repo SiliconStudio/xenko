@@ -30,6 +30,10 @@ namespace SiliconStudio.Assets.Quantum
         /// </summary>
         /// <remarks>This dictionary is used to remember where the prefab instance was located, if during some time all its parts are removed, for example during some specific operaiton in the base asset.</remarks>
         private readonly Dictionary<Guid, Guid> instancesCommonAncestors = new Dictionary<Guid, Guid>();
+        /// <summary>
+        /// A hashset of nodes representing the collections of children from a parent part.
+        /// </summary>
+        private readonly HashSet<IGraphNode> registeredChildParts = new HashSet<IGraphNode>();
 
         protected AssetCompositeHierarchyPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
             : base(container, assetItem, logger)
@@ -39,7 +43,7 @@ namespace SiliconStudio.Assets.Quantum
             rootPartsNode.ItemChanged += RootPartsChanged;
             foreach (var childPartNode in Asset.Hierarchy.Parts.SelectMany(x => RetrieveChildPartNodes(x.Part)))
             {
-                childPartNode.RegisterChanged(ChildPartChanged);
+                RegisterChildPartNode(childPartNode);
             }
             var partsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<IAssetPartDesign<IIdentifiable>, IIdentifiable>.Parts)].Target;
             partsNode.ItemChanged += PartsChanged;
@@ -73,13 +77,18 @@ namespace SiliconStudio.Assets.Quantum
             base.Dispose();
             var rootPartsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootPartIds)].Target;
             rootPartsNode.ItemChanged -= RootPartsChanged;
-            foreach (var childPartNode in Asset.Hierarchy.Parts.SelectMany(x => RetrieveChildPartNodes(x.Part)))
-            {
-                childPartNode.UnregisterChanged(ChildPartChanged);
-            }
+            registeredChildParts.ToList().ForEach(UnregisterChildPartNode);
             var partsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<IAssetPartDesign<IIdentifiable>, IIdentifiable>.Parts)].Target;
             partsNode.ItemChanged -= PartsChanged;
+
+            foreach (var basePartAsset in basePartAssets.Keys)
+            {
+                basePartAsset.PartAdded -= PartAddedInBaseAsset;
+                basePartAsset.PartRemoved -= PartRemovedInBaseAsset;
+            }
+            basePartAssets.Clear();
         }
+
         /// <inheritdoc/>
         public override void ClearReferencesToObjects(IEnumerable<Guid> objectIds)
         {
@@ -516,7 +525,7 @@ namespace SiliconStudio.Assets.Quantum
 
         protected override void OnItemChanged(ItemChangeEventArgs args)
         {
-            RelinkToOwnerPart((IAssetNode)args.Node, args.NewValue);
+            RelinkToOwnerPart((IAssetNode)args.Collection, args.NewValue);
             base.OnItemChanged(args);
         }
 
@@ -548,8 +557,9 @@ namespace SiliconStudio.Assets.Quantum
             basePartAssets.Clear();
             instancesCommonAncestors.Clear();
 
-            // We want to enumerate parts that are actually "reachable", so we don't use Hierarchy.Parts but we iterate from the root parts instead
-            var currentParts = Asset.Hierarchy.RootPartIds.Select(x => Asset.Hierarchy.Parts[x]).DepthFirst(x => Asset.EnumerateChildPartDesigns(x, Asset.Hierarchy, false));
+            // We want to enumerate parts that are actually "reachable", so we don't use Hierarchy.Parts for iteration - we iterate from the root parts instead.
+            // We use Hierarchy.Parts at the end just to retrieve the part design from the actual part.
+            var currentParts = Asset.Hierarchy.RootPartIds.Select(x => Asset.Hierarchy.Parts[x].Part).DepthFirst(x => Asset.EnumerateChildParts(x, false)).Select(x => Asset.Hierarchy.Parts[x.Id]);
             foreach (var part in currentParts.Where(x => x.Base != null))
             {
                 var baseAssetGraph = Container.GetGraph(part.Base.BasePartAsset.Id) as AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>;
@@ -757,7 +767,7 @@ namespace SiliconStudio.Assets.Quantum
                     part = ((TAssetPartDesign)e.NewValue).Part;
                     foreach (var childPartNode in RetrieveChildPartNodes(part))
                     {
-                        childPartNode.RegisterChanged(ChildPartChanged);
+                        RegisterChildPartNode(childPartNode);
                     }
                     break;
                 case ContentChangeType.CollectionRemove:
@@ -765,9 +775,43 @@ namespace SiliconStudio.Assets.Quantum
                     part = ((TAssetPartDesign)e.OldValue).Part;
                     foreach (var childPartNode in RetrieveChildPartNodes(part))
                     {
-                        childPartNode.UnregisterChanged(ChildPartChanged);
+                        UnregisterChildPartNode(childPartNode);
                     }
                     break;
+            }
+        }
+
+        private void RegisterChildPartNode(IGraphNode node)
+        {
+            if (registeredChildParts.Add(node))
+            {
+                var memberNode = node as IMemberNode;
+                if (memberNode != null)
+                {
+                    memberNode.ValueChanged += ChildPartChanged;
+                }
+                var objectNode = node as IObjectNode;
+                if (objectNode != null)
+                {
+                    objectNode.ItemChanged += ChildPartChanged;
+                }
+            }
+        }
+
+        private void UnregisterChildPartNode(IGraphNode node)
+        {
+            if (registeredChildParts.Remove(node))
+            {
+                var memberNode = node as IMemberNode;
+                if (memberNode != null)
+                {
+                    memberNode.ValueChanged -= ChildPartChanged;
+                }
+                var objectNode = node as IObjectNode;
+                if (objectNode != null)
+                {
+                    objectNode.ItemChanged -= ChildPartChanged;
+                }
             }
         }
     }

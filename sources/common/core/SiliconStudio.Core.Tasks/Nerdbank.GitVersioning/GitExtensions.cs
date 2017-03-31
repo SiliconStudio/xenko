@@ -285,7 +285,8 @@ namespace Nerdbank.GitVersioning
         /// <exception cref="ArgumentException">Thrown if the provided path does not lead to an existing directory.</exception>
         public static void HelpFindLibGit2NativeBinaries(string basePath)
         {
-            if (!TryHelpFindLibGit2NativeBinaries(basePath, out string attemptedDirectory))
+            string attemptedDirectory;
+            if (!TryHelpFindLibGit2NativeBinaries(basePath, out attemptedDirectory))
             {
                 throw new ArgumentException($"Unable to find native binaries under directory: \"{attemptedDirectory}\".");
             }
@@ -298,7 +299,8 @@ namespace Nerdbank.GitVersioning
         /// <returns><c>true</c> if the libgit2 native binaries have been found; <c>false</c> otherwise.</returns>
         public static bool TryHelpFindLibGit2NativeBinaries(string basePath)
         {
-            return TryHelpFindLibGit2NativeBinaries(basePath, out string attemptedDirectory);
+            string attemptedDirectory;
+            return TryHelpFindLibGit2NativeBinaries(basePath, out attemptedDirectory);
         }
 
         /// <summary>
