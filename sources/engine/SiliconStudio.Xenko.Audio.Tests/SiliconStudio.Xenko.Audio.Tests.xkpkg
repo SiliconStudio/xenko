@@ -1,7 +1,6 @@
 !Package
 Id: 637e7e88-bc09-4ddd-95eb-00114fd32e5e
-SerializedVersion: {Assets: 0.0.3}
-Tags: []
+SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: SiliconStudio.Xenko.Audio.Tests
     Version: 1.0.0.0
@@ -9,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.6.0-beta
+            Version: 1.11.1.2
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -19,7 +18,6 @@ Profiles:
         AssetFolders:
             -   Path: AudioAssets
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 7af4b563-aad3-42ff-b91e-84b9d34d904a
                 Location: SiliconStudio.Xenko.Audio.Tests.Windows.csproj
@@ -29,7 +27,6 @@ Profiles:
         InheritProfiles: []
         AssetFolders: []
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 7af4b563-aad3-42ff-b91e-84b9d34d904a
                 Location: SiliconStudio.Xenko.Audio.Tests.Windows.csproj
@@ -39,7 +36,6 @@ Profiles:
         InheritProfiles: []
         AssetFolders: []
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 7af4b563-aad3-42ff-b91e-84b9d34d904a
                 Location: SiliconStudio.Xenko.Audio.Tests.Android.csproj
@@ -49,7 +45,6 @@ Profiles:
         InheritProfiles: []
         AssetFolders: []
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 7af4b563-aad3-42ff-b91e-84b9d34d904a
                 Location: SiliconStudio.Xenko.Audio.Tests.iOS.csproj

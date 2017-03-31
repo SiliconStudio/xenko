@@ -25,33 +25,4 @@ Settings:
     Package/Scene/TransformationGizmoSize: 1.0
     Package/Scene/TranslationSnapActive: false
     Package/Scene/TranslationSnapValue: 1.0
-    Package/SceneSettings:
-        629b95b0-5c22-4f4f-805e-3ad9543be1ff:
-            CamPosition: {X: 4.0, Y: 4.0, Z: 4.0}
-            CamPitchYaw: {X: -0.5235988, Y: 0.7853982}
-            CamProjection: Perspective
-            CamVerticalFieldOfView: 45.0
-            CamOrthographicSize: 10.0
-            CamNearClipPlane: 0.1
-            CamFarClipPlane: 1000.0
-            CamAspectRatio: 1.77777779
-            TranslationSnapActive: false
-            TranslationSnapValue: 1.0
-            RotationSnapActive: false
-            RotationSnapValue: 22.5
-            ScaleSnapActive: false
-            ScaleSnapValue: 1.1
-            SceneUnit: 1.0
-            SelectionMaskVisible: true
-            GridVisible: true
-            GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-            CameraPreviewVisible: true
-            RenderMode: Lighting
-            ActiveStream: 
-            TransformationGizmoSize: 1.0
-            ComponentGizmoSize: 1.0
-            FixedSizeGizmos: false
-            HiddenGizmos:
-                - Transform
-            NavigationVisible: false
-            NavigationWireframes: false
+    Package/SceneSettings: {}

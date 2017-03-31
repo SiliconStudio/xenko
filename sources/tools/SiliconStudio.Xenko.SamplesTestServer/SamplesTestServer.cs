@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
         private SocketMessageLayer currentTester;
         private readonly object loggerLock = new object();
 
-        public SamplesTestServer() : base($"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe")
+        public SamplesTestServer() : base($"/service/{XenkoVersion.NuGetVersion}/SiliconStudio.Xenko.SamplesTestServer.exe")
         {
             GameTestingSystem.Initialized = true;
 

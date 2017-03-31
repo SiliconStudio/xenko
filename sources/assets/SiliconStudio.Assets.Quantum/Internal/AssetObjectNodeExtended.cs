@@ -310,7 +310,7 @@ namespace SiliconStudio.Assets.Quantum.Internal
                 return;
 
             // Make sure that we have item ids everywhere we're supposed to.
-            AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Node.Retrieve());
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Collection.Retrieve());
 
             // Clear the cached item identifier collection.
             collectionItemIdentifiers = null;
@@ -352,12 +352,12 @@ namespace SiliconStudio.Assets.Quantum.Internal
                         var collectionDescriptor = node.Descriptor as CollectionDescriptor;
                         if (collectionDescriptor != null)
                         {
-                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Node.Retrieve());
+                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Collection.Retrieve());
                             removedId = itemIds.DeleteAndShift(e.Index.Int, isOverriding);
                         }
                         else
                         {
-                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Node.Retrieve());
+                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Collection.Retrieve());
                             removedId = itemIds.Delete(e.Index.Value, isOverriding);
                         }
                     }
