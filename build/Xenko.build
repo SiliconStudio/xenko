@@ -210,7 +210,7 @@ Example of use:
   <Target Name="BuildWindows10" DependsOnTargets="BuildUWP" />
 
   <Target Name="BuildUWP" DependsOnTargets="CopyXenkoKey">
-    <Exec Command='"$(NuGetPath)" restore "$(MSBuildThisDirectory)project.json"' />
+    <Exec Command='"$(NuGetPath)" restore "$(MSBuildThisFileDirectory)project.json"' />
     <MSBuild Targets="Build" Projects="$(XenkoSolution).UWP.sln" Properties="$(BuildProperties);Platform=UWP"/>
   </Target>
   
