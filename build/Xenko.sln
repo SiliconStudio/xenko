@@ -30,6 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Private", "00-Ta
 		..\sources\targets\Xenko.PostSettings.targets = ..\sources\targets\Xenko.PostSettings.targets
 		..\sources\targets\Xenko.PostSettings.User.targets = ..\sources\targets\Xenko.PostSettings.User.targets
 		..\sources\targets\Xenko.PreSettings.targets = ..\sources\targets\Xenko.PreSettings.targets
+		..\sources\targets\Xenko.PreSettings.UnitTests.targets = ..\sources\targets\Xenko.PreSettings.UnitTests.targets
 		..\sources\targets\Xenko.PreSettings.User.targets = ..\sources\targets\Xenko.PreSettings.User.targets
 		..\sources\targets\Xenko.UnitTests.DisableBuild.targets = ..\sources\targets\Xenko.UnitTests.DisableBuild.targets
 		..\sources\targets\Xenko.UnitTests.targets = ..\sources\targets\Xenko.UnitTests.targets
