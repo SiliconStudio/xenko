@@ -224,7 +224,8 @@ namespace SiliconStudio.Assets.Quantum
             if (visitRoot != null)
             {
                 var visitor = new AssetGraphVisitorBase(this);
-                visitor.Visiting += (node, path) => nodesToReset.Add(node, Index.Empty);
+                // If we're in scenario where rootNode is an object node and index is not empty, we might already have the node in the dictionary so let's check this in Visiting
+                visitor.Visiting += (node, path) => { if (!nodesToReset.ContainsKey(node)) nodesToReset.Add(node, Index.Empty); };
                 visitor.Visit(rootNode);
             }
             // Then we reconcile (recursively) with the base.
