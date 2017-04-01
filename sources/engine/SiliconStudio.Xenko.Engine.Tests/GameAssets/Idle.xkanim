@@ -1,8 +1,8 @@
 !Animation
-Id: 08b936e5-d0eb-4f02-9304-b8b7819086fe
+Id: 332697a8-4758-43bf-ad87-a9de0f5c5789
 SerializedVersion: {Xenko: 1.10.0-alpha01}
 Tags: []
-Source: ../../../data/tests/knight/scenes/he00_normal_idle.fbx
+Source: ../../../data/tests/knight/scenes/Idle.fbx
 ClipDuration:
     Enabled: false
     StartAnimationTime: 0:00:00:00.0000000
@@ -10,10 +10,10 @@ ClipDuration:
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 RepeatMode: LoopInfinite
 Type: !StandardAnimationAssetType {}
-Skeleton: 167cca61-5761-4cc3-b27b-f080a31e4f43:knight Skeleton
+Skeleton: eed299b6-ee92-4a0c-9dc9-ec478f235c9c:mannequinModel Skeleton
 RootMotion: false
-PreviewModel: null
+PreviewModel: 10df5408-fbd1-4177-b0c2-e0190d6311a3:mannequinModel
 AnimationTimeMinimum: 0:00:00:00.0000000
 ~SourceHashes:
-    32d5ecd506202be188e2aac9492a0f01~../../../data/tests/knight/scenes/he00_normal_idle.fbx: cf5cb183b938267366754c64698d7878
+    8e8c1004e5c13167722a1f8bdd0010ea~../../../data/tests/knight/scenes/Idle.fbx: 425da9e0d3fa578a8427ead97d6200b6
 AnimationTimeMaximum: 0:00:00:02.6330000

@@ -77,9 +77,10 @@ namespace SiliconStudio.Assets.Compiler
                 if (mainCompiler == null) return;
 
                 cachedResult = mainCompiler.Prepare(context, assetItem);
+				cachedResult.CopyTo(finalResult);
                 if (cachedResult.HasErrors)
                 {
-                    finalResult.Error($"Failed to compile preview for asset {assetItem.Location}");
+                    finalResult.Error($"Failed to prepare asset {assetItem.Location}");
                     return;
                 }
                 resultsCache.Add(assetItem.Id, cachedResult);
