@@ -42,6 +42,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override void Dispose()
         {
+            base.Dispose();
             Member.ValueChanging -= OnMemberChanging;
             Member.ValueChanged -= OnMemberChanged;
             if (Member.Target != null)

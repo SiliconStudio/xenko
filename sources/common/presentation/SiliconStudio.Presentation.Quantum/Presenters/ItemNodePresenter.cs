@@ -33,6 +33,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override void Dispose()
         {
+            base.Dispose();
             Container.ItemChanging -= OnItemChanging;
             Container.ItemChanged -= OnItemChanged;
         }
