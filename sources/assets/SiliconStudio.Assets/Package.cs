@@ -482,21 +482,6 @@ namespace SiliconStudio.Assets
             if (asset == null) throw new ArgumentNullException(nameof(asset));
             AssetDirtyChanged?.Invoke(asset, oldValue, newValue);
         }
-
-        /// <summary>
-        /// Saves this package and all dirty assets. See remarks.
-        /// </summary>
-        /// <param name="saveAllAssets">if set to <c>true</c> [save all assets].</param>
-        /// <returns>LoggerResult.</returns>
-        /// <remarks>When calling this method directly, it does not handle moving assets between packages. 
-        /// Call <see cref="PackageSession.Save"/> instead.
-        /// </remarks>
-        public LoggerResult Save(PackageSaveParameters saveParameters = null)
-        {
-            var result = new LoggerResult();
-            Save(result, saveParameters);
-            return result;
-        }
         
         /// <summary>
         /// Saves this package and all dirty assets. See remarks.
