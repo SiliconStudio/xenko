@@ -3,9 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.ServiceModel;
-using EnvDTE80;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.VisualStudio.Commands;
