@@ -1210,7 +1210,7 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                     var vertexAttribMask = 1U << vertexAttrib.AttributeIndex;
-                    if (vertexBuffer == null)
+                    if (vertexBuffer == null || vertexBufferView.Stride == 0)
                     {
                         // No VB bound, turn off this attribute
                         if ((enabledVertexAttribArrays & vertexAttribMask) != 0)

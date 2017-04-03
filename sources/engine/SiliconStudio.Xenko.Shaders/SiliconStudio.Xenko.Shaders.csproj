@@ -50,6 +50,7 @@
     <Compile Include="ParameterKeyHashSerializer.cs" />
     <Compile Include="EffectConstantBufferDescription.cs" />
     <Compile Include="ShaderInputBytecode.cs" />
+    <Compile Include="ShaderInputParameterDescription.cs" />
     <Compile Include="ShaderLevelBytecode.cs" />
     <Compile Include="ShaderMixinDiscardException.cs" />
     <Compile Include="ShaderMixinGeneratorSource.cs" />

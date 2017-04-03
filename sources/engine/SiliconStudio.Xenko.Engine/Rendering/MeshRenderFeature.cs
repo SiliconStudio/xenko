@@ -2,13 +2,18 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Data;
+using SiliconStudio.Xenko.Shaders;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -27,6 +32,9 @@ namespace SiliconStudio.Xenko.Rendering
 
         private readonly ThreadLocal<DescriptorSet[]> descriptorSets = new ThreadLocal<DescriptorSet[]>();
 
+        // stream absence compensation buffer
+        private Buffer zeroBuffer;
+
         /// <inheritdoc/>
         public override Type SupportedRenderObjectType => typeof(RenderMesh);
 
@@ -41,6 +49,18 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 renderFeature.AttachRootRenderFeature(this);
                 renderFeature.Initialize(Context);
+            }
+
+            // initialize the global stream-compensatory buffer
+            var bufferDataSource = new byte[PixelFormat.R32G32B32A32_Float.SizeInBytes()];
+            var white = new float[4];
+            for (int i = 0; i < 4; ++i)
+                white[i] = 1.0f;
+            System.Buffer.BlockCopy(white, 0, bufferDataSource, 0, 16);
+            unsafe
+            {
+                fixed (byte* zeroBufferFloatPointer = bufferDataSource)
+                    zeroBuffer = Buffer.Vertex.New(Context.GraphicsDevice, new DataPointer(zeroBufferFloatPointer, bufferDataSource.Length));
             }
         }
 
@@ -112,7 +132,7 @@ namespace SiliconStudio.Xenko.Rendering
             var renderMesh = (RenderMesh)renderObject;
             var drawData = renderMesh.ActiveMeshDraw;
 
-            pipelineState.InputElements = drawData.VertexBuffers.CreateInputElements();
+            pipelineState.InputElements = PrepareInputElements(pipelineState, drawData);
             pipelineState.PrimitiveType = drawData.PrimitiveType;
 
             // Prepare each sub render feature
@@ -149,6 +169,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
             
             MeshDraw currentDrawData = null;
+            int zeroBufferLastSlot = -1;
             for (int index = startIndex; index < endIndex; index++)
             {
                 var renderNodeReference = renderViewStage.SortedRenderNodes[index].RenderNode;
@@ -170,6 +191,14 @@ namespace SiliconStudio.Xenko.Rendering
                     {
                         var vertexBuffer = drawData.VertexBuffers[i];
                         commandList.SetVertexBuffer(i, vertexBuffer.Buffer, vertexBuffer.Offset, vertexBuffer.Stride);
+                    }
+                    // Here we bind a safety stream made up of one element, to accomodate for effects
+                    // which input's layouts requires a stream that wasn't present in the mesh's original buffer.
+                    if (zeroBufferLastSlot != drawData.VertexBuffers.Length)
+                    {
+                        // use a 0 stride to be able to cover any draw size, but with just a buffer of size 1.
+                        commandList.SetVertexBuffer(drawData.VertexBuffers.Length, zeroBuffer, 0, 0);
+                        zeroBufferLastSlot = drawData.VertexBuffers.Length;
                     }
                     if (drawData.IndexBuffer != null)
                         commandList.SetIndexBuffer(drawData.IndexBuffer.Buffer, drawData.IndexBuffer.Offset, drawData.IndexBuffer.Is32Bit);
@@ -229,6 +258,51 @@ namespace SiliconStudio.Xenko.Rendering
                     renderFeature.Dispose();
                     break;
             }
+        }
+
+        private InputElementDescription[] PrepareInputElements(PipelineStateDescription pipelineState, MeshDraw drawData)
+        {
+            // access the input layout excpected by the shader
+            var layout = pipelineState.EffectBytecode.Reflection.InputParameterDescription;
+
+            // prepare available elements from the present streams
+            var availableInputElements = drawData.VertexBuffers.CreateInputElements(); // TODO: defend against systematic recreation? **
+
+            // the number of elements is going to be the count of elements expected by the input layout
+            var elements = new InputElementDescription[layout.Count];  // TODO ** (here too)
+
+            for (int i = 0; i < layout.Count; ++i)
+            {
+                var requiredInput = layout[i];
+                int elementIndex = FindElementBySemantic(requiredInput.SemanticName, requiredInput.SemanticIndex, availableInputElements);
+                if (elementIndex != -1)
+                    elements[i] = availableInputElements[elementIndex];
+                else
+                {
+                    // return a default element
+                    elements[i] = new InputElementDescription
+                    {
+                        AlignedByteOffset = 0,
+                        Format = PixelFormat.R32G32B32A32_Float,
+                        InputSlot = drawData.VertexBuffers.Length,
+                        InputSlotClass = InputClassification.Vertex,
+                        InstanceDataStepRate = 0,
+                        SemanticIndex = requiredInput.SemanticIndex,
+                        SemanticName = requiredInput.SemanticName
+                    };
+                }
+            }
+            return elements;
+            //return elements.Where(ied => ied.InputSlot == 0).ToArray();
+        }
+
+        private int FindElementBySemantic(string requiredInputSemanticName, int requiredSemanticIndex, InputElementDescription[] availableInputElements)
+        {
+            int foundDescIndex = -1;
+            for (int i = 0; i < availableInputElements.Length; ++i)
+                if (requiredInputSemanticName == availableInputElements[i].SemanticName && requiredSemanticIndex == availableInputElements[i].SemanticIndex)
+                    foundDescIndex = i;
+            return foundDescIndex;
         }
     }
 }
