@@ -687,7 +687,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             for (int index = 0; index < renderOutputValidator.RenderTargets.Count; index++)
             {
-                if (renderOutputValidator.RenderTargets[index].Semantic is ColorTargetSemantic)
+                if (renderOutputValidator.RenderTargets[index].Semantic is ColorTargetSemantic && PostEffects == null)
                 {
                     currentRenderTargets[index] = currentRenderTarget;
                 }
