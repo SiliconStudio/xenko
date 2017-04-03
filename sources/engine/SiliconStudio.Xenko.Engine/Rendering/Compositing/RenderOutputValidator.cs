@@ -15,16 +15,24 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     /// </summary>
     public sealed class RenderOutputValidator
     {
-        private readonly FastList<RenderTargetDescription> descriptions = new FastList<RenderTargetDescription>();
+        private readonly FastList<RenderTargetDescription> renderTargets = new FastList<RenderTargetDescription>();
+        private readonly RenderStage renderStage;
 
         private int validatedTargetCount;
         private bool hasChanged;
+        private MSAALevel multiSampleLevel;
+        private PixelFormat depthStencilFormat;
 
-        public IReadOnlyList<RenderTargetDescription> RenderTargets => descriptions;
+        public IReadOnlyList<RenderTargetDescription> RenderTargets => renderTargets;
 
-        public ShaderSourceCollection ShaderSources { get; private set; }
+        public ShaderMixinSource ShaderSource { get; private set; }
 
         //public RenderOutputDescription Output { get; private set; }
+
+        internal RenderOutputValidator(RenderStage renderStage)
+        {
+            this.renderStage = renderStage;
+        }
 
         public void Add<T>(PixelFormat format, bool isShaderResource = true)
             where T : IRenderTargetSemantic, new()
@@ -36,46 +44,93 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             };
 
             int index = validatedTargetCount++;
-            if (index < descriptions.Count)
+            if (index < renderTargets.Count)
             {
-                if (descriptions[index] != description)
+                if (renderTargets[index] != description)
                     hasChanged = true;
 
-                descriptions[index] = description;
+                renderTargets[index] = description;
             }
             else
             {
-                descriptions.Add(description);
+                renderTargets.Add(description);
                 hasChanged = true;
             }
         }
 
-        public void BeginValidation()
+        public void BeginCustomValidation(PixelFormat depthStencilFormat, MSAALevel multiSampleLevel = MSAALevel.None)
         {
             validatedTargetCount = 0;
             hasChanged = false;
+
+            if (this.depthStencilFormat != depthStencilFormat)
+            {
+                hasChanged = true;
+                this.depthStencilFormat = depthStencilFormat;
+            }
+            if (this.multiSampleLevel != multiSampleLevel)
+            {
+                hasChanged = true;
+                this.multiSampleLevel = multiSampleLevel;
+            }
         }
 
-        public void EndValidation()
+        public unsafe void EndCustomValidation()
         {
-            if (validatedTargetCount < descriptions.Count || hasChanged)
+            if (validatedTargetCount < renderTargets.Count || hasChanged)
             {
-                descriptions.Resize(validatedTargetCount, false);
+                renderTargets.Resize(validatedTargetCount, false);
 
                 // Recalculate shader sources
-                ShaderSources = new ShaderSourceCollection();
-                foreach (var description in descriptions)
+                ShaderSource = new ShaderMixinSource();
+                ShaderSource.Macros.Add(new ShaderMacro("SILICON_STUDIO_RENDER_TARGET_COUNT", renderTargets.Count));
+                for (var index = 0; index < renderTargets.Count; index++)
                 {
-                    ShaderSources.Add(new ShaderClassSource(description.Semantic.ShaderClass));
+                    var renderTarget = renderTargets[index];
+                    if (index > 0)
+                        ShaderSource.Compositions.Add($"ShadingColor{index}", renderTarget.Semantic.ShaderClass);
+                }
+
+                ShaderSource.Macros.Add(new ShaderMacro("SILICON_STUDIO_MULTISAMPLE_COUNT", (int)multiSampleLevel));
+            }
+
+            renderStage.Output.RenderTargetCount = renderTargets.Count;
+            renderStage.Output.MultiSampleLevel = multiSampleLevel;
+            renderStage.Output.DepthStencilFormat = depthStencilFormat;
+
+            fixed (PixelFormat* formats = &renderStage.Output.RenderTargetFormat0)
+            {
+                for (int i = 0; i < renderTargets.Count; ++i)
+                {
+                    formats[i] = renderTargets[i].Format;
                 }
             }
         }
 
+        public void Validate(ref RenderOutputDescription renderOutput)
+        {
+            hasChanged = false;
+            if (multiSampleLevel != renderOutput.MultiSampleLevel)
+            {
+                hasChanged = true;
+                multiSampleLevel = renderOutput.MultiSampleLevel;
+            }
+
+            if (hasChanged)
+            {
+                // Recalculate shader sources
+                ShaderSource = new ShaderMixinSource();
+                ShaderSource.Macros.Add(new ShaderMacro("SILICON_STUDIO_MULTISAMPLE_COUNT", (int)multiSampleLevel));
+            }
+
+            renderStage.Output = renderOutput;
+        }
+
         public int Find(Type semanticType)
         {
-            for (int index = 0; index < descriptions.Count; index++)
+            for (int index = 0; index < renderTargets.Count; index++)
             {
-                if (descriptions[index].Semantic.GetType() == semanticType)
+                if (renderTargets[index].Semantic.GetType() == semanticType)
                     return index;
             }
 

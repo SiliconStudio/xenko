@@ -26,7 +26,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         private MSAALevel actualMSAALevel = MSAALevel.None;
         private VRDeviceSystem vrSystem;
 
-        private readonly RenderOutputValidator renderOutputValidator = new RenderOutputValidator();
         private readonly FastList<Texture> currentRenderTargets = new FastList<Texture>();
         private readonly FastList<Texture> currentRenderTargetsMSAA = new FastList<Texture>();
 
@@ -172,17 +171,14 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         {
             if (OpaqueRenderStage != null)
             {
-                renderOutputValidator.BeginValidation();
-                ValidateOpaqueStageOutput(context);
-                renderOutputValidator.EndValidation();
-
-                OpaqueRenderStage.Output = context.RenderOutput;
-                OpaqueRenderStage.OutputValidator = renderOutputValidator;
+                OpaqueRenderStage.OutputValidator.BeginCustomValidation(context.RenderOutput.DepthStencilFormat, context.RenderOutput.MultiSampleLevel);
+                ValidateOpaqueStageOutput(OpaqueRenderStage.OutputValidator, context);
+                OpaqueRenderStage.OutputValidator.EndCustomValidation();
             }
 
             if (TransparentRenderStage != null)
             {
-                TransparentRenderStage.Output = context.RenderOutput;
+                TransparentRenderStage.OutputValidator.Validate(ref context.RenderOutput);
             }
 
             if (GBufferRenderStage != null && LightProbes)
@@ -191,9 +187,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             }
         }
 
-        protected virtual void ValidateOpaqueStageOutput(RenderContext context)
+        protected virtual void ValidateOpaqueStageOutput(RenderOutputValidator renderOutputValidator, RenderContext renderContext)
         {
-            renderOutputValidator.Add<ColorTargetSemantic>(context.RenderOutput.RenderTargetFormat0);
+            renderOutputValidator.Add<ColorTargetSemantic>(renderContext.RenderOutput.RenderTargetFormat0);
 
             if (PostEffects != null)
             {
@@ -247,7 +243,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 // Mark this view as requiring shadows
                 shadowMapRenderer?.RenderViewsWithShadows.Add(context.RenderView);
 
-                context.RenderOutput = new RenderOutputDescription(PostEffects != null ? PixelFormat.R16G16B16A16_Float : context.RenderOutput.RenderTargetFormat0, DepthBufferFormat);
+                context.RenderOutput = new RenderOutputDescription(PostEffects != null ? PixelFormat.R16G16B16A16_Float : context.RenderOutput.RenderTargetFormat0, DepthBufferFormat, MSAALevel);
 
                 CollectStages(context);
 
@@ -496,7 +492,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     }
                 }
 
-                var colorTargetIndex = renderOutputValidator.Find(typeof(ColorTargetSemantic));
+                var colorTargetIndex = OpaqueRenderStage?.OutputValidator.Find(typeof(ColorTargetSemantic)) ?? -1;
                 if (colorTargetIndex == -1)
                     return;
 
@@ -523,7 +519,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     LightShafts?.Draw(drawContext, depthStencil, ViewOutputTarget);
 
                     // Run post effects
-                    PostEffects.Draw(drawContext, renderOutputValidator, renderTargets.Items, depthStencil, ViewOutputTarget);
+                    // Note: OpaqueRenderStage can't be null otherwise colorTargetIndex would be -1
+                    PostEffects.Draw(drawContext, OpaqueRenderStage.OutputValidator, renderTargets.Items, depthStencil, ViewOutputTarget);
                 }
                 else
                 {
@@ -573,7 +570,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         using (drawContext.PushRenderTargetsAndRestore())
                         {
                             drawContext.CommandList.SetViewport(new Viewport(0.0f, 0.0f, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2.0f, VRSettings.VRDevice.ActualRenderFrameSize.Height));
-                            drawContext.CommandList.SetRenderTargets(ViewDepthStencil, renderOutputValidator.RenderTargets.Count, currentRenderTargets.Items);
+                            drawContext.CommandList.SetRenderTargets(ViewDepthStencil, currentRenderTargets.Count, currentRenderTargets.Items);
 
                             ViewCount = 2;
 
@@ -627,7 +624,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
-                        drawContext.CommandList.SetRenderTargetsAndViewport(ViewDepthStencil, renderOutputValidator.RenderTargets.Count, currentRenderTargets.Items);
+                        drawContext.CommandList.SetRenderTargetsAndViewport(ViewDepthStencil, currentRenderTargets.Count, currentRenderTargets.Items);
 
                         // Clear render target and depth stencil
                         Clear?.Draw(drawContext);
@@ -683,17 +680,22 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         private void PrepareRenderTargets(RenderDrawContext drawContext, Texture currentRenderTarget)
         {
-            currentRenderTargets.Resize(renderOutputValidator.RenderTargets.Count, false);
+            if (OpaqueRenderStage == null)
+                return;
 
-            for (int index = 0; index < renderOutputValidator.RenderTargets.Count; index++)
+            var renderTargets = OpaqueRenderStage.OutputValidator.RenderTargets;
+
+            currentRenderTargets.Resize(renderTargets.Count, false);
+
+            for (int index = 0; index < renderTargets.Count; index++)
             {
-                if (renderOutputValidator.RenderTargets[index].Semantic is ColorTargetSemantic && PostEffects == null)
+                if (renderTargets[index].Semantic is ColorTargetSemantic && PostEffects == null)
                 {
                     currentRenderTargets[index] = currentRenderTarget;
                 }
                 else
                 { 
-                    var description = renderOutputValidator.RenderTargets[index];
+                    var description = renderTargets[index];
                     var textureDescription = TextureDescription.New2D(currentRenderTarget.Width, currentRenderTarget.Height, 1, description.Format, TextureFlags.RenderTarget | TextureFlags.ShaderResource, 1, GraphicsResourceUsage.Default, actualMSAALevel);
                     currentRenderTargets[index] = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(textureDescription));
                 }
