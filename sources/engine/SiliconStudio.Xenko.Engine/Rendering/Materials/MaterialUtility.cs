@@ -156,7 +156,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <param name="key">Input scalar.</param>
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
-        public static void ClampFloat4([NotNull] this IComputeColor key, Vector4 min, Vector4 max)
+        public static void ClampFloat4([NotNull] this IComputeColor key, ref Vector4 min, ref Vector4 max)
         {
             var asFloat4 = key as ComputeColors.ComputeFloat4;
             if (asFloat4 != null)

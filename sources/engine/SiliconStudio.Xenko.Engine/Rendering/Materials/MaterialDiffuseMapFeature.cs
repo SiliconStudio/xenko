@@ -53,7 +53,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         {
             if (DiffuseMap != null)
             {
-                DiffuseMap.ClampFloat4(Vector4.Zero, Vector4.One);
+                Vector4 diffuseMin = Vector4.Zero;
+                Vector4 diffuseMax = Vector4.One;
+                DiffuseMap.ClampFloat4(ref diffuseMin, ref diffuseMax);
 
                 var computeColorSource = DiffuseMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.DiffuseMap, MaterialKeys.DiffuseValue, Color.White));
                 var mixin = new ShaderMixinSource();

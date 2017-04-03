@@ -78,7 +78,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public override void VisitFeature(MaterialGeneratorContext context)
         {
-            EmissiveMap.ClampFloat4(Vector4.Zero, new Vector4(float.MaxValue));
+            Vector4 emissiveMin = Vector4.Zero;
+            Vector4 emissiveMax = new Vector4(float.MaxValue);
+            EmissiveMap.ClampFloat4(ref emissiveMin, ref emissiveMax);
             Intensity.ClampFloat(0, float.MaxValue);
 
             context.SetStream(EmissiveStream.Stream, EmissiveMap, MaterialKeys.EmissiveMap, MaterialKeys.EmissiveValue);
