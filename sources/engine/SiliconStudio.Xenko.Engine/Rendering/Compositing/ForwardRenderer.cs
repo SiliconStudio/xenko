@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         private IShadowMapRenderer shadowMapRenderer;
         private Texture depthStencilROCached;
-        private MSAALevel actualMSAALevel = MSAALevel.None;
+        private MultisampleCount actualMultisampleCount = MultisampleCount.None;
         private VRDeviceSystem vrSystem;
 
         private readonly FastList<Texture> currentRenderTargets = new FastList<Texture>();
@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// <summary>
         /// The level of multi-sampling
         /// </summary>
-        public MSAALevel MSAALevel { get; set; } = MSAALevel.None;
+        public MultisampleCount MSAALevel { get; set; } = MultisampleCount.None;
 
         /// <summary>
         /// MSAA Resolver is used to resolve multi-sampled render targets into normal render targets
@@ -106,14 +106,14 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             shadowMapRenderer = Context.RenderSystem.RenderFeatures.OfType<MeshRenderFeature>().FirstOrDefault()?.RenderFeatures.OfType<ForwardLightingRenderFeature>().FirstOrDefault()?.ShadowMapRenderer;
 
-            if (MSAALevel != MSAALevel.None)
+            if (MSAALevel != MultisampleCount.None)
             {
-                actualMSAALevel = (MSAALevel)Math.Min((int)MSAALevel, (int)GraphicsDevice.Features[PixelFormat.R16G16B16A16_Float].MSAALevelMax);
-                actualMSAALevel = (MSAALevel)Math.Min((int)actualMSAALevel, (int)GraphicsDevice.Features[DepthBufferFormat].MSAALevelMax);
+                actualMultisampleCount = (MultisampleCount)Math.Min((int)MSAALevel, (int)GraphicsDevice.Features[PixelFormat.R16G16B16A16_Float].MultisampleCountMax);
+                actualMultisampleCount = (MultisampleCount)Math.Min((int)actualMultisampleCount, (int)GraphicsDevice.Features[DepthBufferFormat].MultisampleCountMax);
 
                 // Note: we cannot support MSAA on DX10 now
-                if(GraphicsDevice.Features.HasMSAADepthAsSRV == false)
-                    actualMSAALevel = MSAALevel.None;
+                if(GraphicsDevice.Features.HasMultisampleDepthAsSRV == false)
+                    actualMultisampleCount = MultisampleCount.None;
             }
 
             var camera = Context.GetCurrentCamera();
@@ -145,7 +145,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         {
                             if (overlay != null && overlay.Texture != null)
                             {
-                                overlay.Overlay = VRSettings.VRDevice.CreateOverlay(overlay.Texture.Width, overlay.Texture.Height, overlay.Texture.MipLevels, (int)overlay.Texture.MultiSampleLevel);
+                                overlay.Overlay = VRSettings.VRDevice.CreateOverlay(overlay.Texture.Width, overlay.Texture.Height, overlay.Texture.MipLevels, (int)overlay.Texture.MultisampleCount);
                             }
                         }
                     }
@@ -171,7 +171,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         {
             if (OpaqueRenderStage != null)
             {
-                OpaqueRenderStage.OutputValidator.BeginCustomValidation(context.RenderOutput.DepthStencilFormat, context.RenderOutput.MultiSampleLevel);
+                OpaqueRenderStage.OutputValidator.BeginCustomValidation(context.RenderOutput.DepthStencilFormat, context.RenderOutput.MultisampleCount);
                 ValidateOpaqueStageOutput(OpaqueRenderStage.OutputValidator, context);
                 OpaqueRenderStage.OutputValidator.EndCustomValidation();
             }
@@ -398,7 +398,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         protected virtual void ResolveDepthMSAA(RenderDrawContext drawContext)
         {
-            if (ViewDepthStencil.MultiSampleLevel == MSAALevel.None)
+            if (ViewDepthStencil.MultisampleCount == MultisampleCount.None)
             {
                 ViewDepthStencilNoMSAA = ViewDepthStencil;
                 return;
@@ -410,7 +410,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             ResolveMSAA(drawContext, ViewDepthStencil, ViewDepthStencilNoMSAA, 1);
         }
 
-        protected virtual void ResolveMSAA(RenderDrawContext drawContext, Texture input, Texture output, int maxResolveSamples = (int)MSAALevel.X8)
+        protected virtual void ResolveMSAA(RenderDrawContext drawContext, Texture input, Texture output, int maxResolveSamples = (int)MultisampleCount.X8)
         {
             if (MSAAResolver != null && MSAAResolver.Enabled)
             {
@@ -418,7 +418,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             }
             else
             {
-                drawContext.CommandList.CopyMultiSample(input, 0, output, 0);
+                drawContext.CommandList.CopyMultisample(input, 0, output, 0);
             }
         }
 
@@ -503,7 +503,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     var depthStencil = ViewDepthStencil;
 
                     // Resolve MSAA targets
-                    if (actualMSAALevel != MSAALevel.None)
+                    if (actualMultisampleCount != MultisampleCount.None)
                     {
                         // If lightprobes (which need Z-Prepass) are enabled, depth is already resolved
                         //if (!lightProbes)
@@ -524,7 +524,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 }
                 else
                 {
-                    if (actualMSAALevel != MSAALevel.None)
+                    if (actualMultisampleCount != MultisampleCount.None)
                     {
                         var input = currentRenderTargetsMSAA[colorTargetIndex];
                         if (input != null)
@@ -696,7 +696,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 else
                 { 
                     var description = renderTargets[index];
-                    var textureDescription = TextureDescription.New2D(currentRenderTarget.Width, currentRenderTarget.Height, 1, description.Format, TextureFlags.RenderTarget | TextureFlags.ShaderResource, 1, GraphicsResourceUsage.Default, actualMSAALevel);
+                    var textureDescription = TextureDescription.New2D(currentRenderTarget.Width, currentRenderTarget.Height, 1, description.Format, TextureFlags.RenderTarget | TextureFlags.ShaderResource, 1, GraphicsResourceUsage.Default, actualMultisampleCount);
                     currentRenderTargets[index] = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(textureDescription));
                 }
             }
@@ -726,12 +726,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             PrepareRenderTargets(drawContext, currentRenderTarget);
 
             //MSAA, we definitely need new buffers
-            if (actualMSAALevel != MSAALevel.None)
+            if (actualMultisampleCount != MultisampleCount.None)
             {
                 //Handle Depth
                 ViewDepthStencil = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
                     TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, currentDepthStencil?.ViewFormat ?? PixelFormat.D24_UNorm_S8_UInt,
-                        TextureFlags.ShaderResource | TextureFlags.DepthStencil, 1, GraphicsResourceUsage.Default, actualMSAALevel)));
+                        TextureFlags.ShaderResource | TextureFlags.DepthStencil, 1, GraphicsResourceUsage.Default, actualMultisampleCount)));
             }
             else
             {

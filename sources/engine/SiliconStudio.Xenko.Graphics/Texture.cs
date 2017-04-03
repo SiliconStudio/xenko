@@ -241,11 +241,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <value>The multi sample level.</value>
         /// <remarks>This field is only valid for a 2D <see cref="Texture" />.</remarks>
-        public MSAALevel MultiSampleLevel
+        public MultisampleCount MultisampleCount
         {
             get
             {
-                return textureDescription.MultiSampleLevel;
+                return textureDescription.MultisampleCount;
             }
         }
 
@@ -335,11 +335,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets a value indicating whether this instance is a multi sample texture.
         /// </summary>
         /// <value><c>true</c> if this instance is multi sample texture; otherwise, <c>false</c>.</value>
-        public bool IsMultiSample
+        public bool IsMultisample
         {
             get
             {
-                return this.MultiSampleLevel > MSAALevel.None;
+                return this.MultisampleCount > MultisampleCount.None;
             }
         }
         

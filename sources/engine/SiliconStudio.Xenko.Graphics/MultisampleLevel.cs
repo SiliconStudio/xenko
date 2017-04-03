@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// <summary>
     /// Multisample count level.
     /// </summary>
-    public enum MSAALevel
+    public enum MultisampleCount
     {
         /// <summary>
         /// No multisample.

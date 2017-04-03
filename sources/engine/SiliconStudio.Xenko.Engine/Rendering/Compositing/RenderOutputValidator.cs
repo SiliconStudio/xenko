@@ -1,4 +1,4 @@
-// Copyright(c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright(c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         private int validatedTargetCount;
         private bool hasChanged;
-        private MSAALevel multiSampleLevel;
+        private MultisampleCount multisampleCount;
         private PixelFormat depthStencilFormat;
 
         public IReadOnlyList<RenderTargetDescription> RenderTargets => renderTargets;
@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             }
         }
 
-        public void BeginCustomValidation(PixelFormat depthStencilFormat, MSAALevel multiSampleLevel = MSAALevel.None)
+        public void BeginCustomValidation(PixelFormat depthStencilFormat, MultisampleCount multisampleCount = MultisampleCount.None)
         {
             validatedTargetCount = 0;
             hasChanged = false;
@@ -68,10 +68,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 hasChanged = true;
                 this.depthStencilFormat = depthStencilFormat;
             }
-            if (this.multiSampleLevel != multiSampleLevel)
+            if (this.multisampleCount != multisampleCount)
             {
                 hasChanged = true;
-                this.multiSampleLevel = multiSampleLevel;
+                this.multisampleCount = multisampleCount;
             }
         }
 
@@ -91,11 +91,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         ShaderSource.Compositions.Add($"ShadingColor{index}", renderTarget.Semantic.ShaderClass);
                 }
 
-                ShaderSource.Macros.Add(new ShaderMacro("SILICON_STUDIO_MULTISAMPLE_COUNT", (int)multiSampleLevel));
+                ShaderSource.Macros.Add(new ShaderMacro("SILICON_STUDIO_MULTISAMPLE_COUNT", (int)multisampleCount));
             }
 
             renderStage.Output.RenderTargetCount = renderTargets.Count;
-            renderStage.Output.MultiSampleLevel = multiSampleLevel;
+            renderStage.Output.MultisampleCount = multisampleCount;
             renderStage.Output.DepthStencilFormat = depthStencilFormat;
 
             fixed (PixelFormat* formats = &renderStage.Output.RenderTargetFormat0)
@@ -110,17 +110,17 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         public void Validate(ref RenderOutputDescription renderOutput)
         {
             hasChanged = false;
-            if (multiSampleLevel != renderOutput.MultiSampleLevel)
+            if (multisampleCount != renderOutput.MultisampleCount)
             {
                 hasChanged = true;
-                multiSampleLevel = renderOutput.MultiSampleLevel;
+                multisampleCount = renderOutput.MultisampleCount;
             }
 
             if (hasChanged)
             {
                 // Recalculate shader sources
                 ShaderSource = new ShaderMixinSource();
-                ShaderSource.Macros.Add(new ShaderMacro("SILICON_STUDIO_MULTISAMPLE_COUNT", (int)multiSampleLevel));
+                ShaderSource.Macros.Add(new ShaderMacro("SILICON_STUDIO_MULTISAMPLE_COUNT", (int)multisampleCount));
             }
 
             renderStage.Output = renderOutput;
