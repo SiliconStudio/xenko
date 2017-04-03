@@ -500,7 +500,10 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
                 }
             }
 
-            return TypeDescriptor.GetConverter(Type).ConvertFrom(value);
+            var converter = TypeDescriptor.GetConverter(Type);
+            if (value == null || !converter.CanConvertFrom(value.GetType()))
+                return null;
+            return converter.ConvertFrom(value);
         }
 
         private void AddChild([NotNull] NodeViewModel child) => ChangeAndNotify(() => { child.Parent = this; ((ICollection<NodeViewModel>)initializingChildren ?? children).Add(child); }, $"{GraphViewModel.HasChildPrefix}{child.Name}", child.Name);
