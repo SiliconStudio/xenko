@@ -76,8 +76,6 @@ namespace SiliconStudio.Xenko.Graphics
 
             ProcessPresentationParameters();
 
-            DefaultViewport = new Viewport(0, 0, Description.BackBufferWidth, Description.BackBufferHeight);
-
             // Creates a default DepthStencilBuffer.
             CreateDepthStencilBuffer();
         }
@@ -92,12 +90,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets the description of this presenter.
         /// </summary>
         public PresentationParameters Description { get; private set; }
-
-        /// <summary>
-        /// Default viewport that covers the whole presenter surface.
-        /// </summary>
-        [Obsolete("This is not used anywhere anymore, except being created")]
-        public Viewport DefaultViewport { get; protected set; }
 
         /// <summary>
         /// Gets the default back buffer for this presenter.
@@ -169,8 +161,6 @@ namespace SiliconStudio.Xenko.Graphics
             Description.BackBufferWidth = width;
             Description.BackBufferHeight = height;
             Description.BackBufferFormat = format;
-
-            DefaultViewport = new Viewport(0, 0, Description.BackBufferWidth, Description.BackBufferHeight);
 
             ResizeBackBuffer(width, height, format);
             ResizeDepthStencilBuffer(width, height, format);

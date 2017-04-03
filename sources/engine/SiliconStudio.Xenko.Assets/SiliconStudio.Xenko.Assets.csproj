@@ -363,7 +363,6 @@
     <Compile Include="IGameSettingsProfile.cs" />
     <Compile Include="Materials\ComputeShaderClassHelper.cs" />
     <Compile Include="Materials\MaterialFactories.cs" />
-    <Compile Include="Materials\MaterialNodeClassLoader.cs" />
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
     <Compile Include="Physics\ColliderShapeFactories.cs" />

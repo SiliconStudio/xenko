@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -76,11 +76,6 @@ namespace SiliconStudio.Xenko.Rendering
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public List<PipelineProcessor> PipelineProcessors { get; } = new List<PipelineProcessor>();
-
-        [Obsolete("TODO GFXCOMP: Replaced by PipelineProcessors")]
-        public delegate void ProcessPipelineStateDelegate(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState);
-        [Obsolete("TODO GFXCOMP: Replaced by PipelineProcessors")]
-        public ProcessPipelineStateDelegate PostProcessPipelineState;
 
         public int EffectDescriptorSetSlotCount => effectDescriptorSetSlots.Count;
 
@@ -773,9 +768,6 @@ namespace SiliconStudio.Xenko.Rendering
 
                         // Bind VAO
                         ProcessPipelineState(Context, renderNodeReference, ref renderNode, renderObject, pipelineState);
-
-                        // TODO GFXCOMP: Remove me (obsolete)
-                        PostProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderObject, pipelineState);
 
                         foreach (var pipelineProcessor in PipelineProcessors)
                             pipelineProcessor.Process(renderNodeReference, ref renderNode, renderObject, pipelineState);
