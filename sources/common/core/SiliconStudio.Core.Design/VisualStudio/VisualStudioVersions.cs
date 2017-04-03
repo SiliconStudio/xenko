@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 
 using Microsoft.Win32;
+using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.Setup.Configuration;
 
 namespace SiliconStudio.Core.VisualStudio
 {
@@ -11,25 +13,15 @@ namespace SiliconStudio.Core.VisualStudio
     {
         public static readonly string[] KnownVersions =
         {
-            VisualStudio2012,
-            VisualStudio2013,
             VisualStudio2015,
-            VisualStudio15,
-            VisualCSharpExpress2012,
-            VisualCSharpExpress2013,
-            VisualCSharpExpress2015,
             XamarinStudio
         };
 
         public const string DefaultIDE = "Default IDE";
-        public const string VisualStudio2012 = "Visual Studio 2012";
-        public const string VisualStudio2013 = "Visual Studio 2013";
         public const string VisualStudio2015 = "Visual Studio 2015";
-        public const string VisualStudio15 = "Visual Studio 15";
-        public const string VisualCSharpExpress2012 = "Visual C# Express 2012";
-        public const string VisualCSharpExpress2013 = "Visual C# Express 2013";
-        public const string VisualCSharpExpress2015 = "Visual C# Express 2015";
         public const string XamarinStudio = "Xamarin Studio";
+
+        private const int maximumSlotSize = 255;    // Workaround for the Configuration lack of proper enumeration
 
         public static IEnumerable<string> AvailableVisualStudioVersions
         {
@@ -43,6 +35,19 @@ namespace SiliconStudio.Core.VisualStudio
                     if (GetVisualStudioPath(visualStudioVersion) != null)
                         yield return visualStudioVersion;
                 }
+
+                var configuration = new SetupConfiguration();
+
+                var instances = configuration.EnumAllInstances();
+                instances.Reset();
+                var inst = new ISetupInstance[maximumSlotSize];
+                int pceltFetched;
+                instances.Next(maximumSlotSize, inst, out pceltFetched);
+
+                for (int i = 0; i < pceltFetched; i++)
+                {
+                    yield return inst[i].GetDisplayName();
+                }
             }
         }
 
@@ -50,32 +55,25 @@ namespace SiliconStudio.Core.VisualStudio
         {
             switch (visualStudioVersion)
             {
-                case VisualStudio2012:
-                case VisualCSharpExpress2012:
-                    return ("11.0");
-                case VisualStudio2013:
-                case VisualCSharpExpress2013:
-                    return ("12.0");
                 case VisualStudio2015:
-                case VisualCSharpExpress2015:
                     return ("14.0");
-                case VisualStudio15:
-                    return ("15.0");
                 default:
-                    return null;
-            }
-        }
+                    {
+                        var configuration = new SetupConfiguration();
 
-        public static bool IsExpressVersion(string visualStudioVersion)
-        {
-            switch (visualStudioVersion)
-            {
-                case VisualCSharpExpress2012:
-                case VisualCSharpExpress2013:
-                case VisualCSharpExpress2015:
-                    return true;
-                default:
-                    return false;
+                        var instances = configuration.EnumAllInstances();
+                        instances.Reset();
+                        var inst = new ISetupInstance[maximumSlotSize];
+                        int pceltFetched;
+                        instances.Next(maximumSlotSize, inst, out pceltFetched);
+
+                        for (int i = 0; i < pceltFetched; i++)
+                        {
+                            if (visualStudioVersion.Equals(inst[i].GetDisplayName()))
+                                return inst[i].GetInstallationVersion();
+                        }
+                    }
+                    return null;
             }
         }
 
@@ -83,25 +81,38 @@ namespace SiliconStudio.Core.VisualStudio
         {
             switch (visualStudioVersion)
             {
-                case VisualStudio2012:
-                case VisualStudio2013:
                 case VisualStudio2015:
-                case VisualCSharpExpress2012:
-                case VisualCSharpExpress2013:
-                case VisualCSharpExpress2015:
-                case VisualStudio15:
-                    return GetSpecificVisualStudioPath(GetVersionNumber(visualStudioVersion), IsExpressVersion(visualStudioVersion));
+                    return GetSpecificVisualStudioPath(GetVersionNumber(visualStudioVersion));
                 case XamarinStudio:
                     return GetXamarinStudioPath();
                 default:
-                    return null;
+                    return GetGenericVisualStudioPath(visualStudioVersion);
             }
         }
 
-        private static string GetSpecificVisualStudioPath(string version, bool express)
+        private static string GetGenericVisualStudioPath(string version)
+        {
+            var configuration = new SetupConfiguration();
+
+            var instances = configuration.EnumAllInstances();
+            instances.Reset();
+            var inst = new ISetupInstance[maximumSlotSize];
+            int pceltFetched;
+            instances.Next(maximumSlotSize, inst, out pceltFetched);
+
+            for (int i = 0; i < pceltFetched; i++)
+            {
+                if (version.Equals(inst[i].GetDisplayName()))
+                    return Path.Combine(inst[i].ResolvePath(), "Common7\\IDE\\devenv.exe");
+            }
+
+            return null;
+        }
+
+        private static string GetSpecificVisualStudioPath(string version)
         {
             var localMachine32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-            using (var subkey = localMachine32.OpenSubKey(string.Format(@"SOFTWARE\Microsoft\{0}\{1}", express ? "VCSExpress" : "VisualStudio", version)))
+            using (var subkey = localMachine32.OpenSubKey(string.Format(@"SOFTWARE\Microsoft\{0}\{1}", "VisualStudio", version)))
             {
                 if (subkey == null)
                     return null;
