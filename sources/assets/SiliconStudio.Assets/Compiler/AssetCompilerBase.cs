@@ -128,5 +128,8 @@ namespace SiliconStudio.Assets.Compiler
 
             return true;
         }
+
+        /// <inheritdoc/>
+        public bool CanBeSkipped { get; protected set; } = false;
     }
 }

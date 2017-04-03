@@ -77,6 +77,12 @@ namespace SiliconStudio.Assets.Compiler
                 if (mainCompiler == null) return;
 
                 cachedResult = mainCompiler.Prepare(context, assetItem);
+                if (mainCompiler.CanBeSkipped && cachedResult.HasErrors)
+                {
+                    //totally skip this asset but do not propagate errors!
+                    return;
+                }
+
 				cachedResult.CopyTo(finalResult);
                 if (cachedResult.HasErrors)
                 {
