@@ -12,6 +12,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Xenko.Shaders.Compiler;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -349,6 +350,37 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
+        /// This is a subpart of effect permutation preparation:
+        ///  set the shader classes that are going to be responsible to compute extended render target colors.
+        /// </summary>
+        /// <param name="context"></param>
+        private void PrepareRenderTargetExtensionsMixins(RenderDrawContext context)
+        {
+            var renderEffectKey = RenderEffectKey;
+            var renderEffects = RenderData.GetData(renderEffectKey);
+
+            // TODO dispatcher
+            foreach (var node in RenderNodes)
+            {
+                var renderNode = node;
+                var renderObject = renderNode.RenderObject;
+
+                // Get RenderEffect
+                var staticObjectNode = renderObject.StaticObjectNode;
+                var staticEffectObjectNode = staticObjectNode * EffectPermutationSlotCount + effectSlots[renderNode.RenderStage.Index].Index;
+                var renderEffect = renderEffects[staticEffectObjectNode];
+
+                if (renderEffect != null)
+                {
+                    var renderStage = renderNode.RenderStage;
+                    var sources = renderStage.OutputValidator?.ShaderSources;
+                    if (sources != null)
+                        renderEffect.EffectValidator.ValidateParameter(XenkoEffectBaseKeys.RenderTargetExtensions, sources);
+                }
+            }
+        }
+
+        /// <summary>
         /// Actual implementation of <see cref="PrepareEffectPermutations"/>.
         /// </summary>
         /// <param name="context"></param>
@@ -399,6 +431,8 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Step1: Perform permutations
             PrepareEffectPermutationsImpl(context);
+
+            PrepareRenderTargetExtensionsMixins(context);
 
             var currentTime = DateTime.UtcNow;
 

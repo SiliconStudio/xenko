@@ -107,5 +107,32 @@ namespace SiliconStudio.Xenko.Rendering
         {
             mixin (extensionPostVertexStage);
         }
+
+        // -----------------------------------------------
+        // MRT output definitions (color0 excluded)
+        // -----------------------------------------------
+        var targetExtensions = XenkoEffectBaseKeys.RenderTargetExtensions;
+        if (targetExtensions != null)
+        {       
+            mixin macro RENDER_TARGET_COUNT = targetExtensions.Count + 1;
+
+            for (int index = 0; index < targetExtensions.Count; index++)
+            {
+                var renderTargetExtension = targetExtensions[index];
+                if (renderTargetExtension != null)
+                {
+                    switch (index)
+                    {
+                        case 1: mixin compose ShadingColor1 = (renderTargetExtension); break;
+                        case 2: mixin compose ShadingColor2 = (renderTargetExtension); break;
+                        case 3: mixin compose ShadingColor3 = (renderTargetExtension); break;
+                        case 4: mixin compose ShadingColor4 = (renderTargetExtension); break;
+                        case 5: mixin compose ShadingColor5 = (renderTargetExtension); break;
+                        case 6: mixin compose ShadingColor6 = (renderTargetExtension); break;
+                        case 7: mixin compose ShadingColor7 = (renderTargetExtension); break;
+                    }
+                }
+            }
+        }
    };
 }
