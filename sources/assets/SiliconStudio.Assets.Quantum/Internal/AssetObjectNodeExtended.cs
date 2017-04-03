@@ -12,6 +12,7 @@ namespace SiliconStudio.Assets.Quantum.Internal
         private readonly Dictionary<string, IGraphNode> contents;
         private readonly Dictionary<ItemId, OverrideType> itemOverrides;
         private readonly Dictionary<ItemId, OverrideType> keyOverrides;
+        private readonly HashSet<ItemId> disconnectedDeletedIds;
         private CollectionItemIdentifiers collectionItemIdentifiers;
         private ItemId restoringId;
 
@@ -21,6 +22,7 @@ namespace SiliconStudio.Assets.Quantum.Internal
             contents = new Dictionary<string, IGraphNode>();
             itemOverrides = new Dictionary<ItemId, OverrideType>();
             keyOverrides = new Dictionary<ItemId, OverrideType>();
+            disconnectedDeletedIds = new HashSet<ItemId>();
             collectionItemIdentifiers = null;
             restoringId = ItemId.Empty;
             PropertyGraph = null;
@@ -79,6 +81,7 @@ namespace SiliconStudio.Assets.Quantum.Internal
                 if (isOverridden)
                 {
                     ids.MarkAsDeleted(deletedId);
+                    disconnectedDeletedIds.Remove(deletedId);
                 }
                 else
                 {
@@ -88,8 +91,17 @@ namespace SiliconStudio.Assets.Quantum.Internal
             }
         }
 
+        public void DisconnectOverriddenDeletedItem(ItemId deletedId)
+        {
+            disconnectedDeletedIds.Add(deletedId);
+            OverrideDeletedItem(false, deletedId);
+        }
+
         public bool IsItemDeleted(ItemId itemId)
         {
+            if (disconnectedDeletedIds.Contains(itemId))
+                return true;
+
             var collection = node.Retrieve();
             CollectionItemIdentifiers ids;
             if (!TryGetCollectionItemIds(collection, out ids))
