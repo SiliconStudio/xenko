@@ -224,7 +224,8 @@ namespace SiliconStudio.Assets.Quantum
             if (visitRoot != null)
             {
                 var visitor = new AssetGraphVisitorBase(this);
-                visitor.Visiting += (node, path) => nodesToReset.Add(node, Index.Empty);
+                // If we're in scenario where rootNode is an object node and index is not empty, we might already have the node in the dictionary so let's check this in Visiting
+                visitor.Visiting += (node, path) => { if (!nodesToReset.ContainsKey(node)) nodesToReset.Add(node, Index.Empty); };
                 visitor.Visit(rootNode);
             }
             // Then we reconcile (recursively) with the base.
@@ -772,13 +773,14 @@ namespace SiliconStudio.Assets.Quantum
                         }
                     }
 
-                    // Clean items marked as "override-deleted" that are absent from the base.
                     var ids = CollectionItemIdHelper.GetCollectionItemIds(localValue);
+                    // Clean items marked as "override-deleted" that are absent from the base.
                     foreach (var deletedId in ids.DeletedItems.ToList())
                     {
                         if (baseNode.Indices.All(x => baseNode.IndexToId(x) != deletedId))
                         {
-                            ids.UnmarkAsDeleted(deletedId);
+                            // We "disconnect" it instead of purely remove it, so it can still be restored by undo/redo
+                            objectNode.DisconnectOverriddenDeletedItem(deletedId);
                         }
                     }
 
@@ -790,7 +792,11 @@ namespace SiliconStudio.Assets.Quantum
 
                         // Skip items marked as "override-deleted"
                         if (itemId == ItemId.Empty || objectNode.IsItemDeleted(itemId))
+                        {
+                            // We force-write the item to be deleted, in case it was just "disconnected"
+                            objectNode.OverrideDeletedItem(true, itemId);
                             continue;
+                        }
 
                         Index localIndex;
                         if (!objectNode.TryIdToIndex(itemId, out localIndex))
@@ -803,8 +809,7 @@ namespace SiliconStudio.Assets.Quantum
                             // We cannot add the item, let's mark it as deleted.
                             if (keyCollision || itemRejected)
                             {
-                                var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(assetNode.Retrieve());
-                                instanceIds.MarkAsDeleted(itemId);
+                                objectNode.OverrideDeletedItem(true, itemId);
                             }
                             else
                             {
@@ -851,7 +856,7 @@ namespace SiliconStudio.Assets.Quantum
                         var value = assetNode.Retrieve(index);
                         objectNode.Remove(value, index);
                         // We're reconciling, so let's hack the normal behavior of marking the removed item as deleted.
-                        ids.UnmarkAsDeleted(item);
+                        objectNode.OverrideDeletedItem(false, item);
                     }
 
                     // Process items marked to be added

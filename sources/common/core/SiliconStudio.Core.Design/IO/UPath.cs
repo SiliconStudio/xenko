@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.IO
 {
@@ -83,6 +84,7 @@ namespace SiliconStudio.Core.IO
         /// </summary>
         /// <value>The full path.</value>
         /// <remarks>This property cannot be null.</remarks>
+        [NotNull]
         public string FullPath { get; }
 
         /// <summary>

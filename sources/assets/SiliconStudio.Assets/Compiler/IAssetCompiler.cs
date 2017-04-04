@@ -45,5 +45,10 @@ namespace SiliconStudio.Assets.Compiler
         /// <returns>The types to exclude</returns>
         /// <remarks>This method takes higher priority, it will exclude assets included with inclusion methods even in the same compiler</remarks>
         IEnumerable<Type> GetInputTypesToExclude(AssetCompilerContext context, AssetItem assetItem);
+
+        /// <summary>
+        /// A boolean indicating if this asset can be skipped in a build chain if its preparation has failed.
+        /// </summary>
+        bool CanBeSkipped { get; }
     }
 }

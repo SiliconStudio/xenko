@@ -636,13 +636,13 @@ namespace SiliconStudio.Xenko.Graphics
             NativeDeviceContext.CopyResource(source.NativeResource, destination.NativeResource);
         }
 
-        public void CopyMultiSample(Texture sourceMsaaTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
+        public void CopyMultisample(Texture sourceMultisampleTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
         {
-            if (sourceMsaaTexture == null) throw new ArgumentNullException("sourceMsaaTexture");
+            if (sourceMultisampleTexture == null) throw new ArgumentNullException(nameof(sourceMultisampleTexture));
             if (destTexture == null) throw new ArgumentNullException("destTexture");
-            if (!sourceMsaaTexture.IsMultiSample) throw new ArgumentOutOfRangeException("sourceMsaaTexture", "Source texture is not a MSAA texture");
+            if (!sourceMultisampleTexture.IsMultisample) throw new ArgumentOutOfRangeException(nameof(sourceMultisampleTexture), "Source texture is not a MSAA texture");
 
-            NativeDeviceContext.ResolveSubresource(sourceMsaaTexture.NativeResource, sourceSubResource, destTexture.NativeResource, destSubResource, (SharpDX.DXGI.Format)(format == PixelFormat.None ? destTexture.Format : format));
+            NativeDeviceContext.ResolveSubresource(sourceMultisampleTexture.NativeResource, sourceSubResource, destTexture.NativeResource, destSubResource, (SharpDX.DXGI.Format)(format == PixelFormat.None ? destTexture.Format : format));
         }
 
         public void CopyRegion(GraphicsResource source, int sourceSubresource, ResourceRegion? sourecRegion, GraphicsResource destination, int destinationSubResource, int dstX = 0, int dstY = 0, int dstZ = 0)

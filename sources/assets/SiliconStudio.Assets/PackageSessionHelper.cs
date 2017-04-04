@@ -333,8 +333,8 @@ MinimumVisualStudioVersion = 14.0.23107.0";
             var packagePath = package.FullPath;
             var propsFilePath = UPath.Combine(packagePath.GetParent(), (UFile)(packagePath.GetFileNameWithoutExtension() + ".props")) ;
 
-            var projectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
-            var project = new Microsoft.Build.Evaluation.Project(projectCollection);
+            var projectCollection = new Microsoft.Build.Evaluation.ProjectCollection { DefaultToolsVersion = "14.0" };
+            var project = new Microsoft.Build.Evaluation.Project(null, "14.0", projectCollection);
             var commonPropertyGroup = project.Xml.AddPropertyGroup();
 
             var dependencies = package.FindDependencies(false, false, true);

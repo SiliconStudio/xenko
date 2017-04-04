@@ -38,13 +38,11 @@
     <Compile Include="IBuildStepProvider.cs" />
     <Compile Include="IForwardSerializableLogRemote.cs" />
     <Compile Include="MicrothreadLocalDatabases.cs" />
-    <Compile Include="OutputEnumerationBuildStep.cs" />
     <Compile Include="PathExt.cs" />
     <Compile Include="PluginResolver.cs" />
     <Compile Include="ProcessBuilderRemote.cs" />
     <Compile Include="SerializableTimestampLogMessage.cs" />
     <Compile Include="SingleFileImportCommand.cs" />
-    <Compile Include="FileEnumerationBuildStep.cs" />
     <Compile Include="IBuildMonitorRemote.cs" />
     <Compile Include="MicroThreadFileProvider.cs" />
     <Compile Include="StepCounter.cs" />

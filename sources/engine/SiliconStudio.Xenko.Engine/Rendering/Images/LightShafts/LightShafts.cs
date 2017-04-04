@@ -9,6 +9,7 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Shadows;
 using SiliconStudio.Xenko.Shaders;
@@ -244,13 +245,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        public void Draw(RenderDrawContext drawContext, IRenderTarget inputTargetsComposition, Texture inputDepthStencil, Texture outputTarget)
+        public void Draw(RenderDrawContext drawContext, Texture inputDepthStencil, Texture output)
         {
-            var colorInput = inputTargetsComposition as IColorTarget;
-            if (colorInput == null) return;
-
             SetInput(0, inputDepthStencil);
-            SetOutput(colorInput.Color);
+            SetOutput(output);
             Draw(drawContext);
         }
 

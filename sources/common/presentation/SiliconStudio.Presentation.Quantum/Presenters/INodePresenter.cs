@@ -42,7 +42,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         object Value { get; }
 
-        string CombineKey { get; }
+        string CombineKey { get; set; }
 
         IPropertyProviderViewModel PropertyProvider { get; }
 

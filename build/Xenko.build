@@ -148,6 +148,9 @@ Example of use:
     <PropertyGroup>
       <BuildProperties>$(BuildProperties);SiliconStudioGenerateDoc=true;SiliconStudioPackageBuild=true</BuildProperties>
     </PropertyGroup>
+	
+	<!-- Need to restore NuGet packages before running some part of the build (for example, VisualStudio Package needs Microsoft.VSSDK.BuildTools target files when loading project; note: the . after $(MSBuildThisFileDirectory) is necessary (NuGet doesn't like SolutionDir ending with \) -->
+    <Exec Command='"$(NuGetPath)" restore -SolutionDir "$(MSBuildThisFileDirectory)." "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package"' />
     
     <!-- Make sure SiliconStudio.Assets is built to run the task to update package version.
          It might be better to move it to a prebuilt assembly if that becomes a problem.
@@ -210,7 +213,7 @@ Example of use:
   <Target Name="BuildWindows10" DependsOnTargets="BuildUWP" />
 
   <Target Name="BuildUWP" DependsOnTargets="CopyXenkoKey">
-    <Exec Command='"$(NuGetPath)" restore "$(MSBuildThisDirectory)project.json"' />
+    <Exec Command='"$(NuGetPath)" restore "$(MSBuildThisFileDirectory)project.json"' />
     <MSBuild Targets="Build" Projects="$(XenkoSolution).UWP.sln" Properties="$(BuildProperties);Platform=UWP"/>
   </Target>
   

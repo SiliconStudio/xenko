@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
@@ -461,12 +461,12 @@ namespace SiliconStudio.Xenko.Graphics
                 SubresourceRange = new ImageSubresourceRange(IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color, (uint)arrayOrDepthSlice, (uint)layerCount, (uint)mipIndex, (uint)mipCount) // TODO VULKAN: Select between depth and stencil?
             };
 
-            if (IsMultiSample)
+            if (IsMultisample)
                 throw new NotImplementedException();
 
             if (this.ArraySize > 1)
             {
-                if (IsMultiSample && Dimension != TextureDimension.Texture2D)
+                if (IsMultisample && Dimension != TextureDimension.Texture2D)
                     throw new NotSupportedException("Multisample is only supported for 2D Textures");
 
                 if (Dimension == TextureDimension.Texture3D)
@@ -489,7 +489,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else
             {
-                if (IsMultiSample && Dimension != TextureDimension.Texture2D)
+                if (IsMultisample && Dimension != TextureDimension.Texture2D)
                     throw new NotSupportedException("Multisample is only supported for 2D RenderTarget Textures");
 
                 if (Dimension == TextureDimension.TextureCube)
@@ -534,12 +534,12 @@ namespace SiliconStudio.Xenko.Graphics
                 SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, (uint)arrayOrDepthSlice, 1, (uint)mipIndex, (uint)mipCount)
             };
 
-            if (IsMultiSample)
+            if (IsMultisample)
                 throw new NotImplementedException();
 
             if (this.ArraySize > 1)
             {
-                if (IsMultiSample && Dimension != TextureDimension.Texture2D)
+                if (IsMultisample && Dimension != TextureDimension.Texture2D)
                     throw new NotSupportedException("Multisample is only supported for 2D Textures");
 
                 if (Dimension == TextureDimension.Texture3D)
@@ -547,7 +547,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else
             {
-                if (IsMultiSample && Dimension != TextureDimension.Texture2D)
+                if (IsMultisample && Dimension != TextureDimension.Texture2D)
                     throw new NotSupportedException("Multisample is only supported for 2D RenderTarget Textures");
 
                 if (Dimension == TextureDimension.TextureCube)
