@@ -23,11 +23,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [AssetCompiler(typeof(TextureAsset), typeof(AssetCompilationContext))]
     public class TextureAssetCompiler : AssetCompilerBase
     {
-        public TextureAssetCompiler()
-        {
-            CanBeSkipped = true; //a failed texture should not break mat->model builds
-        }
-
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
         {
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(GameSettingsAsset), BuildDependencyType.CompileAsset);
