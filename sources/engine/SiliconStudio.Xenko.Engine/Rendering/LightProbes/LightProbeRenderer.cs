@@ -74,18 +74,28 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
         class LightProbeShaderGroupData : LightShaderGroupDynamic
         {
             private readonly LightProbeRenderer lightProbeRenderer;
+            private readonly RenderContext renderContext;
+            private readonly ShaderSource shaderSourceEnabled;
+            private readonly ShaderSource shaderSourceDisabled;
 
             public LightProbeShaderGroupData(RenderContext renderContext, LightProbeRenderer lightProbeRenderer)
                 : base(renderContext, null)
             {
+                this.renderContext = renderContext;
                 this.lightProbeRenderer = lightProbeRenderer;
-                ShaderSource = new ShaderClassSource("LightProbeShader", 3);
+                shaderSourceEnabled = new ShaderClassSource("LightProbeShader", 3);
+                shaderSourceDisabled = new ShaderClassSource("EnvironmentLight");
             }
 
-            public override unsafe void ApplyViewParameters(RenderDrawContext context, int viewIndex, ParameterCollection parameters)
+            public override void UpdateLayout(string compositionName)
             {
-                // Note: no need to fill CurrentLights since we have no shadow maps
-                base.ApplyViewParameters(context, viewIndex, parameters);
+                base.UpdateLayout(compositionName);
+
+                // Setup light probe shader only if there is some light probe data
+                // TODO: Just like the ForwardLightingRenderFeature access the LightProcessor, accessing the SceneInstance.LightProbeProcessor is not what we want.
+                // Ideally, we should send the data the other way around. Let's fix that together when we refactor the lighting at some point.
+                var lightProbeRuntimeData = renderContext.SceneInstance?.GetProcessor<LightProbeProcessor>()?.RuntimeData;
+                ShaderSource = lightProbeRuntimeData != null ? shaderSourceEnabled : shaderSourceDisabled;
             }
         }
     }
