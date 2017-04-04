@@ -323,7 +323,7 @@ namespace SiliconStudio.Assets.Quantum
             var clonedHierarchy = AssetCloner.Clone(subTreeHierarchy, clonerFlags, externalReferences, out idRemapping);
           
             // When cloning with GenerateNewIdsForIdentifiableObjects, indices in the Parts collection will change. Therefore we need to remap them if we want to keep overrides
-            if ((flags & SubHierarchyCloneFlags.RemoveOverrides) == 0)
+            if ((flags & SubHierarchyCloneFlags.RemoveOverrides) == 0 && (flags & SubHierarchyCloneFlags.GenerateNewIdsForIdentifiableObjects) != 0)
             {
                 // TODO: we shouldn't have to do that, it would be better to have a more robust collection for parts
                 // First, build a mapping old index -> new index
