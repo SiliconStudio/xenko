@@ -123,6 +123,18 @@ namespace SiliconStudio.Core.Extensions
         }
 
         /// <summary>
+        /// Filters out null items from the enumerable.
+        /// </summary>
+        /// <typeparam name="T">Generic type parameter.</typeparam>
+        /// <param name="source">Input enumerable to work on.</param>
+        /// <returns>An enumeration of all items in <paramref name="source"/> that are not <c>null</c>.</returns>
+        [NotNull, Pure]
+        public static IEnumerable<T> NotNull<T>([NotNull] this IEnumerable<T?> source) where T : struct
+        {
+            return source.Where(item => item.HasValue).Select(item => item.Value);
+        }
+
+        /// <summary>
         /// Enumerates the linked list nodes.
         /// </summary>
         /// <typeparam name="T"></typeparam>
