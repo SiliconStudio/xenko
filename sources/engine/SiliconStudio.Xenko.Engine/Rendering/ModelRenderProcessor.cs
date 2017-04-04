@@ -95,6 +95,9 @@ namespace SiliconStudio.Xenko.Rendering
 
                 renderMesh.Enabled = modelComponent.Enabled;
 
+                //TODO GRAPHICS REFACTOR: we have to copy it here, otherwise any RenderStageSelector will not evaluate it correctly, 
+                renderMesh.RenderGroup = modelComponent.RenderGroup;
+
                 if (renderMesh.Enabled)
                 {
                     // Update material
@@ -107,8 +110,7 @@ namespace SiliconStudio.Xenko.Rendering
                     var nodeIndex = mesh.NodeIndex;
                     renderMesh.World = nodeTransformations[nodeIndex].WorldMatrix;
                     renderMesh.IsScalingNegative = nodeTransformations[nodeIndex].IsScalingNegative;
-                    renderMesh.BoundingBox = new BoundingBoxExt(meshInfo.BoundingBox);
-                    renderMesh.RenderGroup = modelComponent.RenderGroup;
+                    renderMesh.BoundingBox = new BoundingBoxExt(meshInfo.BoundingBox);                    
                     renderMesh.BlendMatrices = meshInfo.BlendMatrices;
                 }
             }
