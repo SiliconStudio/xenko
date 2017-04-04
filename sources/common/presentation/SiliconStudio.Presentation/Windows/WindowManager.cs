@@ -325,6 +325,7 @@ namespace SiliconStudio.Presentation.Windows
                 if (index < 0)
                     throw new InvalidOperationException("An unregistered blocking window has been closed.");
                 BlockingWindowsList.RemoveAt(index);
+                windowInfo.IsBlocking = false;
                 if (MainWindow != null && MainWindow.IsShown && BlockingWindowsList.Count == 0 && ModalWindows.Count == 0)
                 {
                     Logger.Verbose($"Main window ({MainWindow.Hwnd}) enabled because no more modal nor blocking windows are visible.");
