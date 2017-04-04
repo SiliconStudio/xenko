@@ -26,6 +26,11 @@ namespace SiliconStudio.Shaders.Ast
         /// </summary>
         public static readonly Qualifier Out = new Qualifier("out");
 
+        /// <summary>
+        ///   Flat modifier, only for inputs or outputs.
+        /// </summary>
+        public static readonly Qualifier Flat = new Qualifier("flat");
+
         #endregion
 
         #region Public Methods
@@ -47,6 +52,8 @@ namespace SiliconStudio.Shaders.Ast
                 return InOut;
             if (enumName == (string)Out.Key)
                 return Out;
+            if (enumName == (string)Flat.Key)
+                return Flat;
 
             throw new ArgumentException(string.Format("Unable to convert [{0}] to qualifier", enumName), "key");
         }

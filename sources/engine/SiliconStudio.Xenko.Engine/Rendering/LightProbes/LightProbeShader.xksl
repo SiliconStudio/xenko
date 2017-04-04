@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
             float4 tetrahedronFactors4 = float4(tetrahedronFactors3, 1.0f - tetrahedronFactors3.x - tetrahedronFactors3.y - tetrahedronFactors3.z);
 
             // Zero all the barycentric coordinates that reference probes past IgnoredProbeStart (the one far away)
-            tetrahedronFactors4 = lerp(tetrahedronFactors4, 0.0f, probeIndices >= IgnoredProbeStart ? 1.0f : 0.0f);
+            tetrahedronFactors4 = lerp(tetrahedronFactors4, 0.0f, probeIndices >= IgnoredProbeStart ? float4(1.0f, 1.0f, 1.0f, 1.0f) : float4(0.0f, 0.0f, 0.0f, 0.0f));
 
             //if (probeIndices.x >= IgnoredProbeStart)
             //    tetrahedronFactors4.x = 0.0f;
