@@ -129,7 +129,7 @@ namespace SiliconStudio.Assets.Quantum
                 var node = (IAssetObjectNode)Container.NodeContainer.GetNode(part);
                 node[nameof(IAssetPartDesign<IIdentifiable>.Base)].Update(null);
                 // We must refresh the base to stop further update from the prefab to the instance entities
-                RefreshBase(node, (IAssetNode)node.BaseNode);
+                RefreshBase(node, null);
             }
         }
 
