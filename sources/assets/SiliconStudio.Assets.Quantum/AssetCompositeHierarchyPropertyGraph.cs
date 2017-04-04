@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using SiliconStudio.Assets.Quantum.Visitors;
 using SiliconStudio.Assets.Yaml;
@@ -8,6 +9,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum
@@ -307,8 +309,9 @@ namespace SiliconStudio.Assets.Quantum
             var externalReferences = ExternalReferenceCollector.GetExternalReferences(preCloningAssetGraph, preCloningAssetGraph.RootNode);
             YamlAssetMetadata<OverrideType> overrides = null;
             if ((flags & SubHierarchyCloneFlags.RemoveOverrides) == 0)
+            {
                 overrides = GenerateOverridesForSerialization(preCloningAssetGraph.RootNode);
-
+            }
             // clone the parts of the sub-tree
             var clonerFlags = AssetClonerFlags.None;
 
@@ -318,9 +321,61 @@ namespace SiliconStudio.Assets.Quantum
                 clonerFlags |= AssetClonerFlags.ClearExternalReferences;
 
             var clonedHierarchy = AssetCloner.Clone(subTreeHierarchy, clonerFlags, externalReferences, out idRemapping);
+          
+            // When cloning with GenerateNewIdsForIdentifiableObjects, indices in the Parts collection will change. Therefore we need to remap them if we want to keep overrides
+            if ((flags & SubHierarchyCloneFlags.RemoveOverrides) == 0 && (flags & SubHierarchyCloneFlags.GenerateNewIdsForIdentifiableObjects) != 0)
+            {
+                // TODO: we shouldn't have to do that, it would be better to have a more robust collection for parts
+                // First, build a mapping old index -> new index
+                var partIndexRemapping = new Dictionary<int, int>();
+                for (var i = 0; i < preCloningAsset.Hierarchy.Parts.Count; i++)
+                {
+                    var part = preCloningAsset.Hierarchy.Parts[i];
+                    var newIndex = clonedHierarchy.Parts.BinarySearch(idRemapping[part.Part.Id]);
+                    partIndexRemapping.Add(i, newIndex);
+                }
+
+                // Then, find overrides that work on part by checking the beginning of the YamlAssetPath
+                if (overrides == null) throw new InvalidOperationException("overrides collection is null");
+                var startPath = new YamlAssetPath();
+                startPath.PushMember(nameof(AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>.Hierarchy));
+                startPath.PushMember(nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.Parts));
+                var fixedOverrides = new YamlAssetMetadata<OverrideType>();
+                foreach (var overrideEntry in overrides)
+                {
+                    var pathItems = overrideEntry.Key.Items;
+                    // If this override target a part, we need to fixup the indices.
+                    if (pathItems.Count > 3 && startPath.Items[0].Equals(pathItems[0]) && startPath.Items[1].Equals(pathItems[1]))
+                    {
+                        // Retrieve the previous index
+                        var oldIndex = (int)overrideEntry.Key.Items[2].Value;
+                        // Append the new index instead on a new YamlAssetPath
+                        var newPath = startPath.Clone();
+                        newPath.PushIndex(partIndexRemapping[oldIndex]);
+                        // And append the rest of the override path normally.
+                        for (var i = 3; i < pathItems.Count; ++i)
+                        {
+                            newPath.Push(pathItems[i]);
+                        }
+                        fixedOverrides.Set(newPath, overrideEntry.Value);
+                    }
+                    else
+                    {
+                        // Otherwise we can just copy the override path as-is
+                        fixedOverrides.Set(overrideEntry.Key, overrideEntry.Value);
+                    }
+                }
+                // Replace the overrides collection by the one we just fixed.
+                overrides = fixedOverrides;
+            }
+
+            // Now that we have fixed overrides (if needed), we can replace the initial hierarchy by the cloned one.
             preCloningAssetGraph.RootNode[nameof(AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>.Hierarchy)].Update(clonedHierarchy);
             if ((flags & SubHierarchyCloneFlags.RemoveOverrides) == 0)
+            {
+                // And we can apply overrides if needed, with proper (fixed) YamlAssetPath.
                 ApplyOverrides(preCloningAssetGraph.RootNode, overrides);
+            }
 
             preCloningAssetGraph.Dispose();
 
