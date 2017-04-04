@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering.Sprites;
+using SiliconStudio.Xenko.Engine.Events;
 
 namespace JumpyJet
 {
@@ -12,131 +11,93 @@ namespace JumpyJet
     /// </summary>
     public class PipesScript : SyncScript
     {
-        private const int GapBetweenPipe = 400;
-        private const int StartPipePosition = 400;
+        private const float GapBetweenPipe = 4f;
+        private const float StartPipePosition = 4f;
 
-        public SpriteSheet Sprites;
+        private EventReceiver gameOverListener = new EventReceiver(GameGlobals.GameOverEventKey);
+        private EventReceiver gameResetListener = new EventReceiver(GameGlobals.GameResetEventKey);
+        private EventReceiver gameStartedListener = new EventReceiver(GameGlobals.GameStartedventKey);
 
-        private readonly List<PipeSet> pipeSetList = new List<PipeSet>();
-
-        /// <summary>
-        /// The number of pipe sets move to the end of the screen.
-        /// </summary>
-        private int numberOfPipeMoved;
+        private readonly List<Entity> pipeSets = new List<Entity>();
         
         private bool isScrolling;
-        
+
+        private readonly Random random = new Random();
+
+        private float sceneWidth;
+        private float pipeOvervaluedWidth = 1f;
+
         public override void Start()
         {
-            // Load assets TODO: replace this by prefab when available.
-            var pipeEntity = new Entity("pipe") { new SpriteComponent
-            {
-                SpriteProvider = new SpriteFromSheet { Sheet = Sprites, CurrentFrame = 2 },
-                IgnoreDepth = true
-            } };
+            var pipeSetPrefab = Content.Load<Prefab>("Pipe Set");
 
             // Create PipeSets
-            var screenWidth = GraphicsDevice.Presenter.BackBuffer.Width;
-            for (int i = 0; i < (int)Math.Ceiling(screenWidth / (float)GapBetweenPipe); i++)
-                CreatePipe(pipeEntity, StartPipePosition + i * GapBetweenPipe);
+            sceneWidth = GameGlobals.GamePixelToUnitScale*GraphicsDevice.Presenter.BackBuffer.Width;
+            var numberOfPipes = (int) Math.Ceiling(sceneWidth + 2* pipeOvervaluedWidth / GapBetweenPipe);
+            for (int i = 0; i < numberOfPipes; i++)
+            {
+                var pipeSet = pipeSetPrefab.Instantiate()[0];
+                pipeSets.Add(pipeSet);
+                Entity.AddChild(pipeSet);
+            }
+
+            // Reset the position of the PipeSets
+            Reset();
         }
 
         public override void Update()
         {
+            if (gameOverListener.TryReceive())
+                isScrolling = false;
+
+            if (gameStartedListener.TryReceive())
+                isScrolling = true;
+
+            if(gameResetListener.TryReceive())
+                Reset();
+
             if (!isScrolling)
                 return;
 
             var elapsedTime = (float) Game.UpdateTime.Elapsed.TotalSeconds;
 
-            for (int i = 0; i < pipeSetList.Count; i++)
+            for (int i = 0; i < pipeSets.Count; i++)
             {
+                var pipeSetTransform = pipeSets[i].Transform;
+
                 // update the position of the pipe
-                pipeSetList[i].Update(elapsedTime);
+                pipeSetTransform.Position -= new Vector3(elapsedTime * GameGlobals.GameSpeed, 0, 0);
                     
                 // move the pipe to the end of screen if not visible anymore
-                if (pipeSetList[i].IsOutOfScreenLeft())
-                    MovePipeToEnd(i, pipeSetList[i]);
+                if (pipeSetTransform.Position.X + pipeOvervaluedWidth/2 < -sceneWidth/2)
+                {
+
+                    // When a pipe is determined to be reset,
+                    // get its next position by adding an offset to the position
+                    // of a pipe which index is before itself.
+                    var prevPipeSetIndex =  (i + pipeSets.Count - 1) % pipeSets.Count;
+
+                    var nextPosX = pipeSets[prevPipeSetIndex].Transform.Position.X + GapBetweenPipe;
+                    pipeSetTransform.Position = new Vector3(nextPosX, GetPipeRandoYPosition(), 0);
+                }
             }
+        }
+
+        private float GetPipeRandoYPosition()
+        {
+            return GameGlobals.GamePixelToUnitScale * random.Next(50, 225);
+        }
+
+        private void Reset()
+        {
+            for (var i = 0; i < pipeSets.Count; ++i)
+                pipeSets[i].Transform.Position = new Vector3(StartPipePosition + i * GapBetweenPipe, GetPipeRandoYPosition(), 0);
         }
 
         public override void Cancel()
         {
             // remove all the children pipes.
             Entity.Transform.Children.Clear();
-        }
-
-        /// <summary>
-        /// Get the next pipe set to come.
-        /// </summary>
-        /// <param name="positionX">The position along the X axis</param>
-        /// <returns>The next pipe to come</returns>
-        public PipeSet GetNextPipe(float positionX)
-        {
-            PipeSet nextPipe = null;
-            var nextPipePosition = float.PositiveInfinity;
-
-            foreach (var pipeSet in pipeSetList)
-            {
-                var pipePosition = pipeSet.Entity.Transform.Position.X;
-                if (!pipeSet.HasBeenPassed(positionX) && pipePosition < nextPipePosition)
-                {
-                    nextPipe = pipeSet;
-                    nextPipePosition = pipePosition;
-                }
-            }
-
-            return nextPipe;
-        }
-
-        /// <summary>
-        /// Get the number of pipes that have passed provided position
-        /// </summary>
-        /// <param name="positionX">The position along X</param>
-        /// <returns>The number of pipes that passed</returns>
-        public int GetPassedPipeNumber(float positionX)
-        {
-            return numberOfPipeMoved + pipeSetList.Count(x=> x.HasBeenPassed(positionX));
-        }
-        
-        private void CreatePipe(Entity pipeEntity, float startPosX)
-        {
-            var pipe = new PipeSet(pipeEntity, -GameScript.GameSpeed, startPosX, GraphicsDevice.Presenter.BackBuffer.Width);
-            pipeSetList.Add(pipe);
-            Entity.AddChild(pipe.Entity);
-        }
-
-        private void MovePipeToEnd(int pipeSetIndex, PipeSet pipeSet)
-        {
-            // When a pipe is determined to be reset,
-            // get its next position by adding an offset to the position
-            // of a pipe which index is before itself.
-            var prevPipeSetIndex = pipeSetIndex - 1;
-
-            if (prevPipeSetIndex < 0)
-                prevPipeSetIndex = pipeSetList.Count - 1;
-
-            var nextPosX = pipeSetList[prevPipeSetIndex].Entity.Transform.Position.X + GapBetweenPipe;
-
-            pipeSet.ResetPipe(nextPosX);
-
-            ++numberOfPipeMoved;
-        }
-
-        public void Reset()
-        {
-            numberOfPipeMoved = 0;
-            foreach (var pipeSet in pipeSetList)
-                pipeSet.ResetPipe();
-        }
-
-        public void StartScrolling()
-        {
-            isScrolling = true;
-        }
-
-        public void StopScrolling()
-        {
-            isScrolling = false;
         }
     }
 }
