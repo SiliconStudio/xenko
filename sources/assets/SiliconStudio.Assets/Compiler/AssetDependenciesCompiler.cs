@@ -109,16 +109,14 @@ namespace SiliconStudio.Assets.Compiler
             }
 
             //Finally link the steps together, this uses low level build engine primitive and routines to make sure dependencies are compiled
-            if ((dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent || //only if content is required Content.Load
+            if (((dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent) || //only if content is required Content.Load
                 (dependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime) //or the asset is required anyway at runtime
             {
                 if (!inCache)  //skip adding again the step if it was already in the final step
-                {
                     finalResult.BuildSteps.Add(cachedResult.BuildSteps);
-                }
 
                 //link
-                if (parentBuildStep != null)
+                if (parentBuildStep != null && ((dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent)) //only if content is required Content.Load
                     BuildStep.LinkBuildSteps(cachedResult.BuildSteps, parentBuildStep);
             }
         }
