@@ -75,9 +75,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             // clear the targets
             if (depthStencil != null && (ClearFlags == ClearRendererFlags.ColorAndDepth || ClearFlags == ClearRendererFlags.DepthOnly))
             {
-                var clearOptions = DepthStencilClearOptions.DepthBuffer;
-                if (depthStencil.HasStencil)
-                    clearOptions |= DepthStencilClearOptions.Stencil;
+                var clearOptions = DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil;
 
                 commandList.Clear(depthStencil, clearOptions, Depth, Stencil);
             }
