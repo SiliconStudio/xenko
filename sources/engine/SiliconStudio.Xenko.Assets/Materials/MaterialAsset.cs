@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RemoveParametersUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     [Display(1150, "Material")]
-    public sealed class MaterialAsset : Asset, IMaterialDescriptor, IAssetCompileTimeDependencies
+    public sealed class MaterialAsset : Asset, IMaterialDescriptor
     {
         /// <summary>
         /// The default file extension used by the <see cref="MaterialAsset"/>.
@@ -85,16 +85,6 @@ namespace SiliconStudio.Xenko.Assets.Materials
             Attributes?.Visit(context);
             Layers?.Visit(context);
         }
-
-        /// <inheritdoc/>
-        public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
-        {
-            foreach (var materialReference in FindMaterialReferences())
-            {
-                yield return materialReference;
-            }
-        }
-
 
         public class RemoveParametersUpgrader : AssetUpgraderBase
         {
