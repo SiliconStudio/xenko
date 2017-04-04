@@ -66,6 +66,11 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
                                                  LightProbeTetrahedronMatrices.Load(tetrahedronIndex * 3 + 2));
 
             float3 tetrahedronFactors3 = mul((float3x3)tetrahedronMatrix, streams.PositionWS.xyz - tetrahedronMatrix._14_24_34);
+
+            // Protect ourselves against degenerate cases
+            // TODO: Investigate why those happen (almost coplanar tetrahedron?)
+            tetrahedronFactors3 = saturate(tetrahedronFactors3);
+
             float4 tetrahedronFactors4 = float4(tetrahedronFactors3, 1.0f - tetrahedronFactors3.x - tetrahedronFactors3.y - tetrahedronFactors3.z);
 
             // Zero all the barycentric coordinates that reference probes past IgnoredProbeStart (the one far away)
