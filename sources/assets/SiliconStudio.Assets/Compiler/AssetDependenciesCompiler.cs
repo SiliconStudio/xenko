@@ -77,7 +77,7 @@ namespace SiliconStudio.Assets.Compiler
                 if (mainCompiler == null) return;
 
                 cachedResult = mainCompiler.Prepare(context, assetItem);
-                if (mainCompiler.CanBeSkipped && cachedResult.HasErrors)
+                if (((dependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime) && cachedResult.HasErrors) //allow Runtime dependencies to fail
                 {
                     //totally skip this asset but do not propagate errors!
                     return;
