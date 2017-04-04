@@ -39,15 +39,6 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
             lightprobeGroup = new LightProbeShaderGroupData(context, this);
         }
 
-        public override void Unload()
-        {
-            // Dispose GPU resources
-            lightprobeCoefficients?.Dispose();
-            lightprobeCoefficients = null;
-
-            base.Unload();
-        }
-
         public override void Reset()
         {
             base.Reset();
@@ -95,23 +86,6 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
             {
                 // Note: no need to fill CurrentLights since we have no shadow maps
                 base.ApplyViewParameters(context, viewIndex, parameters);
-
-                using (context.LockCommandList())
-                {
-                    if (lightProbeRenderer.lightprobeCoefficients == null)
-                        lightProbeRenderer.lightprobeCoefficients = Buffer.New(context.GraphicsDevice, 9 * 4 * sizeof(Vector4), 0, BufferFlags.ShaderResource, PixelFormat.R32G32B32A32_Float);
-
-                    var data = new Color4[9*4];
-                    for (int i = 0; i < 4; ++i)
-                    {
-                        data[i * 9] = Color4.White;
-                    }
-                    fixed (Color4* dataPtr = data)
-                        context.CommandList.UpdateSubresource(lightProbeRenderer.lightprobeCoefficients, 0, new DataBox((IntPtr)dataPtr, 0, 0), new ResourceRegion(0, 0, 0, data.Length * sizeof(Color4), 1, 1));
-                }
-
-                // Set resources
-                //parameters.Set(LightProbeShaderKeys.LightProbeCoefficients, lightprobeRenderer.lightprobeCoefficients);
             }
         }
     }
