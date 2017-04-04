@@ -9,33 +9,63 @@ using Microsoft.VisualStudio.Setup.Configuration;
 
 namespace SiliconStudio.Core.VisualStudio
 {
+    public struct IDEDictionaryKey
+    {
+        int key;
+
+        public int Key { get => key; set => key = value; }
+
+        public IDEDictionaryKey(int key)
+        {
+            this.key = key;
+        }
+
+        public override int GetHashCode() => key;
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is IDEDictionaryKey))
+                return false;
+
+            return ((IDEDictionaryKey)obj).Key == key;
+        }
+    }
+
+    public struct IDEInfo
+    {
+        public string DisplayName { get; set; }
+        public string InstallationPath { get; set; }
+    }
+
     public static class VisualStudioVersions
     {
-        public static readonly string[] KnownVersions =
-        {
-            VisualStudio2015,
-            XamarinStudio
-        };
+        private static Dictionary<IDEDictionaryKey, IDEInfo> ideDictionary;
 
         public const string DefaultIDE = "Default IDE";
-        public const string VisualStudio2015 = "Visual Studio 2015";
-        public const string XamarinStudio = "Xamarin Studio";
+        private const string VisualStudio2015 = "Visual Studio 2015";
 
         private const int maximumSlotSize = 255;    // Workaround for the Configuration lack of proper enumeration
 
-        public static IEnumerable<string> AvailableVisualStudioVersions
+        private static void BuildDictionary()
         {
-            get
+            if (ideDictionary != null)
+                return;
+
+            ideDictionary = new Dictionary<IDEDictionaryKey, IDEInfo>();
+
+            ideDictionary.Add(new IDEDictionaryKey(ideDictionary.Count),
+                new IDEInfo { DisplayName = "Default IDE", InstallationPath = null });
+
+            // Visual Studio 14.0 (2015)
+            var vs14InstallPath = GetSpecificVisualStudioPath("14.0");
+            if (vs14InstallPath != null)
             {
-                // Default is always included first
-                yield return DefaultIDE;
+                ideDictionary.Add(new IDEDictionaryKey(ideDictionary.Count),
+                    new IDEInfo { DisplayName = "Visual Studio 2015", InstallationPath = vs14InstallPath });
+            }
 
-                foreach (var visualStudioVersion in KnownVersions)
-                {
-                    if (GetVisualStudioPath(visualStudioVersion) != null)
-                        yield return visualStudioVersion;
-                }
-
+            // Visual Studio 15.0 (2017) and later
+            {
                 var configuration = new SetupConfiguration();
 
                 var instances = configuration.EnumAllInstances();
@@ -46,8 +76,24 @@ namespace SiliconStudio.Core.VisualStudio
 
                 for (int i = 0; i < pceltFetched; i++)
                 {
-                    yield return inst[i].GetDisplayName();
+                    var path = Path.Combine(inst[i].ResolvePath(), "Common7\\IDE\\devenv.exe");
+                    if (path == null)
+                        continue;
+
+                    ideDictionary.Add(new IDEDictionaryKey(ideDictionary.Count),
+                        new IDEInfo { DisplayName = inst[i].GetDisplayName(), InstallationPath = path });
                 }
+            }
+        }
+
+        public static IEnumerable<string> AvailableVisualStudioVersions
+        {
+            get
+            {
+                BuildDictionary();
+
+                foreach (var ideInfo in ideDictionary.Values)
+                    yield return ideInfo.DisplayName;
             }
         }
 
@@ -83,14 +129,12 @@ namespace SiliconStudio.Core.VisualStudio
             {
                 case VisualStudio2015:
                     return GetSpecificVisualStudioPath(GetVersionNumber(visualStudioVersion));
-                case XamarinStudio:
-                    return GetXamarinStudioPath();
                 default:
                     return GetGenericVisualStudioPath(visualStudioVersion);
             }
         }
 
-        private static string GetGenericVisualStudioPath(string version)
+        private static string GetGenericVisualStudioPath(string displayName)
         {
             var configuration = new SetupConfiguration();
 
@@ -102,8 +146,12 @@ namespace SiliconStudio.Core.VisualStudio
 
             for (int i = 0; i < pceltFetched; i++)
             {
-                if (version.Equals(inst[i].GetDisplayName()))
-                    return Path.Combine(inst[i].ResolvePath(), "Common7\\IDE\\devenv.exe");
+                var path = Path.Combine(inst[i].ResolvePath(), "Common7\\IDE\\devenv.exe");
+                if (path == null)
+                    continue;
+
+                if (displayName.Equals(inst[i].GetDisplayName()))
+                    return path;
             }
 
             return null;
@@ -122,22 +170,6 @@ namespace SiliconStudio.Core.VisualStudio
                     return null;
 
                 return Path.Combine(path, "devenv.exe");
-            }
-        }
-
-        private static string GetXamarinStudioPath()
-        {
-            var localMachine32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-            using (var subkey = localMachine32.OpenSubKey(string.Format(@"SOFTWARE\Xamarin\XamarinStudio")))
-            {
-                if (subkey == null)
-                    return null;
-
-                var path = (string)subkey.GetValue("Path");
-                if (path == null)
-                    return null;
-
-                return Path.Combine(path, @"bin\XamarinStudio.exe");
             }
         }
     }
