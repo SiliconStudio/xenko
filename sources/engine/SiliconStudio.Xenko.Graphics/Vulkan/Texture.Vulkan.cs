@@ -273,8 +273,22 @@ namespace SiliconStudio.Xenko.Graphics
 
         private unsafe void InitializeImage(DataBox[] dataBoxes)
         {
-            var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
-            var beginInfo = new CommandBufferBeginInfo { StructureType = StructureType.CommandBufferBeginInfo };
+            // Begin copy command buffer
+            var commandBufferAllocateInfo = new CommandBufferAllocateInfo
+            {
+                StructureType = StructureType.CommandBufferAllocateInfo,
+                CommandPool = GraphicsDevice.NativeCopyCommandPool,
+                CommandBufferCount = 1,
+                Level = CommandBufferLevel.Primary
+            };
+            CommandBuffer commandBuffer;
+
+            lock (GraphicsDevice.QueueLock)
+            {
+                GraphicsDevice.NativeDevice.AllocateCommandBuffers(ref commandBufferAllocateInfo, &commandBuffer);
+            }
+
+            var beginInfo = new CommandBufferBeginInfo { StructureType = StructureType.CommandBufferBeginInfo, Flags = CommandBufferUsageFlags.OneTimeSubmit };
             commandBuffer.Begin(ref beginInfo);
 
             if (dataBoxes != null && dataBoxes.Length > 0)
@@ -360,7 +374,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
                 GraphicsDevice.NativeCommandQueue.WaitIdle();
-                commandBuffer.Reset(CommandBufferResetFlags.None);
+                GraphicsDevice.NativeDevice.FreeCommandBuffers(GraphicsDevice.NativeCopyCommandPool, 1, &commandBuffer);
             }
         }
 
