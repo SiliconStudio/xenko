@@ -8,10 +8,6 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Physics
 {
-    /// <summary>
-    ///     Generic contact between colliders, Always using Vector3 as the engine allows mixed 2D/3D contacts.
-    ///     Note: As class because it is shared between the 2 Colliders.. maybe struct is faster?
-    /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct ContactPoint
     {

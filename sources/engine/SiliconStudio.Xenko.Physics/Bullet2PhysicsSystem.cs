@@ -95,8 +95,7 @@ namespace SiliconStudio.Xenko.Physics
 
                     //finally process any needed cleanup
                     physicsScene.Processor.UpdateRemovals();
-
-                    
+                   
                     //handle frame contacts
                     physicsScene.Processor.UpdateContacts();
 

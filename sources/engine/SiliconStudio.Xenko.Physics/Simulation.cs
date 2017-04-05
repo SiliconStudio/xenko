@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Physics
@@ -172,6 +173,9 @@ namespace SiliconStudio.Xenko.Physics
                 {
                     collision.ColliderB.PairEndedChannel.Send(collision);
                 }
+
+                collision.Destroy();
+                collisionsPool.Enqueue(collision);
             }
 
             foreach (var contactPoint in newContactsFastCache)
@@ -1027,6 +1031,12 @@ namespace SiliconStudio.Xenko.Physics
             handler?.Invoke(this, e);
         }
 
+        private readonly FastList<ContactPoint> newContacts = new FastList<ContactPoint>();
+        private readonly FastList<ContactPoint> updatedContacts = new FastList<ContactPoint>();
+        private readonly FastList<ContactPoint> removedContacts = new FastList<ContactPoint>();
+
+        private readonly Queue<Collision> collisionsPool = new Queue<Collision>();
+
         internal void BeginContactTesting()
         {
             //swap the lists
@@ -1035,10 +1045,6 @@ namespace SiliconStudio.Xenko.Physics
             currentFrameContacts.Clear();
             previousFrameContacts = previous;         
         }
-
-        private readonly FastList<ContactPoint> newContacts = new FastList<ContactPoint>();
-        private readonly FastList<ContactPoint> updatedContacts = new FastList<ContactPoint>();
-        private readonly FastList<ContactPoint> removedContacts = new FastList<ContactPoint>();
 
         private void ContactRemoval(ContactPoint contact, PhysicsComponent component0, PhysicsComponent component1)
         {
@@ -1142,7 +1148,8 @@ namespace SiliconStudio.Xenko.Physics
                 }
                 else
                 {
-                    var newPair = new Collision(component0, component1);
+                    var newPair = collisionsPool.Count == 0 ? new Collision() : collisionsPool.Dequeue();
+                    newPair.Initialize(component0, component1);
                     newPair.Contacts.Add(contact);
                     component0.Collisions.Add(newPair);
                     component1.Collisions.Add(newPair);
@@ -1214,11 +1221,21 @@ namespace SiliconStudio.Xenko.Physics
         {
             IntPtr buffer;
             int bufferSize;
-            collisionWorld.GetCollisions(component.NativeCollisionObject, out buffer, out bufferSize);
+            collisionWorld.GetCollisions(component.NativeCollisionObject, (short)component.CanCollideWith, (short)component.CollisionGroup, out buffer, out bufferSize);
             var contacts = (ContactPoint*) buffer;
             for (var i = 0; i < bufferSize; i++)
             {
                 var contact = contacts[i];
+
+                var obj0 = BulletSharp.CollisionObject.GetManaged(contact.ColliderA);
+                var obj1 = BulletSharp.CollisionObject.GetManaged(contact.ColliderB);
+                var component0 = (PhysicsComponent)obj0.UserObject;
+                var component1 = (PhysicsComponent)obj1.UserObject;
+
+                //disable static-static
+                if (component0 is StaticColliderComponent && component1 is StaticColliderComponent)
+                    continue;
+
                 currentFrameContacts.Add(contact);
             }
         }
