@@ -23,16 +23,20 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     [CategoryOrder(10, "Parameters")]
     [CategoryOrder(50, "Atlas Packing")]
     [CategoryOrder(150, "Sprites")]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.10.0-alpha01")]
-    [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RenameImageGroupsUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(RemoveMaxSizeUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.5.0-alpha01", typeof(BorderSizeOrderUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.10.0-alpha01", typeof(SpriteSheetSRGBUpgrader))]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(SpriteSheet))]
     [Display(1600, "Sprite Sheet")]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.5.0-alpha01")]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.10.0-alpha01", typeof(SpriteSheetSRGBUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-alpha01", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
     public class SpriteSheetAsset : Asset
     {
+        private const string CurrentVersion = "2.0.0.0";
+
         /// <summary>
         /// The default file extension used by the <see cref="SpriteSheetAsset"/>.
         /// </summary>
@@ -174,54 +178,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             return textureAbsolutePath + "__ATLAS_TEXTURE__" + atlasIndex;
         }
 
-        class RenameImageGroupsUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                var images = asset.Images;
-                if (images != null)
-                {
-                    asset.Sprites = images;
-                    asset.Images = DynamicYamlEmpty.Default;
-                }
-            }
-        }
-        class RemoveMaxSizeUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                var packing = asset.Packing;
-                if (packing != null)
-                {
-                    packing.AtlasMaximumSize = DynamicYamlEmpty.Default;
-                }
-            }
-        }
-
-        class BorderSizeOrderUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                // SerializedVersion format changed during renaming upgrade. However, before this was merged back in master, some asset upgrader still with older version numbers were developed.
-                // As a result, upgrade is not needed for version 3
-                var sprites = asset.Sprites;
-                if (sprites == null || currentVersion == PackageVersion.Parse("0.0.3"))
-                    return;
-
-                foreach (var sprite in asset.Sprites)
-                {
-                    if (sprite.Borders == null)
-                    {
-                        continue;
-                    }
-                    var y = sprite.Borders.Y ?? 0.0f;
-                    sprite.Borders.Y = sprite.Borders.Z ?? 0.0f;
-                    sprite.Borders.Z = y;
-                }
-            }
-        }
-
-        class SpriteSheetSRGBUpgrader : AssetUpgraderBase
+        private class SpriteSheetSRGBUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {

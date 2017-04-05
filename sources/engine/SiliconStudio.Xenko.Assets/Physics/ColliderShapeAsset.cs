@@ -20,13 +20,17 @@ namespace SiliconStudio.Xenko.Assets.Physics
     [DataContract("ColliderShapeAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(PhysicsColliderShape))]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.4.0-beta")]
-    [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(UpgraderShapeDescriptions))]
-    [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(Box2DRemovalUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.4.0-beta")]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
     [Display("Collider Shape")]
     public class ColliderShapeAsset : Asset
     {
+        private const string CurrentVersion = "2.0.0.0";
+
         public const string FileExtension = ".xkphy;pdxphy";
 
         /// <userdoc>
@@ -36,72 +40,5 @@ namespace SiliconStudio.Xenko.Assets.Physics
         [Category]
         [MemberCollection(NotNullItems = true)]
         public List<IAssetColliderShapeDesc> ColliderShapes { get; set; } = new List<IAssetColliderShapeDesc>();
-
-        private class UpgraderShapeDescriptions : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                if (asset.ColliderShapes == null)
-                    return;
-
-                foreach (var colliderShape in asset.ColliderShapes)
-                {
-                    if (colliderShape.Node.Tag == "!Box2DColliderShapeDesc")
-                    {
-                        var size = 2f * DynamicYamlExtensions.ConvertTo<Vector2>(colliderShape.HalfExtent);
-                        colliderShape.Size = DynamicYamlExtensions.ConvertFrom(size);
-                        colliderShape.HalfExtent = DynamicYamlEmpty.Default;
-                    }
-                    if (colliderShape.Node.Tag == "!BoxColliderShapeDesc")
-                    {
-                        var size = 2f * DynamicYamlExtensions.ConvertTo<Vector3>(colliderShape.HalfExtents);
-                        colliderShape.Size = DynamicYamlExtensions.ConvertFrom(size);
-                        colliderShape.HalfExtents = DynamicYamlEmpty.Default;
-                    }
-                    if (colliderShape.Node.Tag == "!CapsuleColliderShapeDesc" || colliderShape.Node.Tag == "!CylinderColliderShapeDesc")
-                    {
-                        var upVector = DynamicYamlExtensions.ConvertTo<Vector3>(colliderShape.UpAxis);
-                        if (upVector == Vector3.UnitX)
-                            colliderShape.Orientation = ShapeOrientation.UpX;
-                        if (upVector == Vector3.UnitZ)
-                            colliderShape.Orientation = ShapeOrientation.UpZ;
-
-                        colliderShape.UpAxis = DynamicYamlEmpty.Default;
-                    }
-                    if (colliderShape.Node.Tag == "!CapsuleColliderShapeDesc" && colliderShape.Height != null)
-                    {
-                        colliderShape.Length = 2f * (float)colliderShape.Height;
-                        colliderShape.Height = DynamicYamlEmpty.Default;
-                    }
-                    if (colliderShape.Node.Tag == "!CylinderColliderShapeDesc")
-                    {
-                        colliderShape.Radius = (float)colliderShape.HalfExtents.X;
-                        colliderShape.Height = 2f * (float)colliderShape.HalfExtents.Y;
-                        colliderShape.HalfExtents = DynamicYamlEmpty.Default;
-                    }
-                }
-            }
-        }
-
-        private class Box2DRemovalUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                if (asset.ColliderShapes == null)
-                    return;
-
-                foreach (dynamic shape in asset.ColliderShapes)
-                {
-                    var tag = shape.Node.Tag;
-                    if (tag != "!Box2DColliderShapeDesc") continue;
-
-                    shape.Node.Tag = "!BoxColliderShapeDesc";
-                    shape.Is2D = true;
-                    shape.Size.X = shape.Size.X;
-                    shape.Size.Y = shape.Size.Y;
-                    shape.Size.Z = 0.01f;
-                }
-            }
-        }
     }
 }
