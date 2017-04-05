@@ -8,8 +8,10 @@ using Microsoft.VisualStudio.Setup.Configuration;
 
 namespace SiliconStudio.Core.VisualStudio
 {
-    public struct IDEInfo
+    public class IDEInfo
     {
+        public override string ToString() => DisplayName;
+        public string DisplayName { get; set; }
         public string InstallationPath { get; set; }
     }
 
@@ -17,7 +19,7 @@ namespace SiliconStudio.Core.VisualStudio
     {
         private static Dictionary<string, IDEInfo> ideDictionary;
 
-        public const string DefaultIDE = "Default IDE";
+        public static IDEInfo DefaultIDE = new IDEInfo { DisplayName = "Default IDE", InstallationPath = null };
 
         private static void BuildDictionary()
         {
@@ -26,7 +28,7 @@ namespace SiliconStudio.Core.VisualStudio
 
             ideDictionary = new Dictionary<string, IDEInfo>();
 
-            ideDictionary.Add(DefaultIDE, new IDEInfo { InstallationPath = null });
+            ideDictionary.Add(DefaultIDE.DisplayName, DefaultIDE);
 
             // Visual Studio 14.0 (2015)
             var localMachine32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
@@ -37,7 +39,7 @@ namespace SiliconStudio.Core.VisualStudio
                 var vs14InstallPath = (path != null) ? Path.Combine(path, "devenv.exe") : null;
                 if (vs14InstallPath != null)
                 {
-                    ideDictionary.Add("Visual Studio 2015", new IDEInfo { InstallationPath = vs14InstallPath });
+                    ideDictionary.Add("Visual Studio 2015", new IDEInfo { DisplayName = "Visual Studio 2015", InstallationPath = vs14InstallPath });
                 }
             }
 
@@ -58,31 +60,20 @@ namespace SiliconStudio.Core.VisualStudio
 
                     var path = Path.Combine(inst[0].ResolvePath(), "Common7\\IDE\\devenv.exe");
                     if (File.Exists(path))
-                        ideDictionary.Add(inst[0].GetDisplayName(), new IDEInfo { InstallationPath = path });
+                        ideDictionary.Add(inst[0].GetDisplayName(), new IDEInfo { DisplayName = inst[0].GetDisplayName(), InstallationPath = path });
                 } 
             }
         }
 
-        public static IEnumerable<string> AvailableVisualStudioVersions
+        public static IEnumerable<IDEInfo> AvailableVisualStudioVersions
         {
             get
             {
                 BuildDictionary();
 
-                foreach (var key in ideDictionary.Keys)
-                    yield return key;
+                foreach (var value in ideDictionary.Values)
+                    yield return value;
             }
-        }
-
-        public static string GetVisualStudioPath(string ideDisplayName)
-        {
-            BuildDictionary();
-
-            IDEInfo ideInfo;
-            if (ideDictionary.TryGetValue(ideDisplayName, out ideInfo))
-                return ideInfo.InstallationPath;
-
-            return null;
         }
     }
 }
