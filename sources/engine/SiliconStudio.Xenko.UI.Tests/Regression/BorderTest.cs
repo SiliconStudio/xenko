@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public BorderTest()
         {
-            CurrentVersion = 6;
+            CurrentVersion = 7;
         }
 
         protected override async Task LoadContent()
