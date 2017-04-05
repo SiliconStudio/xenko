@@ -34,10 +34,15 @@ namespace SiliconStudio.Presentation.ViewModel
         {
             // intentionally do nothing
         }
-        
-        void IDirtiable.UpdateDirtiness(bool value)
+
+        protected virtual void UpdateDirtinessImpl(bool value)
         {
             IsDirty = value;
+        }
+
+        void IDirtiable.UpdateDirtiness(bool value)
+        {
+            UpdateDirtinessImpl(value);
         }
     }
 }
