@@ -19,8 +19,6 @@ namespace SiliconStudio.Core.VisualStudio
 
         public const string DefaultIDE = "Default IDE";
 
-        private const int maximumSlotSize = 255;    // Workaround for the Configuration lack of proper enumeration
-
         private static void BuildDictionary()
         {
             if (ideDictionary != null)
@@ -49,18 +47,19 @@ namespace SiliconStudio.Core.VisualStudio
 
                 var instances = configuration.EnumAllInstances();
                 instances.Reset();
-                var inst = new ISetupInstance[maximumSlotSize];
+                var inst = new ISetupInstance[1];
                 int pceltFetched;
-                instances.Next(maximumSlotSize, inst, out pceltFetched);
 
-                for (int i = 0; i < pceltFetched; i++)
+                while (true)
                 {
-                    var path = Path.Combine(inst[i].ResolvePath(), "Common7\\IDE\\devenv.exe");
-                    if (path == null)
-                        continue;
+                    instances.Next(1, inst, out pceltFetched);
+                    if (pceltFetched <= 0)
+                        break;
 
-                    ideDictionary.Add(inst[i].GetDisplayName(), new IDEInfo { InstallationPath = path });
-                }
+                    var path = Path.Combine(inst[0].ResolvePath(), "Common7\\IDE\\devenv.exe");
+                    if (File.Exists(path))
+                        ideDictionary.Add(inst[0].GetDisplayName(), new IDEInfo { InstallationPath = path });
+                } 
             }
         }
 
