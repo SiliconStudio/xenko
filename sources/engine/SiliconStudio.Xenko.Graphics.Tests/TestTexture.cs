@@ -420,7 +420,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             PerformDrawTest(
                 (game, context) =>
                 {
-                    context.CommandList.Clear(context.CommandList.RenderTarget, Color.Green);
+                    context.CommandList.Clear(context.CommandList.RenderTarget, new Color4(Color.Green).ToColorSpace(ColorSpace.Linear));
                     context.CommandList.Clear(context.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
 
                     var device = game.GraphicsDevice;
