@@ -567,64 +567,60 @@ namespace SiliconStudio.Assets
                         var assetItemOrPackage = fileIt.Value;
 
                         var assetItem = assetItemOrPackage as AssetItem;
-
-                        if (File.Exists(assetPath))
+                        try
                         {
-                            try
+                            //If we are within a csproj we need to remove the file from there as well
+                            if (assetItem?.SourceProject != null)
                             {
-                                //If we are within a csproj we need to remove the file from there as well
-                                if (assetItem?.SourceProject != null)
+                                var projectAsset = assetItem.Asset as IProjectAsset;
+                                if (projectAsset != null)
                                 {
-                                    var projectAsset = assetItem.Asset as IProjectAsset;
-                                    if (projectAsset != null)
+                                    var projectInclude = assetItem.GetProjectInclude();
+
+                                    Project project;
+                                    if (!vsProjs.TryGetValue(assetItem.SourceProject, out project))
                                     {
-                                        var projectInclude = assetItem.GetProjectInclude();
+                                        project = VSProjectHelper.LoadProject(assetItem.SourceProject);
+                                        vsProjs.Add(assetItem.SourceProject, project);
+                                    }
+                                    var projectItem = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == projectInclude);
+                                    if (projectItem != null)
+                                    {
+                                        project.RemoveItem(projectItem);
+                                    }
 
-                                        Project project;
-                                        if (!vsProjs.TryGetValue(assetItem.SourceProject, out project))
+                                    //delete any generated file as well
+                                    var generatorAsset = assetItem.Asset as IProjectFileGeneratorAsset;
+                                    if (generatorAsset != null)
+                                    {
+                                        var generatedAbsolutePath = assetItem.GetGeneratedAbsolutePath().ToWindowsPath();
+
+                                        File.Delete(generatedAbsolutePath);
+
+                                        var generatedInclude = assetItem.GetGeneratedInclude();
+                                        var generatedItem = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == generatedInclude);
+                                        if (generatedItem != null)
                                         {
-                                            project = VSProjectHelper.LoadProject(assetItem.SourceProject);
-                                            vsProjs.Add(assetItem.SourceProject, project);
-                                        }
-                                        var projectItem = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == projectInclude);
-                                        if (projectItem != null)
-                                        {
-                                            project.RemoveItem(projectItem);
-                                        }
-
-                                        //delete any generated file as well
-                                        var generatorAsset = assetItem.Asset as IProjectFileGeneratorAsset;
-                                        if (generatorAsset != null)
-                                        {
-                                            var generatedAbsolutePath = assetItem.GetGeneratedAbsolutePath().ToWindowsPath();
-
-                                            File.Delete(generatedAbsolutePath);
-
-                                            var generatedInclude = assetItem.GetGeneratedInclude();
-                                            var generatedItem = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == generatedInclude);
-                                            if (generatedItem != null)
-                                            {
-                                                project.RemoveItem(generatedItem);
-                                            }
+                                            project.RemoveItem(generatedItem);
                                         }
                                     }
                                 }
-
-                                File.Delete(assetPath);
                             }
-                            catch (Exception ex)
+
+                            File.Delete(assetPath);
+                        }
+                        catch (Exception ex)
+                        {
+                            if (assetItem != null)
                             {
-                                if (assetItem != null)
+                                log.Error(assetItem.Package, assetItem.ToReference(), AssetMessageCode.AssetCannotDelete, ex, assetPath);
+                            }
+                            else
+                            {
+                                var package = assetItemOrPackage as Package;
+                                if (package != null)
                                 {
-                                    log.Error(assetItem.Package, assetItem.ToReference(), AssetMessageCode.AssetCannotDelete, ex, assetPath);
-                                }
-                                else
-                                {
-                                    var package = assetItemOrPackage as Package;
-                                    if (package != null)
-                                    {
-                                        log.Error(package, null, AssetMessageCode.AssetCannotDelete, ex, assetPath);
-                                    }
+                                    log.Error(package, null, AssetMessageCode.AssetCannotDelete, ex, assetPath);
                                 }
                             }
                         }
