@@ -526,11 +526,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 {
                     if (actualMultisampleCount != MultisampleCount.None)
                     {
-                        var input = currentRenderTargetsMSAA[colorTargetIndex];
-                        if (input != null)
-                        {
-                            ResolveMSAA(drawContext, input, ViewOutputTarget);
-                        }
+                        ResolveMSAA(drawContext);
+                        drawContext.CommandList.Copy(currentRenderTargetsMSAA[colorTargetIndex], ViewOutputTarget);
                     }
                 }
 
@@ -689,7 +686,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             for (int index = 0; index < renderTargets.Count; index++)
             {
-                if (renderTargets[index].Semantic is ColorTargetSemantic && PostEffects == null)
+                if (renderTargets[index].Semantic is ColorTargetSemantic && PostEffects == null && actualMultisampleCount == MultisampleCount.None)
                 {
                     currentRenderTargets[index] = currentRenderTarget;
                 }
