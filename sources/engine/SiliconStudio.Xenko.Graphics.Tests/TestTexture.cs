@@ -434,8 +434,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                         
                     game.GraphicsContext.DrawTexture(texture, BlendStates.AlphaBlend);
                 },
-                GraphicsProfile.Level_9_1,
-                sourceFormat.ToString());
+                GraphicsProfile.Level_9_1);
         }
 
         private void CheckTexture(GraphicsContext graphicsContext, Texture texture, byte[] data)
