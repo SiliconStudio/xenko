@@ -10,6 +10,6 @@ namespace SiliconStudio.Xenko.Rendering
     {
         public static readonly PermutationParameterKey<ShaderSource> ExtensionPostVertexStageShader = ParameterKeys.NewPermutation<ShaderSource>();
 
-        public static readonly PermutationParameterKey<ShaderSourceCollection> RenderTargetExtensions = ParameterKeys.NewPermutation<ShaderSourceCollection>();
+        public static readonly PermutationParameterKey<ShaderSource> RenderTargetExtensions = ParameterKeys.NewPermutation<ShaderSource>();
     }
 }

@@ -1306,7 +1306,8 @@ Hierarchy:
                                 Size: XLarge
                                 DepthRange: {}
                                 PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic {}
-                                BiasParameters: {}
+                                BiasParameters:
+                                    DepthBias: 0.0015
                         Intensity: 5.0
         -   Entity:
                 Id: 28004364-5dba-4025-90a7-d91c554c4ac3

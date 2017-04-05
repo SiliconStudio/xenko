@@ -11,14 +11,14 @@ namespace SiliconStudio.Xenko.Rendering
 
         public override void Process(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
         {
-            var isMsaa = renderNode.RenderStage.Output.MultiSampleLevel != MSAALevel.None;
+            var isMultisample = renderNode.RenderStage.Output.MultisampleCount != MultisampleCount.None;
 
             // Make object in transparent stage use AlphaBlend and DepthRead
             if (renderNode.RenderStage == TransparentRenderStage)
             {
                 pipelineState.BlendState = BlendStates.AlphaBlend;
                 pipelineState.DepthStencilState = DepthStencilStates.DepthRead;
-                if (isMsaa)
+                if (isMultisample)
                     pipelineState.BlendState.AlphaToCoverageEnable = true;
             }
 
@@ -62,10 +62,10 @@ namespace SiliconStudio.Xenko.Rendering
 
             pipelineState.RasterizerState.CullMode = cullMode;
 
-            if (isMsaa)
+            if (isMultisample)
             {
-                pipelineState.RasterizerState.MultiSampleLevel = renderNode.RenderStage.Output.MultiSampleLevel;
-                pipelineState.RasterizerState.MultiSampleAntiAliasLine = true;
+                pipelineState.RasterizerState.MultisampleCount = renderNode.RenderStage.Output.MultisampleCount;
+                pipelineState.RasterizerState.MultisampleAntiAliasLine = true;
             }
         }
     }

@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             // Render IBL tetrahedra ID so that we can assign them per pixel
             //ibl = PushScopedResource(Context.Allocator.GetTemporaryTexture2D(drawContext.CommandList.DepthStencilBuffer.Width, drawContext.CommandList.DepthStencilBuffer.Height, PixelFormat.R16_UInt));
             ibl = PushScopedResource(Context.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(drawContext.CommandList.DepthStencilBuffer.Width, drawContext.CommandList.DepthStencilBuffer.Height,
-                        1, PixelFormat.R16_UInt, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1 , GraphicsResourceUsage.Default, actualMSAALevel)));
+                        1, PixelFormat.R16_UInt, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1 , GraphicsResourceUsage.Default, actualMultisampleCount)));
             using (drawContext.PushRenderTargetsAndRestore())
             {
                 drawContext.CommandList.Clear(ibl, Color4.Black);

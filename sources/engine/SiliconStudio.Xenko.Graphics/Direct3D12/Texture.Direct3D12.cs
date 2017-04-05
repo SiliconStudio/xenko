@@ -250,7 +250,7 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     // Else regular Texture array
                     // Multisample?
-                    if (IsMultiSample)
+                    if (IsMultisample)
                     {
                         if (Dimension != TextureDimension.Texture2D)
                         {
@@ -273,7 +273,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else
             {
-                if (IsMultiSample)
+                if (IsMultisample)
                 {
                     if (Dimension != TextureDimension.Texture2D)
                     {
@@ -335,7 +335,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (this.ArraySize > 1)
             {
-                if (this.MultiSampleLevel > MSAALevel.None)
+                if (this.MultisampleCount > MultisampleCount.None)
                 {
                     if (Dimension != TextureDimension.Texture2D)
                     {
@@ -363,7 +363,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else
             {
-                if (IsMultiSample)
+                if (IsMultisample)
                 {
                     if (Dimension != TextureDimension.Texture2D)
                     {
@@ -434,7 +434,7 @@ namespace SiliconStudio.Xenko.Graphics
                 depthStencilViewDescription.Texture2D.MipSlice = 0;
             }
 
-            if (MultiSampleLevel > MSAALevel.None)
+            if (MultisampleCount > MultisampleCount.None)
                 depthStencilViewDescription.Dimension = DepthStencilViewDimension.Texture2DMultisampled;
 
             if (IsDepthStencilReadOnly)
@@ -515,7 +515,7 @@ namespace SiliconStudio.Xenko.Graphics
                 Width = (int)description.Width,
                 Height = description.Height,
                 Depth = 1,
-                MultiSampleLevel = (MSAALevel)description.SampleDescription.Count,
+                MultisampleCount = (MultisampleCount)description.SampleDescription.Count,
                 Format = (PixelFormat)description.Format,
                 MipLevels = description.MipLevels,
                 Usage = GraphicsResourceUsage.Default,
@@ -594,7 +594,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            return ResourceDescription.Texture2D(format, textureDescription.Width, textureDescription.Height, (short)textureDescription.ArraySize, (short)textureDescription.MipLevels, (short)textureDescription.MultiSampleLevel, 0, GetBindFlagsFromTextureFlags(flags));
+            return ResourceDescription.Texture2D(format, textureDescription.Width, textureDescription.Height, (short)textureDescription.ArraySize, (short)textureDescription.MipLevels, (short)textureDescription.MultisampleCount, 0, GetBindFlagsFromTextureFlags(flags));
         }
 
         internal static PixelFormat ComputeShaderResourceFormatFromDepthFormat(PixelFormat format)

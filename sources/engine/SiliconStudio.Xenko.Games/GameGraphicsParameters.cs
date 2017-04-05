@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Games
         /// <summary>
         ///   Gets or sets a value indicating the number of sample locations during multisampling.
         /// </summary>
-        public MSAALevel PreferredMultiSampleLevel;
+        public MultisampleCount PreferredMultisampleCount;
 
         /// <summary>
         /// Gets or sets a value indicating whether to synochrnize present with vertical blanking.

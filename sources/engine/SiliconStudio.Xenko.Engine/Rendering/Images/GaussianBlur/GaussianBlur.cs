@@ -124,7 +124,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Get a temporary texture for the intermediate pass
             // This texture will be allocated only in the scope of this draw and returned to the pool at the exit of this method
             var desc = inputTexture.Description;
-            desc.MultiSampleLevel = MSAALevel.None; // TODO we should have a method to get a non-MSAA RT
+            desc.MultisampleCount = MultisampleCount.None; // TODO we should have a method to get a non-multisampled RT
             var outputTextureH = NewScopedRenderTarget2D(desc);
 
             var size = Radius * 2 + 1;

@@ -702,7 +702,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        public void CopyMultiSample(Texture sourceMsaaTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
+        public void CopyMultisample(Texture sourceMultisampleTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
         {
             Internal.Refactor.ThrowNotImplementedException();
         }
@@ -894,7 +894,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
         }
 
-        public void BeginProfile(Color profileColor, string name)
+        public void BeginProfile(Color4 profileColor, string name)
         {
 #if !SILICONSTUDIO_PLATFORM_IOS
             if (GraphicsDevice.ProfileEnabled)

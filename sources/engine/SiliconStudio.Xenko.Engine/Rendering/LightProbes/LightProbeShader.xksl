@@ -14,7 +14,11 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
         }
         rgroup PerView.LightProbes
         {
+#ifdef MSAA_LEVEL
+            stage Texture2DMS<uint, SILICON_STUDIO_MULTISAMPLE_COUNT> LightProbeTetrahedronIds;  // SV_Position => tetrahedron ID
+#else
             stage Texture2DMS<uint> LightProbeTetrahedronIds;  // SV_Position => tetrahedron ID
+#endif
             stage Buffer<uint4> LightProbeTetrahedronProbeIndices; // tetrahaedron ID => 4 probe IDs
             stage Buffer<float4> LightProbeTetrahedronMatrices; // tetrahaedron ID => world to tetrahedron space matrix
             stage Buffer<float3> LightProbeCoefficients; // probe ID => SH coefficients

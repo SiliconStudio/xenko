@@ -68,12 +68,12 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Multisample level.
         /// </summary>
-        public MSAALevel MultiSampleLevel;
+        public MultisampleCount MultisampleCount;
 
         /// <summary>
         /// Enable line antialiasing; only applies if doing line drawing and MultisampleEnable is false.
         /// </summary>
-        public bool MultiSampleAntiAliasLine;
+        public bool MultisampleAntiAliasLine;
 
         /// <summary>
         /// Sets default values for this instance.
@@ -85,8 +85,8 @@ namespace SiliconStudio.Xenko.Graphics
             DepthClipEnable = true;
             FrontFaceCounterClockwise = false;
             ScissorTestEnable = false;
-            MultiSampleLevel = MSAALevel.None;
-            MultiSampleAntiAliasLine = false;
+            MultisampleCount = MultisampleCount.None;
+            MultisampleAntiAliasLine = false;
             DepthBias = 0;
             DepthBiasClamp = 0f;
             SlopeScaleDepthBias = 0f;
@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public bool Equals(RasterizerStateDescription other)
         {
-            return FillMode == other.FillMode && CullMode == other.CullMode && FrontFaceCounterClockwise == other.FrontFaceCounterClockwise && DepthBias == other.DepthBias && DepthBiasClamp.Equals(other.DepthBiasClamp) && SlopeScaleDepthBias.Equals(other.SlopeScaleDepthBias) && DepthClipEnable == other.DepthClipEnable && ScissorTestEnable == other.ScissorTestEnable && MultiSampleLevel == other.MultiSampleLevel && MultiSampleAntiAliasLine == other.MultiSampleAntiAliasLine;
+            return FillMode == other.FillMode && CullMode == other.CullMode && FrontFaceCounterClockwise == other.FrontFaceCounterClockwise && DepthBias == other.DepthBias && DepthBiasClamp.Equals(other.DepthBiasClamp) && SlopeScaleDepthBias.Equals(other.SlopeScaleDepthBias) && DepthClipEnable == other.DepthClipEnable && ScissorTestEnable == other.ScissorTestEnable && MultisampleCount == other.MultisampleCount && MultisampleAntiAliasLine == other.MultisampleAntiAliasLine;
         }
 
         public override bool Equals(object obj)
@@ -128,8 +128,8 @@ namespace SiliconStudio.Xenko.Graphics
                 hashCode = (hashCode*397) ^ SlopeScaleDepthBias.GetHashCode();
                 hashCode = (hashCode*397) ^ DepthClipEnable.GetHashCode();
                 hashCode = (hashCode*397) ^ ScissorTestEnable.GetHashCode();
-                hashCode = (hashCode*397) ^ (int)MultiSampleLevel;
-                hashCode = (hashCode*397) ^ MultiSampleAntiAliasLine.GetHashCode();
+                hashCode = (hashCode*397) ^ (int)MultisampleCount;
+                hashCode = (hashCode*397) ^ MultisampleAntiAliasLine.GetHashCode();
                 return hashCode;
             }
         }

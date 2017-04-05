@@ -373,9 +373,9 @@ namespace SiliconStudio.Xenko.Rendering
                 if (renderEffect != null)
                 {
                     var renderStage = renderNode.RenderStage;
-                    var sources = renderStage.OutputValidator?.ShaderSources;
-                    if (sources != null)
-                        renderEffect.EffectValidator.ValidateParameter(XenkoEffectBaseKeys.RenderTargetExtensions, sources);
+                    var renderStageShaderSource = renderStage.OutputValidator.ShaderSource;
+                    if (renderStageShaderSource != null)
+                        renderEffect.EffectValidator.ValidateParameter(XenkoEffectBaseKeys.RenderTargetExtensions, renderStageShaderSource);
                 }
             }
         }
@@ -798,7 +798,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                         // Extract outputs from render stage
                         pipelineState.Output = renderNode.RenderStage.Output;
-                        pipelineState.RasterizerState.MultiSampleLevel = renderNode.RenderStage.Output.MultiSampleLevel;
+                        pipelineState.RasterizerState.MultisampleCount = renderNode.RenderStage.Output.MultisampleCount;
 
                         // Bind VAO
                         ProcessPipelineState(Context, renderNodeReference, ref renderNode, renderObject, pipelineState);

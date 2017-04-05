@@ -33,6 +33,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public int CascadeCount { get; set; }
 
+        public float CurrentMinDistance { get; set; }
+
+        public float CurrentMaxDistance { get; set; }
+
         public ShadowMapAtlasTexture Atlas { get; internal set; }
 
         public ILightShadowMapRenderer Renderer;
