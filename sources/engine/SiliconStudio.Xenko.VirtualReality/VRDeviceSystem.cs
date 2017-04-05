@@ -111,6 +111,16 @@ namespace SiliconStudio.Xenko.VirtualReality
                     Device.RenderFrameScaling = PreferredScalings[Device.VRApi];
                     Device.Enable(GraphicsDevice, deviceManager, RequireMirror, MirrorWidth, MirrorHeight);
                 }
+                else
+                {
+                    //fallback to dummy device
+                    Device = new DummyDevice
+                    {
+                        Game = Game,
+                        RenderFrameScaling = 1.0f
+                    };
+                    Device.Enable(GraphicsDevice, deviceManager, RequireMirror, MirrorWidth, MirrorHeight);
+                }
             }
         }
 
