@@ -329,51 +329,40 @@ namespace SiliconStudio.Assets.Quantum.Internal
 
             // Create new ids for collection items
             var baseNode = (AssetObjectNode)BaseNode;
-            var isOverriding = baseNode != null && !PropertyGraph.UpdatingPropertyFromBase;
             var removedId = ItemId.Empty;
+            var isOverriding = baseNode != null && !PropertyGraph.UpdatingPropertyFromBase;
+            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(node.Retrieve());
+            var collectionDescriptor = node.Descriptor as CollectionDescriptor;
             switch (e.ChangeType)
             {
                 case ContentChangeType.CollectionUpdate:
                     break;
                 case ContentChangeType.CollectionAdd:
                 {
-                    var collectionDescriptor = node.Descriptor as CollectionDescriptor;
-                    var itemIds = CollectionItemIdHelper.GetCollectionItemIds(node.Retrieve());
                     // Compute the id we will add for this item
                     var itemId = restoringId != ItemId.Empty ? restoringId : ItemId.New();
                     // Add the id to the proper location (insert or add)
                     if (collectionDescriptor != null)
                     {
-                        if (e.Index != Index.Empty)
-                        {
-                            itemIds.Insert(e.Index.Int, itemId);
-                        }
-                        else
-                        {
+                        if (e.Index == Index.Empty)
                             throw new InvalidOperationException("An item has been added to a collection that does not have a predictable Add. Consider using NonIdentifiableCollectionItemsAttribute on this collection.");
-                        }
+
+                        itemIds.Insert(e.Index.Int, itemId);
                     }
                     else
                     {
                         itemIds[e.Index.Value] = itemId;
                     }
+                    break;
                 }
-                    break;
                 case ContentChangeType.CollectionRemove:
-                    {
-                        var collectionDescriptor = node.Descriptor as CollectionDescriptor;
-                        if (collectionDescriptor != null)
-                        {
-                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Collection.Retrieve());
-                            removedId = itemIds.DeleteAndShift(e.Index.Int, isOverriding);
-                        }
-                        else
-                        {
-                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Collection.Retrieve());
-                            removedId = itemIds.Delete(e.Index.Value, isOverriding);
-                        }
-                    }
+                {
+                    var itemId = itemIds[e.Index.Value];
+                    // update isOverriding, it should be true only if the item being removed exist in the base.
+                    isOverriding = isOverriding && baseNode.HasId(itemId);
+                    removedId = collectionDescriptor != null ? itemIds.DeleteAndShift(e.Index.Int, isOverriding) : itemIds.Delete(e.Index.Value, isOverriding);
                     break;
+                }
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -384,15 +373,17 @@ namespace SiliconStudio.Assets.Quantum.Internal
                 return;
 
             // Mark it as New if it does not come from the base
-            if (baseNode != null && !PropertyGraph.UpdatingPropertyFromBase && !ResettingOverride)
+            if (!ResettingOverride)
             {
-                if (e.ChangeType != ContentChangeType.CollectionRemove)
+                if (e.ChangeType != ContentChangeType.CollectionRemove && isOverriding)
                 {
-                    OverrideItem(!ResettingOverride, e.Index);
+                    // If it's an add or an updating, there is no scenario where we can be "un-overriding" without ResettingOverride, so we pass true.
+                    OverrideItem(true, e.Index);
                 }
-                else
+                else if (e.ChangeType == ContentChangeType.CollectionRemove)
                 {
-                    OverrideDeletedItem(true, removedId);
+                    // If it's a delete, it could be an item that was previously added as an override, and that should not be marked as "deleted-overridden", so we pass isOverriding
+                    OverrideDeletedItem(isOverriding, removedId);
                 }
             }
         }
