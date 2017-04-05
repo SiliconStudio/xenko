@@ -600,7 +600,13 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         }
                     }
 
-                    //draw mirror to backbuffer
+                    var isFullViewport = (int)viewport.X == 0 && (int)viewport.Y == 0
+                                         && (int)viewport.Width == drawContext.CommandList.RenderTarget.ViewWidth
+                                         && (int)viewport.Height == drawContext.CommandList.RenderTarget.ViewHeight;
+                    if (!isFullViewport)
+                        throw new NotImplementedException("Can't render VR with a viewport smaller than texture");
+
+                    //draw mirror to backbuffer (if size is matching and full viewport)
                     if (VRSettings.VRDevice.MirrorTexture.Size != drawContext.CommandList.RenderTarget.Size)
                     {
                         VRSettings.MirrorScaler.SetInput(0, VRSettings.VRDevice.MirrorTexture);
@@ -610,7 +616,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     else
                     {
                         drawContext.CommandList.Copy(VRSettings.VRDevice.MirrorTexture, drawContext.CommandList.RenderTarget);
-                    }                  
+                    }
                 }
                 else
                 {
@@ -621,7 +627,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
-                        drawContext.CommandList.SetRenderTargetsAndViewport(ViewDepthStencil, currentRenderTargets.Count, currentRenderTargets.Items);
+                        drawContext.CommandList.SetRenderTargets(ViewDepthStencil, currentRenderTargets.Count, currentRenderTargets.Items);
 
                         // Clear render target and depth stencil
                         Clear?.Draw(drawContext);
