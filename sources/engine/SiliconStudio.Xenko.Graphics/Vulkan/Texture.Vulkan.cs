@@ -310,9 +310,6 @@ namespace SiliconStudio.Xenko.Graphics
                     int mipSlice = i % MipLevels;
                     var mipMapDescription = GetMipMapDescription(mipSlice);
 
-                    SubresourceLayout layout;
-                    GraphicsDevice.NativeDevice.GetImageSubresourceLayout(NativeImage, new ImageSubresource(NativeImageAspect, (uint)arraySlice, (uint)mipSlice), out layout);
-
                     var alignment = ((uploadOffset + alignmentMask) & ~alignmentMask) - uploadOffset;
                     uploadMemory += alignment;
                     uploadOffset += alignment;
@@ -326,8 +323,8 @@ namespace SiliconStudio.Xenko.Graphics
                         ImageSubresource = new ImageSubresourceLayers(ImageAspectFlags.Color, (uint)arraySlice, 1, (uint)mipSlice),
                         BufferRowLength = 0, //(uint)(dataBoxes[i].RowPitch / pixelSize),
                         BufferImageHeight = 0, //(uint)(dataBoxes[i].SlicePitch / dataBoxes[i].RowPitch),
-                        ImageOffset = new Offset3D(0, 0, arraySlice),
-                        ImageExtent = new Extent3D((uint)mipMapDescription.Width, (uint)mipMapDescription.Height, 1)
+                        ImageOffset = new Offset3D(0, 0, 0),
+                        ImageExtent = new Extent3D((uint)mipMapDescription.Width, (uint)mipMapDescription.Height, (uint)mipMapDescription.Depth)
                     };
 
                     uploadMemory += slicePitch;
