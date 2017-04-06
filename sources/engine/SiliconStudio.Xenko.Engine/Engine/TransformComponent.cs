@@ -307,6 +307,8 @@ namespace SiliconStudio.Xenko.Engine
                 throw new InvalidOperationException("This TransformComponent already has a Parent, detach it first.");
 
             item.parent = this;
+
+            Entity?.EntityManager?.OnHierarchyChanged(item.Entity);
         }
 
         private void RemoveItem(TransformComponent item)
@@ -315,6 +317,8 @@ namespace SiliconStudio.Xenko.Engine
                 throw new InvalidOperationException("This TransformComponent's parent is not the expected value.");
 
             item.parent = null;
+
+            Entity?.EntityManager?.OnHierarchyChanged(item.Entity);
         }
 
         private void ChildrenCollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
