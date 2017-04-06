@@ -19,18 +19,18 @@ namespace SiliconStudio.Core.VisualStudio
 
     public static class VisualStudioVersions
     {
-        private static Dictionary<string, IDEInfo> ideDictionary;
+        private static List<IDEInfo> ideInfos;
 
         public static IDEInfo DefaultIDE = new IDEInfo { DisplayName = "Default IDE", InstallationPath = null };
 
-        private static void BuildDictionary()
+        private static void BuildIDEInfos()
         {
-            if (ideDictionary != null)
+            if (ideInfos != null)
                 return;
 
-            ideDictionary = new Dictionary<string, IDEInfo>();
+            ideInfos = new List<IDEInfo>();
 
-            ideDictionary.Add(DefaultIDE.DisplayName, DefaultIDE);
+            ideInfos.Add(DefaultIDE);
 
             // Visual Studio 14.0 (2015)
             var localMachine32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
@@ -45,7 +45,7 @@ namespace SiliconStudio.Core.VisualStudio
                     if (!File.Exists(vsixInstallerPath))
                         vsixInstallerPath = null;
 
-                    ideDictionary.Add("Visual Studio 2015", new IDEInfo { DisplayName = "Visual Studio 2015", InstallationPath = vs14InstallPath, VsixInstallerPath = vsixInstallerPath });
+                    ideInfos.Add(new IDEInfo { DisplayName = "Visual Studio 2015", InstallationPath = vs14InstallPath, VsixInstallerPath = vsixInstallerPath });
                 }
             }
 
@@ -72,7 +72,7 @@ namespace SiliconStudio.Core.VisualStudio
                         if (!File.Exists(vsixInstallerPath))
                             vsixInstallerPath = null;
 
-                        ideDictionary.Add(inst[0].GetDisplayName(), new IDEInfo { DisplayName = inst[0].GetDisplayName(), InstallationPath = path, VsixInstallerPath = vsixInstallerPath });
+                        ideInfos.Add(new IDEInfo { DisplayName = inst[0].GetDisplayName(), InstallationPath = path, VsixInstallerPath = vsixInstallerPath });
                     }
                 } 
             }
@@ -82,10 +82,9 @@ namespace SiliconStudio.Core.VisualStudio
         {
             get
             {
-                BuildDictionary();
+                BuildIDEInfos();
 
-                foreach (var value in ideDictionary.Values)
-                    yield return value;
+                return ideInfos;
             }
         }
     }
