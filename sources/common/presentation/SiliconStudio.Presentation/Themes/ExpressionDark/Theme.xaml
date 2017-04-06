@@ -223,34 +223,43 @@
                                                              {Binding Owner.IsVisible, Converter={cvt:InvertBool}, RelativeSource={RelativeSource Self}},
                                                              {Binding Owner.WindowState, Converter={cvt:IsEqualToParam}, ConverterParameter={x:Static WindowState.Minimized}, RelativeSource={RelativeSource Self}},
                                                              Converter={cvt:OrMultiConverter}, FallbackValue={me:True}}" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="MinHeight" Value="120" />
+    <Setter Property="MinWidth" Value="320" />
+    <Setter Property="MaxHeight" Value="768" />
+    <Setter Property="SizeToContent" Value="WidthAndHeight" />
+    <Setter Property="ResizeMode" Value="NoResize" />
+    <Setter Property="Padding" Value="10,0" />
     <Setter Property="ContentTemplate">
       <Setter.Value>
         <DataTemplate>
           <DockPanel LastChildFill="True" Margin="10">
             <!--  BUTTONS  -->
-            <ItemsControl Margin="10" DockPanel.Dock="Bottom"
-                          ItemsSource="{Binding ButtonsSource, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <UniformGrid HorizontalAlignment="Right" IsItemsHost="True" Rows="1" />
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
-              <ItemsControl.ItemTemplate>
-                <ItemContainerTemplate DataType="{x:Type wnd:DialogButtonInfo}">
-                  <Button d:DataContext="{d:DesignInstance wnd:DialogButtonInfo}"
-                          Margin="10,0,0,0" Padding="20,6" MinWidth="80"
-                          Command="{Binding ButtonCommand, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
-                          CommandParameter="{Binding Result}"
-                          Content="{Binding Content}" IsCancel="{Binding IsCancel}" IsDefault="{Binding IsDefault}" />
-                </ItemContainerTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
+              <ItemsControl x:Name="ButtonItemsControl" Margin="10" HorizontalAlignment="Right" DockPanel.Dock="Bottom"
+                            ItemsSource="{Binding ButtonsSource, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <UniformGrid IsItemsHost="True" Rows="1" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <ItemContainerTemplate DataType="{x:Type wnd:DialogButtonInfo}">
+                    <Button d:DataContext="{d:DesignInstance wnd:DialogButtonInfo}"
+                            Margin="5,0" Padding="20,6" MinWidth="80"
+                            Command="{Binding ButtonCommand, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
+                            CommandParameter="{Binding Result}"
+                            Content="{Binding Content}" IsCancel="{Binding IsCancel}" IsDefault="{Binding IsDefault}" />
+                  </ItemContainerTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
             <!--  CONTENT  -->
             <ContentPresenter Content="{Binding}"
                               ContentTemplate="{Binding MessageTemplate, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
                               ContentTemplateSelector="{Binding MessageTemplateSelector, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
                               Cursor="{Binding Cursor, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
                               Margin="{Binding Padding, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
+                              MinWidth="{Binding ActualWidth, ElementName=ButtonItemsControl}"
                               HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
                               VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"/>
           </DockPanel>
@@ -299,19 +308,12 @@
     <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
   </Style>
   <Style TargetType="{x:Type wnd:MessageBox}" BasedOn="{StaticResource MessageDialogChromeStyle}">
-    <Setter Property="HorizontalContentAlignment" Value="Left" />
-    <Setter Property="VerticalContentAlignment" Value="Center" />
-    <Setter Property="MinHeight" Value="120" />
-    <Setter Property="MinWidth" Value="320" />
-    <Setter Property="MaxHeight" Value="768" />
-    <Setter Property="SizeToContent" Value="WidthAndHeight" />
-    <Setter Property="ResizeMode" Value="NoResize" />
     <Setter Property="MessageTemplate">
       <Setter.Value>
         <DataTemplate>
           <DockPanel LastChildFill="True"
-                     MinWidth="{Binding MinWidth, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, FallbackValue=320}"
-                     MaxHeight="{Binding MaxHeight, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:SumNum}, ConverterParameter={me:Double -20}, FallbackValue=748}" >
+                     MinWidth="{Binding MinWidth, RelativeSource={RelativeSource AncestorType=ContentPresenter}, FallbackValue=320}"
+                     MaxHeight="{Binding MaxHeight, RelativeSource={RelativeSource AncestorType=ContentPresenter}, Converter={cvt:SumNum}, ConverterParameter={me:Double -20}, FallbackValue=748}">
             <i:Interaction.Behaviors>
               <behaviors:ResizeBehavior SizeRatio="5,3"/>
             </i:Interaction.Behaviors>
@@ -319,19 +321,20 @@
                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" RenderOptions.BitmapScalingMode="HighQuality"
                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelHeight)}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelWidth)}"
                    Visibility="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:Chained {cvt:ObjectToBool}, {cvt:VisibleOrCollapsed}}}" />
-            <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center" />
+            <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center"/>
           </DockPanel>
         </DataTemplate>
       </Setter.Value>
     </Setter>
   </Style>
+
   <Style TargetType="{x:Type wnd:CheckedMessageBox}" BasedOn="{StaticResource {x:Type wnd:MessageBox}}">
     <Setter Property="MessageTemplate">
       <Setter.Value>
         <DataTemplate>
           <DockPanel LastChildFill="True"
-                     MinWidth="{Binding MinWidth, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, FallbackValue=320}"
-                     MaxHeight="{Binding MaxHeight, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:SumNum}, ConverterParameter={me:Double -20}, FallbackValue=748}" >
+                     MinWidth="{Binding MinWidth, RelativeSource={RelativeSource AncestorType=ContentPresenter}, FallbackValue=320}"
+                     MaxHeight="{Binding MaxHeight, RelativeSource={RelativeSource AncestorType=ContentPresenter}, Converter={cvt:SumNum}, ConverterParameter={me:Double -20}, FallbackValue=748}" >
             <i:Interaction.Behaviors>
               <behaviors:ResizeBehavior SizeRatio="5,3"/>
             </i:Interaction.Behaviors>
@@ -343,7 +346,7 @@
                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,5" RenderOptions.BitmapScalingMode="HighQuality"
                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Source.PixelHeight}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Source.PixelWidth}"
                    Visibility="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:CheckedMessageBox}, Converter={cvt:Chained {cvt:ObjectToBool}, {cvt:VisibleOrCollapsed}}}" />
-            <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center" />
+            <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center"/>
           </DockPanel>
         </DataTemplate>
       </Setter.Value>
@@ -356,7 +359,8 @@
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ctrl:MarkdownTextBlock}">
           <FlowDocumentScrollViewer x:Name="PART_MessageContainer"
-                                    HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" />
+                                    HorizontalScrollBarVisibility="Hidden"
+                                    VerticalScrollBarVisibility="Auto"/>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
