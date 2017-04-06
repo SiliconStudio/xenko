@@ -154,7 +154,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
                 else
                 {
-                    pipelineState = new PipelineState(graphicsDevice, pipelineStateDescription) { InputBindingCount = pipelineStateDescription.InputElements?.Max(x => x.InputSlot) ?? 0 };
+                    pipelineState = new PipelineState(graphicsDevice, pipelineStateDescription);
                     graphicsDevice.CachedPipelineStates.Add(hashedState, pipelineState);
                 }
             }

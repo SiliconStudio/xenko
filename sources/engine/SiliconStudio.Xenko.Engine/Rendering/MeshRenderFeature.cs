@@ -159,6 +159,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
             
             MeshDraw currentDrawData = null;
+            int emptyBufferSlot = -1;
             for (int index = startIndex; index < endIndex; index++)
             {
                 var renderNodeReference = renderViewStage.SortedRenderNodes[index].RenderNode;
@@ -176,17 +177,18 @@ namespace SiliconStudio.Xenko.Rendering
                 // Bind VB
                 if (currentDrawData != drawData)
                 {
-                    for (int i = 0; i < drawData.VertexBuffers.Length; i++)
+                    for (int slot = 0; slot < drawData.VertexBuffers.Length; slot++)
                     {
-                        var vertexBuffer = drawData.VertexBuffers[i];
-                        commandList.SetVertexBuffer(i, vertexBuffer.Buffer, vertexBuffer.Offset, vertexBuffer.Stride);
+                        var vertexBuffer = drawData.VertexBuffers[slot];
+                        commandList.SetVertexBuffer(slot, vertexBuffer.Buffer, vertexBuffer.Offset, vertexBuffer.Stride);
                     }
 
                     // If the mesh's vertex buffers miss any input streams, an additional input binding will have been added to the pipeline state.
                     // We bind an additional empty vertex buffer to that slot handle those streams gracefully.
-                    if (renderEffect.PipelineState.InputBindingCount != drawData.VertexBuffers.Length)
+                    if (emptyBufferSlot != drawData.VertexBuffers.Length)
                     {
                         commandList.SetVertexBuffer(drawData.VertexBuffers.Length, emptyBuffer, 0, 0);
+                        emptyBufferSlot = drawData.VertexBuffers.Length;
                     }
 
                     if (drawData.IndexBuffer != null)
