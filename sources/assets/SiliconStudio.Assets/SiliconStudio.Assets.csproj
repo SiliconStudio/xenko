@@ -125,6 +125,7 @@
     <Compile Include="PackageStore.cs" />
     <Compile Include="PackageUpgrader.cs" />
     <Compile Include="PackageUpgraderAttribute.cs" />
+    <Compile Include="PackageUpgradeRequestedAnswer.cs" />
     <Compile Include="PackageUserSettings.cs" />
     <Compile Include="PackageVersionRangeExtensions.cs" />
     <Compile Include="Reflection\CollectionItemIdentifiers.cs" />
