@@ -61,7 +61,8 @@ namespace SiliconStudio.Xenko.Rendering
 
             RenderFeatures.CollectionChanged -= RenderFeatures_CollectionChanged;
 
-            emptyBuffer.Dispose();
+            emptyBuffer?.Dispose();
+            emptyBuffer = null;
 
             base.Destroy();
         }
