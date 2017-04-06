@@ -23,16 +23,19 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     [CategoryOrder(10, "Parameters")]
     [CategoryOrder(50, "Atlas Packing")]
     [CategoryOrder(150, "Sprites")]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.10.0-alpha01")]
+    [AssetFormatVersion(XenkoConfig.PackageName, SpriteSheetAssetVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RenameImageGroupsUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(RemoveMaxSizeUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.5.0-alpha01", typeof(BorderSizeOrderUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.10.0-alpha01", typeof(SpriteSheetSRGBUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-alpha01", "2.0.0.0", typeof(CompressionUpgrader))]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(SpriteSheet))]
     [Display(1600, "Sprite Sheet")]
     public class SpriteSheetAsset : Asset
     {
+        private const string SpriteSheetAssetVersion = "2.0.0.0";
+
         /// <summary>
         /// The default file extension used by the <see cref="SpriteSheetAsset"/>.
         /// </summary>
@@ -238,6 +241,12 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             // public TextureFormat Format { get; set; } = TextureFormat.Compressed;
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
+                if (asset.ContainsChild("IsCompressed"))
+                {
+                    // This asset was already upgraded manually, so just bump the version
+                    return;
+                }
+
                 if (asset.ContainsChild("Format"))
                 {
                     if (asset.Format == "Compressed")
@@ -253,6 +262,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                 }
                 else
                 {
+                    // The asset has no Format, so assign a value matching the default Format (Compressed)
                     asset.IsCompressed = true;
                 }
             }
