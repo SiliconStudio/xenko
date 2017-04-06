@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
     {
         public BillboardModeTests()
         {
-            CurrentVersion = 5;
+            CurrentVersion = 6;
         }
 
         protected override async Task LoadContent()

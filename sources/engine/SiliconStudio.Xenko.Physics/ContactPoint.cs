@@ -5,23 +5,29 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Physics
 {
-    /// <summary>
-    ///     Generic contact between colliders, Always using Vector3 as the engine allows mixed 2D/3D contacts.
-    ///     Note: As class because it is shared between the 2 Colliders.. maybe struct is faster?
-    /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct ContactPoint
+    internal struct NativeContactPoint
     {
         internal readonly IntPtr ColliderA;
         internal readonly IntPtr ColliderB;
-
         public readonly float Distance;
         public readonly Vector3 Normal;
         public readonly Vector3 PositionOnA;
         public readonly Vector3 PositionOnB;
+    }
+
+    public struct ContactPoint
+    {
+        public PhysicsComponent ColliderA;
+        public PhysicsComponent ColliderB;
+        public float Distance;
+        public Vector3 Normal;
+        public Vector3 PositionOnA;
+        public Vector3 PositionOnB;
     }
 
     public class ContactPointEqualityComparer : EqualityComparer<ContactPoint>

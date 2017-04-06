@@ -273,8 +273,22 @@ namespace SiliconStudio.Xenko.Graphics
 
         private unsafe void InitializeImage(DataBox[] dataBoxes)
         {
-            var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
-            var beginInfo = new CommandBufferBeginInfo { StructureType = StructureType.CommandBufferBeginInfo };
+            // Begin copy command buffer
+            var commandBufferAllocateInfo = new CommandBufferAllocateInfo
+            {
+                StructureType = StructureType.CommandBufferAllocateInfo,
+                CommandPool = GraphicsDevice.NativeCopyCommandPool,
+                CommandBufferCount = 1,
+                Level = CommandBufferLevel.Primary
+            };
+            CommandBuffer commandBuffer;
+
+            lock (GraphicsDevice.QueueLock)
+            {
+                GraphicsDevice.NativeDevice.AllocateCommandBuffers(ref commandBufferAllocateInfo, &commandBuffer);
+            }
+
+            var beginInfo = new CommandBufferBeginInfo { StructureType = StructureType.CommandBufferBeginInfo, Flags = CommandBufferUsageFlags.OneTimeSubmit };
             commandBuffer.Begin(ref beginInfo);
 
             if (dataBoxes != null && dataBoxes.Length > 0)
@@ -310,9 +324,6 @@ namespace SiliconStudio.Xenko.Graphics
                     int mipSlice = i % MipLevels;
                     var mipMapDescription = GetMipMapDescription(mipSlice);
 
-                    SubresourceLayout layout;
-                    GraphicsDevice.NativeDevice.GetImageSubresourceLayout(NativeImage, new ImageSubresource(NativeImageAspect, (uint)arraySlice, (uint)mipSlice), out layout);
-
                     var alignment = ((uploadOffset + alignmentMask) & ~alignmentMask) - uploadOffset;
                     uploadMemory += alignment;
                     uploadOffset += alignment;
@@ -326,8 +337,8 @@ namespace SiliconStudio.Xenko.Graphics
                         ImageSubresource = new ImageSubresourceLayers(ImageAspectFlags.Color, (uint)arraySlice, 1, (uint)mipSlice),
                         BufferRowLength = 0, //(uint)(dataBoxes[i].RowPitch / pixelSize),
                         BufferImageHeight = 0, //(uint)(dataBoxes[i].SlicePitch / dataBoxes[i].RowPitch),
-                        ImageOffset = new Offset3D(0, 0, arraySlice),
-                        ImageExtent = new Extent3D((uint)mipMapDescription.Width, (uint)mipMapDescription.Height, 1)
+                        ImageOffset = new Offset3D(0, 0, 0),
+                        ImageExtent = new Extent3D((uint)mipMapDescription.Width, (uint)mipMapDescription.Height, (uint)mipMapDescription.Depth)
                     };
 
                     uploadMemory += slicePitch;
@@ -363,7 +374,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
                 GraphicsDevice.NativeCommandQueue.WaitIdle();
-                commandBuffer.Reset(CommandBufferResetFlags.None);
+                GraphicsDevice.NativeDevice.FreeCommandBuffers(GraphicsDevice.NativeCopyCommandPool, 1, &commandBuffer);
             }
         }
 

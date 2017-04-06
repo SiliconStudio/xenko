@@ -14,8 +14,12 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
         }
         rgroup PerView.LightProbes
         {
-#ifdef MSAA_LEVEL
+#ifdef SILICON_STUDIO_MULTISAMPLE_COUNT 
+  #if SILICON_STUDIO_MULTISAMPLE_COUNT > 1
             stage Texture2DMS<uint, SILICON_STUDIO_MULTISAMPLE_COUNT> LightProbeTetrahedronIds;  // SV_Position => tetrahedron ID
+  #else
+            stage Texture2D<uint> LightProbeTetrahedronIds;  // SV_Position => tetrahedron ID
+  #endif
 #else
             stage Texture2DMS<uint> LightProbeTetrahedronIds;  // SV_Position => tetrahedron ID
 #endif
@@ -49,7 +53,12 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
             sampleDirection = float3(sampleDirection.xy, -sampleDirection.z);
 
             var shadingPosition = int3(streams.ShadingPosition.xy, 0);
+#if SILICON_STUDIO_MULTISAMPLE_COUNT == 1
+            uint tetrahedronIndex = LightProbeTetrahedronIds.Load(shadingPosition);
+#else
+            // TODO: Use SV_SampleIndex
             uint tetrahedronIndex = LightProbeTetrahedronIds.Load(shadingPosition, 0);
+#endif
 
             uint4 probeIndices = LightProbeTetrahedronProbeIndices.Load(tetrahedronIndex);
             float3x4 tetrahedronMatrix = float3x4(LightProbeTetrahedronMatrices.Load(tetrahedronIndex * 3 + 0),
@@ -57,10 +66,15 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
                                                  LightProbeTetrahedronMatrices.Load(tetrahedronIndex * 3 + 2));
 
             float3 tetrahedronFactors3 = mul((float3x3)tetrahedronMatrix, streams.PositionWS.xyz - tetrahedronMatrix._14_24_34);
+
+            // Protect ourselves against degenerate cases
+            // TODO: Investigate why those happen (almost coplanar tetrahedron?)
+            tetrahedronFactors3 = saturate(tetrahedronFactors3);
+
             float4 tetrahedronFactors4 = float4(tetrahedronFactors3, 1.0f - tetrahedronFactors3.x - tetrahedronFactors3.y - tetrahedronFactors3.z);
 
             // Zero all the barycentric coordinates that reference probes past IgnoredProbeStart (the one far away)
-            tetrahedronFactors4 = lerp(tetrahedronFactors4, 0.0f, probeIndices >= IgnoredProbeStart ? 1.0f : 0.0f);
+            tetrahedronFactors4 = lerp(tetrahedronFactors4, 0.0f, probeIndices >= IgnoredProbeStart ? float4(1.0f, 1.0f, 1.0f, 1.0f) : float4(0.0f, 0.0f, 0.0f, 0.0f));
 
             //if (probeIndices.x >= IgnoredProbeStart)
             //    tetrahedronFactors4.x = 0.0f;

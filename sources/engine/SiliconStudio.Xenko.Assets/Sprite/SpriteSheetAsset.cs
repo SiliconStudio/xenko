@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.5.0-alpha01")]
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.10.0-alpha01", typeof(SpriteSheetSRGBUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-alpha01", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-alpha01", "2.0.0.0", typeof(CompressionUpgrader))]
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
@@ -195,6 +195,12 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             // public TextureFormat Format { get; set; } = TextureFormat.Compressed;
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
+                if (asset.ContainsChild("IsCompressed"))
+                {
+                    // This asset was already upgraded manually, so just bump the version
+                    return;
+                }
+
                 if (asset.ContainsChild("Format"))
                 {
                     if (asset.Format == "Compressed")
@@ -210,6 +216,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                 }
                 else
                 {
+                    // The asset has no Format, so assign a value matching the default Format (Compressed)
                     asset.IsCompressed = true;
                 }
             }
