@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha02", "1.10.0-alpha01", typeof(AnimationAssetUpgraderFramerate))]     // Force re-import for Min/Max frames
-    public partial class AnimationAsset : Asset, IAssetCompileTimeDependencies
+    public class AnimationAsset : Asset
     {
         private const string CurrentVersion = "1.10.0-alpha01";
 
@@ -145,15 +145,5 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// </userdoc>
         [DataMember(100)]
         public Model PreviewModel { get; set; }
-
-        /// <inheritdoc/>
-        public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
-        {
-            var reference = AttachedReferenceManager.GetAttachedReference(Skeleton);
-            if (reference != null)
-            {
-                yield return new AssetReference(reference.Id, reference.Url);
-            }
-        }
     }
 }

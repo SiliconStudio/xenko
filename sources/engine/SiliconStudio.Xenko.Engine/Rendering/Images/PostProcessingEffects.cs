@@ -4,6 +4,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Rendering.Images
@@ -247,13 +248,23 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
         }
 
-        public void Draw(RenderDrawContext drawContext, IRenderTarget inputTargetsComposition, Texture inputDepthStencil, Texture outputTarget)
+        public void Draw(RenderDrawContext drawContext, RenderOutputValidator outputValidator, Texture[] inputs, Texture inputDepthStencil, Texture outputTarget)
         {
-            var colorInput = inputTargetsComposition as IColorTarget;
-            if (colorInput == null) return;
-
-            SetInput(0, colorInput.Color);
+            var colorIndex = outputValidator.Find<ColorTargetSemantic>();
+            if (colorIndex < 0)
+                return;
+            
+            SetInput(0, inputs[colorIndex]);
             SetInput(1, inputDepthStencil);
+
+            var reflectionIndex0 = outputValidator.Find<OctahedronNormalSpecularColorTargetSemantic>();
+            var reflectionIndex1 = outputValidator.Find<EnvironmentLightRoughnessTargetSemantic>();
+            if (reflectionIndex0 >= 0 && reflectionIndex1 >= 0)
+            {
+                SetInput(2, inputs[reflectionIndex0]);
+                SetInput(3, inputs[reflectionIndex1]);
+            }
+            
             SetOutput(outputTarget);
             Draw(drawContext);
         }
@@ -261,6 +272,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public bool RequiresVelocityBuffer => false;
 
         public bool RequiresNormalBuffer => false;
+
+        public bool RequiresSsrGBuffers => false; // localReflections.Enabled; TODO : to merge with RLR branch.
 
         protected override void DrawCore(RenderDrawContext context)
         {

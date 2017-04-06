@@ -27,6 +27,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             // Plug an event handler to track events
             var events = new List<EntityComponentEvent>();
+            entity.EntityManager = new DelegateEntityComponentNotify(evt => events.Add(evt));
 
             // Make sure that an entity has a transform component
             Assert.NotNull(entity.Transform);
@@ -171,6 +172,22 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
                 newEntity = newEntities[0];
                 goto check_new_Entity;
+            }
+        }
+
+        private class DelegateEntityComponentNotify : EntityManager
+        {
+            private readonly Action<EntityComponentEvent> action;
+
+            public DelegateEntityComponentNotify(Action<EntityComponentEvent> action) : base(new ServiceRegistry())
+            {
+                if (action == null) throw new ArgumentNullException(nameof(action));
+                this.action = action;
+            }
+
+            protected override void OnComponentChanged(Entity entity, int index, EntityComponent oldComponent, EntityComponent newComponent)
+            {
+                action(new EntityComponentEvent(entity, index, oldComponent, newComponent));
             }
         }
 

@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Graphics
                 Usage = Texture.GetUsageWithFlags(usage, flags),
                 ArraySize = 1,
                 Dimension = TextureDimension.Texture3D,
-                MultiSampleLevel = MSAALevel.None
+                MultisampleCount = MultisampleCount.None
             };
 
             return desc;

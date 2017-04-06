@@ -50,7 +50,6 @@ namespace SiliconStudio.Xenko.Assets.Models
                 return;
             }
 
-            //sourceBuildStep.InputFilesGetter = () => GetInputFiles(context, assetItem);
             sourceBuildStep.Mode = ImportModelCommand.ExportMode.Animation;
             sourceBuildStep.SourcePath = assetSource;
             sourceBuildStep.Location = targetUrlInStorage;

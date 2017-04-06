@@ -94,17 +94,10 @@ namespace SiliconStudio.Quantum
             {
                 // Some collection (such as sets) won't add item at the end but at an arbitrary location.
                 // Better send a null index in this case than sending a wrong value.
-                var value = Value;
                 var index = collectionDescriptor.IsList ? new Index(collectionDescriptor.GetCollectionCount(value)) : Index.Empty;
                 var args = new ItemChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
                 NotifyItemChanging(args);
                 collectionDescriptor.Add(value, newItem);
-                // TODO: fixme
-                //if (value.GetType().GetTypeInfo().IsValueType)
-                //{
-                //    var containerValue = Parent.Retrieve();
-                //    MemberDescriptor.Set(containerValue, value);
-                //}
                 UpdateReferences();
                 NotifyItemChanged(args);
             }
@@ -120,7 +113,6 @@ namespace SiliconStudio.Quantum
             if (collectionDescriptor != null)
             {
                 var index = collectionDescriptor.IsList ? itemIndex : Index.Empty;
-                var value = Value;
                 var args = new ItemChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
                 NotifyItemChanging(args);
                 if (collectionDescriptor.GetCollectionCount(value) == itemIndex.Int || !collectionDescriptor.HasInsert)
@@ -131,12 +123,6 @@ namespace SiliconStudio.Quantum
                 {
                     collectionDescriptor.Insert(value, itemIndex.Int, newItem);
                 }
-                // TODO: fixme
-                //if (value.GetType().GetTypeInfo().IsValueType)
-                //{
-                //    var containerValue = Parent.Retrieve();
-                //    MemberDescriptor.Set(containerValue, value);
-                //}
                 UpdateReferences();
                 NotifyItemChanged(args);
             }
@@ -144,14 +130,7 @@ namespace SiliconStudio.Quantum
             {
                 var args = new ItemChangeEventArgs(this, itemIndex, ContentChangeType.CollectionAdd, null, newItem);
                 NotifyItemChanging(args);
-                var value = Value;
                 dictionaryDescriptor.AddToDictionary(value, itemIndex.Value, newItem);
-                // TODO: fixme
-                //if (value.GetType().GetTypeInfo().IsValueType)
-                //{
-                //    var containerValue = Parent.Retrieve();
-                //    MemberDescriptor.Set(containerValue, value);
-                //}
                 UpdateReferences();
                 NotifyItemChanged(args);
             }
@@ -168,7 +147,6 @@ namespace SiliconStudio.Quantum
             NotifyItemChanging(args);
             var collectionDescriptor = Descriptor as CollectionDescriptor;
             var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
-            var value = Value;
             if (collectionDescriptor != null)
             {
                 if (collectionDescriptor.HasRemoveAt)
@@ -187,12 +165,6 @@ namespace SiliconStudio.Quantum
             else
                 throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
 
-            // TODO: fixme
-            //if (value.GetType().GetTypeInfo().IsValueType)
-            //{
-            //    var containerValue = Parent.Retrieve();
-            //    MemberDescriptor.Set(containerValue, value);
-            //}
             UpdateReferences();
             NotifyItemChanged(args);
         }

@@ -60,6 +60,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public override void VisitFeature(MaterialGeneratorContext context)
         {
+            Intensity.ClampFloat(0, 1);
+
             context.SetStream(SpecularStream.Stream, SpecularMap, MaterialKeys.SpecularMap, MaterialKeys.SpecularValue);
             context.SetStream("matSpecularIntensity", Intensity, null, MaterialKeys.SpecularIntensityValue);
         }

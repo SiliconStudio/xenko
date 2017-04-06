@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
@@ -79,6 +79,8 @@ namespace SiliconStudio.Assets.Quantum.Internal
         public bool TryIdToIndex(ItemId id, out Index index) => ex.TryIdToIndex(id, out index);
 
         IAssetObjectNode IAssetObjectNode.IndexedTarget(Index index) => (IAssetObjectNode)IndexedTarget(index);
+
+        void IAssetObjectNodeInternal.DisconnectOverriddenDeletedItem(ItemId deletedId) => ex.DisconnectOverriddenDeletedItem(deletedId);
 
         void IAssetObjectNodeInternal.NotifyOverrideChanging() => OverrideChanging?.Invoke(this, EventArgs.Empty);
 

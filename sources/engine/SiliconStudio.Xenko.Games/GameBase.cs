@@ -207,12 +207,6 @@ namespace SiliconStudio.Xenko.Games
         public ContentManager Content { get; private set; }
 
         /// <summary>
-        /// Gets the <see cref="ContentManager"/>.
-        /// </summary>
-        [Obsolete("Use Content property instead when accessing the ContentManager")]
-        public ContentManager Asset => Content;
-
-        /// <summary>
         /// Gets the game components registered by this game.
         /// </summary>
         /// <value>The game components.</value>

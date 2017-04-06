@@ -12,9 +12,6 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
     {
         public static readonly ValueParameterKey<float> Intensity = ParameterKeys.NewValue(1.0f);
 
-        [Obsolete]
-        public static readonly ValueParameterKey<float> Rotation = ParameterKeys.NewValue(0.0f);
-
         public static readonly ValueParameterKey<Matrix> SkyMatrix = ParameterKeys.NewValue(Matrix.Identity);
 
         public static readonly PermutationParameterKey<ShaderSource> Shader = ParameterKeys.NewPermutation<ShaderSource>();

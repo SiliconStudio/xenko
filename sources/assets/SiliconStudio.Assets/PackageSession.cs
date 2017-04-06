@@ -516,17 +516,6 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Saves all packages and assets.
         /// </summary>
-        /// <returns>Result of saving.</returns>
-        public LoggerResult Save()
-        {
-            var log = new LoggerResult();
-            Save(log);
-            return log;
-        }
-
-        /// <summary>
-        /// Saves all packages and assets.
-        /// </summary>
         /// <param name="log">The <see cref="LoggerResult"/> in which to report result.</param>
         /// <param name="saveParameters">The parameters for the save operation.</param>
         public void Save(LoggerResult log, PackageSaveParameters saveParameters = null)

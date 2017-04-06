@@ -1,7 +1,6 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
@@ -60,14 +59,14 @@ namespace JumpyJet
             var virtualResolution = new Vector3(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height, 20f);
 
             // Create Parallax Background
-            backgroundParallax.Add(new BackgroundSection(ParallaxBackgrounds.Sprites[0], virtualResolution, GameScript.GameSpeed / 4f, Pal0Depth));
-            backgroundParallax.Add(new BackgroundSection(ParallaxBackgrounds.Sprites[1], virtualResolution, GameScript.GameSpeed / 3f, Pal1Depth));
-            backgroundParallax.Add(new BackgroundSection(ParallaxBackgrounds.Sprites[2], virtualResolution, GameScript.GameSpeed / 1.5f, Pal2Depth));
+            backgroundParallax.Add(new BackgroundSection(ParallaxBackgrounds.Sprites[0], virtualResolution, 100 * GameGlobals.GameSpeed / 4f, Pal0Depth));
+            backgroundParallax.Add(new BackgroundSection(ParallaxBackgrounds.Sprites[1], virtualResolution, 100 * GameGlobals.GameSpeed / 3f, Pal1Depth));
+            backgroundParallax.Add(new BackgroundSection(ParallaxBackgrounds.Sprites[2], virtualResolution, 100 * GameGlobals.GameSpeed / 1.5f, Pal2Depth));
 
             // For pal3Sprite: Ground, move it downward so that its bottom edge is at the bottom screen.
             var screenHeight = virtualResolution.Y;
             var pal3Height = ParallaxBackgrounds.Sprites[3].SizeInPixels.Y;
-            backgroundParallax.Add(new BackgroundSection(ParallaxBackgrounds.Sprites[3], virtualResolution, GameScript.GameSpeed, Pal3Depth, Vector2.UnitY * (screenHeight - pal3Height) / 2));
+            backgroundParallax.Add(new BackgroundSection(ParallaxBackgrounds.Sprites[3], virtualResolution, 100 * GameGlobals.GameSpeed, Pal3Depth, Vector2.UnitY * (screenHeight - pal3Height) / 2));
 
             // allocate the sprite batch in charge of drawing the backgrounds.
             spriteBatch = new SpriteBatch(GraphicsDevice) { VirtualResolution = virtualResolution };

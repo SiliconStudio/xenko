@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public ModalElementTest()
         {
-            CurrentVersion = 9;
+            CurrentVersion = 10;
         }
 
         protected override async Task LoadContent()

@@ -62,7 +62,7 @@ namespace SiliconStudio.Core
         /// <summary>
         /// The Universal Windows Platform (UWP). Please use <see cref="UWP"/> intead.
         /// </summary>
-        [Obsolete]
+        [Obsolete("Please use UWP instead")]
         Windows10 = UWP,
     }
 }

@@ -131,7 +131,8 @@ namespace SiliconStudio.Xenko.Assets.Tasks
             newPackage.TemplateFolders.Add(targetFolder);
             var newPackageFileName = "temp" + Guid.NewGuid() + ".xkpkg";
             newPackage.FullPath = package.RootDirectory + "/" + newPackageFileName;
-            var result = newPackage.Save();
+            var result = new LoggerResult();
+            newPackage.Save(result);
             if (result.HasErrors)
             {
                 throw new InvalidOperationException(result.ToText());

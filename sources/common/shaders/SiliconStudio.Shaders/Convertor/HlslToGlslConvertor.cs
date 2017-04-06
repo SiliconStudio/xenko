@@ -4096,6 +4096,18 @@ namespace SiliconStudio.Shaders.Convertor
                 if (variable == null)
                 {
                     variable = new Variable(type, semanticGl) { Span = span };
+
+                    // int must be "flat" between stages (everywhere except VS input)
+                    if (!(isInput == true && pipelineStage == PipelineStage.Vertex))
+                    {
+                        var baseType = TypeBase.GetBaseType(variable.Type);
+                        // Note: not sure why, but it seems scalar are not properly resolved?
+                        if (baseType.Name == ScalarType.Int.Name || baseType.Name == ScalarType.UInt.Name)
+                        {
+                            variable.Qualifiers |= Ast.ParameterQualifier.Flat;
+                        }
+                    }
+
                     variable.Qualifiers |= isInput ? Ast.ParameterQualifier.In : Ast.ParameterQualifier.Out;
 
                     // Setup Variable Tag for LayoutQualifiers
