@@ -1,13 +1,13 @@
 !MaterialAsset
 Id: 5aab867b-1b2b-425c-b89a-8c300de9bf77
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
             Texture: 13ad1467-0e79-4492-a615-41f43d953864:Textures/xenko_box_normals
             FallbackValue:
-                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+                Value: {R: 0.5019608, G: 0.5019608, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
             Swizzle: null

@@ -1,6 +1,6 @@
 !GameSettingsAsset
 Id: 22ae89be-900a-4a73-a5b5-94907b01732b
-SerializedVersion: {Xenko: 1.11.0.0}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 DefaultScene: null
 GraphicsCompositor: c3b08bc2-7b1c-4c48-8982-d32cb86a08de:GraphicsCompositor

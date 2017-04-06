@@ -1,6 +1,6 @@
 !Texture
 Id: a92a0e5c-6f9f-4d1d-bff8-38b596819274
-SerializedVersion: {Xenko: 1.11.1.2}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Source: ../../Resources/XenkoBackground.jpg
 IsCompressed: false
