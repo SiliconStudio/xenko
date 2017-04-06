@@ -22,12 +22,15 @@ namespace SiliconStudio.Xenko.Assets.Models
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(AnimationClip))]
     [Display(1805, "Animation")]
-    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
-    [AssetUpgrader(XenkoConfig.PackageName, "0", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha02", "1.10.0-alpha01", typeof(AnimationAssetUpgraderFramerate))]     // Force re-import for Min/Max frames
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.10.0-alpha01")]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-alpha01", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
     public class AnimationAsset : Asset
     {
-        private const string CurrentVersion = "1.10.0-alpha01";
+        private const string CurrentVersion = "2.0.0.0";
 
         /// <summary>
         /// The default file extension used by the <see cref="AnimationAsset"/>.

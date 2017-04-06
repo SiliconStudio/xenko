@@ -15,10 +15,16 @@ namespace SiliconStudio.Xenko.Assets.Models
     [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetContentType(typeof(Skeleton))]
     [Display(1800, "Skeleton", "A skeleton (node hierarchy)")]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.7.8-beta")]
-    [AssetUpgrader(XenkoConfig.PackageName, "0", "1.7.8-beta", typeof(EnsureScaleNotZero))]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.7.8-beta")]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.7.8-beta", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
     public class SkeletonAsset : Asset
     {
+        private const string CurrentVersion = "2.0.0.0";
+
         /// <summary>
         /// The default file extension used by the <see cref="SkeletonAsset"/>.
         /// </summary>
@@ -138,15 +144,5 @@ namespace SiliconStudio.Xenko.Assets.Models
                 node.Preserve = !node.Preserve;
         }
 
-        class EnsureScaleNotZero : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                if (asset.ScaleImport != null && (float)asset.ScaleImport == 0.0f)
-                {
-                    asset.RemoveChild("ScaleImport");
-                }
-            }
-        }
     }
 }

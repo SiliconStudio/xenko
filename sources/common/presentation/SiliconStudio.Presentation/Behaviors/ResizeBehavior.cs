@@ -28,7 +28,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void SizeChanged(object sender, [NotNull] SizeChangedEventArgs e)
         {
-            if (IsSizeRatioInValid() || !e.HeightChanged || !e.WidthChanged)
+            if (IsSizeRatioInvalid() || !e.HeightChanged || !e.WidthChanged)
                 return;
 
             // Measure the required size
@@ -50,7 +50,7 @@ namespace SiliconStudio.Presentation.Behaviors
             AssociatedObject.Height = height;
         }
 
-        private bool IsSizeRatioInValid()
+        private bool IsSizeRatioInvalid()
         {
             return SizeRatio.IsEmpty
                 || double.IsNaN(SizeRatio.Width) || double.IsInfinity(SizeRatio.Width) || SizeRatio.Width < 1

@@ -391,7 +391,6 @@
     <Compile Include="SpriteFont\FontProviderBase.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAsset.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAssetCompiler.cs" />
-    <Compile Include="SpriteFont\SpriteFontAsset.Upgrader.cs" />
     <Compile Include="SpriteFont\SpriteFontAssetExtensions.cs" />
     <Compile Include="SpriteFont\SpriteFontAssetFactories.cs" />
     <Compile Include="SpriteFont\SpriteFontTypeBase.cs" />
