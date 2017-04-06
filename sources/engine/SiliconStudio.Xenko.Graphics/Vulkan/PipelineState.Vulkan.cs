@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Graphics
                 inputBindings[slotIndex].InputRate = inputElement.InputSlotClass == InputClassification.Vertex ? VertexInputRate.Vertex : VertexInputRate.Instance;
 
                 // TODO VULKAN: This is currently an argument to Draw() overloads.
-                if (inputBindings[slotIndex].Binding == 0 && inputBindings[slotIndex].Stride < inputElement.AlignedByteOffset + size)
+                if (inputBindings[slotIndex].Stride < inputElement.AlignedByteOffset + size)
                     inputBindings[slotIndex].Stride = (uint)(inputElement.AlignedByteOffset + size);
 
                 if (inputElement.InputSlot >= inputBindingCount)

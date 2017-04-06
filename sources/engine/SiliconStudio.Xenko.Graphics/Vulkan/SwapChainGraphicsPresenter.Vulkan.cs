@@ -347,7 +347,7 @@ namespace SiliconStudio.Xenko.Graphics
                 Surface = surface,
                 ImageArrayLayers = 1,
                 ImageSharingMode = SharingMode.Exclusive,
-                ImageExtent = new Extent2D((uint)Description.BackBufferWidth, (uint)Description.BackBufferHeight+1),
+                ImageExtent = new Extent2D((uint)Description.BackBufferWidth, (uint)Description.BackBufferHeight),
                 ImageFormat = backBufferFormat,
                 ImageColorSpace = Description.ColorSpace == ColorSpace.Gamma ? SharpVulkan.ColorSpace.SRgbNonlinear : 0,
                 ImageUsage = ImageUsageFlags.ColorAttachment | ImageUsageFlags.TransferDestination | (surfaceCapabilities.SupportedUsageFlags & ImageUsageFlags.TransferSource), // TODO VULKAN: Use off-screen buffer to emulate

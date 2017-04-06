@@ -230,8 +230,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 foreach (var semantic in semanticList)
                 {
                     var parsed = Semantic.Parse(semantic.Name);
-                    parsingResult.Reflection.InputParameterDescription.Add(
-                        new ShaderInputParameterDescription
+                    parsingResult.Reflection.InputAttributes.Add(
+                        new ShaderInputAttributeDescription
                         {
                             SemanticName = parsed.Key,
                             SemanticIndex = parsed.Value

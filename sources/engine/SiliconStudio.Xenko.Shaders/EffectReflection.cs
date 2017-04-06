@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Shaders
             ResourceBindings = new FastList<EffectResourceBindingDescription>();
             ConstantBuffers = new List<EffectConstantBufferDescription>();
             ShaderStreamOutputDeclarations = new List<ShaderStreamOutputDeclarationEntry>();
-            InputParameterDescription = new FastList<ShaderInputParameterDescription>();
+            InputAttributes = new FastList<ShaderInputAttributeDescription>();
         }
 
         /// <summary>
@@ -62,6 +62,6 @@ namespace SiliconStudio.Xenko.Shaders
         /// <value>The stream output rasterized stream.</value>
         public int StreamOutputRasterizedStream { get; set; }
 
-        public FastList<ShaderInputParameterDescription> InputParameterDescription { get; set; }
+        public FastList<ShaderInputAttributeDescription> InputAttributes { get; set; }
     }
 }
