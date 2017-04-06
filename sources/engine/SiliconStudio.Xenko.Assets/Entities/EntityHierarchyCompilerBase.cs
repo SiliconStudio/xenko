@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             foreach (var entityData in asset.Hierarchy.Parts)
             {
                 // TODO: How to make this code pluggable?
-                var modelComponent = entityData.Entity.Components.Get<ModelComponent>();
+                var modelComponent = entityData.Entity.Components.Get<ModelComponent>();                
                 if (modelComponent != null)
                 {
                     if (modelComponent.Model == null)
@@ -39,6 +39,12 @@ namespace SiliconStudio.Xenko.Assets.Entities
                             result.Error($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] is referencing an unreachable model.");
                         }
                     }
+                }
+
+                var spriteComponent = entityData.Entity.Components.Get<SpriteComponent>();
+                if (spriteComponent != null && spriteComponent.SpriteProvider.GetSprite() == null)
+                {
+                    result.Warning($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] has a sprite component that does not reference any sprite group.");
                 }
 
                 var nodeLinkComponent = entityData.Entity.Components.Get<ModelNodeLinkComponent>();
