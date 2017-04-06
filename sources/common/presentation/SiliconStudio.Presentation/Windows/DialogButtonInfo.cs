@@ -17,9 +17,30 @@ namespace SiliconStudio.Presentation.Windows
         private string key = string.Empty;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="DialogButtonInfo"/> class.
+        /// </summary>
+        /// <param name="content">The content of the button.</param>
+        /// <param name="result">The result value associated to this button.</param>
+        /// <param name="isDefault">Indicates if this button is the default button.</param>
+        /// <param name="isCancel">Indicates if this button is the cancel button.</param>
+        public DialogButtonInfo(object content, int result, bool isDefault = false, bool isCancel = false)
+        {
+            this.content = content;
+            this.result = result;
+            this.isDefault = isDefault;
+            this.isCancel = isCancel;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogButtonInfo"/> class.
+        /// </summary>
+        public DialogButtonInfo()
+        {
+        }
+
+        /// <summary>
         /// The content of this button.
         /// </summary>
-        /// <seealso cref="System.Windows.Controls.Button.Content"/>
         public object Content
         {
             get { return content; }

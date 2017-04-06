@@ -12,47 +12,47 @@ namespace SiliconStudio.Presentation.Windows
     public static class DialogHelper
     {
         [NotNull]
-        public static Task<MessageBoxResult> MessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public static Task<MessageBoxResult> MessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
-            return dispatcher.InvokeTask(() => Windows.MessageBox.Show(owner, message, caption, button, image));
+            return dispatcher.InvokeTask(() => Windows.MessageBox.Show(message, caption, button, image));
         }
 
         [NotNull]
-        public static Task<MessageBoxResult> MessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public static Task<int> MessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None)
         {
-            return dispatcher.InvokeTask(() => Windows.MessageBox.Show(owner, message, caption, buttons, image));
+            return dispatcher.InvokeTask(() => Windows.MessageBox.Show(message, caption, buttons, image));
         }
 
         [NotNull]
-        public static Task<CheckedMessageBoxResult> CheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public static Task<CheckedMessageBoxResult> CheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
-            return dispatcher.InvokeTask(() => Windows.CheckedMessageBox.Show(owner, message, caption, button, image, Strings.DontAskMeAgain, isChecked));
+            return dispatcher.InvokeTask(() => Windows.CheckedMessageBox.Show(message, caption, button, image, Strings.DontAskMeAgain, isChecked));
         }
 
         [NotNull]
-        public static Task<CheckedMessageBoxResult> CheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public static Task<CheckedMessageBoxResult> CheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
-            return dispatcher.InvokeTask(() => Windows.CheckedMessageBox.Show(owner, message, caption, button, image, checkboxMessage, isChecked));
+            return dispatcher.InvokeTask(() => Windows.CheckedMessageBox.Show(message, caption, button, image, checkboxMessage, isChecked));
         }
 
-        public static MessageBoxResult BlockingMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public static MessageBoxResult BlockingMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
-            return PushFrame(dispatcher, () => MessageBox(dispatcher, message, caption, button, image, owner));
+            return PushFrame(dispatcher, () => MessageBox(dispatcher, message, caption, button, image));
         }
 
-        public static MessageBoxResult BlockingMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public static int BlockingMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None)
         {
-            return PushFrame(dispatcher, () => MessageBox(dispatcher, message, caption, buttons, image, owner));
+            return PushFrame(dispatcher, () => MessageBox(dispatcher, message, caption, buttons, image));
         }
 
-        public static CheckedMessageBoxResult BlockingCheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public static CheckedMessageBoxResult BlockingCheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
-            return PushFrame(dispatcher, () => CheckedMessageBox(dispatcher, message, caption, isChecked, button, image, owner));
+            return PushFrame(dispatcher, () => CheckedMessageBox(dispatcher, message, caption, isChecked, button, image));
         }
 
-        public static CheckedMessageBoxResult BlockingCheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public static CheckedMessageBoxResult BlockingCheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
-            return PushFrame(dispatcher, () => CheckedMessageBox(dispatcher, message, caption, isChecked, checkboxMessage, button, image, owner));
+            return PushFrame(dispatcher, () => CheckedMessageBox(dispatcher, message, caption, isChecked, checkboxMessage, button, image));
         }
 
         private static TResult PushFrame<TResult>([NotNull] IDispatcherService dispatcher, Func<Task<TResult>> task)

@@ -41,10 +41,9 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="message">The text to display as message in the message box.</param>
         /// <param name="buttons">The buttons to display in the message box.</param>
         /// <param name="image">The image to display in the message box.</param>
-        /// <param name="owner">The intended owner for the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
         [NotNull]
-        Task<MessageBoxResult> MessageBox(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
+        Task<MessageBoxResult> MessageBox(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
 
         /// <summary>
         /// Displays a modal message box and returns a task that completes when the message box is closed.
@@ -52,10 +51,9 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="message">The text to display as message in the message box.</param>
         /// <param name="buttons">The buttons to display in the message box.</param>
         /// <param name="image">The image to display in the message box.</param>
-        /// <param name="owner">The intended owner for the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
         [NotNull]
-        Task<MessageBoxResult> MessageBox(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
+        Task<int> MessageBox(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None);
 
         /// <summary>
         /// Displays a modal message box with an additional checkbox between the message and the buttons,
@@ -66,10 +64,9 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="isChecked">The initial status of the check box.</param>
         /// <param name="buttons">The buttons to display in the message box.</param>
         /// <param name="image">The image to display in the message box.</param>
-        /// <param name="owner">The intended owner for the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
         [NotNull]
-        Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
+        Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
 
         /// <summary>
         /// Displays a modal message box with an additional checkbox between the message and the buttons,
@@ -80,10 +77,9 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="checkboxMessage"></param>
         /// <param name="buttons">The buttons to display in the message box.</param>
         /// <param name="image">The image to display in the message box.</param>
-        /// <param name="owner">The intended owner for the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
         [NotNull]
-        Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, string checkboxMessage, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
+        Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, string checkboxMessage, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
 
         /// <summary>
         /// Displays a modal message box and blocks until the user closed the message box.
@@ -91,9 +87,8 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="message">The text to display as message in the message box.</param>
         /// <param name="buttons">The buttons to display in the message box.</param>
         /// <param name="image">The image to display in the message box.</param>
-        /// <param name="owner">The intended owner for the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
-        MessageBoxResult BlockingMessageBox(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
+        MessageBoxResult BlockingMessageBox(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
 
         /// <summary>
         /// Displays a modal message box and blocks until the user closed the message box.
@@ -101,9 +96,8 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="message">The text to display as message in the message box.</param>
         /// <param name="buttons">The buttons to display in the message box.</param>
         /// <param name="image">The image to display in the message box.</param>
-        /// <param name="owner">The intended owner for the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
-        MessageBoxResult BlockingMessageBox(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
+        int BlockingMessageBox(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None);
 
         /// <summary>
         /// Displays a modal message box with an additional checkbox between the message and the buttons,
@@ -114,9 +108,8 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="isChecked">The initial status of the check box.</param>
         /// <param name="buttons">The buttons to display in the message box.</param>
         /// <param name="image">The image to display in the message box.</param>
-        /// <param name="owner">The intended owner for the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
-        CheckedMessageBoxResult BlockingCheckedMessageBox(string message, bool? isChecked, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
+        CheckedMessageBoxResult BlockingCheckedMessageBox(string message, bool? isChecked, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
 
         /// <summary>
         /// Displays a modal message box with an additional checkbox between the message and the buttons,
@@ -127,9 +120,8 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="checkboxMessage"></param>
         /// <param name="buttons">The buttons to display in the message box.</param>
         /// <param name="image">The image to display in the message box.</param>
-        /// <param name="owner">The intended owner for the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
-        CheckedMessageBoxResult BlockingCheckedMessageBox(string message, bool? isChecked, string checkboxMessage, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
+        CheckedMessageBoxResult BlockingCheckedMessageBox(string message, bool? isChecked, string checkboxMessage, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
 
         /// <summary>
         /// Attempts to close the main window of the application.
