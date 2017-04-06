@@ -63,23 +63,23 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <summary>
         /// the error logger
         /// </summary>
-        private LoggerResult errorWarningLog;
+        private ShaderMixinParsingResult parsingResult;
 
         #endregion
 
         #region Constructor
 
-        private XenkoStreamCreator(ShaderClassType shaderClassType, ModuleMixin mixin, List<ModuleMixin> mixins, LoggerResult errorLog)
+        private XenkoStreamCreator(ShaderClassType shaderClassType, ModuleMixin mixin, List<ModuleMixin> mixins, ShaderMixinParsingResult result)
         {
             shader = shaderClassType;
             mainModuleMixin = mixin;
             mixinInheritance = mixins;
-            errorWarningLog = errorLog ?? new LoggerResult();
+            parsingResult = result ?? new ShaderMixinParsingResult();
         }
 
-        public static void Run(ShaderClassType shaderClassType, ModuleMixin mixin, List<ModuleMixin> mixins, LoggerResult errorLog)
+        public static void Run(ShaderClassType shaderClassType, ModuleMixin mixin, List<ModuleMixin> mixins, ShaderMixinParsingResult result)
         {
-            var streamCreator = new XenkoStreamCreator(shaderClassType, mixin, mixins, errorLog);
+            var streamCreator = new XenkoStreamCreator(shaderClassType, mixin, mixins, result);
             streamCreator.Run();
         }
 
@@ -89,10 +89,10 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
         public void Run()
         {
-            streamAnalyzer = new XenkoStreamAnalyzer(errorWarningLog);
+            streamAnalyzer = new XenkoStreamAnalyzer(this.parsingResult);
             streamAnalyzer.Run(shader);
 
-            if (errorWarningLog.HasErrors)
+            if (this.parsingResult.HasErrors)
                 return;
 
             streamsUsages = streamAnalyzer.StreamsUsageByMethodDefinition;
@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
             if (!(hullShaderMethod == null && hullConstantShaderMethod == null && domainShaderMethod == null) && (hullShaderMethod == null || hullConstantShaderMethod == null || domainShaderMethod == null))
             {
-                errorWarningLog.Error(XenkoMessageCode.ErrorIncompleteTesselationShader, new SourceSpan());
+                this.parsingResult.Error(XenkoMessageCode.ErrorIncompleteTesselationShader, new SourceSpan());
                 return;
             }
             
@@ -221,8 +221,41 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             outputStructure = GenerateStreams(pixelShaderMethod, streamStageUsagePS, "PS", outputStructure, false);
 
             outputStructure = GenerateStreams(computeShaderMethod, streamStageUsageCS, "CS", null);
-            
+
+            // reflect the input layout
+            // FirstOrDefault : because the first stage that exists is the entry point in the pipeline for the streams.
+            var semanticList = shaderStreamsUsage.FirstOrDefault()?.InStreamList?.OfType<Variable>().Select(v => v.Qualifiers.Values.OfType<Semantic>())?.SelectMany(x => x);
+            if (semanticList != null)
+            {
+                foreach (var semantic in semanticList)
+                {
+                    var parsed = Semantic.Parse(semantic.Name);
+                    parsingResult.Reflection.InputAttributes.Add(
+                        new ShaderInputAttributeDescription
+                        {
+                            SemanticName = parsed.Key,
+                            SemanticIndex = parsed.Value
+                        });
+                }
+            }
+
             RemoveUselessAndSortMethods();
+        }
+
+        private static int ParseSemanticIndex(string semantic)
+        {
+            if (string.IsNullOrEmpty(semantic))
+                return 0;
+            // semantics are simple digits, let's analyze the last character:
+            char last = semantic.Last();
+            return char.IsNumber(last) ? last - '0' : 0;
+        }
+
+        private static string StripStringOfSemanticIndex(string semantic)
+        {
+            if (string.IsNullOrEmpty(semantic))
+                return semantic;
+            return char.IsNumber(semantic.Last()) ? semantic.Substring(0, semantic.Length - 1): semantic;
         }
 
         #endregion
@@ -351,7 +384,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         {
             if (visitedMethods.Contains(currentMethod))
             {
-                errorWarningLog.Error(XenkoMessageCode.ErrorRecursiveCall, currentMethod.Span, currentMethod);
+                parsingResult.Error(XenkoMessageCode.ErrorRecursiveCall, currentMethod.Span, currentMethod);
                 return;
             }
 
@@ -387,7 +420,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                                 FindStreamsUsage(streamUsage.MethodDeclaration, inStreamList, outStreamList, newListVisitedMethods);
                         }
                         else if (streamUsage.CallType != StreamCallType.Direct) // should not happen
-                            errorWarningLog.Error(XenkoMessageCode.ErrorStreamUsageInitialization, streamUsage.Expression.Span, streamUsage.Expression);
+                            parsingResult.Error(XenkoMessageCode.ErrorStreamUsageInitialization, streamUsage.Expression.Span, streamUsage.Expression);
                     }
                 }
             }
@@ -937,7 +970,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     {
                         if (stageList.Value.Contains(method))
                         {
-                            errorWarningLog.Error(XenkoMessageCode.ErrorCrossStageMethodCall, method.Span, method, stage, shaderStage);
+                            parsingResult.Error(XenkoMessageCode.ErrorCrossStageMethodCall, method.Span, method, stage, shaderStage);
                         }
                     }
                 }
