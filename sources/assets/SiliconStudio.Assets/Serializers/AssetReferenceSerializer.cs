@@ -28,10 +28,6 @@ namespace SiliconStudio.Assets.Serializers
             {
                 throw new YamlException(fromScalar.Start, fromScalar.End, "Unable to decode asset reference [{0}]. Expecting format GUID:LOCATION".ToFormat(fromScalar.Value));
             }
-            if (referenceId != Guid.Empty)
-            {
-                IdentifiableHelper.SetId(assetReference, referenceId);
-            }
             return assetReference;
         }
 

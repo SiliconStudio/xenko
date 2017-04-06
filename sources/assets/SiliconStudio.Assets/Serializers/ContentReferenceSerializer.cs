@@ -33,12 +33,9 @@ namespace SiliconStudio.Assets.Serializers
             }
 
             var instance = AttachedReferenceManager.CreateProxyObject(context.Descriptor.Type, guid, location);
-            if (referenceId != Guid.Empty)
-            {
-                IdentifiableHelper.SetId(instance, referenceId);
-            }
             return instance;
         }
+
         public override string ConvertTo(ref ObjectContext objectContext)
         {
             var attachedReference = AttachedReferenceManager.GetAttachedReference(objectContext.Instance);
