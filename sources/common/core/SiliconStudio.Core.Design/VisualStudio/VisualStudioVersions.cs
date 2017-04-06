@@ -13,6 +13,8 @@ namespace SiliconStudio.Core.VisualStudio
         public override string ToString() => DisplayName;
         public string DisplayName { get; set; }
         public string InstallationPath { get; set; }
+
+        public string VsixInstallerPath { get; set; }
     }
 
     public static class VisualStudioVersions
@@ -37,9 +39,13 @@ namespace SiliconStudio.Core.VisualStudio
                 var path = (string)subkey?.GetValue("InstallDir");
 
                 var vs14InstallPath = (path != null) ? Path.Combine(path, "devenv.exe") : null;
-                if (vs14InstallPath != null)
+                if (vs14InstallPath != null && File.Exists(vs14InstallPath))
                 {
-                    ideDictionary.Add("Visual Studio 2015", new IDEInfo { DisplayName = "Visual Studio 2015", InstallationPath = vs14InstallPath });
+                    var vsixInstallerPath = Path.Combine(path, "VSIXInstaller.exe");
+                    if (!File.Exists(vsixInstallerPath))
+                        vsixInstallerPath = null;
+
+                    ideDictionary.Add("Visual Studio 2015", new IDEInfo { DisplayName = "Visual Studio 2015", InstallationPath = vs14InstallPath, VsixInstallerPath = vsixInstallerPath });
                 }
             }
 
@@ -58,9 +64,16 @@ namespace SiliconStudio.Core.VisualStudio
                     if (pceltFetched <= 0)
                         break;
 
-                    var path = Path.Combine(inst[0].ResolvePath(), "Common7\\IDE\\devenv.exe");
+                    var idePath = Path.Combine(inst[0].ResolvePath(), "Common7\\IDE");
+                    var path = Path.Combine(idePath, "devenv.exe");
                     if (File.Exists(path))
-                        ideDictionary.Add(inst[0].GetDisplayName(), new IDEInfo { DisplayName = inst[0].GetDisplayName(), InstallationPath = path });
+                    {
+                        var vsixInstallerPath = Path.Combine(idePath, "VSIXInstaller.exe");
+                        if (!File.Exists(vsixInstallerPath))
+                            vsixInstallerPath = null;
+
+                        ideDictionary.Add(inst[0].GetDisplayName(), new IDEInfo { DisplayName = inst[0].GetDisplayName(), InstallationPath = path, VsixInstallerPath = vsixInstallerPath });
+                    }
                 } 
             }
         }
