@@ -20,7 +20,7 @@ namespace SiliconStudio.Assets
 
         public abstract bool ContainsPart(Guid id);
 
-        protected class FixPartReferenceUpgrader : AssetUpgraderBase
+        public class FixPartReferenceUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {

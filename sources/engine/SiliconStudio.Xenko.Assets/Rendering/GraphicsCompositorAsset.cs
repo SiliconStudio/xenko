@@ -29,7 +29,8 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [AssetContentType(typeof(GraphicsCompositor))]
     [AssetDescription(FileExtension)]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
-    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.10.0-beta01")]
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.10.0-beta01", typeof(AssetComposite.FixPartReferenceUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-beta01", "2.0.0.0", typeof(EmptyAssetUpgrader))]
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
