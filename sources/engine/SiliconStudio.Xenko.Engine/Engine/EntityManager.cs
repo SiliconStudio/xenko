@@ -583,7 +583,7 @@ namespace SiliconStudio.Xenko.Engine
             ComponentChanged?.Invoke(this, new EntityComponentEventArgs(entity, index, previousComponent, newComponent));
         }
 
-        public void OnHierarchyChanged(Entity entity)
+        internal void OnHierarchyChanged(Entity entity)
         {
             HierarchyChanged?.Invoke(this, entity);
         }
