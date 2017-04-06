@@ -43,6 +43,7 @@
     <Compile Include="PackagePathResolver.cs" />
     <Compile Include="PackageConstants.cs" />
     <Compile Include="NullPackagesLogger.cs" />
+    <Compile Include="ProgressAction.cs" />
     <Compile Include="ProgressReport.cs" />
     <Compile Include="TargetGenerator.cs">
       <DependentUpon>TargetGenerator.tt</DependentUpon>

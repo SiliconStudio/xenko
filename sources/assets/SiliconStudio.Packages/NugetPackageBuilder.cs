@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using NuGet;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -96,7 +97,7 @@ namespace SiliconStudio.Packages
         /// </summary>
         public bool DevelopmentDependency => Builder.DevelopmentDependency;
 
-        public Collection<IPackageFile> Files => Builder.Files;
+        public IEnumerable<PackageFile> Files => Builder.Files.Select(x => new PackageFile(x));
 
         public IEnumerable<FrameworkAssemblyReference> FrameworkAssemblies => Builder.FrameworkAssemblies;
 
@@ -190,6 +191,14 @@ namespace SiliconStudio.Packages
         public void PopulateFiles(UDirectory rootDirectory, List<ManifestFile> files)
         {
             ((PackageBuilder)Builder).PopulateFiles(rootDirectory, ToManifestFiles(files));
+        }
+
+        /// <summary>
+        /// Removes the files previously added by <see cref="PopulateFiles"/>.
+        /// </summary>
+        public void ClearFiles()
+        {
+            Builder.Files.Clear();
         }
 
         /// <summary>

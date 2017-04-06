@@ -112,10 +112,12 @@ namespace SiliconStudio.Presentation.View
         }
 
         /// <inheritdoc/>
-        public void EnsureAccess()
+        public void EnsureAccess(bool inDispatcherThread = true)
         {
-            if (Thread.CurrentThread != dispatcher.Thread)
+            if (inDispatcherThread && Thread.CurrentThread != dispatcher.Thread)
                 throw new InvalidOperationException("The current thread was expected to be the dispatcher thread.");
+            if (!inDispatcherThread && Thread.CurrentThread == dispatcher.Thread)
+                throw new InvalidOperationException("The current thread was expected to be different from the dispatcher thread.");
         }
     }
 }

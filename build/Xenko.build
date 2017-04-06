@@ -70,9 +70,9 @@ Example of use:
 
     <Delete Files="@(FilesToDeleteVSIX)"/>
 
-    <MSBuild Targets="91-VisualStudio\SiliconStudio_Xenko_VisualStudio_Package" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
-    <Exec Command='"$(NuGetPath)" pack "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package\SiliconStudio.Xenko.VisualStudio.Package.nuspec" -BasePath "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package\bin\Release"' />
-  </Target>  
+    <MSBuild Targets="91-VisualStudio\SiliconStudio_Xenko_VisualStudio_Package;91-VisualStudio\SiliconStudio_Xenko_VisualStudio_PackageInstall" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    <Exec Command='"$(NuGetPath)" pack "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package\SiliconStudio.Xenko.VisualStudio.Package.nuspec" -BasePath "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package"' />
+  </Target>
   
   <!--
   Package Installer: XenkoSetup.exe
