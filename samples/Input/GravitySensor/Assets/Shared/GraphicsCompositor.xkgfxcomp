@@ -1,6 +1,6 @@
 !GraphicsCompositorAsset
 Id: 8962575a-b65c-47ff-b8fb-2812b72601dd
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Archetype: 9af53371-51ba-49fc-b420-ee7874892e75:Compositing/DefaultGraphicsCompositorLevel9
 Cameras:

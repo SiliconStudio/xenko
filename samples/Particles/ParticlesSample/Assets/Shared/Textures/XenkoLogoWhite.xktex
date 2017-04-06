@@ -1,6 +1,6 @@
 !Texture
 Id: ad3bc951-0f20-464d-a236-fb9c3727f4e7
-SerializedVersion: {Xenko: 1.11.1.2}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Source: ../../../Resources/XenkoLogoWhite.png
 IsCompressed: false
