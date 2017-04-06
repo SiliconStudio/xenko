@@ -1,11 +1,14 @@
+using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Extensions;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
@@ -17,32 +20,42 @@ namespace SiliconStudio.Xenko.Assets.Entities
             foreach (var entityData in asset.Hierarchy.Parts)
             {
                 // TODO: How to make this code pluggable?
-                var modelComponent = entityData.Entity.Components.Get<ModelComponent>();
-                var spriteComponent = entityData.Entity.Components.Get<SpriteComponent>();
-
-                // determine the underlying source asset exists
+                var modelComponent = entityData.Entity.Components.Get<ModelComponent>();                
                 if (modelComponent != null)
                 {
                     if (modelComponent.Model == null)
                     {
                         result.Warning($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] has a model component that does not reference any model.");
-                        continue;
                     }
-
-                    var modelAttachedReference = AttachedReferenceManager.GetAttachedReference(modelComponent.Model);
-                    var modelId = modelAttachedReference.Id;
-
-                    // compute the full path to the source asset.
-                    var modelAssetItem = assetItem.Package.Session.FindAsset(modelId);
-                    if (modelAssetItem == null)
+                    else
                     {
-                        result.Error($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] is referencing an unreachable model.");
-                        continue;
+                        var modelAttachedReference = AttachedReferenceManager.GetAttachedReference(modelComponent.Model);
+                        var modelId = modelAttachedReference.Id;
+
+                        // compute the full path to the source asset.
+                        var modelAssetItem = assetItem.Package.Session.FindAsset(modelId);
+                        if (modelAssetItem == null)
+                        {
+                            result.Error($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] is referencing an unreachable model.");
+                        }
                     }
                 }
-                if (spriteComponent != null && spriteComponent.SpriteProvider == null)
+
+                var spriteComponent = entityData.Entity.Components.Get<SpriteComponent>();
+                if (spriteComponent != null && spriteComponent.SpriteProvider.GetSprite() == null)
                 {
                     result.Warning($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] has a sprite component that does not reference any sprite group.");
+                }
+
+                var nodeLinkComponent = entityData.Entity.Components.Get<ModelNodeLinkComponent>();
+                if (nodeLinkComponent != null)
+                {
+                    nodeLinkComponent.ValidityCheck();
+                    if (!nodeLinkComponent.IsValid)
+                    {
+                        result.Warning($"The Model Node Link between {entityData.Entity.Name} and {nodeLinkComponent.Target?.Entity.Name} is invalid.");
+                        nodeLinkComponent.Target = null;
+                    }
                 }
             }
 

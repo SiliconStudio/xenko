@@ -4,11 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using NUnit.Framework;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Engine.Processors;
+using SiliconStudio.Xenko.UI.Events;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {
@@ -390,6 +392,66 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Assert.AreEqual(0, entityManager.Processors.Count);
             Assert.AreEqual(0, transformProcessor.TransformationRoots.Count);
             Assert.Null(transformProcessor.EntityManager);
+        }
+
+        [Test]
+        public void TestHierarchyChanged()
+        {
+            var registry = new ServiceRegistry();
+            var entityManager = new CustomEntityManager(registry);
+
+            // Entity with a sub-Entity
+            var childEntity0 = new Entity();
+            var entity = new Entity();
+
+            entityManager.Add(entity);
+
+            var addChildCheck = false;
+            var removeChildCheck = false;
+            var prevRootAsChildCheck = false;
+
+            Action<Entity>[] currentAction = { null };
+
+            entityManager.HierarchyChanged += (sender, entity1) =>
+            {
+                currentAction[0]?.Invoke(entity1);
+            };
+
+            var addChildAction = new Action<Entity>(otherEntity =>
+            {
+                if (otherEntity == childEntity0)
+                {
+                    addChildCheck = true;
+                }
+            });
+            currentAction[0] = addChildAction;
+            entity.AddChild(childEntity0);
+
+            var removeChildAction = new Action<Entity>(otherEntity =>
+            {
+                if (otherEntity == childEntity0)
+                {
+                    removeChildCheck = true;
+                }
+            });
+            currentAction[0] = removeChildAction;
+            entity.RemoveChild(childEntity0);
+
+            entityManager.Add(childEntity0);
+
+            var prevRootAction = new Action<Entity>(otherEntity =>
+            {
+                if (otherEntity == entity)
+                {
+                    prevRootAsChildCheck = true;
+                }
+            });
+            currentAction[0] = prevRootAction;
+            childEntity0.AddChild(entity);
+
+            Assert.IsTrue(addChildCheck);
+            Assert.IsTrue(removeChildCheck);
+            Assert.IsTrue(prevRootAsChildCheck);
         }
 
         public static void Main()
