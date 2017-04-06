@@ -74,12 +74,25 @@ namespace SiliconStudio.Presentation.Services
         /// </summary>
         /// <param name="message">The text to display as message in the message box.</param>
         /// <param name="isChecked">The initial status of the check box.</param>
-        /// <param name="checkboxMessage"></param>
+        /// <param name="checkboxMessage">The message to display in the check box.</param>
         /// <param name="buttons">The buttons to display in the message box.</param>
         /// <param name="image">The image to display in the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
         [NotNull]
         Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, string checkboxMessage, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
+
+        /// <summary>
+        /// Displays a modal message box with an additional checkbox between the message and the buttons,
+        /// and returns a task that completes when the message box is closed.
+        /// </summary>
+        /// <param name="message">The text to display as message in the message box.</param>
+        /// <param name="isChecked">The initial status of the check box.</param>
+        /// <param name="checkboxMessage">The message to display in the check box.</param>
+        /// <param name="buttons">The buttons to display in the message box.</param>
+        /// <param name="image">The image to display in the message box.</param>
+        /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
+        [NotNull]
+        Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, string checkboxMessage, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None);
 
         /// <summary>
         /// Displays a modal message box and blocks until the user closed the message box.
@@ -117,11 +130,23 @@ namespace SiliconStudio.Presentation.Services
         /// </summary>
         /// <param name="message">The text to display as message in the message box.</param>
         /// <param name="isChecked">The initial status of the check box.</param>
-        /// <param name="checkboxMessage"></param>
+        /// <param name="checkboxMessage">The message to display in the check box.</param>
         /// <param name="buttons">The buttons to display in the message box.</param>
         /// <param name="image">The image to display in the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
         CheckedMessageBoxResult BlockingCheckedMessageBox(string message, bool? isChecked, string checkboxMessage, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
+
+        /// <summary>
+        /// Displays a modal message box with an additional checkbox between the message and the buttons,
+        /// and blocks until the user closed the message box.
+        /// </summary>
+        /// <param name="message">The text to display as message in the message box.</param>
+        /// <param name="isChecked">The initial status of the check box.</param>
+        /// <param name="checkboxMessage">The message to display in the check box.</param>
+        /// <param name="buttons">The buttons to display in the message box.</param>
+        /// <param name="image">The image to display in the message box.</param>
+        /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
+        CheckedMessageBoxResult BlockingCheckedMessageBox(string message, bool? isChecked, string checkboxMessage, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None);
 
         /// <summary>
         /// Attempts to close the main window of the application.

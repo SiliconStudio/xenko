@@ -35,6 +35,12 @@ namespace SiliconStudio.Presentation.Windows
             return dispatcher.InvokeTask(() => Windows.CheckedMessageBox.Show(message, caption, button, image, checkboxMessage, isChecked));
         }
 
+        [NotNull]
+        public static Task<CheckedMessageBoxResult> CheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, string checkboxMessage, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None)
+        {
+            return dispatcher.InvokeTask(() => Windows.CheckedMessageBox.Show(message, caption, buttons, image, checkboxMessage, isChecked));
+        }
+
         public static MessageBoxResult BlockingMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
             return PushFrame(dispatcher, () => MessageBox(dispatcher, message, caption, button, image));
@@ -53,6 +59,11 @@ namespace SiliconStudio.Presentation.Windows
         public static CheckedMessageBoxResult BlockingCheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
             return PushFrame(dispatcher, () => CheckedMessageBox(dispatcher, message, caption, isChecked, checkboxMessage, button, image));
+        }
+
+        public static CheckedMessageBoxResult BlockingCheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, string checkboxMessage, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None)
+        {
+            return PushFrame(dispatcher, () => CheckedMessageBox(dispatcher, message, caption, isChecked, checkboxMessage, buttons, image));
         }
 
         private static TResult PushFrame<TResult>([NotNull] IDispatcherService dispatcher, Func<Task<TResult>> task)
