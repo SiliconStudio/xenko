@@ -156,7 +156,7 @@ namespace SiliconStudio.Xenko.Engine
             Matrix.Invert(ref transformComponent.WorldMatrix, out worldMatrixInv);
 
             Vector3.Transform(ref position, ref worldMatrixInv, out position);
-            rotation.Invert();
+            worldRotation.Invert();
             Quaternion.Multiply(ref rotation, ref worldRotation, out rotation);
             Vector3.Demodulate(ref scale, ref worldScale, out scale);
         }

@@ -86,20 +86,23 @@ namespace SiliconStudio.Xenko.Physics
                 {
                     //read skinned meshes bone positions and write them to the physics engine
                     physicsScene.Processor.UpdateBones();
+                    
                     //simulate physics
                     physicsScene.Simulation.Simulate((float)gameTime.Elapsed.TotalSeconds);
+
                     //update character bound entity's transforms from physics engine simulation
                     physicsScene.Processor.UpdateCharacters();
 
+                    //Perform clean ups before test contacts in this frame
                     physicsScene.Simulation.BeginContactTesting();
 
                     //finally process any needed cleanup
                     physicsScene.Processor.UpdateRemovals();
-
-                    
+                   
                     //handle frame contacts
                     physicsScene.Processor.UpdateContacts();
 
+                    //This is the heavy contact logic
                     physicsScene.Simulation.EndContactTesting();
 
                     //send contact events

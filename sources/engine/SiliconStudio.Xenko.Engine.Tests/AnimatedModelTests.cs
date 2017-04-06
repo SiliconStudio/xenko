@@ -39,10 +39,16 @@ namespace SiliconStudio.Xenko.Engine.Tests
             //CurrentVersion = 8; // Changes in FBX importer (Use GetMeshEdgeIndexForPolygon() instead of GetMeshEdgeIndex() )
             //CurrentVersion = 9; // MSBUild tests
             //CurrentVersion = 10; // Build machine changed
-            CurrentVersion = 11; // Additive animation samples added
+            //CurrentVersion = 11; // Additive animation samples added
+            CurrentVersion = 12; // Delta time is fixed, animation times are manually set
 
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_3 };
+
+            // Use a fixed time step
+            IsFixedTimeStep = true;
+            ForceOneUpdatePerDraw = true;
+            IsDrawDesynchronized = false;
         }
 
         protected override async Task LoadContent()
@@ -78,15 +84,15 @@ namespace SiliconStudio.Xenko.Engine.Tests
             guard1 = new Entity { new ModelComponent { Model = mannequinModel } };
             guard1.Transform.Position = new Vector3(2, 0, 0);
             var animationComponent1 = guard1.GetOrCreate<AnimationComponent>();
-            animationComponent1.Add(Content.Load<AnimationClip>("Idle"), 0, AnimationBlendOperation.LinearBlend);
-            animationComponent1.Add(Content.Load<AnimationClip>("GuardAdditive"), 0, AnimationBlendOperation.Add);
+            animationComponent1.Add(Content.Load<AnimationClip>("Idle"), 0, AnimationBlendOperation.LinearBlend, timeScale: 0f);
+            animationComponent1.Add(Content.Load<AnimationClip>("GuardAdditive"), 0, AnimationBlendOperation.Add, timeScale: 0f);
             Scene.Entities.Add(guard1);
 
             guard2 = new Entity { new ModelComponent { Model = mannequinModel } };
             guard2.Transform.Position = new Vector3(0, 0, 2);
             var animationComponent2 = guard2.GetOrCreate<AnimationComponent>();
-            animationComponent2.Add(Content.Load<AnimationClip>("Walk"), 0, AnimationBlendOperation.LinearBlend);
-            animationComponent2.Add(Content.Load<AnimationClip>("GuardAdditive"), 0, AnimationBlendOperation.Add);
+            animationComponent2.Add(Content.Load<AnimationClip>("Walk"), 0, AnimationBlendOperation.LinearBlend, timeScale: 0f);
+            animationComponent2.Add(Content.Load<AnimationClip>("GuardAdditive"), 0, AnimationBlendOperation.Add, timeScale: 0f);
             Scene.Entities.Add(guard2);
         }
 

@@ -8,7 +8,9 @@ namespace SiliconStudio.Xenko.Rendering
         [DefaultValue(RenderGroupMask.Group0)]
         public RenderGroupMask RenderGroup { get; set; } = RenderGroupMask.Group0;
 
+        [DefaultValue(null)]
         public RenderStage OpaqueRenderStage { get; set; }
+        [DefaultValue(null)]
         public RenderStage TransparentRenderStage { get; set; }
 
         public string EffectName { get; set; }

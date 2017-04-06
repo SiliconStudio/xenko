@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     [AssetUpgrader(XenkoConfig.PackageName, 0, 2, typeof(Upgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
-    public sealed class ModelAsset : Asset, IModelAsset, IAssetCompileTimeDependencies
+    public sealed class ModelAsset : Asset, IModelAsset
     {
         /// <summary>
         /// The default file extension used by the <see cref="ModelAsset"/>.
@@ -76,19 +76,6 @@ namespace SiliconStudio.Xenko.Assets.Models
 
         [DataMemberIgnore]
         public override UFile MainSource => Source;
-
-        /// <inheritdoc/>
-        public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
-        {
-            if (Skeleton != null)
-            {
-                var reference = AttachedReferenceManager.GetAttachedReference(Skeleton);
-                if (reference != null)
-                {
-                    yield return new AssetReference(reference.Id, reference.Url);
-                }
-            }
-        }
 
         class Upgrader : AssetUpgraderBase
         {

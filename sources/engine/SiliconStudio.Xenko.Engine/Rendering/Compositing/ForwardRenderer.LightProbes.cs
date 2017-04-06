@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         private unsafe void PrepareLightprobeConstantBuffer(RenderContext context)
         {
             var renderView = context.RenderView;
-            var lightProbesData = context.RenderView.SceneInstance.Tags.Get(LightProbeComponent.RuntimeData);
+            var lightProbesData = context.RenderView.SceneInstance.GetProcessor<LightProbeProcessor>()?.RuntimeData;
             if (lightProbesData != null)
             {
                 foreach (var renderFeature in context.RenderSystem.RenderFeatures)
@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             Buffer lightprobesCoefficients = null;
             var renderView = context.RenderView;
 
-            var lightProbesData = renderView.SceneInstance.Tags.Get(LightProbeComponent.RuntimeData);
+            var lightProbesData = renderView.SceneInstance.GetProcessor<LightProbeProcessor>()?.RuntimeData;
             if (lightProbesData == null)
             {
                 // No lightprobes, we still set GPU resources (otherwise rendering might fetch invalid data)
@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             // Render IBL tetrahedra ID so that we can assign them per pixel
             //ibl = PushScopedResource(Context.Allocator.GetTemporaryTexture2D(drawContext.CommandList.DepthStencilBuffer.Width, drawContext.CommandList.DepthStencilBuffer.Height, PixelFormat.R16_UInt));
             ibl = PushScopedResource(Context.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(drawContext.CommandList.DepthStencilBuffer.Width, drawContext.CommandList.DepthStencilBuffer.Height,
-                        1, PixelFormat.R16_UInt, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1 , GraphicsResourceUsage.Default, actualMSAALevel)));
+                        1, PixelFormat.R16_UInt, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1 , GraphicsResourceUsage.Default, actualMultisampleCount)));
             using (drawContext.PushRenderTargetsAndRestore())
             {
                 drawContext.CommandList.Clear(ibl, Color4.Black);

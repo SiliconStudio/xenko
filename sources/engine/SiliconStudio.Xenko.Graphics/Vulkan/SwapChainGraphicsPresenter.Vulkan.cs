@@ -444,7 +444,7 @@ namespace SiliconStudio.Xenko.Graphics
                 Flags = TextureFlags.RenderTarget,
                 Format = Description.BackBufferFormat,
                 MipLevels = 1,
-                MultiSampleLevel = MSAALevel.None,
+                MultisampleCount = MultisampleCount.None,
                 Usage = GraphicsResourceUsage.Default
             };
             backbuffer.InitializeWithoutResources(backBufferDescription);

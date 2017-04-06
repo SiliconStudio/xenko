@@ -46,6 +46,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         {
             if (MetalnessMap != null)
             {
+                MetalnessMap.ClampFloat(0, 1);
+
                 var computeColorSource = MetalnessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.MetalnessMap, MaterialKeys.MetalnessValue));
                 var mixin = new ShaderMixinSource();
                 mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceMetalness"));

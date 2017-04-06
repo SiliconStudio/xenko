@@ -29,14 +29,14 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="textureFlags">true if the texture needs to support unordered read write.</param>
         /// <param name="arraySize">Size of the texture 2D array, default to 1.</param>
         /// <param name="usage">The usage.</param>
-        /// <param name="msaaLevel">The MSAA Level</param>
+        /// <param name="multisampleCount">The multisample count.</param>
         /// <returns>A new instance of <see cref="TextureDescription" /> class.</returns>
-        public static TextureDescription New2D(int width, int height, MipMapCount mipCount, PixelFormat format, TextureFlags textureFlags = TextureFlags.ShaderResource, int arraySize = 1, GraphicsResourceUsage usage = GraphicsResourceUsage.Default, MSAALevel msaaLevel = MSAALevel.None)
+        public static TextureDescription New2D(int width, int height, MipMapCount mipCount, PixelFormat format, TextureFlags textureFlags = TextureFlags.ShaderResource, int arraySize = 1, GraphicsResourceUsage usage = GraphicsResourceUsage.Default, MultisampleCount multisampleCount = MultisampleCount.None)
         {
-            return New2D(width, height, format, textureFlags, mipCount, arraySize, usage, msaaLevel);
+            return New2D(width, height, format, textureFlags, mipCount, arraySize, usage, multisampleCount);
         }
 
-        private static TextureDescription New2D(int width, int height, PixelFormat format, TextureFlags textureFlags, int mipCount, int arraySize, GraphicsResourceUsage usage, MSAALevel msaaLevel)
+        private static TextureDescription New2D(int width, int height, PixelFormat format, TextureFlags textureFlags, int mipCount, int arraySize, GraphicsResourceUsage usage, MultisampleCount multisampleCount)
         {
             if ((textureFlags & TextureFlags.UnorderedAccess) != 0)
                 usage = GraphicsResourceUsage.Default;
@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Graphics
                 Height = height,
                 Depth = 1,
                 ArraySize = arraySize,
-                MultiSampleLevel = msaaLevel,
+                MultisampleCount = multisampleCount,
                 Flags = textureFlags,
                 Format = format,
                 MipLevels = Texture.CalculateMipMapCount(mipCount, width, height),
