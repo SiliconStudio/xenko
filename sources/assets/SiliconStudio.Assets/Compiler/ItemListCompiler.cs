@@ -17,7 +17,7 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public abstract class ItemListCompiler
     {
-        private readonly ICompilerRegistry<IAssetCompiler> compilerRegistry;
+        private readonly AssetCompilerRegistry compilerRegistry;
         private readonly Type compilationContext;
         private int latestPriority;
 
@@ -31,7 +31,7 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         /// <param name="compilerRegistry">The registry that contains the compiler to use for each asset type</param>
         /// <param name="compilationContext">The context in which this list will compile the assets (Asset, Preview, thumbnail etc)</param>
-        protected ItemListCompiler(ICompilerRegistry<IAssetCompiler> compilerRegistry, Type compilationContext)
+        protected ItemListCompiler(AssetCompilerRegistry compilerRegistry, Type compilationContext)
         {
             if (compilerRegistry == null) throw new ArgumentNullException(nameof(compilerRegistry));
             if (compilationContext == null) throw new ArgumentNullException(nameof(compilationContext));
