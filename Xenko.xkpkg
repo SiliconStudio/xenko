@@ -15,7 +15,7 @@ Meta:
 Profiles:
     - Name: Shared
       AssetFolders:
-        - Path: sources/engine/SiliconStudio.Xenko.Assets/AssetPackage/XenkoAssetPackage/Assets/Shared
+        - Path: sources/engine/SiliconStudio.Xenko.Assets/AssetPackage/Assets/Shared
         - Path: sources/engine/SiliconStudio.Xenko.Engine/Rendering
         - Path: sources/engine/SiliconStudio.Xenko.Graphics/Shaders
         - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Shaders
