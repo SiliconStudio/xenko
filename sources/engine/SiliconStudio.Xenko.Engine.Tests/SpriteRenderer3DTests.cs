@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
@@ -22,8 +22,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         public SpriteRenderer3DTests()
         {
-            //CurrentVersion = 4;
-            CurrentVersion = 5; // Build machine changed
+            CurrentVersion = 6;
             GraphicsDeviceManager.PreferredBackBufferWidth = ScreenWidth;
             GraphicsDeviceManager.PreferredBackBufferHeight = ScreenHeight;
         }

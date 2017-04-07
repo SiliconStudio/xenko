@@ -402,8 +402,8 @@ namespace SiliconStudio.Xenko.Graphics
             // TODO VULKAN API: Stride is part of Pipeline 
 
             // TODO VULKAN: Handle multiple buffers. Collect and apply before draw?
-            if (index != 0)
-                throw new NotImplementedException();
+            //if (index != 0)
+            //    throw new NotImplementedException();
 
             var bufferCopy = buffer.NativeBuffer;
             var offsetCopy = (ulong)offset;
