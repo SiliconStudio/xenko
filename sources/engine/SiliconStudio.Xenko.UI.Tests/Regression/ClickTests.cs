@@ -24,7 +24,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public ClickTests()
         {
-            CurrentVersion = 9;
+            //CurrentVersion = 9;
+            CurrentVersion = 10; // Ignore rotation of the elements - refer to XK-4689
         }
 
         protected override async Task LoadContent()
@@ -125,9 +126,16 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             FrameGameSystem.Draw(0, UpdateTextBlockText).TakeScreenshot(0);
             FrameGameSystem.Draw(1, Draw1).TakeScreenshot(1);
             FrameGameSystem.Draw(2, Draw2).TakeScreenshot(2);
-            FrameGameSystem.Draw(3, () => SetElement2Matrix(Matrix.Translation(0, 0, -110))).Draw(4, Draw3).TakeScreenshot(4);
-            FrameGameSystem.Draw(5, () => SetElement2Matrix(Matrix.Translation(0, 0, 170))).Draw(6, Draw4).TakeScreenshot(6);
-            FrameGameSystem.Draw(7, () => SetElement2Matrix(Matrix.RotationYawPitchRoll(-0.1f, -0.2f, 0.3f))).Draw(8, Draw5).TakeScreenshot(8);
+
+            // Ignore rotation of the elements - refer to XK-4689
+            //FrameGameSystem.Draw(3, () => SetElement2Matrix(Matrix.Translation(0, 0, -110))).Draw(4, Draw3).TakeScreenshot(4);
+            //FrameGameSystem.Draw(5, () => SetElement2Matrix(Matrix.Translation(0, 0, 170))).Draw(6, Draw4).TakeScreenshot(6);
+            //FrameGameSystem.Draw(7, () => SetElement2Matrix(Matrix.RotationYawPitchRoll(-0.1f, -0.2f, 0.3f))).Draw(8, Draw5).TakeScreenshot(8);
+
+            FrameGameSystem.Draw(3, () => {}).Draw(4, Draw3).TakeScreenshot(4);
+            FrameGameSystem.Draw(5, () => { }).Draw(6, Draw4).TakeScreenshot(6);
+            FrameGameSystem.Draw(7, () => { }).Draw(8, Draw5).TakeScreenshot(8);
+
             FrameGameSystem.Draw(Draw6).TakeScreenshot();
         }
 
