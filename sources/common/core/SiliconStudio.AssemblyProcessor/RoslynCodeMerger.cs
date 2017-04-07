@@ -119,6 +119,7 @@ namespace SiliconStudio.AssemblyProcessor
             {
                 OutputFile = assembly.MainModule.FileName,
                 DebugInfo = true,
+                SourceServerData = false,
                 CopyAttributes = true,
                 AllowMultipleAssemblyLevelAttributes = true,
                 XmlDocumentation = false,
