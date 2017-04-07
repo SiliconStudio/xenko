@@ -1,4 +1,5 @@
 ﻿using System;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Presentation.Quantum.ViewModels;
 using SiliconStudio.Quantum;
@@ -26,7 +27,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="member">The member to evaluate.</param>
         /// <returns><c>True</c> if the member node should be constructed, <c>False</c> otherwise.</returns>
-        bool ShouldConstructMember(IMemberNode member);
+        bool ShouldConstructMember([NotNull] IMemberNode member);
 
         /// <summary>
         /// Indicates whether the view model of a specific item of a collection should be constructed.
@@ -34,6 +35,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="collection">The collection to evaluate.</param>
         /// <param name="index">The index of the item to evaluate.</param>
         /// <returns><c>True</c> if the member node should be constructed, <c>False</c> otherwise.</returns>
-        bool ShouldConstructItem(IObjectNode collection, Index index);
+        bool ShouldConstructItem([NotNull] IObjectNode collection, Index index);
     }
 }

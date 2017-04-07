@@ -1,6 +1,6 @@
 !Animation
 Id: 5628ecfb-1167-4f0f-ac8a-34103724252f
-SerializedVersion: {Xenko: 1.10.0-alpha01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Source: ../../../Resources/Animation/Reload.fbx
 ClipDuration:
@@ -14,6 +14,6 @@ Skeleton: 64401578-294c-4eb2-b92f-4c0a805d7314:Models/mannequinHandModel Skeleto
 RootMotion: false
 PreviewModel: a2ee43dd-1239-4930-bd7c-6017bb263391:Models/mannequinHandModel
 AnimationTimeMinimum: 0:00:00:00.0000000
-AnimationTimeMaximum: 0:00:00:02.1670000
 ~SourceHashes:
     de1227ec883878b842d455db2859b688~../../../Resources/Animation/Reload.fbx: 4ad603dbcef7219a56051ac9b866a41e
+AnimationTimeMaximum: 0:00:00:02.1670000

@@ -133,14 +133,13 @@
     <Compile Include="PackageStore.cs" />
     <Compile Include="PackageUpgrader.cs" />
     <Compile Include="PackageUpgraderAttribute.cs" />
+    <Compile Include="PackageUpgradeRequestedAnswer.cs" />
     <Compile Include="PackageUserSettings.cs" />
     <Compile Include="PackageVersionRangeExtensions.cs" />
     <Compile Include="Reflection\CollectionItemIdentifiers.cs" />
     <Compile Include="Reflection\CollectionItemIdHelper.cs" />
-    <Compile Include="Reflection\IdentifiableHelper.cs" />
     <Compile Include="Reflection\ItemId.cs" />
     <Compile Include="Reflection\OverrideTarget.cs" />
-    <Compile Include="Reflection\ShadowId.cs" />
     <Compile Include="Serializers\AssetPartContainedAttribute.cs" />
     <Compile Include="Serializers\FixupObjectReferences.cs" />
     <Compile Include="Serializers\IAssetPartReference.cs" />

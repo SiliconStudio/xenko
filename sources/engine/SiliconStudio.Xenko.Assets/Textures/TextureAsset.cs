@@ -1,15 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Graphics;
@@ -25,14 +21,17 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [Display(1055, "Texture")]
     [CategoryOrder(10, "Size")]
     [CategoryOrder(20, "Format")]
-    [AssetFormatVersion(XenkoConfig.PackageName, TextureAssetVersion)]
-    [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(TransformSRgbToColorSpace))]
-    [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.4.0-beta")]
     [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.10.0-alpha01", typeof(DescriptionUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-alpha01", TextureAssetVersion, typeof(CompressionUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-alpha01", "1.11.1.2", typeof(CompressionUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.11.1.2", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
     public sealed class TextureAsset : AssetWithSource
     {
-        private const string TextureAssetVersion = "1.11.1.2";
+        private const string CurrentVersion = "2.0.0.0";
 
         /// <summary>
         /// The default file extension used by the <see cref="TextureAsset"/>.
@@ -116,14 +115,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [NotNull]
         [Display(null, "Format", Expand = ExpandRule.Always)]
         public ITextureType Type { get; set; } = new ColorTextureType();
-
-        private class TransformSRgbToColorSpace : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                // Code was removed intentionally. Backward compatibility before 1.4.0-beta is no longer supported
-            }
-        }
 
         private class CompressionUpgrader : AssetUpgraderBase
         {
