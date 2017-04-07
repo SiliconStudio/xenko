@@ -307,7 +307,7 @@ namespace SiliconStudio.Assets
                 if (logger == null) throw new ArgumentNullException("logger");
 
                 // Make sure ToolsVersion is at least MinimumToolsVersion
-                var toolsVersion = project.ToolsVersion;
+                var toolsVersion = project.Xml.ToolsVersion ?? project.ToolsVersion;
                 if (toolsVersion != null)
                 {
                     Version parsedToolsVersion;
