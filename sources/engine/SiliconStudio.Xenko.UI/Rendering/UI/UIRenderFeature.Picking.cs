@@ -24,8 +24,11 @@ namespace SiliconStudio.Xenko.Rendering.UI
             if (renderUIElement.UIComponent.Page?.RootElement == null)
                 return;
 
-             UpdateMouseOver(ref viewport, ref worldViewProj, renderUIElement);
-             UpdateTouchEvents(ref viewport, ref worldViewProj, renderUIElement, drawTime);
+            var inverseZViewProj = worldViewProj;
+            inverseZViewProj.Row3 = -inverseZViewProj.Row3;
+
+            UpdateMouseOver(ref viewport, ref inverseZViewProj, renderUIElement);
+            UpdateTouchEvents(ref viewport, ref inverseZViewProj, renderUIElement, drawTime);
         }
 
         partial void PickingClear()
