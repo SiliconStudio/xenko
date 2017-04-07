@@ -52,12 +52,12 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Saves the content to as stream.
+        /// Saves the content to a stream.
         /// </summary>
         /// <param name="stream"></param>
         public virtual void Save(Stream stream)
         {
-            TextAccessor.WriteTo(stream).Wait();
+            TextAccessor.Save(stream).Wait();
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace SiliconStudio.Assets
             /// Writes the text to the given <see cref="StreamWriter"/>.
             /// </summary>
             /// <param name="streamWriter"></param>
-            Task WriteTo(Stream streamWriter);
+            Task Save(Stream streamWriter);
 
             ISerializableTextAccessor GetSerializableVersion();
         }
@@ -141,7 +141,7 @@ namespace SiliconStudio.Assets
                 text = value;
             }
 
-            public async Task WriteTo(Stream stream)
+            public async Task Save(Stream stream)
             {
                 if (text != null)
                 {
