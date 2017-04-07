@@ -29,6 +29,9 @@ namespace SiliconStudio.Xenko.Navigation.Tests
         public DynamicBarrierTest()
         {
             AutoLoadDefaultSettings = true;
+            IsDrawDesynchronized = false;
+            IsFixedTimeStep = true;
+            ForceOneUpdatePerDraw = true;
         }
 
         protected override async Task LoadContent()
