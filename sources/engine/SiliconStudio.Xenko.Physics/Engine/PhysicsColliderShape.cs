@@ -67,6 +67,9 @@ namespace SiliconStudio.Xenko.Physics
 
         internal static ColliderShape CreateShape(IColliderShapeDesc desc)
         {
+            if (desc == null)
+                return null;
+
             ColliderShape shape = null;
 
             var type = desc.GetType();
