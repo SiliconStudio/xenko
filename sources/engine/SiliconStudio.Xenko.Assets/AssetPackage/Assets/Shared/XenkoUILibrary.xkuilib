@@ -1,6 +1,6 @@
 !UILibraryAsset
 Id: 79af0b55-a70f-4c7a-8f5b-967d55661736
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Design:
     Resolution: {X: 128.0, Y: 72.0, Z: 100.0}

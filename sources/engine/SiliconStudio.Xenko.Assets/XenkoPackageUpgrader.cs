@@ -29,8 +29,8 @@ namespace SiliconStudio.Xenko.Assets
     {
         public const string CurrentVersion = "2.0.0.0";
 
-        public static readonly string DefaultGraphicsCompositorLevel9Url = "Compositing/DefaultGraphicsCompositorLevel9";
-        public static readonly string DefaultGraphicsCompositorLevel10Url = "Compositing/DefaultGraphicsCompositorLevel10";
+        public static readonly string DefaultGraphicsCompositorLevel9Url = "DefaultGraphicsCompositorLevel9";
+        public static readonly string DefaultGraphicsCompositorLevel10Url = "DefaultGraphicsCompositorLevel10";
 
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
         {
