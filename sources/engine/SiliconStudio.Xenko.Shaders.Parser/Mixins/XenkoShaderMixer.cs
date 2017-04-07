@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <summary>
         /// Log of all the warnings and errors
         /// </summary>
-        private readonly LoggerResult log;
+        private readonly ShaderMixinParsingResult log;
 
         #endregion
 
@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// or
         /// context
         /// </exception>
-        public XenkoShaderMixer(ModuleMixin moduleMixin, LoggerResult log, Dictionary<string, ModuleMixin> context, CompositionDictionary compositionsPerVariable, CloneContext cloneContext = null)
+        public XenkoShaderMixer(ModuleMixin moduleMixin, ShaderMixinParsingResult log, Dictionary<string, ModuleMixin> context, CompositionDictionary compositionsPerVariable, CloneContext cloneContext = null)
         {
             if (moduleMixin == null)
                 throw new ArgumentNullException("moduleMixin");

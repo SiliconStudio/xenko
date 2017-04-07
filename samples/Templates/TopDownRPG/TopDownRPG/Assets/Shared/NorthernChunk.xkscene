@@ -1,6 +1,6 @@
 !SceneAsset
 Id: cd7db7bc-2d8e-45be-a6d9-4b7e9008e949
-SerializedVersion: {Xenko: 1.10.0-beta03}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 ChildrenIds: []
 Parent: b1ceb6db-e76e-4c37-be81-72941ddd6b9a:DynamicScene

@@ -1,8 +1,8 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Assets;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
@@ -10,8 +10,16 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
     [AssetContentType(typeof(AnimationClip))]
     [AssetDescription(".xkss4a;.pdxss4a")] // A description used to display in the asset editor
     [Display("Sprite Studio Animation")]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "0.0.0")]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
     public class SpriteStudioAnimationAsset : AssetWithSource
     {
+        private const string CurrentVersion = "2.0.0.0";
+
         [DataMember(1)]
         [DefaultValue(AnimationRepeatMode.LoopInfinite)]
         public AnimationRepeatMode RepeatMode { get; set; } = AnimationRepeatMode.LoopInfinite;

@@ -86,12 +86,12 @@ namespace SiliconStudio.Xenko.Assets.Physics
                 // Cloned list of collider shapes
                 var descriptions = Parameters.ColliderShapes.ToList();
 
-                Parameters.ColliderShapes = Parameters.ColliderShapes.Where(x => x != null
+                var validShapes = Parameters.ColliderShapes.Where(x => x != null
                     && (x.GetType() != typeof(ConvexHullColliderShapeDesc) || ((ConvexHullColliderShapeDesc)x).Model != null)).ToList();
 
                 //pre process special types
                 foreach (var convexHullDesc in
-                    (from shape in Parameters.ColliderShapes let type = shape.GetType() where type == typeof(ConvexHullColliderShapeDesc) select shape)
+                    (from shape in validShapes let type = shape.GetType() where type == typeof(ConvexHullColliderShapeDesc) select shape)
                     .Cast<ConvexHullColliderShapeDesc>())
                 {
                     // Clone the convex hull shape description so the fields that should not be serialized can be cleared (Model in this case)

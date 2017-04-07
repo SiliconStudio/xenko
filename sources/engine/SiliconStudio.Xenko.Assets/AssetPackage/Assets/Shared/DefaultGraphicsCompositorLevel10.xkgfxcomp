@@ -1,6 +1,6 @@
-!GraphicsCompositorAsset
+﻿!GraphicsCompositorAsset
 Id: 823a81bf-bac0-4552-9267-aeed499c40df
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Cameras:
     de2e75c3b2b23e54162686363f3f138e:
