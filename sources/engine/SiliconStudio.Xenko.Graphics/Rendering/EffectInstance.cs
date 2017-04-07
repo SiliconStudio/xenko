@@ -38,6 +38,14 @@ namespace SiliconStudio.Xenko.Rendering
 
         public ParameterCollection Parameters { get; }
 
+        protected override void Destroy()
+        {
+            RootSignature?.Dispose();
+            RootSignature = null;
+
+            base.Destroy();
+        }
+
         /// <summary>
         /// Compiles or recompiles the effect if necesssary.
         /// </summary>
@@ -60,6 +68,7 @@ namespace SiliconStudio.Xenko.Rendering
                 var layoutNames = effect.Bytecode.Reflection.ResourceBindings.Select(x => x.ResourceGroup ?? "Globals").Distinct().ToList();
                 descriptorReflection = EffectDescriptorSetReflection.New(graphicsDevice, effect.Bytecode, layoutNames, "Globals");
 
+                RootSignature?.Dispose();
                 RootSignature = RootSignature.New(graphicsDevice, descriptorReflection);
 
                 bufferUploader.Compile(graphicsDevice, descriptorReflection, effect.Bytecode);

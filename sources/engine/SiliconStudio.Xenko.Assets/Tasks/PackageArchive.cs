@@ -69,6 +69,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
             // Handle Assets
             var rootDir = package.RootDirectory;
 
+
             var newPackage = new Package { Meta = package.Meta };
 
             foreach (var profile in package.Profiles)
@@ -84,9 +85,12 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                     files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xksheet", target));
                     files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xkuilib", target));
                     files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xkgfxcomp", target));
-                    files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/UIDesigns.dds", target));
+                    var resourceFolder = UPath.Combine(assetFolder.Path, new UDirectory("../../Resources"));
+                    if (Directory.Exists(resourceFolder.ToWindowsPath()))
+                    {
+                        files.Add(NewFile(resourceFolder.MakeRelative(rootDir) + "/**/*.*", "Resources"));
+                    }
                 }
-
                 var targetProfile = new PackageProfile(profile.Name);
                 targetProfile.AssetFolders.Add(new AssetFolder(target));
                 newPackage.Profiles.Add(targetProfile);
