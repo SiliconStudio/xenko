@@ -1,27 +1,49 @@
 // Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Core.MicroThreading;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Physics
 {
     public class Collision
     {
-        public Collision(PhysicsComponent colliderA, PhysicsComponent colliderB)
+        private static readonly Queue<Channel<ContactPoint>> ChannelsPool = new Queue<Channel<ContactPoint>>();
+
+        internal Collision()
+        {
+        }
+
+        public void Initialize(PhysicsComponent colliderA, PhysicsComponent colliderB)
         {
             ColliderA = colliderA;
             ColliderB = colliderB;
 
-            NewContactChannel = new Channel<ContactPoint> { Preference = ChannelPreference.PreferSender };
-            ContactUpdateChannel = new Channel<ContactPoint> { Preference = ChannelPreference.PreferSender };
-            ContactEndedChannel = new Channel<ContactPoint> { Preference = ChannelPreference.PreferSender };
+            NewContactChannel = ChannelsPool.Count == 0 ? new Channel<ContactPoint> { Preference = ChannelPreference.PreferSender } : ChannelsPool.Dequeue();
+            ContactUpdateChannel = ChannelsPool.Count == 0 ? new Channel<ContactPoint> { Preference = ChannelPreference.PreferSender } : ChannelsPool.Dequeue();
+            ContactEndedChannel = ChannelsPool.Count == 0 ? new Channel<ContactPoint> { Preference = ChannelPreference.PreferSender } : ChannelsPool.Dequeue();
         }
 
-        public readonly PhysicsComponent ColliderA;
-        public readonly PhysicsComponent ColliderB;
+        internal void Destroy()
+        {
+            ColliderA = null;
+            ColliderB = null;
+            NewContactChannel.Reset();
+            ContactUpdateChannel.Reset();
+            ContactEndedChannel.Reset();
+            ChannelsPool.Enqueue(NewContactChannel);
+            ChannelsPool.Enqueue(ContactUpdateChannel);
+            ChannelsPool.Enqueue(ContactEndedChannel);
+            Contacts.Clear();
+        }
+
+        public PhysicsComponent ColliderA { get; private set; }
+
+        public PhysicsComponent ColliderB { get; private set; }
 
         public HashSet<ContactPoint> Contacts = new HashSet<ContactPoint>(ContactPointEqualityComparer.Default);
 
@@ -59,12 +81,17 @@ namespace SiliconStudio.Xenko.Physics
         public override bool Equals(object obj)
         {
             var other = (Collision)obj;
-            return (other.ColliderA == ColliderA && other.ColliderB == ColliderB) || (other.ColliderB == ColliderA && other.ColliderA == ColliderB);
+            return other != null && ((other.ColliderA == ColliderA && other.ColliderB == ColliderB) || (other.ColliderB == ColliderA && other.ColliderA == ColliderB));
         }
 
         public override int GetHashCode()
         {
-            return 397 * ColliderA.GetHashCode() * ColliderB.GetHashCode();
+            unchecked
+            {
+                var result = ColliderA.GetHashCode();
+                result = (result * 397) ^ ColliderB.GetHashCode();
+                return result;
+            }
         }
 
         internal bool InternalEquals(PhysicsComponent a, PhysicsComponent b)

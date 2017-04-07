@@ -136,11 +136,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 throw new ArgumentNullException(nameof(input));
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
-            if (!input.IsMultiSample)
+            if (!input.IsMultisample)
                 throw new ArgumentOutOfRangeException(nameof(input), "Source texture is not a MSAA texture.");
 
             // Prepare
-            int samplesCount = Math.Min(maxSamples, (int)input.MultiSampleLevel);
+            int samplesCount = Math.Min(maxSamples, (int)input.MultisampleCount);
             var inputSize = input.Size;
             // SvPosUnpack = float4(float2(0.5, -0.5) * TextureSize, float2(0.5, 0.5) * TextureSize))
             // TextureSizeLess1 = TextureSize - 1
@@ -152,13 +152,13 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             if (FilterType == FilterTypes.Default)
             {
                 // Resolve using in-build API function
-                drawContext.CommandList.CopyMultiSample(input, 0, output, 0);
+                drawContext.CommandList.CopyMultisample(input, 0, output, 0);
             }
             else
             {
                 // Resolve using custom pixel shader
                 msaaResolver.Parameters.Set(MSAAResolverShaderKeys.InputTexture, input);
-                msaaResolver.Parameters.Set(MSAAResolverParams.InputQuality, (int)input.MultiSampleLevel);
+                msaaResolver.Parameters.Set(MSAAResolverParams.InputQuality, (int)input.MultisampleCount);
                 if (samplesCount > 1)
                     msaaResolver.Parameters.Set(MSAAResolverParams.ResolveFilterType, (int)FilterType);
                 msaaResolver.SetOutput(output);

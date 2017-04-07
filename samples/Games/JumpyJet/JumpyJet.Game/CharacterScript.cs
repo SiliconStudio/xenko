@@ -1,9 +1,11 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Events;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Physics;
 using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace JumpyJet
@@ -14,17 +16,16 @@ namespace JumpyJet
     /// </summary>
     public class CharacterScript : AsyncScript
     {
-        private static readonly Vector3 Gravity = new Vector3(0, -1700, 0);
-        private static readonly Vector3 StartPos = new Vector3(-100, 0, 0);
-        private static readonly Vector3 StartVelocity = new Vector3(0, 700, 0);
+        private EventReceiver gameResetListener = new EventReceiver(GameGlobals.GameResetEventKey);
+        private EventReceiver gameStartedListener = new EventReceiver(GameGlobals.GameStartedventKey);
 
-        // Collider rectangles of CharacterScript
-        private static readonly RectangleF BodyRectangle = new RectangleF(30, 19, 60, 34);
-        private static readonly RectangleF HeadRectangle = new RectangleF(36, 63, 20, 20);
-
-        private const int TopLimit = 568 - 200;
-        private const float NormalVelocityY = 650;
-        private const float VelocityAboveTopLimit = 200;
+        private static readonly Vector3 Gravity = new Vector3(0, -17, 0);
+        private static readonly Vector3 StartPos = new Vector3(-1, 0, 0);
+        private static readonly Vector3 StartVelocity = new Vector3(0, 7, 0);
+       
+        private const float TopLimit = (568 - 200)*GameGlobals.GamePixelToUnitScale;
+        private const float NormalVelocityY = 6.5f;
+        private const float VelocityAboveTopLimit = 2f;
         private const int FlyingSpriteFrameIndex = 1;
         private const int FallingSpriteFrameIndex = 0;
 
@@ -32,38 +33,17 @@ namespace JumpyJet
         private Vector3 rotation;
 
         private bool isRunning;
-        private float agentWidth;
-        private float agentHeight;
-
         private Vector3 velocity;
-
-        private RectangleF[] colliders;
-
-        /// <summary>
-        /// The position of the back of the character along the X axis.
-        /// </summary>
-        public float PositionBack
-        {
-            get { return Entity.Transform.Position.X - agentWidth/2f; }
-        }
 
         public void Start()
         {
-            // Get texture region from the sprite
-            var textureRegion = Entity.Get<SpriteComponent>().SpriteProvider.GetSprite().Region;
-            agentWidth = textureRegion.Width;
-            agentHeight = textureRegion.Height;
-
             position = StartPos;
             velocity = StartVelocity;
 
-            colliders = new[]
-            {
-                BodyRectangle,
-                HeadRectangle
-            };
-
             Reset();
+
+            Script.AddTask(CountPassedPipes);
+            Script.AddTask(DetectGameOver);
         }
 
         /// <summary>
@@ -84,20 +64,43 @@ namespace JumpyJet
         }
 
         /// <summary>
-        /// Restart the character
+        /// Update the agent according to its states: {Idle, Alive, Die}
         /// </summary>
-        public void Restart()
+        public async Task CountPassedPipes()
         {
-            Reset();
-            isRunning = true;
+            var physicsComponent = Entity.Components.Get<PhysicsComponent>();
+
+            while (Game.IsRunning)
+            {
+                var collision = await physicsComponent.CollisionEnded();
+
+                if(collision.ColliderA.CollisionGroup == CollisionFilterGroups.CustomFilter1 || // use collision group 1 to distinguish pipe passed trigger from other colliders.
+                    collision.ColliderB.CollisionGroup == CollisionFilterGroups.CustomFilter1)
+                    GameGlobals.PipePassedEventKey.Broadcast();
+            }
         }
 
         /// <summary>
-        /// Stop to update the character
+        /// Update the agent according to its states: {Idle, Alive, Die}
         /// </summary>
-        public void Stop()
+        public async Task DetectGameOver()
         {
-            isRunning = false;
+            var physicsComponent = Entity.Components.Get<PhysicsComponent>();
+
+            while (Game.IsRunning)
+            {
+
+                await Script.NextFrame();
+
+                // detect collisions with the pipes
+                var collision = await physicsComponent.NewCollision();
+                if (collision.ColliderA.CollisionGroup == CollisionFilterGroups.DefaultFilter &&
+                    collision.ColliderB.CollisionGroup == CollisionFilterGroups.DefaultFilter)
+                {
+                    isRunning = false;
+                    GameGlobals.GameOverEventKey.Broadcast();
+                }
+            }
         }
 
         /// <summary>
@@ -110,6 +113,12 @@ namespace JumpyJet
             while (Game.IsRunning)
             {
                 await Script.NextFrame();
+
+                if (gameResetListener.TryReceive())
+                    Reset();
+
+                if (gameStartedListener.TryReceive())
+                    isRunning = true;
 
                 if (!isRunning)
                     continue;
@@ -157,26 +166,6 @@ namespace JumpyJet
             rotation.Z += rotationSign * MathUtil.Pi * 0.01f;
             if (rotationSign * rotation.Z > Math.PI / 10f)
                 rotation.Z = rotationSign * MathUtil.Pi / 10f;
-        }
-
-        /// <summary>
-        /// Check if the pipe set is colliding with the character or not.
-        /// </summary>
-        /// <returns></returns>
-        public bool IsColliding(PipeSet nextPipeSet)
-        {
-            for (var i=0; i<colliders.Length; ++i)
-            {
-                var collider = colliders[i];
-                collider.X = colliders[i].X + position.X - agentWidth / 2;
-                collider.Y = colliders[i].Y + position.Y - agentHeight / 2;
-
-                if (collider.Intersects(nextPipeSet.GetBottomPipeCollider()) ||
-                    collider.Intersects(nextPipeSet.GetTopPipeCollider()))
-                    return true;
-            }
-
-            return false;
         }
     }
 }

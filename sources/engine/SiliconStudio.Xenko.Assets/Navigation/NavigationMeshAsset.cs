@@ -3,14 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Navigation;
 using SiliconStudio.Xenko.Physics;
@@ -21,8 +16,16 @@ namespace SiliconStudio.Xenko.Assets.Navigation
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(NavigationMesh))]
     [Display("Navigation Mesh")]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "0.0.0")]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
     public class NavigationMeshAsset : Asset
     {
+        private const string CurrentVersion = "2.0.0.0";
+
         public const string FileExtension = ".xknavmesh";
 
         /// <summary>

@@ -21,12 +21,17 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
     [DataContract("SkyboxAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Skybox))]
+    [Display(1000, "Skybox")]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.11.1.1", typeof(RemoveSkyboxUsage))]
-    [Display(1000, "Skybox")]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.11.1.1", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
     public sealed class SkyboxAsset : Asset
     {
-        private const string CurrentVersion = "1.11.1.1";
+        private const string CurrentVersion = "2.0.0.0";
 
         /// <summary>
         /// The default file extension used by the <see cref="SkyboxAsset"/>.

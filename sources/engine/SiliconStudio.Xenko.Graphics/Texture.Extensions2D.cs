@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2012 SharpDX - Alexandre Mutel
@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="textureFlags">true if the texture needs to support unordered read write.</param>
         /// <param name="arraySize">Size of the texture 2D array, default to 1.</param>
         /// <param name="usage">The usage.</param>
-        /// <param name="msaaLevel">The level of MSAA</param>
+        /// <param name="multisampleCount">The multisample count.</param>
         /// <returns>A new instance of 2D <see cref="Texture" /> class.</returns>
         public static Texture New2D(
             GraphicsDevice device,
@@ -106,9 +106,9 @@ namespace SiliconStudio.Xenko.Graphics
             TextureFlags textureFlags = TextureFlags.ShaderResource,
             int arraySize = 1,
             GraphicsResourceUsage usage = GraphicsResourceUsage.Default,
-            MSAALevel msaaLevel = MSAALevel.None)
+            MultisampleCount multisampleCount = MultisampleCount.None)
         {
-            return new Texture(device).InitializeFrom(TextureDescription.New2D(width, height, mipCount, format, textureFlags, arraySize, usage, msaaLevel), textureData);
+            return new Texture(device).InitializeFrom(TextureDescription.New2D(width, height, mipCount, format, textureFlags, arraySize, usage, multisampleCount), textureData);
         }
     }
 }

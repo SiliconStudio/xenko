@@ -7,7 +7,7 @@ FullDescription: |
    This sample shows you how to analyse raw touch pointer events, activate advanced gesture recognition, and determine mouse and keyboard state. 
    It displays all the touch events received on the screen.
 Group: Samples/Input
-Icon: ../.xktpl/NewInput.png
+Icon: ../.xktpl/NewTouch.png
 DefaultOutputName: TouchInputs
 Screenshots:
     - .xktpl/screenshot_small.jpg

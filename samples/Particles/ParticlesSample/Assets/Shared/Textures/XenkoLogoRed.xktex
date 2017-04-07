@@ -1,6 +1,6 @@
 !Texture
 Id: 2833fb49-fbe8-4d15-9200-1ee5630552af
-SerializedVersion: {Xenko: 1.11.1.2}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Source: ../../../Resources/XenkoLogoRed.png
 Type: !ColorTextureType

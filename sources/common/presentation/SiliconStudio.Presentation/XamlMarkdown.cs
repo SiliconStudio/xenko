@@ -353,8 +353,8 @@ namespace SiliconStudio.Presentation
             }
 
             var result = Create<Hyperlink, Inline>(RunSpanGamut(linkText));
-            result.CommandParameter = url;
-            result.Command = HyperlinkCommand;
+            // Note: cannot use Command and CommandParameter because of a WPF bug (when copying the text). See https://stackoverflow.com/questions/3206258/commandconverter-valid-exception-or-net-bug
+            result.Click += (_, __) => HyperlinkCommand.Execute(url);
             return result;
         }
 

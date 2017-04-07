@@ -38,6 +38,13 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         protected override IObjectNode ParentingNode => RootNode;
 
+        public override void Dispose()
+        {
+            base.Dispose();
+            RootNode.ItemChanging -= OnItemChanging;
+            RootNode.ItemChanged -= OnItemChanged;
+        }
+
         public override void UpdateValue(object newValue)
         {
             throw new NodePresenterException($"A {nameof(RootNodePresenter)} cannot have its own value updated.");

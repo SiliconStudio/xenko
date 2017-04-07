@@ -71,10 +71,6 @@ namespace SiliconStudio.Xenko.Engine
         public ContentManager Content { get; private set; }
 
         [DataMemberIgnore]
-        [Obsolete("Use Content property instead when accessing the ContentManager")]
-        public ContentManager Asset => Content;
-
-        [DataMemberIgnore]
         public GraphicsDevice GraphicsDevice => graphicsDeviceService?.GraphicsDevice;
 
         [DataMemberIgnore]

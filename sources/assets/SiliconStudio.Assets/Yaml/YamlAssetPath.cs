@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -68,6 +68,11 @@ namespace SiliconStudio.Core.Yaml
         public void PushItemId(ItemId itemId)
         {
             items.Add(new Item(ItemType.ItemId, itemId));
+        }
+
+        public void Push(Item item)
+        {
+            items.Add(item);
         }
 
         public void RemoveFirstItem()

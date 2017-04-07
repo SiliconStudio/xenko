@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
     {
         public CanvasGridTest()
         {
-            CurrentVersion = 5;
+            CurrentVersion = 6;
         }
 
         protected override void RegisterTests()

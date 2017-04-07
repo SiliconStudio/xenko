@@ -168,7 +168,7 @@ namespace SiliconStudio.AssemblyProcessor
                 var typeDefinition = serializableType.Key.Resolve();
 
                 // If using List<T>, register this type in UpdateEngine
-                var listInterfaceType = typeDefinition.Interfaces.OfType<GenericInstanceType>().FirstOrDefault(x => x.ElementType.FullName == typeof(IList<>).FullName);
+                var listInterfaceType = typeDefinition.Interfaces.Select(x => x.InterfaceType).OfType<GenericInstanceType>().FirstOrDefault(x => x.ElementType.FullName == typeof(IList<>).FullName);
                 if (listInterfaceType != null)
                 {
                     //call Updater.UpdateEngine.RegisterMemberResolver(new Updater.ListUpdateResolver<T>());
