@@ -1,0 +1,60 @@
+﻿// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    /// <summary>
+	/// Screen Space Local Reflections shader with common variables and functions
+    /// </summary>
+    shader SSLRCommon : ImageEffectShader, Utilities
+    {		
+		// Options:
+		// 3 - 5-tap blur
+		// 5 - 9-tap blur
+		#define SSR_BLUR_STEPS 3
+
+		// SSR depth aware blur is still in testing stage
+		#define SSR_BLUR_DEPTH_AWARE 0
+		#define SSR_BLUR_MAX_DEPTH_DIFF 10
+
+		// Parmeter to control minimum Z of view space normal of the pixel to be used in SSR
+		#define SSR_MIN_Z_REFLECT 0.1f
+
+		// Enable/disable debug visualization of the SSR hit points
+		#define SSR_DEBUG_HITS 0
+
+		// Enable/disable blurring trace hit during cone trace pass
+		#define SSR_CONE_TRACE_SAMPLING_BLUR 1
+
+		// Enable/disable blurring SSR during sampling results and mixing with reflections buffer
+		#define SSR_MIX_BLUR 1
+
+		// Enable/disable cone tracing for SSR
+		#define SSR_DISABLE_CONE_TRACE 0
+
+		cbuffer Data
+        {
+			stage float cb_numMips; // the number of mip levels in the convolved color buffer
+			stage float cb_screenSizeMax; // max (screenW, screenH) of trace rt
+			stage float2 TexelSize;
+
+			stage float2 SSRtexelSize;
+			stage float RoughnessFade; // roughnes fade
+			stage float MaxTraceSamples;
+			
+			stage float4x4 V;
+			stage float4x4 P;
+
+            /*stage float4   CameraPosWS;
+            stage float4   ViewDirection;
+            stage float4   ViewDirectionOrthoLeft;
+            stage float2   ScreenSize;
+            stage float    MaxNumSteps;         // around 45
+            stage float    WorldAntiSelfOcclusionBias;  // around 0.03f;
+            stage float    PixelDepth;          // around 0.03f;
+            stage float    MaxHizMipLevel;      // log of resolution.
+            stage float    MaxTravelDistance;   // usually 1
+            stage float    ResolutionDivisor;   // 1,2,4 (used to adapt Texture0TexelSize because we plug it non reduced)*/
+        };
+    };
+}

@@ -1,0 +1,96 @@
+﻿// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    /// <summary>
+	/// Screen Space Local Reflections shader for Cone Trace Pass
+    /// </summary>
+    shader SSLRConeTracePass : ImageEffectShader, SSLRCommon, Utilities
+    {
+        // use depth-difference rejection 5-sampling to convolve the color fetched by the reflection, to create a smoother roughness effect.
+        /*float4 FetchColorBufferConvolve(float2 centerUv, float radius)
+        {
+            // optimization.
+            [branch]
+            if (radius < 1 / ResolutionDivisor)
+                return Texture0.SampleLevel(LinearSampler, centerUv, 0);
+            else
+                // 10 was empirically determined to be a reasonably good anti-"smudge" of unrelated objects.
+                // it behaves differently (larger range) when far clip is distant. But it seemed universal enough with far clips from 80 to 5000.
+                return DepthAwareColorDownScaling(Texture0, Texture0TexelSize * ResolutionDivisor, Texture1, Texture1TexelSize, centerUv, radius, 10);
+        }
+
+        // screen space local reflection
+        float4 SSLR(float2 pixelcoord)
+        {
+            float2 glossinessXreflectivityY = Unpack2floats(Texture3.SampleLevel(PointSampler, pixelcoord, 0).a);
+
+            // if there is no reflectivity on this zone, no need to pay an expensive ray stepping.
+            if (glossinessXreflectivityY.y <= 0.0001f)
+                return 0;
+
+            float3 normalWS = GetWorldNormalAt(pixelcoord, Texture2);
+
+            const float zBufferDepth = SampleRawDepthAt(Texture1, pixelcoord, 0);
+            const float3 positionWS = ComputeWorldPosition(pixelcoord, zBufferDepth);
+
+			// that's our ray
+            const float3 viewingVectorWS = normalize(positionWS - CameraPosWS.xyz);
+
+            float4 accumColor = 0.0f;
+
+            float3 reflected = reflect(viewingVectorWS, normalWS);
+
+            if (dot(reflected, ViewDirection) < 0 || zBufferDepth > 0.9999)
+                return 0;
+
+            float3 offsetedStartPos = positionWS + normalWS * WorldAntiSelfOcclusionBias;
+            float3 startPointUv = ProjectWorldToUv(offsetedStartPos);
+            float3 nextPointUv = ProjectWorldToUv(offsetedStartPos + reflected);
+            float3 marchVectorUv = nextPointUv - startPointUv;
+            float screenStep = 1.0f / ScreenSize.x;
+            // normalize across screen plane
+            float3 marchVectorUvUnit = screenStep * marchVectorUv / max2(abs(marchVectorUv.xy));
+
+			// start position offseted in screen space too
+            float3 uv = startPointUv + marchVectorUvUnit * 2;
+
+            float3 mirrorUv = 0;
+            float traveledDist;
+            int steps = 0;
+            float4 impactUvPosition = RayTraceToCollision(uv, marchVectorUvUnit, MaxNumSteps, mirrorUv, traveledDist, steps);
+            float dist = 0;
+            bool hit = impactUvPosition.w > 0.f;
+            float attenuation = 0;
+
+            // color evaluation:
+            [branch]
+            if (hit)
+            {
+                dist = length(mirrorUv - startPointUv);
+
+                // attenuate progressively until cut-outs. this takes care of screen borders from ray start and ray end.
+                attenuation = sqrt(smoothstep(0, 1, 5 * ChebyDistToBorders(pixelcoord)) * smoothstep(0, 1, 10 * ChebyDistToBorders(mirrorUv.xy)));
+                // we dim dangerous "reflecting back" directions:
+                attenuation *= dot(reflected, ViewDirection);
+                attenuation *= DistanceAttenuation(traveledDist);
+                // apply a roughness.distance pre-blur:
+                // 10 is empirically determined to be a distance that's maximum, before seeing obvious banding due to only taking 5 samples.
+                float radius = traveledDist * 10 / ResolutionDivisor * (1 - glossinessXreflectivityY.x);
+                accumColor += attenuation * FetchColorBufferConvolve(mirrorUv.xy, radius);
+            }
+
+
+            //return float4(float3(mirrorUv.xy, 0), hit ? attenuation * saturate(1 - dist * 2) : traveledDist);
+			return float4(accumColor.rgb, hit ? attenuation * saturate(1 - dist * 2) : 0);
+            //return float4(((float)hit).xxx, hit ? attenuation * saturate(1 - dist * 2) : 0);
+            //return float4(steps.xxx/MaxNumSteps, hit ? attenuation * saturate(1 - dist * 2) : 0);
+        }*/
+
+        override stage float4 Shading()
+        {
+			return float4(1, 0, 0, 1);
+        }
+    };
+}
