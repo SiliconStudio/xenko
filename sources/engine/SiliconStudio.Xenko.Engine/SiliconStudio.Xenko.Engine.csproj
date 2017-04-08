@@ -207,6 +207,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Core\NormalUpdate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>NormalUpdate.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Images\ImageScaler\SamplingPattern.cs" />
     <Compile Include="Rendering\Images\LocalReflections\LocalReflections.cs" />
     <Compile Include="Rendering\Images\LocalReflections\SSLRBlurPass.cs">
@@ -342,6 +348,10 @@
     <None Include="Rendering\Compositing\MSAAResolverShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MSAAResolverShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Core\NormalUpdate.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>NormalUpdate.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\LocalReflections\SSLRBlurPass.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
