@@ -136,15 +136,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         /// <param name="colorBuffer">Single view of the scene</param>
         /// <param name="depthBuffer">The depth buffer corresponding to the color buffer provided.</param>
-        /// <param name="miniGBuffer">The G buffer containing world normals, ibl light, spec color and roughness.</param>
-        public void SetInputSurfaces(Texture colorBuffer, Texture depthBuffer, Texture miniGBuffer1, Texture miniGBuffer2)
+        /// <param name="normalsBuffer">The buffer which contains surface normals and roughness.</param>
+        public void SetInputSurfaces(Texture colorBuffer, Texture depthBuffer, Texture normalsBuffer)
         {
-            // TOOD: cleanup this!
-
             SetInput(0, colorBuffer);
             SetInput(1, depthBuffer);
-            SetInput(2, miniGBuffer1);
-            SetInput(3, miniGBuffer2);
+            SetInput(2, normalsBuffer);
         }
 
         protected override void PreDrawCore(RenderDrawContext context)

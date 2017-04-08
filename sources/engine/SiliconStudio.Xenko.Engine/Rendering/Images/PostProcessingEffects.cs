@@ -17,6 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     public sealed class PostProcessingEffects : ImageEffect, IImageEffectRenderer, IPostProcessingEffects
     {
         private AmbientOcclusion ambientOcclusion;
+        private LocalReflections localReflections;
         private DepthOfField depthOfField;
         private LuminanceEffect luminanceEffect;
         private BrightFilter brightFilter;
@@ -44,6 +45,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public PostProcessingEffects()
         {
             ambientOcclusion = new AmbientOcclusion();
+            localReflections = new LocalReflections();
             depthOfField = new DepthOfField();
             luminanceEffect = new LuminanceEffect();
             brightFilter = new BrightFilter();
@@ -84,6 +86,20 @@ namespace SiliconStudio.Xenko.Rendering.Images
             get
             {
                 return ambientOcclusion;
+            }
+        }
+
+        /// <summary>
+        /// Gets the local reflections effect.
+        /// </summary>
+        /// <value>The local reflection technique.</value>
+        [DataMember(9)]
+        [Category]
+        public LocalReflections LocalReflections
+        {
+            get
+            {
+                return localReflections;
             }
         }
 
@@ -205,6 +221,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public void DisableAll()
         {
             ambientOcclusion.Enabled = false;
+            localReflections.Enabled = false;
             depthOfField.Enabled = false;
             bloom.Enabled = false;
             lightStreak.Enabled = false;
@@ -229,6 +246,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             base.InitializeCore();
 
             ambientOcclusion = ToLoadAndUnload(ambientOcclusion);
+            localReflections = ToLoadAndUnload(localReflections);
             depthOfField = ToLoadAndUnload(depthOfField);
             luminanceEffect = ToLoadAndUnload(luminanceEffect);
             brightFilter = ToLoadAndUnload(brightFilter);
@@ -353,6 +371,19 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 ambientOcclusion.SetOutput(aoOutput);
                 ambientOcclusion.Draw(context);
                 currentInput = aoOutput;
+            }
+
+            //var normalsBuffer = GetInput(2);
+            //var inputIBLRoughnessTexture = GetInput(3);
+            // TODO: cleanup that
+            if (localReflections.Enabled && inputDepthTexture != null)// && normalsBuffer != null && inputIBLRoughnessTexture != null)
+            {
+                // Local reflections
+                var rlrOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
+                localReflections.SetInputSurfaces(currentInput, inputDepthTexture, null);//normalsBuffer);
+                localReflections.SetOutput(rlrOutput);
+                localReflections.Draw(context);
+                currentInput = rlrOutput;
             }
 
             if (depthOfField.Enabled && inputDepthTexture != null)
