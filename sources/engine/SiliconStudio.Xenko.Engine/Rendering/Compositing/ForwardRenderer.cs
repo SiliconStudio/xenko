@@ -202,12 +202,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 {
                     renderOutputValidator.Add<VelocityTargetSemantic>(PixelFormat.R16G16_Float);
                 }
-
-                if (PostEffects.RequiresSsrGBuffers)
-                {
-                    renderOutputValidator.Add<OctahedronNormalSpecularColorTargetSemantic>(PixelFormat.R16G16B16A16_Float);
-                    renderOutputValidator.Add<EnvironmentLightRoughnessTargetSemantic>(PixelFormat.R16G16B16A16_Float);
-                }
             }
         }
 

@@ -275,6 +275,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
             SetInput(0, inputs[colorIndex]);
             SetInput(1, inputDepthStencil);
 
+            var normalsIndex = outputValidator.Find<NormalTargetSemantic>();
+            if (normalsIndex >= 0)
+            {
+                SetInput(2, inputs[normalsIndex]);
+            }
+
             var reflectionIndex0 = outputValidator.Find<OctahedronNormalSpecularColorTargetSemantic>();
             var reflectionIndex1 = outputValidator.Find<EnvironmentLightRoughnessTargetSemantic>();
             if (reflectionIndex0 >= 0 && reflectionIndex1 >= 0)
@@ -289,9 +295,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         public bool RequiresVelocityBuffer => false;
 
-        public bool RequiresNormalBuffer => false;
-
-        public bool RequiresSsrGBuffers => false; // localReflections.Enabled; TODO : to merge with RLR branch.
+        public bool RequiresNormalBuffer => LocalReflections.Enabled;
 
         protected override void DrawCore(RenderDrawContext context)
         {
@@ -373,17 +377,19 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 currentInput = aoOutput;
             }
 
-            //var normalsBuffer = GetInput(2);
-            //var inputIBLRoughnessTexture = GetInput(3);
-            // TODO: cleanup that
-            if (localReflections.Enabled && inputDepthTexture != null)// && normalsBuffer != null && inputIBLRoughnessTexture != null)
+            if (localReflections.Enabled && inputDepthTexture != null)
             {
-                // Local reflections
-                var rlrOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
-                localReflections.SetInputSurfaces(currentInput, inputDepthTexture, null);//normalsBuffer);
-                localReflections.SetOutput(rlrOutput);
-                localReflections.Draw(context);
-                currentInput = rlrOutput;
+                var normalsBuffer = GetInput(2);
+
+                if (normalsBuffer != null)
+                {
+                    // Local reflections
+                    var rlrOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
+                    localReflections.SetInputSurfaces(currentInput, inputDepthTexture, normalsBuffer);
+                    localReflections.SetOutput(rlrOutput);
+                    localReflections.Draw(context);
+                    currentInput = rlrOutput;
+                }
             }
 
             if (depthOfField.Enabled && inputDepthTexture != null)

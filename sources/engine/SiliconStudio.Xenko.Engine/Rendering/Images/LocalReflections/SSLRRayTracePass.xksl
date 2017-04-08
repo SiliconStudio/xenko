@@ -149,27 +149,24 @@ namespace SiliconStudio.Xenko.Rendering.Images
 		
         override stage float4 Shading()
         {
+			// Inputs Mapping:
+			// Texture0 - Color
+			// Texture1 - Depth
+			// Texture2 - Normals (with roughness)
+			
 			float2 texCoord = streams.TexCoord;
-			
-            // vizu depth:
-            //return pow(ConvertToLinearDepth(SampleRawDepthAt(streams.TexCoord, 0)),2) * float4(0,1,0,1);
-
-            // vizu color:
-            //return pow(Texture0.SampleLevel(LinearSampler, streams.TexCoord, 3), 2.2);
-			
-			// mapping:
-			// Texture0 - color
-			// Texture1 - depth
-			// Texture2 - normals with roughness
 			
 			//float3 normalWS = GetWorldNormalAt(texCoord, Texture2);
             //const float zBufferDepth = SampleRawDepthAt(Texture1, texCoord, 0);
             //const float3 positionWS = ComputeWorldPosition(texCoord, zBufferDepth);
             //const float3 viewingVectorWS = normalize(positionWS - CameraPosWS.xyz);
 			
-			return float4(1, texCoord.x, 0, 1);
+			return float4(1, texCoord.y, 0, 1);
 			
 			// TODO: convert Flax shader to Xenko stuff
+			
+			// Sample normal
+			
 			
 			/*// Sample GBuffer
 			GBuffer gBuffer = SampleGBuffer(input.TexCoord); // TODO: do we need to sample whole gbuffer?

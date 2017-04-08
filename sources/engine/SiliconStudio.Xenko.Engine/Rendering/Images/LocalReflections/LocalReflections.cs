@@ -222,14 +222,23 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // TODO: Blur Pass
 
-            // TODO: Ray Trace Pass
+            // Ray Trace Pass
+            rayTracePassShader.SetInput(0, colorBuffer);
+            rayTracePassShader.SetInput(1, depthBuffer);
+            rayTracePassShader.SetInput(2, normalsBuffer);
+            rayTracePassShader.SetOutput(rayTraceBuffer);
+            rayTracePassShader.Draw(context, "Ray Trace");
+
+
 
             // TODO: Cone Trace Pass
 
             // TODO: Combine Pass
 
-            // temporary clear output
-            context.CommandList.Clear(outputBuffer, Color.BlueViolet);
+            //context.CommandList.Clear(outputBuffer, Color.BlueViolet);
+            Scaler.SetInput(0, rayTraceBuffer);
+            Scaler.SetOutput(outputBuffer);
+            Scaler.Draw(context);
 
             /*localReflectionShader.SetInput(0, colorBuffer);
             localReflectionShader.SetInput(1, hizChainSkipMip);
