@@ -6,8 +6,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
 	/// Screen Space Local Reflections shader for Ray Trace Pass
     /// </summary>
-    shader SSLRRayTracePass : ImageEffectShader, SSLRCommon
-    {		
+    shader SSLRRayTracePass : ImageEffectShader, SSLRCommon, NormalPack
+    {
+		// Parmeter to control minimum Z of view space normal of the pixel to be used in SSR
+		#define SSR_MIN_Z_REFLECT 0.1f
+		
         // hi-z trace. return the uv position where ray impacts.
         /*float4 RayTraceToCollision(float3 uv, float3 marchVectorUvUnit, int steps, out float3 mirrorUv, out float travelDist, out int stepsdone)
         {
@@ -149,6 +152,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			return Texture1.SampleLevel(PointSampler, uv, 0).r;
 		}
 		
+		// Linearize raw device depth
+		float LinearizeZ(in float depth)
+		{
+			// Linearize depth
+			return ViewInfo.w / (depth - ViewInfo.z);
+		}
+		
 		// 1:-1 to 0:1
         float2 ClipToUv(float2 clipPos)
         {
@@ -165,16 +175,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             float4 clipPos = float4(UvToClip(uv), rawDepth, 1);
             float4 pos = mul(clipPos, IVP);
-            pos /= pos.w;
+			pos /= pos.w;
             return pos.xyz;
         }
 		
 		float3 ComputeViewPosition(float2 uv, float rawDepth)
         {
-            float4 clipPos = float4(UvToClip(uv), rawDepth, 1);
-            float4 pos = mul(clipPos, IP);
-            pos /= pos.w;
-            return pos.xyz;
+			float eyeZ = LinearizeZ(rawDepth) * ViewFarPlane;
+			return float3(UvToClip(uv) * ViewInfo.xy * eyeZ, eyeZ);
         }
 		
         override stage float4 Shading()
@@ -190,26 +198,27 @@ namespace SiliconStudio.Xenko.Rendering.Images
             //const float3 viewingVectorWS = normalize(positionWS - CameraPosWS.xyz);
 			//return float4(1, uv.y, 0, 1);
 			
-			// Sample normal and roughness
-			float4 gbuffer0 = Texture2.SampleLevel(PointSampler, uv, 0);
-			float4 gbuffer1 = Texture3.SampleLevel(PointSampler, uv, 0);
-			float3 normalWS = DecodeNormal(gbuffer0.rgb);
-			float roughness = gbuffer1.a;
+			// Sample material normal and roughness
+			float4 normalsBuffer = Texture2.SampleLevel(PointSampler, uv, 0);
+			float4 specularRoughnessBuffer = Texture3.SampleLevel(PointSampler, uv, 0);
+			float3 normalWS = DecodeNormal(normalsBuffer.rgb);
+			float roughness = specularRoughnessBuffer.a;
 			
-			return float4(normalWS, 1);
-			/*
+			//return float4(normalWS, 1);
+			
 			// Get view space position
 			float depth = SampleZ(uv);
 			float3 positionVS = ComputeViewPosition(uv, depth);
 			
-			// Reject invalid pixels
-			//if(gBuffer.ShadingModel == SHADING_MODEL_UNLIT || RoughnessFade - roughness < 0 || positionVS.z > 2000.0f)
-			if(positionVS.z > 500.0f)
-				return 0;
-			*/
-			return float4(1, 0, 0, 1);
+			//return depth.xxxx;
+			//return float4(ComputeWorldPosition(uv, depth), 1);
+			//return float4(positionVS, 1);
 			
-			/*// Calculate view space normal vector
+			// Reject invalid pixels
+			if(positionVS.z > 100.0f || roughness > RoughnessFade)
+				return 0;
+			
+			// Calculate view space normal vector
 			float3 normalVS = mul(normalWS, (float3x3)V);
 			
 			// Calculate normalized view space reflection vector
@@ -219,8 +228,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			if(reflectVS.z < SSR_MIN_Z_REFLECT) 
 				return 0;
 			
+			return float4(1, 0, 0, 1);
+			
 			// Calculate screen space position
-			float3 positionSS = float3(uv, depth);
+			/*float3 positionSS = float3(uv, depth);
 			positionSS.xy = positionSS.xy * float2(2, -2) + float2(-1, 1);
 			
 			// Transform the view space reflection to screen space

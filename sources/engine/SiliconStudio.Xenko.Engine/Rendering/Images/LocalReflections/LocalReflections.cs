@@ -161,6 +161,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Output:
             Texture outputBuffer = GetSafeOutput(0);
             
+            // TODO: cleanup that stuff
+
             screenSize = new Vector2();
             var currentCamera = context.RenderContext.GetCurrentCamera();
             if (currentCamera == null)
@@ -189,7 +191,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
             screenSize.X = resolutionAsSize2.Width;
             screenSize.Y = resolutionAsSize2.Height;
 
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.P, projectionMatrix);
+            float roughnessFade = 0.5f;// TODO: promote to parameter
+
+            // ViewInfo    :  x-1/Projection[0,0]   y-1/Projection[1,1]   z-(Far / (Far - Near)   w-(-Far * Near) / (Far - Near) / Far)
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, new Vector4(1.0f / projectionMatrix.M11, 1.0f / projectionMatrix.M22, farclip / (farclip - nearclip), (-farclip * nearclip) / (farclip - nearclip) / farclip));
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.P, projectionMatrix);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.IP, inverseProjectionMatrix);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
@@ -227,7 +235,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Get temporary buffers (use small formats, we don't want to kill performance)
             var traceBuffersSize = GetTraceBufferResolution(outputBuffer);
-            Texture rayTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R16G16_Float, 1);
+            //Texture rayTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R16G16_Float, 1);
+            Texture rayTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R16G16B16A16_Float, 1);
             Texture coneTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R8G8B8A8_UNorm, 1);
 
             // TODO: Blur Pass

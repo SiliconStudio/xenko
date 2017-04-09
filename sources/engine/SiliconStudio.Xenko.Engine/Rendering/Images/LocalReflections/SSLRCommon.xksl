@@ -17,9 +17,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 		#define SSR_BLUR_DEPTH_AWARE 0
 		#define SSR_BLUR_MAX_DEPTH_DIFF 10
 		
-		// Parmeter to control minimum Z of view space normal of the pixel to be used in SSR
-		#define SSR_MIN_Z_REFLECT 0.1f
-		
 		// Enable/disable debug visualization of the SSR hit points
 		#define SSR_DEBUG_HITS 0
 		
@@ -41,6 +38,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			stage float2 SSRtexelSize;
 			stage float RoughnessFade; // roughnes fade
 			stage float MaxTraceSamples;
+			
+			stage float ViewFarPlane;
+			stage float3 Padding0;
+			
+			stage float4 ViewInfo;
 			
 			stage float4x4 V;
 			stage float4x4 P;
