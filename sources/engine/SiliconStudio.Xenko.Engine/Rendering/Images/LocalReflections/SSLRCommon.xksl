@@ -7,16 +7,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 	/// Screen Space Local Reflections shader with common variables and functions
     /// </summary>
     shader SSLRCommon : ImageEffectShader, Utilities, NormalPack
-    {		
-		// Options:
-		// 3 - 5-tap blur
-		// 5 - 9-tap blur
-		#define SSR_BLUR_STEPS 3
-		
-		// SSR depth aware blur is still in testing stage
-		#define SSR_BLUR_DEPTH_AWARE 0
-		#define SSR_BLUR_MAX_DEPTH_DIFF 10
-		
+    {	
 		// Enable/disable blurring trace hit during cone trace pass
 		#define SSR_CONE_TRACE_SAMPLING_BLUR 1
 		
@@ -41,7 +32,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			stage float2 ScreenSize;
 			
 			stage float4 ViewInfo;
-
+			
 			stage float4 CameraPosWS;	
 			stage float4 ZPlanes;              // x = Frustum Near, y = Frustum Far, w = FOV
 			

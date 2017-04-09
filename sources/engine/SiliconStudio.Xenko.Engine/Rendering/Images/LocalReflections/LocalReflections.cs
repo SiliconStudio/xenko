@@ -4,10 +4,8 @@
 using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
-using System.Diagnostics;
 using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Xenko.Rendering.Images
@@ -18,7 +16,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [DataContract("LocalReflections")]
     public sealed class LocalReflections : ImageEffect
     {
-        ImageEffectShader rayTracePassShader;
+        private ImageEffectShader blurPassShader;
+        private ImageEffectShader rayTracePassShader;
+
+        private Texture[] cachedColorBuffer0Mips;
+        private Texture[] cachedColorBuffer1Mips;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalReflections"/> class.
@@ -56,39 +58,42 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [Display("Resolution divisor")]
         [DefaultValue(ResolutionDivisors.Half)]
         public ResolutionDivisors ResolutionDivisor { get; set; }
-        /*
-        // TOOD: cleanup this! remove unused params
-        /// <summary>
-        /// maximum number of dynamic iterations in the HiZ trace
-        /// </summary>
-        [Display("Max num steps")]
-        [DefaultValue(45)]
-        public int MaxNumSteps { get; set; } = 45;
 
         /// <summary>
-        /// ray tracing starting position is offseted by a percent of the normal in world space to avoid self occlusions.
+        /// Maximum allowed amount of dynamic iterations in the ray trace pass.
+        /// </summary>
+        [Display("Max steps amount")]
+        [DefaultValue(24)]
+        public int MaxStepsAmount { get; set; } = 24;
+
+        /// <summary>
+        /// Maximum allowed surface roughness value to use local reflections.
+        /// </summary>
+        [Display("Max roughness")]
+        [DefaultValue(0.6f)]
+        public float MaxRoughness { get; set; } = 0.6f;
+
+        /// <summary>
+        /// Ray tracing starting position is offseted by a percent of the normal in world space to avoid self occlusions.
         /// </summary>
         [Display("Ray start bias")]
-        [DefaultValue(0.03f)]
-        public float WorldAntiSelfOcclusionBias { get; set; } = 0.03f;
-
-        /// <summary>
-        /// this represents the thickness of the depth buffer surface
-        /// </summary>
-        [Display("Pixel depth")]
         [DefaultValue(0.01f)]
-        public float PixelDepth { get; set; } = 0.01f;
+        public float WorldAntiSelfOcclusionBias { get; set; } = 0.01f;
 
-        [Display("Max depth")]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
-        [DefaultValue(1.0f)]
-        public float MaxTravelDistance { get; set; } = 1.0f;
-        */
         protected override void InitializeCore()
         {
             base.InitializeCore();
 
+            blurPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRBlurPass"));
             rayTracePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRRayTracePass"));
+        }
+
+        protected override void Destroy()
+        {
+            cachedColorBuffer0Mips?.ForEach(view => view?.Dispose());
+            cachedColorBuffer1Mips?.ForEach(view => view?.Dispose());
+
+            base.Destroy();
         }
 
         private int GetResolutionDivisor()
@@ -114,7 +119,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var divisor = GetResolutionDivisor();
             return new Size3(fullResTarget.Width / divisor, fullResTarget.Height / divisor, 1);
         }
-
+        
         /// <summary>
         /// Provides a color buffer and a depth buffer to apply the depth-of-field to.
         /// </summary>
@@ -132,13 +137,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         protected override void PreDrawCore(RenderDrawContext context)
         {
+            Texture outputBuffer = GetSafeOutput(0);
+
+            if (!blurPassShader.Initialized)
+                blurPassShader.Initialize(context.RenderContext);
             if (!rayTracePassShader.Initialized)
                 rayTracePassShader.Initialize(context.RenderContext);
 
-            Texture outputBuffer = GetSafeOutput(0);
-            
             // TODO: cleanup that stuff
-            
+
             var currentCamera = context.RenderContext.GetCurrentCamera();
             if (currentCamera == null)
                 throw new InvalidOperationException("No valid camera");
@@ -156,9 +163,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Vector4 ZPlanes = new Vector4(nearclip, farclip, 0, fieldOfView); // x = Frustum Near, y = Frustum Far, w = FOV
 
             var traceBufferSize = GetTraceBufferResolution(outputBuffer);
-
-            float roughnessFade = 0.6f;// TODO: promote to parameter
-            int maxTraceSamples = 48;// TODO: promote to parameter
+            var roughnessFade = MathUtil.Clamp(MaxRoughness, 0.0f, 1.0f);
+            var maxTraceSamples = MathUtil.Clamp(MaxStepsAmount, 1, 128);
 
             // ViewInfo    :  x-1/Projection[0,0]   y-1/Projection[1,1]   z-(Far / (Far - Near)   w-(-Far * Near) / (Far - Near) / Far)
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, new Vector4(1.0f / projectionMatrix.M11, 1.0f / projectionMatrix.M22, farclip / (farclip - nearclip), (-farclip * nearclip) / (farclip - nearclip) / farclip));
@@ -190,10 +196,63 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Get temporary buffers (use small formats, we don't want to kill performance)
             var traceBuffersSize = GetTraceBufferResolution(outputBuffer);
+            var colorBuffersSize = new Size2(outputBuffer.Width / 2, outputBuffer.Height / 2);
             Texture rayTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R16G16_Float, 1);
-            //Texture coneTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R8G8B8A8_UNorm, 1);
+            Texture coneTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R8G8B8A8_UNorm, 1);
+            Texture colorBuffer0 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
+            Texture colorBuffer1 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
 
-            // TODO: Blur Pass
+            // Cache per colro buffer mip views
+            int colorMipLevels = colorBuffer0.MipLevels;
+            if (cachedColorBuffer0Mips == null || cachedColorBuffer0Mips.Length != colorMipLevels || cachedColorBuffer0Mips[0].ParentTexture != colorBuffer0)
+            {
+                cachedColorBuffer0Mips?.ForEach(view => view?.Dispose());
+                cachedColorBuffer0Mips = new Texture[colorMipLevels];
+                for (int mipIndex = 0; mipIndex < colorMipLevels; mipIndex++)
+                {
+                    cachedColorBuffer0Mips[mipIndex] = colorBuffer0.ToTextureView(ViewType.Single, 0, mipIndex);
+                }
+            }
+            if (cachedColorBuffer1Mips == null || cachedColorBuffer1Mips.Length != colorMipLevels || cachedColorBuffer1Mips[0].ParentTexture != colorBuffer1)
+            {
+                cachedColorBuffer1Mips?.ForEach(view => view?.Dispose());
+                cachedColorBuffer1Mips = new Texture[colorMipLevels];
+                for (int mipIndex = 0; mipIndex < colorMipLevels; mipIndex++)
+                {
+                    cachedColorBuffer1Mips[mipIndex] = colorBuffer1.ToTextureView(ViewType.Single, 0, mipIndex);
+                }
+            }
+
+            // Blur Pass
+            for (int mipLevel = 0; mipLevel < colorMipLevels; mipLevel++)
+            {
+                Texture srcMip, dstMip;
+                int mipWidth = colorBuffer0.Width >> mipLevel;
+                int mipHeight = colorBuffer1.Height >> mipLevel;
+
+                blurPassShader.Parameters.Set(SSLRCommonKeys.TexelSize, new Vector2(1.0f / mipWidth, 1.0f / mipHeight));
+
+                //context.SetViewport(mipWidth, mipHeight);
+
+                // Blur H
+                if (mipLevel == 0)
+                    srcMip = colorBuffer;
+                else
+                    srcMip = cachedColorBuffer0Mips[mipLevel - 1];
+                dstMip = cachedColorBuffer1Mips[mipLevel];
+                blurPassShader.SetInput(0, srcMip);
+                blurPassShader.SetOutput(dstMip);
+                blurPassShader.Draw(context, "Blur H");
+
+                // TODO: use macro CONVOLVE_VERTICAL to change blur direction
+
+                // Blur V
+                srcMip = dstMip;
+                dstMip = cachedColorBuffer0Mips[mipLevel];
+                blurPassShader.SetInput(0, srcMip);
+                blurPassShader.SetOutput(dstMip);
+                blurPassShader.Draw(context, "Blur V");
+            }
 
             // Ray Trace Pass
             rayTracePassShader.SetInput(0, colorBuffer);
@@ -206,43 +265,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // TODO: Cone Trace Pass
 
             // TODO: Combine Pass
-
+            
             //context.CommandList.Clear(outputBuffer, Color.BlueViolet);
             Scaler.SetInput(0, rayTraceBuffer);
+            //Scaler.SetInput(0, cachedColorBuffer0Mips[3]);
             Scaler.SetOutput(outputBuffer);
             Scaler.Draw(context);
-
-            /*localReflectionShader.SetInput(0, colorBuffer);
-            localReflectionShader.SetInput(1, hizChainSkipMip);
-            localReflectionShader.SetInput(2, gBuffer);
-            localReflectionShader.SetInput(3, gBuffer2);
-            localReflectionShader.SetOutput(reflectionBuffer);
-            localReflectionShader.Draw(context, "trace reflections");
-
-            Texture tmpOutput = NewScopedRenderTarget2D(reflectionBuffer.Width, reflectionBuffer.Height, reflectionBuffer.Format);
-
-            // H-V blur pass here for roughness.
-            hRoughBlurPass.SetInput(0, reflectionBuffer);
-            hRoughBlurPass.SetInput(1, hizChainSkipMip);
-            hRoughBlurPass.SetInput(2, gBuffer);
-            hRoughBlurPass.SetInput(3, gBuffer2);
-            hRoughBlurPass.SetOutput(tmpOutput);
-            hRoughBlurPass.Draw(context, "hblur rough");
-
-            vRoughBlurPass.SetInput(0, tmpOutput);
-            vRoughBlurPass.SetInput(1, hizChainSkipMip);
-            vRoughBlurPass.SetInput(2, gBuffer);
-            vRoughBlurPass.SetInput(3, gBuffer2);
-            vRoughBlurPass.SetOutput(reflectionBuffer);
-            vRoughBlurPass.Draw(context, "vblur rough");
-
-            roughnessBlurAndReflectionCompositing.SetInput(0, reflectionBuffer);  // RGB: ray traced color pick | A: ray length
-            roughnessBlurAndReflectionCompositing.SetInput(1, colorBuffer);       // scene color (with IBL)
-            roughnessBlurAndReflectionCompositing.SetInput(2, hizChain);          // depth chain
-            roughnessBlurAndReflectionCompositing.SetInput(3, gBuffer);           // RG:  normals | BA: spec color
-            roughnessBlurAndReflectionCompositing.SetInput(4, gBuffer2);          // RGB: IBL     | A:  packed( material roughness, material reflectivity )
-            roughnessBlurAndReflectionCompositing.SetOutput(outputTarget);
-            roughnessBlurAndReflectionCompositing.Draw(context, "IBL mix & fresnel");*/
         }
     }
 }
