@@ -1113,8 +1113,26 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>The resulting mipmap count (clamp to [1, maxMipMapCount] for this texture)</returns>
         internal static int CalculateMipMapCount(MipMapCount requestedLevel, int width, int height = 0, int depth = 0)
         {
-            int size = Math.Max(Math.Max(width, height), depth);
-            int maxMipMap = 1 + (int)Math.Ceiling(Math.Log(size) / Math.Log(2.0));
+            // This looks nice but doesn't work for all texture sizes
+            //int size = Math.Max(Math.Max(width, height), depth);
+            //int maxMipMap = 1 + (int)Math.Ceiling(Math.Log(size) / Math.Log(2.0));
+
+            if (height == 0)
+                height = 1;
+            if (depth == 0)
+                depth = 1;
+
+            int maxMipMap = 1;
+            while (width > 1 || height > 1 || depth > 1)
+            {
+                if (width > 1)
+                    width >>= 1;
+                if (height > 1)
+                    height >>= 1;
+                if (depth > 1)
+                    depth >>= 1;
+                maxMipMap++;
+            }
 
             return requestedLevel  == 0 ? maxMipMap : Math.Min(requestedLevel, maxMipMap);
         }
