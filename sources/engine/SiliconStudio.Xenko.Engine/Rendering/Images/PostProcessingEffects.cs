@@ -281,12 +281,18 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 SetInput(2, inputs[normalsIndex]);
             }
 
+            var specularRoughnessIndex = outputValidator.Find<SpecularColorRoughnessTargetSemantic>();
+            if (specularRoughnessIndex >= 0)
+            {
+                SetInput(3, inputs[specularRoughnessIndex]);
+            }
+
             var reflectionIndex0 = outputValidator.Find<OctahedronNormalSpecularColorTargetSemantic>();
             var reflectionIndex1 = outputValidator.Find<EnvironmentLightRoughnessTargetSemantic>();
             if (reflectionIndex0 >= 0 && reflectionIndex1 >= 0)
             {
-                SetInput(2, inputs[reflectionIndex0]);
-                SetInput(3, inputs[reflectionIndex1]);
+                SetInput(4, inputs[reflectionIndex0]);
+                SetInput(5, inputs[reflectionIndex1]);
             }
             
             SetOutput(outputTarget);
@@ -296,6 +302,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public bool RequiresVelocityBuffer => false;
 
         public bool RequiresNormalBuffer => LocalReflections.Enabled;
+
+        public bool RequiresSpecularRoughnessBuffer => LocalReflections.Enabled;
 
         protected override void DrawCore(RenderDrawContext context)
         {
@@ -380,12 +388,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (localReflections.Enabled && inputDepthTexture != null)
             {
                 var normalsBuffer = GetInput(2);
+                var specularRoughnessBuffer = GetInput(3);
 
-                if (normalsBuffer != null)
+                if (normalsBuffer != null && specularRoughnessBuffer != null)
                 {
                     // Local reflections
                     var rlrOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
-                    localReflections.SetInputSurfaces(currentInput, inputDepthTexture, normalsBuffer);
+                    localReflections.SetInputSurfaces(currentInput, inputDepthTexture, normalsBuffer, specularRoughnessBuffer);
                     localReflections.SetOutput(rlrOutput);
                     localReflections.Draw(context);
                     currentInput = rlrOutput;

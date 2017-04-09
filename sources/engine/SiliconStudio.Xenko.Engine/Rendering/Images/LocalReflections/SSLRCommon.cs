@@ -26,5 +26,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public static readonly ValueParameterKey<float> MaxTraceSamples = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<Matrix> V = ParameterKeys.NewValue<Matrix>();
         public static readonly ValueParameterKey<Matrix> P = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> IP = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> IVP = ParameterKeys.NewValue<Matrix>();
     }
 }

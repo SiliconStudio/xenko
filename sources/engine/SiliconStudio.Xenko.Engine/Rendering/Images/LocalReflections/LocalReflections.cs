@@ -30,6 +30,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         float farclip;
         Matrix inverseViewMatrix;
         Matrix inverseViewProjectionMatrix;
+        Matrix inverseProjectionMatrix;
         float aspect;
         float fieldOfView;
         Vector4 viewDirection;
@@ -136,12 +137,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         /// <param name="colorBuffer">Single view of the scene</param>
         /// <param name="depthBuffer">The depth buffer corresponding to the color buffer provided.</param>
-        /// <param name="normalsBuffer">The buffer which contains surface normals and roughness.</param>
-        public void SetInputSurfaces(Texture colorBuffer, Texture depthBuffer, Texture normalsBuffer)
+        /// <param name="normalsBuffer">The buffer which contains surface packed world space normal vectors.</param>
+        /// <param name="specularRoughnessBuffer">The buffer which contains surface specular color and roughness.</param>
+        public void SetInputSurfaces(Texture colorBuffer, Texture depthBuffer, Texture normalsBuffer, Texture specularRoughnessBuffer)
         {
             SetInput(0, colorBuffer);
             SetInput(1, depthBuffer);
             SetInput(2, normalsBuffer);
+            SetInput(3, specularRoughnessBuffer);
         }
 
         protected override void PreDrawCore(RenderDrawContext context)
@@ -149,15 +152,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (!rayTracePassShader.Initialized)
                 rayTracePassShader.Initialize(context.RenderContext);
 
-            // inputs:
-            /*var depthBuffer = GetSafeInput(1);
-            // output:
-            var outputTarget = GetSafeOutput(0);
+            // Inputs:
+            Texture colorBuffer = GetSafeInput(0);
+            Texture depthBuffer = GetSafeInput(1);
+            Texture normalsBuffer = GetSafeInput(2);
+            Texture specularRoughnessBuffer = GetSafeInput(3);
 
-            VerifyDirty(depthBuffer);
-            if (configurationDirty)
-                SetupTechnique(context.RenderContext, depthBuffer, outputTarget);
-
+            // Output:
+            Texture outputBuffer = GetSafeOutput(0);
+            
             screenSize = new Vector2();
             var currentCamera = context.RenderContext.GetCurrentCamera();
             if (currentCamera == null)
@@ -166,6 +169,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             projectionMatrix = currentCamera.ProjectionMatrix;
             viewProjectionMatrix = currentCamera.ViewProjectionMatrix;
             inverseViewMatrix = Matrix.Invert(viewMatrix);
+            inverseProjectionMatrix = Matrix.Invert(viewProjectionMatrix);
             eye = inverseViewMatrix.Row4;
             nearclip = currentCamera.NearClipPlane;
             farclip = currentCamera.FarClipPlane;
@@ -181,12 +185,17 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             zPlanes = new Vector4(nearclip, farclip, 0, fieldOfView);
 
-            var resolutionAsSize2 = GetReflectionBufferResolution(outputTarget);
+            var resolutionAsSize2 = GetTraceBufferResolution(outputBuffer);
             screenSize.X = resolutionAsSize2.Width;
             screenSize.Y = resolutionAsSize2.Height;
 
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.P, projectionMatrix);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.P, projectionMatrix);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.IP, inverseProjectionMatrix);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
+
             // uniform settings:
-            localReflectionShader.Parameters.Set(SSLRShaderKeys.ScreenSize, screenSize);
+            /*localReflectionShader.Parameters.Set(SSLRShaderKeys.ScreenSize, screenSize);
             localReflectionShader.Parameters.Set(SSLRCommonKeys.ZPlanes, zPlanes);
             localReflectionShader.Parameters.Set(SSLRCommonKeys.ViewProjectionMatrix, viewProjectionMatrix);
             localReflectionShader.Parameters.Set(SSLRCommonKeys.InverseViewProjectionMatrix, inverseViewProjectionMatrix);
@@ -211,12 +220,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Texture colorBuffer = GetSafeInput(0);
             Texture depthBuffer = GetSafeInput(1);
             Texture normalsBuffer = GetSafeInput(2);
+            Texture specularRoughnessBuffer = GetSafeInput(3);
 
             // Output:
             Texture outputBuffer = GetSafeOutput(0);
 
             // Get temporary buffers (use small formats, we don't want to kill performance)
-            var traceBuffersSize = GetTraceBufferResolution(depthBuffer);
+            var traceBuffersSize = GetTraceBufferResolution(outputBuffer);
             Texture rayTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R16G16_Float, 1);
             Texture coneTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R8G8B8A8_UNorm, 1);
 
@@ -226,6 +236,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             rayTracePassShader.SetInput(0, colorBuffer);
             rayTracePassShader.SetInput(1, depthBuffer);
             rayTracePassShader.SetInput(2, normalsBuffer);
+            rayTracePassShader.SetInput(3, specularRoughnessBuffer);
             rayTracePassShader.SetOutput(rayTraceBuffer);
             rayTracePassShader.Draw(context, "Ray Trace");
 

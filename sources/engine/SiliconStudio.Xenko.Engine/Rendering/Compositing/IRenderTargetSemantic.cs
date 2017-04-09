@@ -26,6 +26,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         public ShaderSource ShaderClass { get; } = new ShaderClassSource("GBufferOutputNormals");
     }
 
+    public class SpecularColorRoughnessTargetSemantic : IRenderTargetSemantic
+    {
+        public ShaderSource ShaderClass { get; } = new ShaderClassSource("GBufferOutputSpecularColorRoughness");
+    }
+
     public class VelocityTargetSemantic : IRenderTargetSemantic
     {
         public ShaderSource ShaderClass { get; } = null;

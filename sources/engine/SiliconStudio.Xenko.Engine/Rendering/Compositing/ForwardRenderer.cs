@@ -195,7 +195,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 if (PostEffects.RequiresNormalBuffer)
                 {
-                    renderOutputValidator.Add<NormalTargetSemantic>(PixelFormat.R16G16B16A16_Float);
+                    renderOutputValidator.Add<NormalTargetSemantic>(PixelFormat.R10G10B10A2_UNorm);
+                }
+
+                if (PostEffects.RequiresSpecularRoughnessBuffer)
+                {
+                    renderOutputValidator.Add<SpecularColorRoughnessTargetSemantic>(PixelFormat.R8G8B8A8_UNorm);
                 }
 
                 if (PostEffects.RequiresVelocityBuffer)

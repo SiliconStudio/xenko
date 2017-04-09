@@ -292,6 +292,18 @@
     </Compile>
     <Compile Include="Rendering\Compositing\RenderOutputValidator.cs" />
     <Compile Include="Rendering\LightProbes\LightProbeProcessor.cs" />
+	<Compile Include="Rendering\Materials\Shaders\GBufferOutputNormals.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>GBufferOutputNormals.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\GBufferOutputSpecularColorRoughness.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>GBufferOutputSpecularColorRoughness.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\RenderViewFlags.cs" />
     <Compile Include="Rendering\Skyboxes\CubemapSceneRenderer.cs" />
     <Compile Include="Rendering\Lights\LightPointShadowMap.cs" />
@@ -781,7 +793,14 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeSphericalHarmonics.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Materials\Shaders\GBufferOutputNormals.xksl" />
+	<None Include="Rendering\Materials\Shaders\GBufferOutputNormals.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>GBufferOutputNormals.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\GBufferOutputSpecularColorRoughness.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>GBufferOutputSpecularColorRoughness.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Shadows\ShadowMapCasterCubeMap.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapCasterCubeMap.cs</LastGenOutput>

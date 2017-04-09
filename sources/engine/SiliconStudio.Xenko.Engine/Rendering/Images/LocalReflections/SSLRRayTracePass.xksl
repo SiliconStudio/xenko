@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
 	/// Screen Space Local Reflections shader for Ray Trace Pass
     /// </summary>
-    shader SSLRRayTracePass : ImageEffectShader, SSLRCommon, Utilities
+    shader SSLRRayTracePass : ImageEffectShader, SSLRCommon
     {		
         // hi-z trace. return the uv position where ray impacts.
         /*float4 RayTraceToCollision(float3 uv, float3 marchVectorUvUnit, int steps, out float3 mirrorUv, out float travelDist, out int stepsdone)
@@ -141,57 +141,90 @@ namespace SiliconStudio.Xenko.Rendering.Images
             //return float4(steps.xxx/MaxNumSteps, hit ? attenuation * saturate(1 - dist * 2) : 0);
         }*/
 		
+		// TODO: move util functions to SSRLCommon shader
+		
 		// Sample raw device depth buffer
 		float SampleZ(in float2 uv)
 		{
 			return Texture1.SampleLevel(PointSampler, uv, 0).r;
 		}
 		
+		// 1:-1 to 0:1
+        float2 ClipToUv(float2 clipPos)
+        {
+            return mad(clipPos, float2(0.5, -0.5), float2(0.5, 0.5));
+        }
+
+        // 0:1 to 1:-1
+        float2 UvToClip(float2 uv)
+        {
+            return mad(uv, float2(2, -2), float2(-1, 1));
+        }
+		
+		float3 ComputeWorldPosition(float2 uv, float rawDepth)
+        {
+            float4 clipPos = float4(UvToClip(uv), rawDepth, 1);
+            float4 pos = mul(clipPos, IVP);
+            pos /= pos.w;
+            return pos.xyz;
+        }
+		
+		float3 ComputeViewPosition(float2 uv, float rawDepth)
+        {
+            float4 clipPos = float4(UvToClip(uv), rawDepth, 1);
+            float4 pos = mul(clipPos, IP);
+            pos /= pos.w;
+            return pos.xyz;
+        }
+		
         override stage float4 Shading()
         {
 			// Inputs Mapping:
 			// Texture0 - Color
 			// Texture1 - Depth
-			// Texture2 - Normals (with roughness)
+			// Texture2 - Normals
+			// Texture3 - Specular Color + Roughness
 			
-			float2 texCoord = streams.TexCoord;
+			float2 uv = streams.TexCoord;
 			
-			//float3 normalWS = GetWorldNormalAt(texCoord, Texture2);
-            //const float zBufferDepth = SampleRawDepthAt(Texture1, texCoord, 0);
-            //const float3 positionWS = ComputeWorldPosition(texCoord, zBufferDepth);
             //const float3 viewingVectorWS = normalize(positionWS - CameraPosWS.xyz);
+			//return float4(1, uv.y, 0, 1);
 			
-			return float4(1, texCoord.y, 0, 1);
+			// Sample normal and roughness
+			float4 gbuffer0 = Texture2.SampleLevel(PointSampler, uv, 0);
+			float4 gbuffer1 = Texture3.SampleLevel(PointSampler, uv, 0);
+			float3 normalWS = DecodeNormal(gbuffer0.rgb);
+			float roughness = gbuffer1.a;
 			
-			// TODO: convert Flax shader to Xenko stuff
-			
-			// Sample normal
-			
-			
-			/*// Sample GBuffer
-			GBuffer gBuffer = SampleGBuffer(input.TexCoord); // TODO: do we need to sample whole gbuffer?
+			return float4(normalWS, 1);
+			/*
+			// Get view space position
+			float depth = SampleZ(uv);
+			float3 positionVS = ComputeViewPosition(uv, depth);
 			
 			// Reject invalid pixels
-			if(gBuffer.ShadingModel == SHADING_MODEL_UNLIT || RoughnessFade - gBuffer.Roughness < 0 || gBuffer.ViewPos.z > 2000.0f)
+			//if(gBuffer.ShadingModel == SHADING_MODEL_UNLIT || RoughnessFade - roughness < 0 || positionVS.z > 2000.0f)
+			if(positionVS.z > 500.0f)
 				return 0;
+			*/
+			return float4(1, 0, 0, 1);
 			
-			// Calculate view space normal vector
+			/*// Calculate view space normal vector
 			float3 normalVS = mul(normalWS, (float3x3)V);
 			
 			// Calculate normalized view space reflection vector
-			float3 reflectVS = normalize(reflect(gBuffer.ViewPos, normalVS));
+			float3 reflectVS = normalize(reflect(positionVS, normalVS));
 			
 			// Check if there is any chance to see the reflection
 			if(reflectVS.z < SSR_MIN_Z_REFLECT) 
 				return 0;
 			
 			// Calculate screen space position
-			float depth = SampleZ(input.TexCoord); // TODO: get depth from gBuffer
-			float3 positionSS = float3(input.TexCoord, depth);
+			float3 positionSS = float3(uv, depth);
 			positionSS.xy = positionSS.xy * float2(2, -2) + float2(-1, 1);
 			
 			// Transform the view space reflection to screen space
-			float4 positionPrimeSS4 = mul(float4(gBuffer.ViewPos + reflectVS, 1.0f), P);
+			float4 positionPrimeSS4 = mul(float4(positionVS + reflectVS, 1.0f), P);
 			float3 positionPrimeSS = positionPrimeSS4.xyz / positionPrimeSS4.w;
 			float3 rayStep = positionPrimeSS - positionSS;
 			
