@@ -781,6 +781,7 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeSphericalHarmonics.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Materials\Shaders\GBufferOutputNormals.xksl" />
     <None Include="Rendering\Shadows\ShadowMapCasterCubeMap.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapCasterCubeMap.cs</LastGenOutput>

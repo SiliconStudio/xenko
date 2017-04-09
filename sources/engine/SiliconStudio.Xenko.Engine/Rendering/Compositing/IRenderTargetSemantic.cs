@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
     public class NormalTargetSemantic : IRenderTargetSemantic
     {
-        public ShaderSource ShaderClass { get; } = null;
+        public ShaderSource ShaderClass { get; } = new ShaderClassSource("GBufferOutputNormals");
     }
 
     public class VelocityTargetSemantic : IRenderTargetSemantic

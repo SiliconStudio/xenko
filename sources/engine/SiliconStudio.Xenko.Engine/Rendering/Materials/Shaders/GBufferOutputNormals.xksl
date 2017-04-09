@@ -1,0 +1,13 @@
+﻿namespace SiliconStudio.Xenko.Rendering.Materials.Shaders
+{
+	/// <summary>
+    /// Outputs material world space normal vectors
+    /// </summary>
+    shader GBufferOutputNormals : ComputeColor, MaterialPixelShadingStream, Utilities
+    {
+        override float4 Compute()
+        {
+            return float4(streams.normalWS, 1);
+        }
+    };
+}
