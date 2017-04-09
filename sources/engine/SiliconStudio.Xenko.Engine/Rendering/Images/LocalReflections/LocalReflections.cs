@@ -20,23 +20,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {
         ImageEffectShader rayTracePassShader;
 
-        // TOOD: cleanup this! turn into local variables
-        Vector2 screenSize;
-        Matrix viewMatrix;
-        Matrix projectionMatrix;
-        Matrix viewProjectionMatrix;
-        Vector4 eye;
-        float nearclip;
-        float farclip;
-        Matrix inverseViewMatrix;
-        Matrix inverseViewProjectionMatrix;
-        Matrix inverseProjectionMatrix;
-        float aspect;
-        float fieldOfView;
-        Vector4 viewDirection;
-        Vector4 viewDirectionOrtho;
-        Vector4 zPlanes;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalReflections"/> class.
         /// </summary>
@@ -152,74 +135,46 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (!rayTracePassShader.Initialized)
                 rayTracePassShader.Initialize(context.RenderContext);
 
-            // Inputs:
-            Texture colorBuffer = GetSafeInput(0);
-            Texture depthBuffer = GetSafeInput(1);
-            Texture normalsBuffer = GetSafeInput(2);
-            Texture specularRoughnessBuffer = GetSafeInput(3);
-
-            // Output:
             Texture outputBuffer = GetSafeOutput(0);
             
             // TODO: cleanup that stuff
-
-            screenSize = new Vector2();
+            
             var currentCamera = context.RenderContext.GetCurrentCamera();
             if (currentCamera == null)
                 throw new InvalidOperationException("No valid camera");
-            viewMatrix = currentCamera.ViewMatrix;
-            projectionMatrix = currentCamera.ProjectionMatrix;
-            viewProjectionMatrix = currentCamera.ViewProjectionMatrix;
-            inverseViewMatrix = Matrix.Invert(viewMatrix);
-            inverseProjectionMatrix = Matrix.Invert(viewProjectionMatrix);
-            eye = inverseViewMatrix.Row4;
-            nearclip = currentCamera.NearClipPlane;
-            farclip = currentCamera.FarClipPlane;
-            inverseViewProjectionMatrix = Matrix.Invert(viewProjectionMatrix);
-            aspect = currentCamera.AspectRatio;
-            fieldOfView = (float)(2.0f * Math.Atan2(projectionMatrix.M11, aspect));
+            Matrix viewMatrix = currentCamera.ViewMatrix;
+            Matrix projectionMatrix = currentCamera.ProjectionMatrix;
+            Matrix viewProjectionMatrix = currentCamera.ViewProjectionMatrix;
+            Matrix inverseViewMatrix = Matrix.Invert(viewMatrix);
+            Matrix inverseProjectionMatrix = Matrix.Invert(projectionMatrix);
+            Matrix inverseViewProjectionMatrix = Matrix.Invert(viewProjectionMatrix);
+            Vector4 eye = inverseViewMatrix.Row4;
+            float nearclip = currentCamera.NearClipPlane;
+            float farclip = currentCamera.FarClipPlane;
+            float aspect = currentCamera.AspectRatio;
+            float fieldOfView = (float)(2.0f * Math.Atan2(projectionMatrix.M11, aspect));
+            Vector4 ZPlanes = new Vector4(nearclip, farclip, 0, fieldOfView); // x = Frustum Near, y = Frustum Far, w = FOV
 
-            viewDirection = new Vector4(0, 0, -1, 0);
-            viewDirection = Vector4.Transform(viewDirection, inverseViewMatrix);
+            var traceBufferSize = GetTraceBufferResolution(outputBuffer);
 
-            viewDirectionOrtho = new Vector4(1, 0, 0, 0);
-            viewDirectionOrtho = Vector4.Transform(viewDirectionOrtho, inverseViewMatrix);
-
-            zPlanes = new Vector4(nearclip, farclip, 0, fieldOfView);
-
-            var resolutionAsSize2 = GetTraceBufferResolution(outputBuffer);
-            screenSize.X = resolutionAsSize2.Width;
-            screenSize.Y = resolutionAsSize2.Height;
-
-            float roughnessFade = 0.5f;// TODO: promote to parameter
+            float roughnessFade = 0.6f;// TODO: promote to parameter
+            int maxTraceSamples = 48;// TODO: promote to parameter
 
             // ViewInfo    :  x-1/Projection[0,0]   y-1/Projection[1,1]   z-(Far / (Far - Near)   w-(-Far * Near) / (Far - Near) / Far)
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, new Vector4(1.0f / projectionMatrix.M11, 1.0f / projectionMatrix.M22, farclip / (farclip - nearclip), (-farclip * nearclip) / (farclip - nearclip) / farclip));
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.MaxTraceSamples, maxTraceSamples);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, eye);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.ZPlanes, ZPlanes);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, new Vector2(traceBufferSize.Width, traceBufferSize.Height));
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.P, projectionMatrix);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.IV, inverseViewMatrix);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.IP, inverseProjectionMatrix);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
-
-            // uniform settings:
-            /*localReflectionShader.Parameters.Set(SSLRShaderKeys.ScreenSize, screenSize);
-            localReflectionShader.Parameters.Set(SSLRCommonKeys.ZPlanes, zPlanes);
-            localReflectionShader.Parameters.Set(SSLRCommonKeys.ViewProjectionMatrix, viewProjectionMatrix);
-            localReflectionShader.Parameters.Set(SSLRCommonKeys.InverseViewProjectionMatrix, inverseViewProjectionMatrix);
-            localReflectionShader.Parameters.Set(SSLRShaderKeys.CameraPosWS, eye);
-            localReflectionShader.Parameters.Set(SSLRShaderKeys.ViewDirection, viewDirection);
-            localReflectionShader.Parameters.Set(SSLRShaderKeys.ViewDirectionOrthoLeft, viewDirectionOrtho);
-            localReflectionShader.Parameters.Set(SSLRShaderKeys.MaxNumSteps, MaxNumSteps);
-            localReflectionShader.Parameters.Set(SSLRShaderKeys.WorldAntiSelfOcclusionBias, WorldAntiSelfOcclusionBias);
-            localReflectionShader.Parameters.Set(SSLRShaderKeys.PixelDepth, PixelDepth);
-            localReflectionShader.Parameters.Set(SSLRShaderKeys.MaxHizMipLevel, hizChain.MipLevels - 1);
-            localReflectionShader.Parameters.Set(SSLRShaderKeys.MaxTravelDistance, MaxTravelDistance);
-            localReflectionShader.Parameters.Set(SSLRShaderKeys.ResolutionDivisor, GetResolutionDivisor());
-
-            roughnessBlurAndReflectionCompositing.Parameters.Set(SSLRCommonKeys.InverseViewProjectionMatrix, inverseViewProjectionMatrix);
-            roughnessBlurAndReflectionCompositing.Parameters.Set(SSLRCommonKeys.ZPlanes, zPlanes);
-            roughnessBlurAndReflectionCompositing.Parameters.Set(ReflectionBRDFCompositingKeys.CameraPosWS, eye);*/
         }
 
         protected override void DrawCore(RenderDrawContext context)
@@ -235,9 +190,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Get temporary buffers (use small formats, we don't want to kill performance)
             var traceBuffersSize = GetTraceBufferResolution(outputBuffer);
-            //Texture rayTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R16G16_Float, 1);
-            Texture rayTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R16G16B16A16_Float, 1);
-            Texture coneTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R8G8B8A8_UNorm, 1);
+            Texture rayTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R16G16_Float, 1);
+            //Texture coneTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R8G8B8A8_UNorm, 1);
 
             // TODO: Blur Pass
 
@@ -248,9 +202,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             rayTracePassShader.SetInput(3, specularRoughnessBuffer);
             rayTracePassShader.SetOutput(rayTraceBuffer);
             rayTracePassShader.Draw(context, "Ray Trace");
-
-
-
+            
             // TODO: Cone Trace Pass
 
             // TODO: Combine Pass

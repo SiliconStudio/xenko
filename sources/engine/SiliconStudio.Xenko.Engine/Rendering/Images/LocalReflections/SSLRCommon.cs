@@ -25,10 +25,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public static readonly ValueParameterKey<float> RoughnessFade = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<float> MaxTraceSamples = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<float> ViewFarPlane = ParameterKeys.NewValue<float>();
-        public static readonly ValueParameterKey<Vector3> Padding0 = ParameterKeys.NewValue<Vector3>();
+        public static readonly ValueParameterKey<float> RayStepScale = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<Vector2> ScreenSize = ParameterKeys.NewValue<Vector2>();
         public static readonly ValueParameterKey<Vector4> ViewInfo = ParameterKeys.NewValue<Vector4>();
+        public static readonly ValueParameterKey<Vector4> CameraPosWS = ParameterKeys.NewValue<Vector4>();
+        public static readonly ValueParameterKey<Vector4> ZPlanes = ParameterKeys.NewValue<Vector4>();
         public static readonly ValueParameterKey<Matrix> V = ParameterKeys.NewValue<Matrix>();
         public static readonly ValueParameterKey<Matrix> P = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> VP = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> IV = ParameterKeys.NewValue<Matrix>();
         public static readonly ValueParameterKey<Matrix> IP = ParameterKeys.NewValue<Matrix>();
         public static readonly ValueParameterKey<Matrix> IVP = ParameterKeys.NewValue<Matrix>();
     }

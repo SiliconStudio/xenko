@@ -11,215 +11,37 @@ namespace SiliconStudio.Xenko.Rendering.Images
 		// Parmeter to control minimum Z of view space normal of the pixel to be used in SSR
 		#define SSR_MIN_Z_REFLECT 0.1f
 		
-        // hi-z trace. return the uv position where ray impacts.
-        /*float4 RayTraceToCollision(float3 uv, float3 marchVectorUvUnit, int steps, out float3 mirrorUv, out float travelDist, out int stepsdone)
-        {
-            float3 startUv = uv;
-            float3 oldUv = uv;
-            int zmipLevel = 0;
-            [loop]
-            for (int i = 1; i < steps; ++i)
-            {
-                stepsdone = i;
-                // marching uv current position:
-                uv += marchVectorUvUnit * pow(2, max(0, zmipLevel));
-                travelDist = max2(abs(uv - startUv));
-
-                // shooting too far after this step. cancel step and retry smaller.
-                bool screenExit = OutOfScreen(uv) || DistanceAttenuation(travelDist) < 0.01;
-
-                float3 distanceToSurface_linearZ_rawZ = SampleLinearizedDepthDistanceAt(Texture1, uv, max(0, zmipLevel));
-                if (IsRayFree(distanceToSurface_linearZ_rawZ) && !screenExit)
-                {
-                    if (zmipLevel < MaxHizMipLevel)
-						++zmipLevel;
-                }
-                else
-                {
-                    if (zmipLevel >= 0)
-						--zmipLevel;
-                    uv = oldUv;
-                }
-
-                [branch]
-                if (zmipLevel < 0 && IsRayOccluded(distanceToSurface_linearZ_rawZ))
-                {
-                    // this magic formula is an artefact mitigation control to get a high threshold for rays that move in the direction of the depth.
-                    // that is very equivalent to a shadow bias.
-                    // the adjustment factors are ad-hoc and have been empirically discovered by testing.
-                    // the combinatory scenarios to test are very grazing reflections, different resolutions, and different near/far clip combinations.
-                    float threshold = 1000/ScreenSize.y * max(1, abs(marchVectorUvUnit.z) * distanceToSurface_linearZ_rawZ.y * ZPlanes.y/ZPlanes.x) * distanceToSurface_linearZ_rawZ.y * PixelDepth;
-                    // ray hit close to the zmap
-                    if (distanceToSurface_linearZ_rawZ.x < threshold)
-                    {
-                        // the mirror UV computation was more meaningful with fixed step tracing. HiZ tracing is already sub pixel precise.
-                        mirrorUv = lerp(oldUv, uv, (threshold - distanceToSurface_linearZ_rawZ.x) / threshold);
-                        return float4(mirrorUv, 1);
-                    }
-					// give up marching here.
-                    break;
-                }
-                oldUv = uv;
-            }
-            return float4(uv, 0);
-        }*/
-		
-        /*// use depth-difference rejection 5-sampling to convolve the color fetched by the reflection, to create a smoother roughness effect.
-        float4 FetchColorBufferConvolve(float2 centerUv, float radius)
-        {
-            // optimization.
-            [branch]
-            if (radius < 1 / ResolutionDivisor)
-                return Texture0.SampleLevel(LinearSampler, centerUv, 0);
-            else
-                // 10 was empirically determined to be a reasonably good anti-"smudge" of unrelated objects.
-                // it behaves differently (larger range) when far clip is distant. But it seemed universal enough with far clips from 80 to 5000.
-                return DepthAwareColorDownScaling(Texture0, Texture0TexelSize * ResolutionDivisor, Texture1, Texture1TexelSize, centerUv, radius, 10);
-        }
-
-        // screen space local reflection
-        float4 SSLR(float2 pixelcoord)
-        {
-            float2 glossinessXreflectivityY = Unpack2floats(Texture3.SampleLevel(PointSampler, pixelcoord, 0).a);
-
-            // if there is no reflectivity on this zone, no need to pay an expensive ray stepping.
-            if (glossinessXreflectivityY.y <= 0.0001f)
-                return 0;
-
-            float3 normalWS = GetWorldNormalAt(pixelcoord, Texture2);
-
-            const float zBufferDepth = SampleRawDepthAt(Texture1, pixelcoord, 0);
-            const float3 positionWS = ComputeWorldPosition(pixelcoord, zBufferDepth);
-
-			// that's our ray
-            const float3 viewingVectorWS = normalize(positionWS - CameraPosWS.xyz);
-
-            float4 accumColor = 0.0f;
-
-            float3 reflected = reflect(viewingVectorWS, normalWS);
-
-            if (dot(reflected, ViewDirection) < 0 || zBufferDepth > 0.9999)
-                return 0;
-
-            float3 offsetedStartPos = positionWS + normalWS * WorldAntiSelfOcclusionBias;
-            float3 startPointUv = ProjectWorldToUv(offsetedStartPos);
-            float3 nextPointUv = ProjectWorldToUv(offsetedStartPos + reflected);
-            float3 marchVectorUv = nextPointUv - startPointUv;
-            float screenStep = 1.0f / ScreenSize.x;
-            // normalize across screen plane
-            float3 marchVectorUvUnit = screenStep * marchVectorUv / max2(abs(marchVectorUv.xy));
-
-			// start position offseted in screen space too
-            float3 uv = startPointUv + marchVectorUvUnit * 2;
-
-            float3 mirrorUv = 0;
-            float traveledDist;
-            int steps = 0;
-            float4 impactUvPosition = RayTraceToCollision(uv, marchVectorUvUnit, MaxNumSteps, mirrorUv, traveledDist, steps);
-            float dist = 0;
-            bool hit = impactUvPosition.w > 0.f;
-            float attenuation = 0;
-
-            // color evaluation:
-            [branch]
-            if (hit)
-            {
-                dist = length(mirrorUv - startPointUv);
-
-                // attenuate progressively until cut-outs. this takes care of screen borders from ray start and ray end.
-                attenuation = sqrt(smoothstep(0, 1, 5 * ChebyDistToBorders(pixelcoord)) * smoothstep(0, 1, 10 * ChebyDistToBorders(mirrorUv.xy)));
-                // we dim dangerous "reflecting back" directions:
-                attenuation *= dot(reflected, ViewDirection);
-                attenuation *= DistanceAttenuation(traveledDist);
-                // apply a roughness.distance pre-blur:
-                // 10 is empirically determined to be a distance that's maximum, before seeing obvious banding due to only taking 5 samples.
-                float radius = traveledDist * 10 / ResolutionDivisor * (1 - glossinessXreflectivityY.x);
-                accumColor += attenuation * FetchColorBufferConvolve(mirrorUv.xy, radius);
-            }
-
-
-            //return float4(float3(mirrorUv.xy, 0), hit ? attenuation * saturate(1 - dist * 2) : traveledDist);
- return float4(accumColor.rgb, hit ? attenuation * saturate(1 - dist * 2) : 0);
-            //return float4(((float)hit).xxx, hit ? attenuation * saturate(1 - dist * 2) : 0);
-            //return float4(steps.xxx/MaxNumSteps, hit ? attenuation * saturate(1 - dist * 2) : 0);
-        }*/
-		
-		// TODO: move util functions to SSRLCommon shader
-		
-		// Sample raw device depth buffer
-		float SampleZ(in float2 uv)
-		{
-			return Texture1.SampleLevel(PointSampler, uv, 0).r;
-		}
-		
-		// Linearize raw device depth
-		float LinearizeZ(in float depth)
-		{
-			// Linearize depth
-			return ViewInfo.w / (depth - ViewInfo.z);
-		}
-		
-		// 1:-1 to 0:1
-        float2 ClipToUv(float2 clipPos)
-        {
-            return mad(clipPos, float2(0.5, -0.5), float2(0.5, 0.5));
-        }
-
-        // 0:1 to 1:-1
-        float2 UvToClip(float2 uv)
-        {
-            return mad(uv, float2(2, -2), float2(-1, 1));
-        }
-		
-		float3 ComputeWorldPosition(float2 uv, float rawDepth)
-        {
-            float4 clipPos = float4(UvToClip(uv), rawDepth, 1);
-            float4 pos = mul(clipPos, IVP);
-			pos /= pos.w;
-            return pos.xyz;
-        }
-		
-		float3 ComputeViewPosition(float2 uv, float rawDepth)
-        {
-			float eyeZ = LinearizeZ(rawDepth) * ViewFarPlane;
-			return float3(UvToClip(uv) * ViewInfo.xy * eyeZ, eyeZ);
-        }
-		
+		// Enable/disable debug visualization of the SSR hit points
+		#define SSR_DEBUG_HITS 0
+			
         override stage float4 Shading()
         {
 			// Inputs Mapping:
 			// Texture0 - Color
 			// Texture1 - Depth
-			// Texture2 - Normals
+			// Texture2 - World Space Normals
 			// Texture3 - Specular Color + Roughness
 			
 			float2 uv = streams.TexCoord;
 			
-            //const float3 viewingVectorWS = normalize(positionWS - CameraPosWS.xyz);
-			//return float4(1, uv.y, 0, 1);
-			
-			// Sample material normal and roughness
-			float4 normalsBuffer = Texture2.SampleLevel(PointSampler, uv, 0);
+			// Sample material roughness
 			float4 specularRoughnessBuffer = Texture3.SampleLevel(PointSampler, uv, 0);
-			float3 normalWS = DecodeNormal(normalsBuffer.rgb);
 			float roughness = specularRoughnessBuffer.a;
-			
-			//return float4(normalWS, 1);
 			
 			// Get view space position
 			float depth = SampleZ(uv);
 			float3 positionVS = ComputeViewPosition(uv, depth);
-			
-			//return depth.xxxx;
-			//return float4(ComputeWorldPosition(uv, depth), 1);
-			//return float4(positionVS, 1);
 			
 			// Reject invalid pixels
 			if(positionVS.z > 100.0f || roughness > RoughnessFade)
 				return 0;
 			
 			// Calculate view space normal vector
+			float4 normalsBuffer = Texture2.SampleLevel(PointSampler, uv, 0);
+			float3 normalWS = DecodeNormal(normalsBuffer.rgb);
 			float3 normalVS = mul(normalWS, (float3x3)V);
+			
+			// TODO: dont use reflectVS, only reflectWS ??
 			
 			// Calculate normalized view space reflection vector
 			float3 reflectVS = normalize(reflect(positionVS, normalVS));
@@ -228,33 +50,31 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			if(reflectVS.z < SSR_MIN_Z_REFLECT) 
 				return 0;
 			
-			return float4(1, 0, 0, 1);
+			float3 positionWS = ComputeWorldPosition(uv, depth);
+			float3 viewWS = normalize(positionWS - CameraPosWS.xyz);
+			float3 reflectWS = reflect(viewWS, normalWS);
 			
-			// Calculate screen space position
-			/*float3 positionSS = float3(uv, depth);
-			positionSS.xy = positionSS.xy * float2(2, -2) + float2(-1, 1);
+			float WorldAntiSelfOcclusionBias = 0.001f;// TODO: promote to parameter
 			
-			// Transform the view space reflection to screen space
-			float4 positionPrimeSS4 = mul(float4(positionVS + reflectVS, 1.0f), P);
-			float3 positionPrimeSS = positionPrimeSS4.xyz / positionPrimeSS4.w;
-			float3 rayStep = positionPrimeSS - positionSS;
+			// TODO: cleanup unsused constants
 			
-			// Resize screen space reflection to an appropriate length
-			rayStep *= ScreenSize.z * 2.0f / length(rayStep.xy);
+			// TODO: optimzie some stuff, less view space <-> world space oeprations, less math etc.
 			
-			// Init SS position offset
-			// .xy for Screen Space is in the range of -1 to 1
-			// But we want to sample from a texture, thus we want to convert this to 0 to 1
-			float3 currOffset = positionSS + rayStep * 8.0f;
-			currOffset.xy = float2(currOffset.x * 0.5 + 0.5, currOffset.y * -0.5 + 0.5);
+			float3 startWS = positionWS + normalWS * WorldAntiSelfOcclusionBias;
+            float3 startUV = ProjectWorldToUv(startWS);
+            float3 endUV = ProjectWorldToUv(startWS + reflectWS);
 			
-			// Convert ray step to view space from screen space
-			rayStep = float3(rayStep.x * 0.5 , rayStep.y * -0.5, rayStep.z);
+            float3 rayUV = endUV - startUV;
+			float screenStep = 1.0f / ScreenSize.x;
+			rayUV *= screenStep / max2(abs(rayUV.xy));
+			float3 startUv = startUV + rayUV * 2;
+			
+			float3 currOffset = startUv;
+			float3 rayStep = rayUV * 2;
 			
 			// Calculate number of samples
 			float3 samplesToEdge = ((sign(rayStep.xyz) * 0.5 + 0.5) - currOffset.xyz) / rayStep.xyz;
 			samplesToEdge.x = min(samplesToEdge.x, min(samplesToEdge.y, samplesToEdge.z)) * 1.05f;
-			//float numSamples = (int)samplesToEdge.x;
 			float numSamples = min(MaxTraceSamples, samplesToEdge.x);
 			rayStep *= samplesToEdge.x / numSamples;
 			
@@ -274,10 +94,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 				depthDiff = currOffset.z - currSample;
 				
 				// Check intersection
-				if(depthDiff >= 0.0f)
+				if(depthDiff >= 0)
 				{
-					// TODO: use higher rayStep but use binary search here
-					
 					// Check if it isn't false intersection
 					if(depthDiff >= depthDiffError)
 					{
@@ -317,16 +135,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			
 			// Calculate intersection texture coordinate
 			float3 lastOffset = currOffset - rayStep;
-			float2 raySS = lastOffset.xy + (currSample - lastOffset.z) * rayStep.xy;
+			float2 hitUV = lastOffset.xy + (currSample - lastOffset.z) * rayStep.xy;
 			
-			//color.rgb = SAMPLE_TEXTURE_LEVEL(Scene, raySS.xy, 1).rgb;
-			
-			//return GBuffer0.Sample(SamplerLinearClamp, raySS.xy);
+			// Debug scene color preview:
+			return Texture0.Sample(PointSampler, hitUV.xy);
 			
 			// xy - hit UV
-			return float4(raySS.xy, 1, 1);
-			
-		#endif*/
+			return float4(hitUV, 1, 1);
         }
     };
 }
