@@ -1,10 +1,10 @@
 !TemplateSample
 Id: 91366B3A-915A-46B7-88C8-0439B0F3E5F5
-Name: Virtual Reality
+Name: Virtual reality
 Scope: Session
-Description: A virtual reality game template.
-FullDescription: This template creates a virtual reality game. The player can interact with the objects on the table using the triggers on either hand. Pressing A or the thumb button on the right hand controller allows the player to teleport to a new location.
+Description: A virtual reality game template
 Group: Templates
+FullDescription: A virtual reality template. The player can interact with objects using the triggers on either hand, and teleport with A or the thumb button on the right-hand controller.
 Icon: ../../.xktpl/Icon2VR.png
 DefaultOutputName: VRSandbox
 Screenshots:

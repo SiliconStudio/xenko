@@ -1,6 +1,6 @@
 !TemplateSample
 Id: 13657392-016C-4A77-8FE2-977B0800C84A
-Name: Linked Entity UI Sample
+Name: Linked entity UI sample
 Scope: Session
 Description: This sample shows how you can link an entity to follow a ui element around.
 FullDescription: |
