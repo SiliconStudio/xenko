@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         override stage float4 Shading()
         {
 			// Inputs Mapping:
-			// Texture0 - Color
+			// Texture0 - Scene Color
 			// Texture1 - Depth
 			// Texture2 - World Space Normals
 			// Texture3 - Specular Color + Roughness

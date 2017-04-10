@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private ImageEffectShader blurPassShader;
         private ImageEffectShader rayTracePassShader;
         private ImageEffectShader coneTracePassShader;
+        private ImageEffectShader combinePassShader;
 
         private Texture[] cachedColorBuffer0Mips;
         private Texture[] cachedColorBuffer1Mips;
@@ -88,6 +89,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             blurPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRBlurPassEffect"));
             rayTracePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRRayTracePass"));
             coneTracePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRConeTracePass"));
+            combinePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRCombinePass"));
         }
 
         protected override void Destroy()
@@ -147,6 +149,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 rayTracePassShader.Initialize(context.RenderContext);
             if (!coneTracePassShader.Initialized)
                 coneTracePassShader.Initialize(context.RenderContext);
+            if (!combinePassShader.Initialized)
+                combinePassShader.Initialize(context.RenderContext);
 
             // TODO: cleanup that stuff
 
@@ -199,6 +203,20 @@ namespace SiliconStudio.Xenko.Rendering.Images
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
+
+            combinePassShader.Parameters.Set(SSLRCommonKeys.MaxColorMiplevel, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.TraceSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.SSRtexelSize, new Vector2(1.0f / traceBufferSize.Width, 1.0f / traceBufferSize.Height));
+            combinePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ViewInfo);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.MaxTraceSamples, maxTraceSamples);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, eye);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, ScreenSize);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
         }
 
         protected override void DrawCore(RenderDrawContext context)
@@ -291,15 +309,22 @@ namespace SiliconStudio.Xenko.Rendering.Images
             coneTracePassShader.SetOutput(coneTraceBuffer);
             coneTracePassShader.Draw(context, "Cone Trace");
 
-            // TODO: Combine Pass
+            // Combine Pass
+            combinePassShader.SetInput(0, colorBuffer);
+            combinePassShader.SetInput(1, depthBuffer);
+            combinePassShader.SetInput(2, normalsBuffer);
+            combinePassShader.SetInput(3, specularRoughnessBuffer);
+            combinePassShader.SetInput(4, coneTraceBuffer);
+            combinePassShader.SetOutput(outputBuffer);
+            combinePassShader.Draw(context, "Combine");
 
             // Debug preview of temp targets
-            //context.CommandList.Clear(outputBuffer, Color.BlueViolet);
+            /*//context.CommandList.Clear(outputBuffer, Color.BlueViolet);
+            //Scaler.SetInput(0, cachedColorBuffer0Mips[3]);
             //Scaler.SetInput(0, rayTraceBuffer);
             Scaler.SetInput(0, coneTraceBuffer);
-            //Scaler.SetInput(0, cachedColorBuffer0Mips[3]);
             Scaler.SetOutput(outputBuffer);
-            Scaler.Draw(context);
+            Scaler.Draw(context);*/
         }
     }
 }

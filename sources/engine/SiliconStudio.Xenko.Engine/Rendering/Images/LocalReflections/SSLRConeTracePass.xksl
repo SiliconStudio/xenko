@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         override stage float4 Shading()
         {
 			// Inputs Mapping:
-			// Texture0 - Color (with blurred mip maps chain)
+			// Texture0 - Scene Color (with blurred mip maps chain)
 			// Texture1 - Depth
 			// Texture2 - World Space Normals
 			// Texture3 - Specular Color + Roughness
@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			float4 normalsBuffer = Texture2.SampleLevel(PointSampler, uv, 0);
 			float3 normalWS = DecodeNormal(normalsBuffer.rgb);
 			float3 normalVS = mul(normalWS, (float3x3)V);
-
+			
 			// Sample material roughness
 			float4 specularRoughnessBuffer = Texture3.SampleLevel(PointSampler, uv, 0);
 			float roughness = specularRoughnessBuffer.a;
