@@ -220,6 +220,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         /// <param name="e"></param>
         private void OnEdgesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            // TODO: properly support reset!
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:

@@ -27,6 +27,7 @@ namespace SiliconStudio.Assets.Quantum
         /// </summary>
         /// <remarks>Part stored here are preserved after being removed, in case they have to come back later, for example if a part in the base is being moved (removed + added again).</remarks>
         private readonly Dictionary<Tuple<Guid, Guid>, TAssetPart> baseInstanceMapping = new Dictionary<Tuple<Guid, Guid>, TAssetPart>();
+
         /// <summary>
         /// A dictionary mapping instance ids to the common ancestor of the parts corresponding to that instance id in this asset.
         /// </summary>
