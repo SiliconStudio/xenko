@@ -119,7 +119,6 @@ TemplateFolders:
         - samples\UI\GameMenu\GameMenu.xktpl
         - samples\UI\UIParticles\UIParticles.xktpl
         - samples\UI\UIElementLink\UIElementLink.xktpl
-        - samples\Others\NativeLinking\NativeLinking.xktpl
         - samples\Templates\FirstPersonShooter\FirstPersonShooter\FirstPersonShooter.xktpl
         - samples\Templates\ThirdPersonPlatformer\ThirdPersonPlatformer\ThirdPersonPlatformer.xktpl
         - samples\Templates\TopDownRPG\TopDownRPG\TopDownRPG.xktpl

@@ -187,6 +187,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         {
             var index = OculusOvr.GetCurrentTargetIndex(ovrSession);
             commandList.Copy(renderFrame, textures[index]);
+            overlayPtrs = overlays.Where(x => x.Enabled).Select(x => x.OverlayPtr).ToArray();
             OculusOvr.CommitFrame(ovrSession, overlayPtrs.Length, overlayPtrs);
         }
 
@@ -194,7 +195,6 @@ namespace SiliconStudio.Xenko.VirtualReality
         {
             var overlay = new OculusOverlay(ovrSession, graphicsDevice, width, height, mipLevels, sampleCount);
             overlays.Add(overlay);
-            overlayPtrs = overlays.Select(x => x.OverlayPtr).ToArray();
             return overlay;
         }
 
@@ -203,7 +203,6 @@ namespace SiliconStudio.Xenko.VirtualReality
             var oculusOverlay = (OculusOverlay)overlay;
             oculusOverlay.Dispose();
             overlays.Remove(oculusOverlay);
-            overlayPtrs = overlays.Select(x => x.OverlayPtr).ToArray();
         }
     }
 }

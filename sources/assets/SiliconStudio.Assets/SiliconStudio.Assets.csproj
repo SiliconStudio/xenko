@@ -189,7 +189,6 @@
     <Compile Include="Compiler\AssetBuildStep.cs" />
     <Compile Include="Compiler\AssetDependenciesCompiler.cs" />
     <Compile Include="AssetImporterBase.cs" />
-    <Compile Include="Compiler\ICompilerRegistry.cs" />
     <Compile Include="Compiler\IPackageCompilerSource.cs" />
     <Compile Include="Compiler\IPackageCompiler.cs" />
     <Compile Include="Compiler\PackageAssetEnumerator.cs" />
@@ -204,7 +203,6 @@
     <Compile Include="Compiler\AssetCompilerBase.cs" />
     <Compile Include="Compiler\AssetCompilerContext.cs" />
     <Compile Include="Compiler\AssetCompilerRegistry.cs" />
-    <Compile Include="Compiler\AttributeBasedRegistry.cs" />
     <Compile Include="Compiler\FailedCommand.cs" />
     <Compile Include="IAssetCompileTimeDependencies.cs" />
     <Compile Include="IAssetComposite.cs" />
@@ -217,7 +215,6 @@
     <Compile Include="OverrideUpgraderHint.cs" />
     <Compile Include="Compiler\CompilerAttribute.cs" />
     <Compile Include="Compiler\CompilerContext.cs" />
-    <Compile Include="Compiler\CompilerRegistry.cs" />
     <Compile Include="Compiler\AssetCompilerResult.cs" />
     <Compile Include="Compiler\IAssetCompiler.cs" />
     <Compile Include="Compiler\ImportStreamCommand.cs" />
