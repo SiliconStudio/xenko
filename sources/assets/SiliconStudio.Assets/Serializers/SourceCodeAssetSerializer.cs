@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Text;
+using SiliconStudio.Assets.TextAccessors;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;

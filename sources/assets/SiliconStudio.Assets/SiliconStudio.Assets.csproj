@@ -105,10 +105,13 @@
     <Compile Include="Compiler\ICompilationContext.cs" />
     <Compile Include="Diagnostics\AssetSerializableLogMessage.cs" />
     <Compile Include="DynamicYaml\DynamicYamlExtensions.cs" />
+    <Compile Include="FileTextAccessor.cs" />
     <Compile Include="IAssetFinder.cs" />
     <Compile Include="IAssetPartDesign.cs" />
     <Compile Include="IProjectAsset.cs" />
     <Compile Include="IProjectFileGeneratorAsset.cs" />
+    <Compile Include="TextAccessors\ISerializableTextAccessor.cs" />
+    <Compile Include="TextAccessors\ITextAccessor.cs" />
     <Compile Include="Package.Constants.cs" />
     <Compile Include="Package.cs" />
     <Compile Include="PackageAssetCollection.cs" />
@@ -146,6 +149,8 @@
     <Compile Include="Serializers\IdentifiableAssetPartReference.cs" />
     <Compile Include="Serializers\IdentifiableAssetPartReferenceSerializer.cs" />
     <Compile Include="Serializers\IdentifiableObjectSerializer.cs" />
+    <Compile Include="TextAccessors\StringTextAccessor.cs" />
+    <Compile Include="TextAccessors\DefaultTextAccessor.cs" />
     <Compile Include="Yaml\AttachedYamlAssetMetadata.cs" />
     <Compile Include="Yaml\IYamlAssetMetadata.cs" />
     <Compile Include="Serializers\ScalarOrObjectSerializer.cs" />
