@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public float CurrentMinDistance
         {
-            get => currentMinDistance;
+            get { return currentMinDistance; }
             set
             {
                 if (value <= DistanceMinRange)
@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public float CurrentMaxDistance
         {
-            get => currentMaxDistance; 
+            get { return currentMaxDistance; }
             set
             {
                 if (value <= DistanceMinRangeDouble)
