@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             base.InitializeCore();
 
-            blurPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRBlurPass"));
+            blurPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRBlurPassEffect"));
             rayTracePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRRayTracePass"));
         }
 
@@ -226,31 +226,25 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Blur Pass
             for (int mipLevel = 0; mipLevel < colorMipLevels; mipLevel++)
             {
-                Texture srcMip, dstMip;
                 int mipWidth = colorBuffer0.Width >> mipLevel;
                 int mipHeight = colorBuffer1.Height >> mipLevel;
 
                 blurPassShader.Parameters.Set(SSLRCommonKeys.TexelSize, new Vector2(1.0f / mipWidth, 1.0f / mipHeight));
 
-                //context.SetViewport(mipWidth, mipHeight);
-
                 // Blur H
-                if (mipLevel == 0)
-                    srcMip = colorBuffer;
-                else
-                    srcMip = cachedColorBuffer0Mips[mipLevel - 1];
-                dstMip = cachedColorBuffer1Mips[mipLevel];
+                var srcMip = mipLevel == 0 ? colorBuffer : cachedColorBuffer0Mips[mipLevel - 1];
+                var dstMip = cachedColorBuffer1Mips[mipLevel];
                 blurPassShader.SetInput(0, srcMip);
                 blurPassShader.SetOutput(dstMip);
+                blurPassShader.Parameters.Set(SSLRBlurPassParams.ConvolveVertical, 0);
                 blurPassShader.Draw(context, "Blur H");
-
-                // TODO: use macro CONVOLVE_VERTICAL to change blur direction
-
+                
                 // Blur V
                 srcMip = dstMip;
                 dstMip = cachedColorBuffer0Mips[mipLevel];
                 blurPassShader.SetInput(0, srcMip);
                 blurPassShader.SetOutput(dstMip);
+                blurPassShader.Parameters.Set(SSLRBlurPassParams.ConvolveVertical, 1);
                 blurPassShader.Draw(context, "Blur V");
             }
 

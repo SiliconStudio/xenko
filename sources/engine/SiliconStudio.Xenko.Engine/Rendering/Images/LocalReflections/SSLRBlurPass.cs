@@ -6,4 +6,39 @@
 // and re-save the associated .xkfx.
 // </auto-generated>
 
-// Nothing to generate
+using System;
+using SiliconStudio.Core;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Core.Mathematics;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    public static partial class SSLRBlurPassKeys
+    {
+    }
+    [DataContract]public partial class SSLRBlurPassParams : ShaderMixinParameters
+    {
+        public static readonly PermutationParameterKey<int> ConvolveVertical = ParameterKeys.NewPermutation<int>();
+    };
+    internal static partial class ShaderMixins
+    {
+        internal partial class SSLRBlurPassEffect  : IShaderMixinBuilder
+        {
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
+            {
+                mixin.AddMacro("CONVOLVE_VERTICAL", context.GetParam(SSLRBlurPassParams.ConvolveVertical));
+                context.Mixin(mixin, "SSLRBlurPass");
+            }
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
+            {
+                ShaderMixinManager.Register("SSLRBlurPassEffect", new SSLRBlurPassEffect());
+            }
+        }
+    }
+}

@@ -72,4 +72,17 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			return float4(color, 1.0f);
 		}
     };
+
+    params SSLRBlurPassParams
+    {
+        int ConvolveVertical;
+    }
+
+    effect SSLRBlurPassEffect
+    {
+        using params SSLRBlurPassParams;
+		
+        mixin macro CONVOLVE_VERTICAL = SSLRBlurPassParams.ConvolveVertical;
+        mixin SSLRBlurPass;
+    };
 }
