@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// </summary>
         /// <value>The name.</value>
         [DataMember(10)]
-        public string Name { get; set; }
+        public string Name { get; set; } = "CameraSlot";
 
         [DataMemberIgnore]
         public CameraComponent Camera { get; set; }
