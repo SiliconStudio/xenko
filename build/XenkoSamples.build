@@ -26,7 +26,6 @@
 		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe SpriteStudioDemo &quot;6BE30E8D-9346-4130-87BE-12BF9CC362DE&quot;" />
 		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe GravitySensor &quot;7174D040-C0FB-4D5C-8170-3411AD8AA4C2&quot;" />
 		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe TouchInputs &quot;662A15A4-92C1-4C43-BE06-0303C9E2FF50&quot;" />
-		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe NativeLinking &quot;9d082fab-bcde-45de-ae80-f84b89a26220&quot;" />
 		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe PhysicsSample &quot;d20d150b-d3cb-454e-8c11-620b4c9d393f&quot;" />
 		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe GameMenu &quot;7ac2c705-6240-4ddc-af63-fc438d10f4de&quot;" />
 		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe ParticlesSample &quot;35C3FB4D-2A6E-40EB-825E-D4E5670FEE78&quot;" />
@@ -46,7 +45,6 @@
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\SpriteStudioDemo\SpriteStudioDemo.$(PlatformToBuild)\SpriteStudioDemo.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\GravitySensor\GravitySensor.$(PlatformToBuild)\GravitySensor.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\TouchInputs\TouchInputs.$(PlatformToBuild)\TouchInputs.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\NativeLinking\NativeLinking.$(PlatformToBuild)\NativeLinking.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\PhysicsSample\PhysicsSample.$(PlatformToBuild)\PhysicsSample.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\GameMenu\GameMenu.$(PlatformToBuild)\GameMenu.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\ParticlesSample\ParticlesSample.$(PlatformToBuild)\ParticlesSample.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
