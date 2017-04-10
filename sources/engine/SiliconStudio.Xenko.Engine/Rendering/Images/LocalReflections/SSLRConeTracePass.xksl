@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 		#define SSR_MIN_Z_REFLECT 0.1f
 		
 		// Enable/disable blurring trace hit during cone trace pass
-		#define SSR_CONE_TRACE_SAMPLING_BLUR 0
+		#define SSR_CONE_TRACE_SAMPLING_BLUR 1
 		
 		// Enable/disable cone tracing for SSR
 		#define SSR_DISABLE_CONE_TRACE 0
@@ -118,11 +118,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			//return float4(raySS.xy, 0, 1);
 			//return coneSampleWeightedColor(raySS.xy, 0, 1);
 			
-			// Get view space position
-			float depth = SampleZ(uv);
-			float3 positionVS = ComputeViewPosition(uv, depth);
-			
 			// Calculate screen space position
+			float depth = SampleZ(uv);
 			float3 positionSS = float3(uv, depth);
 			//positionSS.xy = positionSS.xy * float2(2, -2) + float2(-1, 1);
 			
@@ -151,7 +148,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			
 			float4 totalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
 			float remainingAlpha = 1.0f;
-			float maxMipLevel = (float)cb_numMips - 1.0f; // TODO: change constant to remvoe that sub
 			float glossMult = gloss;
 			
 			// Cone-tracing using an isosceles triangle to approximate a cone in screen space
@@ -168,8 +164,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 				float2 samplePos = positionSS.xy + adjacentUnit * (adjacentLength - incircleSize);
 				
 				// Convert the in-radius into screen size then check what power N to raise 2 to reach it - that power N becomes mip level to sample from
-				//float mipChannel = log2(incircleSize * cb_screenSizeMax);
-				float mipChannel = clamp(log2(incircleSize * cb_screenSizeMax), 0.0f, maxMipLevel);
+				//float mipChannel = log2(incircleSize * TraceSizeMax);
+				float mipChannel = clamp(log2(incircleSize * TraceSizeMax), 0.0f, MaxColorMiplevel);
 				
 				// Read color and accumulate it using trilinear filtering and weight it.
 				// Uses pre-convolved image (color buffer) and glossiness to weigh color contributions.
@@ -198,11 +194,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			totalColor = Texture0.SampleLevel(LinearSampler, raySS.xy, 0);
 		#endif
 			
-			// Debug color or hit point:
-			//return float4(raySS.xy, 1, 1);
-			return totalColor;
+			// Debug not faded color or a hit point coordinates:
+			//return totalColor;
+			//return float4(raySS.xy, 0, 1);
 			
-			/*// Calculate normalized view space reflection vector
+			// Bilateral box-filter over a quad for free
+			//int2 screenPosition = streams.TexCoord.xy * ScreenSize.xy;
+			//totalColor -= ddx(totalColor) * ((screenPosition.x & 1) - 0.5);
+			//totalColor -= ddy(totalColor) * ((screenPosition.y & 1) - 0.5);
+			
+			// Calculate normalized view space reflection vector
 			float3 positionVS = ComputeViewPosition(uv, depth);
 			float3 reflectVS = normalize(reflect(positionVS, normalVS));
 			
@@ -226,8 +227,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			float totalFade = fadeOnBorder * faceViewerFactor * roughnessFade;
 			totalColor *= totalFade;
 			
-			return saturate(totalColor);
-			//return totalColor; // TODO: support hdr ssr??*/
+			return totalColor;
         }
     };
 }

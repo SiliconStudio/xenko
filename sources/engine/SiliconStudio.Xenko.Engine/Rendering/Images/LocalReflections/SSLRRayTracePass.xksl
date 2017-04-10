@@ -54,7 +54,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			float3 viewWS = normalize(positionWS - CameraPosWS.xyz);
 			float3 reflectWS = reflect(viewWS, normalWS);
 			
-			float WorldAntiSelfOcclusionBias = 0.001f;// TODO: promote to parameter
+			// Parameter WorldAntiSelfOcclusionBias is packed in CameraPosWS.w
+			#define WorldAntiSelfOcclusionBias CameraPosWS.w
 			
 			// TODO: cleanup unsused constants
 			

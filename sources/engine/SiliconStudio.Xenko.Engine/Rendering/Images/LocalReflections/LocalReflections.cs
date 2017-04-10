@@ -164,9 +164,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             float farclip = currentCamera.FarClipPlane;
             float aspect = currentCamera.AspectRatio;
             float fieldOfView = (float)(2.0f * Math.Atan2(projectionMatrix.M11, aspect));
-            Vector4 ZPlanes = new Vector4(nearclip, farclip, 0, fieldOfView); // x = Frustum Near, y = Frustum Far, w = FOV
             Vector4 ViewInfo = new Vector4(1.0f / projectionMatrix.M11, 1.0f / projectionMatrix.M22, farclip / (farclip - nearclip), (-farclip * nearclip) / (farclip - nearclip) / farclip);
-            
+            Vector4 CameraPosWS = new Vector4(eye.X, eye.Y, eye.Z, WorldAntiSelfOcclusionBias);
+
             var traceBufferSize = GetTraceBufferResolution(outputBuffer);
             Vector2 ScreenSize = new Vector2(traceBufferSize.Width, traceBufferSize.Height);
             var roughnessFade = MathUtil.Clamp(MaxRoughness, 0.0f, 1.0f);
@@ -177,35 +177,27 @@ namespace SiliconStudio.Xenko.Rendering.Images
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.MaxTraceSamples, maxTraceSamples);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, eye);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.ZPlanes, ZPlanes);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, CameraPosWS);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, ScreenSize);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.P, projectionMatrix);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.IV, inverseViewMatrix);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.IP, inverseProjectionMatrix);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
 
             // TODO: check which keys are used by coneTracePassShader
 
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.cb_numMips, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.cb_screenSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.MaxColorMiplevel, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.TraceSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.SSRtexelSize, new Vector2(1.0f / traceBufferSize.Width, 1.0f / traceBufferSize.Height));
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ViewInfo);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.MaxTraceSamples, maxTraceSamples);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, eye);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.ZPlanes, ZPlanes);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, ScreenSize);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.P, projectionMatrix);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.IV, inverseViewMatrix);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.IP, inverseProjectionMatrix);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
         }
 
@@ -221,13 +213,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Texture outputBuffer = GetSafeOutput(0);
 
             // Get temporary buffers (use small formats, we don't want to kill performance)
+            // Note: we convole color buffer into half size because it's super fast
             var traceBuffersSize = GetTraceBufferResolution(outputBuffer);
             var colorBuffersSize = new Size2(outputBuffer.Width / 2, outputBuffer.Height / 2);
             Texture rayTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R8G8_UNorm, 1);
             Texture coneTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R11G11B10_Float, 1);
             Texture colorBuffer0 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
             Texture colorBuffer1 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
-            // TODO: we don't use colorBuffer1 mip 0 - make it smaller by half
+            // TODO: we don't use colorBuffer1 mip0, could be optimized
 
             // Cache per color buffer mip views
             int colorMipLevels = colorBuffer0.MipLevels;
@@ -264,6 +257,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 blurPassShader.Parameters.Set(SSLRCommonKeys.TexelSize, new Vector2(1.0f / mipWidth, 1.0f / mipHeight));
 
                 // Blur H
+                //var srcMip = mipLevel == 0 ? cachedColorBuffer0Mips[0] : cachedColorBuffer0Mips[mipLevel - 1];
                 var srcMip = cachedColorBuffer0Mips[mipLevel - 1];
                 var dstMip = cachedColorBuffer1Mips[mipLevel];
                 blurPassShader.SetInput(0, srcMip);
@@ -299,6 +293,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // TODO: Combine Pass
 
+            // Debug preview of temp targets
             //context.CommandList.Clear(outputBuffer, Color.BlueViolet);
             //Scaler.SetInput(0, rayTraceBuffer);
             Scaler.SetInput(0, coneTraceBuffer);
