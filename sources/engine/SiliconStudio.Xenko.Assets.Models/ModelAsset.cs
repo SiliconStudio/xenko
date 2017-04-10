@@ -15,7 +15,7 @@ using SiliconStudio.Xenko.Rendering;
 namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("Model")]
-    [AssetDescription(FileExtension, AllowArchetype = false)]
+    [AssetDescription(FileExtension, AllowArchetype = true)]
     [AssetContentType(typeof(Model))]
     [Display(1900, "Model")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
