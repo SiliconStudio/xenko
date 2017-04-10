@@ -169,6 +169,9 @@ namespace SiliconStudio.Xenko.VirtualReality
 
             InitDone = true;
 
+            //this makes the camera behave like oculus rift default!
+            Valve.VR.OpenVR.Compositor.SetTrackingSpace(ETrackingUniverseOrigin.TrackingUniverseSeated);
+
             return true;
         }
 
