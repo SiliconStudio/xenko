@@ -7,22 +7,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
 	/// Screen Space Local Reflections shader with common variables and functions
     /// </summary>
     shader SSLRCommon : ImageEffectShader, Utilities, NormalPack
-    {	
-		// Enable/disable blurring trace hit during cone trace pass
-		#define SSR_CONE_TRACE_SAMPLING_BLUR 1
-		
+    {
 		// Enable/disable blurring SSR during sampling results and mixing with reflections buffer
 		#define SSR_MIX_BLUR 1
-		
-		// Enable/disable cone tracing for SSR
-		#define SSR_DISABLE_CONE_TRACE 0
 		
 		cbuffer Data
         {
 			stage float cb_numMips; // the number of mip levels in the convolved color buffer
 			stage float cb_screenSizeMax; // max (screenW, screenH) of trace rt
 			stage float2 TexelSize;
-			
+
 			stage float2 SSRtexelSize;
 			stage float RoughnessFade;
 			stage float MaxTraceSamples;

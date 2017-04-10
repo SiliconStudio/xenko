@@ -138,7 +138,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			float2 hitUV = lastOffset.xy + (currSample - lastOffset.z) * rayStep.xy;
 			
 			// Debug scene color preview:
-			return Texture0.Sample(PointSampler, hitUV.xy);
+			//return Texture0.Sample(PointSampler, hitUV.xy);
 			
 			// xy - hit UV
 			return float4(hitUV, 1, 1);

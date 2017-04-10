@@ -18,6 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {
         private ImageEffectShader blurPassShader;
         private ImageEffectShader rayTracePassShader;
+        private ImageEffectShader coneTracePassShader;
 
         private Texture[] cachedColorBuffer0Mips;
         private Texture[] cachedColorBuffer1Mips;
@@ -86,6 +87,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             blurPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRBlurPassEffect"));
             rayTracePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRRayTracePass"));
+            coneTracePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRConeTracePass"));
         }
 
         protected override void Destroy()
@@ -143,6 +145,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 blurPassShader.Initialize(context.RenderContext);
             if (!rayTracePassShader.Initialized)
                 rayTracePassShader.Initialize(context.RenderContext);
+            if (!coneTracePassShader.Initialized)
+                coneTracePassShader.Initialize(context.RenderContext);
 
             // TODO: cleanup that stuff
 
@@ -161,19 +165,21 @@ namespace SiliconStudio.Xenko.Rendering.Images
             float aspect = currentCamera.AspectRatio;
             float fieldOfView = (float)(2.0f * Math.Atan2(projectionMatrix.M11, aspect));
             Vector4 ZPlanes = new Vector4(nearclip, farclip, 0, fieldOfView); // x = Frustum Near, y = Frustum Far, w = FOV
-
+            Vector4 ViewInfo = new Vector4(1.0f / projectionMatrix.M11, 1.0f / projectionMatrix.M22, farclip / (farclip - nearclip), (-farclip * nearclip) / (farclip - nearclip) / farclip);
+            
             var traceBufferSize = GetTraceBufferResolution(outputBuffer);
+            Vector2 ScreenSize = new Vector2(traceBufferSize.Width, traceBufferSize.Height);
             var roughnessFade = MathUtil.Clamp(MaxRoughness, 0.0f, 1.0f);
             var maxTraceSamples = MathUtil.Clamp(MaxStepsAmount, 1, 128);
 
             // ViewInfo    :  x-1/Projection[0,0]   y-1/Projection[1,1]   z-(Far / (Far - Near)   w-(-Far * Near) / (Far - Near) / Far)
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, new Vector4(1.0f / projectionMatrix.M11, 1.0f / projectionMatrix.M22, farclip / (farclip - nearclip), (-farclip * nearclip) / (farclip - nearclip) / farclip));
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ViewInfo);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.MaxTraceSamples, maxTraceSamples);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, eye);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.ZPlanes, ZPlanes);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, new Vector2(traceBufferSize.Width, traceBufferSize.Height));
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, ScreenSize);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.P, projectionMatrix);
@@ -181,6 +187,26 @@ namespace SiliconStudio.Xenko.Rendering.Images
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.IV, inverseViewMatrix);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.IP, inverseProjectionMatrix);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
+
+            // TODO: check which keys are used by coneTracePassShader
+
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.cb_numMips, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.cb_screenSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.SSRtexelSize, new Vector2(1.0f / traceBufferSize.Width, 1.0f / traceBufferSize.Height));
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ViewInfo);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.MaxTraceSamples, maxTraceSamples);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, eye);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.ZPlanes, ZPlanes);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, ScreenSize);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.P, projectionMatrix);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.IV, inverseViewMatrix);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.IP, inverseProjectionMatrix);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
         }
 
         protected override void DrawCore(RenderDrawContext context)
@@ -198,11 +224,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var traceBuffersSize = GetTraceBufferResolution(outputBuffer);
             var colorBuffersSize = new Size2(outputBuffer.Width / 2, outputBuffer.Height / 2);
             Texture rayTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R8G8_UNorm, 1);
-            Texture coneTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R8G8B8A8_UNorm, 1);
+            Texture coneTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R11G11B10_Float, 1);
             Texture colorBuffer0 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
             Texture colorBuffer1 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
+            // TODO: we don't use colorBuffer1 mip 0 - make it smaller by half
 
-            // Cache per colro buffer mip views
+            // Cache per color buffer mip views
             int colorMipLevels = colorBuffer0.MipLevels;
             if (cachedColorBuffer0Mips == null || cachedColorBuffer0Mips.Length != colorMipLevels || cachedColorBuffer0Mips[0].ParentTexture != colorBuffer0)
             {
@@ -223,8 +250,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 }
             }
 
+            // Clone scene frame to mip 0 of colorBuffer0
+            Scaler.SetInput(0, colorBuffer);
+            Scaler.SetOutput(cachedColorBuffer0Mips[0]);
+            Scaler.Draw(context, "Copy frame");
+
             // Blur Pass
-            for (int mipLevel = 0; mipLevel < colorMipLevels; mipLevel++)
+            for (int mipLevel = 1; mipLevel < colorMipLevels; mipLevel++)
             {
                 int mipWidth = colorBuffer0.Width >> mipLevel;
                 int mipHeight = colorBuffer1.Height >> mipLevel;
@@ -232,7 +264,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 blurPassShader.Parameters.Set(SSLRCommonKeys.TexelSize, new Vector2(1.0f / mipWidth, 1.0f / mipHeight));
 
                 // Blur H
-                var srcMip = mipLevel == 0 ? colorBuffer : cachedColorBuffer0Mips[mipLevel - 1];
+                var srcMip = cachedColorBuffer0Mips[mipLevel - 1];
                 var dstMip = cachedColorBuffer1Mips[mipLevel];
                 blurPassShader.SetInput(0, srcMip);
                 blurPassShader.SetOutput(dstMip);
@@ -255,13 +287,21 @@ namespace SiliconStudio.Xenko.Rendering.Images
             rayTracePassShader.SetInput(3, specularRoughnessBuffer);
             rayTracePassShader.SetOutput(rayTraceBuffer);
             rayTracePassShader.Draw(context, "Ray Trace");
-            
-            // TODO: Cone Trace Pass
+
+            // Cone Trace Pass
+            coneTracePassShader.SetInput(0, colorBuffer0);
+            coneTracePassShader.SetInput(1, depthBuffer);
+            coneTracePassShader.SetInput(2, normalsBuffer);
+            coneTracePassShader.SetInput(3, specularRoughnessBuffer);
+            coneTracePassShader.SetInput(4, rayTraceBuffer);
+            coneTracePassShader.SetOutput(coneTraceBuffer);
+            coneTracePassShader.Draw(context, "Cone Trace");
 
             // TODO: Combine Pass
-            
+
             //context.CommandList.Clear(outputBuffer, Color.BlueViolet);
-            Scaler.SetInput(0, rayTraceBuffer);
+            //Scaler.SetInput(0, rayTraceBuffer);
+            Scaler.SetInput(0, coneTraceBuffer);
             //Scaler.SetInput(0, cachedColorBuffer0Mips[3]);
             Scaler.SetOutput(outputBuffer);
             Scaler.Draw(context);
