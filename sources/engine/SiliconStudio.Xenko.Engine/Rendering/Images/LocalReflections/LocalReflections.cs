@@ -197,7 +197,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Get temporary buffers (use small formats, we don't want to kill performance)
             var traceBuffersSize = GetTraceBufferResolution(outputBuffer);
             var colorBuffersSize = new Size2(outputBuffer.Width / 2, outputBuffer.Height / 2);
-            Texture rayTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R16G16_Float, 1);
+            Texture rayTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R8G8_UNorm, 1);
             Texture coneTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R8G8B8A8_UNorm, 1);
             Texture colorBuffer0 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
             Texture colorBuffer1 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
