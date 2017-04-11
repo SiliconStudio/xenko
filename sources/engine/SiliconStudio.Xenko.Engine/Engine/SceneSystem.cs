@@ -68,9 +68,9 @@ namespace SiliconStudio.Xenko.Engine
         public Color4 SplashScreenColor { get; set; }
 
         /// <summary>
-        /// If splahs screen rendering is enabeld, true by default and only happens in release builds
+        /// If splahs screen rendering is enabeld, true if a splash screen texture is present, and only happens in release builds
         /// </summary>
-        public bool SplashScreenEnabled { get; set; } = true;
+        public bool SplashScreenEnabled { get; set; }
 
         public GraphicsCompositor GraphicsCompositor { get; set; }
 
@@ -81,7 +81,6 @@ namespace SiliconStudio.Xenko.Engine
         private const float SplashScreenFadeTime = 1.0f;
 
         private double fadeTime;
-        private bool fadingOut;
         private Texture splashScreenTexture;
 
         public enum SplashScreenState
@@ -100,6 +99,13 @@ namespace SiliconStudio.Xenko.Engine
             var content = Services.GetSafeServiceAs<ContentManager>();
             var graphicsContext = Services.GetSafeServiceAs<GraphicsContext>();
 
+            if (SplashScreenUrl != null && content.Exists(SplashScreenUrl))
+            {
+                splashScreenTexture = content.Load<Texture>(SplashScreenUrl);
+                splashScreenState = splashScreenTexture != null ? SplashScreenState.Intro : SplashScreenState.Invalid;
+                SplashScreenEnabled = true;
+            }
+
             // Preload the scene if it exists and show splash screen
             if (InitialSceneUrl != null && content.Exists(InitialSceneUrl))
             {
@@ -115,12 +121,6 @@ namespace SiliconStudio.Xenko.Engine
                     compositorTask = content.LoadAsync<GraphicsCompositor>(InitialGraphicsCompositorUrl);
                 else
                     GraphicsCompositor = content.Load<GraphicsCompositor>(InitialGraphicsCompositorUrl);
-            }
-
-            if (SplashScreenUrl != null && content.Exists(SplashScreenUrl))
-            {
-                splashScreenTexture = content.Load<Texture>(SplashScreenUrl);
-                splashScreenState = splashScreenTexture != null ? SplashScreenState.Intro : SplashScreenState.Invalid;
             }
 
             // Create the drawing context
