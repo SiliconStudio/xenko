@@ -137,25 +137,26 @@ namespace SiliconStudio.Xenko.Engine
 
         private void RenderSplashScreen(Color4 color, BlendStateDescription blendState)
         {
-            Game.GraphicsContext.CommandList.Clear(Game.GraphicsContext.CommandList.RenderTarget, SplashScreenColor);
+            var renderTarget = Game.GraphicsContext.CommandList.RenderTarget;
+            Game.GraphicsContext.CommandList.Clear(renderTarget, SplashScreenColor);
 
             int width;
             int height;
-            if (Game.GraphicsContext.CommandList.RenderTarget.Height > Game.GraphicsContext.CommandList.RenderTarget.Width) //portrait
+            if (renderTarget.Height > renderTarget.Width) //portrait
             {
-                width = height = Game.GraphicsContext.CommandList.RenderTarget.Width;
+                width = height = renderTarget.Width;
             }
             else //landscape
             {
-                width = height = Game.GraphicsContext.CommandList.RenderTarget.Height;
+                width = height = renderTarget.Height;
             }
 
             var viewport = Game.GraphicsContext.CommandList.Viewport;
 
             var x = -width / 2;
             var y = -height / 2;
-            x += Game.GraphicsContext.CommandList.RenderTarget.Width / 2;
-            y += Game.GraphicsContext.CommandList.RenderTarget.Height / 2;
+            x += renderTarget.Width / 2;
+            y += renderTarget.Height / 2;
             Game.GraphicsContext.CommandList.SetViewport(new Viewport(x, y, width, height));
 
             Game.GraphicsContext.DrawTexture(splashScreenTexture, color, blendState);
@@ -253,7 +254,7 @@ namespace SiliconStudio.Xenko.Engine
                     }
                         break;
                     case SplashScreenState.FadingOut:
-                        {
+                    {
                         var color = Color4.White;
                         var factor = (MathUtil.SmoothStep((float)fadeTime / SplashScreenFadeTime) * -1) + 1;
                         color *= factor;
