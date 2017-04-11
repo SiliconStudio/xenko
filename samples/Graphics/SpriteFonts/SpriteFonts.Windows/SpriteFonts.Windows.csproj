@@ -11,6 +11,7 @@
     <RootNamespace>SpriteFonts</RootNamespace>
     <AssemblyName>SpriteFonts</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <LangVersion>6</LangVersion>
     <FileAlignment>512</FileAlignment>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <SiliconStudioPackageGuid>{c148408b-43bc-465c-825a-d74b122377ef}</SiliconStudioPackageGuid>

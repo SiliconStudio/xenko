@@ -10,6 +10,7 @@
     <RootNamespace>JumpyJetTest</RootNamespace>
     <AssemblyName>JumpyJetTest</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <LangVersion>6</LangVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

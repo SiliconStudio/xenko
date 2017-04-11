@@ -11,6 +11,7 @@
     <RootNamespace>ThirdPersonPlatformer</RootNamespace>
     <AssemblyName>ThirdPersonPlatformer</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <LangVersion>6</LangVersion>
     <FileAlignment>512</FileAlignment>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <SiliconStudioPackageGuid>{1adf36a6-5e90-4da5-9e31-2c9fe29cad18}</SiliconStudioPackageGuid>
