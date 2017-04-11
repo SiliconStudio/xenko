@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Threading.Tasks;
@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Engine
         private Task<Scene> sceneTask;
         private Task<GraphicsCompositor> compositorTask;
 
-        private const double MinSplashScreenTime = 3.0f;
+        private const double MinSplashScreenTime = 4.0f;
         private const float SplashScreenFadeTime = 1.0f;
 
         private double fadeTime;
@@ -82,6 +82,7 @@ namespace SiliconStudio.Xenko.Engine
         public enum SplashScreenState
         {
             Invalid,
+            Intro,
             FadingIn,
             Showing,
             FadingOut
@@ -108,7 +109,7 @@ namespace SiliconStudio.Xenko.Engine
             if (SplashScreenUrl != null && content.Exists(SplashScreenUrl))
             {
                 splashScreenTexture = content.Load<Texture>(SplashScreenUrl);
-                splashScreenState = splashScreenTexture != null ? SplashScreenState.FadingIn : SplashScreenState.Invalid;
+                splashScreenState = splashScreenTexture != null ? SplashScreenState.Intro : SplashScreenState.Invalid;
             }
 
             // Create the drawing context
@@ -204,6 +205,7 @@ namespace SiliconStudio.Xenko.Engine
                 switch (splashScreenState)
                 {
                     case SplashScreenState.Invalid:
+                    {
                         if (sceneTask.IsCompleted && compositorTask.IsCompleted)
                         {
                             SceneInstance = new SceneInstance(Services, sceneTask.Result);
@@ -211,47 +213,59 @@ namespace SiliconStudio.Xenko.Engine
                             sceneTask = null;
                             compositorTask = null;
                         }
+                    }
+                        break;
+                    case SplashScreenState.Intro:
+                    {
+                        Game.GraphicsContext.CommandList.Clear(Game.GraphicsContext.CommandList.RenderTarget, SplashScreenColor);
+
+                        if (gameTime.Total.TotalSeconds > SplashScreenFadeTime)
+                        {
+                            splashScreenState = SplashScreenState.FadingIn;
+                            fadeTime = 0.0f;
+                        }
+                    }
                         break;
                     case SplashScreenState.FadingIn:
+                    {
+                        var color = Color4.White;
+                        var factor = MathUtil.SmoothStep((float)fadeTime / SplashScreenFadeTime);
+                        color *= factor;
+                        if (factor >= 1.0f)
                         {
-                            var color = Color4.White;
-                            var factor = MathUtil.SmoothStep((float)fadeTime / SplashScreenFadeTime);
-                            color *= factor;
-                            if (factor >= 1.0f)
-                            {
-                                splashScreenState = SplashScreenState.Showing;
-                            }
-
-                            fadeTime += gameTime.Elapsed.TotalSeconds;
-
-                            RenderSplashScreen(color, BlendStates.AlphaBlend);
+                            splashScreenState = SplashScreenState.Showing;
                         }
+
+                        fadeTime += gameTime.Elapsed.TotalSeconds;
+
+                        RenderSplashScreen(color, BlendStates.AlphaBlend);
+                    }
                         break;
                     case SplashScreenState.Showing:
-                        {
-                            RenderSplashScreen(Color4.White, BlendStates.Default);
+                    {
+                        RenderSplashScreen(Color4.White, BlendStates.Default);
 
-                            if (gameTime.Total.TotalSeconds > MinSplashScreenTime && sceneTask.IsCompleted && compositorTask.IsCompleted)
-                            {
-                                splashScreenState = SplashScreenState.FadingOut;
-                                fadeTime = 0.0f;
-                            }
+                        if (gameTime.Total.TotalSeconds > MinSplashScreenTime && sceneTask.IsCompleted && compositorTask.IsCompleted)
+                        {
+                            splashScreenState = SplashScreenState.FadingOut;
+                            fadeTime = 0.0f;
                         }
+                    }
                         break;
                     case SplashScreenState.FadingOut:
                         {
-                            var color = Color4.White;
-                            var factor = (MathUtil.SmoothStep((float)fadeTime / SplashScreenFadeTime) * -1) + 1;
-                            color *= factor;
-                            if (factor <= 0.0f)
-                            {
-                                splashScreenState = SplashScreenState.Invalid;
-                            }
-
-                            fadeTime += gameTime.Elapsed.TotalSeconds;
-
-                            RenderSplashScreen(color, BlendStates.AlphaBlend);
+                        var color = Color4.White;
+                        var factor = (MathUtil.SmoothStep((float)fadeTime / SplashScreenFadeTime) * -1) + 1;
+                        color *= factor;
+                        if (factor <= 0.0f)
+                        {
+                            splashScreenState = SplashScreenState.Invalid;
                         }
+
+                        fadeTime += gameTime.Elapsed.TotalSeconds;
+
+                        RenderSplashScreen(color, BlendStates.AlphaBlend);
+                    }
                         break;
                 }
             }
