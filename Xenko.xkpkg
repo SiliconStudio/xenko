@@ -119,10 +119,10 @@ TemplateFolders:
         - samples\UI\GameMenu\GameMenu.xktpl
         - samples\UI\UIParticles\UIParticles.xktpl
         - samples\UI\UIElementLink\UIElementLink.xktpl
-        - samples\Others\NativeLinking\NativeLinking.xktpl
         - samples\Templates\FirstPersonShooter\FirstPersonShooter\FirstPersonShooter.xktpl
         - samples\Templates\ThirdPersonPlatformer\ThirdPersonPlatformer\ThirdPersonPlatformer.xktpl
         - samples\Templates\TopDownRPG\TopDownRPG\TopDownRPG.xktpl
         - samples\Templates\VRSandbox\VRSandbox\VRSandbox.xktpl
 RootAssets:
     - c90f3988-0544-4cbe-993f-13af7d9c23c6:XenkoDefaultFont
+    - d26edb11-10bd-403c-b3c2-9c7fcccf25e5:XenkoDefaultSplashScreen

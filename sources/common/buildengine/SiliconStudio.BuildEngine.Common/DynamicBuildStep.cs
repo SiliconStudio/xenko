@@ -69,7 +69,7 @@ namespace SiliconStudio.BuildEngine
                     await CompleteOneBuildStep(executeContext, buildStepsToWait);
 
                 // Should we check for all tasks or only high priority tasks? (priority < 0)
-                bool checkOnlyForHighPriorityTasks = buildStepsToWait.Count >= MaxParallelSteps;
+                var checkOnlyForHighPriorityTasks = buildStepsToWait.Count >= Math.Max(MaxParallelSteps - 1, 1);
 
                 // Transform item into build step
                 var buildStep = buildStepProvider.GetNextBuildStep(checkOnlyForHighPriorityTasks ? -1 : int.MaxValue);

@@ -85,6 +85,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                     files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xksheet", target));
                     files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xkuilib", target));
                     files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xkgfxcomp", target));
+                    files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xktex", target));
                     var resourceFolder = UPath.Combine(assetFolder.Path, new UDirectory("../../Resources"));
                     if (Directory.Exists(resourceFolder.ToWindowsPath()))
                     {

@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             var renderView = context.RenderView;
 
             var lightProbesData = renderView.SceneInstance.GetProcessor<LightProbeProcessor>()?.RuntimeData;
-            if (lightProbesData == null)
+            if (lightProbesData == null || lightProbesData.Tetrahedra.Count == 0)
             {
                 // No lightprobes, we still set GPU resources (otherwise rendering might fetch invalid data)
                 goto SetGPUResources;

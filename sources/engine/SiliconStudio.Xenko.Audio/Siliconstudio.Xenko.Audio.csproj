@@ -37,6 +37,7 @@
     <Compile Include="AudioExceptions.cs" />
     <Compile Include="AudioListener.cs" />
     <Compile Include="AudioEngineFactory.cs" />
+    <Compile Include="Module.cs" />
     <Compile Include="Native\AudioLayer.cs" />
     <Compile Include="Native\Celt.cs" />
     <Compile Include="CompressedSoundPacket.cs" />
@@ -93,7 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Native\Celt.cpp" />
-    <SiliconStudioContent Include="SiliconStudio.Xenko.Audio.dll.config"/>
+    <SiliconStudioContent Include="SiliconStudio.Xenko.Audio.dll.config" />
     <None Include="Xenko.Native.Libs.targets">
       <SubType>Designer</SubType>
     </None>
