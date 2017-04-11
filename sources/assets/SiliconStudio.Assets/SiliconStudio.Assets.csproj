@@ -105,7 +105,7 @@
     <Compile Include="Compiler\ICompilationContext.cs" />
     <Compile Include="Diagnostics\AssetSerializableLogMessage.cs" />
     <Compile Include="DynamicYaml\DynamicYamlExtensions.cs" />
-    <Compile Include="FileTextAccessor.cs" />
+    <Compile Include="TextAccessors\FileTextAccessor.cs" />
     <Compile Include="IAssetFinder.cs" />
     <Compile Include="IAssetPartDesign.cs" />
     <Compile Include="IProjectAsset.cs" />
