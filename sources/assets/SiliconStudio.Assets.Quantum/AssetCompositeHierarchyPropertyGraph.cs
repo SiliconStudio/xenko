@@ -27,6 +27,10 @@ namespace SiliconStudio.Assets.Quantum
         /// <remarks>Part stored here are preserved after being removed, in case they have to come back later, for example if a part in the base is being moved (removed + added again).</remarks>
         private readonly Dictionary<Tuple<Guid, Guid>, TAssetPart> baseInstanceMapping = new Dictionary<Tuple<Guid, Guid>, TAssetPart>();
         /// <summary>
+        /// A mapping of (base part id, instance id) corresponding to deleted parts in specific instances of this asset which base part exists in the base asset.
+        /// </summary>
+        private readonly HashSet<Tuple<Guid, Guid>> deletedPartsInstanceMapping = new HashSet<Tuple<Guid, Guid>>();
+        /// <summary>
         /// A dictionary mapping instance ids to the common ancestor of the parts corresponding to that instance id in this asset.
         /// </summary>
         /// <remarks>This dictionary is used to remember where the part instance was located, if during some time all its parts are removed, for example during some specific operaiton in the base asset.</remarks>
@@ -184,17 +188,19 @@ namespace SiliconStudio.Assets.Quantum
         /// <summary>
         /// Deletes the given parts and all its children, recursively, and clear all object references to it.
         /// </summary>
-        /// <param name="parts">The parts to delete.</param>
-        public virtual void DeleteParts([NotNull] IEnumerable<TAssetPart> parts)
+        /// <param name="partDesigns">The parts to delete.</param>
+        /// <param name="deletedPartsMapping">A mapping of deleted parts (base part id, instance id).</param>
+        public void DeleteParts([NotNull] IEnumerable<TAssetPartDesign> partDesigns, [NotNull] out HashSet<Tuple<Guid, Guid>> deletedPartsMapping)
         {
-            if (parts == null) throw new ArgumentNullException(nameof(parts));
-            var partsToDelete = new Stack<TAssetPart>(parts);
+            if (partDesigns == null) throw new ArgumentNullException(nameof(partDesigns));
+            var partsToDelete = new Stack<TAssetPartDesign>(partDesigns);
             var referencesToClear = new HashSet<Guid>();
+            deletedPartsMapping = new HashSet<Tuple<Guid, Guid>>();
             while (partsToDelete.Count > 0)
             {
                 // We need to remove children first to keep consistency in our data
                 var partToDelete = partsToDelete.Peek();
-                var children = AssetHierarchy.EnumerateChildParts(partToDelete, false).ToList();
+                var children = AssetHierarchy.EnumerateChildPartDesigns(partToDelete, AssetHierarchy.Hierarchy, false).ToList();
                 if (children.Count > 0)
                 {
                     // Enqueue children if there is any, and re-process the stack
@@ -205,11 +211,17 @@ namespace SiliconStudio.Assets.Quantum
                 partToDelete = partsToDelete.Pop();
                 // First remove all references to the part we are deleting
                 // Note: we must do this first so instances of this base will be able to properly make the connection with the base part being cleared
-                var containedIdentifiables = IdentifiableObjectCollector.Collect(this, Container.NodeContainer.GetNode(partToDelete));
+                var containedIdentifiables = IdentifiableObjectCollector.Collect(this, Container.NodeContainer.GetNode(partToDelete.Part));
                 containedIdentifiables.Keys.ForEach(x => referencesToClear.Add(x));
                 // Then actually remove the part from the hierarchy
-                RemovePartFromAsset(AssetHierarchy.Hierarchy.Parts[partToDelete.Id]);
+                RemovePartFromAsset(partToDelete);
+                // Keep track of deleted part instances
+                if (partToDelete.Base != null)
+                {
+                    deletedPartsMapping.Add(Tuple.Create(partToDelete.Base.BasePartId, partToDelete.Base.InstanceId));
+                }
             }
+            TrackDeletedInstanceParts(deletedPartsMapping);
             ClearReferencesToObjects(referencesToClear);
         }
 
@@ -417,11 +429,31 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         /// <summary>
+        /// Tracks the given deleted instance parts.
+        /// </summary>
+        /// <param name="deletedPartsMapping">A mapping of deleted parts (base part id, instance id).</param>
+        public void TrackDeletedInstanceParts([NotNull] HashSet<Tuple<Guid, Guid>> deletedPartsMapping)
+        {
+            if (deletedPartsMapping == null) throw new ArgumentNullException(nameof(deletedPartsMapping));
+            deletedPartsInstanceMapping.UnionWith(deletedPartsMapping);
+        }
+
+        /// <summary>
+        /// Untracks the given deleted instance parts.
+        /// </summary>
+        /// <param name="deletedPartsMapping">A mapping of deleted parts (base part id, instance id).</param>
+        public void UntrackDeletedInstanceParts([NotNull] HashSet<Tuple<Guid, Guid>> deletedPartsMapping)
+        {
+            if (deletedPartsMapping == null) throw new ArgumentNullException(nameof(deletedPartsMapping));
+            deletedPartsInstanceMapping.ExceptWith(deletedPartsMapping);
+        }
+
+        /// <summary>
         /// Retrieves the Quantum <see cref="IGraphNode"/> instances containing the child parts. These contents can be collections or single values.
         /// </summary>
         /// <param name="part">The part instance for which to retrieve the Quantum content/</param>
         /// <returns>A sequence containing all contents containing child parts.</returns>
-        // TODO: this method probably don't need to retuern an enumerable, our current use case are single content only.
+        // TODO: this method probably doesn't need to return an enumerable, our current use case are single content only.
         protected abstract IEnumerable<IGraphNode> RetrieveChildPartNodes(TAssetPart part);
 
         /// <summary>
@@ -454,9 +486,9 @@ namespace SiliconStudio.Assets.Quantum
         /// <param name="newPart">The new part that has been added in the base asset.</param>
         /// <param name="newPartParent">The parent of the new part that has been added in the base asset.</param>
         /// <returns><c>true</c> if the part should be cloned and added to this asset; otherwise, <c>false</c>.</returns>
-        protected virtual bool ShouldAddNewPartFromBase(AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> baseAssetGraph, TAssetPartDesign newPart, TAssetPart newPartParent)
+        protected virtual bool ShouldAddNewPartFromBase(AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> baseAssetGraph, TAssetPartDesign newPart, TAssetPart newPartParent, Guid instanceId)
         {
-            return true;
+            return !deletedPartsInstanceMapping.Contains(Tuple.Create(newPart.Part.Id, instanceId));
         }
 
         protected virtual void RewriteIds(TAssetPart targetPart, TAssetPart sourcePart)
@@ -667,13 +699,13 @@ namespace SiliconStudio.Assets.Quantum
             var baseAssetGraph = Container.GetGraph(baseAsset.Id) as AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>;
             if (baseAssetGraph == null) throw new InvalidOperationException("Unable to find the graph corresponding to the base part");
 
-            // Discard the part if this asset don't want it
-            // Note: we still need to add it to the base to keep bases in sync since they are suppose to contain full assets.
-            if (!ShouldAddNewPartFromBase(baseAssetGraph, newPart, newPartParent))
-                return;
 
             foreach (var instanceId in basePartAssets[baseAssetGraph])
             {
+                // Discard the part if this asset don't want it
+                if (!ShouldAddNewPartFromBase(baseAssetGraph, newPart, newPartParent, instanceId))
+                    continue;
+
                 TAssetPartDesign instanceParent;
                 var insertIndex = FindBestInsertIndex(baseAsset, newPart, newPartParent, instanceId, out instanceParent);
                 if (insertIndex < 0)
