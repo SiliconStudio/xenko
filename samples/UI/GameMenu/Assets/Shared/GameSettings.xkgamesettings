@@ -1,6 +1,6 @@
 !GameSettingsAsset
 Id: e6a60237-e287-40d1-acb1-4bce2273fd45
-SerializedVersion: {Xenko: 1.11.0.0}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 DefaultScene: 49fe9241-18f3-478f-8f71-e87f87346da2:SplashScene
 GraphicsCompositor: 733c24da-ac75-4fce-b148-d6d2d3753157:GraphicsCompositor

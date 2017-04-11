@@ -1,12 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
@@ -31,12 +28,16 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [Display(8000, "Graphics Compositor")]
     [AssetContentType(typeof(GraphicsCompositor))]
     [AssetDescription(FileExtension)]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
-    // TODO: remove this upgrader (and turn it back protected) before releasing 1.10 or above (needed only for internal upgrades)
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.10.0-beta01", typeof(AssetComposite.FixPartReferenceUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-beta01", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
     public class GraphicsCompositorAsset : Asset
     {
-        private const string CurrentVersion = "1.10.0-beta01";
+        private const string CurrentVersion = "2.0.0.0";
 
         /// <summary>
         /// The default file extension used by the <see cref="GraphicsCompositorAsset"/>.
@@ -57,7 +58,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// </summary>
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        //[AssetPartContained(typeof(RenderStage))]
         public RenderStageCollection RenderStages { get; } = new RenderStageCollection();
 
         /// <summary>
@@ -65,7 +65,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// </summary>
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        //[AssetPartContained(typeof(RootRenderFeature))]
         public List<RootRenderFeature> RenderFeatures { get; } = new List<RootRenderFeature>();
 
         /// <summary>
@@ -73,7 +72,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// </summary>
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        //[AssetPartContained(typeof(ISharedRenderer))]
         public SharedRendererCollection SharedRenderers { get; } = new SharedRendererCollection();
 
         /// <summary>

@@ -20,7 +20,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public ImageRotatedTest()
         {
-            CurrentVersion = 7;
+            //CurrentVersion = 7;
+            CurrentVersion = 8; // Texture assets set to uncompressed, build machine changed
             GraphicsDeviceManager.PreferredBackBufferWidth = WindowWidth;
             GraphicsDeviceManager.PreferredBackBufferHeight = WindowHeight;
         }

@@ -2,10 +2,10 @@
 using SiliconStudio.Core;
 using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Presentation.Quantum.Tests.Helpers;
-using TestContext = SiliconStudio.Presentation.Quantum.Tests.Helpers.TestContext;
 
 namespace SiliconStudio.Presentation.Quantum.Tests
 {
+    // TODO: this class should be rewritten to properly match the new design of dependent properties, which is using hard-link between nodes instead of path-based.
     [TestFixture]
     public class TestDependentProperties
     {
@@ -68,7 +68,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestSimpleDependency()
         {
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
-            var testContext = new TestContext();
+            var testContext = new TestContainerContext();
             var instanceContext = testContext.CreateInstanceContext(container);
             testContext.GraphViewModelService.AvailableUpdaters.Add(new SimpleDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
@@ -94,7 +94,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestSimpleDependencyChangeParent()
         {
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
-            var testContext = new TestContext();
+            var testContext = new TestContainerContext();
             var instanceContext = testContext.CreateInstanceContext(container);
             testContext.GraphViewModelService.AvailableUpdaters.Add(new SimpleDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
@@ -120,7 +120,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestRecursiveDependency()
         {
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
-            var testContext = new TestContext();
+            var testContext = new TestContainerContext();
             var instanceContext = testContext.CreateInstanceContext(container);
             testContext.GraphViewModelService.AvailableUpdaters.Add(new RecursiveDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
@@ -146,7 +146,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestRecursiveDependencyChangeChild()
         {
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
-            var testContext = new TestContext();
+            var testContext = new TestContainerContext();
             var instanceContext = testContext.CreateInstanceContext(container);
             testContext.GraphViewModelService.AvailableUpdaters.Add(new RecursiveDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
@@ -172,7 +172,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestRecursiveDependencyMixedChanges()
         {
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
-            var testContext = new TestContext();
+            var testContext = new TestContainerContext();
             var instanceContext = testContext.CreateInstanceContext(container);
             testContext.GraphViewModelService.AvailableUpdaters.Add(new RecursiveDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
@@ -210,7 +210,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestChangeDifferentPropertyWithSameStart()
         {
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
-            var testContext = new TestContext();
+            var testContext = new TestContainerContext();
             var instanceContext = testContext.CreateInstanceContext(container);
             testContext.GraphViewModelService.AvailableUpdaters.Add(new SimpleDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();

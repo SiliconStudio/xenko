@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using NUnit.Framework;
 using SiliconStudio.Assets;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Assets.Tasks;
 
 namespace SiliconStudio.Xenko.Assets.Tests
@@ -21,7 +22,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             var defaultPackage = PackageStore.Instance.DefaultPackage;
 
-            PackageArchive.Build(defaultPackage);
+            PackageArchive.Build(GlobalLogger.GetLogger("PackageArchiveTest"), defaultPackage);
         }
     }
 }

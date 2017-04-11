@@ -21,12 +21,13 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CombineMode.cs" />
+    <Compile Include="ContentChangeType.cs" />
     <Compile Include="Internal\Content.cs" />
-    <Compile Include="GraphNodeExtensions.cs" />
     <Compile Include="IInitializingGraphNode.cs" />
     <Compile Include="IInitializingObjectNode.cs" />
     <Compile Include="IMemberNode.cs" />
     <Compile Include="INodeChangeEventArgs.cs" />
+    <Compile Include="ItemChangeEventArgs.cs" />
     <Compile Include="MemberNodeChangeEventArgs.cs" />
     <Compile Include="DefaultNodeFactory.cs" />
     <Compile Include="DynamicNode.cs" />
@@ -38,8 +39,8 @@
     <Compile Include="Index.cs" />
     <Compile Include="INodeBuilder.cs" />
     <Compile Include="INodeContainer.cs" />
-    <Compile Include="INotifyContentValueChange.cs" />
-    <Compile Include="INotifyItemChange.cs" />
+    <Compile Include="INotifyNodeValueChange.cs" />
+    <Compile Include="INotifyNodeItemChange.cs" />
     <Compile Include="IObjectNode.cs" />
     <Compile Include="NodeAccessor.cs" />
     <Compile Include="QuantumConsistencyException.cs" />

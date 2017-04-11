@@ -33,11 +33,10 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override void Dispose()
         {
+            base.Dispose();
             Container.ItemChanging -= OnItemChanging;
             Container.ItemChanged -= OnItemChanged;
         }
-
-        public sealed override List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
 
         public INodePresenter OwnerCollection { get; }
 
@@ -58,7 +57,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             try
             {
                 Container.Update(newValue, Index);
-                Refresh();
             }
             catch (Exception e)
             {
@@ -73,10 +71,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
-                RaiseValueChanging(Value);
                 Container.IndexedTarget(Index).Add(value);
-                Refresh();
-                RaiseValueChanged(Value);
             }
             catch (Exception e)
             {
@@ -91,10 +86,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
-                RaiseValueChanging(Value);
                 Container.IndexedTarget(Index).Add(value, index);
-                Refresh();
-                RaiseValueChanged(Value);
             }
             catch (Exception e)
             {
@@ -109,10 +101,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
             try
             {
-                RaiseValueChanging(Value);
                 Container.IndexedTarget(Index).Remove(value, index);
-                Refresh();
-                RaiseValueChanged(Value);
             }
             catch (Exception e)
             {
@@ -140,7 +129,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        private bool IsValidChange([NotNull] INodeChangeEventArgs e)
+        private bool IsValidChange([NotNull] ItemChangeEventArgs e)
         {
             return IsValidChange(e.ChangeType, e.Index, Index);
         }

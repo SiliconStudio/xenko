@@ -22,17 +22,9 @@ namespace SiliconStudio.Xenko.Assets.Materials
     {
         public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
         {
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent); //sub-materials
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.Runtime);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.CompileAsset);
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(GameSettingsAsset), BuildDependencyType.CompileAsset);
-        }
-
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
-        {
-            foreach (var compileTimeDependency in ((MaterialAsset)assetItem.Asset).EnumerateCompileTimeDependencies(assetItem.Package.Session))
-            {
-                yield return new ObjectUrl(UrlType.ContentLink, compileTimeDependency.Location);
-            }
         }
 
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
@@ -41,9 +33,6 @@ namespace SiliconStudio.Xenko.Assets.Materials
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
                 new MaterialCompileCommand(targetUrlInStorage, assetItem, asset, context)
-                {
-                    InputFilesGetter = () => GetInputFiles(context, assetItem)
-                }
             };
         }
 
@@ -71,6 +60,15 @@ namespace SiliconStudio.Xenko.Assets.Materials
 
                 // Write the 
                 writer.Write(colorSpace);
+
+                foreach (var compileTimeDependency in ((MaterialAsset)assetItem.Asset).FindMaterialReferences())
+                {
+                    var linkedAsset = Package.FindAsset(compileTimeDependency);
+                    if (linkedAsset?.Asset != null)
+                    {
+                        writer.SerializeExtended(linkedAsset.Asset, ArchiveMode.Serialize);
+                    }
+                }
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -112,7 +110,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                 materialContext.AddLoadingFromSession(Package);
 
                 var materialClone = AssetCloner.Clone(Parameters);
-                var result = MaterialGenerator.Generate(new MaterialDescriptor() { MaterialId = materialClone.Id, Attributes = materialClone.Attributes, Layers = materialClone.Layers}, materialContext, string.Format("{0}:{1}", materialClone.Id, assetUrl));
+                var result = MaterialGenerator.Generate(new MaterialDescriptor { MaterialId = materialClone.Id, Attributes = materialClone.Attributes, Layers = materialClone.Layers}, materialContext, string.Format("{0}:{1}", materialClone.Id, assetUrl));
 
                 if (result.HasErrors)
                 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 
@@ -44,7 +45,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         public string DisplayName { get; set; }
         public string Name { get; protected set; }
 
-        public abstract List<INodePresenterCommand> Commands { get; }
+        public List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
         public abstract Type Type { get; }
         public abstract bool IsEnumerable { get; }
 
@@ -119,7 +120,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         protected void Refresh()
         {
             // Remove existing children and attached properties
-            foreach (var child in children)
+            foreach (var child in children.DepthFirst(x => x.Children))
             {
                 child.Dispose();
             }

@@ -79,6 +79,8 @@ namespace SiliconStudio.Assets.Quantum.Internal
 
         IAssetObjectNode IAssetObjectNode.IndexedTarget(Index index) => (IAssetObjectNode)IndexedTarget(index);
 
+        void IAssetObjectNodeInternal.DisconnectOverriddenDeletedItem(ItemId deletedId) => ex.DisconnectOverriddenDeletedItem(deletedId);
+
         void IAssetObjectNodeInternal.NotifyOverrideChanging() => OverrideChanging?.Invoke(this, EventArgs.Empty);
 
         void IAssetObjectNodeInternal.NotifyOverrideChanged() => OverrideChanged?.Invoke(this, EventArgs.Empty);

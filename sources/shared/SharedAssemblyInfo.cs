@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #pragma warning disable 436 // The type 'type' in 'assembly' conflicts with the imported type 'type2' in 'assembly' (due to XenkoVersion being duplicated)
 using System;
@@ -12,10 +12,10 @@ using SiliconStudio;
 [assembly:AssemblyTrademark("")]
 [assembly:AssemblyCulture("")]
 
-[assembly: AssemblyVersion(XenkoVersion.CurrentAssemblyAsText)]
-[assembly: AssemblyFileVersion(XenkoVersion.CurrentAssemblyAsText)]
+[assembly: AssemblyVersion(XenkoVersion.PublicVersion)]
+[assembly: AssemblyFileVersion(XenkoVersion.PublicVersion)]
 
-[assembly: AssemblyInformationalVersion(XenkoVersion.CurrentAsText)]
+[assembly: AssemblyInformationalVersion(XenkoVersion.AssemblyInformationalVersion)]
 
 #if DEBUG
 [assembly:AssemblyConfiguration("Debug")]
@@ -29,25 +29,45 @@ namespace SiliconStudio
     /// Internal version used to identify Xenko version.
     /// </summary>
     /// <remarks>
-    /// Note: When modifying the version here, it must be modified also in the Xenko.xkpkg 
+    /// Note: Xenko.xkpkg and PublicVersion first 3 digits should match.
+    /// Also, during package build, PackageUpdateVersionTask is updating that file and expect some specific text regex so be careful if you change any of this.
     /// </remarks>
     internal class XenkoVersion
     {
         /// <summary>
-        /// The .NET current assembly version as text, not including pre-release (alpha, beta...) information.
+        /// The version used by editor for display purpose.
         /// </summary>
-        public const string CurrentAssemblyAsText = "1.11.1.2";
+        public const string PublicVersion = "2.0.0";
 
         /// <summary>
-        /// The current version as text, including pre-release (alpha, beta...) information, if needed
+        /// The current assembly version as text, currently same as <see cref="PublicVersion"/>.
         /// </summary>
-        /// <remarks>
-        /// Version number as described in http://docs.nuget.org/docs/reference/versioning
-        /// When using pre-release (alpha, beta, rc...etc.) and because the order of the release is in alphabetical order,
-        /// please use a double digit like alpha00 alpha01...etc. in order to make sure that we will follow the correct
-        /// order for the versions.
-        /// </remarks>
-        public const string CurrentAsText = CurrentAssemblyAsText; 
+        public const string AssemblyVersion = PublicVersion;
+
+        /// <summary>
+        /// The NuGet package version without special tags.
+        /// </summary>
+        public const string NuGetVersionSimple = PublicVersion;
+
+        /// <summary>
+        /// The NuGet package version.
+        /// </summary>
+        public const string NuGetVersion = NuGetVersionSimple + NuGetVersionSuffix;
+
+        /// <summary>
+        /// The NuGet package suffix (i.e. -beta01). Note: might be replaced during package build.
+        /// </summary>
+        public const string NuGetVersionSuffix = "";
+
+        /// <summary>
+        /// The informational assembly version, containing -dev or -g[git_hash] during package.
+        /// </summary>
+        public const string AssemblyInformationalVersion = PublicVersion + AssemblyInformationalSuffix;
+
+        /// <summary>
+        /// The assembly suffix. Note: replaced by git commit during package build.
+        /// </summary>
+        private const string AssemblyInformationalSuffix = "-dev";
     }
 
     partial class PublicKeys

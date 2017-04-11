@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -256,56 +256,6 @@ Objects:
         }
 
         [Test]
-        public void TestCollectionDeserializationOldWay()
-        {
-            ShadowObject.Enable = true;
-            var yaml = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIdsSerialization+ContainerCollection,SiliconStudio.Assets.Tests
-Name: Root
-Strings:
-    - aaa
-    - bbb
-Objects:
-    -   ~Id: 00000004-0004-0000-0400-000004000000
-        Name: obj1
-        Strings: {}
-        Objects: {}
-    -   ~Id: 00000003-0003-0000-0300-000003000000
-        Name: obj2
-        Strings: {}
-        Objects: {}
-";
-
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(yaml);
-            writer.Flush();
-            stream.Position = 0;
-            var instance = AssetYamlSerializer.Default.Deserialize(stream);
-            Assert.NotNull(instance);
-            Assert.AreEqual(typeof(ContainerCollection), instance.GetType());
-            var obj = (ContainerCollection)instance;
-            Assert.AreEqual("Root", obj.Name);
-            Assert.AreEqual(2, obj.Strings.Count);
-            Assert.AreEqual("aaa", obj.Strings[0]);
-            Assert.AreEqual("bbb", obj.Strings[1]);
-            Assert.AreEqual(2, obj.Objects.Count);
-            Assert.AreEqual("obj1", obj.Objects[0].Name);
-            Assert.AreEqual("obj2", obj.Objects[1].Name);
-            var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
-            var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
-            Assert.AreEqual(2, stringIds.KeyCount);
-            Assert.AreEqual(0, stringIds.DeletedCount);
-            Assert.IsTrue(stringIds.ContainsKey(0));
-            Assert.IsTrue(stringIds.ContainsKey(1));
-            Assert.AreEqual(2, objectIds.KeyCount);
-            Assert.AreEqual(0, objectIds.DeletedCount);
-            Assert.IsTrue(objectIds.ContainsKey(0));
-            Assert.IsTrue(objectIds.ContainsKey(1));
-            Assert.AreEqual(new ItemId(GuidGenerator.Get(4).ToByteArray()), objectIds[0]);
-            Assert.AreEqual(new ItemId(GuidGenerator.Get(3).ToByteArray()), objectIds[1]);
-        }
-
-        [Test]
         public void TestDictionarySerialization()
         {
             ShadowObject.Enable = true;
@@ -349,58 +299,6 @@ Objects:
             Assert.AreEqual(IdentifierGenerator.Get(2), stringIds[GuidGenerator.Get(200)]);
             Assert.AreEqual(IdentifierGenerator.Get(1), stringIds[GuidGenerator.Get(100)]);
             var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
-            Assert.AreEqual(IdentifierGenerator.Get(3), objectIds["key3"]);
-            Assert.AreEqual(IdentifierGenerator.Get(4), objectIds["key4"]);
-        }
-
-        [Test]
-        public void TestDictionaryDeserializationOldWay()
-        {
-            ShadowObject.Enable = true;
-            var yaml = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIdsSerialization+ContainerDictionary,SiliconStudio.Assets.Tests
-Name: Root
-Strings:
-    000000c8-00c8-0000-c800-0000c8000000: aaa
-    00000064-0064-0000-6400-000064000000: bbb
-Objects:
-    key3:
-        ~Id: 00000003-0003-0000-0300-000003000000
-        Name: obj1
-        Strings: {}
-        Objects: {}
-    key4:
-        ~Id: 00000004-0004-0000-0400-000004000000
-        Name: obj2
-        Strings: {}
-        Objects: {}
-";
-
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(yaml);
-            writer.Flush();
-            stream.Position = 0;
-            var instance = AssetYamlSerializer.Default.Deserialize(stream);
-            Assert.NotNull(instance);
-            Assert.AreEqual(typeof(ContainerDictionary), instance.GetType());
-            var obj = (ContainerDictionary)instance;
-            Assert.AreEqual("Root", obj.Name);
-            Assert.AreEqual(2, obj.Strings.Count);
-            Assert.AreEqual("aaa", obj.Strings[GuidGenerator.Get(200)]);
-            Assert.AreEqual("bbb", obj.Strings[GuidGenerator.Get(100)]);
-            Assert.AreEqual(2, obj.Objects.Count);
-            Assert.AreEqual("obj1", obj.Objects["key3"].Name);
-            Assert.AreEqual("obj2", obj.Objects["key4"].Name);
-            var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
-            var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
-            Assert.AreEqual(2, stringIds.KeyCount);
-            Assert.AreEqual(0, stringIds.DeletedCount);
-            Assert.IsTrue(stringIds.ContainsKey(GuidGenerator.Get(200)));
-            Assert.IsTrue(stringIds.ContainsKey(GuidGenerator.Get(100)));
-            Assert.AreEqual(2, objectIds.KeyCount);
-            Assert.AreEqual(0, objectIds.DeletedCount);
-            Assert.IsTrue(objectIds.ContainsKey("key3"));
-            Assert.IsTrue(objectIds.ContainsKey("key4"));
             Assert.AreEqual(IdentifierGenerator.Get(3), objectIds["key3"]);
             Assert.AreEqual(IdentifierGenerator.Get(4), objectIds["key4"]);
         }

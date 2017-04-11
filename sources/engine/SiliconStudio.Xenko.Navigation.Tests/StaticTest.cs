@@ -24,6 +24,9 @@ namespace SiliconStudio.Xenko.Navigation.Tests
         public StaticTest()
         {
             AutoLoadDefaultSettings = true;
+            IsDrawDesynchronized = false;
+            IsFixedTimeStep = true;
+            ForceOneUpdatePerDraw = true;
         }
 
         protected override void PrepareContext()

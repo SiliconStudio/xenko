@@ -3,7 +3,6 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Rendering.Materials.Processor.Visitors;
 
 namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
 {

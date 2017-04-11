@@ -1,8 +1,0 @@
-!Texture
-Id: deb728b5-1fdb-4194-af74-1dc78a8b572d
-SerializedVersion: {Xenko: 1.11.1.2}
-Tags: []
-Source: ../../Resources/XenkoBackground.jpg
-IsCompressed: false
-Type: !ColorTextureType
-    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

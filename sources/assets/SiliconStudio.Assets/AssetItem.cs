@@ -96,7 +96,7 @@ namespace SiliconStudio.Assets
         /// Gets the attached metadata for YAML serialization.
         /// </summary>
         [DataMemberIgnore]
-        public AttachedYamlAssetMetadata YamlMetadata { get; internal set; } = new AttachedYamlAssetMetadata();
+        public AttachedYamlAssetMetadata YamlMetadata { get; } = new AttachedYamlAssetMetadata();
 
         /// <summary>
         /// Converts this item to a reference.

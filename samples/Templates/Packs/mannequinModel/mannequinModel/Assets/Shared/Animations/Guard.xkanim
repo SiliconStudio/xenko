@@ -1,6 +1,6 @@
 !Animation
 Id: 70ad041e-e911-4cc8-8710-47a2d092df59
-SerializedVersion: {Xenko: 1.10.0-alpha01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Source: ../../../Resources/Animation/Guard.fbx
 ClipDuration:
@@ -14,6 +14,6 @@ Skeleton: a0d324bd-326a-4fd8-88a9-fc5e4dcc62e5:Models/mannequinModel Skeleton
 RootMotion: false
 PreviewModel: f68ea240-695a-4de5-9884-60d77544fcd6:Models/mannequinModel
 AnimationTimeMinimum: 0:00:00:00.0000000
-AnimationTimeMaximum: 0:00:00:00.1670000
 ~SourceHashes:
     8fa4e7c9b41796109f23099f7beea1fe~../../../Resources/Animation/Guard.fbx: cf2632d8b5312ab099c63fa2fc63c7d2
+AnimationTimeMaximum: 0:00:00:00.1670000

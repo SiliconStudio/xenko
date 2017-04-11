@@ -1,9 +1,9 @@
 !GameSettingsAsset
 Id: 30ea4b14-3937-4a9c-8b02-2e4bb0f52f26
-SerializedVersion: {Xenko: 1.11.0.0}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 DefaultScene: 7207a5b4-cbf4-4edc-a7fb-0dfa83e2414e:Scene
-GraphicsCompositor: f817c0a5-f2bd-4d4e-a7ab-1ab9da2b76d1:GraphicsCompositor
+GraphicsCompositor: de5e5f4f-73e4-4411-8fa8-11a0b9aa80c2:GraphicsCompositor
 SplashScreenTexture: d26edb11-10bd-403c-b3c2-9c7fcccf25e5:XenkoDefaultSplashScreen
 SplashScreenColor: {R: 0, G: 0, B: 0, A: 255}
 Defaults:

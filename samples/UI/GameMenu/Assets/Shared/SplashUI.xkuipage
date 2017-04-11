@@ -1,6 +1,6 @@
 !UIPageAsset
 Id: 62c493c2-13ea-4fac-bbaf-578afafac104
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Design:
     Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}

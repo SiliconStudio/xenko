@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -32,6 +32,42 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         public int Size { get; private set; }
 
         public int CascadeCount { get; set; }
+
+        public float CurrentMinDistance
+        {
+            get { return currentMinDistance; }
+            set
+            {
+                if (value <= DistanceMinRange)
+                    return;
+
+                currentMinDistance = value;
+                if (currentMaxDistance < currentMinDistance + DistanceMinRange)
+                    currentMaxDistance = currentMinDistance + DistanceMinRange;
+            }
+        }
+
+        public float CurrentMaxDistance
+        {
+            get { return currentMaxDistance; }
+            set
+            {
+                if (value <= DistanceMinRangeDouble)
+                    return;
+
+                currentMaxDistance = value;
+                if (currentMinDistance > currentMaxDistance - DistanceMinRange)
+                    currentMinDistance = currentMaxDistance - DistanceMinRange;
+            }
+        }
+
+        private float currentMinDistance = 1f;
+
+        private float currentMaxDistance = 2f;
+
+        private const float DistanceMinRange = 0.001f;
+
+        private const float DistanceMinRangeDouble = DistanceMinRange * 2;
 
         public ShadowMapAtlasTexture Atlas { get; internal set; }
 

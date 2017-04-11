@@ -31,7 +31,7 @@ namespace SiliconStudio.Assets
         private Package currentPackage;
         private AssetDependencyManager dependencies;
         private AssetSourceTracker sourceTracker;
-
+        private bool? packageUpgradeAllowed;
         public event DirtyFlagChangedDelegate<AssetItem> AssetDirtyChanged;
 
         /// <summary>
@@ -516,17 +516,6 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Saves all packages and assets.
         /// </summary>
-        /// <returns>Result of saving.</returns>
-        public LoggerResult Save()
-        {
-            var log = new LoggerResult();
-            Save(log);
-            return log;
-        }
-
-        /// <summary>
-        /// Saves all packages and assets.
-        /// </summary>
         /// <param name="log">The <see cref="LoggerResult"/> in which to report result.</param>
         /// <param name="saveParameters">The parameters for the save operation.</param>
         public void Save(LoggerResult log, PackageSaveParameters saveParameters = null)
@@ -906,7 +895,7 @@ namespace SiliconStudio.Assets
             return null;
         }
 
-        private static bool TryLoadAssets(PackageSession session, ILogger log, Package package, PackageLoadParameters loadParameters)
+        private bool TryLoadAssets(PackageSession session, ILogger log, Package package, PackageLoadParameters loadParameters)
         {
             // Already loaded
             if (package.State >= PackageState.AssetsReady)
@@ -975,14 +964,19 @@ namespace SiliconStudio.Assets
 
                 if (pendingPackageUpgrades.Count > 0)
                 {
-                    var upgradeAllowed = true;
+                    var upgradeAllowed = packageUpgradeAllowed != false ? PackageUpgradeRequestedAnswer.Upgrade : PackageUpgradeRequestedAnswer.DoNotUpgrade;
+
                     // Need upgrades, let's ask user confirmation
-                    if (loadParameters.PackageUpgradeRequested != null)
+                    if (loadParameters.PackageUpgradeRequested != null && !packageUpgradeAllowed.HasValue)
                     {
                         upgradeAllowed = loadParameters.PackageUpgradeRequested(package, pendingPackageUpgrades);
+                        if (upgradeAllowed == PackageUpgradeRequestedAnswer.UpgradeAll)
+                            packageUpgradeAllowed = true;
+                        if (upgradeAllowed == PackageUpgradeRequestedAnswer.DoNotUpgradeAny)
+                            packageUpgradeAllowed = false;
                     }
 
-                    if (!upgradeAllowed)
+                    if (!PackageLoadParameters.ShouldUpgrade(upgradeAllowed))
                     {
                         log.Error($"Necessary package migration for [{package.Meta.Name}] has not been allowed");
                         return false;

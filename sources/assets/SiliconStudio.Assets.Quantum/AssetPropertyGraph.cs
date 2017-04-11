@@ -58,6 +58,7 @@ namespace SiliconStudio.Assets.Quantum
         private readonly GraphNodeChangeListener nodeListener;
         private readonly Dictionary<IAssetNode, NodeChangeHandlers> baseLinkedNodes = new Dictionary<IAssetNode, NodeChangeHandlers>();
         private IBaseToDerivedRegistry baseToDerivedRegistry;
+        private bool isDisposed;
 
         public AssetPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
         {
@@ -73,8 +74,8 @@ namespace SiliconStudio.Assets.Quantum
             var overrides = assetItem.YamlMetadata?.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
             ApplyOverrides(RootNode, overrides);
             nodeListener = new AssetGraphNodeChangeListener(RootNode, this);
-            nodeListener.Changing += AssetContentChanging;
-            nodeListener.Changed += AssetContentChanged;
+            nodeListener.ValueChanging += AssetContentChanging;
+            nodeListener.ValueChanged += AssetContentChanged;
             nodeListener.ItemChanging += AssetItemChanging;
             nodeListener.ItemChanged += AssetItemChanged;
 
@@ -84,11 +85,13 @@ namespace SiliconStudio.Assets.Quantum
 
         public virtual void Dispose()
         {
-            nodeListener.Changing -= AssetContentChanging;
-            nodeListener.Changed -= AssetContentChanged;
+            nodeListener.ValueChanging -= AssetContentChanging;
+            nodeListener.ValueChanged -= AssetContentChanged;
             nodeListener.ItemChanging -= AssetItemChanging;
             nodeListener.ItemChanged -= AssetItemChanged;
             nodeListener.Dispose();
+            ClearAllBaseLinks();
+            isDisposed = true;
         }
 
         /// <summary>
@@ -119,7 +122,7 @@ namespace SiliconStudio.Assets.Quantum
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
         /// </summary>
-        public event EventHandler<MemberNodeChangeEventArgs> Changing { add { nodeListener.Changing += value; } remove { nodeListener.Changing -= value; } }
+        public event EventHandler<MemberNodeChangeEventArgs> Changing { add { nodeListener.ValueChanging += value; } remove { nodeListener.ValueChanging -= value; } }
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
@@ -168,17 +171,17 @@ namespace SiliconStudio.Assets.Quantum
             ReconcileWithBase(RootNode);
         }
 
-        private void ReconcileWithBase(IAssetNode rootNode)
+        private void ReconcileWithBase(IAssetNode rootNode, Dictionary<IGraphNode, Index> nodesToReset = null)
         {
             // Two passes: first pass will reconcile almost everything, but skip object reference.
             // The reason is that the target of the reference might not exist yet (might need to be reconcilied)
             var visitor = CreateReconcilierVisitor();
-            visitor.Visiting += (node, path) => ReconcileWithBaseNode((IAssetNode)node, false);
+            visitor.Visiting += (node, path) => ReconcileWithBaseNode((IAssetNode)node, false, nodesToReset);
             visitor.Visit(rootNode);
             // Second pass: this one should only reconcile remaining object reference.
             // TODO: these two passes could be improved!
             visitor = CreateReconcilierVisitor();
-            visitor.Visiting += (node, path) => ReconcileWithBaseNode((IAssetNode)node, true);
+            visitor.Visiting += (node, path) => ReconcileWithBaseNode((IAssetNode)node, true, nodesToReset);
             visitor.Visit(rootNode);
         }
 
@@ -192,38 +195,41 @@ namespace SiliconStudio.Assets.Quantum
             if (rootNode is IAssetMemberNode && indexToReset != Index.Empty) throw new ArgumentException(@"The index must be empty when invoking this method on a member node.", nameof(indexToReset));
 
             // We first use a visitor to reset recursively all overrides
-            var visitor = new AssetGraphVisitorBase(this);
-            visitor.Visiting += (node, path) =>
+            var nodesToReset = new Dictionary<IGraphNode, Index>();
+
+            IGraphNode visitRoot = null;
+            var memberNode = rootNode as AssetMemberNode;
+            if (memberNode != null)
             {
-                var memberNode = node as AssetMemberNode;
-                memberNode?.OverrideContent(false);
+                if (indexToReset != Index.Empty) throw new InvalidOperationException("Expecting empty index when resetting a member node.");
+                visitRoot = memberNode.Target;
+                nodesToReset.Add(rootNode, indexToReset);
+            }
 
-                var objectNode = node as AssetObjectNode;
-                if (objectNode != null)
+            var objectNode = rootNode as AssetObjectNode;
+            if (objectNode != null)
+            {
+                if (indexToReset != Index.Empty)
                 {
-                    if (objectNode == rootNode && indexToReset != Index.Empty)
-                    {
-                        // If it's the root node and an index was provided, make sure we reset only this index.
-                        objectNode.OverrideItem(false, indexToReset);
-                    }
-                    else
-                    {
-                        // Otherwise reset everything
-                        foreach (var overrideItem in objectNode.GetOverriddenItemIndices().ToList())
-                        {
-                            objectNode.OverrideItem(false, overrideItem);
-                        }
-                        foreach (var overrideKey in objectNode.GetOverriddenKeyIndices().ToList())
-                        {
-                            objectNode.OverrideKey(false, overrideKey);
-                        }
-                    }
+                    nodesToReset.Add(rootNode, indexToReset);
+                    visitRoot = objectNode.IsReference ? objectNode.IndexedTarget(indexToReset) : null;
+                    objectNode.OverrideItem(false, indexToReset);
                 }
-            };
-            visitor.Visit(rootNode);
-
+                else
+                {
+                    // Otherwise reset everything
+                    visitRoot = objectNode;
+                }
+            }
+            if (visitRoot != null)
+            {
+                var visitor = new AssetGraphVisitorBase(this);
+                // If we're in scenario where rootNode is an object node and index is not empty, we might already have the node in the dictionary so let's check this in Visiting
+                visitor.Visiting += (node, path) => { if (!nodesToReset.ContainsKey(node)) nodesToReset.Add(node, Index.Empty); };
+                visitor.Visit(rootNode);
+            }
             // Then we reconcile (recursively) with the base.
-            ReconcileWithBase(rootNode);
+            ReconcileWithBase(rootNode, nodesToReset);
         }
 
         public virtual bool IsObjectReference(IGraphNode targetNode, Index index, object value)
@@ -273,13 +279,6 @@ namespace SiliconStudio.Assets.Quantum
         protected virtual void OnItemChanged(ItemChangeEventArgs args)
         {
             // Do nothing by default
-        }
-
-        [CanBeNull]
-        private static IAssetNode ResolveObjectPath([NotNull] IAssetNode rootNode, [NotNull] YamlAssetPath path, out Index index)
-        {
-            bool unused;
-            return ResolveObjectPath(rootNode, path, out index, out unused);
         }
 
         [CanBeNull]
@@ -353,6 +352,7 @@ namespace SiliconStudio.Assets.Quantum
             return currentNode;
         }
 
+        [NotNull]
         public static YamlAssetMetadata<OverrideType> GenerateOverridesForSerialization(IGraphNode rootNode)
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
@@ -537,7 +537,7 @@ namespace SiliconStudio.Assets.Quantum
                     if (member != null)
                     {
                         valueChange = (s, e) => OnBaseContentChanged(e, currentNode);
-                        member.Changed += valueChange;
+                        member.ValueChanged += valueChange;
                     }
                     var objectNode = assetNode.BaseNode as IObjectNode;
                     if (objectNode != null)
@@ -560,7 +560,7 @@ namespace SiliconStudio.Assets.Quantum
                 var member = assetNode.BaseNode as IMemberNode;
                 if (member != null)
                 {
-                    member.Changed -= linkedNode.ValueChange;
+                    member.ValueChanged -= linkedNode.ValueChange;
                 }
                 var objectNode = assetNode.BaseNode as IObjectNode;
                 if (objectNode != null)
@@ -578,7 +578,7 @@ namespace SiliconStudio.Assets.Quantum
                 var member = linkedNode.Key.BaseNode as IMemberNode;
                 if (member != null)
                 {
-                    member.Changed -= linkedNode.Value.ValueChange;
+                    member.ValueChanged -= linkedNode.Value.ValueChange;
                 }
                 var objectNode = linkedNode.Key.BaseNode as IObjectNode;
                 if (objectNode != null)
@@ -603,6 +603,9 @@ namespace SiliconStudio.Assets.Quantum
             previousOverrides.Remove(e.Member);
             var node = (AssetMemberNode)e.Member;
             var overrideValue = node.GetContentOverride();
+            if (node.ResettingOverride)
+                overrideValue &= ~OverrideType.New;
+
             // Link the node that has changed to its base.
             LinkToBase(node, (IAssetNode)node.BaseNode);
             OnContentChanged(e);
@@ -612,7 +615,7 @@ namespace SiliconStudio.Assets.Quantum
         private void AssetItemChanging(object sender, ItemChangeEventArgs e)
         {
             var overrideValue = OverrideType.Base;
-            var node = (AssetObjectNode)e.Node;
+            var node = (AssetObjectNode)e.Collection;
             var collection = node.Retrieve();
             // For value change and remove, we store the current override state.
             if (CollectionItemIdHelper.HasCollectionItemIds(collection))
@@ -624,20 +627,20 @@ namespace SiliconStudio.Assets.Quantum
                     var ids = CollectionItemIdHelper.GetCollectionItemIds(collection);
                     ItemId itemId;
                     ids.TryGet(e.Index.Value, out itemId);
-                    removedItemIds[e.Node] = itemId;
+                    removedItemIds[e.Collection] = itemId;
                 }
             }
-            previousOverrides[e.Node] = overrideValue;
+            previousOverrides[e.Collection] = overrideValue;
         }
 
         private void AssetItemChanged(object sender, ItemChangeEventArgs e)
         {
-            var previousOverride = previousOverrides[e.Node];
-            previousOverrides.Remove(e.Node);
+            var previousOverride = previousOverrides[e.Collection];
+            previousOverrides.Remove(e.Collection);
 
             var itemId = ItemId.Empty;
             var overrideValue = OverrideType.Base;
-            var node = (IAssetObjectNodeInternal)e.Node;
+            var node = (IAssetObjectNodeInternal)e.Collection;
             var collection = node.Retrieve();
             if (e.ChangeType == ContentChangeType.CollectionUpdate || e.ChangeType == ContentChangeType.CollectionAdd)
             {
@@ -657,8 +660,8 @@ namespace SiliconStudio.Assets.Quantum
                 if (CollectionItemIdHelper.HasCollectionItemIds(collection))
                 {
                     overrideValue = node.BaseNode != null && !UpdatingPropertyFromBase ? OverrideType.New : OverrideType.Base;
-                    itemId = removedItemIds[e.Node];
-                    removedItemIds.Remove(e.Node);
+                    itemId = removedItemIds[e.Collection];
+                    removedItemIds.Remove(e.Collection);
                 }
             }
 
@@ -666,6 +669,10 @@ namespace SiliconStudio.Assets.Quantum
             // TODO: can link only the changed item instead of the whole collection
             LinkToBase(node, (IAssetNode)node.BaseNode);
             OnItemChanged(e);
+
+            if (node.ResettingOverride)
+                overrideValue &= ~OverrideType.New;
+
             ItemChanged?.Invoke(sender, new AssetItemNodeChangeEventArgs(e, previousOverride, overrideValue, itemId));
         }
 
@@ -694,7 +701,7 @@ namespace SiliconStudio.Assets.Quantum
             BaseContentChanged?.Invoke(e, node);
         }
 
-        private void ReconcileWithBaseNode(IAssetNode assetNode, bool reconcileObjectReference)
+        private void ReconcileWithBaseNode(IAssetNode assetNode, bool reconcileObjectReference, Dictionary<IGraphNode, Index> nodesToReset)
         {
             var memberNode = assetNode as AssetMemberNode;
             var objectNode = assetNode as IAssetObjectNodeInternal;
@@ -708,20 +715,27 @@ namespace SiliconStudio.Assets.Quantum
             // Reconcile occurs only when the node is not overridden.
             if (memberNode != null)
             {
-                if (!memberNode.IsContentOverridden())
+                if (ShouldReconcileMember(memberNode, reconcileObjectReference, nodesToReset))
                 {
-                    memberNode.ResettingOverride = true;
-                    if (ShouldReconcileMember(memberNode, reconcileObjectReference))
+                    // If we have no setter, we cannot reconcile this property. Usually it means that the value is already correct (eg. it's an instance of the correct type,
+                    // or it's a value that cannot change), so we'll just keep going and try to reconcile the children of this member.
+                    if (memberNode.MemberDescriptor.HasSet)
                     {
+                        memberNode.ResettingOverride = true;
+
                         object clonedValue;
                         // Object references
                         if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty, memberNode.BaseNode.Retrieve()))
                             clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseValue, memberNode);
                         else
                             clonedValue = CloneValueFromBase(baseValue, assetNode);
+
+                        // Clear override, in case we are resetting it during this reconciliation.
                         memberNode.Update(clonedValue);
+                        memberNode.OverrideContent(false);
+
+                        memberNode.ResettingOverride = false;
                     }
-                    memberNode.ResettingOverride = false;
                 }
             }
             if (objectNode != null)
@@ -738,8 +752,9 @@ namespace SiliconStudio.Assets.Quantum
                     // Check for item present in the instance and absent from the base.
                     foreach (var index in objectNode.Indices)
                     {
-                        // Skip overridden items
-                        if (objectNode.IsItemOverridden(index))
+                        // Skip overridden items, if they are not marked to be reset.
+                        Index indexToReset;
+                        if (objectNode.IsItemOverridden(index) || (nodesToReset != null && nodesToReset.TryGetValue(objectNode, out indexToReset) && indexToReset != index))
                             continue;
 
                         var itemId = objectNode.IndexToId(index);
@@ -759,13 +774,14 @@ namespace SiliconStudio.Assets.Quantum
                         }
                     }
 
-                    // Clean items marked as "override-deleted" that are absent from the base.
                     var ids = CollectionItemIdHelper.GetCollectionItemIds(localValue);
+                    // Clean items marked as "override-deleted" that are absent from the base.
                     foreach (var deletedId in ids.DeletedItems.ToList())
                     {
                         if (baseNode.Indices.All(x => baseNode.IndexToId(x) != deletedId))
                         {
-                            ids.UnmarkAsDeleted(deletedId);
+                            // We "disconnect" it instead of purely remove it, so it can still be restored by undo/redo
+                            objectNode.DisconnectOverriddenDeletedItem(deletedId);
                         }
                     }
 
@@ -777,7 +793,11 @@ namespace SiliconStudio.Assets.Quantum
 
                         // Skip items marked as "override-deleted"
                         if (itemId == ItemId.Empty || objectNode.IsItemDeleted(itemId))
+                        {
+                            // We force-write the item to be deleted, in case it was just "disconnected"
+                            objectNode.OverrideDeletedItem(true, itemId);
                             continue;
+                        }
 
                         Index localIndex;
                         if (!objectNode.TryIdToIndex(itemId, out localIndex))
@@ -790,8 +810,7 @@ namespace SiliconStudio.Assets.Quantum
                             // We cannot add the item, let's mark it as deleted.
                             if (keyCollision || itemRejected)
                             {
-                                var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(assetNode.Retrieve());
-                                instanceIds.MarkAsDeleted(itemId);
+                                objectNode.OverrideDeletedItem(true, itemId);
                             }
                             else
                             {
@@ -802,21 +821,18 @@ namespace SiliconStudio.Assets.Quantum
                         else
                         {
                             // If the item is present in both the instance and the base, check if we need to reconcile the value
-                            // Skip it if it's overridden
-                            if (!objectNode.IsItemOverridden(localIndex))
+                            if (ShouldReconcileItem(objectNode, localIndex, index, reconcileObjectReference, nodesToReset))
                             {
-                                if (ShouldReconcileItem(objectNode, localIndex, index, reconcileObjectReference))
-                                {
-                                    object clonedValue;
-                                    var baseItemValue = objectNode.BaseNode.Retrieve(index);
-                                    // Object references
-                                    if (baseItemValue is IIdentifiable && IsObjectReference(objectNode.BaseNode, index, objectNode.BaseNode.Retrieve(index)))
-                                        clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseItemValue, objectNode);
-                                    else
-                                        clonedValue = CloneValueFromBase(baseItemValue, assetNode);
+                                object clonedValue;
+                                var baseItemValue = objectNode.BaseNode.Retrieve(index);
+                                // Object references
+                                if (baseItemValue is IIdentifiable && IsObjectReference(objectNode.BaseNode, index, objectNode.BaseNode.Retrieve(index)))
+                                    clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseItemValue, objectNode);
+                                else
+                                    clonedValue = CloneValueFromBase(baseItemValue, assetNode);
 
-                                    objectNode.Update(clonedValue, localIndex);
-                                }
+                                objectNode.Update(clonedValue, localIndex);
+                                objectNode.OverrideItem(false, localIndex);
                             }
                             // In dictionaries, the keys might be different between the instance and the base. We need to reconcile them too
                             if (objectNode.Descriptor is DictionaryDescriptor && !objectNode.IsKeyOverridden(localIndex))
@@ -841,7 +857,7 @@ namespace SiliconStudio.Assets.Quantum
                         var value = assetNode.Retrieve(index);
                         objectNode.Remove(value, index);
                         // We're reconciling, so let's hack the normal behavior of marking the removed item as deleted.
-                        ids.UnmarkAsDeleted(item);
+                        objectNode.OverrideDeletedItem(false, item);
                     }
 
                     // Process items marked to be added
@@ -891,10 +907,21 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        private bool ShouldReconcileMember([NotNull] IAssetMemberNode memberNode, bool reconcileObjectReference)
+        private bool ShouldReconcileMember([NotNull] IAssetMemberNode memberNode, bool reconcileObjectReference, Dictionary<IGraphNode, Index> nodesToReset)
         {
             var localValue = memberNode.Retrieve();
             var baseValue = memberNode.BaseNode.Retrieve();
+
+            // First rule: if the node is to be reset, we should reconcile.
+            var index = Index.Empty;
+            if (nodesToReset?.TryGetValue(memberNode, out index) ?? false)
+            {
+                return index == Index.Empty;
+            }
+
+            // Second rule: if the node is overridden, we shouldn't reconcile.
+            if (memberNode.IsContentOverridden())
+                return false;
 
             // Object references
             if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty, memberNode.BaseNode.Retrieve()))
@@ -924,10 +951,21 @@ namespace SiliconStudio.Assets.Quantum
             return !Equals(localValue, baseValue);
         }
 
-        private bool ShouldReconcileItem(IAssetObjectNode node, Index localIndex, Index baseIndex, bool reconcileObjectReference)
+        private bool ShouldReconcileItem(IAssetObjectNode node, Index localIndex, Index baseIndex, bool reconcileObjectReference, Dictionary<IGraphNode, Index> nodesToReset)
         {
             var localValue = node.Retrieve(localIndex);
             var baseValue = node.BaseNode.Retrieve(baseIndex);
+
+            // First rule: if the node is to be reset, we should reconcile.
+            var index = Index.Empty;
+            if (nodesToReset?.TryGetValue(node, out index) ?? false)
+            {
+                return index == Index.Empty || index == localIndex;
+            }
+
+            // Second rule: if the node is overridden, we shouldn't reconcile.
+            if (node.IsItemOverridden(localIndex))
+                return false;
 
             // Object references
             if (baseValue is IIdentifiable && IsObjectReference(node.BaseNode, baseIndex, node.BaseNode.Retrieve(baseIndex)))
