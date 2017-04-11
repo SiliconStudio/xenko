@@ -1,5 +1,6 @@
 ﻿using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
+using System.Reflection;
 
 namespace SiliconStudio.Xenko.Audio
 {
@@ -9,7 +10,7 @@ namespace SiliconStudio.Xenko.Audio
         public static void Initialize()
         {
             // Make sure that this assembly is registered
-            AssemblyRegistry.Register(typeof(Module).Assembly, AssemblyCommonCategories.Assets);
+            AssemblyRegistry.Register(typeof(Module).GetTypeInfo().Assembly, AssemblyCommonCategories.Assets);
         }
     }
 }

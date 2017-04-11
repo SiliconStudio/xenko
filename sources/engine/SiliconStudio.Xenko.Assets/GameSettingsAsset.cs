@@ -16,6 +16,8 @@ using SiliconStudio.Xenko.Data;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Rendering.Compositing;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
 {
@@ -27,6 +29,7 @@ namespace SiliconStudio.Xenko.Assets
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetContentType(typeof(GameSettings))]
     [Display(10000, "Game Settings")]
+    [CategoryOrder(1550, "Splash Screen")]
     [NonIdentifiableCollectionItems]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.6.1-alpha01")]
@@ -61,6 +64,14 @@ namespace SiliconStudio.Xenko.Assets
         [DataMember(1500)]
         public GraphicsCompositor GraphicsCompositor { get; set; }
 
+        [Display("Texture", "Splash Screen")]
+        [DataMember(1600)]
+        public Texture SplashScreenTexture { get; set; }
+
+        [Display("Color", "Splash Screen")]
+        [DataMember(1700)]
+        public Color SplashScreenColor { get; set; } = Color.Black;
+
         [DataMember(2000)]
         [MemberCollection(ReadOnly = true, NotNullItems = true)]
         public List<Configuration> Defaults { get; } = new List<Configuration>();
@@ -72,6 +83,38 @@ namespace SiliconStudio.Xenko.Assets
         [DataMember(4000)]
         [Category]
         public List<string> PlatformFilters { get; } = new List<string>();
+
+        /// <summary>
+        /// Tries to get the requested <see cref="Configuration"/>, returns null if it doesn't exist
+        /// </summary>
+        /// <typeparam name="T">The <see cref="Configuration"/> to get</typeparam>
+        /// <param name="profile">If not null, will filter the results by profile first</param>
+        /// <returns></returns>
+        public T TryGet<T>(string profile = null) where T : Configuration
+        {
+            if (profile != null)
+            {
+                foreach (var configurationOverride in Overrides)
+                {
+                    if (configurationOverride.SpecificFilter == -1) continue;
+                    var filter = PlatformFilters[configurationOverride.SpecificFilter];
+                    if (filter == profile)
+                    {
+                        var x = configurationOverride.Configuration;
+                        if (x?.GetType() == typeof(T))
+                            return (T)x;
+                    }
+                }
+            }
+
+            foreach (var x in Defaults)
+            {
+                if (x?.GetType() == typeof(T))
+                    return (T)x;
+            }
+
+            return null;
+        }
 
         public T GetOrCreate<T>(string profile = null) where T : Configuration, new()
         {
