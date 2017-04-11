@@ -65,15 +65,5 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             return $"Camera [{name}]";
         }
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="CameraComponent"/> to <see cref="SceneCameraSlot"/>.
-        /// </summary>
-        /// <param name="camera">The camera.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator SceneCameraSlot(CameraComponent camera)
-        {
-            return new SceneCameraSlot(camera);
-        }
     }
 }

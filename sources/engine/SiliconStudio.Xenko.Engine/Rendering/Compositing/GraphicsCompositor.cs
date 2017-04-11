@@ -284,7 +284,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 Cameras =
                 {
-                    camera
+                    new SceneCameraSlot(camera)
                 },
                 RenderStages =
                 {
