@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Collections.Generic;
 using SiliconStudio.Core.Annotations;
 
-namespace SiliconStudio.Presentation.Extensions
+namespace SiliconStudio.Core.Extensions
 {
     public static class DictionaryExtensions
     {
