@@ -16,6 +16,8 @@ using SiliconStudio.Xenko.Data;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Rendering.Compositing;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
 {
@@ -27,6 +29,7 @@ namespace SiliconStudio.Xenko.Assets
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetContentType(typeof(GameSettings))]
     [Display(10000, "Game Settings")]
+    [CategoryOrder(1550, "Splash Screen")]
     [NonIdentifiableCollectionItems]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.6.1-alpha01")]
@@ -60,6 +63,14 @@ namespace SiliconStudio.Xenko.Assets
 
         [DataMember(1500)]
         public GraphicsCompositor GraphicsCompositor { get; set; }
+
+        [Display("Texture", "Splash Screen")]
+        [DataMember(1600)]
+        public Texture SplashScreenTexture { get; set; }
+
+        [Display("Color", "Splash Screen")]
+        [DataMember(1700)]
+        public Color SplashScreenColor { get; set; } = Color.Black;
 
         [DataMember(2000)]
         [MemberCollection(ReadOnly = true, NotNullItems = true)]
