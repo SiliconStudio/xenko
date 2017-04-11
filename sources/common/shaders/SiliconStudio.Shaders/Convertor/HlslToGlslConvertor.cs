@@ -1411,7 +1411,7 @@ namespace SiliconStudio.Shaders.Convertor
 
                                 if (memberReferenceExpression.Member == "SampleCmpLevelZero")
                                 {
-                                    methodInvocationExpression.Arguments.Add(new LiteralExpression(0));
+                                    methodInvocationExpression.Arguments.Add(new LiteralExpression(0.0f));
                                 }
                             }
 
