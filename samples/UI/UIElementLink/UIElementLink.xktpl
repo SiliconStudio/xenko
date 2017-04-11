@@ -2,11 +2,11 @@
 Id: 13657392-016C-4A77-8FE2-977B0800C84A
 Name: Linked entity UI sample
 Scope: Session
-Description: This sample shows how you can link an entity to follow a ui element around.
+Description: Demonstrates how have entities follow UI elements
 FullDescription: |
-    There are three scenes which all use identical UI components and define an entity which follows one of the elements. 
-    The fullscreen scene uses an orthographic camera to align the objects to the camera space. 
-    The other two scenes render the UI component in world space so the attached entity is also in world space.
+    This sample contains three scenes with identical UI components, and defines an entity which follows one of the elements. 
+    The fullscreen scene uses an orthographic camera to align the objects to the camera space.
+    The other scenes render the UI component in world space so the attached entity is also in world space.
 Group: Samples/UI
 Icon: ../.xktpl/NewUI.png
 DefaultOutputName: UIElementLink
