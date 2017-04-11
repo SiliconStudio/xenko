@@ -26,6 +26,10 @@ namespace SiliconStudio.Assets.Compiler
     public abstract class AssetCommand<T> : AssetCommand
     {
         protected readonly Package Package;
+
+        /// <summary>
+        /// This is useful if the asset binary format has changed and we want to bump the version to force re-evaluation/compilation of the command
+        /// </summary>
         protected int Version;
 
         protected AssetCommand(string url, T parameters, Package package)
