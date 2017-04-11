@@ -908,7 +908,7 @@
     <Compile Include="Engine\Processors\CameraProjectionMode.cs" />
     <Compile Include="Rendering\Compositing\SceneCameraSlot.cs" />
     <Compile Include="Rendering\Compositing\SceneCameraSlotCollection.cs" />
-    <Compile Include="Rendering\Compositing\SceneCameraSlotIndex.cs" />
+    <Compile Include="Rendering\Compositing\SceneCameraSlotId.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSubtract.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSubtract1.cs">
       <AutoGen>True</AutoGen>

@@ -1,4 +1,4 @@
-using SiliconStudio.Core;
+﻿using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 
@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// </summary>
         /// <value>The camera.</value>
         /// <userdoc>The camera to use to render the scene.</userdoc>
-        public SceneCameraSlotIndex Camera { get; set; } = new SceneCameraSlotIndex(0);
+        public SceneCameraSlot Camera { get; set; }
 
         public ISceneRenderer Child { get; set; }
 
@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         protected virtual CameraComponent ResolveCamera(RenderContext renderContext)
         {
-            return renderContext.GetCameraFromSlot(Camera);
+            return Camera?.Camera;
         }
 
         protected virtual void CollectInner(RenderContext renderContext)
