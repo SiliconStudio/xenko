@@ -280,11 +280,13 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         new LightSpotGroupRenderer(),
                     },
                 };
+
+            var cameraSlot = new SceneCameraSlot(camera);
             return new GraphicsCompositor
             {
                 Cameras =
                 {
-                    new SceneCameraSlot(camera)
+                    cameraSlot
                 },
                 RenderStages =
                 {
@@ -365,6 +367,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 Game = new SceneCameraRenderer()
                 {
                     Child = singleView,
+                    Camera = cameraSlot
                 },
                 Editor = singleView,
                 SingleView = singleView,

@@ -54,7 +54,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
                         DetachCameraFromSlot(camera);
                     }
                 }
-
             }
 
             // Second pass, handle proper attach
