@@ -37,7 +37,7 @@ namespace SiliconStudio
         /// <summary>
         /// The version used by editor for display purpose.
         /// </summary>
-        public const string PublicVersion = "2.0.0";
+        public const string PublicVersion = "2.0.0.0";
 
         /// <summary>
         /// The current assembly version as text, currently same as <see cref="PublicVersion"/>.
