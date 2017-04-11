@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         {
             // Run surface shading but don't take the result
             base.Shading();
-            return float4((streams.normalWS + 1.0f) / 2.0f, 1.0f);
+            return float4(streams.normalWS * 0.5f + 0.5f, 1.0f);
         }
     };
 }
