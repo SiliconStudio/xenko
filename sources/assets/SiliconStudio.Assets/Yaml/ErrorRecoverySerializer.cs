@@ -102,6 +102,9 @@ namespace SiliconStudio.Core.Yaml
                         objectContext.SerializerContext.ParseType(tagAsType, out typeName, out assemblyName);
                     }
 
+                    var log = objectContext.SerializerContext.Logger;
+                    log?.Warning($"Could not deserialize object of type {tag}; replacing it with an object implementing {nameof(IUnloadable)}:\n{ex.Message}", ex);
+
                     var unloadableObject = UnloadableObjectInstantiator.CreateUnloadableObject(type, typeName, assemblyName, ex.Message, parsingEvents);
                     objectContext.Instance = unloadableObject;
                     objectContext.Descriptor = objectContext.SerializerContext.FindTypeDescriptor(unloadableObject.GetType());
@@ -129,9 +132,6 @@ namespace SiliconStudio.Core.Yaml
                         if (firstNode != null)
                             memoryParser.ParsingEvents[startPosition] = firstNode;
                     }
-
-                    var log = objectContext.SerializerContext.Logger;
-                    log?.Warning($"Could not deserialize object of type {tag}; replacing it with an object implementing {nameof(IUnloadable)}:\n{ex.Message}", ex);
 
                     return unloadableObject;
                 }
