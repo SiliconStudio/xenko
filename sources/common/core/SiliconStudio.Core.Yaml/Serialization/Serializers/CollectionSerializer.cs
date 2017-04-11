@@ -155,6 +155,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             while (!reader.Accept<SequenceEnd>())
             {
                 var currentDepth = objectContext.Reader.CurrentDepth;
+                var startParsingEvent = objectContext.Reader.Parser.Current;
 
                 try
                 {
@@ -166,7 +167,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                     {
                         var logger = objectContext.SerializerContext.Logger;
                         logger?.Warning($"Ignored collection item of type [{elementType}] that could not be deserialized:\n{ex.Message}", ex);
-                        objectContext.Reader.Skip(currentDepth);
+                        objectContext.Reader.Skip(currentDepth, startParsingEvent == objectContext.Reader.Parser.Current);
                     }
                     else throw;
                 }
