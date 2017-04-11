@@ -1,6 +1,6 @@
 !Texture
 Id: d26edb11-10bd-403c-b3c2-9c7fcccf25e5
-SerializedVersion: {Xenko: 1.10.0-alpha01}
+SerializedVersion: {Xenko: 2.0.0}
 Tags: []
 Source: XenkoDefaultSplashScreen.png
 Type: !ColorTextureType
