@@ -300,7 +300,7 @@ namespace SiliconStudio.Assets
 
                 // Make sure that we are using the project collection from the loaded project, otherwise we are getting
                 // weird cache behavior with the msbuild system
-                var projectInstance = new ProjectInstance(project.Xml, project.ProjectCollection.GlobalProperties, null, project.ProjectCollection);
+                var projectInstance = new ProjectInstance(project.Xml, project.ProjectCollection.GlobalProperties, project.ToolsVersion, project.ProjectCollection);
 
                 BuildTask = previousTask.ContinueWith(completedPreviousTask =>
                 {
