@@ -4,7 +4,7 @@ Name: "Sample game: Space Escape"
 Scope: Session
 Description: A simple 3D runner game
 FullDescription: |
-   Space Escape is a simple 3D runner game in which you guide a ship between pipes and holes to reach the exit. This sample shows you how to load models, animate them, create a UI, create a basic 3D rendering pipeline and create custom effects such as UV scrolling, fog, and world bending.
+   A simple 3D runner game in which you guide a ship between pipes and holes to reach the exit. This sample shows you how to load models, animate them, create a UI, create a basic 3D rendering pipeline and create custom effects such as UV scrolling, fog, and world bending.
 Group: Samples/Games
 Icon: .xktpl/icon.png
 DefaultOutputName: SpaceEscape
