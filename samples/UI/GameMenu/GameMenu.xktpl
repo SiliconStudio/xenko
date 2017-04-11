@@ -1,6 +1,6 @@
 !TemplateSample
 Id: 7ac2c705-6240-4ddc-af63-fc438d10f4de
-Name: Sample: game menu UI
+Name: "Sample: game menu UI"
 Scope: Session
 Description: A sample demonstrating how to create UIs
 FullDescription: |

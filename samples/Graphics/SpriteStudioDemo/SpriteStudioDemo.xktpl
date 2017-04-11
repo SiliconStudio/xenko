@@ -1,9 +1,9 @@
 !TemplateSample
 Id: 6BE30E8D-9346-4130-87BE-12BF9CC362DE
-Name: Sprite Studio Demo
+Name: "Sample: Sprite Studio"
 Scope: Session
 Description: Demonstrates how to use Sprite Studio integration
-FullDescription: This sample demonstrates how to use Sprite Studio assets and animations in a simple 2D game
+FullDescription: This sample demonstrates how to use Sprite Studio assets and animations in a simple 2D game.
 Group: Samples/Graphics
 Icon: .xktpl/Icon.png
 DefaultOutputName: SpriteStudioDemo

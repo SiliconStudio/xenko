@@ -1,6 +1,6 @@
 !TemplateSample
 Id: 1C9E733A-16BB-48C3-A4DE-722B61EED994
-Name: Sample game: JumpyJet
+Name: "Sample game: JumpyJet"
 Scope: Session
 Description: A simple 2D action game
 FullDescription: |

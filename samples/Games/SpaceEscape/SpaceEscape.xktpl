@@ -1,6 +1,6 @@
 !TemplateSample
 Id: F9C4B79D-E313-47BC-9287-75A0395B8AC4
-Name: Sample game: Space Escape
+Name: "Sample game: Space Escape"
 Scope: Session
 Description: A simple 3D runner game
 FullDescription: |

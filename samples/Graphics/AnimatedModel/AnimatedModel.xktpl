@@ -1,6 +1,6 @@
 !TemplateSample
 Id: 99371864-55BD-4C78-B25C-42471F977540
-Name: Sample: animation
+Name: "Sample: animation"
 Scope: Session
 Description: Dmonstrates how to animate a model
 FullDescription: | 
