@@ -67,6 +67,11 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         public Color4 SplashScreenColor { get; set; }
 
+        /// <summary>
+        /// If splahs screen rendering is enabeld, true by default and only happens in release builds
+        /// </summary>
+        public bool SplashScreenEnabled { get; set; } = true;
+
         public GraphicsCompositor GraphicsCompositor { get; set; }
 
         private Task<Scene> sceneTask;
@@ -98,12 +103,18 @@ namespace SiliconStudio.Xenko.Engine
             // Preload the scene if it exists and show splash screen
             if (InitialSceneUrl != null && content.Exists(InitialSceneUrl))
             {
-                sceneTask = content.LoadAsync<Scene>(InitialSceneUrl);
+                if(SplashScreenEnabled)
+                    sceneTask = content.LoadAsync<Scene>(InitialSceneUrl);
+                else
+                    SceneInstance = new SceneInstance(Services, content.Load<Scene>(InitialSceneUrl));
             }
 
             if (InitialGraphicsCompositorUrl != null && content.Exists(InitialGraphicsCompositorUrl))
             {
-                compositorTask = content.LoadAsync<GraphicsCompositor>(InitialGraphicsCompositorUrl);
+                if (SplashScreenEnabled)
+                    compositorTask = content.LoadAsync<GraphicsCompositor>(InitialGraphicsCompositorUrl);
+                else
+                    GraphicsCompositor = content.Load<GraphicsCompositor>(InitialGraphicsCompositorUrl);
             }
 
             if (SplashScreenUrl != null && content.Exists(SplashScreenUrl))
