@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         private unsafe void PrepareLightprobeConstantBuffer(RenderContext context)
         {
             var renderView = context.RenderView;
-            var lightProbesData = context.RenderView.SceneInstance.Tags.Get(LightProbeComponent.RuntimeData);
+            var lightProbesData = context.RenderView.SceneInstance.GetProcessor<LightProbeProcessor>()?.RuntimeData;
             if (lightProbesData != null)
             {
                 foreach (var renderFeature in context.RenderSystem.RenderFeatures)
@@ -63,8 +63,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             Buffer lightprobesCoefficients = null;
             var renderView = context.RenderView;
 
-            var lightProbesData = renderView.SceneInstance.Tags.Get(LightProbeComponent.RuntimeData);
-            if (lightProbesData == null)
+            var lightProbesData = renderView.SceneInstance.GetProcessor<LightProbeProcessor>()?.RuntimeData;
+            if (lightProbesData == null || lightProbesData.Tetrahedra.Count == 0)
             {
                 // No lightprobes, we still set GPU resources (otherwise rendering might fetch invalid data)
                 goto SetGPUResources;

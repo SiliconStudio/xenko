@@ -29,6 +29,10 @@ namespace SiliconStudio.Xenko.Engine.Tests
         private AnimationClip knightOptimizedClip;
         private TestCamera camera;
 
+        private AnimationClip idleAnimation;
+        private AnimationClip walkAnimation;
+        private AnimationClip guardAnimation;
+
         public AnimatedModelTests()
         {
             // CurrentVersion = 3;
@@ -39,10 +43,17 @@ namespace SiliconStudio.Xenko.Engine.Tests
             //CurrentVersion = 8; // Changes in FBX importer (Use GetMeshEdgeIndexForPolygon() instead of GetMeshEdgeIndex() )
             //CurrentVersion = 9; // MSBUild tests
             //CurrentVersion = 10; // Build machine changed
-            CurrentVersion = 11; // Additive animation samples added
+            //CurrentVersion = 11; // Additive animation samples added
+            //CurrentVersion = 12; // Delta time is fixed, animation times are manually set
+            CurrentVersion = 13; // Changed the scale of the models to reduce aliasing problems in tests
 
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_3 };
+
+            // Use a fixed time step
+            IsFixedTimeStep = true;
+            ForceOneUpdatePerDraw = true;
+            IsDrawDesynchronized = false;
         }
 
         protected override async Task LoadContent()
@@ -73,20 +84,22 @@ namespace SiliconStudio.Xenko.Engine.Tests
             camera.Position = new Vector3(6.0f, 2.5f, 1.5f);
             camera.SetTarget(knight, true);
 
+            idleAnimation = Content.Load<AnimationClip>("Idle");
+            walkAnimation = Content.Load<AnimationClip>("Walk");
+            guardAnimation = Content.Load<AnimationClip>("GuardAdditive");
+
             // Test additive animation
             var mannequinModel = Content.Load<Model>("mannequinModel");
             guard1 = new Entity { new ModelComponent { Model = mannequinModel } };
-            guard1.Transform.Position = new Vector3(2, 0, 0);
-            var animationComponent1 = guard1.GetOrCreate<AnimationComponent>();
-            animationComponent1.Add(Content.Load<AnimationClip>("Idle"), 0, AnimationBlendOperation.LinearBlend);
-            animationComponent1.Add(Content.Load<AnimationClip>("GuardAdditive"), 0, AnimationBlendOperation.Add);
+            guard1.Transform.Position = new Vector3(2.5f, 0, 0);
+            guard1.Transform.Scale = new Vector3(1.5f, 1.5f, 1.5f);
+            guard1.GetOrCreate<AnimationComponent>();
             Scene.Entities.Add(guard1);
 
             guard2 = new Entity { new ModelComponent { Model = mannequinModel } };
-            guard2.Transform.Position = new Vector3(0, 0, 2);
-            var animationComponent2 = guard2.GetOrCreate<AnimationComponent>();
-            animationComponent2.Add(Content.Load<AnimationClip>("Walk"), 0, AnimationBlendOperation.LinearBlend);
-            animationComponent2.Add(Content.Load<AnimationClip>("GuardAdditive"), 0, AnimationBlendOperation.Add);
+            guard2.Transform.Position = new Vector3(0, 0, 2.5f);
+            guard2.Transform.Scale = new Vector3(1.5f, 1.5f, 1.5f);
+            guard2.GetOrCreate<AnimationComponent>();
             Scene.Entities.Add(guard2);
         }
 
@@ -112,6 +125,24 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 // T = 0
                 var playingAnimation = knight.Get<AnimationComponent>().Play("Run");
                 playingAnimation.Enabled = false;
+
+                // Guard 1
+                var animationComponent1 = guard1.GetOrCreate<AnimationComponent>();
+                animationComponent1.Add(idleAnimation, 0, AnimationBlendOperation.LinearBlend, timeScale: 0f);
+                animationComponent1.Add(guardAnimation, 0, AnimationBlendOperation.Add, timeScale: 0f);
+                guard1.Get<AnimationComponent>().PlayingAnimations[0].Enabled = false;
+                guard1.Get<AnimationComponent>().PlayingAnimations[1].Enabled = false;
+                guard1.Get<AnimationComponent>().PlayingAnimations[0].CurrentTime = TimeSpan.FromSeconds(0.0f);
+                guard1.Get<AnimationComponent>().PlayingAnimations[1].CurrentTime = TimeSpan.FromSeconds(0.0f);
+
+                // Guard 2
+                var animationComponent2 = guard2.GetOrCreate<AnimationComponent>();
+                animationComponent2.Add(walkAnimation, 0, AnimationBlendOperation.LinearBlend, timeScale: 0f);
+                animationComponent2.Add(guardAnimation, 0, AnimationBlendOperation.Add, timeScale: 0f);
+                guard2.Get<AnimationComponent>().PlayingAnimations[0].Enabled = false;
+                guard2.Get<AnimationComponent>().PlayingAnimations[1].Enabled = false;
+                guard2.Get<AnimationComponent>().PlayingAnimations[0].CurrentTime = TimeSpan.FromSeconds(0.0f);
+                guard2.Get<AnimationComponent>().PlayingAnimations[1].CurrentTime = TimeSpan.FromSeconds(0.0f);
             }).TakeScreenshot();
 
             FrameGameSystem.Draw(() =>

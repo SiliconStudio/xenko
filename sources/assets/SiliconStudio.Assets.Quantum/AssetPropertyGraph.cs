@@ -352,6 +352,7 @@ namespace SiliconStudio.Assets.Quantum
             return currentNode;
         }
 
+        [NotNull]
         public static YamlAssetMetadata<OverrideType> GenerateOverridesForSerialization(IGraphNode rootNode)
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));

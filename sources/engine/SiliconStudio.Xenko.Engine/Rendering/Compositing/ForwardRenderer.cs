@@ -526,11 +526,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 {
                     if (actualMultisampleCount != MultisampleCount.None)
                     {
-                        var input = currentRenderTargetsMSAA[colorTargetIndex];
-                        if (input != null)
-                        {
-                            ResolveMSAA(drawContext, input, ViewOutputTarget);
-                        }
+                        ResolveMSAA(drawContext);
+                        drawContext.CommandList.Copy(currentRenderTargetsMSAA[colorTargetIndex], ViewOutputTarget);
                     }
                 }
 
@@ -603,7 +600,13 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         }
                     }
 
-                    //draw mirror to backbuffer
+                    var isFullViewport = (int)viewport.X == 0 && (int)viewport.Y == 0
+                                         && (int)viewport.Width == drawContext.CommandList.RenderTarget.ViewWidth
+                                         && (int)viewport.Height == drawContext.CommandList.RenderTarget.ViewHeight;
+                    if (!isFullViewport)
+                        throw new NotImplementedException("Can't render VR with a viewport smaller than texture");
+
+                    //draw mirror to backbuffer (if size is matching and full viewport)
                     if (VRSettings.VRDevice.MirrorTexture.Size != drawContext.CommandList.RenderTarget.Size)
                     {
                         VRSettings.MirrorScaler.SetInput(0, VRSettings.VRDevice.MirrorTexture);
@@ -613,7 +616,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     else
                     {
                         drawContext.CommandList.Copy(VRSettings.VRDevice.MirrorTexture, drawContext.CommandList.RenderTarget);
-                    }                  
+                    }
                 }
                 else
                 {
@@ -624,7 +627,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
-                        drawContext.CommandList.SetRenderTargetsAndViewport(ViewDepthStencil, currentRenderTargets.Count, currentRenderTargets.Items);
+                        drawContext.CommandList.SetRenderTargets(ViewDepthStencil, currentRenderTargets.Count, currentRenderTargets.Items);
 
                         // Clear render target and depth stencil
                         Clear?.Draw(drawContext);
@@ -689,7 +692,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             for (int index = 0; index < renderTargets.Count; index++)
             {
-                if (renderTargets[index].Semantic is ColorTargetSemantic && PostEffects == null)
+                if (renderTargets[index].Semantic is ColorTargetSemantic && PostEffects == null && actualMultisampleCount == MultisampleCount.None)
                 {
                     currentRenderTargets[index] = currentRenderTarget;
                 }
@@ -699,6 +702,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     var textureDescription = TextureDescription.New2D(currentRenderTarget.Width, currentRenderTarget.Height, 1, description.Format, TextureFlags.RenderTarget | TextureFlags.ShaderResource, 1, GraphicsResourceUsage.Default, actualMultisampleCount);
                     currentRenderTargets[index] = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(textureDescription));
                 }
+
+                drawContext.CommandList.ResourceBarrierTransition(currentRenderTargets[index], GraphicsResourceState.RenderTarget);
             }
         }
 

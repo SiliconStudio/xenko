@@ -1,0 +1,255 @@
+!UILibraryAsset
+Id: 79af0b55-a70f-4c7a-8f5b-967d55661736
+SerializedVersion: {Xenko: 2.0.0.0}
+Tags: []
+Design:
+    Resolution: {X: 128.0, Y: 72.0, Z: 100.0}
+PublicUIElements:
+    1dfd7e9f-ab5a-4849-b6e3-1c50b0974f5f: ToggleButton
+    4266a97c-9ff2-45fb-8afd-5bd88a04c101: ModalElement
+    606486b0-61b1-498a-beed-5425893fc384: Border
+    6a778e64-1d79-44c8-b209-be1779349abb: TextBlock
+    72d195ac-472a-4f9b-8540-9f4f7d5fc53e: Grid
+    7d51286a-f844-48de-afe1-cb6b00e2dcb8: ScrollingText
+    97a0fc3a-e627-4122-b585-d33a6a7cd785: StackPanel
+    9b996723-bbd3-44c3-9406-fdc49875d2a2: Canvas
+    a35da784-9d42-4fe0-bd28-3eb547bc2812: ContentDecorator
+    a7e881dd-2f09-49b3-a87e-08a54bbc0cee: ScrollViewer
+    a89f94fa-840f-48d4-9b26-418e9e4a2358: UniformGrid
+    d44fc541-dd44-4a50-897d-c406966fac51: ImageElement
+    e8985e3a-8d82-40a6-adb1-76619eb19cd8: Button
+    eef44bd6-bd2d-4abe-8335-0971d5d83b10: EditText
+    f23d4157-8437-4285-845d-5cab68bca82a: ScrollBar
+    fcd540ef-6f9e-4cab-b24d-ba1533b0fdb9: Slider
+Hierarchy:
+    RootPartIds:
+        - e8985e3a-8d82-40a6-adb1-76619eb19cd8
+        - eef44bd6-bd2d-4abe-8335-0971d5d83b10
+        - fcd540ef-6f9e-4cab-b24d-ba1533b0fdb9
+        - 1dfd7e9f-ab5a-4849-b6e3-1c50b0974f5f
+        - 606486b0-61b1-498a-beed-5425893fc384
+        - a35da784-9d42-4fe0-bd28-3eb547bc2812
+        - d44fc541-dd44-4a50-897d-c406966fac51
+        - 4266a97c-9ff2-45fb-8afd-5bd88a04c101
+        - f23d4157-8437-4285-845d-5cab68bca82a
+        - 7d51286a-f844-48de-afe1-cb6b00e2dcb8
+        - a7e881dd-2f09-49b3-a87e-08a54bbc0cee
+        - 6a778e64-1d79-44c8-b209-be1779349abb
+        - 9b996723-bbd3-44c3-9406-fdc49875d2a2
+        - 72d195ac-472a-4f9b-8540-9f4f7d5fc53e
+        - 97a0fc3a-e627-4122-b585-d33a6a7cd785
+        - a89f94fa-840f-48d4-9b26-418e9e4a2358
+    Parts:
+        -   UIElement: !ToggleButton
+                DependencyProperties: {}
+                Id: 1dfd7e9f-ab5a-4849-b6e3-1c50b0974f5f
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                DrawLayerNumber: 2
+                CanBeHitByUser: true
+                Margin: {}
+                Name: ToggleButton
+                Padding: {Left: 10.0, Top: 5.0, Right: 10.0, Bottom: 7.0}
+                Content: !TextBlock ref!! ac7f6048-d7d0-45ae-a8f3-e4bddafeec22
+                CheckedImage: !SpriteFromSheet
+                    Sheet: 1be3340c-b797-4557-bff7-d9be92dfdb42:XenkoUIDesigns
+                    CurrentFrame: 11
+                UncheckedImage: !SpriteFromSheet
+                    Sheet: 1be3340c-b797-4557-bff7-d9be92dfdb42:XenkoUIDesigns
+                    CurrentFrame: 13
+                IndeterminateImage: !SpriteFromSheet
+                    Sheet: 1be3340c-b797-4557-bff7-d9be92dfdb42:XenkoUIDesigns
+                    CurrentFrame: 12
+        -   UIElement: !ModalElement
+                DependencyProperties: {}
+                Id: 4266a97c-9ff2-45fb-8afd-5bd88a04c101
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                DrawLayerNumber: 2
+                CanBeHitByUser: true
+                HorizontalAlignment: Center
+                VerticalAlignment: Center
+                Margin: {}
+                Name: ModalElement
+                Padding: {}
+                OverlayColor: {R: 0, G: 0, B: 0, A: 153}
+        -   UIElement: !TextBlock
+                DependencyProperties: {}
+                Id: 5b044962-d303-4961-8195-e27d497b9e2b
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                HorizontalAlignment: Center
+                VerticalAlignment: Center
+                Margin: {}
+                Text: Click me!
+                Font: c90f3988-0544-4cbe-993f-13af7d9c23c6:XenkoDefaultFont
+                TextSize: 20.0
+                TextColor: {R: 240, G: 240, B: 240, A: 255}
+        -   UIElement: !Border
+                DependencyProperties: {}
+                Id: 606486b0-61b1-498a-beed-5425893fc384
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Margin: {}
+                Name: Border
+                Padding: {}
+                BorderColor: {R: 0, G: 0, B: 0, A: 255}
+                BorderThickness: {}
+        -   UIElement: !TextBlock
+                DependencyProperties: {}
+                Id: 6a778e64-1d79-44c8-b209-be1779349abb
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Margin: {}
+                Name: TextBlock
+                Font: c90f3988-0544-4cbe-993f-13af7d9c23c6:XenkoDefaultFont
+                TextSize: 20.0
+                TextColor: {R: 240, G: 240, B: 240, A: 255}
+        -   UIElement: !Grid
+                DependencyProperties: {}
+                Id: 72d195ac-472a-4f9b-8540-9f4f7d5fc53e
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Margin: {}
+                Name: Grid
+                Children: {}
+                RowDefinitions: {}
+                ColumnDefinitions: {}
+                LayerDefinitions: {}
+        -   UIElement: !ScrollingText
+                DependencyProperties: {}
+                Id: 7d51286a-f844-48de-afe1-cb6b00e2dcb8
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                DrawLayerNumber: 4
+                Margin: {}
+                Name: ScrollingText
+                Text: 'Scrolling text! '
+                Font: c90f3988-0544-4cbe-993f-13af7d9c23c6:XenkoDefaultFont
+                TextColor: {R: 240, G: 240, B: 240, A: 255}
+        -   UIElement: !StackPanel
+                DependencyProperties: {}
+                Id: 97a0fc3a-e627-4122-b585-d33a6a7cd785
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Margin: {}
+                Name: StackPanel
+                Children: {}
+        -   UIElement: !Canvas
+                DependencyProperties: {}
+                Id: 9b996723-bbd3-44c3-9406-fdc49875d2a2
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Margin: {}
+                Name: Canvas
+                Children: {}
+        -   UIElement: !ContentDecorator
+                DependencyProperties: {}
+                Id: a35da784-9d42-4fe0-bd28-3eb547bc2812
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                DrawLayerNumber: 2
+                Margin: {}
+                Name: ContentDecorator
+                Padding: {}
+        -   UIElement: !ScrollViewer
+                DependencyProperties: {}
+                Id: a7e881dd-2f09-49b3-a87e-08a54bbc0cee
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                ClipToBounds: true
+                CanBeHitByUser: true
+                Margin: {}
+                Name: ScrollViewer
+                Padding: {}
+                ScrollBarColor: {R: 25, G: 25, B: 25, A: 255}
+        -   UIElement: !UniformGrid
+                DependencyProperties: {}
+                Id: a89f94fa-840f-48d4-9b26-418e9e4a2358
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Margin: {}
+                Children: {}
+        -   UIElement: !TextBlock
+                DependencyProperties: {}
+                Id: ac7f6048-d7d0-45ae-a8f3-e4bddafeec22
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                HorizontalAlignment: Center
+                VerticalAlignment: Center
+                Margin: {}
+                Text: Click me!
+                Font: c90f3988-0544-4cbe-993f-13af7d9c23c6:XenkoDefaultFont
+                TextSize: 20.0
+                TextColor: {R: 240, G: 240, B: 240, A: 255}
+        -   UIElement: !ImageElement
+                DependencyProperties: {}
+                Id: d44fc541-dd44-4a50-897d-c406966fac51
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Margin: {}
+                Name: ImageElement
+                Color: {R: 255, G: 255, B: 255, A: 255}
+        -   UIElement: !Button
+                DependencyProperties: {}
+                Id: e8985e3a-8d82-40a6-adb1-76619eb19cd8
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                DrawLayerNumber: 2
+                CanBeHitByUser: true
+                Margin: {}
+                Name: Button
+                Padding: {Left: 10.0, Top: 5.0, Right: 10.0, Bottom: 7.0}
+                Content: !TextBlock ref!! 5b044962-d303-4961-8195-e27d497b9e2b
+                PressedImage: !SpriteFromSheet
+                    Sheet: 1be3340c-b797-4557-bff7-d9be92dfdb42:XenkoUIDesigns
+                    CurrentFrame: 2
+                NotPressedImage: !SpriteFromSheet
+                    Sheet: 1be3340c-b797-4557-bff7-d9be92dfdb42:XenkoUIDesigns
+                    CurrentFrame: 1
+                MouseOverImage: !SpriteFromSheet
+                    Sheet: 1be3340c-b797-4557-bff7-d9be92dfdb42:XenkoUIDesigns
+        -   UIElement: !EditText
+                DependencyProperties: {}
+                Id: eef44bd6-bd2d-4abe-8335-0971d5d83b10
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                DrawLayerNumber: 5
+                CanBeHitByUser: true
+                Margin: {}
+                Name: EditText
+                Padding: {Left: 8.0, Top: 4.0, Right: 8.0, Bottom: 8.0}
+                Font: c90f3988-0544-4cbe-993f-13af7d9c23c6:XenkoDefaultFont
+                TextSize: 20.0
+                TextColor: {R: 240, G: 240, B: 240, A: 255}
+                ActiveImage: !SpriteFromSheet
+                    Sheet: 1be3340c-b797-4557-bff7-d9be92dfdb42:XenkoUIDesigns
+                    CurrentFrame: 3
+                InactiveImage: !SpriteFromSheet
+                    Sheet: 1be3340c-b797-4557-bff7-d9be92dfdb42:XenkoUIDesigns
+                    CurrentFrame: 4
+                MouseOverImage: !SpriteFromSheet
+                    Sheet: 1be3340c-b797-4557-bff7-d9be92dfdb42:XenkoUIDesigns
+                    CurrentFrame: 5
+                CaretColor: {R: 240, G: 240, B: 240, A: 255}
+                CaretWidth: 1.0
+                SelectionColor: {R: 240, G: 240, B: 240, A: 255}
+                CaretFrequency: 1.0
+        -   UIElement: !ScrollBar
+                DependencyProperties: {}
+                Id: f23d4157-8437-4285-845d-5cab68bca82a
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Margin: {}
+                Name: ScrollBar
+                BarColor: {R: 0, G: 0, B: 0, A: 0}
+        -   UIElement: !Slider
+                DependencyProperties: {}
+                Id: fcd540ef-6f9e-4cab-b24d-ba1533b0fdb9
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                DrawLayerNumber: 5
+                CanBeHitByUser: true
+                HorizontalAlignment: Center
+                VerticalAlignment: Center
+                Margin: {}
+                Name: Slider
+                TrackBackgroundImage: !SpriteFromSheet
+                    Sheet: 1be3340c-b797-4557-bff7-d9be92dfdb42:XenkoUIDesigns
+                    CurrentFrame: 9
+                TrackForegroundImage: !SpriteFromSheet
+                    Sheet: 1be3340c-b797-4557-bff7-d9be92dfdb42:XenkoUIDesigns
+                    CurrentFrame: 12
+                TrackStartingOffsets: {X: 3.0, Y: 3.0}
+                ThumbImage: !SpriteFromSheet
+                    Sheet: 1be3340c-b797-4557-bff7-d9be92dfdb42:XenkoUIDesigns
+                    CurrentFrame: 7
+                MouseOverThumbImage: !SpriteFromSheet
+                    Sheet: 1be3340c-b797-4557-bff7-d9be92dfdb42:XenkoUIDesigns
+                    CurrentFrame: 6
+                TickImage: !SpriteFromSheet
+                    Sheet: 1be3340c-b797-4557-bff7-d9be92dfdb42:XenkoUIDesigns
+                    CurrentFrame: 8
+                TickOffset: 13.0

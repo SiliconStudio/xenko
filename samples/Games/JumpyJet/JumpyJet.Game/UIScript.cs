@@ -1,6 +1,7 @@
-﻿using SiliconStudio.Core;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Events;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI;
@@ -15,13 +16,12 @@ namespace JumpyJet
     /// 
     /// It provides a ButtonClickedEvent Action that could be subscribed by its user.
     /// This action provides the name of Button element that is clicked,
-    ///  which is one of {StartButton, MenuBotton and RestartButton}
+    ///  which is one of {startButton, MenuBotton and RestartButton}
     /// </summary>
-    public class UIScript : StartupScript
+    public class UIScript : SyncScript
     {
-        internal Button StartButton { get; private set; }
-        internal Button MenuButton { get; private set; }
-        internal Button RetryButton { get; private set; }
+        private EventReceiver gameOverListener = new EventReceiver(GameGlobals.GameOverEventKey);
+        private EventReceiver pipePassedListener = new EventReceiver(GameGlobals.PipePassedEventKey);
 
         public SpriteFont Font;
         public SpriteSheet UIImages;
@@ -32,6 +32,8 @@ namespace JumpyJet
 
         private TextBlock scoreTextBlock;
         private ISpriteProvider buttonImage;
+
+        private int currentScore = 0;
 
         /// <summary>
         /// Load resource and construct ui components
@@ -45,6 +47,41 @@ namespace JumpyJet
             CreateMainMenuUI();
             CreateGameUI();
             CreateGameOverUI();
+
+            // set the default screen to main screen
+            StartMainMenuMode();
+        }
+
+        public override void Update()
+        {
+            // Increase the score if a new pipe has been passed
+            if (pipePassedListener.TryReceive())
+                ++currentScore;
+
+            // move to game over UI
+            if (gameOverListener.TryReceive())
+            {
+                currentScore = 0;
+                Entity.Get<UIComponent>().Page = new UIPage { RootElement = gameOverRoot };
+            }
+
+            // Update the current score
+            scoreTextBlock.Text = "Score : {0,2}".ToFormat(currentScore);
+        }
+
+        /// <summary>
+        /// Change UI mode to main menu
+        /// </summary>
+        public void StartMainMenuMode()
+        {
+            Entity.Get<UIComponent>().Page = new UIPage { RootElement = mainMenuRoot };
+        }
+        /// <summary>
+        /// Change UI mode to game mode
+        /// </summary>
+        public void StartGameMode()
+        {
+            Entity.Get<UIComponent>().Page = new UIPage { RootElement = gameRoot };
         }
 
         private void CreateMainMenuUI()
@@ -55,7 +92,7 @@ namespace JumpyJet
             xenkoLogo.SetCanvasRelativeSize(new Vector3(0.75f, 0.5f, 1f));
             xenkoLogo.SetCanvasRelativePosition(new Vector3(0.5f, 0.3f, 1f));
 
-            StartButton = new Button
+            var startButton = new Button
             {
                 Content = new TextBlock {Font = Font, Text = "Touch to Start", TextColor = Color.Black, 
                     HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center},
@@ -66,12 +103,17 @@ namespace JumpyJet
                 MinimumWidth = 250f,
             };
 
-            StartButton.SetCanvasPinOrigin(new Vector3(0.5f, 0.5f, 1f));
-            StartButton.SetCanvasRelativePosition(new Vector3(0.5f, 0.7f, 0f));
+            startButton.SetCanvasPinOrigin(new Vector3(0.5f, 0.5f, 1f));
+            startButton.SetCanvasRelativePosition(new Vector3(0.5f, 0.7f, 0f));
+            startButton.Click += (sender, args) =>
+            {
+                GameGlobals.GameStartedventKey.Broadcast();
+                StartGameMode();
+            };
 
             var mainMenuCanvas = new Canvas();
             mainMenuCanvas.Children.Add(xenkoLogo);
-            mainMenuCanvas.Children.Add(StartButton);
+            mainMenuCanvas.Children.Add(startButton);
 
             mainMenuRoot = new ModalElement
             {
@@ -104,7 +146,7 @@ namespace JumpyJet
 
         private void CreateGameOverUI()
         {
-            MenuButton = new Button
+            var menuButton = new Button
             {
                 Content = new TextBlock { Font = Font, Text = "Menu", TextColor = Color.Black, 
                     HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center},
@@ -115,10 +157,15 @@ namespace JumpyJet
                 MinimumWidth = 190f,
             };
 
-            MenuButton.SetCanvasPinOrigin(new Vector3(0.5f, 0.5f, 1f));
-            MenuButton.SetCanvasRelativePosition(new Vector3(0.70f, 0.7f, 0f));
+            menuButton.SetCanvasPinOrigin(new Vector3(0.5f, 0.5f, 1f));
+            menuButton.SetCanvasRelativePosition(new Vector3(0.70f, 0.7f, 0f));
+            menuButton.Click += (sender, args) =>
+            {
+                GameGlobals.GameResetEventKey.Broadcast();
+                StartMainMenuMode();
+            };
 
-            RetryButton = new Button
+            var retryButton = new Button
             {
                 Content = new TextBlock { Font = Font, Text = "Retry", TextColor = Color.Black, 
                     HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center},
@@ -129,12 +176,18 @@ namespace JumpyJet
                 NotPressedImage = buttonImage
             };
 
-            RetryButton.SetCanvasPinOrigin(new Vector3(0.5f, 0.5f, 1f));
-            RetryButton.SetCanvasRelativePosition(new Vector3(0.3f, 0.7f, 0f));
+            retryButton.SetCanvasPinOrigin(new Vector3(0.5f, 0.5f, 1f));
+            retryButton.SetCanvasRelativePosition(new Vector3(0.3f, 0.7f, 0f));
+            retryButton.Click += (sender, args) =>
+            {
+                GameGlobals.GameResetEventKey.Broadcast();
+                GameGlobals.GameStartedventKey.Broadcast();
+                StartGameMode();
+            };
 
             var gameOverCanvas = new Canvas();
-            gameOverCanvas.Children.Add(MenuButton);
-            gameOverCanvas.Children.Add(RetryButton);
+            gameOverCanvas.Children.Add(menuButton);
+            gameOverCanvas.Children.Add(retryButton);
             
             gameOverRoot = new ModalElement
             {
@@ -142,39 +195,6 @@ namespace JumpyJet
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Content = gameOverCanvas
             };
-        }
-
-        /// <summary>
-        /// Change UI mode to main menu
-        /// </summary>
-        public void StartMainMenuMode()
-        {
-            Entity.Get<UIComponent>().Page = new UIPage { RootElement = mainMenuRoot };
-        }
-
-        /// <summary>
-        /// Change UI mode to game
-        /// </summary>
-        public void StartPlayMode()
-        {
-            Entity.Get<UIComponent>().Page = new UIPage { RootElement = gameRoot };
-        }
-
-        /// <summary>
-        /// Change ui mode to game over
-        /// </summary>
-        public void StartGameOverMode()
-        {
-            Entity.Get<UIComponent>().Page = new UIPage { RootElement = gameOverRoot };
-        }
-
-        /// <summary>
-        /// A function to update UI score element.
-        /// </summary>
-        /// <param name="score"></param>
-        public void SetScore(int score)
-        {
-            scoreTextBlock.Text = "Score : {0,2}".ToFormat(score);
         }
     }
 }

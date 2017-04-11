@@ -1,6 +1,6 @@
 !GraphicsCompositorAsset
-Id: 59a84fe5-4282-470b-b179-0a0619973756
-SerializedVersion: {Xenko: 1.10.0-beta01}
+Id: 5f2073ff-fa35-4484-a925-0b899d8e759d
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Archetype: 9af53371-51ba-49fc-b420-ee7874892e75:Compositing/DefaultGraphicsCompositorLevel9
 Cameras:
@@ -77,7 +77,7 @@ SharedRenderers:
         Id: 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
         Clear:
             Id: 4bc4b2ca-027e-4e4a-94cb-2912709bef5f
-            Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
+            Color*: {R: 0.169, G: 0.169, B: 0.169, A: 1.0}
         LightProbes: true
         OpaqueRenderStage: ref!! 50671147-a5c1-49d4-b4ad-3625f71439b3
         TransparentRenderStage: ref!! 0fa30591-02ee-486d-9347-2b6aee83d035
@@ -97,7 +97,7 @@ Game*: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStu
     Camera: {Index: 0}
     Child*: !JumpyJet.JumpyJetRenderer,JumpyJet.Game
         Id: 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
-        ParallaxBackgrounds: ca9993b7-1213-4037-8a77-333f3fa2e163:ParallaxBackgrounds
+        ParallaxBackgrounds: c3781c30-af81-4faf-a8ab-64aded2f4403:ParallaxBackgrounds
         OpaqueRenderStage*: ref!! 50671147-a5c1-49d4-b4ad-3625f71439b3
         TransparentRenderStage*: ref!! 0fa30591-02ee-486d-9347-2b6aee83d035
 SingleView: null

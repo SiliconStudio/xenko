@@ -44,44 +44,54 @@ namespace SiliconStudio.Presentation.Dialogs
             return new FileSaveModalDialog(Dispatcher);
         }
 
-        public Task<MessageBoxResult> MessageBox(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public Task<MessageBoxResult> MessageBox(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
-            return DialogHelper.MessageBox(Dispatcher, message, ApplicationName, buttons, image, owner);
+            return DialogHelper.MessageBox(Dispatcher, message, ApplicationName, buttons, image);
         }
 
-        public Task<MessageBoxResult> MessageBox(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public Task<int> MessageBox(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None)
         {
-            return DialogHelper.MessageBox(Dispatcher, message, ApplicationName, buttons, image, owner);
+            return DialogHelper.MessageBox(Dispatcher, message, ApplicationName, buttons, image);
         }
 
-        public Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
-            return DialogHelper.CheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, button, image, owner);
+            return DialogHelper.CheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, button, image);
         }
 
-        public Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
-            return DialogHelper.CheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, checkboxMessage, button, image, owner);
+            return DialogHelper.CheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, checkboxMessage, button, image);
         }
 
-        public MessageBoxResult BlockingMessageBox(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, string checkboxMessage, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None)
         {
-            return DialogHelper.BlockingMessageBox(Dispatcher, message, ApplicationName, buttons, image, owner);
+            return DialogHelper.CheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, checkboxMessage, buttons, image);
         }
 
-        public MessageBoxResult BlockingMessageBox(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public MessageBoxResult BlockingMessageBox(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
-            return DialogHelper.BlockingMessageBox(Dispatcher, message, ApplicationName, buttons, image, owner);
+            return DialogHelper.BlockingMessageBox(Dispatcher, message, ApplicationName, buttons, image);
         }
 
-        public CheckedMessageBoxResult BlockingCheckedMessageBox(string message, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public int BlockingMessageBox(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None)
         {
-            return DialogHelper.BlockingCheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, button, image, owner);
+            return DialogHelper.BlockingMessageBox(Dispatcher, message, ApplicationName, buttons, image);
         }
 
-        public CheckedMessageBoxResult BlockingCheckedMessageBox(string message, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public CheckedMessageBoxResult BlockingCheckedMessageBox(string message, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
-            return DialogHelper.BlockingCheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, checkboxMessage, button, image, owner);
+            return DialogHelper.BlockingCheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, button, image);
+        }
+
+        public CheckedMessageBoxResult BlockingCheckedMessageBox(string message, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
+        {
+            return DialogHelper.BlockingCheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, checkboxMessage, button, image);
+        }
+
+        public CheckedMessageBoxResult BlockingCheckedMessageBox(string message, bool? isChecked, string checkboxMessage, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None)
+        {
+            return DialogHelper.BlockingCheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, checkboxMessage, buttons, image);
         }
 
         public void CloseMainWindow(Action onClosed)

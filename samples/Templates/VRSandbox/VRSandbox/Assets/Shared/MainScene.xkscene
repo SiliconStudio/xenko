@@ -48,6 +48,8 @@ Hierarchy:
         - 141375b8-a80e-45b0-b512-9d16e511466a
         - b5f5faaf-c45e-4254-bf29-801838276368
         - 1b4f1cd7-35bf-4dc7-b2e2-267356ec5f60
+        - 105f84eb-46e7-41e9-9c06-e2fdba9e94e6
+        - c438b98e-26b4-460b-b53c-c1c94795ce98
     Parts:
         -   Entity:
                 Id: 0376d8f6-bf7a-47e8-8d5e-57595ac6e3b0
@@ -109,6 +111,22 @@ Hierarchy:
                         ControllerIndex: 0
                         DeadZone: 0.25
                         Camera: ref!! 2088ba78-bf4f-48e3-be7d-3f1bea581810
+        -   Entity:
+                Id: 105f84eb-46e7-41e9-9c06-e2fdba9e94e6
+                Name: WallMenu
+                Components:
+                    946e243faf239cc4a3fbab48f287b8e5: !TransformComponent
+                        Id: c2745c07-2836-4413-904b-79b5bc35174e
+                        Position: {X: -4.9, Y: 2.5, Z: 0.0}
+                        Rotation: {X: 0.49999997, Y: 0.49999997, Z: -0.49999997, W: 0.49999997}
+                        Scale: {X: 6.0, Y: 2.5, Z: 2.0}
+                        Children:
+                            71ff7f8efcbe9de866177c02b95aad6d: ref!! de2786b5-6c9b-4dfd-93c5-0ea1119a700e
+                    389983c733c2a0a98203cab90aab377e: !ModelComponent
+                        Id: c2c64e94-9e9e-464c-a73f-1f2c5fe13b43
+                        Model: f2edea4f-0967-47b9-b763-24dd2fa81359:Models/plateA
+                        Materials: {}
+            Folder: Room
         -   Entity:
                 Id: 141375b8-a80e-45b0-b512-9d16e511466a
                 Name: UI
@@ -297,6 +315,23 @@ Hierarchy:
                 BasePartAsset: eaad30b5-ca83-452b-bc80-9d7ab50a94ee:TableDecorationC
                 BasePartId: 5e8e1fbe-6a65-41c7-8340-f34a8e7bce90
                 InstanceId: 9d7d57cf-6338-417f-b9a0-8b8047bbdda8
+        -   Entity:
+                Id: 290dd249-5cda-4a3e-8d66-4e273bb29938
+                Name: UI2Texture
+                Components:
+                    49190e5b24f30d73dd84ca3d896491fa: !TransformComponent
+                        Id: 2d3a2c22-f873-4f8e-bf0d-c733077250d3
+                        Position: {X: 0.0, Y: 0.06, Z: 0.0}
+                        Rotation: {X: -0.707106769, Y: 0.0, Z: 0.0, W: 0.707106769}
+                        Scale: {X: 0.3, Y: 0.72, Z: 0.9}
+                        Children: {}
+                    3f4128d41336e61e2c6424a7723268ca: !SpriteComponent
+                        Id: 2f6b0d98-fabd-4d58-a2a4-7ff071174fb4
+                        SpriteProvider: !SpriteFromTexture
+                            Texture: 9272c67d-f517-41f7-b74f-c9bb4f8ea5b8:Teleport
+                            PixelsPerUnit: 512.0
+                            Center: {X: 0.0, Y: 0.0}
+                        Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
         -   Entity:
                 Id: 2a4473b4-f454-4f4d-80e6-d9f3ca9a8f54
                 Name: TableDecorationB
@@ -1511,6 +1546,22 @@ Hierarchy:
                                 LocalOffset: {X: 0.0, Y: 0.14, Z: 0.01}
                                 LocalRotation: {X: 0.258819044, Y: 0.0, Z: 0.0, W: 0.9659258}
         -   Entity:
+                Id: c438b98e-26b4-460b-b53c-c1c94795ce98
+                Name: WallMenu
+                Components:
+                    946e243faf239cc4a3fbab48f287b8e5: !TransformComponent
+                        Id: ba314280-6845-4eaa-9178-e82bd7147b21
+                        Position: {X: 4.9, Y: 2.5, Z: 0.0}
+                        Rotation: {X: 0.4998273, Y: -0.5001726, Z: 0.4998273, W: 0.5001726}
+                        Scale: {X: 6.0, Y: 2.5, Z: 2.0}
+                        Children:
+                            71ff7f8efcbe9de866177c02b95aad6d: ref!! 2d3a2c22-f873-4f8e-bf0d-c733077250d3
+                    389983c733c2a0a98203cab90aab377e: !ModelComponent
+                        Id: 2531cf46-4eae-4d29-ac49-479c197f430a
+                        Model: f2edea4f-0967-47b9-b763-24dd2fa81359:Models/plateA
+                        Materials: {}
+            Folder: Room
+        -   Entity:
                 Id: c4423e55-11a6-4194-9ed4-2ddbb0eb3934
                 Name: Directional light
                 Components:
@@ -1665,6 +1716,23 @@ Hierarchy:
                                 Is2D: false
                                 Radius: 0.02
                                 LocalOffset: {X: -0.05, Y: 0.0, Z: -0.08}
+        -   Entity:
+                Id: d7063855-8ab9-46ac-9e79-ae2bdd6b53ad
+                Name: UI2Texture
+                Components:
+                    49190e5b24f30d73dd84ca3d896491fa: !TransformComponent
+                        Id: de2786b5-6c9b-4dfd-93c5-0ea1119a700e
+                        Position: {X: 0.0, Y: 0.06, Z: 0.0}
+                        Rotation: {X: -0.707106769, Y: 0.0, Z: 0.0, W: 0.707106769}
+                        Scale: {X: 0.3, Y: 0.72, Z: 0.9}
+                        Children: {}
+                    3f4128d41336e61e2c6424a7723268ca: !SpriteComponent
+                        Id: 2bc94194-d195-4886-bb2f-0cd23d595a21
+                        SpriteProvider: !SpriteFromTexture
+                            Texture: 9272c67d-f517-41f7-b74f-c9bb4f8ea5b8:Teleport
+                            PixelsPerUnit: 512.0
+                            Center: {X: 0.0, Y: 0.0}
+                        Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
         -   Entity:
                 Id: dea24e7c-1d20-413f-a690-4e43b4c641e9
                 Name: Front wall

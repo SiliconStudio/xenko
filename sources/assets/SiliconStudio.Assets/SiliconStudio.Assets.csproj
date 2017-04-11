@@ -20,8 +20,16 @@
       <HintPath>..\..\..\build\packages\Microsoft.Build.15.1.548\lib\net46\Microsoft.Build.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Build.Engine, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.Build.Engine.15.1.548\lib\net46\Microsoft.Build.Engine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Build.Framework, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\build\packages\Microsoft.Build.Framework.15.1.548\lib\net46\Microsoft.Build.Framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Build.Tasks.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.Build.Tasks.Core.15.1.548\lib\net46\Microsoft.Build.Tasks.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Utilities.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -125,14 +133,13 @@
     <Compile Include="PackageStore.cs" />
     <Compile Include="PackageUpgrader.cs" />
     <Compile Include="PackageUpgraderAttribute.cs" />
+    <Compile Include="PackageUpgradeRequestedAnswer.cs" />
     <Compile Include="PackageUserSettings.cs" />
     <Compile Include="PackageVersionRangeExtensions.cs" />
     <Compile Include="Reflection\CollectionItemIdentifiers.cs" />
     <Compile Include="Reflection\CollectionItemIdHelper.cs" />
-    <Compile Include="Reflection\IdentifiableHelper.cs" />
     <Compile Include="Reflection\ItemId.cs" />
     <Compile Include="Reflection\OverrideTarget.cs" />
-    <Compile Include="Reflection\ShadowId.cs" />
     <Compile Include="Serializers\AssetPartContainedAttribute.cs" />
     <Compile Include="Serializers\FixupObjectReferences.cs" />
     <Compile Include="Serializers\IAssetPartReference.cs" />
@@ -177,7 +184,6 @@
     <Compile Include="Compiler\AssetBuildStep.cs" />
     <Compile Include="Compiler\AssetDependenciesCompiler.cs" />
     <Compile Include="AssetImporterBase.cs" />
-    <Compile Include="Compiler\ICompilerRegistry.cs" />
     <Compile Include="Compiler\IPackageCompilerSource.cs" />
     <Compile Include="Compiler\IPackageCompiler.cs" />
     <Compile Include="Compiler\PackageAssetEnumerator.cs" />
@@ -192,7 +198,6 @@
     <Compile Include="Compiler\AssetCompilerBase.cs" />
     <Compile Include="Compiler\AssetCompilerContext.cs" />
     <Compile Include="Compiler\AssetCompilerRegistry.cs" />
-    <Compile Include="Compiler\AttributeBasedRegistry.cs" />
     <Compile Include="Compiler\FailedCommand.cs" />
     <Compile Include="IAssetCompileTimeDependencies.cs" />
     <Compile Include="IAssetComposite.cs" />
@@ -205,7 +210,6 @@
     <Compile Include="OverrideUpgraderHint.cs" />
     <Compile Include="Compiler\CompilerAttribute.cs" />
     <Compile Include="Compiler\CompilerContext.cs" />
-    <Compile Include="Compiler\CompilerRegistry.cs" />
     <Compile Include="Compiler\AssetCompilerResult.cs" />
     <Compile Include="Compiler\IAssetCompiler.cs" />
     <Compile Include="Compiler\ImportStreamCommand.cs" />

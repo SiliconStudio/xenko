@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         }
 
         public override void Dispose()
-        {            
+        {
         }
 
         public override void UpdateSurface(CommandList commandList, Texture texture)

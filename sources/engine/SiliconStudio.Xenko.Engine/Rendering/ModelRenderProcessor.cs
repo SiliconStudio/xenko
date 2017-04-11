@@ -134,6 +134,8 @@ namespace SiliconStudio.Xenko.Rendering
             if (renderModel.Model == model)
                 return;
 
+            renderModel.Model = model;
+
             // Remove old meshes
             if (renderModel.Meshes != null)
             {
@@ -169,7 +171,6 @@ namespace SiliconStudio.Xenko.Rendering
                 UpdateMaterial(renderMeshes[index], modelComponent.Materials.SafeGet(materialIndex), model.Materials.GetItemOrNull(materialIndex), modelComponent);
             }
 
-            renderModel.Model = model;
             renderModel.Meshes = renderMeshes;
 
             // Update before first add so that RenderGroup is properly set

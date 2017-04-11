@@ -1,5 +1,6 @@
 ﻿using SiliconStudio.Assets.Quantum.Internal;
 using SiliconStudio.Assets.Yaml;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Quantum.Visitors
@@ -12,6 +13,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// <summary>
         /// Gets the resulting metadata that can be passed to YAML serialization.
         /// </summary>
+        [NotNull]
         public YamlAssetMetadata<OverrideType> Result { get; } = new YamlAssetMetadata<OverrideType>();
 
         /// <inheritdoc/>

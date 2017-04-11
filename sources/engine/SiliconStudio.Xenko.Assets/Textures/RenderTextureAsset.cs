@@ -1,14 +1,8 @@
-using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.ProceduralModels;
 using SiliconStudio.Xenko.Rendering.RenderTextures;
 
 namespace SiliconStudio.Xenko.Assets.Textures
@@ -17,8 +11,16 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Texture))]
     [Display(1058, "Render Texture")]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "0.0.0")]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
     public sealed class RenderTextureAsset : Asset
     {
+        private const string CurrentVersion = "2.0.0.0";
+
         /// <summary>
         /// The default file extension used by the <see cref="RenderTextureAsset"/>.
         /// </summary>

@@ -894,7 +894,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
         }
 
-        public void BeginProfile(Color profileColor, string name)
+        public void BeginProfile(Color4 profileColor, string name)
         {
 #if !SILICONSTUDIO_PLATFORM_IOS
             if (GraphicsDevice.ProfileEnabled)
@@ -1210,7 +1210,9 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                     var vertexAttribMask = 1U << vertexAttrib.AttributeIndex;
-                    if (vertexBuffer == null)
+
+                    // A stride of zero causes automatic stride calculation. To not use the attribute, unbind it in that case
+                    if (vertexBuffer == null || vertexBufferView.Stride == 0)
                     {
                         // No VB bound, turn off this attribute
                         if ((enabledVertexAttribArrays & vertexAttribMask) != 0)

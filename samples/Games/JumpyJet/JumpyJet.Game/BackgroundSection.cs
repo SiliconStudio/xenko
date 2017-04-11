@@ -1,4 +1,4 @@
-﻿using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 
 namespace JumpyJet
@@ -46,6 +46,8 @@ namespace JumpyJet
             ScrollPos = 0;
 
             CreateBackground(backgroundSprite.Texture, backgroundSprite.Region);
+
+            IsUpdating = true;
         }
 
         public void DrawSprite(float elapsedTime, SpriteBatch spriteBatch)

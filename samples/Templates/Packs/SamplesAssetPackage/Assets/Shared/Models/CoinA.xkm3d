@@ -1,6 +1,6 @@
 !Model
 Id: 9a1283b0-1d34-439a-976b-9efe9eeb00f6
-SerializedVersion: {Xenko: 1.5.0-alpha02}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Source: ../../../Resources/Models/XenkoCoin.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}

@@ -4,13 +4,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Rendering;
@@ -18,15 +15,19 @@ using SiliconStudio.Xenko.Rendering;
 namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("Model")]
-    [AssetDescription(FileExtension, AllowArchetype = false)]
+    [AssetDescription(FileExtension, AllowArchetype = true)]
     [AssetContentType(typeof(Model))]
     [Display(1900, "Model")]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha02")]
-    [AssetUpgrader(XenkoConfig.PackageName, 0, 2, typeof(Upgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
-    public sealed class ModelAsset : Asset, IModelAsset, IAssetCompileTimeDependencies
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.5.0-alpha02")]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha02", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
+    public sealed class ModelAsset : Asset, IModelAsset
     {
+        private const string CurrentVersion = "2.0.0.0";
+
         /// <summary>
         /// The default file extension used by the <see cref="ModelAsset"/>.
         /// </summary>
@@ -76,19 +77,6 @@ namespace SiliconStudio.Xenko.Assets.Models
 
         [DataMemberIgnore]
         public override UFile MainSource => Source;
-
-        /// <inheritdoc/>
-        public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
-        {
-            if (Skeleton != null)
-            {
-                var reference = AttachedReferenceManager.GetAttachedReference(Skeleton);
-                if (reference != null)
-                {
-                    yield return new AssetReference(reference.Id, reference.Url);
-                }
-            }
-        }
 
         class Upgrader : AssetUpgraderBase
         {
