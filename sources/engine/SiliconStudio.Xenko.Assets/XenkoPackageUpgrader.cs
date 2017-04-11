@@ -476,73 +476,33 @@ namespace SiliconStudio.Xenko.Assets
 
             private void AddComponent(dynamic componentsNode, YamlMappingNode node, Guid id)
             {
-                try
-                {
-                    // New format (1.9)
-                    DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
-                    mapping.AddChild(new YamlScalarNode(Guid.NewGuid().ToString("N")), node);
-                    node.Add("Id", id.ToString("D"));
-                }
-                catch (Exception)
-                {
-                    // Old format (<= 1.8)
-                    DynamicYamlArray array = (DynamicYamlArray)componentsNode;
-                    node.Add("~Id", id.ToString("D")); // TODO
-                    array.Add(node);
-                }
+                // New format (1.9)
+                DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
+                mapping.AddChild(new YamlScalarNode(Guid.NewGuid().ToString("N")), node);
+                node.Add("Id", id.ToString("D"));
             }
 
             private void RemoveComponent(dynamic componentsNode, dynamic componentsEntry)
             {
-                try
-                {
-                    // New format (1.9)
-                    DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
-                    mapping.RemoveChild(componentsEntry.Key);
-                }
-                catch (Exception)
-                {
-                    // Old format (<= 1.8)
-                    DynamicYamlArray array = (DynamicYamlArray)componentsNode;
-                    for (int i = 0; i < array.Count; i++)
-                    {
-                        if (componentsNode[i].Node == componentsEntry.Node)
-                        {
-                            array.RemoveAt(i);
-                            return;
-                        }
-                    }
-                }
+                // New format (1.9)
+                DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
+                mapping.RemoveChild(componentsEntry.Key);
             }
 
             private DynamicYamlArray GetPartsArray(dynamic asset)
             {
                 var hierarchy = asset.Hierarchy;
-                if (hierarchy.Parts != null)
-                    return (DynamicYamlArray)hierarchy.Parts; // > 1.6.0
-                return (DynamicYamlArray)hierarchy.Entities; // <= 1.6.0
+                return (DynamicYamlArray)hierarchy.Parts; // > 1.6.0
             }
             
             private ComponentInfo GetComponentInfo(dynamic componentNode)
             {
-                if(componentNode.Key != null && componentNode.Value != null)
+                // New format (1.9)
+                return new ComponentInfo
                 {
-                    // New format (1.9)
-                    return new ComponentInfo
-                    {
-                        Id = (string)componentNode.Key,
-                        Component = componentNode.Value
-                    };
-                }
-                else
-                {
-                    // Old format (<= 1.8)
-                    return new ComponentInfo
-                    {
-                        Id = (string)componentNode["~Id"], // TODO
-                        Component = componentNode
-                    };
-                }
+                    Id = (string)componentNode.Key,
+                    Component = componentNode.Value
+                };
             }
 
             private struct SkyboxAssetInfo
