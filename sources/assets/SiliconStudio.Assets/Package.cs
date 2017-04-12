@@ -312,23 +312,23 @@ namespace SiliconStudio.Assets
         public List<PackageLoadedAssembly> LoadedAssemblies { get; } = new List<PackageLoadedAssembly>();
 
         /// <summary>
-        /// Adds an exiting project to this package.
+        /// Adds an existing project to this package.
         /// </summary>
         /// <param name="pathToMsproj">The path to msproj.</param>
         /// <returns>LoggerResult.</returns>
-        public LoggerResult AddExitingProject(UFile pathToMsproj)
+        public LoggerResult AddExistingProject(UFile pathToMsproj)
         {
             var logger = new LoggerResult();
-            AddExitingProject(pathToMsproj, logger);
+            AddExistingProject(pathToMsproj, logger);
             return logger;
         }
 
         /// <summary>
-        /// Adds an exiting project to this package.
+        /// Adds an existing project to this package.
         /// </summary>
         /// <param name="pathToMsproj">The path to msproj.</param>
         /// <param name="logger">The logger.</param>
-        public void AddExitingProject(UFile pathToMsproj, LoggerResult logger)
+        public void AddExistingProject(UFile pathToMsproj, LoggerResult logger)
         {
             if (pathToMsproj == null) throw new ArgumentNullException(nameof(pathToMsproj));
             if (logger == null) throw new ArgumentNullException(nameof(logger));

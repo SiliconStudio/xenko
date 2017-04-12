@@ -31,14 +31,6 @@ namespace SiliconStudio.Assets
         private const string SiliconStudioProjectType = "SiliconStudioProjectType";
         private const string SiliconStudioPlatform = "SiliconStudioPlatform";
 
-        /// <summary>
-        /// Minimum MSBuild ToolsVersion required for building Xenko projects/games. Currently 14.0 (VS2015).
-        /// </summary>
-        /// <remarks>
-        /// Any project with a ToolsVersion lower than this will use this one instead.
-        /// </remarks>
-        private static readonly Version MinimumToolsVersion = new Version(14, 0);
-
         private static BuildManager mainBuildManager = new BuildManager();
         private static readonly string NugetPath;
 
@@ -306,23 +298,9 @@ namespace SiliconStudio.Assets
                 if (project == null) throw new ArgumentNullException("project");
                 if (logger == null) throw new ArgumentNullException("logger");
 
-                // Make sure ToolsVersion is at least MinimumToolsVersion
-                var toolsVersion = project.Xml.ToolsVersion ?? project.ToolsVersion;
-                if (toolsVersion != null)
-                {
-                    Version parsedToolsVersion;
-                    if (Version.TryParse(toolsVersion, out parsedToolsVersion))
-                    {
-                        if (parsedToolsVersion < MinimumToolsVersion)
-                        {
-                            toolsVersion = MinimumToolsVersion.ToString(2);
-                        }
-                    }
-                }
-
                 // Make sure that we are using the project collection from the loaded project, otherwise we are getting
                 // weird cache behavior with the msbuild system
-                var projectInstance = new ProjectInstance(project.Xml, project.ProjectCollection.GlobalProperties, toolsVersion, project.ProjectCollection);
+                var projectInstance = new ProjectInstance(project.Xml, project.ProjectCollection.GlobalProperties, project.ToolsVersion, project.ProjectCollection);
 
                 BuildTask = previousTask.ContinueWith(completedPreviousTask =>
                 {
