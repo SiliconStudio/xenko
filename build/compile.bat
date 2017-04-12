@@ -42,7 +42,22 @@ echo.
 goto exit
 
 :ArgsDone
-set XXMSBUILD="C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe"
+
+rem Let's check we have msbuild in our path
+msbuild /nologo /version > nul 2>&1
+if %ERRORLEVEL% NEQ 0 (
+    echo Cannot find msbuild.
+    goto exit
+)
+rem Check that msbuild is version 15 or greater
+for /f "tokens=1 delims=." %%i in ('msbuild /nologo /version') do set __BuildVersion=%%i
+
+if %__BuildVersion% LSS 15 (
+    echo MSbuild version 15 or greater is required
+    goto exit
+)
+
+set XXMSBUILD=msbuild.exe
 set _platform_target=Mixed Platforms
 
 rem Compiling the various solutions
@@ -138,7 +153,7 @@ rem Compile our solution. The following variables needs to be set:
 rem "Project" is the solution name
 rem "_platform_target" is the platform being targeted
 :compile
-set _option=/nologo /nr:false /m /verbosity:%__BuildVerbosity% /p:Configuration=%__BuildType% /p:Platform="%_platform_target%" /p:SiliconStudioPackageBuild=%__SkipTestBuild% %Project%
+set _option=/nologo /nr:false /m /verbosity:%__BuildVerbosity% /p:Configuration=%__BuildType% /p:Platform="%_platform_target%" /p:SiliconStudioSkipUnitTests=%__SkipTestBuild% %Project%
 
 if "%__BuildDoc%" == "1" set _option=%_option% /p:SiliconStudioGenerateDoc=true
 
@@ -185,7 +200,7 @@ if %ENDTIME% LSS %STARTTIME% set set /A DURATION=%STARTTIME%-%ENDTIME%
 
 set /A DURATION=%DURATION%/1000
 
-if %DURATION% GT 60 (
+if %DURATION% GEQ 60 (
     set /A MINUTES=%DURATION% / 60
     rem Get rid of the part after the .
     for /f "tokens=1,2 delims=." %%a  in ("%MINUTES%") do set MINUTES=%%a
