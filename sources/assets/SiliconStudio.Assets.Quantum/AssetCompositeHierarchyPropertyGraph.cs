@@ -433,7 +433,7 @@ namespace SiliconStudio.Assets.Quantum
         /// Tracks the given deleted instance parts.
         /// </summary>
         /// <param name="deletedPartsMapping">A mapping of deleted parts (base part id, instance id).</param>
-        public void TrackDeletedInstanceParts([NotNull] HashSet<Tuple<Guid, Guid>> deletedPartsMapping)
+        public void TrackDeletedInstanceParts([NotNull] IEnumerable<Tuple<Guid, Guid>> deletedPartsMapping)
         {
             if (deletedPartsMapping == null) throw new ArgumentNullException(nameof(deletedPartsMapping));
             deletedPartsInstanceMapping.UnionWith(deletedPartsMapping);
@@ -443,10 +443,25 @@ namespace SiliconStudio.Assets.Quantum
         /// Untracks the given deleted instance parts.
         /// </summary>
         /// <param name="deletedPartsMapping">A mapping of deleted parts (base part id, instance id).</param>
-        public void UntrackDeletedInstanceParts([NotNull] HashSet<Tuple<Guid, Guid>> deletedPartsMapping)
+        public void UntrackDeletedInstanceParts([NotNull] IEnumerable<Tuple<Guid, Guid>> deletedPartsMapping)
         {
             if (deletedPartsMapping == null) throw new ArgumentNullException(nameof(deletedPartsMapping));
             deletedPartsInstanceMapping.ExceptWith(deletedPartsMapping);
+        }
+
+        /// <inheritdoc />
+        protected override void InitializeOverride()
+        {
+            // Track parts that were removed in instances by comparing to the base
+            foreach (var kv in basePartAssets)
+            {
+                var baseAsset = kv.Key.Asset;
+                var instanceIds = kv.Value;
+                var baseParts = baseAsset.Hierarchy.Parts.Select(p => p.Part.Id).SelectMany(basePartId => instanceIds, Tuple.Create);
+                var existingParts = baseInstanceMapping.Keys;
+                var deletedParts = baseParts.Except(existingParts);
+                TrackDeletedInstanceParts(deletedParts);
+            }
         }
 
         /// <summary>
