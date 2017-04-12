@@ -51,6 +51,9 @@ namespace SiliconStudio.Assets.Quantum
         private readonly Dictionary<IGraphNode, OverrideType> previousOverrides = new Dictionary<IGraphNode, OverrideType>();
         private readonly Dictionary<IGraphNode, ItemId> removedItemIds = new Dictionary<IGraphNode, ItemId>();
 
+        /// <summary>
+        /// The asset this property graph represents.
+        /// </summary>
         protected readonly Asset Asset;
         // TODO: turn back private
         internal readonly AssetToBaseNodeLinker baseLinker;

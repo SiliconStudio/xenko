@@ -59,9 +59,8 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        public AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> AssetHierarchy => Asset;
-
-        internal new AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> Asset => (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)base.Asset;
+        /// <inheritdoc cref="AssetPropertyGraph.Asset"/>
+        public new AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> Asset => (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)base.Asset;
 
         protected IObjectNode HierarchyNode { get; }
 
@@ -77,6 +76,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public abstract bool IsChildPartReference(IGraphNode node, Index index);
 
+        /// <inheritdoc/>
         public override void Dispose()
         {
             base.Dispose();
@@ -170,15 +170,15 @@ namespace SiliconStudio.Assets.Quantum
         /// <param name="partDesign">The part to remove from this asset.</param>
         public void RemovePartFromAsset(TAssetPartDesign partDesign)
         {
-            if (!AssetHierarchy.Hierarchy.RootPartIds.Contains(partDesign.Part.Id))
+            if (!Asset.Hierarchy.RootPartIds.Contains(partDesign.Part.Id))
             {
-                var parent = AssetHierarchy.GetParent(partDesign.Part);
+                var parent = Asset.GetParent(partDesign.Part);
                 if (parent == null) throw new InvalidOperationException("The part has no parent but is not in the RootPartIds collection.");
                 RemoveChildPartFromParentPart(parent, partDesign.Part);
             }
             else
             {
-                var index = new Index(AssetHierarchy.Hierarchy.RootPartIds.IndexOf(partDesign.Part.Id));
+                var index = new Index(Asset.Hierarchy.RootPartIds.IndexOf(partDesign.Part.Id));
                 var rootPartsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootPartIds)].Target;
                 rootPartsNode.Remove(partDesign.Part.Id, index);
             }
@@ -200,7 +200,7 @@ namespace SiliconStudio.Assets.Quantum
             {
                 // We need to remove children first to keep consistency in our data
                 var partToDelete = partsToDelete.Peek();
-                var children = AssetHierarchy.EnumerateChildPartDesigns(partToDelete, AssetHierarchy.Hierarchy, false).ToList();
+                var children = Asset.EnumerateChildPartDesigns(partToDelete, Asset.Hierarchy, false).ToList();
                 if (children.Count > 0)
                 {
                     // Enqueue children if there is any, and re-process the stack
@@ -225,6 +225,7 @@ namespace SiliconStudio.Assets.Quantum
             ClearReferencesToObjects(referencesToClear);
         }
 
+        /// <inheritdoc/>
         public override IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
         {
             // TODO: try to generalize what the overrides of this implementation are doing.
@@ -234,7 +235,7 @@ namespace SiliconStudio.Assets.Quantum
             {
                 TAssetPartDesign partDesign;
                 // The part might be being moved and could possibly be currently not into the Parts collection.
-                if (AssetHierarchy.Hierarchy.Parts.TryGetValue(part.Id, out partDesign) && partDesign.Base != null)
+                if (Asset.Hierarchy.Parts.TryGetValue(part.Id, out partDesign) && partDesign.Base != null)
                 {
                     var baseAssetGraph = Container.GetGraph(partDesign.Base.BasePartAsset.Id);
                     // Base asset might have been deleted
@@ -303,17 +304,17 @@ namespace SiliconStudio.Assets.Quantum
             var subTreeHierarchy = new AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>();
             foreach (var rootId in sourceRootIds)
             {
-                if (!AssetHierarchy.Hierarchy.Parts.ContainsKey(rootId))
+                if (!Asset.Hierarchy.Parts.ContainsKey(rootId))
                     throw new ArgumentException(@"The source root parts must be parts of this asset.", nameof(sourceRootIds));
 
                 subTreeHierarchy.RootPartIds.Add(rootId);
 
-                subTreeHierarchy.Parts.Add(AssetHierarchy.Hierarchy.Parts[rootId]);
-                foreach (var subTreePart in AssetHierarchy.EnumerateChildParts(AssetHierarchy.Hierarchy.Parts[rootId].Part, true))
-                    subTreeHierarchy.Parts.Add(AssetHierarchy.Hierarchy.Parts[subTreePart.Id]);
+                subTreeHierarchy.Parts.Add(Asset.Hierarchy.Parts[rootId]);
+                foreach (var subTreePart in Asset.EnumerateChildParts(Asset.Hierarchy.Parts[rootId].Part, true))
+                    subTreeHierarchy.Parts.Add(Asset.Hierarchy.Parts[subTreePart.Id]);
             }
 
-            var preCloningAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)Activator.CreateInstance(AssetHierarchy.GetType());
+            var preCloningAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)Activator.CreateInstance(Asset.GetType());
             preCloningAsset.Hierarchy = subTreeHierarchy;
             var preCloningAssetGraph = (AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>)AssetQuantumRegistry.ConstructPropertyGraph(Container, new AssetItem("", preCloningAsset), null);
             var externalReferences = ExternalReferenceCollector.GetExternalReferences(preCloningAssetGraph, preCloningAssetGraph.RootNode);
@@ -602,12 +603,14 @@ namespace SiliconStudio.Assets.Quantum
             return insertIndex;
         }
 
+        /// <inheritdoc/>
         protected override void OnContentChanged(MemberNodeChangeEventArgs args)
         {
             RelinkToOwnerPart((IAssetNode)args.Member, args.NewValue);
             base.OnContentChanged(args);
         }
 
+        /// <inheritdoc/>
         protected override void OnItemChanged(ItemChangeEventArgs args)
         {
             RelinkToOwnerPart((IAssetNode)args.Collection, args.NewValue);
@@ -769,7 +772,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             var node = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.Parts)].Target;
             node.Add(rootPart);
-            foreach (var childPart in AssetHierarchy.EnumerateChildParts(rootPart.Part, false))
+            foreach (var childPart in Asset.EnumerateChildParts(rootPart.Part, false))
             {
                 var partDesign = newPartCollection[childPart.Id];
                 InsertPartInPartsCollection(newPartCollection, partDesign);
@@ -778,13 +781,13 @@ namespace SiliconStudio.Assets.Quantum
 
         private void RemovePartFromPartsCollection(TAssetPartDesign rootPart)
         {
-            foreach (var childPart in AssetHierarchy.EnumerateChildParts(rootPart.Part, false))
+            foreach (var childPart in Asset.EnumerateChildParts(rootPart.Part, false))
             {
-                var partDesign = AssetHierarchy.Hierarchy.Parts[childPart.Id];
+                var partDesign = Asset.Hierarchy.Parts[childPart.Id];
                 RemovePartFromPartsCollection(partDesign);
             }
             var node = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.Parts)].Target;
-            var index = new Index(AssetHierarchy.Hierarchy.Parts.IndexOf(rootPart));
+            var index = new Index(Asset.Hierarchy.Parts.IndexOf(rootPart));
             node.Remove(rootPart, index);
         }
 
