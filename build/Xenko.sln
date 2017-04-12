@@ -431,7 +431,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Presentation.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Code.Tests", "..\sources\tools\SiliconStudio.Xenko.Code.Tests\SiliconStudio.Xenko.Code.Tests.csproj", "{3C855DB2-EEA3-415C-A0A8-C834DEC40531}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.VisualStudio.Debugging", "..\sources\tools\SiliconStudio.VisualStudio.Debugging\SiliconStudio.VisualStudio.Debugging.shproj", "{991E796A-D1D1-48B8-B9AA-95C2744FE112}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.VisualStudio", "..\sources\tools\SiliconStudio.VisualStudio\SiliconStudio.VisualStudio.shproj", "{991E796A-D1D1-48B8-B9AA-95C2744FE112}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.Assets.Yaml", "..\sources\assets\SiliconStudio.Assets.Yaml\SiliconStudio.Assets.Yaml.shproj", "{FB9ED2C4-94A0-4004-A498-3F29A9D5BB5D}"
 EndProject
@@ -443,6 +443,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Mathemat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Tasks", "..\sources\common\core\SiliconStudio.Core.Tasks\SiliconStudio.Core.Tasks.csproj", "{7C67FF28-1B9E-4F13-8BDA-B833D588BC6A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.VisualStudio.Package.Tests", "..\sources\tools\SiliconStudio.Xenko.VisualStudio.Package.Tests\SiliconStudio.Xenko.VisualStudio.Package.Tests.csproj", "{5BFE4386-3C42-4118-96C8-4B68441F1661}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7C67FF28-1B9E-4F13-8BDA-B833D588BC6A} = {7C67FF28-1B9E-4F13-8BDA-B833D588BC6A}
+		{E136B568-3E3F-498F-A8B4-2877B7768560} = {E136B568-3E3F-498F-A8B4-2877B7768560}
+		{0BD41ADD-2704-4A77-A9AB-15460A2ABDC6} = {0BD41ADD-2704-4A77-A9AB-15460A2ABDC6}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\sources\assets\SiliconStudio.Assets.Yaml\SiliconStudio.Assets.Yaml.projitems*{0bd41add-2704-4a77-a9ab-15460a2abdc6}*SharedItemsImports = 4
@@ -450,21 +457,22 @@ Global
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{1e54a9a2-4439-4444-ae57-6d2ed3c0dc47}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
-		..\sources\tools\SiliconStudio.VisualStudio.Debugging\SiliconStudio.VisualStudio.Debugging.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
+		..\sources\tools\SiliconStudio.VisualStudio\SiliconStudio.VisualStudio.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{3a3cb33c-64d9-4948-86c1-0d86320d23c3}*SharedItemsImports = 13
-		..\sources\tools\SiliconStudio.VisualStudio.Debugging\SiliconStudio.VisualStudio.Debugging.projitems*{50d1a3bb-4b41-4ef5-8d2f-3618a3b6c698}*SharedItemsImports = 4
+		..\sources\tools\SiliconStudio.VisualStudio\SiliconStudio.VisualStudio.projitems*{50d1a3bb-4b41-4ef5-8d2f-3618a3b6c698}*SharedItemsImports = 4
 		..\sources\assets\SiliconStudio.Assets.Yaml\SiliconStudio.Assets.Yaml.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{5863574d-7a55-49bc-8e65-babb74d8e66e}*SharedItemsImports = 4
-		..\sources\tools\SiliconStudio.VisualStudio.Debugging\SiliconStudio.VisualStudio.Debugging.projitems*{5e241be1-ffb6-49f2-98b4-7869ba7d9f5a}*SharedItemsImports = 4
+		..\sources\tools\SiliconStudio.VisualStudio\SiliconStudio.VisualStudio.projitems*{5bfe4386-3c42-4118-96c8-4b68441f1661}*SharedItemsImports = 4
+		..\sources\tools\SiliconStudio.VisualStudio\SiliconStudio.VisualStudio.projitems*{5e241be1-ffb6-49f2-98b4-7869ba7d9f5a}*SharedItemsImports = 4
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{6f5b53e9-39c8-4cad-b07c-588b0968c238}*SharedItemsImports = 4
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{75d71310-ecf7-4592-9e35-3fe540040982}*SharedItemsImports = 4
-		..\sources\tools\SiliconStudio.VisualStudio.Debugging\SiliconStudio.VisualStudio.Debugging.projitems*{7732cb84-a39a-4adf-b740-fd32a352fa8a}*SharedItemsImports = 4
+		..\sources\tools\SiliconStudio.VisualStudio\SiliconStudio.VisualStudio.projitems*{7732cb84-a39a-4adf-b740-fd32a352fa8a}*SharedItemsImports = 4
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{77e2fcc0-4ca6-436c-be6f-9418cb807d45}*SharedItemsImports = 4
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{7af4b563-aad3-42ff-b91e-84b9d34d904a}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{950badd0-ad5a-4f58-87ec-4adaecbea89b}*SharedItemsImports = 13
-		..\sources\tools\SiliconStudio.VisualStudio.Debugging\SiliconStudio.VisualStudio.Debugging.projitems*{991e796a-d1d1-48b8-b9aa-95c2744fe112}*SharedItemsImports = 13
+		..\sources\tools\SiliconStudio.VisualStudio\SiliconStudio.VisualStudio.projitems*{991e796a-d1d1-48b8-b9aa-95c2744fe112}*SharedItemsImports = 13
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{9ac6d791-811e-4d6a-b08e-93f0093ef268}*SharedItemsImports = 13
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{a5dc820b-9554-45b6-9677-6a2f902e7787}*SharedItemsImports = 4
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{b33e576f-2279-4bfc-a438-d9b84343b56b}*SharedItemsImports = 13
@@ -4006,6 +4014,42 @@ Global
 		{7C67FF28-1B9E-4F13-8BDA-B833D588BC6A}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{7C67FF28-1B9E-4F13-8BDA-B833D588BC6A}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{7C67FF28-1B9E-4F13-8BDA-B833D588BC6A}.Testing|Win32.Build.0 = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.AppStore|Win32.ActiveCfg = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.AppStore|Win32.Build.0 = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.CoreCLR_Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.CoreCLR_Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.CoreCLR_Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.CoreCLR_Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.CoreCLR_Debug|Win32.ActiveCfg = Debug|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.CoreCLR_Debug|Win32.Build.0 = Debug|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.CoreCLR_Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.CoreCLR_Release|Any CPU.Build.0 = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.CoreCLR_Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.CoreCLR_Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.CoreCLR_Release|Win32.ActiveCfg = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.CoreCLR_Release|Win32.Build.0 = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Debug|Win32.Build.0 = Debug|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Release|Win32.ActiveCfg = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Release|Win32.Build.0 = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Testing|Any CPU.ActiveCfg = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Testing|Any CPU.Build.0 = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Testing|Win32.ActiveCfg = Release|Any CPU
+		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Testing|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -4130,5 +4174,6 @@ Global
 		{1AC5A693-3CC4-4450-AA76-70DA4F0C29DF} = {A7ED9F01-7D78-4381-90A6-D50E51C17250}
 		{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B} = {22ADD4CD-092E-4ADC-A21E-64CF42230152}
 		{7C67FF28-1B9E-4F13-8BDA-B833D588BC6A} = {25F10A0B-7259-404C-86BE-FD2363C92F72}
+		{5BFE4386-3C42-4118-96C8-4B68441F1661} = {E4508D15-6503-4A29-ADC4-27B3A5E99545}
 	EndGlobalSection
 EndGlobal
