@@ -25,6 +25,11 @@ namespace SiliconStudio.Assets
     /// </summary>
     public sealed class PackageSession : IDisposable, IAssetFinder
     {
+        /// <summary>
+        /// The visual studio version property used for newly created project solution files
+        /// </summary>
+        public static readonly Version DefaultVisualStudioVersion = new Version("14.0.23107.0");
+
         private readonly ConstraintProvider constraintProvider = new ConstraintProvider();
         private readonly PackageCollection packagesCopy;
         private readonly object dependenciesLock = new object();
@@ -84,7 +89,7 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// The targeted visual studio version (if specified by the loaded package)
         /// </summary>
-        public string VisualStudioVersion { get; set; }
+        public Version VisualStudioVersion { get; set; }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -861,7 +866,7 @@ namespace SiliconStudio.Assets
                 //    analysis.Run(log);
                 //}
                 // If the package doesn't have a meta name, fix it here (This is supposed to be done in the above disabled analysis - but we still need to do it!)
-                if (string.IsNullOrWhiteSpace(package.Meta.Name) && package.FullPath != null)
+                if (String.IsNullOrWhiteSpace(package.Meta.Name) && package.FullPath != null)
                 {
                     package.Meta.Name = package.FullPath.GetFileNameWithoutExtension();
                     package.IsDirty = true;

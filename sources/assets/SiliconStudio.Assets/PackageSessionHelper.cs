@@ -16,10 +16,10 @@ namespace SiliconStudio.Assets
     /// </summary>
     internal partial class PackageSessionHelper
     {
-        private const string SolutionHeader = @"Microsoft Visual Studio Solution File, Format Version 12.00
+        private static readonly string SolutionHeader = @"Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
-MinimumVisualStudioVersion = 14.0.23107.0";
+VisualStudioVersion = {0}
+MinimumVisualStudioVersion = {0}".ToFormat(PackageSession.DefaultVisualStudioVersion);
 
         public static bool IsPackageFile(string filePath)
         {
@@ -50,8 +50,9 @@ MinimumVisualStudioVersion = 14.0.23107.0";
             }
 
             var versionHeader = solution.Properties.FirstOrDefault(x=>x.Name == "VisualStudioVersion");
-            if (versionHeader != null)
-                session.VisualStudioVersion = versionHeader.Value;
+            Version version;
+            if (versionHeader != null && Version.TryParse(versionHeader.Value, out version))
+                session.VisualStudioVersion = version;
             else
                 session.VisualStudioVersion = null;
         }
