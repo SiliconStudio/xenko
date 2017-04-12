@@ -82,6 +82,11 @@ namespace SiliconStudio.Assets
         public AssemblyContainer AssemblyContainer { get; }
 
         /// <summary>
+        /// The targeted visual studio version (if specified by the loaded package)
+        /// </summary>
+        public string VisualStudioVersion { get; set; }
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()

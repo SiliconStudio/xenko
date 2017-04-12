@@ -48,6 +48,12 @@ MinimumVisualStudioVersion = 14.0.23107.0";
                     packagePaths.Add(packageFullPath);
                 }
             }
+
+            var versionHeader = solution.Properties.FirstOrDefault(x=>x.Name == "VisualStudioVersion");
+            if (versionHeader != null)
+                session.VisualStudioVersion = versionHeader.Value;
+            else
+                session.VisualStudioVersion = null;
         }
 
         public static void SaveSolution(PackageSession session, ILogger log)
