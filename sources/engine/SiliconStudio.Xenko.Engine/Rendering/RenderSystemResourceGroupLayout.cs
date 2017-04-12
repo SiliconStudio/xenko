@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Rendering
                     logicalGroup.ConstantBufferSize = member.Offset + member.Size - logicalGroup.ConstantBufferOffset;
 
                     // Hash
-                    Effect.HashConstantBufferMember(ref hashBuilder, ref member, false);
+                    Effect.HashConstantBufferMember(ref hashBuilder, ref member, logicalGroup.ConstantBufferOffset);
                 }
                 else if (logicalGroup.ConstantBufferMemberStart != -1)
                     break; // group is finished, no need to scan the end
