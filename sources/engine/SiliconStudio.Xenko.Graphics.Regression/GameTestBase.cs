@@ -81,6 +81,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             if (string.IsNullOrEmpty(ImageTester.ImageTestResultConnection.BranchName))
                 ImageTester.ImageTestResultConnection.BranchName = Environment.GetEnvironmentVariable("XENKO_BRANCH_NAME") ?? "";
 #endif
+
+            SceneSystem.SplashScreenEnabled = false;
         }
 
         /// <summary>

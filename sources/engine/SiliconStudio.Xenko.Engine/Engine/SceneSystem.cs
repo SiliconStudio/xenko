@@ -1,8 +1,10 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
@@ -50,24 +52,75 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         public string InitialSceneUrl { get; set; }
 
+        /// <summary>
+        /// URL of the initial graphics compositor that should be used upon loading
+        /// </summary>
         public string InitialGraphicsCompositorUrl { get; set; }
 
+        /// <summary>
+        /// URL of the splash screen texture that should be used upon loading
+        /// </summary>
+        public string SplashScreenUrl { get; set; }
+
+        /// <summary>
+        /// Splash screen background color
+        /// </summary>
+        public Color4 SplashScreenColor { get; set; }
+
+        /// <summary>
+        /// If splahs screen rendering is enabeld, true if a splash screen texture is present, and only happens in release builds
+        /// </summary>
+        public bool SplashScreenEnabled { get; set; }
+
         public GraphicsCompositor GraphicsCompositor { get; set; }
+
+        private Task<Scene> sceneTask;
+        private Task<GraphicsCompositor> compositorTask;
+
+        private const double MinSplashScreenTime = 4.0f;
+        private const float SplashScreenFadeTime = 1.0f;
+
+        private double fadeTime;
+        private Texture splashScreenTexture;
+
+        public enum SplashScreenState
+        {
+            Invalid,
+            Intro,
+            FadingIn,
+            Showing,
+            FadingOut
+        }
+
+        private SplashScreenState splashScreenState = SplashScreenState.Invalid;
 
         protected override void LoadContent()
         {
             var content = Services.GetSafeServiceAs<ContentManager>();
             var graphicsContext = Services.GetSafeServiceAs<GraphicsContext>();
 
-            // Preload the scene if it exists
+            if (SplashScreenUrl != null && content.Exists(SplashScreenUrl))
+            {
+                splashScreenTexture = content.Load<Texture>(SplashScreenUrl);
+                splashScreenState = splashScreenTexture != null ? SplashScreenState.Intro : SplashScreenState.Invalid;
+                SplashScreenEnabled = true;
+            }
+
+            // Preload the scene if it exists and show splash screen
             if (InitialSceneUrl != null && content.Exists(InitialSceneUrl))
             {
-                SceneInstance = new SceneInstance(Services, content.Load<Scene>(InitialSceneUrl));
+                if(SplashScreenEnabled)
+                    sceneTask = content.LoadAsync<Scene>(InitialSceneUrl);
+                else
+                    SceneInstance = new SceneInstance(Services, content.Load<Scene>(InitialSceneUrl));
             }
 
             if (InitialGraphicsCompositorUrl != null && content.Exists(InitialGraphicsCompositorUrl))
             {
-                GraphicsCompositor = content.Load<GraphicsCompositor>(InitialGraphicsCompositorUrl);
+                if (SplashScreenEnabled)
+                    compositorTask = content.LoadAsync<GraphicsCompositor>(InitialGraphicsCompositorUrl);
+                else
+                    GraphicsCompositor = content.Load<GraphicsCompositor>(InitialGraphicsCompositorUrl);
             }
 
             // Create the drawing context
@@ -91,6 +144,35 @@ namespace SiliconStudio.Xenko.Engine
             // Execute Update step of SceneInstance
             // This will run entity processors
             SceneInstance?.Update(gameTime);
+        }
+
+        private void RenderSplashScreen(Color4 color, BlendStateDescription blendState)
+        {
+            var renderTarget = Game.GraphicsContext.CommandList.RenderTarget;
+            Game.GraphicsContext.CommandList.Clear(renderTarget, SplashScreenColor);
+
+            int width;
+            int height;
+            if (renderTarget.Height > renderTarget.Width) //portrait
+            {
+                width = height = renderTarget.Width;
+            }
+            else //landscape
+            {
+                width = height = renderTarget.Height;
+            }
+
+            var viewport = Game.GraphicsContext.CommandList.Viewport;
+
+            var x = -width / 2;
+            var y = -height / 2;
+            x += renderTarget.Width / 2;
+            y += renderTarget.Height / 2;
+            Game.GraphicsContext.CommandList.SetViewport(new Viewport(x, y, width, height));
+
+            Game.GraphicsContext.DrawTexture(splashScreenTexture, color, blendState);
+
+            Game.GraphicsContext.CommandList.SetViewport(viewport);
         }
 
         public override void Draw(GameTime gameTime)
@@ -127,6 +209,77 @@ namespace SiliconStudio.Xenko.Engine
             using (renderDrawContext.RenderContext.PushTagAndRestore(SceneInstance.Current, SceneInstance))
             {
                 GraphicsCompositor?.Draw(renderDrawContext);
+            }
+
+            //do this here, make sure GCompositor and Scene are updated/rendered the next frame!
+            if (sceneTask != null && compositorTask != null)
+            {
+                switch (splashScreenState)
+                {
+                    case SplashScreenState.Invalid:
+                    {
+                        if (sceneTask.IsCompleted && compositorTask.IsCompleted)
+                        {
+                            SceneInstance = new SceneInstance(Services, sceneTask.Result);
+                            GraphicsCompositor = compositorTask.Result;
+                            sceneTask = null;
+                            compositorTask = null;
+                        }
+                    }
+                        break;
+                    case SplashScreenState.Intro:
+                    {
+                        Game.GraphicsContext.CommandList.Clear(Game.GraphicsContext.CommandList.RenderTarget, SplashScreenColor);
+
+                        if (gameTime.Total.TotalSeconds > SplashScreenFadeTime)
+                        {
+                            splashScreenState = SplashScreenState.FadingIn;
+                            fadeTime = 0.0f;
+                        }
+                    }
+                        break;
+                    case SplashScreenState.FadingIn:
+                    {
+                        var color = Color4.White;
+                        var factor = MathUtil.SmoothStep((float)fadeTime / SplashScreenFadeTime);
+                        color *= factor;
+                        if (factor >= 1.0f)
+                        {
+                            splashScreenState = SplashScreenState.Showing;
+                        }
+
+                        fadeTime += gameTime.Elapsed.TotalSeconds;
+
+                        RenderSplashScreen(color, BlendStates.AlphaBlend);
+                    }
+                        break;
+                    case SplashScreenState.Showing:
+                    {
+                        RenderSplashScreen(Color4.White, BlendStates.Default);
+
+                        if (gameTime.Total.TotalSeconds > MinSplashScreenTime && sceneTask.IsCompleted && compositorTask.IsCompleted)
+                        {
+                            splashScreenState = SplashScreenState.FadingOut;
+                            fadeTime = 0.0f;
+                        }
+                    }
+                        break;
+                    case SplashScreenState.FadingOut:
+                    {
+                        var color = Color4.White;
+                        var factor = (MathUtil.SmoothStep((float)fadeTime / SplashScreenFadeTime) * -1) + 1;
+                        color *= factor;
+                        if (factor <= 0.0f)
+                        {
+                            splashScreenState = SplashScreenState.Invalid;
+                        }
+
+                        fadeTime += gameTime.Elapsed.TotalSeconds;
+
+                        RenderSplashScreen(color, BlendStates.AlphaBlend);
+                    }
+                        break;
+                }
             }
         }
     }
