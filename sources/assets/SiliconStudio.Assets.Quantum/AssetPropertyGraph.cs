@@ -140,7 +140,42 @@ namespace SiliconStudio.Assets.Quantum
         /// </summary>
         public Action<INodeChangeEventArgs, IGraphNode> BaseContentChanged;
 
+        /// <summary>
+        /// Indicates whether this property graph has been initialized.
+        /// </summary>
+        protected bool IsInitialized { get; private set; }
+
+        /// <summary>
+        /// Indicates whether this property graph is currently being initialized.
+        /// </summary>
+        protected bool IsInitializing { get; private set; }
+
         private IBaseToDerivedRegistry BaseToDerivedRegistry => baseToDerivedRegistry ?? (baseToDerivedRegistry = CreateBaseToDerivedRegistry());
+
+        /// <summary>
+        /// Initializes this property graph.
+        /// </summary>
+        public void Initialize()
+        {
+            if (IsInitialized)
+#if DEBUG
+                throw new InvalidOperationException("This property graph has already been initialized.");
+#else
+                return;
+#endif
+            try
+            {
+                IsInitializing = true;
+                RefreshBase();
+                ReconcileWithBase();
+                InitializeOverride();
+            }
+            finally
+            {
+                IsInitializing = false;
+            }
+            IsInitialized = true;
+        }
 
         public virtual void RefreshBase()
         {
@@ -269,6 +304,17 @@ namespace SiliconStudio.Assets.Quantum
             CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
             assetItem.YamlMetadata.AttachMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey, GenerateOverridesForSerialization(RootNode));
             assetItem.YamlMetadata.AttachMetadata(AssetObjectSerializerBackend.ObjectReferencesKey, GenerateObjectReferencesForSerialization(RootNode));
+        }
+
+        /// <summary>
+        /// When overridden in a derived class, initializes the <see cref="AssetPropertyGraph"/>-derived class.
+        /// </summary>
+        /// <remarks>
+        /// Override <see cref="InitializeOverride"/> to implement custom initialization behavior for your property graph.
+        /// </remarks>
+        protected virtual void InitializeOverride()
+        {
+            // Default implementation does nothing
         }
 
         protected virtual void OnContentChanged(MemberNodeChangeEventArgs args)
