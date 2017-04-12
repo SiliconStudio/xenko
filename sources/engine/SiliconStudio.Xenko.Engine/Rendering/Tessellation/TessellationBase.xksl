@@ -55,7 +55,7 @@ shader TessellationBase : ShaderBase, TransformationBase, MaterialDomainStream, 
         float2 screenPosition1 = GetScreenSpacePosition(input[NextCPID].PositionWS, ViewProjection, ViewSize.x, ViewSize.y);
         
         // Screen space tessellation based on desired triangle size
-        streams.oppositeEdgeLOD = 1.0f / DesiredTriangleSize * distance(screenPosition0, screenPosition1);
+        streams.oppositeEdgeLOD = distance(screenPosition0, screenPosition1) / DesiredTriangleSize;
 
         output = streams;
     }
