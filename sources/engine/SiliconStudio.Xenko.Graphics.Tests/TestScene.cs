@@ -3,7 +3,7 @@
 using System.Threading.Tasks;
 
 using NUnit.Framework;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 using SiliconStudio.Xenko.Rendering.Images;
@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             scene.Entities.Add(cubeEntity);
 
             // Create a camera entity and add it to the scene
-            var cameraEntity = new Entity { new CameraComponent() };
+            var cameraEntity = new Entity { new CameraComponent { Slot = Services.GetServiceAs<SceneSystem>().GraphicsCompositor.Cameras[0].ToSlotId() } };
             cameraEntity.Transform.Position = new Vector3(0, 0, 5);
             scene.Entities.Add(cameraEntity);
 

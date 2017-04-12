@@ -4,10 +4,11 @@
 using System.Threading.Tasks;
 
 using NUnit.Framework;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
@@ -50,7 +51,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Scene.Entities.Add(imageEntity3);
             
             // setup the camera
-            var camera = new TestCamera { Yaw = MathUtil.Pi/4, Pitch = MathUtil.Pi/4, Position = new Vector3(500, 500, 500), MoveSpeed = 100 };
+            var camera = new TestCamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor) { Yaw = MathUtil.Pi/4, Pitch = MathUtil.Pi/4, Position = new Vector3(500, 500, 500), MoveSpeed = 100 };
             camera.SetTarget(cube, true);
             CameraComponent = camera.Camera;
             Script.Add(camera);

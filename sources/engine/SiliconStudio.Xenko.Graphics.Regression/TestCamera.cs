@@ -1,14 +1,14 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Threading.Tasks;
-
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
-namespace SiliconStudio.Xenko.UI.Tests.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
     /// <summary>
     /// The default script for the scene editor camera.
@@ -42,12 +42,13 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         /// <summary>
         /// Create a new instance of scene camera.
         /// </summary>
-        public TestCamera()
+        public TestCamera(GraphicsCompositor graphicsCompositor)
         {
             MoveSpeed = 10f;
             RotationSpeed = MathUtil.Pi / 2f;
             SceneUnit = 1;
             Camera.UseCustomAspectRatio = true;
+            Camera.Slot = graphicsCompositor.Cameras[0].ToSlotId();
         }
 
         /// <summary>
@@ -211,8 +212,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         protected virtual void SetCamera()
         {
             // set the camera values
-            Camera.NearClipPlane = 1f;
-            Camera.FarClipPlane = 10000f;
+            Camera.NearClipPlane = 0.1f;
+            Camera.FarClipPlane = 1000f;
             Camera.UseCustomViewMatrix = true;
             OnWindowSizeChanged();
         }
@@ -291,6 +292,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         /// </summary>
         protected virtual void OnWindowSizeChanged()
         {
+            // TODO GRAPHICS REFACTOR Need to get aspect ratio using graphics compositor
             Camera.AspectRatio = GraphicsDevice.Presenter.BackBuffer.Width / (float)GraphicsDevice.Presenter.BackBuffer.Height;
         }
 
