@@ -1,8 +1,9 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Xenko.Shaders.Parser.Analysis;
 using SiliconStudio.Shaders.Ast.Xenko;
@@ -1240,6 +1241,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             
             // remove useless variables
             RemoveUselessVariables();
+
+            // Add padding to constant buffers to align logical groups
+            AlignLogicalGroups();
         }
 
         private List<Node> SortNodes(List<Node> nodes)
@@ -1408,6 +1412,181 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             MixedShader.Members.AddRange(variables.Select(x => x.Key).Where(IsOutOfCBufferVariable));
         }
 
+        private void AlignLogicalGroups()
+        {
+            foreach (var constantBuffer in MixedShader.Members.OfType<ConstantBuffer>())
+            {
+                int alignment = 0;
+                string currentLogicalGroupName = null;
+
+                var members = constantBuffer.Members;
+                constantBuffer.Members = new List<Node>();
+
+                foreach (var member in members.OfType<Variable>())
+                {
+                    // Add padding if the logical group changes
+                    var logicalGroupName = (string)member.GetTag(XenkoTags.LogicalGroup);
+                    if (logicalGroupName != currentLogicalGroupName)
+                    {
+                        AddLogicalGroupPadding(constantBuffer, currentLogicalGroupName, alignment);
+                        alignment = 0;
+                        currentLogicalGroupName = logicalGroupName;
+                    }
+
+                    // Calculate the offset of the next variable
+                    ComputeMemberSize(member, ref alignment);
+
+                    // Add the original member
+                    constantBuffer.Members.Add(member);
+                }
+
+                // Pad the last logical group, so it always has the same size
+                if (currentLogicalGroupName != null)
+                {
+                    AddLogicalGroupPadding(constantBuffer, currentLogicalGroupName, alignment);
+                }
+            }
+        }
+
+        private static void AddLogicalGroupPadding(ConstantBuffer constantBuffer, string logicaGroupName, int offset)
+        {
+            // Already aligned, so need to add padding
+            if (offset == 0)
+                return;
+
+            if (logicaGroupName == null)
+                logicaGroupName = "Default";
+
+            var paddingVariable = new Variable(GetPaddingType(offset), $"__padding_{logicaGroupName}");
+
+            paddingVariable.SetTag(XenkoTags.ConstantBuffer, constantBuffer);
+            paddingVariable.SetTag(XenkoTags.LogicalGroup, logicaGroupName);
+
+            // Satisfy the ShaderLinker. The link name needs to be well defined as it is used for hashing
+            paddingVariable.Attributes.Add(new AttributeDeclaration { Name = new Identifier("Link"), Parameters = new List<Literal> { new Literal(paddingVariable.Name.Text) } });
+
+            constantBuffer.Members.Add(paddingVariable);
+        }
+
+        private static TypeBase GetPaddingType(int offset)
+        {
+            // Get a type to pad the specified offset to the next higher 16 bytes
+            switch (offset)
+            {
+                case 4:
+                    return VectorType.Float3;
+                case 8:
+                    return VectorType.Float2;
+                case 12:
+                    return ScalarType.Float;
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+
+        private static void ComputeMemberSize(Variable member, ref int registerOffset)
+        {
+            bool isRowMajor = member.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.RowMajor);
+            ComputeMemberSize(member.Type, isRowMajor, ref registerOffset);
+        }
+
+        private static void ComputeMemberSize(TypeBase type, bool isRowMajor, ref int registerOffset)
+        {
+            var resolvedType = type.ResolveType();
+
+            var arrayType = resolvedType as ArrayType;
+            if (arrayType != null)
+            {
+                // Arrays are aligned to float4. The last element is not padded
+                registerOffset = 0;
+                ComputeMemberSize(arrayType.Type, isRowMajor, ref registerOffset);
+            }
+            else
+            {
+                var structType = resolvedType as StructType;
+                if (structType != null)
+                {
+                    // Structs are aligned to float4. The last element is not padded
+                    registerOffset = 0;
+                    foreach (var field in structType.Fields)
+                    {
+                        // Properly compute size and offset according to DX rules
+                        ComputeMemberSize(field, ref registerOffset);
+                    }
+                }
+                else
+                {
+                    int size;
+
+                    // Scalars, vectors and matrices fill the remaining space in a float4, if they are small enough.
+                    var scalarType = resolvedType as ScalarType;
+                    if (scalarType != null)
+                    {
+                        size = ComputeTypeSize(scalarType);
+                    }
+                    else
+                    {
+                        var vectorType = resolvedType as VectorType;
+                        if (vectorType != null)
+                        {
+                            int elementSize = ComputeTypeSize((ScalarType)vectorType.Type);
+                            size = elementSize * vectorType.Dimension;
+                        }
+                        else
+                        {
+                            var matrixType = resolvedType as MatrixType;
+                            if (matrixType != null)
+                            {
+                                int elementSize = ComputeTypeSize((ScalarType)matrixType.Type);
+
+                                int majorCount = isRowMajor ? matrixType.RowCount : matrixType.ColumnCount;
+                                int minorCount = isRowMajor ? matrixType.ColumnCount : matrixType.RowCount;
+
+                                // Each major starts a new vector (e.g. double3x2 starts 4 vectors)
+                                var vectorsPerMajor = (elementSize * minorCount + 16 - 1) / 16;
+                                size = (vectorsPerMajor * majorCount - 1) * 16 + (elementSize * minorCount - (vectorsPerMajor - 1) * 16);
+                            }
+                            else
+                            {
+                                throw new NotImplementedException();
+                            }
+                        }
+                    }
+
+                    // Align to float4 if it is bigger than leftover space in current float4
+                    if (registerOffset + size >= 16)
+                    {
+                        registerOffset = size % 16;
+                    }
+                    else
+                    {
+                        registerOffset += size;
+                    }
+                }
+            }
+        }
+
+        private static int ComputeTypeSize(ScalarType elementType)
+        {
+            var type = elementType.Type;
+
+            if (type == typeof(int) || type == typeof(uint) || type == typeof(bool) || type == typeof(float))
+            {
+                return 4;
+            }
+
+            if (type == typeof(double))
+            {
+                return 8;
+            }
+
+            if (type == typeof(void))
+            {
+                return 0;
+            }
+
+            throw new NotSupportedException();
+        }
 
         /// <summary>
         /// Merge all the variables with the same semantic and rename them (but typeinference is not correct)
