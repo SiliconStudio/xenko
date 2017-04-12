@@ -33,14 +33,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         public ISpriteProvider Source
         {
             get { return source;} 
-            set
-            {
-                if (source == value)
-                    return;
-
-                source = value;
-                OnSpriteChanged(source?.GetSprite());
-            }
+            set { source = value; }
         }
 
         /// <summary>
