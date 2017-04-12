@@ -1474,9 +1474,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             switch (offset)
             {
                 case 4:
-                    return VectorType.Float3;
+                    return VectorType.Float3.ToNonGenericType();
                 case 8:
-                    return VectorType.Float2;
+                    return VectorType.Float2.ToNonGenericType();
                 case 12:
                     return ScalarType.Float;
                 default:
