@@ -836,6 +836,7 @@ namespace SiliconStudio.Assets.Quantum
             switch (e.ChangeType)
             {
                 case ContentChangeType.CollectionUpdate:
+                case ContentChangeType.ValueChange:
                     if (e.OldValue != null)
                     {
                         NotifyPartRemoved(GetIdFromChildPart(e.OldValue));
