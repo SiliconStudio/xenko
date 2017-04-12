@@ -10,7 +10,6 @@
     <RootNamespace>VRSandbox</RootNamespace>
     <AssemblyName>VRSandbox</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
-    <LangVersion>6</LangVersion>
     <FileAlignment>512</FileAlignment>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <SiliconStudioPackageGuid>{2fd8e3c1-d573-48af-8aeb-3f8d053f7d0d}</SiliconStudioPackageGuid>

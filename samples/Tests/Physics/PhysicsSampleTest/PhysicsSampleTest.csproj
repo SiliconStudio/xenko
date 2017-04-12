@@ -10,7 +10,6 @@
     <RootNamespace>PhysicsSampleTest</RootNamespace>
     <AssemblyName>PhysicsSampleTest</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <LangVersion>6</LangVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
