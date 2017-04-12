@@ -4,7 +4,7 @@ Name: "Sample: game menu UI"
 Scope: Session
 Description: A sample demonstrating how to create UIs
 FullDescription: |
-    A game sample with a splash screen, welcome screen, main screen, and ship selection screen, each with different layouts and UIElements. The sample demonstrates how to arrange UIElements and make them responsive in different resolutions.
+    A game sample with a splash screen, welcome screen, main screen, and ship selection screen, each with different layouts and UI elements. The sample demonstrates how to arrange UI elements and make them responsive in different resolutions.
 Group: Samples/UI
 Icon: ../.xktpl/NewUI.png
 DefaultOutputName: GameMenu
