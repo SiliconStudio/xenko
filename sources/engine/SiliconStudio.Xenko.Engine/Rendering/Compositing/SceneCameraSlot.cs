@@ -22,16 +22,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             Id = Guid.NewGuid();
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SceneCameraSlot"/> class.
-        /// </summary>
-        /// <param name="camera">The camera.</param>
-        public SceneCameraSlot(CameraComponent camera)
-            : this()
-        {
-            Camera = camera;
-        }
-
         [NonOverridable]
         [DataMember(5)]
         public Guid Id { get; set; }

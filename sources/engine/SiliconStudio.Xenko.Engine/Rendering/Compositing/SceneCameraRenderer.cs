@@ -17,6 +17,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         [DataMemberIgnore]
         public RenderView RenderView { get; } = new RenderView();
 
+        public SceneCameraRenderer()
+        {
+
+        }
         /// <summary>
         /// Gets or sets the camera.
         /// </summary>

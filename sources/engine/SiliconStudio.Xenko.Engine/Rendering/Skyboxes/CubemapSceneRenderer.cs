@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 UseCustomViewMatrix = true,
             };
 
-            var slot = new SceneCameraSlot(Camera);
+            var slot = new SceneCameraSlot();
             Camera.Slot = slot.ToSlotId();
             context.SceneSystem.GraphicsCompositor.Cameras.Add(slot);
 

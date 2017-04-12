@@ -150,8 +150,8 @@ namespace SiliconStudio.Xenko.Assets
                     using (var gameSettingsYaml = gameSettings.AsYamlAsset())
                     {
                         dynamic asset = gameSettingsYaml.DynamicRootNode;
-                        string compositorReference = asset.GraphicsCompositor.ToString();
-                        var guidString = compositorReference.Split(':').FirstOrDefault();
+                        string compositorReference = asset.GraphicsCompositor?.ToString();
+                        var guidString = compositorReference?.Split(':').FirstOrDefault();
                         Guid.TryParse(guidString, out defaultCompositorId);
                     }
                 }
@@ -165,6 +165,7 @@ namespace SiliconStudio.Xenko.Assets
                     {
                         dynamic asset = yamlAsset.DynamicRootNode;
                         int i = 0;
+                        var localSlotIds = new Dictionary<int, Guid>();
                         foreach (dynamic cameraSlot in asset.Cameras)
                         {
                             var guid = Guid.NewGuid();
@@ -173,7 +174,15 @@ namespace SiliconStudio.Xenko.Assets
                             {
                                 slotIds.Add(i, guid);
                             }
+                            localSlotIds.Add(i, guid);
                             cameraSlot.Value.Id = guid;
+                        }
+                        var indexString = asset.Game?.Camera?.Index?.ToString();
+                        int index;
+                        int.TryParse(indexString, out index);
+                        if (localSlotIds.ContainsKey(index) && asset.Game?.Camera != null)
+                        {
+                            asset.Game.Camera = $"ref!! {localSlotIds[index]}";
                         }
                     }
                 }

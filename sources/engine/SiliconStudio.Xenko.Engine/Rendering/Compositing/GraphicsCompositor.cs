@@ -281,7 +281,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     },
                 };
 
-            var cameraSlot = new SceneCameraSlot(camera);
+            var cameraSlot = new SceneCameraSlot();
+            if (camera != null)
+                camera.Slot = cameraSlot.ToSlotId();
+
             return new GraphicsCompositor
             {
                 Cameras =

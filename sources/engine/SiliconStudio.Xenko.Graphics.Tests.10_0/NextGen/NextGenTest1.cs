@@ -35,7 +35,8 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             set
             {
                 Camera.Add(value);
-                SceneSystem.GraphicsCompositor.Cameras[0] = new SceneCameraSlot(value);
+                SceneSystem.GraphicsCompositor.Cameras[0] = new SceneCameraSlot();
+                value.Slot = SceneSystem.GraphicsCompositor.Cameras[0].ToSlotId();
             }
         }
 
