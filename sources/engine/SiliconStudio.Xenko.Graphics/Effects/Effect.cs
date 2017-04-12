@@ -322,10 +322,10 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        internal static void HashConstantBufferMember(ref ObjectIdBuilder hashBuilder, ref EffectValueDescription member)
+        internal static void HashConstantBufferMember(ref ObjectIdBuilder hashBuilder, ref EffectValueDescription member, int baseOffset = 0)
         {
             hashBuilder.Write(member.KeyInfo.Key.Name);
-            hashBuilder.Write(member.Offset);
+            hashBuilder.Write(member.Offset - baseOffset);
             hashBuilder.Write(member.Size);
 
             HashType(ref hashBuilder, ref member.Type);
