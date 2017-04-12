@@ -229,12 +229,6 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 case NotifyCollectionChangedAction.Remove:
                     foreach (var oldItem in e.OldItems) { RemoveEdge(oldItem as NodeEdge); }
                     break;
-                case NotifyCollectionChangedAction.Replace:
-                    break;
-                case NotifyCollectionChangedAction.Move:
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -333,7 +327,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             if (graph.ContainsVertex(node))
             {
                 // TODO Need a better way to removing incoming edges
-                var edgesToRemove = AssociatedObject.EdgesList.Values.Where(x => ((NodeEdge)x.Edge).Target == node).ToList();
+                var edgesToRemove = AssociatedObject.EdgesList.Values.Where(x => ((NodeEdge)x.Edge).Source == node || ((NodeEdge)x.Edge).Target == node).ToList();
                 foreach (var control in edgesToRemove)
                 {
                     var edge = (NodeEdge)control.Edge;
