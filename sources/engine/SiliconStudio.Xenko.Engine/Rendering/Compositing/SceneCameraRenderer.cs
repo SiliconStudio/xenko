@@ -1,4 +1,5 @@
-﻿using SiliconStudio.Core;
+﻿using System;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 
@@ -62,7 +63,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         protected virtual CameraComponent ResolveCamera(RenderContext renderContext)
         {
-            return Camera?.Camera;
+            var camera = Camera?.Camera;
+            if (camera == null) throw new InvalidOperationException($"A {nameof(SceneCameraRenderer)} in use has not camera set.");
+            return camera;
         }
 
         protected virtual void CollectInner(RenderContext renderContext)
