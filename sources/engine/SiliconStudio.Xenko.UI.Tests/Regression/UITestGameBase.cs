@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                     Camera.Add(value);
                 }
 
-                SceneSystem.GraphicsCompositor.Cameras[0] = value;
+                SceneSystem.GraphicsCompositor.Cameras[0] = new SceneCameraSlot(value);
             }
         }
 
