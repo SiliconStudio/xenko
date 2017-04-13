@@ -1,6 +1,6 @@
 !TemplateSample
 Id: B12AF970-1F11-4BC8-9571-3B4DA9E20F05
-Name: "Template: FPS"
+Name: "Template: first-person shooter"
 Scope: Session
 Description: A first-person shooter game template
 FullDescription: This template implements a first-person camera, collision detection via raycasting, and visual effects instance spawning.
