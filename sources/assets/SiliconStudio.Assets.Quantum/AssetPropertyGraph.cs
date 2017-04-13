@@ -51,6 +51,9 @@ namespace SiliconStudio.Assets.Quantum
         private readonly Dictionary<IGraphNode, OverrideType> previousOverrides = new Dictionary<IGraphNode, OverrideType>();
         private readonly Dictionary<IGraphNode, ItemId> removedItemIds = new Dictionary<IGraphNode, ItemId>();
 
+        /// <summary>
+        /// The asset this property graph represents.
+        /// </summary>
         protected readonly Asset Asset;
         // TODO: turn back private
         internal readonly AssetToBaseNodeLinker baseLinker;
@@ -140,7 +143,39 @@ namespace SiliconStudio.Assets.Quantum
         /// </summary>
         public Action<INodeChangeEventArgs, IGraphNode> BaseContentChanged;
 
+        /// <summary>
+        /// Indicates whether this property graph has been initialized.
+        /// </summary>
+        protected bool IsInitialized { get; private set; }
+
+        /// <summary>
+        /// Indicates whether this property graph is currently being initialized.
+        /// </summary>
+        protected bool IsInitializing { get; private set; }
+
         private IBaseToDerivedRegistry BaseToDerivedRegistry => baseToDerivedRegistry ?? (baseToDerivedRegistry = CreateBaseToDerivedRegistry());
+
+        /// <summary>
+        /// Initializes this property graph.
+        /// </summary>
+        public void Initialize()
+        {
+            if (IsInitialized)
+                throw new InvalidOperationException("This property graph has already been initialized.");
+
+            try
+            {
+                IsInitializing = true;
+                RefreshBase();
+                ReconcileWithBase();
+                FinalizeInitialization();
+            }
+            finally
+            {
+                IsInitializing = false;
+            }
+            IsInitialized = true;
+        }
 
         public virtual void RefreshBase()
         {
@@ -269,6 +304,17 @@ namespace SiliconStudio.Assets.Quantum
             CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
             assetItem.YamlMetadata.AttachMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey, GenerateOverridesForSerialization(RootNode));
             assetItem.YamlMetadata.AttachMetadata(AssetObjectSerializerBackend.ObjectReferencesKey, GenerateObjectReferencesForSerialization(RootNode));
+        }
+
+        /// <summary>
+        /// When overridden in a derived class, initializes the <see cref="AssetPropertyGraph"/>-derived class.
+        /// </summary>
+        /// <remarks>
+        /// Override <see cref="FinalizeInitialization"/> to implement custom initialization behavior for your property graph.
+        /// </remarks>
+        protected virtual void FinalizeInitialization()
+        {
+            // Default implementation does nothing
         }
 
         protected virtual void OnContentChanged(MemberNodeChangeEventArgs args)
