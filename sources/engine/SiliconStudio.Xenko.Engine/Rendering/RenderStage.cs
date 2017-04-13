@@ -7,6 +7,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Compositing;
+using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -44,6 +45,7 @@ namespace SiliconStudio.Xenko.Rendering
         public RenderStage()
         {
             Id = Guid.NewGuid();
+            OutputValidator = new RenderOutputValidator(this);
         }
 
         public RenderStage(string name, string effectSlotName) : this()
@@ -59,7 +61,7 @@ namespace SiliconStudio.Xenko.Rendering
         public RenderOutputDescription Output;
 
         [DataMemberIgnore]
-        public RenderOutputValidator OutputValidator;
+        public RenderOutputValidator OutputValidator { get; }
 
         /// <summary>
         /// Index in <see cref="RenderSystem.RenderStages"/>.

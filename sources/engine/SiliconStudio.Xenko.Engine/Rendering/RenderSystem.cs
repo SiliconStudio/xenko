@@ -460,42 +460,47 @@ namespace SiliconStudio.Xenko.Rendering
         public void Reset()
         {
             FrameCounter++;
-            
-            // Clear render features node lists
-            foreach (var renderFeature in RenderFeatures)
-            {
-                renderFeature.Reset();
-            }
 
-            // Clear views
-            foreach (var view in Views)
+            try
             {
-                // Clear nodes
-                view.RenderObjects.Clear(false);
-
-                foreach (var renderViewFeature in view.Features)
+                // Clear render features node lists
+                foreach (var renderFeature in RenderFeatures)
                 {
-                    renderViewFeature.RenderNodes.Clear(true);
-                    renderViewFeature.ViewObjectNodes.Clear(true);
-                    renderViewFeature.Layouts.Clear(false);
+                    renderFeature.Reset();
+                }
+            }
+            finally
+            {
+                // Clear views
+                foreach (var view in Views)
+                {
+                    // Clear nodes
+                    view.RenderObjects?.Clear(false);
+
+                    foreach (var renderViewFeature in view.Features)
+                    {
+                        renderViewFeature.RenderNodes?.Clear(true);
+                        renderViewFeature.ViewObjectNodes?.Clear(true);
+                        renderViewFeature.Layouts?.Clear(false);
+                    }
+
+                    foreach (var renderViewStage in view.RenderStages)
+                    {
+                        // Slow clear, since type contains references
+                        renderViewStage.RenderNodes?.Clear(false);
+                        renderViewStage.SortedRenderNodes?.Clear(false);
+
+                        if (renderViewStage.RenderNodes != null) renderNodePool.Release(renderViewStage.RenderNodes);
+                        if (renderViewStage.SortedRenderNodes != null) sortedRenderNodePool.Release(renderViewStage.SortedRenderNodes);
+                    }
+
+                    // Clear view stages
+                    view.RenderStages?.Clear();
                 }
 
-                foreach (var renderViewStage in view.RenderStages)
-                {
-                    // Slow clear, since type contains references
-                    renderViewStage.RenderNodes.Clear(false);
-                    renderViewStage.SortedRenderNodes.Clear(false);
-
-                    renderNodePool.Release(renderViewStage.RenderNodes);
-                    sortedRenderNodePool.Release(renderViewStage.SortedRenderNodes);
-                }
-
-                // Clear view stages
-                view.RenderStages.Clear();
+                // Clear views
+                Views?.Clear();
             }
-
-            // Clear views
-            Views.Clear();
         }
 
         /// <summary>

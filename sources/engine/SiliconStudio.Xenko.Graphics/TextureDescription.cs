@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <remarks>
         /// This field is only valid for <see cref="Texture2D"/>.
         /// </remarks>
-        public MSAALevel MultiSampleLevel;
+        public MultisampleCount MultisampleCount;
 
         /// <summary>	
         /// <dd> <p>Value that identifies how the texture is to be read from and written to. The most common value is <see cref="SharpDX.Direct3D11.ResourceUsage.Default"/>; see <strong><see cref="SharpDX.Direct3D11.ResourceUsage"/></strong> for all possible values.</p> </dd>	
@@ -152,11 +152,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets a value indicating whether this instance is a multi sample texture.
         /// </summary>
         /// <value><c>true</c> if this instance is multi sample texture; otherwise, <c>false</c>.</value>
-        public bool IsMultiSample
+        public bool IsMultisample
         {
             get
             {
-                return this.MultiSampleLevel > MSAALevel.None;
+                return this.MultisampleCount > MultisampleCount.None;
             }
         }
 
@@ -217,7 +217,7 @@ namespace SiliconStudio.Xenko.Graphics
                 MipLevels = description.MipLevels,
                 Format = description.Format,
                 Flags = TextureFlags.ShaderResource,
-                MultiSampleLevel = MSAALevel.None
+                MultisampleCount = MultisampleCount.None
             };
         }
 
@@ -242,7 +242,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public bool Equals(TextureDescription other)
         {
-            return Dimension == other.Dimension && Width == other.Width && Height == other.Height && Depth == other.Depth && ArraySize == other.ArraySize && MipLevels == other.MipLevels && Format == other.Format && MultiSampleLevel == other.MultiSampleLevel && Usage == other.Usage && Flags == other.Flags;
+            return Dimension == other.Dimension && Width == other.Width && Height == other.Height && Depth == other.Depth && ArraySize == other.ArraySize && MipLevels == other.MipLevels && Format == other.Format && MultisampleCount == other.MultisampleCount && Usage == other.Usage && Flags == other.Flags;
         }
 
         public override bool Equals(object obj)
@@ -263,7 +263,7 @@ namespace SiliconStudio.Xenko.Graphics
                 hashCode = (hashCode * 397) ^ ArraySize;
                 hashCode = (hashCode * 397) ^ MipLevels;
                 hashCode = (hashCode * 397) ^ (int)Format;
-                hashCode = (hashCode * 397) ^ (int)MultiSampleLevel;
+                hashCode = (hashCode * 397) ^ (int)MultisampleCount;
                 hashCode = (hashCode * 397) ^ (int)Usage;
                 hashCode = (hashCode * 397) ^ (int)Flags;
                 return hashCode;

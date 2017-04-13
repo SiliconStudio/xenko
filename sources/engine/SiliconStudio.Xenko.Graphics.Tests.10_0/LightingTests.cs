@@ -44,8 +44,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public LightingTests()
         {
-            //CurrentVersion = 11;
-            CurrentVersion = 12; // Build machine changed
+            // CurrentVersion = 13;
+            CurrentVersion = 14;    // LightShadowMapTexture now ensures that (CurrentMinDistance < CurrentMaxDistance)
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
         }
 

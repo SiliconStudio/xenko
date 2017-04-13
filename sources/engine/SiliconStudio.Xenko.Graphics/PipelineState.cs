@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Linq;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.ReferenceCounting;
 using SiliconStudio.Xenko.Shaders;
@@ -135,6 +136,8 @@ namespace SiliconStudio.Xenko.Graphics
 
     public partial class PipelineState : GraphicsResourceBase
     {
+        public int InputBindingCount { get; private set; }
+
         public static PipelineState New(GraphicsDevice graphicsDevice, ref PipelineStateDescription pipelineStateDescription)
         {
             // Hash the current state

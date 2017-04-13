@@ -1,9 +1,11 @@
 !GameSettingsAsset
 Id: e6395b48-106b-4111-bc8b-8cf309b8edb6
-SerializedVersion: {Xenko: 1.11.0.0}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 DefaultScene: b4210f42-14a3-4917-80b6-006d7f81b1c6:MainScene
 GraphicsCompositor: 07078f4f-a078-4ad4-bc35-bb0656a0f4f8:GraphicsCompositor
+SplashScreenTexture: d26edb11-10bd-403c-b3c2-9c7fcccf25e5:XenkoDefaultSplashScreen
+SplashScreenColor: {R: 0, G: 0, B: 0, A: 255}
 Defaults:
     - !SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics
         DefaultBackBufferWidth: 1280

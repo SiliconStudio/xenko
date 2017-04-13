@@ -141,6 +141,7 @@
     </Compile>
     <Compile Include="Rendering\BackToFrontSortMode.cs" />
     <Compile Include="Rendering\Compositing\ClearRenderer.cs" />
+    <Compile Include="Rendering\Compositing\DebugRenderer.cs" />
     <Compile Include="Rendering\Compositing\EditorTopLevelCompositor.cs" />
     <Compile Include="Rendering\Compositing\DelegateSceneRenderer.cs" />
     <Compile Include="Rendering\Compositing\ForceAspectRatioSceneRenderer.cs" />
@@ -254,6 +255,13 @@
       <DependentUpon>VolumeMinMaxShader.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Compositing\RenderOutputValidator.cs" />
+    <Compile Include="Rendering\LightProbes\LightProbeProcessor.cs" />
+    <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceNormalStreamShading.cs">
+      <DependentUpon>MaterialSurfaceNormalStreamShading.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Rendering\RenderViewFlags.cs" />
     <Compile Include="Rendering\Skyboxes\CubemapSceneRenderer.cs" />
     <Compile Include="Rendering\Lights\LightPointShadowMap.cs" />
@@ -718,6 +726,10 @@
     <None Include="Rendering\LightProbes\ComputeSphericalHarmonics.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeSphericalHarmonics.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSurfaceNormalStreamShading.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceNormalStreamShading.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Shadows\ShadowMapCasterCubeMap.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -3762,6 +3774,7 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>PickingShader.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\XenkoDefaultSplashScreen.xktex" />
     <None Include="Rendering\XenkoDefaultFont.xkfnt" />
     <None Include="Rendering\XenkoWireframeShadingEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -4076,6 +4089,9 @@
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\build\packages\System.Threading.Tasks.Dataflow.4.6.0\lib\netstandard1.1\System.Threading.Tasks.Dataflow.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Rendering\XenkoDefaultSplashScreen.jpg" />
   </ItemGroup>
   <Import Project="..\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems" Label="Shared" />
   <Choose>

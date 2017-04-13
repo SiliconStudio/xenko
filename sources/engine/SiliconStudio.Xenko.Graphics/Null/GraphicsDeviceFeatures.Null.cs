@@ -16,10 +16,11 @@ namespace SiliconStudio.Xenko.Graphics
             NullHelper.ToImplement();
             mapFeaturesPerFormat = new FeaturesPerFormat[256];
             for (int i = 0; i < mapFeaturesPerFormat.Length; i++)
-                mapFeaturesPerFormat[i] = new FeaturesPerFormat((PixelFormat)i, MSAALevel.None, FormatSupport.None);
+                mapFeaturesPerFormat[i] = new FeaturesPerFormat((PixelFormat)i, MultisampleCount.None, FormatSupport.None);
             HasComputeShaders = true;
             HasDepthAsReadOnlyRT = false;
             HasDepthAsSRV = true;
+            HasMultisampleDepthAsSRV = false;
             HasDoublePrecision = true;
             HasDriverCommandLists = true;
             HasMultiThreadingConcurrentResources = true;

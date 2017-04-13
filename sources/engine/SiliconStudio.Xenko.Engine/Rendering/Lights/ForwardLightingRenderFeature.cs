@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -389,7 +389,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     if (viewLighting.Hash == ObjectId.Empty)
                         continue;
 
-                    Debug.Assert(viewLighting.Hash == firstViewLighting.Hash, "PerView Lighting layout differs between different RenderObject in the same RenderView");
+                    if (viewLighting.Hash != firstViewLighting.Hash)
+                        throw new InvalidOperationException("PerView Lighting layout differs between different RenderObject in the same RenderView");
 
                     var resourceGroup = viewLayout.Entries[view.Index].Resources;
 

@@ -1,14 +1,17 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Graphics;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -17,6 +20,10 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class MeshRenderFeature : RootEffectRenderFeature
     {
+        private readonly ThreadLocal<DescriptorSet[]> descriptorSets = new ThreadLocal<DescriptorSet[]>();
+
+        private Buffer emptyBuffer;
+
         /// <summary>
         /// Lists of sub render features that can be applied on <see cref="RenderMesh"/>.
         /// </summary>
@@ -24,8 +31,6 @@ namespace SiliconStudio.Xenko.Rendering
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public TrackingCollection<SubRenderFeature> RenderFeatures = new TrackingCollection<SubRenderFeature>();
-
-        private readonly ThreadLocal<DescriptorSet[]> descriptorSets = new ThreadLocal<DescriptorSet[]>();
 
         /// <inheritdoc/>
         public override Type SupportedRenderObjectType => typeof(RenderMesh);
@@ -42,6 +47,9 @@ namespace SiliconStudio.Xenko.Rendering
                 renderFeature.AttachRootRenderFeature(this);
                 renderFeature.Initialize(Context);
             }
+
+            // Create an empty buffer to compensate for missing vertex streams
+            emptyBuffer = Buffer.Vertex.New(Context.GraphicsDevice, new Vector4[1]);
         }
 
         protected override void Destroy()
@@ -52,6 +60,9 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             RenderFeatures.CollectionChanged -= RenderFeatures_CollectionChanged;
+
+            emptyBuffer?.Dispose();
+            emptyBuffer = null;
 
             base.Destroy();
         }
@@ -112,7 +123,7 @@ namespace SiliconStudio.Xenko.Rendering
             var renderMesh = (RenderMesh)renderObject;
             var drawData = renderMesh.ActiveMeshDraw;
 
-            pipelineState.InputElements = drawData.VertexBuffers.CreateInputElements();
+            pipelineState.InputElements = PrepareInputElements(pipelineState, drawData);
             pipelineState.PrimitiveType = drawData.PrimitiveType;
 
             // Prepare each sub render feature
@@ -149,6 +160,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
             
             MeshDraw currentDrawData = null;
+            int emptyBufferSlot = -1;
             for (int index = startIndex; index < endIndex; index++)
             {
                 var renderNodeReference = renderViewStage.SortedRenderNodes[index].RenderNode;
@@ -166,11 +178,20 @@ namespace SiliconStudio.Xenko.Rendering
                 // Bind VB
                 if (currentDrawData != drawData)
                 {
-                    for (int i = 0; i < drawData.VertexBuffers.Length; i++)
+                    for (int slot = 0; slot < drawData.VertexBuffers.Length; slot++)
                     {
-                        var vertexBuffer = drawData.VertexBuffers[i];
-                        commandList.SetVertexBuffer(i, vertexBuffer.Buffer, vertexBuffer.Offset, vertexBuffer.Stride);
+                        var vertexBuffer = drawData.VertexBuffers[slot];
+                        commandList.SetVertexBuffer(slot, vertexBuffer.Buffer, vertexBuffer.Offset, vertexBuffer.Stride);
                     }
+
+                    // If the mesh's vertex buffers miss any input streams, an additional input binding will have been added to the pipeline state.
+                    // We bind an additional empty vertex buffer to that slot handle those streams gracefully.
+                    if (emptyBufferSlot != drawData.VertexBuffers.Length)
+                    {
+                        commandList.SetVertexBuffer(drawData.VertexBuffers.Length, emptyBuffer, 0, 0);
+                        emptyBufferSlot = drawData.VertexBuffers.Length;
+                    }
+
                     if (drawData.IndexBuffer != null)
                         commandList.SetIndexBuffer(drawData.IndexBuffer.Buffer, drawData.IndexBuffer.Offset, drawData.IndexBuffer.Is32Bit);
                     currentDrawData = drawData;
@@ -229,6 +250,48 @@ namespace SiliconStudio.Xenko.Rendering
                     renderFeature.Dispose();
                     break;
             }
+        }
+
+        private InputElementDescription[] PrepareInputElements(PipelineStateDescription pipelineState, MeshDraw drawData)
+        {
+            // Get the input elements already contained in the mesh's vertex buffers
+            var availableInputElements = drawData.VertexBuffers.CreateInputElements();
+            var inputElements = new List<InputElementDescription>(availableInputElements);
+
+            // In addition, add input elements for all attributes that are not contained in a bound buffer, but required by the shader
+            foreach (var inputAttribute in pipelineState.EffectBytecode.Reflection.InputAttributes)
+            {
+                var inputElementIndex = FindElementBySemantic(availableInputElements, inputAttribute.SemanticName, inputAttribute.SemanticIndex);
+                
+                // Provided by any vertex buffer?
+                if (inputElementIndex >= 0)
+                    continue;
+                
+                inputElements.Add(new InputElementDescription
+                {
+                    AlignedByteOffset = 0,
+                    Format = PixelFormat.R32G32B32A32_Float,
+                    InputSlot = drawData.VertexBuffers.Length,
+                    InputSlotClass = InputClassification.Vertex,
+                    InstanceDataStepRate = 0,
+                    SemanticIndex = inputAttribute.SemanticIndex,
+                    SemanticName = inputAttribute.SemanticName
+                });
+            }
+
+            return inputElements.ToArray();
+        }
+
+        private static int FindElementBySemantic(InputElementDescription[] inputElements, string semanticName, int semanticIndex)
+        {
+            int foundDescIndex = -1;
+            for (int index = 0; index < inputElements.Length; index++)
+            {
+                if (semanticName == inputElements[index].SemanticName && semanticIndex == inputElements[index].SemanticIndex)
+                    foundDescIndex = index;
+            }
+
+            return foundDescIndex;
         }
     }
 }

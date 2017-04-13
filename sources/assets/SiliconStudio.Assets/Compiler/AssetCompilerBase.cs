@@ -18,15 +18,7 @@ namespace SiliconStudio.Assets.Compiler
         /// <inheritdoc/>
         public virtual IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
         {
-            var depsEnumerator = assetItem.Asset as IAssetCompileTimeDependencies;
-            if (depsEnumerator == null) yield break;
-            foreach (var reference in depsEnumerator.EnumerateCompileTimeDependencies(assetItem.Package.Session))
-            {
-                if (reference != null)
-                {
-                    yield return new ObjectUrl(UrlType.Content, reference.Location);
-                }
-            }
+            yield break;
         }
 
         /// <inheritdoc/>

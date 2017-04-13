@@ -215,14 +215,14 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Creates the depth stencil buffer.
             var flags = TextureFlags.DepthStencil;
-            if (GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_0 && Description.MultiSampleLevel == MSAALevel.None)
+            if (GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_0 && Description.MultisampleCount == MultisampleCount.None)
             {
                 flags |= TextureFlags.ShaderResource;
             }
 
             // Create texture description
             var depthTextureDescription = TextureDescription.New2D(Description.BackBufferWidth, Description.BackBufferHeight, Description.DepthStencilFormat, flags);
-            depthTextureDescription.MultiSampleLevel = Description.MultiSampleLevel;
+            depthTextureDescription.MultisampleCount = Description.MultisampleCount;
 
             var depthTexture = Texture.New(GraphicsDevice, depthTextureDescription);
             DepthStencilBuffer = depthTexture.DisposeBy(this);

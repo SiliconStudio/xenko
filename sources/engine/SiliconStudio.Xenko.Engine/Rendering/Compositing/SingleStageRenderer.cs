@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 return;
 
             // Collect with current RenderView
-            RenderStage.Output = context.RenderOutput;
+            RenderStage.OutputValidator.Validate(ref context.RenderOutput);
             context.RenderView.RenderStages.Add(RenderStage);
         }
 

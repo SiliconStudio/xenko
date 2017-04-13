@@ -163,6 +163,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         {
             // Open the database for writing
             var log = new LoggerResult();
+            var effectLog = GlobalLogger.GetLogger("EffectCompilerCache");
 
             // Note: this compiler is expected to not be async and directly write stuff in localLogger
             var compiledShader = base.Compile(mixinTree, effectParameters, compilerParameters).WaitForResult();
@@ -176,6 +177,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                     compilingShaders.Remove(mixinObjectId);
                 }
 
+                log.CopyTo(effectLog);
                 return new EffectBytecodeCompilerResult(null, log);
             }
 
@@ -219,6 +221,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 compilingShaders.Remove(mixinObjectId);
             }
 
+            log.CopyTo(effectLog);
             return compiledShader;
         }
 

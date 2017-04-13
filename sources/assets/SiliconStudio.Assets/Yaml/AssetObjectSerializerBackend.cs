@@ -100,12 +100,6 @@ namespace SiliconStudio.Core.Yaml
             }
 
             var resultMemberName = base.ReadMemberName(ref objectContext, realMemberName, out skipMember);
-            // If ~Id was not found as a member, don't generate an error, as we may have switched an object
-            // to NonIdentifiable but we don't want to write an upgrader for this
-            if (!ShadowId.IsTypeIdentifiable(objectType) && memberName == ShadowId.YamlSpecialId)
-            {
-                skipMember = true;
-            }
             return resultMemberName;
         }
 
