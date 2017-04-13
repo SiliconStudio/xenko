@@ -276,6 +276,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         }
 
         [Test]
+        [Ignore("This test is unreliable, needs reworking")]
         public void RunMouseOversTest()
         {
             RequirePlatform(PlatformType.Windows);

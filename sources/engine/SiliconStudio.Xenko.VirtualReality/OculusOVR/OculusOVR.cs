@@ -10,7 +10,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
-    public static class OculusOvr
+    internal static class OculusOvr
     {
         static OculusOvr()
         {

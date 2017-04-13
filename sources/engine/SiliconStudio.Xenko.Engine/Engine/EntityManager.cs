@@ -54,6 +54,11 @@ namespace SiliconStudio.Xenko.Engine
         public event EventHandler<Entity> EntityRemoved;
 
         /// <summary>
+        /// Occurs when an entity is removed.
+        /// </summary>
+        public event EventHandler<Entity> HierarchyChanged;
+
+        /// <summary>
         /// Occurs when a new component type is added.
         /// </summary>
         public event EventHandler<TypeInfo> ComponentTypeAdded;
@@ -576,6 +581,11 @@ namespace SiliconStudio.Xenko.Engine
         protected virtual void OnComponentChanged(Entity entity, int index, EntityComponent previousComponent, EntityComponent newComponent)
         {
             ComponentChanged?.Invoke(this, new EntityComponentEventArgs(entity, index, previousComponent, newComponent));
+        }
+
+        internal void OnHierarchyChanged(Entity entity)
+        {
+            HierarchyChanged?.Invoke(this, entity);
         }
 
         /// <summary>

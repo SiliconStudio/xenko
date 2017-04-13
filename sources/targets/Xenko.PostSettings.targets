@@ -96,8 +96,25 @@
     <XenkoAssetCompilerCommand>$(XenkoSdkToolsDir)SiliconStudio.Assets.CompilerApp.exe</XenkoAssetCompilerCommand>
   </PropertyGroup>
 
-  <!--Import Xenko settings-->
+  <!--Import Silicon Studio common settings-->
   <Import Project="$(MSBuildThisFileDirectory)..\common\targets\SiliconStudio.PostSettings.targets"/>
+  
+  <!-- If it exists, replace SharedAssemblyInfo.cs with the Package one (which contain NuGet and git versions) -->
+  <PropertyGroup>
+    <PrepareResourcesDependsOn>
+      SiliconStudioXenkoReplaceVersionInfo;
+      $(PrepareResourcesDependsOn)
+    </PrepareResourcesDependsOn>
+  </PropertyGroup>
+
+  <Target Name="SiliconStudioXenkoReplaceVersionInfo" Condition="'$(SiliconStudioPackageBuild)' == 'true'">
+    <Error Condition="!Exists('$(MSBuildThisFileDirectory)..\shared\SharedAssemblyInfo.NuGet.cs')" Text="File SharedAssemblyInfo.NuGet.cs doesn't seem to have been generated. Please make sure Xenko.build PackageEnvironment target has been run succesfully."/>
+    <ItemGroup>
+      <XenkoSharedAssemblyFile Include="@(Compile)" Condition="'%(Compile.FullPath)' == '$([System.IO.Path]::GetFullPath(`$(MSBuildThisFileDirectory)..\shared\SharedAssemblyInfo.cs`))'"/>
+      <Compile Remove="@(XenkoSharedAssemblyFile)" />
+      <Compile Include="@(XenkoSharedAssemblyFile->'$(MSBuildThisFileDirectory)..\shared\SharedAssemblyInfo.NuGet.cs')" />
+    </ItemGroup>
+  </Target>
   
   <!-- Import target to handle ProjectReference for executables -->
   <Import Project="$(MSBuildThisFileDirectory)Xenko.InternalReferences.targets"/>

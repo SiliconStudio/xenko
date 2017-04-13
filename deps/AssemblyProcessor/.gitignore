@@ -1,0 +1,4 @@
+*.pdb
+*.xml
+!SiliconStudio.AssemblyProcessor.*
+SiliconStudio.AssemblyProcessor.vshost.*

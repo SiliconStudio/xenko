@@ -26,7 +26,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestSpriteBatch()
         {
-            CurrentVersion = 9;
+            //CurrentVersion = 9;
+            CurrentVersion = 10; // Texture assets set to uncompressed
         }
 
         protected override void RegisterTests()

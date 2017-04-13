@@ -113,6 +113,11 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     context.Mixin(mixin, (extensionPostVertexStage));
                 }
+                var targetExtensions = context.GetParam(XenkoEffectBaseKeys.RenderTargetExtensions);
+                if (targetExtensions != null)
+                {
+                    context.Mixin(mixin, (targetExtensions));
+                }
             }
 
             [ModuleInitializer]

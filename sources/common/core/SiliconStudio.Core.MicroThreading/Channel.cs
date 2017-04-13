@@ -25,6 +25,12 @@ namespace SiliconStudio.Core.MicroThreading
             Preference = ChannelPreference.PreferReceiver;
         }
 
+        public void Reset()
+        {
+            receivers.Clear();
+            senders.Clear();
+        }
+
         /// <summary>
         /// Gets or sets the preference, allowing you to customize how <see cref="Send"/> and <see cref="Receive"/> behave regarding scheduling.
         /// </summary>

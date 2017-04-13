@@ -14,12 +14,6 @@ namespace SiliconStudio.Quantum
         IGraphNode Node { get; }
 
         /// <summary>
-        /// The index where the change occurred. Must be <see cref="Quantum.Index.Empty"/> if <see cref="ChangeType"/> is
-        /// <see cref="ContentChangeType.ValueChange"/>, and another value than <see cref="Quantum.Index.Empty"/> in other cases.
-        /// </summary>
-        Index Index { get; }
-
-        /// <summary>
         /// The type of change.
         /// </summary>
         ContentChangeType ChangeType { get; }

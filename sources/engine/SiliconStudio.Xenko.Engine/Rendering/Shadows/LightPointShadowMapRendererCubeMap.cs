@@ -143,6 +143,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shadowRenderView.RenderView = sourceView;
                 shadowRenderView.ShadowMapTexture = lightShadowMap;
                 shadowRenderView.Rectangle = lightShadowMap.GetRectangle(i);
+                shadowRenderView.ViewSize = new Vector2(lightShadowMap.GetRectangle(i).Width, lightShadowMap.GetRectangle(i).Height);
 
                 shadowRenderView.NearClipPlane = clippingPlanes.X;
                 shadowRenderView.FarClipPlane = clippingPlanes.Y;

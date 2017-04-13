@@ -40,6 +40,11 @@ namespace SiliconStudio.Xenko.Assets.Models
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
         }
 
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
+        {
+            return base.GetInputFiles(context, assetItem);
+        }
+
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (PrefabModelAsset)assetItem.Asset;

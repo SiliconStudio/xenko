@@ -147,6 +147,7 @@ namespace SiliconStudio.Xenko.Rendering
                     perViewCamera->NearClipPlane = view.NearClipPlane;
                     perViewCamera->FarClipPlane = view.FarClipPlane;
                     perViewCamera->ZProjection = CameraKeys.ZProjectionACalculate(view.NearClipPlane, view.FarClipPlane);
+                    // TODO: Report a warning if ViewSize is 0
                     perViewCamera->ViewSize = view.ViewSize;
                     perViewCamera->AspectRatio = view.ViewSize.X / Math.Max(view.ViewSize.Y, 1.0f);
                 }

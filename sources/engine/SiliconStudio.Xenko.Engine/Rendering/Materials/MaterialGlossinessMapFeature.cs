@@ -60,6 +60,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         {
             if (GlossinessMap != null)
             {
+                GlossinessMap.ClampFloat(0, 1);
+
                 context.UseStream(MaterialShaderStage.Pixel, GlossinessStream.Stream);
                 var computeColorSource = GlossinessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.GlossinessMap, MaterialKeys.GlossinessValue));
                 var mixin = new ShaderMixinSource();

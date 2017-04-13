@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.ComponentModel;
@@ -14,8 +14,16 @@ namespace SiliconStudio.Xenko.Assets.Audio
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Sound))]
     [Display(1200, "Sound")]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "0.0.0")]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
     public class SoundAsset : AssetWithSource
     {
+        private const string CurrentVersion = "2.0.0.0";
+
         /// <summary>
         /// The default file extension used by the <see cref="SoundAsset"/>.
         /// </summary>

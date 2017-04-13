@@ -50,13 +50,6 @@ namespace SiliconStudio.Xenko.Rendering
         public ConcurrentCollector<RenderNode> RenderNodes { get; } = new ConcurrentCollector<RenderNode>();
 
         /// <summary>
-        /// Defines which <see cref="RenderObject"/> gets accepted in that render feature.
-        /// </summary>
-        [DataMember]
-        [DefaultValue(null)]
-        public RootRenderFeatureFilter Filter { get; set; }
-
-        /// <summary>
         /// Overrides that allow defining which render stages are enabled for a specific <see cref="RenderObject"/>.
         /// </summary>
         [DataMember]
@@ -191,9 +184,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         internal bool TryAddRenderObject(RenderObject renderObject)
         {
-            if (Filter != null && !Filter.Accept(renderObject))
-                return false;
-
             renderObject.RenderFeature = this;
 
             // Generate static data ID

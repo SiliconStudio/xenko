@@ -18,6 +18,12 @@ namespace SiliconStudio.Core.Reflection
         Type Type { get; }
 
         /// <summary>
+        /// Gets the list of attributes attached to this type.
+        /// </summary>
+        /// <value>The list of attributes.</value>
+        List<Attribute> Attributes { get; }
+
+        /// <summary>
         /// Gets the members of this type.
         /// </summary>
         /// <value>The members.</value>

@@ -20,6 +20,8 @@ Example of use:
     <AdvancedInstallerPath Condition="'$(AdvancedInstallerPath)' == '' And Exists('$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 13.3\bin\x86\advinst.exe')">$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 13.3\bin\x86\advinst.exe</AdvancedInstallerPath>
   </PropertyGroup>
 
+  <UsingTask TaskName="SiliconStudio.Core.Tasks.PackageUpdateVersionTask" AssemblyFile="$(XenkoRoot)sources\common\core\SiliconStudio.Core.Tasks\bin\Release\SiliconStudio.Core.Tasks.dll" />
+  <!-- TODO: those tasks will work only if the Direct3D11 files have been copied to top folder (currently works thanks to BuildEditorShaders being run before) -->
   <UsingTask TaskName="SiliconStudio.Xenko.Assets.Tasks.PackageArchiveTask" AssemblyFile="$(XenkoRootBin)SiliconStudio.Xenko.Assets.dll" />
   <UsingTask TaskName="SiliconStudio.Xenko.Assets.Tasks.PackageGetVersionTask" AssemblyFile="$(XenkoRootBin)SiliconStudio.Xenko.Assets.dll" />
   
@@ -36,7 +38,7 @@ Example of use:
     </ItemGroup>    
     
     <Delete Files="@(FilesToDeletePackage)"/>
-    <PackageArchiveTask File="$(XenkoPackage)" SpecialVersion="$(XenkoPackageSpecialVersion)"/>
+    <PackageArchiveTask File="$(XenkoPackage)"/>
   </Target>
 
   <!--
@@ -142,14 +144,26 @@ Example of use:
   </Target>
   
   <!-- Package -->
-  <Target Name="PackageEnvironment">
+  <Target Name="PreparePackageBuild">
     <PropertyGroup>
       <BuildProperties>$(BuildProperties);SiliconStudioGenerateDoc=true;SiliconStudioPackageBuild=true</BuildProperties>
     </PropertyGroup>
+	
+	<!-- Need to restore NuGet packages before running some part of the build (for example, VisualStudio Package needs Microsoft.VSSDK.BuildTools target files when loading project; note: the . after $(MSBuildThisFileDirectory) is necessary (NuGet doesn't like SolutionDir ending with \) -->
+    <Exec Command='"$(NuGetPath)" restore -SolutionDir "$(MSBuildThisFileDirectory)." "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package"' />
+    
+    <!-- Make sure SiliconStudio.Assets is built to run the task to update package version.
+         It might be better to move it to a prebuilt assembly if that becomes a problem.
+    -->
+    <MSBuild Targets="30-CoreDesign\SiliconStudio_Core_Tasks" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    
+    <!-- Create SharedAssemblyInfo.NuGet.cs with Git information (different between official build and internal builds) -->
+    <PackageUpdateVersionTask Condition="'$(SiliconStudioOfficialBuild)' == 'true'" PackageFile="$(XenkoPackage)" VersionFile="$(XenkoRoot)sources\shared\SharedAssemblyInfo.cs" GeneratedVersionFile="$(XenkoRoot)sources\shared\SharedAssemblyInfo.NuGet.cs" />
+    <PackageUpdateVersionTask Condition="'$(SiliconStudioOfficialBuild)' != 'true'" PackageFile="$(XenkoPackage)" VersionFile="$(XenkoRoot)sources\shared\SharedAssemblyInfo.cs" GeneratedVersionFile="$(XenkoRoot)sources\shared\SharedAssemblyInfo.NuGet.cs" SpecialVersion="beta" SpecialVersionGitHeight="true" SpecialVersionGitCommit="true" />
   </Target>
-  <Target Name="BuildForPackageMinimal" DependsOnTargets="PackageEnvironment;BuildWindows;BuildEditorShaders;VSIXPlugin"/>
-  <Target Name="BuildForPackage" DependsOnTargets="PackageEnvironment;BuildWindows;BuildWindowsDirect3D12;BuildWindowsOpenGL;BuildWindowsOpenGLES;BuildEditorShaders;BuildAndroid;BuildiOS;BuildUWP;BuildWindowsVulkan;BuildLinux;BuildLinuxVulkan;BuildLinuxCoreCLR;BuildLinuxCoreCLRVulkan;VSIXPlugin"/>
-  <Target Name="GeneratePackage" DependsOnTargets="PackageEnvironment;PrerequisitesInstaller;PackageLauncher;Package;PackageInstaller;WritePackageVersionToFile"/>
+  <Target Name="BuildForPackageMinimal" DependsOnTargets="PreparePackageBuild;BuildWindows;BuildEditorShaders;VSIXPlugin"/>
+  <Target Name="BuildForPackage" DependsOnTargets="PreparePackageBuild;BuildWindows;BuildWindowsDirect3D12;BuildWindowsOpenGL;BuildWindowsOpenGLES;BuildEditorShaders;BuildAndroid;BuildiOS;BuildUWP;BuildWindowsVulkan;BuildLinux;BuildLinuxVulkan;BuildLinuxCoreCLR;BuildLinuxCoreCLRVulkan;VSIXPlugin"/>
+  <Target Name="GeneratePackage" DependsOnTargets="PreparePackageBuild;PrerequisitesInstaller;PackageLauncher;Package;PackageInstaller;WritePackageVersionToFile"/>
   
   <Target Name="CopyXenkoKey">
     <Copy Condition="'$(SiliconStudioSign)' == 'true' And Exists('$(LOCALAPPDATA)\SiliconStudio\XenkoBuildKey\xenko.snk')" SourceFiles="$(LOCALAPPDATA)\SiliconStudio\XenkoBuildKey\xenko.snk" DestinationFolder="$(MSBuildThisFileDirectory)"/>
@@ -199,7 +213,7 @@ Example of use:
   <Target Name="BuildWindows10" DependsOnTargets="BuildUWP" />
 
   <Target Name="BuildUWP" DependsOnTargets="CopyXenkoKey">
-    <Exec Command='"$(NuGetPath)" restore "$(MSBuildThisDirectory)project.json"' />
+    <Exec Command='"$(NuGetPath)" restore "$(MSBuildThisFileDirectory)project.json"' />
     <MSBuild Targets="Build" Projects="$(XenkoSolution).UWP.sln" Properties="$(BuildProperties);Platform=UWP"/>
   </Target>
   
@@ -237,7 +251,7 @@ Example of use:
   </Target> 
   
   <Target Name="WritePackageVersionToFile">
-    <PackageGetVersionTask File="$(XenkoPackage)" SpecialVersion="$(XenkoPackageSpecialVersion)">
+    <PackageGetVersionTask File="$(XenkoPackage)">
       <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>
     </PackageGetVersionTask>
     <Delete Files="$(MSBuildThisFileDirectory)Xenko.version"/>
@@ -245,7 +259,7 @@ Example of use:
   </Target>
   
   <Target Name="GitLinkPdb">
-    <PackageGetVersionTask File="$(XenkoPackage)" SpecialVersion="$(XenkoPackageSpecialVersion)">
+    <PackageGetVersionTask File="$(XenkoPackage)">
       <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>
     </PackageGetVersionTask>
     <Exec ContinueOnError="true" Command="$(XenkoRoot)deps\GitLink\GitLink.exe $(XenkoRoot) -f build\Xenko.sln -u https://github.com/SiliconStudio/xenko -s releases/$(XenkoPackageVersion)" />

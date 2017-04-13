@@ -255,7 +255,7 @@
     </PrepareForRunDependsOn>
 
     <!--asset BuildPath for all platforms (same as package)-->
-    <SiliconStudioCompileAssetBuildPath Condition="'$(SiliconStudioCompileAssetBuildPath)' == ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\obj\data</SiliconStudioCompileAssetBuildPath>
+    <SiliconStudioCompileAssetBuildPath Condition="'$(SiliconStudioCompileAssetBuildPath)' == ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Cache\data</SiliconStudioCompileAssetBuildPath>
 
     <!--asset OutputPath for Android.-->
     <SiliconStudioCompileAssetOutputPath Condition="'$(SiliconStudioCompileAssetOutputPath)' == '' and '$(SiliconStudioPlatform)' == 'Android'">$(ProjectDir)$(MonoAndroidAssetsDirIntermediate)\data</SiliconStudioCompileAssetOutputPath>

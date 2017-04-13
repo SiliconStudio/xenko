@@ -312,23 +312,23 @@ namespace SiliconStudio.Assets
         public List<PackageLoadedAssembly> LoadedAssemblies { get; } = new List<PackageLoadedAssembly>();
 
         /// <summary>
-        /// Adds an exiting project to this package.
+        /// Adds an existing project to this package.
         /// </summary>
         /// <param name="pathToMsproj">The path to msproj.</param>
         /// <returns>LoggerResult.</returns>
-        public LoggerResult AddExitingProject(UFile pathToMsproj)
+        public LoggerResult AddExistingProject(UFile pathToMsproj)
         {
             var logger = new LoggerResult();
-            AddExitingProject(pathToMsproj, logger);
+            AddExistingProject(pathToMsproj, logger);
             return logger;
         }
 
         /// <summary>
-        /// Adds an exiting project to this package.
+        /// Adds an existing project to this package.
         /// </summary>
         /// <param name="pathToMsproj">The path to msproj.</param>
         /// <param name="logger">The logger.</param>
-        public void AddExitingProject(UFile pathToMsproj, LoggerResult logger)
+        public void AddExistingProject(UFile pathToMsproj, LoggerResult logger)
         {
             if (pathToMsproj == null) throw new ArgumentNullException(nameof(pathToMsproj));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
@@ -481,21 +481,6 @@ namespace SiliconStudio.Assets
         {
             if (asset == null) throw new ArgumentNullException(nameof(asset));
             AssetDirtyChanged?.Invoke(asset, oldValue, newValue);
-        }
-
-        /// <summary>
-        /// Saves this package and all dirty assets. See remarks.
-        /// </summary>
-        /// <param name="saveAllAssets">if set to <c>true</c> [save all assets].</param>
-        /// <returns>LoggerResult.</returns>
-        /// <remarks>When calling this method directly, it does not handle moving assets between packages. 
-        /// Call <see cref="PackageSession.Save"/> instead.
-        /// </remarks>
-        public LoggerResult Save(PackageSaveParameters saveParameters = null)
-        {
-            var result = new LoggerResult();
-            Save(result, saveParameters);
-            return result;
         }
         
         /// <summary>

@@ -1,12 +1,6 @@
-!SoundEffect
+!Sound
 Id: b93284cf-ebfc-4f64-ab6a-11be7c13e4b9
 Tags: []
 Source: ../../../data/tests/audio/a.wav
-ImporterId: 634842fa-d1db-45c2-b13d-bc11486dae4d
-~Base:
-    ~Id: 9638cee7-4eba-4264-a9a9-a80d72709fb4
-    Location: --import--
-    Asset: !SoundEffect
-        Id: 00000000-0000-0000-0000-000000000000
-        Tags: []
-        Source: 
+StreamFromDisk: false
+Spatialized: true

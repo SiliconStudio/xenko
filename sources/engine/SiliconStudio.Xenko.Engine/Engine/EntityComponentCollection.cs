@@ -189,8 +189,11 @@ namespace SiliconStudio.Xenko.Engine
         {
             var oldItem = ValidateItem(index, item, true);
 
-            // Detach entity from previous item
-            oldItem.Entity = null;
+            if (item != oldItem)
+            {
+                // Detach entity from previous item only when it's different from the new item.
+                oldItem.Entity = null;
+            }
 
             base.SetItem(index, item);
 

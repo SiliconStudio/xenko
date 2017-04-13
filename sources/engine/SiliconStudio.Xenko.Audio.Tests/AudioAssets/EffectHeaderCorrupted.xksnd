@@ -1,12 +1,6 @@
-!SoundEffect
+!Sound
 Id: 7d13c33f-574d-4afe-909e-45f083eef901
 Tags: []
 Source: ../../../data/tests/audio/90-bboc1_HeaderCorrupted.wav
-ImporterId: 634842fa-d1db-45c2-b13d-bc11486dae4d
-~Base:
-    ~Id: 83d4aec2-bed9-4196-9fd2-1a5144b82acd
-    Location: --import--
-    Asset: !SoundEffect
-        Id: 00000000-0000-0000-0000-000000000000
-        Tags: []
-        Source: 
+StreamFromDisk: false
+Spatialized: true

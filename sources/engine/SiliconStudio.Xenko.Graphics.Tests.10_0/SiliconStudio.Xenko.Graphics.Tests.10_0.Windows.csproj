@@ -172,7 +172,6 @@
     <Compile Include="GraphicTestGameBase.cs" />
     <Compile Include="TestImageEffect.cs" />
     <Compile Include="TestLightShafts.cs" />
-    <Compile Include="TestMultipleRenderTargets.cs" />
     <Compile Include="TestShadows.cs" />
     <None Include="Assets\MultipleRenderTargetsEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>

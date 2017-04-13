@@ -231,7 +231,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
 
             session.CurrentPackage = previousCurrent;
 
-            result = session.Save();
+            session.Save(result);
             if (result.HasErrors)
             {
                 Console.WriteLine("Error saving package: {0}", result.ToText());

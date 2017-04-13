@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
         private DynamicEffectInstance skyboxBackgroundEffect;
 
         public override Type SupportedRenderObjectType => typeof(RenderBackground);
-
+        
         public BackgroundRenderFeature()
         {
             // Background should render after most objects (to take advantage of early z depth test)
@@ -77,16 +77,11 @@ namespace SiliconStudio.Xenko.Rendering.Background
 
         private void DrawCube(RenderDrawContext context, RenderView renderView, RenderBackground renderBackground)
         {
-            var target = context.CommandList.RenderTarget;
             var graphicsDevice = context.GraphicsDevice;
             var destination = new RectangleF(0, 0, 1, 1);
 
             var texture = renderBackground.Texture;
-
-            var imageBufferMinRatio = Math.Min(texture.ViewWidth / (float)target.ViewWidth, texture.ViewHeight / (float)target.ViewHeight);
-            var sourceSize = new Vector2(target.ViewWidth * imageBufferMinRatio, target.ViewHeight * imageBufferMinRatio);
-            var source = new RectangleF((texture.ViewWidth - sourceSize.X) / 2, (texture.ViewHeight - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);
-
+            
             skyboxBackgroundEffect.UpdateEffect(graphicsDevice);
             spriteBatch.Begin(context.GraphicsContext, SpriteSortMode.FrontToBack, BlendStates.Opaque, graphicsDevice.SamplerStates.LinearClamp, DepthStencilStates.DepthRead, null, skyboxBackgroundEffect);
             spriteBatch.Parameters.Set(SkyboxShaderKeys.Intensity, renderBackground.Intensity);
@@ -94,7 +89,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
             spriteBatch.Parameters.Set(SkyboxShaderKeys.ProjectionInverse, Matrix.Invert(renderView.Projection));
             spriteBatch.Parameters.Set(SkyboxShaderKeys.SkyMatrix, Matrix.Invert(Matrix.RotationQuaternion(renderBackground.Rotation)));
             spriteBatch.Parameters.Set(SkyboxShaderKeys.CubeMap, renderBackground.Texture);
-            spriteBatch.Draw(texture, destination, source, Color.White, 0, Vector2.Zero, layerDepth: -0.5f);
+            spriteBatch.Draw(texture, destination, null, Color.White, 0, Vector2.Zero, layerDepth: -0.5f);
             spriteBatch.End();
         }
     }

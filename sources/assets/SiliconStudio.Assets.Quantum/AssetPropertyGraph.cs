@@ -58,6 +58,7 @@ namespace SiliconStudio.Assets.Quantum
         private readonly GraphNodeChangeListener nodeListener;
         private readonly Dictionary<IAssetNode, NodeChangeHandlers> baseLinkedNodes = new Dictionary<IAssetNode, NodeChangeHandlers>();
         private IBaseToDerivedRegistry baseToDerivedRegistry;
+        private bool isDisposed;
 
         public AssetPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
         {
@@ -73,8 +74,8 @@ namespace SiliconStudio.Assets.Quantum
             var overrides = assetItem.YamlMetadata?.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
             ApplyOverrides(RootNode, overrides);
             nodeListener = new AssetGraphNodeChangeListener(RootNode, this);
-            nodeListener.Changing += AssetContentChanging;
-            nodeListener.Changed += AssetContentChanged;
+            nodeListener.ValueChanging += AssetContentChanging;
+            nodeListener.ValueChanged += AssetContentChanged;
             nodeListener.ItemChanging += AssetItemChanging;
             nodeListener.ItemChanged += AssetItemChanged;
 
@@ -84,11 +85,13 @@ namespace SiliconStudio.Assets.Quantum
 
         public virtual void Dispose()
         {
-            nodeListener.Changing -= AssetContentChanging;
-            nodeListener.Changed -= AssetContentChanged;
+            nodeListener.ValueChanging -= AssetContentChanging;
+            nodeListener.ValueChanged -= AssetContentChanged;
             nodeListener.ItemChanging -= AssetItemChanging;
             nodeListener.ItemChanged -= AssetItemChanged;
             nodeListener.Dispose();
+            ClearAllBaseLinks();
+            isDisposed = true;
         }
 
         /// <summary>
@@ -119,7 +122,7 @@ namespace SiliconStudio.Assets.Quantum
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
         /// </summary>
-        public event EventHandler<MemberNodeChangeEventArgs> Changing { add { nodeListener.Changing += value; } remove { nodeListener.Changing -= value; } }
+        public event EventHandler<MemberNodeChangeEventArgs> Changing { add { nodeListener.ValueChanging += value; } remove { nodeListener.ValueChanging -= value; } }
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
@@ -221,10 +224,8 @@ namespace SiliconStudio.Assets.Quantum
             if (visitRoot != null)
             {
                 var visitor = new AssetGraphVisitorBase(this);
-                visitor.Visiting += (node, path) =>
-                {
-                    nodesToReset.Add(node, Index.Empty);
-                };
+                // If we're in scenario where rootNode is an object node and index is not empty, we might already have the node in the dictionary so let's check this in Visiting
+                visitor.Visiting += (node, path) => { if (!nodesToReset.ContainsKey(node)) nodesToReset.Add(node, Index.Empty); };
                 visitor.Visit(rootNode);
             }
             // Then we reconcile (recursively) with the base.
@@ -351,6 +352,7 @@ namespace SiliconStudio.Assets.Quantum
             return currentNode;
         }
 
+        [NotNull]
         public static YamlAssetMetadata<OverrideType> GenerateOverridesForSerialization(IGraphNode rootNode)
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
@@ -535,7 +537,7 @@ namespace SiliconStudio.Assets.Quantum
                     if (member != null)
                     {
                         valueChange = (s, e) => OnBaseContentChanged(e, currentNode);
-                        member.Changed += valueChange;
+                        member.ValueChanged += valueChange;
                     }
                     var objectNode = assetNode.BaseNode as IObjectNode;
                     if (objectNode != null)
@@ -558,7 +560,7 @@ namespace SiliconStudio.Assets.Quantum
                 var member = assetNode.BaseNode as IMemberNode;
                 if (member != null)
                 {
-                    member.Changed -= linkedNode.ValueChange;
+                    member.ValueChanged -= linkedNode.ValueChange;
                 }
                 var objectNode = assetNode.BaseNode as IObjectNode;
                 if (objectNode != null)
@@ -576,7 +578,7 @@ namespace SiliconStudio.Assets.Quantum
                 var member = linkedNode.Key.BaseNode as IMemberNode;
                 if (member != null)
                 {
-                    member.Changed -= linkedNode.Value.ValueChange;
+                    member.ValueChanged -= linkedNode.Value.ValueChange;
                 }
                 var objectNode = linkedNode.Key.BaseNode as IObjectNode;
                 if (objectNode != null)
@@ -613,7 +615,7 @@ namespace SiliconStudio.Assets.Quantum
         private void AssetItemChanging(object sender, ItemChangeEventArgs e)
         {
             var overrideValue = OverrideType.Base;
-            var node = (AssetObjectNode)e.Node;
+            var node = (AssetObjectNode)e.Collection;
             var collection = node.Retrieve();
             // For value change and remove, we store the current override state.
             if (CollectionItemIdHelper.HasCollectionItemIds(collection))
@@ -625,20 +627,20 @@ namespace SiliconStudio.Assets.Quantum
                     var ids = CollectionItemIdHelper.GetCollectionItemIds(collection);
                     ItemId itemId;
                     ids.TryGet(e.Index.Value, out itemId);
-                    removedItemIds[e.Node] = itemId;
+                    removedItemIds[e.Collection] = itemId;
                 }
             }
-            previousOverrides[e.Node] = overrideValue;
+            previousOverrides[e.Collection] = overrideValue;
         }
 
         private void AssetItemChanged(object sender, ItemChangeEventArgs e)
         {
-            var previousOverride = previousOverrides[e.Node];
-            previousOverrides.Remove(e.Node);
+            var previousOverride = previousOverrides[e.Collection];
+            previousOverrides.Remove(e.Collection);
 
             var itemId = ItemId.Empty;
             var overrideValue = OverrideType.Base;
-            var node = (IAssetObjectNodeInternal)e.Node;
+            var node = (IAssetObjectNodeInternal)e.Collection;
             var collection = node.Retrieve();
             if (e.ChangeType == ContentChangeType.CollectionUpdate || e.ChangeType == ContentChangeType.CollectionAdd)
             {
@@ -658,8 +660,8 @@ namespace SiliconStudio.Assets.Quantum
                 if (CollectionItemIdHelper.HasCollectionItemIds(collection))
                 {
                     overrideValue = node.BaseNode != null && !UpdatingPropertyFromBase ? OverrideType.New : OverrideType.Base;
-                    itemId = removedItemIds[e.Node];
-                    removedItemIds.Remove(e.Node);
+                    itemId = removedItemIds[e.Collection];
+                    removedItemIds.Remove(e.Collection);
                 }
             }
 
@@ -715,19 +717,26 @@ namespace SiliconStudio.Assets.Quantum
             {
                 if (ShouldReconcileMember(memberNode, reconcileObjectReference, nodesToReset))
                 {
-                    memberNode.ResettingOverride = true;
-                    object clonedValue;
-                    // Object references
-                    if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty, memberNode.BaseNode.Retrieve()))
-                        clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseValue, memberNode);
-                    else
-                        clonedValue = CloneValueFromBase(baseValue, assetNode);
+                    // If we have no setter, we cannot reconcile this property. Usually it means that the value is already correct (eg. it's an instance of the correct type,
+                    // or it's a value that cannot change), so we'll just keep going and try to reconcile the children of this member.
+                    if (memberNode.MemberDescriptor.HasSet)
+                    {
+                        memberNode.ResettingOverride = true;
 
-                    // Clear override, in case we are resetting it during this reconciliation.
-                    memberNode.Update(clonedValue);
-                    memberNode.OverrideContent(false);
+                        object clonedValue;
+                        // Object references
+                        if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty, memberNode.BaseNode.Retrieve()))
+                            clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseValue, memberNode);
+                        else
+                            clonedValue = CloneValueFromBase(baseValue, assetNode);
+
+                        // Clear override, in case we are resetting it during this reconciliation.
+                        memberNode.Update(clonedValue);
+                        memberNode.OverrideContent(false);
+
+                        memberNode.ResettingOverride = false;
+                    }
                 }
-                memberNode.ResettingOverride = false;
             }
             if (objectNode != null)
             {
@@ -765,13 +774,14 @@ namespace SiliconStudio.Assets.Quantum
                         }
                     }
 
-                    // Clean items marked as "override-deleted" that are absent from the base.
                     var ids = CollectionItemIdHelper.GetCollectionItemIds(localValue);
+                    // Clean items marked as "override-deleted" that are absent from the base.
                     foreach (var deletedId in ids.DeletedItems.ToList())
                     {
                         if (baseNode.Indices.All(x => baseNode.IndexToId(x) != deletedId))
                         {
-                            ids.UnmarkAsDeleted(deletedId);
+                            // We "disconnect" it instead of purely remove it, so it can still be restored by undo/redo
+                            objectNode.DisconnectOverriddenDeletedItem(deletedId);
                         }
                     }
 
@@ -783,7 +793,11 @@ namespace SiliconStudio.Assets.Quantum
 
                         // Skip items marked as "override-deleted"
                         if (itemId == ItemId.Empty || objectNode.IsItemDeleted(itemId))
+                        {
+                            // We force-write the item to be deleted, in case it was just "disconnected"
+                            objectNode.OverrideDeletedItem(true, itemId);
                             continue;
+                        }
 
                         Index localIndex;
                         if (!objectNode.TryIdToIndex(itemId, out localIndex))
@@ -796,8 +810,7 @@ namespace SiliconStudio.Assets.Quantum
                             // We cannot add the item, let's mark it as deleted.
                             if (keyCollision || itemRejected)
                             {
-                                var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(assetNode.Retrieve());
-                                instanceIds.MarkAsDeleted(itemId);
+                                objectNode.OverrideDeletedItem(true, itemId);
                             }
                             else
                             {
@@ -844,7 +857,7 @@ namespace SiliconStudio.Assets.Quantum
                         var value = assetNode.Retrieve(index);
                         objectNode.Remove(value, index);
                         // We're reconciling, so let's hack the normal behavior of marking the removed item as deleted.
-                        ids.UnmarkAsDeleted(item);
+                        objectNode.OverrideDeletedItem(false, item);
                     }
 
                     // Process items marked to be added

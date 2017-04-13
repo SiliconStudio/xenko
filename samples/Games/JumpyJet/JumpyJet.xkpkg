@@ -1,5 +1,5 @@
 !Package
-Id: e0f7780a-6563-47ad-a81c-adfdccd9f26c
+Id: a66ff22b-5604-4711-a52b-7d09d2720fdf
 SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: JumpyJet
@@ -8,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.11.1.2
+            Version: 2.0.0.0
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -20,7 +20,7 @@ Profiles:
             -   Path: JumpyJet.Game/Effects
         OutputGroupDirectories: {}
         ProjectReferences:
-            -   Id: cdb18123-f59f-4852-9777-ed9d217eb043
+            -   Id: 597b3943-f261-406d-adad-96c1f38f30a9
                 Location: JumpyJet.Game/JumpyJet.Game.csproj
                 Type: Library
     -   Name: Windows
@@ -30,10 +30,11 @@ Profiles:
             -   Path: Assets/Windows
         OutputGroupDirectories: {}
         ProjectReferences:
-            -   Id: dfecf85b-19e9-4266-a031-696edc5d5ebb
+            -   Id: aa5698d8-580a-4d8d-a746-5f4576c7cc40
                 Location: JumpyJet.Windows/JumpyJet.Windows.csproj
                 Type: Executable
 ExplicitFolders: []
 Bundles: []
 TemplateFolders: []
-RootAssets: []
+RootAssets:
+    - ce7c2b81-110c-4150-bf9a-d902b03b3d41:Pipe Set

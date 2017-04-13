@@ -17,7 +17,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
     {
         public UniformGridTest()
         {
-            CurrentVersion = 8;
+            //CurrentVersion = 8;
+            CurrentVersion = 9; // One texture was using Format: TrueColor which is no longer available!
         }
 
         protected override void RegisterTests()

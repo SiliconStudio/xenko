@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestImageEffect()
         {
-            CurrentVersion = 2;
+            CurrentVersion = 3;
             GraphicsDeviceManager.PreferredBackBufferWidth = 760;
             GraphicsDeviceManager.PreferredBackBufferHeight = 1016;
         }
@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             hdrRenderTexture = Texture.New2D(GraphicsDevice, hdrTexture.Width, hdrTexture.Height, 1, hdrTexture.Description.Format, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
             drawEffectContext = RenderContext.GetShared(Services);
             postProcessingEffects = new PostProcessingEffects(drawEffectContext);
-            postProcessingEffects.BrightFilter.Threshold = 100.0f;
+            postProcessingEffects.BrightFilter.Threshold = 20.0f;
             postProcessingEffects.Bloom.DownScale = 2;
             postProcessingEffects.Bloom.Enabled = true;
             postProcessingEffects.Bloom.ShowOnlyBloom = true;
@@ -65,12 +65,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             if (Input.IsKeyDown(Keys.Left))
             {
-                postProcessingEffects.BrightFilter.Threshold -= 10.0f;
+                postProcessingEffects.BrightFilter.Threshold -= 2.0f;
                 Log.Info($"BrightFilter Threshold: {postProcessingEffects.BrightFilter.Threshold}");
             }
             else if (Input.IsKeyDown(Keys.Right))
             {
-                postProcessingEffects.BrightFilter.Threshold += 10.0f;
+                postProcessingEffects.BrightFilter.Threshold += 2.0f;
                 Log.Info($"BrightFilter Threshold: {postProcessingEffects.BrightFilter.Threshold}");
             }
 

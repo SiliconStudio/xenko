@@ -29,6 +29,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestHammersley()
         {
+            CurrentVersion = 1;
             GraphicsDeviceManager.PreferredBackBufferWidth = OutputSize;
             GraphicsDeviceManager.PreferredBackBufferHeight = OutputSize;
         }

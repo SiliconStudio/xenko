@@ -209,7 +209,7 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     // Else regular Texture array
                     // Multisample?
-                    if (IsMultiSample)
+                    if (IsMultisample)
                     {
                         if (Dimension != TextureDimension.Texture2D)
                         {
@@ -232,7 +232,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else
             {
-                if (IsMultiSample)
+                if (IsMultisample)
                 {
                     if (Dimension != TextureDimension.Texture2D)
                     {
@@ -292,7 +292,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (this.ArraySize > 1)
             {
-                if (this.MultiSampleLevel > MSAALevel.None)
+                if (this.MultisampleCount > MultisampleCount.None)
                 {
                     if (Dimension != TextureDimension.Texture2D)
                     {
@@ -320,7 +320,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else
             {
-                if (IsMultiSample)
+                if (IsMultisample)
                 {
                     if (Dimension != TextureDimension.Texture2D)
                     {
@@ -368,7 +368,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (!IsUnorderedAccess)
                 return null;
 
-            if (IsMultiSample)
+            if (IsMultisample)
                 throw new NotSupportedException("Multisampling is not supported for unordered access views");
 
             int arrayCount;
@@ -458,7 +458,7 @@ namespace SiliconStudio.Xenko.Graphics
                 depthStencilViewDescription.Texture2D.MipSlice = 0;
             }
 
-            if (MultiSampleLevel > MSAALevel.None)
+            if (MultisampleCount > MultisampleCount.None)
                 depthStencilViewDescription.Dimension = DepthStencilViewDimension.Texture2DMultisampled;
 
             if (IsDepthStencilReadOnly)
@@ -543,7 +543,7 @@ namespace SiliconStudio.Xenko.Graphics
                 Width = description.Width,
                 Height = description.Height,
                 Depth = 1,
-                MultiSampleLevel = (MSAALevel)description.SampleDescription.Count,
+                MultisampleCount = (MultisampleCount)description.SampleDescription.Count,
                 Format = (PixelFormat)description.Format,
                 MipLevels = description.MipLevels,
                 Usage = (GraphicsResourceUsage)description.Usage,
@@ -623,7 +623,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             int quality = 0;
-            if(GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_1 && textureDescription.IsMultiSample)
+            if(GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_1 && textureDescription.IsMultisample)
                 quality = (int)StandardMultisampleQualityLevels.StandardMultisamplePattern;
 
             var desc = new Texture2DDescription()
@@ -631,7 +631,7 @@ namespace SiliconStudio.Xenko.Graphics
                 Width = textureDescription.Width,
                 Height = textureDescription.Height,
                 ArraySize = textureDescription.ArraySize,
-                SampleDescription = new SharpDX.DXGI.SampleDescription((int)textureDescription.MultiSampleLevel, quality),
+                SampleDescription = new SharpDX.DXGI.SampleDescription((int)textureDescription.MultisampleCount, quality),
                 BindFlags = GetBindFlagsFromTextureFlags(flags),
                 Format = format,
                 MipLevels = textureDescription.MipLevels,

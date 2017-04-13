@@ -16,10 +16,10 @@ namespace SiliconStudio.Assets
     /// </summary>
     internal partial class PackageSessionHelper
     {
-        private const string SolutionHeader = @"Microsoft Visual Studio Solution File, Format Version 12.00
+        private static readonly string SolutionHeader = @"Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
-MinimumVisualStudioVersion = 14.0.23107.0";
+VisualStudioVersion = {0}
+MinimumVisualStudioVersion = {0}".ToFormat(PackageSession.DefaultVisualStudioVersion);
 
         public static bool IsPackageFile(string filePath)
         {
@@ -48,6 +48,13 @@ MinimumVisualStudioVersion = 14.0.23107.0";
                     packagePaths.Add(packageFullPath);
                 }
             }
+
+            var versionHeader = solution.Properties.FirstOrDefault(x=>x.Name == "VisualStudioVersion");
+            Version version;
+            if (versionHeader != null && Version.TryParse(versionHeader.Value, out version))
+                session.VisualStudioVersion = version;
+            else
+                session.VisualStudioVersion = null;
         }
 
         public static void SaveSolution(PackageSession session, ILogger log)
@@ -333,8 +340,8 @@ MinimumVisualStudioVersion = 14.0.23107.0";
             var packagePath = package.FullPath;
             var propsFilePath = UPath.Combine(packagePath.GetParent(), (UFile)(packagePath.GetFileNameWithoutExtension() + ".props")) ;
 
-            var projectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
-            var project = new Microsoft.Build.Evaluation.Project(projectCollection);
+            var projectCollection = new Microsoft.Build.Evaluation.ProjectCollection { DefaultToolsVersion = "14.0" };
+            var project = new Microsoft.Build.Evaluation.Project(null, "14.0", projectCollection);
             var commonPropertyGroup = project.Xml.AddPropertyGroup();
 
             var dependencies = package.FindDependencies(false, false, true);

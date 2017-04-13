@@ -41,12 +41,14 @@ namespace SiliconStudio.Presentation.Windows
         }
 
         [NotNull]
-        public static Task<CheckedMessageBoxResult> Show(WindowOwner owner, string message, string caption, MessageBoxButton button, MessageBoxImage image, string checkedMessage, bool? isChecked)
+        public static async Task<CheckedMessageBoxResult> Show(string message, string caption, MessageBoxButton button, MessageBoxImage image, string checkedMessage, bool? isChecked)
         {
-            return Show(owner, message, caption, GetButtons(button), image, checkedMessage, isChecked);
+            var result = await Show(message, caption, GetButtons(button), image, checkedMessage, isChecked);
+            return new CheckedMessageBoxResult((MessageBoxResult)result.Result, result.IsChecked);
         }
-        
-        public static async Task<CheckedMessageBoxResult> Show(WindowOwner owner, string message, string caption, [NotNull] IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image, string checkedMessage, bool? isChecked)
+
+        [NotNull]
+        public static async Task<CheckedMessageBoxResult> Show(string message, string caption, [NotNull] IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image, string checkedMessage, bool? isChecked)
         {
             var buttonList = buttons.ToList();
             var messageBox = new CheckedMessageBox
@@ -61,7 +63,7 @@ namespace SiliconStudio.Presentation.Windows
             SetKeyBindings(messageBox, buttonList);
 
             await messageBox.ShowModal();
-            var result = (MessageBoxResult)messageBox.ButtonResult;
+            var result = messageBox.ButtonResult;
             return new CheckedMessageBoxResult(result, messageBox.IsChecked);
         }
     }

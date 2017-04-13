@@ -16,6 +16,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     public class LightDirectionalShadowMapRenderer : LightShadowMapRendererBase
     {
+        private const float DepthIncreaseThreshold = 1.1f;
+        private const float DepthDecreaseThreshold = 2.0f;
+
         /// <summary>
         /// The various UP vectors to try.
         /// </summary>
@@ -247,7 +250,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                 // Update the shadow camera. The calculation of the eye position assumes RH coordinates.
                 var viewMatrix = Matrix.LookAtRH(target - direction * cascadeMaxBoundLS.Z, target, upDirection); // View;;
-                var projectionMatrix = Matrix.OrthoOffCenterRH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, 0.0f, cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z); // Projection
+                var nearClip = 0.0f;
+                var farClip = cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z;
+                var projectionMatrix = Matrix.OrthoOffCenterRH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, nearClip, farClip); // Projection
                 Matrix viewProjectionMatrix;
                 Matrix.Multiply(ref viewMatrix, ref projectionMatrix, out viewProjectionMatrix);
 
@@ -303,8 +308,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shadowRenderView.ShadowMapTexture = lightShadowMap;
                 shadowRenderView.Rectangle = shadowMapRectangle;
                 shadowRenderView.View = viewMatrix;
+                shadowRenderView.ViewSize = new Vector2(shadowMapRectangle.Width, shadowMapRectangle.Height);
                 shadowRenderView.Projection = projectionMatrix;
                 shadowRenderView.ViewProjection = viewProjectionMatrix;
+                shadowRenderView.NearClipPlane = nearClip;
+                shadowRenderView.FarClipPlane = farClip;
 
                 // Add the render view for the current frame
                 context.RenderSystem.Views.Add(shadowRenderView);
@@ -335,20 +343,20 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return projectionMatrix.M43 / denominator;
         }
 
-        private static float LogFloor(float value)
+        private static float LogFloor(float value, float newBase)
         {
-            var log = (float)Math.Log(value, 1.5);
-            log = (float)Math.Floor(log);
-            log = (float)Math.Pow(1.5, log);
-            return log;
+            var result = Math.Log(value, newBase);
+            result = Math.Floor(result);
+            result = Math.Pow(newBase, result);
+            return (float)result;
         }
 
-        private static float LogCeiling(float value)
+        private static float LogCeiling(float value, float newBase)
         {
-            var log = (float)Math.Log(value, 1.5);
-            log = (float)Math.Ceiling(log);
-            log = (float)Math.Pow(1.5, log);
-            return log;
+            var result = Math.Log(value, newBase);
+            result = Math.Ceiling(result);
+            result = Math.Pow(newBase, result);
+            return (float)result;
         }
 
         private Vector2 ComputeCascadeSplits(RenderContext context, RenderView sourceView, ref LightShadowMapTexture lightShadowMap)
@@ -364,15 +372,25 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             if (shadow.DepthRange.IsAutomatic)
             {
-                // Reserve 1/3 of the guard distance for the min distance
-                minDistance = Math.Max(cameraNear, sourceView.MinimumDistance - shadow.DepthRange.GuardDistance / 3);
-                //minDistance = LogFloor(minDistance);
+                minDistance = Math.Max(sourceView.MinimumDistance, cameraNear);
+                maxDistance = Math.Max(sourceView.MaximumDistance, minDistance);
 
-                // Reserve 2/3 of the guard distance for the max distance
-                var guardMaxDistance = minDistance + shadow.DepthRange.GuardDistance * 2 / 3;
-                maxDistance = Math.Max(sourceView.MaximumDistance, guardMaxDistance);
-                // snap to a 'closest floor' of sorts, to improve stability:
-                //maxDistance = LogCeiling(maxDistance);
+                if (lightShadowMap.CurrentMinDistance <= 0)
+                    lightShadowMap.CurrentMinDistance = minDistance;
+
+                if (lightShadowMap.CurrentMaxDistance <= 0)
+                    lightShadowMap.CurrentMaxDistance = maxDistance;
+
+                // Increase the maximum depth in small logarithmic steps, decrease it in larger logarithmic steps
+                var threshold = maxDistance > lightShadowMap.CurrentMaxDistance ? DepthIncreaseThreshold : DepthDecreaseThreshold;
+                maxDistance = lightShadowMap.CurrentMaxDistance = LogCeiling(maxDistance / lightShadowMap.CurrentMaxDistance, threshold) * lightShadowMap.CurrentMaxDistance;
+
+                // Increase/decrease the distance between maximum and minimum depth in small/large logarithmic steps
+                var range = maxDistance - minDistance;
+                var currentRange = lightShadowMap.CurrentMaxDistance - lightShadowMap.CurrentMinDistance;
+                threshold = range > currentRange ? DepthIncreaseThreshold : DepthDecreaseThreshold;
+                minDistance = maxDistance - LogCeiling(range / currentRange, threshold) * currentRange;
+                minDistance = lightShadowMap.CurrentMinDistance = Math.Max(minDistance, cameraNear);
             }
             else
             {

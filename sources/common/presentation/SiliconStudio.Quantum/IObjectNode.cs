@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
-    public interface IObjectNode : IGraphNode, INotifyItemChange
+    public interface IObjectNode : IGraphNode, INotifyNodeItemChange
     {
         /// <summary>
         /// Gets the member corresponding to the given name.

@@ -497,7 +497,7 @@
     <Compile Include="BufferDescription.cs" />
     <Compile Include="ResourceRegion.cs" />
     <Compile Include="TextureFlags.cs" />
-    <Compile Include="MSAALevel.cs" />
+    <Compile Include="MultisampleLevel.cs" />
     <Compile Include="GraphicsResourceBase.cs" />
     <Compile Include="GraphicsAdapterFactory.cs" />
     <Compile Include="IndexBufferBinding.cs" />

@@ -411,17 +411,53 @@ namespace SiliconStudio.Xenko.Graphics
                     compressed = true;
                     break;
 #endif
+                case PixelFormat.R16_SInt:
+                    internalFormat = PixelInternalFormat.R16i;
+                    format = PixelFormatGl.RedInteger;
+                    type = PixelType.Short;
+                    pixelSize = 2;
+                    break;
+                case PixelFormat.R16_UInt:
+                    internalFormat = PixelInternalFormat.R16ui;
+                    format = PixelFormatGl.RedInteger;
+                    type = PixelType.UnsignedShort;
+                    pixelSize = 2;
+                    break;
                 case PixelFormat.R16_Float:
                     internalFormat = PixelInternalFormat.R16f;
                     format = PixelFormatGl.Red;
                     type = PixelType.HalfFloat;
                     pixelSize = 2;
                     break;
+                case PixelFormat.R16G16_SInt:
+                    internalFormat = PixelInternalFormat.Rg16i;
+                    format = PixelFormatGl.RgInteger;
+                    type = PixelType.Short;
+                    pixelSize = 4;
+                    break;
+                case PixelFormat.R16G16_UInt:
+                    internalFormat = PixelInternalFormat.Rg16ui;
+                    format = PixelFormatGl.RgInteger;
+                    type = PixelType.UnsignedShort;
+                    pixelSize = 4;
+                    break;
                 case PixelFormat.R16G16_Float:
                     internalFormat = PixelInternalFormat.Rg16f;
                     format = PixelFormatGl.Rg;
                     type = PixelType.HalfFloat;
                     pixelSize = 4;
+                    break;
+                case PixelFormat.R16G16B16A16_SInt:
+                    internalFormat = PixelInternalFormat.Rgba16i;
+                    format = PixelFormatGl.RgbaInteger;
+                    type = PixelType.Short;
+                    pixelSize = 8;
+                    break;
+                case PixelFormat.R16G16B16A16_UInt:
+                    internalFormat = PixelInternalFormat.Rgba16ui;
+                    format = PixelFormatGl.RgbaInteger;
+                    type = PixelType.UnsignedShort;
+                    pixelSize = 8;
                     break;
                 case PixelFormat.R16G16B16A16_Float:
                     internalFormat = PixelInternalFormat.Rgba16f;
