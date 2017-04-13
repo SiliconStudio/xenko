@@ -4,7 +4,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Events;
-using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Navigation;
 using SiliconStudio.Xenko.Physics;
 using TopDownRPG.Core;
 
@@ -95,7 +95,6 @@ namespace TopDownRPG.Player
 
             // Get the navigation component on the same entity as this script
             navigation = Entity.Get<NavigationComponent>();
-            if (navigation?.NavigationMesh == null) throw new ArgumentException("Please add a NavigationComponent to the entity containing PlayerController with the correct navigation mesh!");
 
             // Will search for an CharacterComponent within the same entity as this script
             character = Entity.Get<CharacterComponent>();

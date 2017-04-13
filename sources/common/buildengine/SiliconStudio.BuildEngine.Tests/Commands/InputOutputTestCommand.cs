@@ -55,6 +55,11 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
 
         public override string OutputLocation => Location;
 
+        public InputOutputTestCommand()
+        {
+            InputFilesGetter = GetInputFilesImpl;
+        }
+
         private bool WaitDelay()
         {
             // Simulating actual work on input to generate output
@@ -109,7 +114,7 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
             return ResultStatus.Successful;
         }
 
-        protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
+        private IEnumerable<ObjectUrl> GetInputFilesImpl()
         {
             yield return Source;
         }

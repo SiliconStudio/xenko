@@ -1,46 +1,30 @@
-<!-- Build file post-included by all Xenko projects -->
+﻿<!-- Build file post-included by all Xenko projects -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
     <SiliconStudioNETFrameworkVersion>v4.5</SiliconStudioNETFrameworkVersion>
   </PropertyGroup>
-  
-  <!-- Embed native libraries -->
+
   <ItemGroup>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libxenko*.so"/>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libbulletc.so"/>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libcore*.so"/>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\*.config"/>
-    <!-- Users custom native libraries -->
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\**\*.so" />
+    <None Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'" Include="$(SiliconStudioPackageXenkoPlatformBin)\CoreCLRSetup.sh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'" Include="$(SiliconStudioPackageXenkoPlatformBin)\runtimeconfig.json">
+      <Link>%(RecursiveDir)$(AssemblyName).runtimeconfig.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
-  <!-- On Linux platform automatically add the following references -->
-  <Choose>
-    <When Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
-      <ItemGroup>
-        <Content Include="@(SiliconStudioEmbeddedNativeLibrary)">
-          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-          <Visible>False</Visible>
-        </Content>
-        <None Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'" Include="$(SiliconStudioPackageXenkoPlatformBin)\CoreCLRSetup.sh">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'" Include="$(SiliconStudioPackageXenkoPlatformBin)\runtimeconfig.json">
-          <Link>%(RecursiveDir)$(AssemblyName).runtimeconfig.json</Link>
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-      </ItemGroup>
-	  </When>
-  </Choose>
-
-  <!-- On Vulkan embed the SPIR-V shader compiler -->
-  <Target Name="EmbedShaderCompiler" BeforeTargets="SiliconStudioUpdateGraphicsPlatform" Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan'">
-    <Copy Condition="Exists('$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator')" SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
-  </Target>  
-  
-  <UsingTask TaskName="PackageDeployTask" AssemblyFile="$(SiliconStudioPackageXenko)\bin\Windows-Direct3D11\SiliconStudio.Xenko.Assets.dll"/>
+  <!-- Copy native libraries to output -->
+  <Target Name="_SiliconStudioSetupNativeLibraries" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <None Include="@(_SiliconStudioDependencyNativeLib)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+  </Target>
+ 
+  <UsingTask TaskName="PackageDeployTask" AssemblyFile="$(SiliconStudioPackageXenko)\bin\Windows\SiliconStudio.Xenko.Assets.dll"/>
 
   <Target Name="DeployOnLinux" AfterTargets="SiliconStudioCompileAsset" Condition="('$(SiliconStudioIsExecutable)' == 'true') AND ('$(SiliconStudioUnitTest)' != 'true') AND ('$(SiliconStudioDeploy)' == 'true')">
     <PackageDeployTask

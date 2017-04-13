@@ -18,6 +18,11 @@ namespace SiliconStudio.Xenko.Graphics
         private bool isCaptureStarted;
         private unsafe IntPtr* apiPointers;
 
+        public unsafe bool IsInitialized
+        {
+            get { return apiPointers != null; }
+        }
+
         // Matching https://github.com/baldurk/renderdoc/blob/master/renderdoc/api/app/renderdoc_app.h
 
         public unsafe RenderDocManager(string logFilePath = null)
@@ -63,7 +68,10 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void Shutdown()
         {
-            GetMethod<RENDERDOC_Shutdown>(RenderDocAPIFunction.Shutdown)();
+            if (IsInitialized)
+            {
+                GetMethod<RENDERDOC_Shutdown>(RenderDocAPIFunction.Shutdown)();
+            }
         }
 
         public void StartCapture(GraphicsDevice graphicsDevice, IntPtr hwndPtr)

@@ -17,16 +17,17 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
+    [AssetCompiler(typeof(SpriteStudioAnimationAsset), typeof(AssetCompilationContext))]
     internal class SpriteStudioAnimationAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (SpriteStudioAnimationAsset)assetItem.Asset;
             var colorSpace = context.GetColorSpace();
 
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new SpriteStudioAnimationAssetCommand(targetUrlInStorage, asset, colorSpace)
+                new SpriteStudioAnimationAssetCommand(targetUrlInStorage, asset, colorSpace, assetItem.Package)
             };
         }
 
@@ -37,8 +38,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
         {
             private ColorSpace colorSpace;
 
-            public SpriteStudioAnimationAssetCommand(string url, SpriteStudioAnimationAsset asset, ColorSpace colorSpace)
-                : base(url, asset)
+            public SpriteStudioAnimationAssetCommand(string url, SpriteStudioAnimationAsset asset, ColorSpace colorSpace, Package package)
+                : base(url, asset, package)
             {
                 this.colorSpace = colorSpace;
             }

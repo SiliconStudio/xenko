@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -12,6 +12,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Xenko.Shaders.Compiler;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -76,11 +77,6 @@ namespace SiliconStudio.Xenko.Rendering
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public List<PipelineProcessor> PipelineProcessors { get; } = new List<PipelineProcessor>();
-
-        [Obsolete("TODO GFXCOMP: Replaced by PipelineProcessors")]
-        public delegate void ProcessPipelineStateDelegate(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState);
-        [Obsolete("TODO GFXCOMP: Replaced by PipelineProcessors")]
-        public ProcessPipelineStateDelegate PostProcessPipelineState;
 
         public int EffectDescriptorSetSlotCount => effectDescriptorSetSlots.Count;
 
@@ -354,6 +350,37 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
+        /// This is a subpart of effect permutation preparation:
+        ///  set the shader classes that are going to be responsible to compute extended render target colors.
+        /// </summary>
+        /// <param name="context"></param>
+        private void PrepareRenderTargetExtensionsMixins(RenderDrawContext context)
+        {
+            var renderEffectKey = RenderEffectKey;
+            var renderEffects = RenderData.GetData(renderEffectKey);
+
+            // TODO dispatcher
+            foreach (var node in RenderNodes)
+            {
+                var renderNode = node;
+                var renderObject = renderNode.RenderObject;
+
+                // Get RenderEffect
+                var staticObjectNode = renderObject.StaticObjectNode;
+                var staticEffectObjectNode = staticObjectNode * EffectPermutationSlotCount + effectSlots[renderNode.RenderStage.Index].Index;
+                var renderEffect = renderEffects[staticEffectObjectNode];
+
+                if (renderEffect != null)
+                {
+                    var renderStage = renderNode.RenderStage;
+                    var renderStageShaderSource = renderStage.OutputValidator.ShaderSource;
+                    if (renderStageShaderSource != null)
+                        renderEffect.EffectValidator.ValidateParameter(XenkoEffectBaseKeys.RenderTargetExtensions, renderStageShaderSource);
+                }
+            }
+        }
+
+        /// <summary>
         /// Actual implementation of <see cref="PrepareEffectPermutations"/>.
         /// </summary>
         /// <param name="context"></param>
@@ -404,6 +431,8 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Step1: Perform permutations
             PrepareEffectPermutationsImpl(context);
+
+            PrepareRenderTargetExtensionsMixins(context);
 
             var currentTime = DateTime.UtcNow;
 
@@ -769,13 +798,10 @@ namespace SiliconStudio.Xenko.Rendering
 
                         // Extract outputs from render stage
                         pipelineState.Output = renderNode.RenderStage.Output;
-                        pipelineState.RasterizerState.MultiSampleLevel = renderNode.RenderStage.Output.MultiSampleLevel;
+                        pipelineState.RasterizerState.MultisampleCount = renderNode.RenderStage.Output.MultisampleCount;
 
                         // Bind VAO
                         ProcessPipelineState(Context, renderNodeReference, ref renderNode, renderObject, pipelineState);
-
-                        // TODO GFXCOMP: Remove me (obsolete)
-                        PostProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderObject, pipelineState);
 
                         foreach (var pipelineProcessor in PipelineProcessors)
                             pipelineProcessor.Process(renderNodeReference, ref renderNode, renderObject, pipelineState);

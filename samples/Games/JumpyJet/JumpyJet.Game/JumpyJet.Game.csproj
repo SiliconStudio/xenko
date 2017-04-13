@@ -5,7 +5,7 @@
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CDB18123-F59F-4852-9777-ED9D217EB043}</ProjectGuid>
+    <ProjectGuid>{597B3943-F261-406D-ADAD-96C1F38F30A9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JumpyJet</RootNamespace>
@@ -29,58 +29,89 @@
     <Optimize>false</Optimize>
     <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
     <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
-    <SiliconStudioXenkoGraphicsApi>Direct3D11</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioBuildProfile>Windows</SiliconStudioBuildProfile>
-    <OutputPath>..\Bin\Windows-Direct3D11\Debug\</OutputPath>
+    <OutputPath>..\Bin\Windows\Debug\</OutputPath>
     <IntermediateOutputPath>obj\Windows\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
     <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
-    <SiliconStudioXenkoGraphicsApi>Direct3D11</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioBuildProfile>Windows</SiliconStudioBuildProfile>
-    <OutputPath>..\Bin\Windows-Direct3D11\Release\</OutputPath>
+    <OutputPath>..\Bin\Windows\Release\</OutputPath>
     <IntermediateOutputPath>obj\Windows\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
     <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
-    <SiliconStudioXenkoGraphicsApi>Direct3D11</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioBuildProfile>Windows</SiliconStudioBuildProfile>
-    <OutputPath>..\Bin\Windows-Direct3D11\AppStore\</OutputPath>
+    <OutputPath>..\Bin\Windows\AppStore\</OutputPath>
     <IntermediateOutputPath>obj\Windows\AppStore\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
     <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
-    <SiliconStudioXenkoGraphicsApi>Direct3D11</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioBuildProfile>Windows</SiliconStudioBuildProfile>
-    <OutputPath>..\Bin\Windows-Direct3D11\Testing\</OutputPath>
+    <OutputPath>..\Bin\Windows\Testing\</OutputPath>
     <IntermediateOutputPath>obj\Windows\Testing\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CoreCLR_Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
+    <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>Windows</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\Windows\CoreCLR_Release\</OutputPath>
+    <IntermediateOutputPath>obj\Windows\CoreCLR_Release\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioRuntime Condition="'$(SiliconStudioProjectType)' == 'Executable'">CoreCLR</SiliconStudioRuntime>
+    <SiliconStudioBuildDirExtension Condition="'$(SiliconStudioBuildDirExtension)' == ''">CoreCLR</SiliconStudioBuildDirExtension>
+    <DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CoreCLR_Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
+    <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>Windows</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\Windows\CoreCLR_Debug\</OutputPath>
+    <IntermediateOutputPath>obj\Windows\CoreCLR_Debug\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioRuntime Condition="'$(SiliconStudioProjectType)' == 'Executable'">CoreCLR</SiliconStudioRuntime>
+    <SiliconStudioBuildDirExtension Condition="'$(SiliconStudioBuildDirExtension)' == ''">CoreCLR</SiliconStudioBuildDirExtension>
+    <DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BackgroundScript.cs" />
     <Compile Include="CharacterScript.cs" />
-    <Compile Include="GameScript.cs" />
+    <Compile Include="GameGlobals.cs" />
     <Compile Include="JumpyJetRenderer.cs" />
-    <Compile Include="PipeSet.cs" />
     <Compile Include="BackgroundSection.cs" />
     <Compile Include="PipesScript.cs" />
     <Compile Include="UIScript.cs" />

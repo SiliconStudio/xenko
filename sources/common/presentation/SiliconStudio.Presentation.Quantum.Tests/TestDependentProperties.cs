@@ -1,9 +1,11 @@
 ﻿using NUnit.Framework;
+using SiliconStudio.Core;
+using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Presentation.Quantum.Tests.Helpers;
-using TestContext = SiliconStudio.Presentation.Quantum.Tests.Helpers.TestContext;
 
 namespace SiliconStudio.Presentation.Quantum.Tests
 {
+    // TODO: this class should be rewritten to properly match the new design of dependent properties, which is using hard-link between nodes instead of path-based.
     [TestFixture]
     public class TestDependentProperties
     {
@@ -14,36 +16,41 @@ namespace SiliconStudio.Presentation.Quantum.Tests
 
         private const string TestDataKey = "TestData";
         private const string UpdateCountKey = "UpdateCount";
+        private static readonly PropertyKey<string> TestData = new PropertyKey<string>(TestDataKey, typeof(TestDependentProperties));
+        private static readonly PropertyKey<int> UpdateCount = new PropertyKey<int>(UpdateCountKey, typeof(TestDependentProperties));
 
-        private abstract class DependentPropertiesUpdater : IPropertyNodeUpdater
+        private abstract class DependentPropertiesUpdater : NodePresenterUpdaterBase
         {
             private int count;
-            public void UpdateNode(SingleNodeViewModel node)
+            protected abstract bool IsRecursive { get; }
+
+            public override void UpdateNode(INodePresenter node)
             {
                 if (node.Name == nameof(Types.DependentPropertyContainer.Title))
                 {
-                    var instance = (Types.DependentPropertyContainer)node.Owner.RootNode.Value;
-                    node.AddAssociatedData(TestDataKey, instance.Instance.Name);
-
-                    var dependencyPath = GetDependencyPath(node.Owner);
-                    node.AddDependency(dependencyPath, IsRecursive);
-
-                    node.AddAssociatedData(UpdateCountKey, count++);
+                    var instance = (Types.DependentPropertyContainer)node.Root.Value;
+                    node.AttachedProperties.Set(TestData, instance.Instance.Name);
+                    node.AttachedProperties.Set(UpdateCount, count++);
                 }
             }
 
-            protected abstract bool IsRecursive { get; }
+            public override void FinalizeTree(INodePresenter root)
+            {
+                var node = root[Title];
+                var dependencyNode = GetDependencyNode(node.Root);
+                node.AddDependency(dependencyNode, IsRecursive);
+            }
 
-            protected abstract string GetDependencyPath(GraphViewModel viewModel);
+            protected abstract INodePresenter GetDependencyNode(INodePresenter rootNode);
         }
 
         private class SimpleDependentPropertiesUpdater : DependentPropertiesUpdater
         {
             protected override bool IsRecursive => false;
 
-            protected override string GetDependencyPath(GraphViewModel viewModel)
+            protected override INodePresenter GetDependencyNode(INodePresenter rootNode)
             {
-                return viewModel.RootNode.GetChild(Instance).GetChild(Name).Path;
+                return rootNode[Instance][Name];
             }
         }
 
@@ -51,9 +58,9 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         {
             protected override bool IsRecursive => true;
 
-            protected override string GetDependencyPath(GraphViewModel viewModel)
+            protected override INodePresenter GetDependencyNode(INodePresenter rootNode)
             {
-                return viewModel.RootNode.GetChild(Instance).Path;
+                return rootNode[Instance];
             }
         }
 
@@ -61,9 +68,9 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestSimpleDependency()
         {
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
-            var testContext = new TestContext();
+            var testContext = new TestContainerContext();
             var instanceContext = testContext.CreateInstanceContext(container);
-            testContext.GraphViewModelService.RegisterPropertyNodeUpdater(new SimpleDependentPropertiesUpdater());
+            testContext.GraphViewModelService.AvailableUpdaters.Add(new SimpleDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
             var titleNode = viewModel.RootNode.GetChild(Title);
             var nameNode = viewModel.RootNode.GetChild(Instance).GetChild(Name);
@@ -72,12 +79,12 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
-            nameNode.Value = "NewValue";
+            nameNode.NodeValue = "NewValue";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
-            nameNode.Value = "NewValue2";
+            nameNode.NodeValue = "NewValue2";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);
@@ -87,9 +94,9 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestSimpleDependencyChangeParent()
         {
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
-            var testContext = new TestContext();
+            var testContext = new TestContainerContext();
             var instanceContext = testContext.CreateInstanceContext(container);
-            testContext.GraphViewModelService.RegisterPropertyNodeUpdater(new SimpleDependentPropertiesUpdater());
+            testContext.GraphViewModelService.AvailableUpdaters.Add(new SimpleDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
             var titleNode = viewModel.RootNode.GetChild(Title);
             var instanceNode = viewModel.RootNode.GetChild(Instance);
@@ -98,12 +105,12 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
-            instanceNode.Value = new Types.SimpleObject { Name = "NewValue" };
+            instanceNode.NodeValue = new Types.SimpleObject { Name = "NewValue" };
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
-            instanceNode.Value = new Types.SimpleObject { Name = "NewValue2" };
+            instanceNode.NodeValue = new Types.SimpleObject { Name = "NewValue2" };
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);
@@ -113,9 +120,9 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestRecursiveDependency()
         {
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
-            var testContext = new TestContext();
+            var testContext = new TestContainerContext();
             var instanceContext = testContext.CreateInstanceContext(container);
-            testContext.GraphViewModelService.RegisterPropertyNodeUpdater(new RecursiveDependentPropertiesUpdater());
+            testContext.GraphViewModelService.AvailableUpdaters.Add(new RecursiveDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
             var titleNode = viewModel.RootNode.GetChild(Title);
             var instanceNode = viewModel.RootNode.GetChild(Instance);
@@ -124,12 +131,12 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
-            instanceNode.Value = new Types.SimpleObject { Name = "NewValue" };
+            instanceNode.NodeValue = new Types.SimpleObject { Name = "NewValue" };
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
-            instanceNode.Value = new Types.SimpleObject { Name = "NewValue2" };
+            instanceNode.NodeValue = new Types.SimpleObject { Name = "NewValue2" };
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);
@@ -139,9 +146,9 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestRecursiveDependencyChangeChild()
         {
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
-            var testContext = new TestContext();
+            var testContext = new TestContainerContext();
             var instanceContext = testContext.CreateInstanceContext(container);
-            testContext.GraphViewModelService.RegisterPropertyNodeUpdater(new RecursiveDependentPropertiesUpdater());
+            testContext.GraphViewModelService.AvailableUpdaters.Add(new RecursiveDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
             var titleNode = viewModel.RootNode.GetChild(Title);
             var nameNode = viewModel.RootNode.GetChild(Instance).GetChild(Name);
@@ -150,12 +157,12 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
-            nameNode.Value = "NewValue";
+            nameNode.NodeValue = "NewValue";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
-            nameNode.Value = "NewValue2";
+            nameNode.NodeValue = "NewValue2";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);
@@ -165,9 +172,9 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestRecursiveDependencyMixedChanges()
         {
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
-            var testContext = new TestContext();
+            var testContext = new TestContainerContext();
             var instanceContext = testContext.CreateInstanceContext(container);
-            testContext.GraphViewModelService.RegisterPropertyNodeUpdater(new RecursiveDependentPropertiesUpdater());
+            testContext.GraphViewModelService.AvailableUpdaters.Add(new RecursiveDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
             var titleNode = viewModel.RootNode.GetChild(Title);
             var instanceNode = viewModel.RootNode.GetChild(Instance);
@@ -177,23 +184,23 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
-            nameNode.Value = "NewValue";
+            nameNode.NodeValue = "NewValue";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
-            instanceNode.Value = new Types.SimpleObject { Name = "NewValue2" };
+            instanceNode.NodeValue = new Types.SimpleObject { Name = "NewValue2" };
             nameNode = viewModel.RootNode.GetChild(Instance).GetChild(Name);
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);
 
-            nameNode.Value = "NewValue3";
+            nameNode.NodeValue = "NewValue3";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue3", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(3, titleNode.AssociatedData[UpdateCountKey]);
 
-            instanceNode.Value = new Types.SimpleObject { Name = "NewValue4" };
+            instanceNode.NodeValue = new Types.SimpleObject { Name = "NewValue4" };
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue4", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(4, titleNode.AssociatedData[UpdateCountKey]);
@@ -203,9 +210,9 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         public void TestChangeDifferentPropertyWithSameStart()
         {
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
-            var testContext = new TestContext();
+            var testContext = new TestContainerContext();
             var instanceContext = testContext.CreateInstanceContext(container);
-            testContext.GraphViewModelService.RegisterPropertyNodeUpdater(new SimpleDependentPropertiesUpdater());
+            testContext.GraphViewModelService.AvailableUpdaters.Add(new SimpleDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
             var titleNode = viewModel.RootNode.GetChild(Title);
             var nameNode = viewModel.RootNode.GetChild(Instance).GetChild(Name);
@@ -215,22 +222,22 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
-            namNode.Value = "NewValue";
+            namNode.NodeValue = "NewValue";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
-            nameNode.Value = "NewValue2";
+            nameNode.NodeValue = "NewValue2";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
-            namNode.Value = "NewValue3";
+            namNode.NodeValue = "NewValue3";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
-            nameNode.Value = "NewValue4";
+            nameNode.NodeValue = "NewValue4";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue4", titleNode.AssociatedData[TestDataKey]);
             Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);

@@ -1,14 +1,8 @@
-using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.ProceduralModels;
 using SiliconStudio.Xenko.Rendering.RenderTextures;
 
 namespace SiliconStudio.Xenko.Assets.Textures
@@ -16,10 +10,17 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [DataContract("RenderTexture")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Texture))]
-    [AssetCompiler(typeof(RenderTextureAssetCompiler))]
     [Display(1058, "Render Texture")]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "0.0.0")]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
     public sealed class RenderTextureAsset : Asset
     {
+        private const string CurrentVersion = "2.0.0.0";
+
         /// <summary>
         /// The default file extension used by the <see cref="RenderTextureAsset"/>.
         /// </summary>
@@ -49,14 +50,15 @@ namespace SiliconStudio.Xenko.Assets.Textures
         public RenderTextureFormat Format { get; set; } = RenderTextureFormat.LDR;
 
         /// <summary>
-        /// Gets or sets the value indicating whether the output texture is encoded into the standard RGB color space.
+        /// Texture will be stored in sRGB format (standard for color textures) and converted to linear space when sampled. Only relevant when working in Linear color space.
         /// </summary>
         /// <userdoc>
-        /// If checked, the input image is considered as an sRGB image. This should be default for colored texture
-        /// with a HDR/gamma correct rendering.
+        /// Should be checked for all color textures, unless they are explicitly in linear space. Texture will be stored in sRGB format (standard for color textures) and converted to linear space when sampled. Only relevant when working in Linear color space.
         /// </userdoc>
-        [DefaultValue(TextureColorSpace.Auto)]
-        [Display("ColorSpace", "Format")]
-        public TextureColorSpace ColorSpace { get; set; } = TextureColorSpace.Auto;
+        [DefaultValue(true)]
+        [Display("sRGB sampling")]
+        public bool UseSRgbSampling { get; set; } = true;
+
+        public bool IsSRgb(ColorSpace colorSpaceReference) => ((colorSpaceReference == ColorSpace.Linear) && UseSRgbSampling);
     }
 }

@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-        public IntPtr StagingData { get; set; }
+        internal IntPtr StagingData { get; set; }
 #endif
 
         public static bool IsDepthStencilReadOnlySupported(GraphicsDevice device)

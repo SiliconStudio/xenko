@@ -1,12 +1,14 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("NodeInformation")]
     [DataStyle(DataStyle.Compact)]
+    [InlineProperty]
     public class NodeInformation
     {
         /// <summary>
@@ -30,6 +32,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// Nodes should be preserved in order to be animated or linked to an entity.</userdoc>
         [DataMember(30)]
         [DefaultValue(true)]
+        [InlineProperty]
         public bool Preserve { get; set; }
 
         public NodeInformation()

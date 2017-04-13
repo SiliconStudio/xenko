@@ -158,6 +158,10 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             // Note: This "isDirty" system is needed because the texture size is not valid 
             // when the texture is set for the first time by the serializer (texture are loaded in two times)
 
+            // Workaround for deserialized texures. Keep dirty while the texture is not fully deserialized.
+            if (texture?.Size == Size3.Zero)
+                isSpriteDirty = true;
+
             return sprite;
         }
 

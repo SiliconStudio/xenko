@@ -1,3 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- HACK: Helps iOS build on VS2017; probably related to a mixup with older VS2015 targets -->
+  <Target Name="GetBuiltProjectOutputRecursive" />
+
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

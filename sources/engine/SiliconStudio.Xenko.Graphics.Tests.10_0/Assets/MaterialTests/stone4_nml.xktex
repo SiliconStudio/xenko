@@ -1,8 +1,8 @@
 !Texture
 Id: 38ae6ae8-009d-4ae5-87ba-d0e3be283dcd
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
-Source: ../../../../../samples/Graphics/MaterialSample/Resources/stone4_nml.jpeg
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: AsIs
-Hint: NormalMap
+Source: ../../Resources/stone4_nml.jpeg
+IsCompressed: false
+Type: !NormalMapTextureType
+    InvertY: false

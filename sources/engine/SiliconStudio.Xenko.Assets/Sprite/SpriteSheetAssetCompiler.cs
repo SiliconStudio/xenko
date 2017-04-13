@@ -24,6 +24,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     /// <summary>
     /// The <see cref="SpriteSheetAsset"/> compiler.
     /// </summary>
+    [AssetCompiler(typeof(SpriteSheetAsset), typeof(AssetCompilationContext))]
     public class SpriteSheetAssetCompiler : AssetCompilerBase 
     {
         private static bool TextureFileIsValid(UFile file)
@@ -31,7 +32,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             return file != null && File.Exists(file);
         }
 
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (SpriteSheetAsset)assetItem.Asset;
             var gameSettingsAsset = context.GetGameSettingsAsset();
@@ -56,7 +57,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     if(!TextureFileIsValid(textureFile))
                         continue;
 
-                    var textureUrl = SpriteSheetAsset.BuildTextureUrl(targetUrlInStorage, i);
+                    var textureUrl = SpriteSheetAsset.BuildTextureUrl(assetItem.Location, i);
 
                     var spriteAssetArray = spriteByTextures[i].ToArray();
                     foreach (var spriteAsset in spriteAssetArray)
@@ -66,14 +67,17 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     var textureAsset = new TextureAsset
                     {
                         Id = AssetId.Empty, // CAUTION: It is important to use an empty GUID here, as we don't want the command to be rebuilt (by default, a new asset is creating a new guid)
-                        Alpha = asset.Alpha,
-                        Format = asset.Format,
+
+                        IsCompressed = asset.IsCompressed,
                         GenerateMipmaps = asset.GenerateMipmaps,
-                        PremultiplyAlpha = asset.PremultiplyAlpha,
-                        ColorKeyColor = asset.ColorKeyColor,
-                        ColorKeyEnabled = asset.ColorKeyEnabled,
-                        ColorSpace = asset.ColorSpace,
-                        Hint = TextureHint.Color
+                        Type = new ColorTextureType
+                        {
+                            Alpha = asset.Alpha,
+                            PremultiplyAlpha = asset.PremultiplyAlpha,
+                            ColorKeyColor = asset.ColorKeyColor,
+                            ColorKeyEnabled = asset.ColorKeyEnabled,
+                            UseSRgbSampling = true,
+                        }
                     };
 
                     // Get absolute path of asset source on disk
@@ -81,19 +85,24 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     var assetSource = UPath.Combine(assetDirectory, spriteAssetArray[0].Source);
 
                     // add the texture build command.
+                    var textureConvertParameters = new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);
+                    var textureConvertCommand = new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureConvertParameters, assetItem.Package);
                     result.BuildSteps.Add(new AssetBuildStep(new AssetItem(textureUrl, textureAsset))
                     {
-                        new TextureAssetCompiler.TextureConvertCommand(
-                            textureUrl,
-                            new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace))
+                        textureConvertCommand
                     });
                 }
             }
 
             if (!result.HasErrors)
             {
+                result.BuildSteps.Add(new WaitBuildStep());
+
                 var parameters = new SpriteSheetParameters(asset, imageToTextureUrl, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);
-                result.BuildSteps.Add(new AssetBuildStep(assetItem) { new SpriteSheetCommand(targetUrlInStorage, parameters) });
+                result.BuildSteps.Add(new AssetBuildStep(assetItem)
+                {
+                    new SpriteSheetCommand(targetUrlInStorage, parameters, assetItem.Package)
+                });
             }
         }
 
@@ -102,19 +111,9 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// </summary>
         public class SpriteSheetCommand : AssetCommand<SpriteSheetParameters>
         {
-            public SpriteSheetCommand(string url, SpriteSheetParameters parameters)
-                : base(url, parameters)
+            public SpriteSheetCommand(string url, SpriteSheetParameters parameters, Package package)
+                : base(url, parameters, package)
             {
-            }
-
-            /// <inheritdoc/>
-            protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
-            {
-                foreach (var dependency in Parameters.ImageToTextureUrl)
-                {
-                    // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to create the spritesheet
-                    yield return new ObjectUrl(UrlType.Content, dependency.Value);
-                }
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -287,7 +286,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
 
                     var sprites = Parameters.SheetAsset.Sprites;
                     var packingParameters = Parameters.SheetAsset.Packing;
-                    bool isSRgb = Parameters.SheetAsset.ColorSpace.ToColorSpace(Parameters.ColorSpace, TextureHint.Color) == ColorSpace.Linear;
+                    bool isSRgb = Parameters.SheetAsset.IsSRGBTexture(Parameters.ColorSpace);
 
                     for (var i = 0; i < sprites.Count; ++i)
                     {

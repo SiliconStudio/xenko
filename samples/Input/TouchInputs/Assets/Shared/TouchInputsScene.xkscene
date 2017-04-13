@@ -1,8 +1,9 @@
 !SceneAsset
 Id: 8da52091-f3ce-45a3-8f1b-01fbf1a19f42
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
-Parent: null
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - 95d80bd6-50e5-4984-92ae-7b8eeec651a6

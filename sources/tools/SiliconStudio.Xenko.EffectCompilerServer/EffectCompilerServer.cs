@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
     {
         private readonly Dictionary<Guid, SocketMessageLayer> gameStudioPerPackageId = new Dictionary<Guid, SocketMessageLayer>();
 
-        public EffectCompilerServer() : base($"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.EffectCompilerServer.exe")
+        public EffectCompilerServer() : base($"/service/{XenkoVersion.NuGetVersion}/SiliconStudio.Xenko.EffectCompilerServer.exe")
         {
             // TODO: Asynchronously initialize Irony grammars to improve first compilation request performance?
         }

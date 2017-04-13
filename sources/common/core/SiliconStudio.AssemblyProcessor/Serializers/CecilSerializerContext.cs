@@ -25,7 +25,7 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
 
             SiliconStudioCoreAssembly = assembly.Name.Name == "SiliconStudio.Core"
                 ? assembly
-                : assembly.MainModule.AssemblyResolver.Resolve("SiliconStudio.Core");
+                : assembly.MainModule.AssemblyResolver.Resolve(new AssemblyNameReference("SiliconStudio.Core", null));
         }
 
         /// <summary>

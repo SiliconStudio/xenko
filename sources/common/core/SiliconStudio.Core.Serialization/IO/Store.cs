@@ -305,13 +305,13 @@ namespace SiliconStudio.Core.IO
             var countLow = (uint)count;
             var countHigh = (uint)(count >> 32);
 
-            var overlapped = new NativeLockFile.OVERLAPPED()
+            var overlapped = new NativeOverlapped()
                 {
-                    internalLow = 0,
-                    internalHigh = 0,
-                    offsetLow = (uint)offset,
-                    offsetHigh = (uint)(offset >> 32),
-                    hEvent = IntPtr.Zero,
+                    InternalLow= IntPtr.Zero,
+                    InternalHigh = IntPtr.Zero,
+                    OffsetLow = (int)(offset & 0x00000000FFFFFFFF),
+                    OffsetHigh = (int)(offset >> 32),
+                    EventHandle = IntPtr.Zero,
                 };
 
             if (!NativeLockFile.LockFileEx(fileStream.SafeFileHandle, exclusive ? NativeLockFile.LOCKFILE_EXCLUSIVE_LOCK : 0, 0, countLow, countHigh, ref overlapped))
@@ -354,13 +354,13 @@ namespace SiliconStudio.Core.IO
             var countLow = (uint)count;
             var countHigh = (uint)(count >> 32);
 
-            var overlapped = new NativeLockFile.OVERLAPPED()
+            var overlapped = new NativeOverlapped()
                 {
-                    internalLow = 0,
-                    internalHigh = 0,
-                    offsetLow = (uint)offset,
-                    offsetHigh = (uint)(offset >> 32),
-                    hEvent = IntPtr.Zero,
+                    InternalLow = IntPtr.Zero,
+                    InternalHigh = IntPtr.Zero,
+                    OffsetLow = (int)(offset & 0x00000000FFFFFFFF),
+                    OffsetHigh = (int)(offset >> 32),
+                    EventHandle = IntPtr.Zero,
                 };
 
             if (!NativeLockFile.UnlockFileEx(fileStream.SafeFileHandle, 0, countLow, countHigh, ref overlapped))

@@ -702,7 +702,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        public void CopyMultiSample(Texture sourceMsaaTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
+        public void CopyMultisample(Texture sourceMultisampleTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
         {
             Internal.Refactor.ThrowNotImplementedException();
         }
@@ -894,7 +894,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
         }
 
-        public void BeginProfile(Color profileColor, string name)
+        public void BeginProfile(Color4 profileColor, string name)
         {
 #if !SILICONSTUDIO_PLATFORM_IOS
             if (GraphicsDevice.ProfileEnabled)
@@ -1210,7 +1210,9 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                     var vertexAttribMask = 1U << vertexAttrib.AttributeIndex;
-                    if (vertexBuffer == null)
+
+                    // A stride of zero causes automatic stride calculation. To not use the attribute, unbind it in that case
+                    if (vertexBuffer == null || vertexBufferView.Stride == 0)
                     {
                         // No VB bound, turn off this attribute
                         if ((enabledVertexAttribArrays & vertexAttribMask) != 0)
@@ -1530,6 +1532,19 @@ namespace SiliconStudio.Xenko.Graphics
                 throw new ArgumentException("Invalid stage.", nameof(stage));
 
             Internal.Refactor.ThrowNotImplementedException();
+        }
+        
+        /// <summary>
+        /// Unsets an unordered access view from the shader pipeline.
+        /// </summary>
+        /// <param name="unorderedAccessView">The unordered access view.</param>
+        internal void UnsetUnorderedAccessView(GraphicsResource unorderedAccessView)
+        {
+#if DEBUG
+            GraphicsDevice.EnsureContextActive();
+#endif
+            
+            //Internal.Refactor.ThrowNotImplementedException();
         }
 
         internal void SetupTargets()

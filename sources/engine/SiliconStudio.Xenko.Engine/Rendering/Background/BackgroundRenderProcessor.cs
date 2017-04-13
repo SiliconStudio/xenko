@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 
@@ -55,6 +56,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
                     renderBackground.Texture = backgroundComponent.Texture;
                     renderBackground.Intensity = backgroundComponent.Intensity;
                     renderBackground.RenderGroup = backgroundComponent.RenderGroup;
+                    renderBackground.Rotation = Quaternion.RotationMatrix(backgroundComponent.Entity.Transform.WorldMatrix);
 
                     ActiveBackground = renderBackground;
                     break;

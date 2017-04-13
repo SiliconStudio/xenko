@@ -70,12 +70,12 @@ namespace SiliconStudio.AssemblyProcessor
             // Get some useful Cecil objects from SiliconStudio.Core
             var siliconStudioCoreAssembly = context.Assembly.Name.Name == "SiliconStudio.Core"
                     ? context.Assembly
-                    : context.Assembly.MainModule.AssemblyResolver.Resolve("SiliconStudio.Core");
+                    : context.Assembly.MainModule.AssemblyResolver.Resolve(new AssemblyNameReference("SiliconStudio.Core", null));
             var siliconStudioCoreModule = siliconStudioCoreAssembly.MainModule;
 
             var siliconStudioXenkoEngineAssembly = context.Assembly.Name.Name == "SiliconStudio.Xenko.Engine"
                     ? context.Assembly
-                    : context.Assembly.MainModule.AssemblyResolver.Resolve("SiliconStudio.Xenko.Engine");
+                    : context.Assembly.MainModule.AssemblyResolver.Resolve(new AssemblyNameReference("SiliconStudio.Xenko.Engine", null));
             var siliconStudioXenkoEngineModule = siliconStudioXenkoEngineAssembly.MainModule;
 
             // Generate IL for SiliconStudio.Core
@@ -168,7 +168,7 @@ namespace SiliconStudio.AssemblyProcessor
                 var typeDefinition = serializableType.Key.Resolve();
 
                 // If using List<T>, register this type in UpdateEngine
-                var listInterfaceType = typeDefinition.Interfaces.OfType<GenericInstanceType>().FirstOrDefault(x => x.ElementType.FullName == typeof(IList<>).FullName);
+                var listInterfaceType = typeDefinition.Interfaces.Select(x => x.InterfaceType).OfType<GenericInstanceType>().FirstOrDefault(x => x.ElementType.FullName == typeof(IList<>).FullName);
                 if (listInterfaceType != null)
                 {
                     //call Updater.UpdateEngine.RegisterMemberResolver(new Updater.ListUpdateResolver<T>());

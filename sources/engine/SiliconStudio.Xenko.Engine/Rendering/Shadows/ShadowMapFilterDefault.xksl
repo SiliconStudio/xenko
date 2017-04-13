@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         /// </summary>
         float FilterShadow(float2 position, float positionDepth)
         {
-            return ShadowMapTexture.SampleCmp(LinearClampCompareLessEqualSampler, position, positionDepth);
+            return ShadowMapTexture.SampleCmpLevelZero(LinearClampCompareLessEqualSampler, position, positionDepth);
         }
     };
 }

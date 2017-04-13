@@ -9,7 +9,7 @@ using Valve.VR;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
-    public static class OpenVR
+    internal static class OpenVR
     {
         public class Controller
         {
@@ -169,6 +169,9 @@ namespace SiliconStudio.Xenko.VirtualReality
 
             InitDone = true;
 
+            //this makes the camera behave like oculus rift default!
+            Valve.VR.OpenVR.Compositor.SetTrackingSpace(ETrackingUniverseOrigin.TrackingUniverseSeated);
+
             return true;
         }
 
@@ -315,8 +318,61 @@ namespace SiliconStudio.Xenko.VirtualReality
             var eyeTexSrv = IntPtr.Zero;
             Valve.VR.OpenVR.Compositor.GetMirrorTextureD3D11(eyeIndex == 0 ? EVREye.Eye_Left : EVREye.Eye_Right, nativeDevice, ref eyeTexSrv);
             var tex = new Texture(device);
-            tex.InitializeFrom(new ShaderResourceView(eyeTexSrv));
+            tex.InitializeFromImpl(new ShaderResourceView(eyeTexSrv));
             return tex;
+        }
+
+        public static ulong CreateOverlay()
+        {
+            var layerKeyName = Guid.NewGuid().ToString();
+            ulong handle = 0;
+            return Valve.VR.OpenVR.Overlay.CreateOverlay(layerKeyName, layerKeyName, ref handle) == EVROverlayError.None ? handle : 0;
+        }
+
+        public static void InitOverlay(ulong overlayId)
+        {
+            Valve.VR.OpenVR.Overlay.SetOverlayInputMethod(overlayId, VROverlayInputMethod.None);
+            Valve.VR.OpenVR.Overlay.SetOverlayFlag(overlayId, VROverlayFlags.SortWithNonSceneOverlays, true);
+        }
+
+        public static bool SubmitOverlay(ulong overlayId, Texture texture)
+        {
+            var tex = new Texture_t
+            {
+                eType = EGraphicsAPIConvention.API_DirectX,
+                eColorSpace = EColorSpace.Auto,
+                handle = texture.NativeResource.NativePointer
+            };
+           
+            return Valve.VR.OpenVR.Overlay.SetOverlayTexture(overlayId, ref tex) == EVROverlayError.None;
+        }
+
+        public static unsafe void SetOverlayParams(ulong overlayId, Matrix transform, bool followsHead, Vector2 surfaceSize)
+        {
+            Valve.VR.OpenVR.Overlay.SetOverlayWidthInMeters(overlayId, 1.0f);
+
+            transform = Matrix.Scaling(new Vector3(surfaceSize.X, surfaceSize.Y, 1.0f)) * transform;
+
+            if (followsHead)
+            {
+                HmdMatrix34_t pose = new HmdMatrix34_t();
+                Utilities.CopyMemory((IntPtr)Interop.Fixed(ref pose), (IntPtr)Interop.Fixed(ref transform), Utilities.SizeOf<HmdMatrix34_t>());
+                Valve.VR.OpenVR.Overlay.SetOverlayTransformTrackedDeviceRelative(overlayId, 0, ref pose);
+            }
+            else
+            {
+                HmdMatrix34_t pose = new HmdMatrix34_t();
+                Utilities.CopyMemory((IntPtr)Interop.Fixed(ref pose), (IntPtr)Interop.Fixed(ref transform), Utilities.SizeOf<HmdMatrix34_t>());
+                Valve.VR.OpenVR.Overlay.SetOverlayTransformAbsolute(overlayId, ETrackingUniverseOrigin.TrackingUniverseSeated, ref pose);
+            }
+        }
+
+        public static void SetOverlayEnabled(ulong overlayId, bool enabled)
+        {
+            if(enabled)
+                Valve.VR.OpenVR.Overlay.ShowOverlay(overlayId);
+            else
+                Valve.VR.OpenVR.Overlay.HideOverlay(overlayId);
         }
     }
 }

@@ -37,10 +37,7 @@ namespace SiliconStudio.BuildEngine
         }
 
         /// <inheritdoc/>
-        public int Count
-        {
-            get { return children.Count; }
-        }
+        public int Count => children.Count;
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator()
@@ -134,9 +131,6 @@ namespace SiliconStudio.BuildEngine
         }
 
         /// <inheritdoc/>
-        bool ICollection<BuildStep>.IsReadOnly
-        {
-            get { return ((IList<BuildStep>)children).IsReadOnly; }
-        }
+        bool ICollection<BuildStep>.IsReadOnly => ((IList<BuildStep>)children).IsReadOnly;
     }
 }

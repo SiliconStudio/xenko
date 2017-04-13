@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         {
             base.Draw(context, renderView, renderViewStage, startIndex, endIndex);
 
-            var isMsaa = RenderSystem.RenderStages[renderViewStage.Index].Output.MultiSampleLevel != MSAALevel.None;
+            var isMultisample = RenderSystem.RenderStages[renderViewStage.Index].Output.MultisampleCount != MultisampleCount.None;
 
             var batchContext = threadContext.Value;
 
@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     var blendState = isPicking ? BlendStates.Default : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? BlendStates.AlphaBlend : BlendStates.NonPremultiplied) : BlendStates.Opaque;
                     var currentEffect = isPicking ? batchContext.GetOrCreatePickingSpriteEffect(RenderSystem.EffectSystem) : null; // TODO remove this code when material are available
                     var depthStencilState = renderSprite.SpriteComponent.IgnoreDepth ? DepthStencilStates.None : DepthStencilStates.Default;
-                    if (isMsaa)
+                    if (isMultisample)
                         blendState.AlphaToCoverageEnable = true;
 
                     var samplerState = context.GraphicsDevice.SamplerStates.LinearClamp;
@@ -114,10 +114,10 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     }
 
                     var rasterizerState = RasterizerStates.CullNone;
-                    if (isMsaa)
+                    if (isMultisample)
                     {
-                        rasterizerState.MultiSampleLevel = RenderSystem.RenderStages[renderViewStage.Index].Output.MultiSampleLevel;
-                        rasterizerState.MultiSampleAntiAliasLine = true;
+                        rasterizerState.MultisampleCount = RenderSystem.RenderStages[renderViewStage.Index].Output.MultisampleCount;
+                        rasterizerState.MultisampleAntiAliasLine = true;
                     }
 
                     batchContext.SpriteBatch.Begin(context.GraphicsContext, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, samplerState, depthStencilState, rasterizerState, currentEffect);

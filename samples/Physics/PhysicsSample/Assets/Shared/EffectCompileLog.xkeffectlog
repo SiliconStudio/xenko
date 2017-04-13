@@ -18,7 +18,7 @@ UsedParameters:
                     - !ShaderMixinSource
                         Mixins:
                             -   ClassName: MaterialSurfaceNormalMap
-                                GenericArguments: [false, true, true]
+                                GenericArguments: [false, true]
                         Compositions:
                             normalMap: !ShaderClassSource
                                 ClassName: ComputeColorTextureScaledOffsetDynamicSampler
@@ -161,7 +161,7 @@ UsedParameters:
                     - !ShaderMixinSource
                         Mixins:
                             -   ClassName: MaterialSurfaceNormalMap
-                                GenericArguments: [false, true, true]
+                                GenericArguments: [false, true]
                         Compositions:
                             normalMap: !ShaderClassSource
                                 ClassName: ComputeColorTextureScaledOffsetDynamicSampler
@@ -273,7 +273,7 @@ UsedParameters:
                                     - !ShaderMixinSource
                                         Mixins:
                                             -   ClassName: MaterialSurfaceNormalMap
-                                                GenericArguments: [false, true, true]
+                                                GenericArguments: [false, true]
                                         Compositions:
                                             normalMap: !ShaderClassSource
                                                 ClassName: ComputeColorTextureScaledOffsetDynamicSampler
@@ -396,6 +396,10 @@ UsedParameters:
     Lighting.EnvironmentLights:
         - !ShaderClassSource
             ClassName: LightSimpleAmbient
+---
+!EffectCompileRequest
+EffectName: BackgroundShader
+UsedParameters: {}
 ---
 !EffectCompileRequest
 EffectName: XenkoForwardShadingEffect

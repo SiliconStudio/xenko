@@ -3,15 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
-
-using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-
 using NShader;
-
 using SiliconStudio.Assets;
 using SiliconStudio.Xenko.Shaders.Parser;
 using SiliconStudio.Xenko.VisualStudio.BuildEngine;
@@ -25,7 +17,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
     {
         public void Initialize(string xenkoSdkDir)
         {
-            DirectoryHelper.packageDirectoryOverride = xenkoSdkDir;
+            DirectoryHelper.PackageDirectoryOverride = xenkoSdkDir;
             // Don't necessarely initialize the shaders
             //XenkoShaderParser.Initialize();
         }

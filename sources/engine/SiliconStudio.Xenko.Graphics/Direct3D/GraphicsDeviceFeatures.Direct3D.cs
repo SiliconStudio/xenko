@@ -59,36 +59,37 @@ namespace SiliconStudio.Xenko.Graphics
 
             HasDepthAsSRV = (CurrentProfile >= GraphicsProfile.Level_10_0);
             HasDepthAsReadOnlyRT = (CurrentProfile >= GraphicsProfile.Level_11_0);
+            HasMultisampleDepthAsSRV = (CurrentProfile > GraphicsProfile.Level_10_0);
 
             // Check features for each DXGI.Format
             foreach (var format in Enum.GetValues(typeof(SharpDX.DXGI.Format)))
             {
                 var dxgiFormat = (SharpDX.DXGI.Format)format;
-                var maximumMSAA = MSAALevel.None;
+                var maximumMultisampleCount = MultisampleCount.None;
                 var computeShaderFormatSupport = ComputeShaderFormatSupport.None;
                 var formatSupport = FormatSupport.None;
 
                 if (!ObsoleteFormatToExcludes.Contains(dxgiFormat))
                 {
-                    maximumMSAA = GetMaximumMSAASampleCount(nativeDevice, dxgiFormat);
+                    maximumMultisampleCount = GetMaximumMultisampleCount(nativeDevice, dxgiFormat);
                     if (HasComputeShaders)
                         computeShaderFormatSupport = nativeDevice.CheckComputeShaderFormatSupport(dxgiFormat);
 
                     formatSupport = (FormatSupport)nativeDevice.CheckFormatSupport(dxgiFormat);
                 }
 
-                //mapFeaturesPerFormat[(int)dxgiFormat] = new FeaturesPerFormat((PixelFormat)dxgiFormat, maximumMSAA, computeShaderFormatSupport, formatSupport);
-                mapFeaturesPerFormat[(int)dxgiFormat] = new FeaturesPerFormat((PixelFormat)dxgiFormat, maximumMSAA, formatSupport);
+                //mapFeaturesPerFormat[(int)dxgiFormat] = new FeaturesPerFormat((PixelFormat)dxgiFormat, maximumMultisampleCount, computeShaderFormatSupport, formatSupport);
+                mapFeaturesPerFormat[(int)dxgiFormat] = new FeaturesPerFormat((PixelFormat)dxgiFormat, maximumMultisampleCount, formatSupport);
             }
         }
 
         /// <summary>
-        /// Gets the maximum MSAA sample count for a particular <see cref="PixelFormat" />.
+        /// Gets the maximum multisample count for a particular <see cref="PixelFormat" />.
         /// </summary>
         /// <param name="device">The device.</param>
         /// <param name="pixelFormat">The pixelFormat.</param>
         /// <returns>The maximum multisample count for this pixel pixelFormat</returns>
-        private static MSAALevel GetMaximumMSAASampleCount(SharpDX.Direct3D11.Device device, SharpDX.DXGI.Format pixelFormat)
+        private static MultisampleCount GetMaximumMultisampleCount(SharpDX.Direct3D11.Device device, SharpDX.DXGI.Format pixelFormat)
         {
             int maxCount = 1;
             for (int i = 1; i <= 8; i *= 2)
@@ -96,7 +97,7 @@ namespace SiliconStudio.Xenko.Graphics
                 if (device.CheckMultisampleQualityLevels(pixelFormat, i) != 0)
                     maxCount = i;
             }
-            return (MSAALevel)maxCount;
+            return (MultisampleCount)maxCount;
         }
     }
 }

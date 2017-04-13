@@ -72,6 +72,7 @@ namespace SiliconStudio.Xenko.Games
         private const int SC_SCREENSAVE = 0xF140;
         private const int MNC_CLOSE = 1;
         private const byte VK_RETURN = 0x0D;
+        private const byte VK_TAB = 0x09;
         private Size cachedSize;
         private FormWindowState previousWindowState;
         private bool isUserResizing;
@@ -362,6 +363,12 @@ namespace SiliconStudio.Xenko.Games
                     else
                     {
                         OnAppDeactivated(EventArgs.Empty);
+
+                        //also remove full screen if this is the case
+                        if (IsFullScreen) //exit full screen on alt-tab if in fullscreen
+                        {
+                            OnFullscreenToggle(new EventArgs());
+                        }
                     }
                     break;
                 case Win32Native.WM_POWERBROADCAST:

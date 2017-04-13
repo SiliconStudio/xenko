@@ -8,6 +8,8 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
+using SiliconStudio.Packages;
 using SiliconStudio.Xenko.Engine.Network;
 
 namespace SiliconStudio.Xenko.ConnectionRouter
@@ -52,7 +54,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                 if (xenkoPackage == null)
                     return null;
 
-                var packageDirectory = store.PathResolver.GetPackageDirectory(xenkoPackage);
+                var packageDirectory = store.GetPackageDirectory(xenkoPackage);
                 return Path.Combine(xenkoSdkDir, store.RepositoryPath, packageDirectory);
             }
 
@@ -88,24 +90,25 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     }
                 }
 
-                var routerAssemblyLocation = typeof(Router).Assembly.Location;
+                var defaultRouterAssemblyLocation = typeof(Router).Assembly.Location;
+                if (defaultRouterAssemblyLocation == null)
+                {
+                    throw new InvalidOperationException("Could not find Connection Router assembly location");
+                }
+
+                var routerAssemblyLocation = defaultRouterAssemblyLocation;
                 var routerAssemblyExe = Path.GetFileName(routerAssemblyLocation);
 
                 // Find latest xenko
                 var xenkoSdkDir = FindXenkoSdkDir();
-                if (xenkoSdkDir == null)
+                if (xenkoSdkDir != null)
                 {
-                    throw new FileNotFoundException("Could not find Xenko Sdk Dir");
-                }
+                    // Try to find Connection Router in Xenko Sdk
+                    routerAssemblyLocation = Path.Combine(xenkoSdkDir, @"Bin\Windows", routerAssemblyExe);
 
-                var xenkoSdkBinDir = Path.Combine(xenkoSdkDir, @"Bin\Windows-Direct3D11");
-
-                var routerAssemblyFile = Path.Combine(xenkoSdkBinDir, routerAssemblyExe);
-
-                if (!File.Exists(routerAssemblyLocation))
-                {
-                    // Should we allow it to continue if there is an existing router? (routerVersion != null)
-                    throw new FileNotFoundException("Could not find Xenko Connection Router executable");
+                    // Could not find anything, use router from current version instead of latest version
+                    if (!File.Exists(routerAssemblyLocation))
+                        routerAssemblyLocation = defaultRouterAssemblyLocation;
                 }
 
                 // If already started, check if found version is better
@@ -114,7 +117,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     var routerAssemblyFileVersionInfo = FileVersionInfo.GetVersionInfo(routerAssemblyLocation);
 
                     // Check that current router is at least as good as the one of latest found Xenko
-                    if (new Version(routerAssemblyFileVersionInfo.FileVersion) <= new Version(runningRouterVersion.FileVersion))
+                    if (new PackageVersion(routerAssemblyFileVersionInfo.FileVersion) <= new PackageVersion(runningRouterVersion.FileVersion))
                         return true;
                 }
 
@@ -126,7 +129,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                 }
 
                 // Start new router process
-                var spawnedRouterProcess = Process.Start(routerAssemblyFile);
+                var spawnedRouterProcess = Process.Start(routerAssemblyLocation);
 
                 // If we are in "developer" mode, attach job so that it gets killed with editor
                 if (attachChildJob && spawnedRouterProcess != null)

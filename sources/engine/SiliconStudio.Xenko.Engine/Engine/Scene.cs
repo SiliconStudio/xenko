@@ -12,6 +12,8 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Engine
 {
+    public class ChildSceneComponent { }
+
     /// <summary>
     /// A scene.
     /// </summary>
@@ -68,6 +70,44 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         [DataMemberIgnore]
         public TrackingCollection<Scene> Children { get; }
+
+        /// <summary>
+        /// An offset applied to all entities of the scene relative to it's parent scene.
+        /// </summary>
+        public Vector3 Offset;
+
+        /// <summary>
+        /// The absolute transform applied to all entities of the scene.
+        /// </summary>
+        /// <remarks>This field is overwritten by the transform processor each frame.</remarks>
+        public Matrix WorldMatrix;
+
+        /// <summary>
+        /// Updates the world transform of the scene.
+        /// </summary>
+        public void UpdateWorldMatrix()
+        {
+            UpdateWorldMatrixInternal(true);
+        }
+
+        internal void UpdateWorldMatrixInternal(bool isRecursive)
+        {
+            if (parent != null)
+            {
+                if (isRecursive)
+                {
+                    parent.UpdateWorldMatrixInternal(true);
+                }
+
+                WorldMatrix = parent.WorldMatrix;
+            }
+            else
+            {
+                WorldMatrix = Matrix.Identity;
+            }
+
+            WorldMatrix.TranslationVector += Offset;
+        }
 
         public override string ToString()
         {

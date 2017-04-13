@@ -58,29 +58,32 @@ namespace SiliconStudio.Xenko.Graphics
 
             HasDepthAsSRV = true;
             HasDepthAsReadOnlyRT = true;
+            HasMultisampleDepthAsSRV = true;
 
             HasResourceRenaming = false;
 
             // TODO D3D12
+            for (int i = 0; i < mapFeaturesPerFormat.Length; i++)
+                mapFeaturesPerFormat[i] = new FeaturesPerFormat((PixelFormat)i, MultisampleCount.None, FormatSupport.None);
             //// Check features for each DXGI.Format
             //foreach (var format in Enum.GetValues(typeof(SharpDX.DXGI.Format)))
             //{
             //    var dxgiFormat = (SharpDX.DXGI.Format)format;
-            //    var maximumMSAA = MSAALevel.None;
+            //    var maximumMultisampleCount = MultisampleCount.None;
             //    var computeShaderFormatSupport = ComputeShaderFormatSupport.None;
             //    var formatSupport = FormatSupport.None;
 
             //    if (!ObsoleteFormatToExcludes.Contains(dxgiFormat))
             //    {
-            //        maximumMSAA = GetMaximumMSAASampleCount(nativeDevice, dxgiFormat);
+            //        maximumMultisampleCount = GetMaximumMultisampleCount(nativeDevice, dxgiFormat);
             //        if (HasComputeShaders)
             //            computeShaderFormatSupport = nativeDevice.CheckComputeShaderFormatSupport(dxgiFormat);
 
             //        formatSupport = (FormatSupport)nativeDevice.CheckFormatSupport(dxgiFormat);
             //    }
 
-            //    //mapFeaturesPerFormat[(int)dxgiFormat] = new FeaturesPerFormat((PixelFormat)dxgiFormat, maximumMSAA, computeShaderFormatSupport, formatSupport);
-            //    mapFeaturesPerFormat[(int)dxgiFormat] = new FeaturesPerFormat((PixelFormat)dxgiFormat, maximumMSAA, formatSupport);
+            //    //mapFeaturesPerFormat[(int)dxgiFormat] = new FeaturesPerFormat((PixelFormat)dxgiFormat, maximumMultisampleCount, computeShaderFormatSupport, formatSupport);
+            //    mapFeaturesPerFormat[(int)dxgiFormat] = new FeaturesPerFormat((PixelFormat)dxgiFormat, maximumMultisampleCount, formatSupport);
             //}
         }
     }

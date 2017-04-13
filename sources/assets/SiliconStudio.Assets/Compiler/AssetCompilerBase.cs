@@ -1,9 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.IO;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Compiler
 {
@@ -12,7 +15,25 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public abstract class AssetCompilerBase : IAssetCompiler
     {
-        public AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem)
+        /// <inheritdoc/>
+        public virtual IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
+        {
+            yield break;
+        }
+
+        /// <inheritdoc/>
+        public virtual IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        {
+            yield break;
+        }
+
+        /// <inheritdoc/>
+        public virtual IEnumerable<Type> GetInputTypesToExclude(AssetCompilerContext context, AssetItem assetItem)
+        {
+            yield break;
+        }
+
+        public AssetCompilerResult Prepare(AssetCompilerContext context, AssetItem assetItem)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
             if (assetItem == null) throw new ArgumentNullException(nameof(assetItem));
@@ -32,7 +53,7 @@ namespace SiliconStudio.Assets.Compiler
             // Try to compile only if we're sure that the sources exist.
             if (EnsureSourcesExist(result, assetItem))
             {
-                Compile((AssetCompilerContext)context, assetItem, assetItem.Location.GetDirectoryAndFileName(), result);
+                Prepare((AssetCompilerContext)context, assetItem, assetItem.Location.GetDirectoryAndFileName(), result);
             }
 
             return result;
@@ -45,7 +66,7 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="assetItem">The asset to compile</param>
         /// <param name="targetUrlInStorage">The absolute URL to the asset, relative to the storage.</param>
         /// <param name="result">The result where the commands and logs should be output.</param>
-        protected abstract void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result);
+        protected abstract void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result);
 
         /// <summary>
         /// Returns the absolute path on the disk of an <see cref="UFile"/> that is relative to the asset location.

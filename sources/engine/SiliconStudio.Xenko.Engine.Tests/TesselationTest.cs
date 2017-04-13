@@ -103,14 +103,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         void RendererInitialized(IGraphicsRendererCore obj)
         {
             // TODO: callback will be called also for editor renderers. We might want to filter down this
-            if (obj is MeshRenderFeature)
-            {
-                ((MeshRenderFeature)obj).PostProcessPipelineState +=
-                    (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
-                    {
-                        pipelineState.RasterizerState = RasterizerStates.WireframeCullBack;
-                    };
-            }
+            (obj as MeshRenderFeature)?.PipelineProcessors.Add(new WireframeCullbackPipelineProcessor());
         }
 
         protected override void RegisterTests()
@@ -218,6 +211,14 @@ namespace SiliconStudio.Xenko.Engine.Tests
             using (var game = new TesselationTest(true))
             {
                 game.Run();
+            }
+        }
+
+        private class WireframeCullbackPipelineProcessor : PipelineProcessor
+        {
+            public override void Process(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
+            {
+                pipelineState.RasterizerState = RasterizerStates.WireframeCullBack;
             }
         }
     }

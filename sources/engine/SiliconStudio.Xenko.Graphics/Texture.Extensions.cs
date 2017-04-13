@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Graphics
                 throw new NotSupportedException("This texture is not a valid depth stencil texture");
 
             var description = texture.Description;
-            description.Format = (PixelFormat)Texture.ComputeShaderResourceFormatFromDepthFormat(description.Format); // TODO: review this
+            description.Format = Texture.ComputeShaderResourceFormatFromDepthFormat(description.Format); // TODO: review this
             if (description.Format == PixelFormat.None)
                 throw new NotSupportedException("This depth stencil format is not supported");
 

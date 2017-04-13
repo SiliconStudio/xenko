@@ -23,6 +23,12 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override bool CanInitialize => OpenVR.InitDone || OpenVR.Init();
 
+        public OpenVRHmd()
+        {
+            VRApi = VRApi.OpenVR;
+            SupportsOverlays = true;
+        }
+
         public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror, int mirrorWidth, int mirrorHeight)
         {
             var width = (int)(OptimalRenderFrameSize.Width * RenderFrameScaling);
@@ -45,6 +51,12 @@ namespace SiliconStudio.Xenko.VirtualReality
 
             leftHandController = new OpenVRTouchController(TouchControllerHand.Left);
             rightHandController = new OpenVRTouchController(TouchControllerHand.Right);
+        }
+
+        public override VROverlay CreateOverlay(int width, int height, int mipLevels, int sampleCount)
+        {
+            var overlay = new OpenVROverlay();
+            return overlay;
         }
 
         public override void Draw(GameTime gameTime)

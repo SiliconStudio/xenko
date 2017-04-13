@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -16,14 +16,17 @@ namespace SiliconStudio.Xenko.Assets.UI
     [DataContract("UILibraryAsset")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetContentType(typeof(UILibrary))]
-    [AssetCompiler(typeof(UILibraryAssetCompiler))]
-    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.9.0-beta01")]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta01", "1.10.0-beta01", typeof(FixPartReferenceUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-beta01", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
     [Display("UI Library")]
-    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.9.0-beta01", typeof(BasePartsRemovalComponentUpgrader))]    
-    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta01", "1.10.0-beta01", typeof(FixPartReferenceUpgrader))]    
     public class UILibraryAsset : UIAssetBase
     {
-        private const string CurrentVersion = "1.10.0-beta01";
+        private const string CurrentVersion = "2.0.0.0";
 
         /// <summary>
         /// The default file extension used by the <see cref="UILibraryAsset"/>.

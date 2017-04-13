@@ -1,12 +1,6 @@
-!SoundEffect
+!Sound
 Id: d631e4e2-38ad-4135-ae47-d1885ba7779e
 Tags: []
 Source: ../../../data/tests/audio/parley48000Hz.wav
-ImporterId: 634842fa-d1db-45c2-b13d-bc11486dae4d
-~Base:
-    ~Id: 65b8afe1-766d-4743-8a69-c17ffb7e21bb
-    Location: --import--
-    Asset: !SoundEffect
-        Id: 00000000-0000-0000-0000-000000000000
-        Tags: []
-        Source: 
+StreamFromDisk: false
+Spatialized: true

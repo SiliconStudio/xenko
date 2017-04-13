@@ -1,5 +1,4 @@
 ﻿using System;
-using SiliconStudio.Assets.Quantum.Commands;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
@@ -12,12 +11,6 @@ namespace SiliconStudio.Assets.Quantum
     {
         public AssetNodeContainer()
         {
-            NodeBuilder.AvailableCommands.Add(new AddNewItemCommand());
-            NodeBuilder.AvailableCommands.Add(new AddPrimitiveKeyCommand());
-            NodeBuilder.AvailableCommands.Add(new CreateNewInstanceCommand());
-            NodeBuilder.AvailableCommands.Add(new RemoveItemCommand());
-            NodeBuilder.AvailableCommands.Add(new MoveItemCommand());
-            NodeBuilder.AvailableCommands.Add(new RenameStringKeyCommand());
             NodeBuilder.RegisterPrimitiveType(typeof(IReference));
             NodeBuilder.RegisterPrimitiveType(typeof(PropertyKey));
             NodeBuilder.RegisterPrimitiveType(typeof(TimeSpan));

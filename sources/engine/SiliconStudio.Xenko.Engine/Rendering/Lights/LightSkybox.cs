@@ -4,6 +4,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering.Skyboxes;
 
 namespace SiliconStudio.Xenko.Rendering.Lights
 {
@@ -15,20 +16,19 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     public class LightSkybox : IEnvironmentLight
     {
         /// <summary>
-        /// Gets the skybox component (this is set after the <see cref="LightProcessor"/> has processed this light.
+        /// Gets the skybox (this is set after the <see cref="LightProcessor"/> has processed this light.
         /// </summary>
-        /// <value>The skybox component.</value>
-        [DataMemberIgnore]
-        public SkyboxComponent SkyboxComponent { get; private set; }
+        /// <value>The skybox.</value>
+        [DataMember(0)]
+        public Skybox Skybox { get; set; }
 
         [DataMemberIgnore]
-        public Matrix SkyMatrix;
+        internal Quaternion Rotation;
 
         public bool Update(LightComponent lightComponent)
         {
-            SkyMatrix = Matrix.RotationQuaternion(lightComponent.Entity.Transform.Rotation);
-            SkyboxComponent = lightComponent.Entity.Get<SkyboxComponent>();
-            return SkyboxComponent != null && SkyboxComponent.Skybox != null;
+            Rotation = Quaternion.RotationMatrix(lightComponent.Entity.Transform.WorldMatrix);
+            return Skybox != null;
         }
     }
 }

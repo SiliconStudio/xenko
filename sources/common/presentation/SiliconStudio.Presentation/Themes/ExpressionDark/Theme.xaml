@@ -223,34 +223,43 @@
                                                              {Binding Owner.IsVisible, Converter={cvt:InvertBool}, RelativeSource={RelativeSource Self}},
                                                              {Binding Owner.WindowState, Converter={cvt:IsEqualToParam}, ConverterParameter={x:Static WindowState.Minimized}, RelativeSource={RelativeSource Self}},
                                                              Converter={cvt:OrMultiConverter}, FallbackValue={me:True}}" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="MinHeight" Value="120" />
+    <Setter Property="MinWidth" Value="320" />
+    <Setter Property="MaxHeight" Value="768" />
+    <Setter Property="SizeToContent" Value="WidthAndHeight" />
+    <Setter Property="ResizeMode" Value="NoResize" />
+    <Setter Property="Padding" Value="10,0" />
     <Setter Property="ContentTemplate">
       <Setter.Value>
         <DataTemplate>
           <DockPanel LastChildFill="True" Margin="10">
             <!--  BUTTONS  -->
-            <ItemsControl Margin="10" DockPanel.Dock="Bottom"
-                          ItemsSource="{Binding ButtonsSource, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <UniformGrid HorizontalAlignment="Right" IsItemsHost="True" Rows="1" />
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
-              <ItemsControl.ItemTemplate>
-                <ItemContainerTemplate DataType="{x:Type wnd:DialogButtonInfo}">
-                  <Button d:DataContext="{d:DesignInstance wnd:DialogButtonInfo}"
-                          Margin="10,0,0,0" Padding="20,6" MinWidth="80"
-                          Command="{Binding ButtonCommand, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
-                          CommandParameter="{Binding Result}"
-                          Content="{Binding Content}" IsCancel="{Binding IsCancel}" IsDefault="{Binding IsDefault}" />
-                </ItemContainerTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
+              <ItemsControl x:Name="ButtonItemsControl" Margin="10,10,10,0" HorizontalAlignment="Right" DockPanel.Dock="Bottom"
+                            ItemsSource="{Binding ButtonsSource, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <UniformGrid IsItemsHost="True" Rows="1" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <ItemContainerTemplate DataType="{x:Type wnd:DialogButtonInfo}">
+                    <Button d:DataContext="{d:DesignInstance wnd:DialogButtonInfo}"
+                            Margin="5,0" Padding="20,6" MinWidth="80"
+                            Command="{Binding ButtonCommand, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
+                            CommandParameter="{Binding Result}"
+                            Content="{Binding Content}" IsCancel="{Binding IsCancel}" IsDefault="{Binding IsDefault}" />
+                  </ItemContainerTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
             <!--  CONTENT  -->
             <ContentPresenter Content="{Binding}"
                               ContentTemplate="{Binding MessageTemplate, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
                               ContentTemplateSelector="{Binding MessageTemplateSelector, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
                               Cursor="{Binding Cursor, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
                               Margin="{Binding Padding, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
+                              MinWidth="{Binding ActualWidth, ElementName=ButtonItemsControl}"
                               HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
                               VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"/>
           </DockPanel>
@@ -299,19 +308,12 @@
     <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
   </Style>
   <Style TargetType="{x:Type wnd:MessageBox}" BasedOn="{StaticResource MessageDialogChromeStyle}">
-    <Setter Property="HorizontalContentAlignment" Value="Left" />
-    <Setter Property="VerticalContentAlignment" Value="Center" />
-    <Setter Property="MinHeight" Value="120" />
-    <Setter Property="MinWidth" Value="320" />
-    <Setter Property="MaxHeight" Value="768" />
-    <Setter Property="SizeToContent" Value="WidthAndHeight" />
-    <Setter Property="ResizeMode" Value="NoResize" />
     <Setter Property="MessageTemplate">
       <Setter.Value>
         <DataTemplate>
           <DockPanel LastChildFill="True"
-                     MinWidth="{Binding MinWidth, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, FallbackValue=320}"
-                     MaxHeight="{Binding MaxHeight, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:SumNum}, ConverterParameter={me:Double -20}, FallbackValue=748}" >
+                     MinWidth="{Binding MinWidth, RelativeSource={RelativeSource AncestorType=ContentPresenter}, FallbackValue=320}"
+                     MaxHeight="{Binding MaxHeight, RelativeSource={RelativeSource AncestorType=ContentPresenter}, Converter={cvt:SumNum}, ConverterParameter={me:Double -20}, FallbackValue=748}">
             <i:Interaction.Behaviors>
               <behaviors:ResizeBehavior SizeRatio="5,3"/>
             </i:Interaction.Behaviors>
@@ -319,23 +321,24 @@
                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" RenderOptions.BitmapScalingMode="HighQuality"
                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelHeight)}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelWidth)}"
                    Visibility="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:Chained {cvt:ObjectToBool}, {cvt:VisibleOrCollapsed}}}" />
-            <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center" />
+            <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center"/>
           </DockPanel>
         </DataTemplate>
       </Setter.Value>
     </Setter>
   </Style>
+
   <Style TargetType="{x:Type wnd:CheckedMessageBox}" BasedOn="{StaticResource {x:Type wnd:MessageBox}}">
     <Setter Property="MessageTemplate">
       <Setter.Value>
         <DataTemplate>
           <DockPanel LastChildFill="True"
-                     MinWidth="{Binding MinWidth, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, FallbackValue=320}"
-                     MaxHeight="{Binding MaxHeight, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:SumNum}, ConverterParameter={me:Double -20}, FallbackValue=748}" >
+                     MinWidth="{Binding MinWidth, RelativeSource={RelativeSource AncestorType=ContentPresenter}, FallbackValue=320}"
+                     MaxHeight="{Binding MaxHeight, RelativeSource={RelativeSource AncestorType=ContentPresenter}, Converter={cvt:SumNum}, ConverterParameter={me:Double -20}, FallbackValue=748}" >
             <i:Interaction.Behaviors>
               <behaviors:ResizeBehavior SizeRatio="5,3"/>
             </i:Interaction.Behaviors>
-            <CheckBox DockPanel.Dock="Bottom" Margin="20,15,5,5"
+            <CheckBox DockPanel.Dock="Bottom" Margin="0,15,0,5"
                       HorizontalAlignment="Left" VerticalAlignment="Bottom"
                       Content="{Binding CheckedMessage, RelativeSource={RelativeSource AncestorType=wnd:CheckedMessageBox}}"
                       IsChecked="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=wnd:CheckedMessageBox}}"/>
@@ -343,7 +346,7 @@
                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,5" RenderOptions.BitmapScalingMode="HighQuality"
                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Source.PixelHeight}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Source.PixelWidth}"
                    Visibility="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:CheckedMessageBox}, Converter={cvt:Chained {cvt:ObjectToBool}, {cvt:VisibleOrCollapsed}}}" />
-            <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center" />
+            <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center"/>
           </DockPanel>
         </DataTemplate>
       </Setter.Value>
@@ -356,7 +359,8 @@
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ctrl:MarkdownTextBlock}">
           <FlowDocumentScrollViewer x:Name="PART_MessageContainer"
-                                    HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" />
+                                    HorizontalScrollBarVisibility="Hidden"
+                                    VerticalScrollBarVisibility="Auto"/>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
@@ -1895,10 +1899,16 @@
                   </Grid>
                 </RepeatButton>
               </UniformGrid>
-              <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}"/>
+              <Grid>
+                <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}"/>
+                <ContentControl x:Name="Watermark" Content="{TemplateBinding WatermarkContent}" ContentTemplate="{TemplateBinding WatermarkContentTemplate}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="6,2,2,2" Focusable="False"/>
+              </Grid>
             </DockPanel>
           </Border>
           <ControlTemplate.Triggers>
+            <Trigger Property="HasText" Value="True">
+              <Setter TargetName="Watermark" Property="Visibility" Value="Hidden"/>
+            </Trigger>
             <Trigger Property="DisplayUpDownButtons" Value="True">
               <Setter TargetName="upDownButtons" Property="Visibility" Value="Visible"/>
             </Trigger>
@@ -1909,7 +1919,13 @@
         </ControlTemplate>
       </Setter.Value>
     </Setter>
-    <Setter Property="interactivity:Interaction.Behaviors">
+    <Setter Property="WatermarkContentTemplate">
+      <Setter.Value>
+        <DataTemplate>
+          <TextBlock Text="{Binding Mode=OneTime}" IsHitTestVisible="False" FontStyle="Italic" Foreground="Gray"/>
+        </DataTemplate>
+      </Setter.Value>
+    </Setter>    <Setter Property="interactivity:Interaction.Behaviors">
       <Setter.Value>
         <interactivity:BehaviorCollection>
           <behaviors:NumericTextBoxDragBehavior UsePreviewEvents="True" DragCursor="/SiliconStudio.Presentation;component/Resources/Cursors/CursorDrag.cur" />
@@ -3870,27 +3886,33 @@
                     Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="L" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
                                      DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent"
                     Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
                                      DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent"
                     Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
                                      DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <ToggleButton x:Name="PART_ToggleButton" Grid.Column="4" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
@@ -3922,39 +3944,44 @@
                     Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="L" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
                                      DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent"
                     Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent"
                     Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent"
                     Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="Z" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <ToggleButton x:Name="PART_ToggleButton" Grid.Column="6" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
@@ -3988,38 +4015,44 @@
                     Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="L" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
                                      DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent"
                     Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent"
                     Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent"
                     Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="Z" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
 
               </DockPanel>
             </Border>
@@ -4028,9 +4061,10 @@
               <DockPanel>
                 <TextBlock Text="W" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
                 <ctrl:NumericTextBox Value="{Binding W, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <ToggleButton x:Name="PART_ToggleButton" Grid.Column="8" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
@@ -4058,17 +4092,19 @@
             <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <ToggleButton Grid.Column="4" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
@@ -4116,25 +4152,28 @@
             <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>/>
               </DockPanel>
             </Border>
             <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="Z" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <ToggleButton Grid.Column="6" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16"
@@ -4184,32 +4223,37 @@
             <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="Z" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="7" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="W" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding W, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding W, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <ToggleButton Grid.Column="8" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
@@ -4258,37 +4302,42 @@
             <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding RectX, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                <ctrl:NumericTextBox Value="{Binding RectX, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
 
               </DockPanel>
             </Border>
             <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding RectY, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding RectY, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="W" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding RectWidth, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding RectWidth, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="7" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="H" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding RectHeight, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding RectHeight, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
           </Grid>
@@ -4316,29 +4365,37 @@
             <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding RectX, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                <ctrl:NumericTextBox Value="{Binding RectX, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding RectY, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                <ctrl:NumericTextBox Value="{Binding RectY, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="W" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding RectWidth, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                <ctrl:NumericTextBox Value="{Binding RectWidth, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="7" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="H" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
                 <ctrl:NumericTextBox Value="{Binding RectHeight, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
           </Grid>
@@ -4365,28 +4422,31 @@
             <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent">
               <DockPanel>
                 <TextBlock Text="Z" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
-                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"
+                                     WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
             <Button Grid.Column="6" Margin="2,0,0,0" x:Name="ResetButton" Width="16" Height="16" Background="Transparent"
@@ -4405,22 +4465,70 @@
       <Setter.Value>
         <ControlTemplate TargetType="ctrl:MatrixEditor">
           <UniformGrid Rows="4" Columns="4">
-            <ctrl:NumericTextBox Margin="2" Value="{Binding M11, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-            <ctrl:NumericTextBox Margin="2" Value="{Binding M12, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-            <ctrl:NumericTextBox Margin="2" Value="{Binding M13, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-            <ctrl:NumericTextBox Margin="2" Value="{Binding M14, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-            <ctrl:NumericTextBox Margin="2" Value="{Binding M21, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-            <ctrl:NumericTextBox Margin="2" Value="{Binding M22, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-            <ctrl:NumericTextBox Margin="2" Value="{Binding M23, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-            <ctrl:NumericTextBox Margin="2" Value="{Binding M24, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-            <ctrl:NumericTextBox Margin="2" Value="{Binding M31, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-            <ctrl:NumericTextBox Margin="2" Value="{Binding M32, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-            <ctrl:NumericTextBox Margin="2" Value="{Binding M33, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-            <ctrl:NumericTextBox Margin="2" Value="{Binding M34, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-            <ctrl:NumericTextBox Margin="2" Value="{Binding M41, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-            <ctrl:NumericTextBox Margin="2" Value="{Binding M42, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-            <ctrl:NumericTextBox Margin="2" Value="{Binding M43, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-            <ctrl:NumericTextBox Margin="2" Value="{Binding M44, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+            <ctrl:NumericTextBox Margin="2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"
+                                 Value="{Binding M11, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                 WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+            <ctrl:NumericTextBox Margin="2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"
+                                 Value="{Binding M12, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                 WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+            <ctrl:NumericTextBox Margin="2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"
+                                 Value="{Binding M13, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                 WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+            <ctrl:NumericTextBox Margin="2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"
+                                 Value="{Binding M14, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                 WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+            <ctrl:NumericTextBox Margin="2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"
+                                 Value="{Binding M21, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                 WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+            <ctrl:NumericTextBox Margin="2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"
+                                 Value="{Binding M22, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                 WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+            <ctrl:NumericTextBox Margin="2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"
+                                 Value="{Binding M23, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                 WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+            <ctrl:NumericTextBox Margin="2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"
+                                 Value="{Binding M24, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                 WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+            <ctrl:NumericTextBox Margin="2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"
+                                 Value="{Binding M31, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                 WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+            <ctrl:NumericTextBox Margin="2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"
+                                 Value="{Binding M32, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                 WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+            <ctrl:NumericTextBox Margin="2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"
+                                 Value="{Binding M33, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                 WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+            <ctrl:NumericTextBox Margin="2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"
+                                 Value="{Binding M34, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                 WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+            <ctrl:NumericTextBox Margin="2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"
+                                 Value="{Binding M41, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                 WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+            <ctrl:NumericTextBox Margin="2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"
+                                 Value="{Binding M42, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                 WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+            <ctrl:NumericTextBox Margin="2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"
+                                 Value="{Binding M43, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                 WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+            <ctrl:NumericTextBox Margin="2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"
+                                 Value="{Binding M44, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:ToDouble}}"
+                                 WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
           </UniformGrid>
         </ControlTemplate>
       </Setter.Value>

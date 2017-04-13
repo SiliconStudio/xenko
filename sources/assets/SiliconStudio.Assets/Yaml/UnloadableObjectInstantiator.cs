@@ -106,10 +106,10 @@ namespace SiliconStudio.Core.Yaml
                     }
                     ctorIL.Emit(OpCodes.Ret);
 
-                    // Build list of abstract class hierarchy (from deeper to closer)
+                    // Build list of class hierarchy (from deeper to closer)
                     var currentType = baseType;
                     var abstractBaseTypes = new List<Type>();
-                    while (currentType != null && (currentType.Attributes & TypeAttributes.Abstract) != 0)
+                    while (currentType != null)
                     {
                         abstractBaseTypes.Add(currentType);
                         currentType = currentType.BaseType;

@@ -14,7 +14,6 @@ namespace SiliconStudio.Assets
     /// <userdoc>A raw asset, an asset that is imported as-is.</userdoc>
     [DataContract("RawAsset")]
     [AssetDescription(FileExtension)]
-    [AssetCompiler(typeof(RawAssetCompiler))]
     [Display(1050, "Raw Asset")]
     public sealed class RawAsset : AssetWithSource
     {

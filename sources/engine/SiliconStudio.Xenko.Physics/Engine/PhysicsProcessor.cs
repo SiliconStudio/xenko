@@ -51,55 +51,31 @@ namespace SiliconStudio.Xenko.Physics
 
             if (!colliderShapesRendering)
             {
-                throw new NotImplementedException();
-                //var mainCompositor = sceneSystem.GraphicsCompositor;
-                //var scene = debugEntityScene.Get<ChildSceneComponent>().Scene;
-                //
-                //foreach (var element in elements)
-                //{
-                //    element.RemoveDebugEntity(scene);
-                //}
-                //
-                //sceneSystem.SceneInstance.RootScene.Entities.Remove(debugEntityScene);
-                //mainCompositor.Master.Renderers.Remove(debugSceneRenderer);
+                if (debugScene != null)
+                {
+                    debugScene.Dispose();
+
+                    foreach (var element in elements)
+                    {
+                        element.RemoveDebugEntity(debugScene);
+                    }
+
+                    sceneSystem.SceneInstance.RootScene.Children.Remove(debugScene);
+                }
             }
             else
             {
-                // TODO GFXCOMP: Reimplement physics debug shapes rendering
-                throw new NotImplementedException();
-
-                /*
-                //we create a child scene to render the shapes, so that they are totally separated from the normal scene
-                var mainCompositor = (SceneGraphicsCompositorLayers)sceneSystem.GraphicsCompositor;
-
-                var graphicsCompositor = new SceneGraphicsCompositorLayers
-                {
-                    Cameras = { mainCompositor.Cameras[0] },
-                    Master =
-                    {
-                        Renderers =
-                        {
-                            new SceneCameraRenderer { Mode = new PhysicsDebugCameraRendererMode { Name = "Camera renderer" } },
-                        }
-                    }
-                };
-
                 debugScene = new Scene();
-
-                var childComponent = new ChildSceneComponent { Scene = debugScene };
-                debugEntityScene = new Entity { childComponent };
-                debugSceneRenderer = new SceneChildRenderer(childComponent) { GraphicsCompositorOverride = graphicsCompositor };
-
-                mainCompositor.Master.Add(debugSceneRenderer);
-                sceneSystem.SceneInstance.RootScene.Entities.Add(debugEntityScene);*/
 
                 foreach (var element in elements)
                 {
                     if (element.Enabled)
                     {
-                        element.AddDebugEntity(debugScene);
+                        element.AddDebugEntity(debugScene, Simulation.ColliderShapesRenderGroup);
                     }
                 }
+
+                sceneSystem.SceneInstance.RootScene.Children.Add(debugScene);
             }
         }
 

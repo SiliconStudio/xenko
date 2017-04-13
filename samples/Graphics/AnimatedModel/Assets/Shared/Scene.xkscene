@@ -1,8 +1,9 @@
 !SceneAsset
 Id: 84efeed8-fdd2-4e9b-9cfb-d4ea3e5aa6aa
-SerializedVersion: {Xenko: 1.10.0-beta02}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
-Parent: null
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - 883e544b-9579-48c0-b731-9b8de2d287e4
@@ -116,7 +117,7 @@ Hierarchy:
                         Children: {}
                     77fd36bd095b584a92ce82be90aa012f: !BackgroundComponent
                         Id: bd36fd77-5b09-4a58-92ce-82be90aa012f
-                        Texture: b237783b-085e-40e5-b6b4-c41c2b98eb41:XenkoBackground
+                        Texture: 51b041a7-2f3e-4327-aa2f-9ac598ddedb1:XenkoBackground
         -   Entity:
                 Id: cbaa8520-30cd-4b52-a6cb-f55adc4dab16
                 Name: RenderToTextureTilted
@@ -176,7 +177,7 @@ Hierarchy:
                         RenderGroup: Group1
                     c4d0e397bc7bc2468a2cdc3bd4190c90: !AnimatedModel.UIScript,AnimatedModel.Game
                         Id: 97e3d0c4-7bbc-46c2-8a2c-dc3bd4190c90
-                        Knight: f63efa01-c45a-4b81-ad59-e49391a813e4
+                        Knight: ref!! f63efa01-c45a-4b81-ad59-e49391a813e4
                         Font: dc5e460a-ac52-45b9-a69f-cc5a5a5f9cf7:Font
         -   Entity:
                 Id: f63efa01-c45a-4b81-ad59-e49391a813e4

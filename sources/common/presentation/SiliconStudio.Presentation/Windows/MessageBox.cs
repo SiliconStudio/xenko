@@ -163,28 +163,26 @@ namespace SiliconStudio.Presentation.Windows
         /// <summary>
         /// Displays a <see cref="MessageBox"/> an returns the <see cref="MessageBoxResult"/> depending on the user's choice.
         /// </summary>
-        /// <param name="owner">The intended owner window of the message box.</param>
         /// <param name="message">A <see cref="string"/> that specifies the text to display.</param>
         /// <param name="caption">A <see cref="string"/> that specifies the title bar caption to display.</param>
         /// <param name="button">A <see cref="MessageBoxButton"/> value that specifies which button or buttons to display</param>
         /// <param name="image">A <see cref="MessageBoxImage"/> value that specifies the icon to display.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
         [NotNull]
-        public static Task<MessageBoxResult> Show(WindowOwner owner, string message, string caption, MessageBoxButton button, MessageBoxImage image)
+        public static async Task<MessageBoxResult> Show(string message, string caption, MessageBoxButton button, MessageBoxImage image)
         {
-            return Show(owner, message, caption, GetButtons(button), image);
+            return (MessageBoxResult)await Show(message, caption, GetButtons(button), image);
         }
 
         /// <summary>
         /// Displays a <see cref="MessageBox"/> an returns the <see cref="MessageBoxResult"/> depending on the user's choice.
         /// </summary>
-        /// <param name="owner">The intended owner window of the message box.</param>
         /// <param name="message">A <see cref="string"/> that specifies the text to display.</param>
         /// <param name="caption">A <see cref="string"/> that specifies the title bar caption to display.</param>
         /// <param name="buttons">A n enumeration of <see cref="DialogButtonInfo"/> that specifies buttons to display</param>
         /// <param name="image">A <see cref="MessageBoxImage"/> value that specifies the icon to display.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
-        public static async Task<MessageBoxResult> Show(WindowOwner owner, string message, string caption, [NotNull] IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image)
+        public static async Task<int> Show(string message, string caption, [NotNull] IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image)
         {
             var buttonList = buttons.ToList();
             var messageBox = new MessageBox
@@ -195,7 +193,8 @@ namespace SiliconStudio.Presentation.Windows
             };
             SetImage(messageBox, image);
             SetKeyBindings(messageBox, buttonList);
-            return (MessageBoxResult)await messageBox.ShowInternal(owner);
+            await messageBox.ShowModal();
+            return messageBox.ButtonResult;
         }
 
         internal static void SetKeyBindings(MessageBox messageBox, [NotNull] IEnumerable<DialogButtonInfo> buttons)

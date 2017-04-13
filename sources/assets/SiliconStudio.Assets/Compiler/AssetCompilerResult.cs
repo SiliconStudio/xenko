@@ -9,7 +9,7 @@ using SiliconStudio.Core.Diagnostics;
 namespace SiliconStudio.Assets.Compiler
 {
     /// <summary>
-    /// Result of a compilation of assets when using <see cref="IAssetCompiler.Compile"/>
+    /// Result of a compilation of assets when using <see cref="IAssetCompiler.Prepare"/>
     /// </summary>
     public class AssetCompilerResult : LoggerResult
     {
@@ -23,11 +23,6 @@ namespace SiliconStudio.Assets.Compiler
         {
             BuildSteps = new ListBuildStep();
         }
-
-        /// <summary>
-        /// Gets or sets the value indicating if the result build steps must wait previous items to be built before being executed.
-        /// </summary>
-        public bool ShouldWaitForPreviousBuilds { get; set; }
 
         /// <summary>
         /// Gets or sets the build steps generated for the build engine. This can be null if <see cref="LoggerResult.HasErrors"/> is true.

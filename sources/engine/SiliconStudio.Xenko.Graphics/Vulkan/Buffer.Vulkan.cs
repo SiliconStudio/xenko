@@ -172,7 +172,12 @@ namespace SiliconStudio.Xenko.Graphics
                     Level = CommandBufferLevel.Primary
                 };
                 CommandBuffer commandBuffer;
-                GraphicsDevice.NativeDevice.AllocateCommandBuffers(ref commandBufferAllocateInfo, &commandBuffer);
+
+                lock (GraphicsDevice.QueueLock)
+                {
+                    GraphicsDevice.NativeDevice.AllocateCommandBuffers(ref commandBufferAllocateInfo, &commandBuffer);
+                }
+
                 var beginInfo = new CommandBufferBeginInfo { StructureType = StructureType.CommandBufferBeginInfo, Flags = CommandBufferUsageFlags.OneTimeSubmit };
                 commandBuffer.Begin(ref beginInfo);
 

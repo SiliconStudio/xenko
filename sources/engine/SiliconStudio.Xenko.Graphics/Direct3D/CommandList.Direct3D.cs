@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly SharpDX.Direct3D11.CommonShaderStage[] shaderStages = new SharpDX.Direct3D11.CommonShaderStage[StageCount];
         private readonly Buffer[] constantBuffers = new Buffer[StageCount * ConstantBufferCount];
         private readonly SamplerState[] samplerStates = new SamplerState[StageCount * SamplerStateCount];
-        private readonly GraphicsResourceBase[] unorderedAccessViews = new GraphicsResourceBase[UnorderedAcccesViewCount]; // Only CS
+        private readonly SharpDX.Direct3D11.UnorderedAccessView[] unorderedAccessViews = new SharpDX.Direct3D11.UnorderedAccessView[UnorderedAcccesViewCount]; // Only CS
 
         private PipelineState currentPipelineState;
 
@@ -174,19 +174,6 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        ///     Unsets the read/write buffers.
-        /// </summary>
-        public void UnsetReadWriteBuffers()
-        {
-            // TODO: This should be done automatically on SetPipelineState
-            // TODO optimize it using SetUnorderedAccessViews
-            for (int i = 0; i < UnorderedAcccesViewCount; i++)
-            {
-                SetUnorderedAccessView(ShaderStage.Compute, i, null);
-            }
-        }
-
-        /// <summary>
         /// Unsets the render targets.
         /// </summary>
         public void UnsetRenderTargets()
@@ -279,7 +266,32 @@ namespace SiliconStudio.Xenko.Graphics
             if (stage != ShaderStage.Compute)
                 throw new ArgumentException("Invalid stage.", "stage");
 
-            NativeDeviceContext.ComputeShader.SetUnorderedAccessView(slot, unorderedAccessView != null ? unorderedAccessView.NativeUnorderedAccessView : null);
+            var view = unorderedAccessView?.NativeUnorderedAccessView;
+            if (unorderedAccessViews[slot] != view)
+            {
+                unorderedAccessViews[slot] = view;
+                NativeDeviceContext.ComputeShader.SetUnorderedAccessView(slot, view);
+            }
+        }
+
+        /// <summary>
+        /// Unsets an unordered access view from the shader pipeline.
+        /// </summary>
+        /// <param name="unorderedAccessView">The unordered access view.</param>
+        internal void UnsetUnorderedAccessView(GraphicsResource unorderedAccessView)
+        {
+            var view = unorderedAccessView?.NativeUnorderedAccessView;
+            if (view == null)
+                return;
+
+            for (int slot = 0; slot < UnorderedAcccesViewCount; slot++)
+            {
+                if (unorderedAccessViews[slot] == view)
+                {
+                    unorderedAccessViews[slot] = null;
+                    NativeDeviceContext.ComputeShader.SetUnorderedAccessView(slot, null);
+                }
+            }
         }
 
         /// <summary>
@@ -624,13 +636,13 @@ namespace SiliconStudio.Xenko.Graphics
             NativeDeviceContext.CopyResource(source.NativeResource, destination.NativeResource);
         }
 
-        public void CopyMultiSample(Texture sourceMsaaTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
+        public void CopyMultisample(Texture sourceMultisampleTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
         {
-            if (sourceMsaaTexture == null) throw new ArgumentNullException("sourceMsaaTexture");
+            if (sourceMultisampleTexture == null) throw new ArgumentNullException(nameof(sourceMultisampleTexture));
             if (destTexture == null) throw new ArgumentNullException("destTexture");
-            if (!sourceMsaaTexture.IsMultiSample) throw new ArgumentOutOfRangeException("sourceMsaaTexture", "Source texture is not a MSAA texture");
+            if (!sourceMultisampleTexture.IsMultisample) throw new ArgumentOutOfRangeException(nameof(sourceMultisampleTexture), "Source texture is not a MSAA texture");
 
-            NativeDeviceContext.ResolveSubresource(sourceMsaaTexture.NativeResource, sourceSubResource, destTexture.NativeResource, destSubResource, (SharpDX.DXGI.Format)(format == PixelFormat.None ? destTexture.Format : format));
+            NativeDeviceContext.ResolveSubresource(sourceMultisampleTexture.NativeResource, sourceSubResource, destTexture.NativeResource, destSubResource, (SharpDX.DXGI.Format)(format == PixelFormat.None ? destTexture.Format : format));
         }
 
         public void CopyRegion(GraphicsResource source, int sourceSubresource, ResourceRegion? sourecRegion, GraphicsResource destination, int destinationSubResource, int dstX = 0, int dstY = 0, int dstZ = 0)

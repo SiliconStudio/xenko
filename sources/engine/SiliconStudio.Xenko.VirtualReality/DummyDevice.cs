@@ -32,6 +32,11 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override bool CanInitialize => true;
 
+        public DummyDevice()
+        {
+            VRApi = VRApi.Dummy;
+        }
+
         public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror, int mirrorWidth, int mirrorHeight)
         {
             ActualRenderFrameSize = OptimalRenderFrameSize;

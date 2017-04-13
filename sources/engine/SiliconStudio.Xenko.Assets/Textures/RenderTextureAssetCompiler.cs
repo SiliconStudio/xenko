@@ -9,14 +9,15 @@ using SiliconStudio.Xenko.Rendering.RenderTextures;
 
 namespace SiliconStudio.Xenko.Assets.Textures
 {
+    [AssetCompiler(typeof(RenderTextureAsset), typeof(AssetCompilationContext))]
     public class RenderTextureAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (RenderTextureAsset)assetItem.Asset;
             var colorSpace = context.GetColorSpace();
 
-            result.BuildSteps = new AssetBuildStep(assetItem) { new RenderTextureConvertCommand(targetUrlInStorage, new RenderTextureParameters(asset, colorSpace) ) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new RenderTextureConvertCommand(targetUrlInStorage, new RenderTextureParameters(asset, colorSpace), assetItem.Package) };
         }
 
         /// <summary>
@@ -24,8 +25,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         private class RenderTextureConvertCommand : AssetCommand<RenderTextureParameters>
         {
-            public RenderTextureConvertCommand(string url, RenderTextureParameters parameters)
-                : base(url, parameters)
+            public RenderTextureConvertCommand(string url, RenderTextureParameters parameters, Package package)
+                : base(url, parameters, package)
             {
             }
 
@@ -37,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                     Width = Parameters.Asset.Width,
                     Height = Parameters.Asset.Height,
                     Format = Parameters.Asset.Format,
-                    ColorSpace = Parameters.Asset.ColorSpace.ToColorSpace(Parameters.ColorSpace, TextureHint.Color)
+                    ColorSpace = Parameters.Asset.IsSRgb(Parameters.ColorSpace) ? ColorSpace.Linear : ColorSpace.Gamma,
                 });
 
                 return Task.FromResult(ResultStatus.Successful);

@@ -12,7 +12,6 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// </summary>
     [DataContract("EffectLibrary")]
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true, AllowArchetype = false)]
-    [AssetCompiler(typeof(EffectLogAssetCompiler))]
     [Display(900, "Effect Library")]
     public sealed class EffectLogAsset : SourceCodeAsset
     {
@@ -25,7 +24,5 @@ namespace SiliconStudio.Xenko.Assets.Effect
         /// The default file extension used by the <see cref="EffectLogAsset"/>.
         /// </summary>
         public const string FileExtension = ".xkeffectlog;.pdxeffectlog";
-
-        protected override int InternalBuildOrder => 100;
     }
 }

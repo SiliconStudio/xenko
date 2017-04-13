@@ -1,8 +1,9 @@
 !SceneAsset
 Id: d23da80d-8ef3-4400-9f16-190a9c6bd3b3
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
-Parent: null
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - 0b04edaf-f330-4ae1-9d93-517d967fbe95
@@ -58,7 +59,6 @@ Hierarchy:
                         Animations:
                             2ca4d1acc4788c4ba964649692ef2cf0~Dead: 071d843d-2efa-4b49-83ef-f6ee79e8dbb5:character_template_2head_dead
                             8cd235e092f39e4e82a177c45c6ba4a2~Wait: 23bad94a-8864-48ca-88e7-cc3c7121f156:character_template_2head_wait
-                        PlayingAnimations: {}
                     50e67a9acfce0f4cbd0d9c840e9dffe2: !SpriteStudioDemo.EnemyScript,SpriteStudioDemo.Game
                         Id: 9a7ae650-cecf-4c0f-bd0d-9c840e9dffe2
                     ac6c500d6ce33045a0d946e43e55d505: !SpriteStudioDemo.EnemyCollisionScript,SpriteStudioDemo.Game
@@ -127,7 +127,6 @@ Hierarchy:
                             73b8fd8ff94aec488c5768963f127d50~Attack: 230575a8-df6b-4de2-ae9f-93bfcb02d538:character_template_3head_attack3
                             56df8487c4948b4fba41d3d2374d46fa~Run: 0450fe8b-c834-4ab2-856b-19704944755c:character_template_3head_run
                             d2f66ca42271884cbe513d3fbeeb5bad~Stance: ee0096d9-18f6-410a-ab68-d88a7c7ce9fc:character_template_3head_wait
-                        PlayingAnimations: {}
                     a8a68c014dc3934b99013c685336a2f0: !SpriteStudioDemo.PlayerScript,SpriteStudioDemo.Game
                         Id: 018ca6a8-c34d-4b93-9901-3c685336a2f0
                         BulletSheet: fba79776-e90e-42eb-ac60-a137b2e7378d:SpriteSheet
@@ -168,7 +167,6 @@ Hierarchy:
                         Animations:
                             d9cfe3f9b9b7674dabb4492da802d4bc~Dead: 071d843d-2efa-4b49-83ef-f6ee79e8dbb5:character_template_2head_dead
                             87d9dd28e1a63e4d8ac3a60b765c7fcd~Wait: 23bad94a-8864-48ca-88e7-cc3c7121f156:character_template_2head_wait
-                        PlayingAnimations: {}
                     cfe4659f916b3140b923bcaf2c20a868: !SpriteStudioDemo.EnemyScript,SpriteStudioDemo.Game
                         Id: 9f65e4cf-6b91-4031-b923-bcaf2c20a868
                     ad59c92189c7b444948b1d4021f6aa50: !SpriteStudioDemo.EnemyCollisionScript,SpriteStudioDemo.Game
@@ -212,7 +210,6 @@ Hierarchy:
                         Animations:
                             53568e288f3d26468bb9f8e1f4696165~Dead: 071d843d-2efa-4b49-83ef-f6ee79e8dbb5:character_template_2head_dead
                             675dbb201052684d82bc629f72be8e13~Wait: 23bad94a-8864-48ca-88e7-cc3c7121f156:character_template_2head_wait
-                        PlayingAnimations: {}
                     829d96a06f47aa4a82f27eff15b86395: !SpriteStudioDemo.EnemyScript,SpriteStudioDemo.Game
                         Id: a0969d82-476f-4aaa-82f2-7eff15b86395
                     d53f7b7022c6c5449141511dd24417e1: !SpriteStudioDemo.EnemyCollisionScript,SpriteStudioDemo.Game

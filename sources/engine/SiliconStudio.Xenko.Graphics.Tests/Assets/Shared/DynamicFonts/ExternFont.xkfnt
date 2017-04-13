@@ -3,7 +3,5 @@ Id: 05718a05-c688-4340-853a-e22ee854d9cf
 SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
 FontSource: !FileFontProvider
-    ~Id: 1de15c6d-9213-487e-940f-a6c3555ab172
     Source: ../../../../../data/tests/Risaltyp_024.ttf
-FontType: !RuntimeRasterizedSpriteFontType
-    ~Id: 8f366a0d-22a6-4289-8d9a-ca36bf40f000
+FontType: !RuntimeRasterizedSpriteFontType {}

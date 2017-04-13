@@ -14,7 +14,7 @@ namespace SiliconStudio.Core
     /// </summary>
     [DataContract]
     [DataSerializer(typeof(DictionaryAllSerializer<PropertyContainerClass, PropertyKey, object>))]
-    public class PropertyContainerClass : IDictionary<PropertyKey, object>
+    public class PropertyContainerClass : IDictionary<PropertyKey, object>, IReadOnlyDictionary<PropertyKey, object>
     {
         private PropertyContainer inner;
 
@@ -174,5 +174,11 @@ namespace SiliconStudio.Core
         {
             inner.SetObject(key, value);
         }
+
+        /// <inheritdoc />
+        IEnumerable<PropertyKey> IReadOnlyDictionary<PropertyKey, object>.Keys => Keys;
+
+        /// <inheritdoc />
+        IEnumerable<object> IReadOnlyDictionary<PropertyKey, object>.Values => Values;
     }
 }

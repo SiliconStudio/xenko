@@ -310,7 +310,13 @@ namespace SiliconStudio.Core.IO
             var handler = Modified;
             if (handler != null)
             {
-                OnModified(this, new FileEvent((FileEventChangeType)e.ChangeType, e.Name, e.FullPath));
+                if (e.ChangeType == WatcherChangeTypes.Renamed)
+                {
+                    var renamedEventArgs = e as RenamedEventArgs;
+                    OnModified(this, new FileRenameEvent(e.Name, e.FullPath, renamedEventArgs.OldFullPath));
+                }
+                else
+                    OnModified(this, new FileEvent((FileEventChangeType)e.ChangeType, e.Name, e.FullPath));
             }
         }
 

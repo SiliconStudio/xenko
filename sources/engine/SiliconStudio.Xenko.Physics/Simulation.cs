@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Physics
@@ -210,12 +211,6 @@ namespace SiliconStudio.Xenko.Physics
                 }
             }
 
-            newCollisionsCache.Clear();
-            removedCollisionsCache.Clear();
-            newContactsFastCache.Clear();
-            updatedContactsCache.Clear();
-            removedContactsCache.Clear();
-
             //contactsProfilingState.End("Contacts: {0}", currentFrameContacts.Count);
         }
 
@@ -249,6 +244,8 @@ namespace SiliconStudio.Xenko.Physics
                 processor.RenderColliderShapes(value);
             }
         }
+
+        public RenderGroup ColliderShapesRenderGroup { get; set; } = RenderGroup.Group0;
 
         internal void AddCollider(PhysicsComponent component, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
         {
@@ -1027,18 +1024,34 @@ namespace SiliconStudio.Xenko.Physics
             handler?.Invoke(this, e);
         }
 
+        private readonly FastList<ContactPoint> newContacts = new FastList<ContactPoint>();
+        private readonly FastList<ContactPoint> updatedContacts = new FastList<ContactPoint>();
+        private readonly FastList<ContactPoint> removedContacts = new FastList<ContactPoint>();
+
+        private readonly Queue<Collision> collisionsPool = new Queue<Collision>();
+
         internal void BeginContactTesting()
         {
+            //remove previous frame removed collisions
+            foreach (var collision in removedCollisionsCache)
+            {
+                collision.Destroy();
+                collisionsPool.Enqueue(collision);
+            }
+
+            //clean caches
+            newCollisionsCache.Clear();
+            removedCollisionsCache.Clear();
+            newContactsFastCache.Clear();
+            updatedContactsCache.Clear();
+            removedContactsCache.Clear();
+
             //swap the lists
             var previous = currentFrameContacts;
             currentFrameContacts = previousFrameContacts;
             currentFrameContacts.Clear();
             previousFrameContacts = previous;         
         }
-
-        private readonly FastList<ContactPoint> newContacts = new FastList<ContactPoint>();
-        private readonly FastList<ContactPoint> updatedContacts = new FastList<ContactPoint>();
-        private readonly FastList<ContactPoint> removedContacts = new FastList<ContactPoint>();
 
         private void ContactRemoval(ContactPoint contact, PhysicsComponent component0, PhysicsComponent component1)
         {
@@ -1112,10 +1125,8 @@ namespace SiliconStudio.Xenko.Physics
 
             foreach (var contact in newContacts)
             {
-                var obj0 = BulletSharp.CollisionObject.GetManaged(contact.ColliderA);
-                var obj1 = BulletSharp.CollisionObject.GetManaged(contact.ColliderB);
-                var component0 = (PhysicsComponent)obj0.UserObject;
-                var component1 = (PhysicsComponent)obj1.UserObject;
+                var component0 = contact.ColliderA;
+                var component1 = contact.ColliderB;
 
                 Collision existingPair = null;
                 foreach (var x in component0.Collisions)
@@ -1142,7 +1153,8 @@ namespace SiliconStudio.Xenko.Physics
                 }
                 else
                 {
-                    var newPair = new Collision(component0, component1);
+                    var newPair = collisionsPool.Count == 0 ? new Collision() : collisionsPool.Dequeue();
+                    newPair.Initialize(component0, component1);
                     newPair.Contacts.Add(contact);
                     component0.Collisions.Add(newPair);
                     component1.Collisions.Add(newPair);
@@ -1156,10 +1168,8 @@ namespace SiliconStudio.Xenko.Physics
 
             foreach (var contact in updatedContacts)
             {
-                var obj0 = BulletSharp.CollisionObject.GetManaged(contact.ColliderA);
-                var obj1 = BulletSharp.CollisionObject.GetManaged(contact.ColliderB);
-                var component0 = (PhysicsComponent)obj0.UserObject;
-                var component1 = (PhysicsComponent)obj1.UserObject;
+                var component0 = contact.ColliderA;
+                var component1 = contact.ColliderB;
 
                 Collision existingPair = null;
                 foreach (var x in component0.Collisions)
@@ -1198,10 +1208,8 @@ namespace SiliconStudio.Xenko.Physics
 
             foreach (var contact in removedContacts)
             {
-                var obj0 = BulletSharp.CollisionObject.GetManaged(contact.ColliderA);
-                var obj1 = BulletSharp.CollisionObject.GetManaged(contact.ColliderB);
-                var component0 = (PhysicsComponent)obj0.UserObject;
-                var component1 = (PhysicsComponent)obj1.UserObject;
+                var component0 = contact.ColliderA;
+                var component1 = contact.ColliderB;
 
                 ContactRemoval(contact, component0, component1);
             }     
@@ -1214,12 +1222,30 @@ namespace SiliconStudio.Xenko.Physics
         {
             IntPtr buffer;
             int bufferSize;
-            collisionWorld.GetCollisions(component.NativeCollisionObject, out buffer, out bufferSize);
-            var contacts = (ContactPoint*) buffer;
+            collisionWorld.GetCollisions(component.NativeCollisionObject, (short)component.CanCollideWith, (short)component.CollisionGroup, out buffer, out bufferSize);
+            var contacts = (NativeContactPoint*) buffer;
             for (var i = 0; i < bufferSize; i++)
             {
                 var contact = contacts[i];
-                currentFrameContacts.Add(contact);
+
+                var obj0 = BulletSharp.CollisionObject.GetManaged(contact.ColliderA);
+                var obj1 = BulletSharp.CollisionObject.GetManaged(contact.ColliderB);
+                var component0 = (PhysicsComponent)obj0.UserObject;
+                var component1 = (PhysicsComponent)obj1.UserObject;
+
+                //disable static-static
+                if (component0 is StaticColliderComponent && component1 is StaticColliderComponent || !component0.Enabled || !component1.Enabled)
+                    continue;
+
+                currentFrameContacts.Add(new ContactPoint
+                {
+                    ColliderA = component0,
+                    ColliderB = component1,
+                    Distance = contact.Distance,
+                    Normal = contact.Normal,
+                    PositionOnA = contact.PositionOnA,
+                    PositionOnB = contact.PositionOnB
+                });
             }
         }
 
@@ -1231,10 +1257,8 @@ namespace SiliconStudio.Xenko.Physics
 
             foreach (var previousFrameContact in previousFrameContacts)
             {
-                var obj0 = BulletSharp.CollisionObject.GetManaged(previousFrameContact.ColliderA);
-                var obj1 = BulletSharp.CollisionObject.GetManaged(previousFrameContact.ColliderB);
-                var component0 = (PhysicsComponent)obj0.UserObject;
-                var component1 = (PhysicsComponent)obj1.UserObject;
+                var component0 = previousFrameContact.ColliderA;
+                var component1 = previousFrameContact.ColliderB;
                 if (component == component0 || component == component1)
                 {
                     previousToRemove.Add(previousFrameContact);

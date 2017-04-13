@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Panels;
 using System.Threading.Tasks;
 
-namespace PhysicsSample
+namespace PhysicsSample12
 {
     public class DemoScript : StartupScript
     {
@@ -70,6 +70,7 @@ namespace PhysicsSample
             PhysicsSampleList.Add(CreateConeTwistConstraint);
             PhysicsSampleList.Add(CreateGeneric6DoFConstraint);
 
+            RemoveConstraint();
             PhysicsSampleList[constraintIndex]();
 
             //Add a script for the slider constraint, to apply an impulse on collision
@@ -197,8 +198,12 @@ namespace PhysicsSample
         private void RemoveConstraint()
         {
             //Remove and dispose the current constraint
-            simulation.RemoveConstraint(currentConstraint);
-            currentConstraint.Dispose();
+            if (currentConstraint != null)
+            {
+                simulation.RemoveConstraint(currentConstraint);
+                currentConstraint.Dispose();
+				currentConstraint = null;
+            }
 
             //Stop motion and reset the rigid bodies
             cubeRigidBody.PhysicsWorldTransform = Matrix.Translation(new Vector3(2, 0, -9)) *

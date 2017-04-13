@@ -1,9 +1,10 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Audio;
@@ -74,6 +75,7 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         [DataMember(-10), Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; }
 
         [DataMemberIgnore]
@@ -90,10 +92,6 @@ namespace SiliconStudio.Xenko.Engine
 
         [DataMemberIgnore]
         public ContentManager Content { get; private set; }
-
-        [DataMemberIgnore]
-        [Obsolete("Use Content property instead when accessing the ContentManager")]
-        public ContentManager Asset => Content;
 
         [DataMemberIgnore]
         public GraphicsDevice GraphicsDevice

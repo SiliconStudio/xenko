@@ -44,10 +44,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <inheritdoc/>
         public override void ProcessLights(ProcessLightsParameters parameters)
         {
-            for (int lightIndex = parameters.LightStart; lightIndex < parameters.LightEnd; lightIndex++)
+            foreach (var index in parameters.LightIndices)
             {
                 // For now, we allow only one cubemap at once
-                var light = parameters.LightCollection[lightIndex];
+                var light = parameters.LightCollection[index];
 
                 // Prepare LightSkyBoxShaderGroup
                 LightSkyBoxShaderGroup lightShaderGroup;
@@ -59,6 +59,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     lightShaderGroupsPerSkybox.Add(light, lightShaderGroup);
                 }
             }
+
+            // Consume all the lights
+            parameters.LightIndices.Clear();
         }
 
         public override void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry)
@@ -118,8 +121,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public override void ApplyEffectPermutations(RenderEffect renderEffect)
             {
                 var lightSkybox = (LightSkybox)light.Type;
-                var skyboxComponent = lightSkybox.SkyboxComponent;
-                var skybox = skyboxComponent.Skybox;
+                var skybox = lightSkybox.Skybox;
 
                 var diffuseParameters = skybox.DiffuseLightingParameters;
                 var specularParameters = skybox.SpecularLightingParameters;
@@ -136,16 +138,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 base.ApplyViewParameters(context, viewIndex, parameters);
 
                 var lightSkybox = ((LightSkybox)light.Type);
-                var skyboxComponent = lightSkybox.SkyboxComponent;
-                var skybox = skyboxComponent.Skybox;
+                var skybox = lightSkybox.Skybox;
 
                 var intensity = light.Intensity;
-                if (skyboxComponent.Enabled)
-                {
-                    intensity *= skyboxComponent.Intensity;
-                }
 
-                var rotationMatrix = lightSkybox.SkyMatrix;
+                var skyMatrix = Matrix.Invert(Matrix.RotationQuaternion(lightSkybox.Rotation));
 
                 var diffuseParameters = skybox.DiffuseLightingParameters;
                 var specularParameters = skybox.SpecularLightingParameters;
@@ -160,7 +157,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                 // global parameters
                 parameters.Set(intensityKey, intensity);
-                parameters.Set(skyMatrixKey, rotationMatrix);
+                parameters.Set(skyMatrixKey, skyMatrix);
 
                 // This need to be working with new system
                 parameters.Set(sphericalColorsKey, sphericalColors);

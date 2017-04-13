@@ -227,6 +227,34 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
+        /// Updates the local matrix based on the world matrix and the parent entity's or containing scene's world matrix.
+        /// </summary>
+        public void UpdateLocalFromWorld()
+        {
+            if (Parent == null)
+            {
+                var scene = Entity?.Scene;
+                if (scene != null)
+                {
+                    var inverseSceneTransform = scene.WorldMatrix;
+                    inverseSceneTransform.Invert();
+                    Matrix.Multiply(ref WorldMatrix, ref inverseSceneTransform, out LocalMatrix);
+                }
+                else
+                {
+                    LocalMatrix = WorldMatrix;
+                }
+            }
+            else
+            {
+                //We are not root so we need to derive the local matrix as well
+                var inverseParent = Parent.WorldMatrix;
+                inverseParent.Invert();
+                Matrix.Multiply(ref WorldMatrix, ref inverseParent, out LocalMatrix);
+            }
+        }
+
+        /// <summary>
         /// Updates the world matrix.
         /// It will first call <see cref="UpdateLocalMatrix"/> on self, and <see cref="UpdateWorldMatrix"/> on <see cref="Parent"/> if not null.
         /// Then <see cref="WorldMatrix"/> will be updated by multiplying <see cref="LocalMatrix"/> and parent <see cref="WorldMatrix"/> (if any).
@@ -254,6 +282,17 @@ namespace SiliconStudio.Xenko.Engine
             else
             {
                 WorldMatrix = LocalMatrix;
+
+                var scene = Entity?.Scene;
+                if (scene != null)
+                {
+                    if (recursive)
+                    {
+                        scene.UpdateWorldMatrix();
+                    }
+
+                    Matrix.Multiply(ref WorldMatrix, ref scene.WorldMatrix, out WorldMatrix);
+                }
             }
 
             foreach (var transformOperation in PostOperations)
@@ -268,6 +307,8 @@ namespace SiliconStudio.Xenko.Engine
                 throw new InvalidOperationException("This TransformComponent already has a Parent, detach it first.");
 
             item.parent = this;
+
+            Entity?.EntityManager?.OnHierarchyChanged(item.Entity);
         }
 
         private void RemoveItem(TransformComponent item)
@@ -276,6 +317,8 @@ namespace SiliconStudio.Xenko.Engine
                 throw new InvalidOperationException("This TransformComponent's parent is not the expected value.");
 
             item.parent = null;
+
+            Entity?.EntityManager?.OnHierarchyChanged(item.Entity);
         }
 
         private void ChildrenCollectionChanged(object sender, TrackingCollectionChangedEventArgs e)

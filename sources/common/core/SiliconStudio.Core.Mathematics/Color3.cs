@@ -40,7 +40,7 @@ namespace SiliconStudio.Core.Mathematics
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Color3 : IEquatable<Color3>, IFormattable
     {
-        private const string ToStringFormat = "Red:{0} Green:{1} Blue:{2}";
+        private const string ToStringFormat = "R:{0} G:{1} B:{2}";
 
         /// <summary>
         /// The red component of the color.
@@ -721,6 +721,15 @@ namespace SiliconStudio.Core.Mathematics
         public override string ToString()
         {
             return ToString(CultureInfo.CurrentCulture);
+        }
+
+        /// <summary>
+        /// Convert this color to an equivalent <see cref="Color4"/> with an opaque alpha.
+        /// </summary>
+        /// <returns>An equivalent <see cref="Color4"/> with an opaque alpha.</returns>
+        public Color4 ToColor4()
+        {
+            return new Color4(R, G, B, 1.0f);
         }
 
         /// <summary>

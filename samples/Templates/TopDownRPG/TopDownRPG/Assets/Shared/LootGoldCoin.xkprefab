@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 6064f3e4-a929-424b-abea-688419f05265
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -16,11 +16,10 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            40bc0789c794df458f3da83107baa90c: cc62754d-0945-45f8-9d81-b73910989393/8907bc40-94c7-45df-8f3d-a83107baa90c
+                            40bc0789c794df458f3da83107baa90c: ref!! 8907bc40-94c7-45df-8f3d-a83107baa90c
                     4f91b6bae79ef24fa7181a3895c0d4aa: !RigidbodyComponent
                         Id: bab6914f-9ee7-4ff2-a718-1a3895c0d4aa
                         CanCollideWith: DefaultFilter, CustomFilter1
-                        ProcessCollisions: false
                         CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
@@ -85,5 +84,5 @@ Hierarchy:
                     01ab324bade8aa4c9118f516e330ca39: !TopDownRPG.Gameplay.LootCoinScript,TopDownRPG.Game
                         Id: 4b32ab01-e8ad-4caa-9118-f516e330ca39
                         CoinGetEffect: 48c406d2-677a-4a3b-90a0-4c0094894935:VFXPrefabs/vfx-GetCoin
-                        Trigger: cc62754d-0945-45f8-9d81-b73910989393/0f987c5d-9f63-4567-9b68-a76d9fcdd82c
+                        Trigger: ref!! 0f987c5d-9f63-4567-9b68-a76d9fcdd82c
                         SoundEffect: 8f8f4038-b521-4a36-b606-7d33e68f9ddb:Audio/coin_get

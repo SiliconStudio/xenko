@@ -4,7 +4,7 @@
   <PropertyGroup>
     <SiliconStudioProjectType>Cpp</SiliconStudioProjectType>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
     <SiliconStudioAssemblyProcessorOptions>
     </SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
@@ -38,7 +38,6 @@
     <ProjectGuid>{C2306552-6C42-464C-8981-32FEF4F9458D}</ProjectGuid>
     <Keyword>ManagedCProj</Keyword>
     <RootNamespace>SiliconStudio.Xenko.Importer.Assimp</RootNamespace>
-    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">

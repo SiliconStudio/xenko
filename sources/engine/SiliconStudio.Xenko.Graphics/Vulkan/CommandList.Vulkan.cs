@@ -402,8 +402,8 @@ namespace SiliconStudio.Xenko.Graphics
             // TODO VULKAN API: Stride is part of Pipeline 
 
             // TODO VULKAN: Handle multiple buffers. Collect and apply before draw?
-            if (index != 0)
-                throw new NotImplementedException();
+            //if (index != 0)
+            //    throw new NotImplementedException();
 
             var bufferCopy = buffer.NativeBuffer;
             var offsetCopy = (ulong)offset;
@@ -962,7 +962,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        public void CopyMultiSample(Texture sourceMsaaTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
+        public void CopyMultisample(Texture sourceMultisampleTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
         {
             throw new NotImplementedException();
         }

@@ -43,11 +43,14 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
             // Sum contribution from all lights
             var ambientColor = new Color3();
-            for (int index = parameters.LightStart; index < parameters.LightEnd; index++)
+            foreach (var index in parameters.LightIndices)
             {
                 var light = parameters.LightCollection[index];
                 ambientColor += light.Color;
             }
+
+            // Consume all the lights
+            parameters.LightIndices.Clear();
 
             // Store ambient sum for this view
             lightShaderGroup.AmbientColor[parameters.ViewIndex] = ambientColor;

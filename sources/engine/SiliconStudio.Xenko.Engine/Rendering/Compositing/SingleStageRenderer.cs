@@ -9,13 +9,19 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         protected override void CollectCore(RenderContext context)
         {
+            if (RenderStage == null)
+                return;
+
             // Collect with current RenderView
-            RenderStage.Output = context.RenderOutput;
+            RenderStage.OutputValidator.Validate(ref context.RenderOutput);
             context.RenderView.RenderStages.Add(RenderStage);
         }
 
         protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
         {
+            if (RenderStage == null)
+                return;
+
             // Draw with current RenderView
             drawContext.RenderContext.RenderSystem.Draw(drawContext, drawContext.RenderContext.RenderView, RenderStage);
         }

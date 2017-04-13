@@ -2,9 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-
+using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Compiler
 {
@@ -19,59 +21,33 @@ namespace SiliconStudio.Assets.Compiler
         {
             Url = url;
         }
-
     }
 
     public abstract class AssetCommand<T> : AssetCommand
     {
+        protected readonly Package Package;
 
-        protected AssetCommand(string url, T parameters)
+        /// <summary>
+        /// This is useful if the asset binary format has changed and we want to bump the version to force re-evaluation/compilation of the command
+        /// </summary>
+        protected int Version;
+
+        protected AssetCommand(string url, T parameters, Package package)
             : base (url)
         {
             Parameters = parameters;
+            Package = package;
         }
 
         public T Parameters { get; set; }
         
-        public override string Title
-        {
-            get
-            {
-                return string.Format("Asset command processing {0}", Url);
-            }
-        }
-
-        protected static void ComputeCompileTimeDependenciesHash(Package package, BinarySerializationWriter writer, Asset asset)
-        {
-            var assetWithCompileTimeDependencies = asset as IAssetCompileTimeDependencies;
-            if (assetWithCompileTimeDependencies != null)
-            {
-                foreach (var dependentAssetReference in assetWithCompileTimeDependencies.EnumerateCompileTimeDependencies(package.Session))
-                {
-                    var dependentAssetItem = package.FindAsset(dependentAssetReference);
-                    var dependentAsset = dependentAssetItem != null ? dependentAssetItem.Asset : null;
-                    if (dependentAsset == null)
-                        continue;
-
-                    if (dependentAsset == asset)
-                    {
-                        // TODO: We don't have access to the log here, so we are throwing an exception which is not really user friendly with the stacktrace exception
-                        throw new InvalidOperationException(string.Format("Asset [{0}:{1}] cannot be used recursively", asset.Id, dependentAssetReference.Location));
-                    }
-                    
-                    // Hash asset content (since it is embedded, not a real reference)
-                    // Note: we hash child and not current, because when we start with main asset, it has already been hashed by base.ComputeParameterHash()
-                    writer.SerializeExtended(ref dependentAsset, ArchiveMode.Serialize);
-
-                    // Recurse
-                    ComputeCompileTimeDependenciesHash(package, writer, dependentAsset);
-                }
-            }
-        }
+        public override string Title => $"Asset command processing {Url}";
 
         protected override void ComputeParameterHash(BinarySerializationWriter writer)
         {
             base.ComputeParameterHash(writer);
+
+            writer.Serialize(ref Version);
             
             var url = Url;
             var assetParameters = Parameters;

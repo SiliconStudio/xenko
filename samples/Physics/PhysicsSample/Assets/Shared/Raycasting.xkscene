@@ -1,8 +1,9 @@
 !SceneAsset
 Id: 86fed268-baa8-4929-9eba-4d14cf3a0e68
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
-Parent: null
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - d296aa0e-cd27-4f65-936f-dfba810e1ef2
@@ -173,7 +174,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 8c4f3755-c248-48ed-8df8-b86730fe702b/2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! 2e3ef041-2f80-4db2-95a7-74c7f12119bd
         -   Entity:
                 Id: 9a3a924c-3e9a-4867-8670-08bbf1cfe213
                 Name: Ground
@@ -206,7 +207,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 8d8f7cdf-a2d1-4832-8ab8-3245792e20d5/e6f2eeb6-656f-48a9-9d9b-1a4aea0a10c7
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! e6f2eeb6-656f-48a9-9d9b-1a4aea0a10c7
         -   Entity:
                 Id: bfe4e7b3-64c6-44e0-b2fd-df843f48075b
                 Name: NextScene
@@ -270,4 +271,4 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 95664a00-cbe6-40d4-b536-9d0bf74af845/bb92c642-cc1f-4824-b2d0-ea4f1f2fd7c3
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! bb92c642-cc1f-4824-b2d0-ea4f1f2fd7c3

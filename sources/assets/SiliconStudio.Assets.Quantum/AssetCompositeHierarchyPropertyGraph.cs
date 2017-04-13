@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using SiliconStudio.Assets.Quantum.Visitors;
 using SiliconStudio.Assets.Yaml;
@@ -8,6 +9,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum
@@ -30,6 +32,10 @@ namespace SiliconStudio.Assets.Quantum
         /// </summary>
         /// <remarks>This dictionary is used to remember where the prefab instance was located, if during some time all its parts are removed, for example during some specific operaiton in the base asset.</remarks>
         private readonly Dictionary<Guid, Guid> instancesCommonAncestors = new Dictionary<Guid, Guid>();
+        /// <summary>
+        /// A hashset of nodes representing the collections of children from a parent part.
+        /// </summary>
+        private readonly HashSet<IGraphNode> registeredChildParts = new HashSet<IGraphNode>();
 
         protected AssetCompositeHierarchyPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
             : base(container, assetItem, logger)
@@ -39,7 +45,7 @@ namespace SiliconStudio.Assets.Quantum
             rootPartsNode.ItemChanged += RootPartsChanged;
             foreach (var childPartNode in Asset.Hierarchy.Parts.SelectMany(x => RetrieveChildPartNodes(x.Part)))
             {
-                childPartNode.RegisterChanged(ChildPartChanged);
+                RegisterChildPartNode(childPartNode);
             }
             var partsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<IAssetPartDesign<IIdentifiable>, IIdentifiable>.Parts)].Target;
             partsNode.ItemChanged += PartsChanged;
@@ -73,13 +79,18 @@ namespace SiliconStudio.Assets.Quantum
             base.Dispose();
             var rootPartsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootPartIds)].Target;
             rootPartsNode.ItemChanged -= RootPartsChanged;
-            foreach (var childPartNode in Asset.Hierarchy.Parts.SelectMany(x => RetrieveChildPartNodes(x.Part)))
-            {
-                childPartNode.UnregisterChanged(ChildPartChanged);
-            }
+            registeredChildParts.ToList().ForEach(UnregisterChildPartNode);
             var partsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<IAssetPartDesign<IIdentifiable>, IIdentifiable>.Parts)].Target;
             partsNode.ItemChanged -= PartsChanged;
+
+            foreach (var basePartAsset in basePartAssets.Keys)
+            {
+                basePartAsset.PartAdded -= PartAddedInBaseAsset;
+                basePartAsset.PartRemoved -= PartRemovedInBaseAsset;
+            }
+            basePartAssets.Clear();
         }
+
         /// <inheritdoc/>
         public override void ClearReferencesToObjects(IEnumerable<Guid> objectIds)
         {
@@ -118,7 +129,7 @@ namespace SiliconStudio.Assets.Quantum
                 var node = (IAssetObjectNode)Container.NodeContainer.GetNode(part);
                 node[nameof(IAssetPartDesign<IIdentifiable>.Base)].Update(null);
                 // We must refresh the base to stop further update from the prefab to the instance entities
-                RefreshBase(node, (IAssetNode)node.BaseNode);
+                RefreshBase(node, null);
             }
         }
 
@@ -298,8 +309,9 @@ namespace SiliconStudio.Assets.Quantum
             var externalReferences = ExternalReferenceCollector.GetExternalReferences(preCloningAssetGraph, preCloningAssetGraph.RootNode);
             YamlAssetMetadata<OverrideType> overrides = null;
             if ((flags & SubHierarchyCloneFlags.RemoveOverrides) == 0)
+            {
                 overrides = GenerateOverridesForSerialization(preCloningAssetGraph.RootNode);
-
+            }
             // clone the parts of the sub-tree
             var clonerFlags = AssetClonerFlags.None;
 
@@ -309,9 +321,61 @@ namespace SiliconStudio.Assets.Quantum
                 clonerFlags |= AssetClonerFlags.ClearExternalReferences;
 
             var clonedHierarchy = AssetCloner.Clone(subTreeHierarchy, clonerFlags, externalReferences, out idRemapping);
+          
+            // When cloning with GenerateNewIdsForIdentifiableObjects, indices in the Parts collection will change. Therefore we need to remap them if we want to keep overrides
+            if ((flags & SubHierarchyCloneFlags.RemoveOverrides) == 0 && (flags & SubHierarchyCloneFlags.GenerateNewIdsForIdentifiableObjects) != 0)
+            {
+                // TODO: we shouldn't have to do that, it would be better to have a more robust collection for parts
+                // First, build a mapping old index -> new index
+                var partIndexRemapping = new Dictionary<int, int>();
+                for (var i = 0; i < preCloningAsset.Hierarchy.Parts.Count; i++)
+                {
+                    var part = preCloningAsset.Hierarchy.Parts[i];
+                    var newIndex = clonedHierarchy.Parts.BinarySearch(idRemapping[part.Part.Id]);
+                    partIndexRemapping.Add(i, newIndex);
+                }
+
+                // Then, find overrides that work on part by checking the beginning of the YamlAssetPath
+                if (overrides == null) throw new InvalidOperationException("overrides collection is null");
+                var startPath = new YamlAssetPath();
+                startPath.PushMember(nameof(AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>.Hierarchy));
+                startPath.PushMember(nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.Parts));
+                var fixedOverrides = new YamlAssetMetadata<OverrideType>();
+                foreach (var overrideEntry in overrides)
+                {
+                    var pathItems = overrideEntry.Key.Items;
+                    // If this override target a part, we need to fixup the indices.
+                    if (pathItems.Count > 3 && startPath.Items[0].Equals(pathItems[0]) && startPath.Items[1].Equals(pathItems[1]))
+                    {
+                        // Retrieve the previous index
+                        var oldIndex = (int)overrideEntry.Key.Items[2].Value;
+                        // Append the new index instead on a new YamlAssetPath
+                        var newPath = startPath.Clone();
+                        newPath.PushIndex(partIndexRemapping[oldIndex]);
+                        // And append the rest of the override path normally.
+                        for (var i = 3; i < pathItems.Count; ++i)
+                        {
+                            newPath.Push(pathItems[i]);
+                        }
+                        fixedOverrides.Set(newPath, overrideEntry.Value);
+                    }
+                    else
+                    {
+                        // Otherwise we can just copy the override path as-is
+                        fixedOverrides.Set(overrideEntry.Key, overrideEntry.Value);
+                    }
+                }
+                // Replace the overrides collection by the one we just fixed.
+                overrides = fixedOverrides;
+            }
+
+            // Now that we have fixed overrides (if needed), we can replace the initial hierarchy by the cloned one.
             preCloningAssetGraph.RootNode[nameof(AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>.Hierarchy)].Update(clonedHierarchy);
             if ((flags & SubHierarchyCloneFlags.RemoveOverrides) == 0)
+            {
+                // And we can apply overrides if needed, with proper (fixed) YamlAssetPath.
                 ApplyOverrides(preCloningAssetGraph.RootNode, overrides);
+            }
 
             preCloningAssetGraph.Dispose();
 
@@ -344,6 +408,13 @@ namespace SiliconStudio.Assets.Quantum
         public override void RefreshBase()
         {
             base.RefreshBase();
+            UpdateAssetPartBases();
+        }
+
+        /// <inheritdoc/>
+        public override void RefreshBase(IAssetNode node, IAssetNode baseNode)
+        {
+            base.RefreshBase(node, baseNode);
             UpdateAssetPartBases();
         }
 
@@ -474,9 +545,9 @@ namespace SiliconStudio.Assets.Quantum
                     {
                         var sibling = baseAsset.GetChild(newBasePartParent, i);
                         var instanceSibling = Asset.Hierarchy.Parts.FirstOrDefault(x => x.Base?.InstanceId == instanceId && x.Base?.BasePartId == sibling.Id);
-                        // This sibling still exists instance-side, let's before after it
+                        // This sibling still exists instance-side, let's insert before it
                         if (instanceSibling != null)
-                            insertIndex = i + 1;
+                            insertIndex = i - 1;
                     }
 
                     // Default position is first index
@@ -509,7 +580,7 @@ namespace SiliconStudio.Assets.Quantum
 
         protected override void OnItemChanged(ItemChangeEventArgs args)
         {
-            RelinkToOwnerPart((IAssetNode)args.Node, args.NewValue);
+            RelinkToOwnerPart((IAssetNode)args.Collection, args.NewValue);
             base.OnItemChanged(args);
         }
 
@@ -530,71 +601,63 @@ namespace SiliconStudio.Assets.Quantum
         }
         private void UpdateAssetPartBases()
         {
-            foreach (var basePartAsset in basePartAssets.Keys)
+            // We need to subscribe to event of new base assets, but we don't want to unregister from previous one, in case the user is moving (remove + add)
+            // the single part of a base. In this case we wouldn't have any part linking to the base once it has been removed.
+            var newBasePartAsset = new HashSet<AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>>();
+
+            // We want to enumerate parts that are actually "reachable", so we don't use Hierarchy.Parts for iteration - we iterate from the root parts instead.
+            // We use Hierarchy.Parts at the end just to retrieve the part design from the actual part.
+            var currentParts = Asset.Hierarchy.RootPartIds.Select(x => Asset.Hierarchy.Parts[x].Part).DepthFirst(x => Asset.EnumerateChildParts(x, false)).Select(x => Asset.Hierarchy.Parts[x.Id]);
+            foreach (var part in currentParts.Where(x => x.Base != null))
             {
-                basePartAsset.PartAdded -= PartAddedInBaseAsset;
-                basePartAsset.PartRemoved -= PartRemovedInBaseAsset;
+                var baseAssetGraph = Container.GetGraph(part.Base.BasePartAsset.Id) as AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>;
+                if (baseAssetGraph != null)
+                {
+                    HashSet<Guid> instanceIds;
+                    if (!basePartAssets.TryGetValue(baseAssetGraph, out instanceIds))
+                    {
+                        instanceIds = new HashSet<Guid>();
+                        basePartAssets.Add(baseAssetGraph, instanceIds);
+                        newBasePartAsset.Add(baseAssetGraph);
+                    }
+                    instanceIds.Add(part.Base.InstanceId);
+                }
+
+                // Update mapping
+                baseInstanceMapping[Tuple.Create(part.Base.BasePartId, part.Base.InstanceId)] = part.Part;
+
+                // Update common ancestors
+                Guid ancestorId;
+                if (!instancesCommonAncestors.TryGetValue(part.Base.InstanceId, out ancestorId))
+                {
+                    instancesCommonAncestors[part.Base.InstanceId] = Asset.GetParent(part.Part)?.Id ?? Guid.Empty;
+                }
+                else
+                {
+                    var parent = ancestorId;
+                    var parents = new HashSet<Guid>();
+                    while (parent != Guid.Empty)
+                    {
+                        parents.Add(parent);
+                        parent = Asset.GetParent(Asset.Hierarchy.Parts[parent].Part)?.Id ?? Guid.Empty;
+                    }
+                    ancestorId = Asset.GetParent(part.Part)?.Id ?? Guid.Empty;
+                    while (ancestorId != Guid.Empty && !parents.Contains(ancestorId))
+                    {
+                        ancestorId = Asset.GetParent(Asset.Hierarchy.Parts[ancestorId].Part)?.Id ?? Guid.Empty;
+                    }
+                    instancesCommonAncestors[part.Base.InstanceId] = ancestorId;
+                }
             }
 
-            UpdatePartBases();
-
-            foreach (var basePartAsset in basePartAssets.Keys)
+            // Register to new base part events
+            foreach (var basePartAsset in newBasePartAsset)
             {
                 basePartAsset.PartAdded += PartAddedInBaseAsset;
                 basePartAsset.PartRemoved += PartRemovedInBaseAsset;
             }
         }
 
-
-        private void UpdatePartBases()
-        {
-            basePartAssets.Clear();
-            instancesCommonAncestors.Clear();
-
-            foreach (var part in Asset.Hierarchy.Parts)
-            {
-                if (part.Base != null)
-                {
-                    var baseAssetGraph = Container.GetGraph(part.Base.BasePartAsset.Id) as AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>;
-                    if (baseAssetGraph != null)
-                    {
-                        HashSet<Guid> instanceIds;
-                        if (!basePartAssets.TryGetValue(baseAssetGraph, out instanceIds))
-                        {
-                            instanceIds = new HashSet<Guid>();
-                            basePartAssets.Add(baseAssetGraph, instanceIds);
-                        }
-                        instanceIds.Add(part.Base.InstanceId);
-                    }
-
-                    // Update mapping
-                    baseInstanceMapping[Tuple.Create(part.Base.BasePartId, part.Base.InstanceId)] = part.Part;
-
-                    // Update common ancestors
-                    Guid ancestorId;
-                    if (!instancesCommonAncestors.TryGetValue(part.Base.InstanceId, out ancestorId))
-                    {
-                        instancesCommonAncestors[part.Base.InstanceId] = Asset.GetParent(part.Part)?.Id ?? Guid.Empty;
-                    }
-                    else
-                    {
-                        var parent = ancestorId;
-                        var parents = new HashSet<Guid>();
-                        while (parent != Guid.Empty)
-                        {
-                            parents.Add(parent);
-                            parent = Asset.GetParent(Asset.Hierarchy.Parts[parent].Part)?.Id ?? Guid.Empty;
-                        }
-                        ancestorId = Asset.GetParent(part.Part)?.Id ?? Guid.Empty;
-                        while (ancestorId != Guid.Empty && !parents.Contains(ancestorId))
-                        {
-                            ancestorId = Asset.GetParent(Asset.Hierarchy.Parts[ancestorId].Part)?.Id ?? Guid.Empty;
-                        }
-                        instancesCommonAncestors[part.Base.InstanceId] = ancestorId;
-                    }
-                }
-            }
-        }
 
         private void PartAddedInBaseAsset(object sender, AssetPartChangeEventArgs e)
         {
@@ -697,11 +760,13 @@ namespace SiliconStudio.Assets.Quantum
 
         private void NotifyPartAdded(Guid partId)
         {
+            UpdateAssetPartBases();
             PartAdded?.Invoke(this, new AssetPartChangeEventArgs(AssetItem, partId));
         }
 
         private void NotifyPartRemoved(Guid partId)
         {
+            UpdateAssetPartBases();
             PartRemoved?.Invoke(this, new AssetPartChangeEventArgs(AssetItem, partId));
         }
 
@@ -751,7 +816,7 @@ namespace SiliconStudio.Assets.Quantum
                     part = ((TAssetPartDesign)e.NewValue).Part;
                     foreach (var childPartNode in RetrieveChildPartNodes(part))
                     {
-                        childPartNode.RegisterChanged(ChildPartChanged);
+                        RegisterChildPartNode(childPartNode);
                     }
                     break;
                 case ContentChangeType.CollectionRemove:
@@ -759,9 +824,43 @@ namespace SiliconStudio.Assets.Quantum
                     part = ((TAssetPartDesign)e.OldValue).Part;
                     foreach (var childPartNode in RetrieveChildPartNodes(part))
                     {
-                        childPartNode.UnregisterChanged(ChildPartChanged);
+                        UnregisterChildPartNode(childPartNode);
                     }
                     break;
+            }
+        }
+
+        private void RegisterChildPartNode(IGraphNode node)
+        {
+            if (registeredChildParts.Add(node))
+            {
+                var memberNode = node as IMemberNode;
+                if (memberNode != null)
+                {
+                    memberNode.ValueChanged += ChildPartChanged;
+                }
+                var objectNode = node as IObjectNode;
+                if (objectNode != null)
+                {
+                    objectNode.ItemChanged += ChildPartChanged;
+                }
+            }
+        }
+
+        private void UnregisterChildPartNode(IGraphNode node)
+        {
+            if (registeredChildParts.Remove(node))
+            {
+                var memberNode = node as IMemberNode;
+                if (memberNode != null)
+                {
+                    memberNode.ValueChanged -= ChildPartChanged;
+                }
+                var objectNode = node as IObjectNode;
+                if (objectNode != null)
+                {
+                    objectNode.ItemChanged -= ChildPartChanged;
+                }
             }
         }
     }

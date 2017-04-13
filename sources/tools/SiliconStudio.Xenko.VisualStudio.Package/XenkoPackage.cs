@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.VisualStudio
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
     public sealed class XenkoPackage : Package, IOleComponent
     {
-        public const string Version = "1.4";
+        public const string Version = "2.0";
 
         private readonly Dictionary<EnvDTE.Project, string> previousProjectPlatforms = new Dictionary<EnvDTE.Project, string>();
         private EnvDTE.Project currentStartupProject;
@@ -207,8 +207,8 @@ namespace SiliconStudio.Xenko.VisualStudio
             foreach (System.Diagnostics.StackFrame stackFrame in new StackTrace().GetFrames())
             {
                 var method = stackFrame.GetMethod();
-                if (method.DeclaringType.FullName == "Xamarin.VisualStudio.TastyFlavoredProject" &&
-                    method.Name == "OnAfterSetStartupProjectCommandExecuted")
+                if (method.DeclaringType.FullName == "Xamarin.VisualStudio.TastyFlavoredProject" && method.Name == "OnAfterSetStartupProjectCommandExecuted" ||
+                    method.DeclaringType.FullName == "Xamarin.VisualStudio.SolutionConfigurationManager" && method.Name == "ChangePlatform")
                 {
                     UpdateConfigurationFromStartupProject();
                     return;
@@ -301,15 +301,7 @@ namespace SiliconStudio.Xenko.VisualStudio
                     var startupProjects = (object[])dte.Solution.SolutionBuild.StartupProjects;
                     if (!startupProjects.Cast<string>().Contains(project.UniqueName))
                     {
-                        try
-                        {
-                            configurationLock = true;
-                            buildManager.set_StartupProject(VsHelper.ToHierarchy(project));
-                        }
-                        finally
-                        {
-                            configurationLock = false;
-                        }
+                        buildManager.set_StartupProject(VsHelper.ToHierarchy(project));
                     }
 
                     previousProjectPlatforms[project] = context.PlatformName;

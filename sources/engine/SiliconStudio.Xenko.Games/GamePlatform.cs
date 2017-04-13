@@ -240,7 +240,7 @@ namespace SiliconStudio.Xenko.Games
             }
 
             deviceInfo.PresentationParameters.DepthStencilFormat = preferredParameters.PreferredDepthStencilFormat;
-            deviceInfo.PresentationParameters.MultiSampleLevel = preferredParameters.PreferredMultiSampleLevel;
+            deviceInfo.PresentationParameters.MultisampleCount = preferredParameters.PreferredMultisampleCount;
 
             if (!graphicsDeviceInfos.Contains(deviceInfo))
             {
@@ -278,7 +278,7 @@ namespace SiliconStudio.Xenko.Games
                             GraphicsProfile = featureLevel,
                             PresentationParameters =
                             {
-                                MultiSampleLevel = preferredParameters.PreferredMultiSampleLevel,
+                                MultisampleCount = preferredParameters.PreferredMultisampleCount,
                                 IsFullScreen = preferredParameters.IsFullScreen,
                                 PreferredFullScreenOutputIndex = preferredParameters.PreferredFullScreenOutputIndex,
                                 PresentationInterval = preferredParameters.SynchronizeWithVerticalRetrace ? PresentInterval.One : PresentInterval.Immediate,
