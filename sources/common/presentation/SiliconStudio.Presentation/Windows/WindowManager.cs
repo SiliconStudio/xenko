@@ -153,13 +153,6 @@ namespace SiliconStudio.Presentation.Windows
             window.Loaded += (sender, e) => windowInfo.ForceUpdateHwnd();
             window.Closed += (sender, e) => ActivateMainWindow();
 
-            // Disable minimize on modal windows
-            var handle = new WindowInteropHelper(window).Handle;
-            if (handle != IntPtr.Zero)
-            {
-                NativeHelper.DisableMinimizeButton(handle);
-            }
-
             Logger.Info($"Modal window showing. ({window})");
             window.Show();
         }
