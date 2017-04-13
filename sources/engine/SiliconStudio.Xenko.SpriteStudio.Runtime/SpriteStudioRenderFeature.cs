@@ -50,9 +50,10 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
         protected override void Destroy()
         {
-            base.Destroy();
+            sprite3DBatch?.Dispose();
+            sprite3DBatch = null;
 
-            sprite3DBatch.Dispose();
+            base.Destroy();
         }
 
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)

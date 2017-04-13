@@ -119,12 +119,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Navigation.cpp" />
-    <Content Include="Navigation.hpp" />
-    <Content Include="NavigationBuilder.cpp" />
-    <Content Include="NavigationBuilder.hpp" />
-    <Content Include="NavigationMesh.cpp" />
-    <Content Include="NavigationMesh.hpp" />
+    <None Include="Navigation.cpp" />
+    <None Include="Navigation.hpp" />
+    <None Include="NavigationBuilder.cpp" />
+    <None Include="NavigationBuilder.hpp" />
+    <None Include="NavigationMesh.cpp" />
+    <None Include="NavigationMesh.hpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="..\..\native\Xenko.Native.targets" />

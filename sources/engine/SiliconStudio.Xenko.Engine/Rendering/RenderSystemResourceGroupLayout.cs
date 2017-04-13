@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Collections;
@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Rendering
                     logicalGroup.ConstantBufferSize = member.Offset + member.Size - logicalGroup.ConstantBufferOffset;
 
                     // Hash
-                    Effect.HashConstantBufferMember(ref hashBuilder, ref member);
+                    Effect.HashConstantBufferMember(ref hashBuilder, ref member, logicalGroup.ConstantBufferOffset);
                 }
                 else if (logicalGroup.ConstantBufferMemberStart != -1)
                     break; // group is finished, no need to scan the end

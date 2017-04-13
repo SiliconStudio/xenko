@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #include "stdafx.h"
 #include "../SiliconStudio.Xenko.Assimp.Translation/Extension.h"
@@ -160,6 +160,7 @@ private:
 		*/
 		
 		std::string unmanaged = msclr::interop::marshal_as<std::string>(inputFilename);
+
 		return importer->ReadFile(unmanaged, flags);
 	}
 
@@ -449,7 +450,8 @@ private:
 		}
 
 		// Build the mesh data
-		auto vertexBufferBinding = VertexBufferBinding(GraphicsSerializerExtensions::ToSerializableVersion(gcnew BufferData(BufferFlags::VertexBuffer, vertexBuffer)), gcnew VertexDeclaration(vertexElements->ToArray()), mesh->mNumVertices, 0, 0);
+		auto vertexDeclaration = gcnew VertexDeclaration(vertexElements->ToArray());
+		auto vertexBufferBinding = VertexBufferBinding(GraphicsSerializerExtensions::ToSerializableVersion(gcnew BufferData(BufferFlags::VertexBuffer, vertexBuffer)), vertexDeclaration, mesh->mNumVertices, vertexDeclaration->VertexStride, 0);
 		auto indexBufferBinding = gcnew IndexBufferBinding(GraphicsSerializerExtensions::ToSerializableVersion(gcnew BufferData(BufferFlags::IndexBuffer, indexBuffer)), is32BitIndex, nbIndices, 0);
 
 		auto drawData = gcnew MeshDraw();

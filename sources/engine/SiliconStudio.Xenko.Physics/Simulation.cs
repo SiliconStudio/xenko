@@ -245,6 +245,8 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
+        public RenderGroup ColliderShapesRenderGroup { get; set; } = RenderGroup.Group0;
+
         internal void AddCollider(PhysicsComponent component, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
         {
             collisionWorld.AddCollisionObject(component.NativeCollisionObject, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
@@ -1232,7 +1234,7 @@ namespace SiliconStudio.Xenko.Physics
                 var component1 = (PhysicsComponent)obj1.UserObject;
 
                 //disable static-static
-                if (component0 is StaticColliderComponent && component1 is StaticColliderComponent)
+                if (component0 is StaticColliderComponent && component1 is StaticColliderComponent || !component0.Enabled || !component1.Enabled)
                     continue;
 
                 currentFrameContacts.Add(new ContactPoint

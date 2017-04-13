@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Text;
+using SiliconStudio.Assets.TextAccessors;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
@@ -22,7 +23,7 @@ namespace SiliconStudio.Assets.Serializers
             var type = AssetRegistry.GetAssetTypeFromFileExtension(assetFileExtension);
             var asset = (SourceCodeAsset)Activator.CreateInstance(type);
 
-            var textAccessor = asset.TextAccessor as SourceCodeAsset.DefaultTextAccessor;
+            var textAccessor = asset.TextAccessor as DefaultTextAccessor;
             if (textAccessor != null)
             {
                 // Don't load the file if we have the file path

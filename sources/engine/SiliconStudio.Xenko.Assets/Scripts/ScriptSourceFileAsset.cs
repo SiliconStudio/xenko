@@ -1,4 +1,7 @@
-﻿using SiliconStudio.Assets;
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Assets;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
