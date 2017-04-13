@@ -197,7 +197,7 @@ namespace SiliconStudio.Assets
                 }
             }
 
-            var projectCollection = new Microsoft.Build.Evaluation.ProjectCollection(globalProperties) { DefaultToolsVersion = "14.0" };
+            var projectCollection = new Microsoft.Build.Evaluation.ProjectCollection(globalProperties);
             projectCollection.LoadProject(fullProjectLocation);
             var project = projectCollection.LoadedProjects.First();
             return project;
