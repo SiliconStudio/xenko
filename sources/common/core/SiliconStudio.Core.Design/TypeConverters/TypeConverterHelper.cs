@@ -17,49 +17,55 @@ namespace SiliconStudio.Core.TypeConverters
         /// <returns><c>true</c> if the <paramref name="source"/> could be converted to the <paramref name="targetType"/>; otherwise, <c>false</c>.</returns>
         public static bool TryConvert(object source, Type targetType, out object target)
         {
-            try
+            if (targetType == null)
+                throw new ArgumentNullException(nameof(targetType));
+
+            if(source != null)
             {
-                // Already same type or inherited (also works with interface)
-                if (targetType.IsInstanceOfType(source))
+                try
                 {
-                    target = source;
-                    return true;
-                }
-                
-                if (source is IConvertible)
-                {
-                    var typeCode = Type.GetTypeCode(targetType);
-                    if (typeCode != TypeCode.Empty && typeCode != TypeCode.Object)
+                    // Already same type or inherited (also works with interface)
+                    if (targetType.IsInstanceOfType(source))
                     {
-                        target = Convert.ChangeType(source, targetType);
+                        target = source;
+                        return true;
+                    }
+                
+                    if (source is IConvertible)
+                    {
+                        var typeCode = Type.GetTypeCode(targetType);
+                        if (typeCode != TypeCode.Object)
+                        {
+                            target = Convert.ChangeType(source, targetType);
+                            return true;
+                        }
+                    }
+
+                    var sourceType = source.GetType();
+                    // Try to convert using the source type converter
+                    var converter = TypeDescriptor.GetConverter(sourceType);
+                    if (converter.CanConvertTo(targetType))
+                    {
+                        target = converter.ConvertTo(source, targetType);
+                        return true;
+                    }
+                    // Try to convert using the target type converter
+                    converter = TypeDescriptor.GetConverter(targetType);
+                    if (converter.CanConvertFrom(sourceType))
+                    {
+                        target = converter.ConvertFrom(source);
                         return true;
                     }
                 }
-
-                var sourceType = source.GetType();
-                // Try to convert using the source type converter
-                var converter = TypeDescriptor.GetConverter(sourceType);
-                if (converter.CanConvertTo(targetType))
-                {
-                    target = converter.ConvertTo(source, targetType);
-                    return true;
-                }
-                // Try to convert using the target type converter
-                converter = TypeDescriptor.GetConverter(targetType);
-                if (converter.CanConvertFrom(sourceType))
-                {
-                    target = converter.ConvertFrom(source);
-                    return true;
-                }
+                catch (InvalidCastException) { }
+                catch (InvalidOperationException) { }
+                catch (FormatException) { }
+                catch (NotSupportedException) { }
+                catch (Exception ex) when (ex.InnerException is InvalidCastException) { }
+                catch (Exception ex) when (ex.InnerException is InvalidOperationException) { }
+                catch (Exception ex) when (ex.InnerException is FormatException) { }
+                catch (Exception ex) when (ex.InnerException is NotSupportedException) { }
             }
-            catch (InvalidCastException) { }
-            catch (InvalidOperationException) { }
-            catch (FormatException) { }
-            catch (NotSupportedException) { }
-            catch (Exception ex) when (ex.InnerException is InvalidCastException) { }
-            catch (Exception ex) when (ex.InnerException is InvalidOperationException) { }
-            catch (Exception ex) when (ex.InnerException is FormatException) { }
-            catch (Exception ex) when (ex.InnerException is NotSupportedException) { }
 
             // Incompatible type and no conversion available
             target = null;

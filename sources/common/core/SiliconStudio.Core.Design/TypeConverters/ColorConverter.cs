@@ -76,6 +76,7 @@ namespace SiliconStudio.Core.TypeConverters
             });
         }
 
+        /// <inheritdoc/>
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
         {
             return destinationType == typeof(Color3) || destinationType == typeof(Color4) || base.CanConvertTo(context, destinationType);
@@ -113,6 +114,7 @@ namespace SiliconStudio.Core.TypeConverters
             return base.ConvertTo(context, culture, value, destinationType);
         }
 
+        /// <inheritdoc/>
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
             return sourceType == typeof(Color3) || sourceType == typeof(Color4) || base.CanConvertFrom(context, sourceType);

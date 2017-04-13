@@ -26,6 +26,7 @@ namespace SiliconStudio.Core.TypeConverters
             });
         }
 
+        /// <inheritdoc/>
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
         {
             return destinationType == typeof(Color) || destinationType == typeof(Color4) || base.CanConvertTo(context, destinationType);
