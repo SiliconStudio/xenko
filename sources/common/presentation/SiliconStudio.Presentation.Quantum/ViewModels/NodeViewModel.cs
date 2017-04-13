@@ -489,9 +489,12 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
 
         private object ConvertValue(object value)
         {
-            if (!TypeConverterHelper.TryConvert(value, Type, out value))
-                return Type.Default();
-            return value;
+            if (value == null)
+                return null;
+            object convertedValue;
+            if (!TypeConverterHelper.TryConvert(value, Type, out convertedValue))
+                return null;
+            return convertedValue;
         }
 
         private void AddChild([NotNull] NodeViewModel child) => ChangeAndNotify(() => { child.Parent = this; ((ICollection<NodeViewModel>)initializingChildren ?? children).Add(child); }, $"{GraphViewModel.HasChildPrefix}{child.Name}", child.Name);
