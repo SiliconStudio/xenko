@@ -1,4 +1,5 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using System.Reflection;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -29,8 +30,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         /// <param name="entity">The entity contained in this instance.</param>
         public EntityDesign([NotNull] Entity entity)
+            : this(entity, string.Empty)
         {
-            Entity = entity;
         }
 
         /// <summary>

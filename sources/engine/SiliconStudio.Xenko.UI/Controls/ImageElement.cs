@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         [DefaultValue(null)]
         public ISpriteProvider Source
         {
-            get { return source;} 
+            get { return source;}
             set
             {
                 if (source == value)

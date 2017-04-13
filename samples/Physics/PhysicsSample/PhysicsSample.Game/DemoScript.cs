@@ -202,6 +202,7 @@ namespace PhysicsSample12
             {
                 simulation.RemoveConstraint(currentConstraint);
                 currentConstraint.Dispose();
+				currentConstraint = null;
             }
 
             //Stop motion and reset the rigid bodies

@@ -152,7 +152,6 @@
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Extensions\WindowHelper.cs" />
     <Compile Include="Core\Utils.cs" />
-    <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="MarkupExtensions\MaxDoubleExtension.cs" />
     <Compile Include="MarkupExtensions\MaxIntExtension.cs" />

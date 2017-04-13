@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    // Temporary code for testing IMaterialSurface
+    shader MaterialSurfaceNormalStreamShading : ShadingBase, NormalStream
+    {
+        stage override float4 Shading()
+        {
+            // Run surface shading but don't take the result
+            base.Shading();
+            return float4(streams.normalWS * 0.5f + 0.5f, 1.0f);
+        }
+    };
+}

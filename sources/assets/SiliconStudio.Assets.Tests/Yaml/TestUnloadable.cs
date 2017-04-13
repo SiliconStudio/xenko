@@ -39,10 +39,6 @@ ObjectList:
     02000000020000000200000002000000: !UnknownType value1
 ";
 
-        private const string YamlInvalidTokens = @"!UnloadableContainerInvalidType
-ObjectMember: { value0
-";
-
         private static string Serialize(object instance)
         {
             using (var stream = new MemoryStream())
@@ -135,20 +131,6 @@ ObjectMember: { value0
             Assert.IsInstanceOf<IUnloadable>(obj.ObjectList[1]);
 
             // It shouldn't be stable since a member is gone
-            Assert.AreNotEqual(YamlInvalidType, Serialize(obj));
-        }
-
-        [Test]
-        public void TestInvalidTokens()
-        {
-            var obj = Deserialize<UnloadableContainer>(YamlInvalidMemberType);
-
-            // Check it's not an unloadable object
-            Assert.IsNotInstanceOf<IUnloadable>(obj);
-            // But it's member should be
-            Assert.IsInstanceOf<IUnloadable>(obj.ObjectMember);
-
-            // It should be stable since a member is gone
             Assert.AreNotEqual(YamlInvalidType, Serialize(obj));
         }
     }

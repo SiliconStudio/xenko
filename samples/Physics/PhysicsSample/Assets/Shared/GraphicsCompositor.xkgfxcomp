@@ -2,7 +2,7 @@
 Id: d0f9813f-8924-4b77-a91e-51be4084acf7
 SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
-Archetype: 9af53371-51ba-49fc-b420-ee7874892e75:Compositing/DefaultGraphicsCompositorLevel9
+Archetype: 9af53371-51ba-49fc-b420-ee7874892e75:DefaultGraphicsCompositorLevel9
 Cameras:
     de2e75c3b2b23e54162686363f3f138e:
         Name: Main

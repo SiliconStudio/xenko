@@ -145,20 +145,29 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             while (!reader.Accept<MappingEnd>())
             {
                 var currentDepth = objectContext.Reader.CurrentDepth;
+                var startParsingEvent = objectContext.Reader.Parser.Current;
 
                 try
                 {
                     // Read key and value
                     var keyValue = ReadDictionaryItem(ref objectContext, new KeyValuePair<Type, Type>(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType));
-                    dictionaryDescriptor.AddToDictionary(objectContext.Instance, keyValue.Key, keyValue.Value);
+                    try
+                    {
+                        dictionaryDescriptor.AddToDictionary(objectContext.Instance, keyValue.Key, keyValue.Value);
+                    }
+                    catch (Exception ex)
+                    {
+                        ex = ex.Unwrap();
+                        throw new YamlException(reader.Parser.Current.Start, reader.Parser.Current.End, $"Cannot add item with key [{keyValue.Key}] to dictionary of type [{objectContext.Descriptor}]:\n{ex.Message}", ex);
+                    }
                 }
                 catch (YamlException ex)
                 {
                     if (objectContext.SerializerContext.AllowErrors)
                     {
                         var logger = objectContext.SerializerContext.Logger;
-                        logger?.Warning("Ignored dictionary item that could not be deserialized", ex);
-                        objectContext.Reader.Skip(currentDepth);
+                        logger?.Warning($"Ignored dictionary item that could not be deserialized:\n{ex.Message}", ex);
+                        objectContext.Reader.Skip(currentDepth, startParsingEvent == objectContext.Reader.Parser.Current);
                     }
                     else throw;
                 }

@@ -32,6 +32,13 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                 return;
             }
 
+            if (nugetVersion.Revision <= 0)
+            {
+                // If 0, we have special cases with NuGet dropping it in install path, could be dangerous and lead to bugs if not properly tested.
+                log.Error($"Package has revision {nugetVersion} but 4th digit needs to be at least 1.");
+                return;
+            }
+
             // Override version with NuGet version (4th number is different in Xenko package)
             meta.Version = XenkoVersion.NuGetVersion;
 
@@ -85,6 +92,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                     files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xksheet", target));
                     files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xkuilib", target));
                     files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xkgfxcomp", target));
+                    files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xktex", target));
                     var resourceFolder = UPath.Combine(assetFolder.Path, new UDirectory("../../Resources"));
                     if (Directory.Exists(resourceFolder.ToWindowsPath()))
                     {

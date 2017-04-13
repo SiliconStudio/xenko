@@ -27,6 +27,10 @@ namespace PhysicsSample
             while (!CancellationToken.IsCancellationRequested)
             {
                 var state = await receiver.ReceiveAsync();
+				
+				if (CancellationToken.IsCancellationRequested)
+                    return;
+				
                 if (state)
                 {
                     //switch to dynamic and awake the rigid body

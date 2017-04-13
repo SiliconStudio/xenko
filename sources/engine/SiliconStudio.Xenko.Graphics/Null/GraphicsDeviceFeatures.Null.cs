@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Graphics
             HasComputeShaders = true;
             HasDepthAsReadOnlyRT = false;
             HasDepthAsSRV = true;
+            HasMultisampleDepthAsSRV = false;
             HasDoublePrecision = true;
             HasDriverCommandLists = true;
             HasMultiThreadingConcurrentResources = true;

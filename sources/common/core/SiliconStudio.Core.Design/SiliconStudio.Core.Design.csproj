@@ -49,6 +49,7 @@
     <Compile Include="Collections\HybridDictionary.cs" />
     <Compile Include="Extensions\AnonymousEqualityComparer.cs" />
     <Compile Include="Extensions\DesignExtensions.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Transactions\TransactionStack.cs" />
     <Compile Include="Transactions\TransactionStackFactory.cs" />
     <Compile Include="TypeConverters\Color3Converter.cs" />
+    <Compile Include="TypeConverters\TypeConverterHelper.cs" />
     <Compile Include="Windows\FileLock.cs" />
     <Compile Include="Windows\GlobalMutex.cs" />
     <Compile Include="Yaml\AssetIdSerializer.cs" />
