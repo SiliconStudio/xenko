@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <returns>Screenspace rotation in radians, positive is clockwise</returns>
         protected unsafe float GetParticleRotation(Particle particle, ParticleFieldAccessor<float> rotationField, ParticleFieldAccessor<float> lifeField)
         {
-            var particleRotation = rotationField.IsValid() ? particle.Get(rotationField) : 1f;
+            var particleRotation = rotationField.IsValid() ? particle.Get(rotationField) : 0f;
 
             if (SamplerRotation == null)
                 return particleRotation;
