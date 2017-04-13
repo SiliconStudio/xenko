@@ -493,7 +493,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
                 return null;
             object convertedValue;
             if (!TypeConverterHelper.TryConvert(value, Type, out convertedValue))
-                return null;
+                throw new InvalidOperationException("Can not convert value to the required type");
             return convertedValue;
         }
 
