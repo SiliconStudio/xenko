@@ -189,7 +189,7 @@ namespace SiliconStudio.Assets.Quantum
         /// Deletes the given parts and all its children, recursively, and clear all object references to it.
         /// </summary>
         /// <param name="partDesigns">The parts to delete.</param>
-        /// <param name="deletedPartsMapping">A mapping of deleted parts (base part id, instance id).</param>
+        /// <param name="deletedPartsMapping">A mapping of the base information (base part id, instance id) of the deleted parts that have a base.</param>
         public void DeleteParts([NotNull] IEnumerable<TAssetPartDesign> partDesigns, [NotNull] out HashSet<Tuple<Guid, Guid>> deletedPartsMapping)
         {
             if (partDesigns == null) throw new ArgumentNullException(nameof(partDesigns));
@@ -450,7 +450,7 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         /// <inheritdoc />
-        protected override void InitializeOverride()
+        protected override void FinalizeInitialization()
         {
             // Track parts that were removed in instances by comparing to the base
             foreach (var kv in basePartAssets)

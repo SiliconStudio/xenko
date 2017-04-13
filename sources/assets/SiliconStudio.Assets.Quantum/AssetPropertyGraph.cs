@@ -161,17 +161,14 @@ namespace SiliconStudio.Assets.Quantum
         public void Initialize()
         {
             if (IsInitialized)
-#if DEBUG
                 throw new InvalidOperationException("This property graph has already been initialized.");
-#else
-                return;
-#endif
+
             try
             {
                 IsInitializing = true;
                 RefreshBase();
                 ReconcileWithBase();
-                InitializeOverride();
+                FinalizeInitialization();
             }
             finally
             {
@@ -313,9 +310,9 @@ namespace SiliconStudio.Assets.Quantum
         /// When overridden in a derived class, initializes the <see cref="AssetPropertyGraph"/>-derived class.
         /// </summary>
         /// <remarks>
-        /// Override <see cref="InitializeOverride"/> to implement custom initialization behavior for your property graph.
+        /// Override <see cref="FinalizeInitialization"/> to implement custom initialization behavior for your property graph.
         /// </remarks>
-        protected virtual void InitializeOverride()
+        protected virtual void FinalizeInitialization()
         {
             // Default implementation does nothing
         }
