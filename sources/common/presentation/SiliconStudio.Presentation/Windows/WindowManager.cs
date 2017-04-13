@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Windows;
-using System.Windows.Interop;
 using System.Windows.Threading;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
