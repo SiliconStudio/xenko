@@ -56,34 +56,39 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Core.TypeConverters
 {
-	/// <summary>
-	/// Defines a type converter for <see cref="Color4"/>.
-	/// </summary>
-	public class Color4Converter : BaseConverter
-	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Color4Converter"/> class.
-		/// </summary>
-		public Color4Converter()
-		{
-			var type = typeof(Color4);
-			Properties = new PropertyDescriptorCollection(new PropertyDescriptor[] 
-            { 
-                new FieldPropertyDescriptor(type.GetField(nameof(Color4.R))), 
+    /// <summary>
+    /// Defines a type converter for <see cref="Color4"/>.
+    /// </summary>
+    public class Color4Converter : BaseConverter
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Color4Converter"/> class.
+        /// </summary>
+        public Color4Converter()
+        {
+            var type = typeof(Color4);
+            Properties = new PropertyDescriptorCollection(new PropertyDescriptor[]
+            {
+                new FieldPropertyDescriptor(type.GetField(nameof(Color4.R))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Color4.G))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Color4.B))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Color4.A)))
             });
-		}
+        }
+
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        {
+            return destinationType == typeof(Color) || destinationType == typeof(Color3) || base.CanConvertTo(context, destinationType);
+        }
 
         /// <inheritdoc/>
-		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
-		{
-			if (destinationType == null) throw new ArgumentNullException(nameof(destinationType));
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        {
+            if (destinationType == null) throw new ArgumentNullException(nameof(destinationType));
 
-			if (value is Color4)
-			{
-				var color = (Color4)value;
+            if (value is Color4)
+            {
+                var color = (Color4)value;
 
                 if (destinationType == typeof(string))
                 {
@@ -99,18 +104,23 @@ namespace SiliconStudio.Core.TypeConverters
                 }
 
                 if (destinationType == typeof(InstanceDescriptor))
-				{
-					var constructor = typeof(Color4).GetConstructor(MathUtil.Array(typeof(float), 4));
-					if (constructor != null)
+                {
+                    var constructor = typeof(Color4).GetConstructor(MathUtil.Array(typeof(float), 4));
+                    if (constructor != null)
                         return new InstanceDescriptor(constructor, color.ToArray());
-				}
-			}
+                }
+            }
 
-			return base.ConvertTo(context, culture, value, destinationType);
-		}
+            return base.ConvertTo(context, culture, value, destinationType);
+        }
+
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        {
+            return sourceType == typeof(Color) || sourceType == typeof(Color3) || base.CanConvertFrom(context, sourceType);
+        }
 
         /// <inheritdoc/>
-		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             if (value is Color)
             {
