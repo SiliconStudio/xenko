@@ -176,6 +176,7 @@ namespace SiliconStudio.Xenko.Assets
                             }
                             localSlotIds.Add(i, guid);
                             cameraSlot.Value.Id = guid;
+                            ++i;
                         }
                         var indexString = asset.Game?.Camera?.Index?.ToString();
                         int index;
