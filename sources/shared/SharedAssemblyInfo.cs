@@ -6,11 +6,12 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using SiliconStudio;
 
-[assembly:AssemblyCompany("Silicon Studio")]
-[assembly:AssemblyCopyright("Copyright © 2011-2016 Silicon Studio")]
+[assembly: AssemblyCompany("Silicon Studio Corporation")]
+[assembly: AssemblyCopyright("Copyright © 2011-2017 Silicon Studio Corporation")]
 
-[assembly:AssemblyTrademark("")]
-[assembly:AssemblyCulture("")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+
 
 [assembly: AssemblyVersion(XenkoVersion.PublicVersion)]
 [assembly: AssemblyFileVersion(XenkoVersion.PublicVersion)]

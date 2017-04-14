@@ -31,6 +31,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>  
     <Compile Include="Dirtiables\SimpleDirtiable.cs" />
     <Compile Include="Dirtiables\SimpleDirtyingOperation.cs" />
     <Compile Include="Dirtiables\TestDirtiable.cs" />
