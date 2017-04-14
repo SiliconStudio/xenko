@@ -10,6 +10,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.TypeConverters;
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation.Core;
@@ -488,19 +489,12 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
 
         private object ConvertValue(object value)
         {
-            if (Type.IsInstanceOfType(value))
-                return value;
-
-            if (value is IConvertible)
-            {
-                var typeCode = Type.GetTypeCode(Type);
-                if (typeCode != TypeCode.Empty && typeCode != TypeCode.Object)
-                {
-                    return Convert.ChangeType(value, Type);
-                }
-            }
-
-            return TypeDescriptor.GetConverter(Type).ConvertFrom(value);
+            if (value == null)
+                return null;
+            object convertedValue;
+            if (!TypeConverterHelper.TryConvert(value, Type, out convertedValue))
+                throw new InvalidOperationException("Can not convert value to the required type");
+            return convertedValue;
         }
 
         private void AddChild([NotNull] NodeViewModel child) => ChangeAndNotify(() => { child.Parent = this; ((ICollection<NodeViewModel>)initializingChildren ?? children).Add(child); }, $"{GraphViewModel.HasChildPrefix}{child.Name}", child.Name);

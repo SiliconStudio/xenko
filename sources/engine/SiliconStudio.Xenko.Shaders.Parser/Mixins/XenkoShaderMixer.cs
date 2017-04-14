@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
@@ -1240,6 +1240,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             
             // remove useless variables
             RemoveUselessVariables();
+
+            // Add padding to constant buffers to align logical groups
+            AlignLogicalGroups();
         }
 
         private List<Node> SortNodes(List<Node> nodes)
@@ -1408,6 +1411,54 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             MixedShader.Members.AddRange(variables.Select(x => x.Key).Where(IsOutOfCBufferVariable));
         }
 
+        private void AlignLogicalGroups()
+        {
+            foreach (var constantBuffer in MixedShader.Members.OfType<ConstantBuffer>())
+            {
+                string currentLogicalGroupName = null;
+
+                var members = constantBuffer.Members;
+                constantBuffer.Members = new List<Node>();
+
+                foreach (var member in members.OfType<Variable>())
+                {
+                    // Add padding if the logical group changes
+                    var logicalGroupName = (string)member.GetTag(XenkoTags.LogicalGroup);
+                    if (logicalGroupName != currentLogicalGroupName)
+                    {
+                        AddLogicalGroupPadding(constantBuffer, currentLogicalGroupName);
+                        currentLogicalGroupName = logicalGroupName;
+                    }
+
+                    // Add the original member
+                    constantBuffer.Members.Add(member);
+                }
+
+                // Pad the last logical group, so it always has the same size
+                if (currentLogicalGroupName != null)
+                {
+                    AddLogicalGroupPadding(constantBuffer, currentLogicalGroupName);
+                }
+            }
+        }
+
+        private static void AddLogicalGroupPadding(ConstantBuffer constantBuffer, string logicaGroupName)
+        {
+            if (logicaGroupName == null)
+                logicaGroupName = "Default";
+
+            // Pad with float4, so we align to 16 bytes, independent of the packing rules of the shader compiler
+            // This is not optimal. Ideally we would define all layouts manually.
+            var paddingVariable = new Variable(VectorType.Float4.ToNonGenericType(), $"_padding_{constantBuffer.Name}_{logicaGroupName}");
+
+            paddingVariable.SetTag(XenkoTags.ConstantBuffer, constantBuffer);
+            paddingVariable.SetTag(XenkoTags.LogicalGroup, logicaGroupName);
+
+            // Satisfy the ShaderLinker. The link name needs to be well defined as it is used for hashing
+            paddingVariable.Attributes.Add(new AttributeDeclaration { Name = new Identifier("Link"), Parameters = new List<Literal> { new Literal(paddingVariable.Name.Text) } });
+
+            constantBuffer.Members.Add(paddingVariable);
+        }
 
         /// <summary>
         /// Merge all the variables with the same semantic and rename them (but typeinference is not correct)

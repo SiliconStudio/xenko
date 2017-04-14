@@ -269,10 +269,12 @@ Example of use:
     <!-- By default, enable all known categories -->
     <PropertyGroup>
       <SiliconStudioBuildTestCategories Condition="'$(SiliconStudioBuildTestCategories)' == ''">Simple;Game</SiliconStudioBuildTestCategories>
+      <!-- We enclose everything with ;, so that we could do full word matches more easily with string.Contains() -->
+      <SiliconStudioBuildTestCategories>;$(SiliconStudioBuildTestCategories);</SiliconStudioBuildTestCategories>
     </PropertyGroup>
     
     <!-- Simple standalone unit tests -->
-    <ItemGroup Condition="$(SiliconStudioBuildTestCategories.Contains('Simple'))">
+    <ItemGroup Condition="$(SiliconStudioBuildTestCategories.Contains(';Simple;'))">
       <UnitTest Include="11-CoreRuntime.Tests\SiliconStudio.Core.Tests"/>
       <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Shaders.Tests.Windows"/>
       <UnitTest Include="31-CoreDesign.Tests\SiliconStudio.BuildEngine.Tests"/>
@@ -280,42 +282,87 @@ Example of use:
       <UnitTest Include="31-CoreDesign.Tests\SiliconStudio.Core.Yaml.Tests"/>
       <UnitTest Include="41-Assets.Tests\SiliconStudio.Assets.Quantum.Tests"/>
       <UnitTest Include="41-Assets.Tests\SiliconStudio.Assets.Tests"/>
-      <UnitTest Include="51-Presentation.Tests\SiliconStudio.Presentation.Quantum.Tests"/>
+      <!-- Need fix <UnitTest Include="51-Presentation.Tests\SiliconStudio.Presentation.Quantum.Tests"/>-->
       <UnitTest Include="51-Presentation.Tests\SiliconStudio.Presentation.Tests"/>
       <UnitTest Include="51-Presentation.Tests\SiliconStudio.Quantum.Tests"/>
       <UnitTest Include="61-Editor.Tests\SiliconStudio.Assets.Editor.Tests"/>
       <UnitTest Include="61-Editor.Tests\SiliconStudio.Xenko.GameStudio.Tests"/>
       <UnitTest Include="71-XenkoAssets.Tests\SiliconStudio.Xenko.Assets.Tests2"/>
     </ItemGroup>
+	
+	<ItemGroup>
+      <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Engine.Tests.Windows"/>
+      <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.10_0.Windows"/>
+      <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.Windows"/>
+      <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Navigation.Tests.Windows"/>
+      <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Input.Tests.Windows"/>
+      <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Particles.Tests.Windows"/>
+      <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Physics.Tests.Windows"/>
+      <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.UI.Tests.Windows"/>
+	</ItemGroup>
 
-    <!-- Unit tests that need the asset compiler -->
-    <ItemGroup Condition="$(SiliconStudioBuildTestCategories.Contains('Game'))">
-      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Audio.Tests.Windows"/>
-      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Engine.Tests.Windows"/>
-      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.10_0.Windows"/>
+    <!-- Direct3D11 unit tests -->
+    <ItemGroup Condition="$(SiliconStudioBuildTestCategories.Contains(';Game;'))">
+      <UnitTest Include="@(UnitTestGame)"/>
+      <!-- Other graphics platforms don't support compute shaders and tessellation yet -->
       <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.11_0.Windows"/>
-      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.Windows"/>
-      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Navigation.Tests.Windows"/>
-      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Input.Tests.Windows"/>
-      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Particles.Tests.Windows"/>
-      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Physics.Tests.Windows"/>
-      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.UI.Tests.Windows"/>
+      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Audio.Tests.Windows"/>
       <UnitTest Include="71-XenkoAssets.Tests\SiliconStudio.Xenko.Assets.Tests"/>
     </ItemGroup>
+
+    <!-- Direct3D12 unit tests -->
+    <ItemGroup Condition="$(SiliconStudioBuildTestCategories.Contains(';GameDirect3D12;'))">
+	  <UnitTestPrerequisites Include="@(UnitTestGame)"/>
+      <UnitTest Include="@(UnitTestGame)"><Solution>$(XenkoSolution).Direct3D12.sln</Solution></UnitTest>
+	</ItemGroup>
+
+    <!-- OpenGL unit tests -->
+    <ItemGroup Condition="$(SiliconStudioBuildTestCategories.Contains(';GameOpenGL;'))">
+	  <UnitTestPrerequisites Include="@(UnitTestGame)"/>
+      <UnitTest Include="@(UnitTestGame)"><Solution>$(XenkoSolution).OpenGL.sln</Solution></UnitTest>
+    </ItemGroup>
+
+    <!-- OpenGLES unit tests -->
+    <ItemGroup Condition="$(SiliconStudioBuildTestCategories.Contains(';GameOpenGLES;'))">
+	  <UnitTestPrerequisites Include="@(UnitTestGame)"/>
+      <UnitTest Include="@(UnitTestGame)"><Solution>$(XenkoSolution).OpenGLES.sln</Solution></UnitTest>
+    </ItemGroup>
     
-    <!-- Replace . into _ (needed for .sln targets) -->
-    <ItemGroup>
-      <UnitTest Include="@(UnitTest)">
+    <!-- Vulkan unit tests -->
+    <ItemGroup Condition="$(SiliconStudioBuildTestCategories.Contains(';GameVulkan;'))">
+	  <UnitTestPrerequisites Include="@(UnitTestGame)"/>
+      <UnitTest Include="@(UnitTestGame)"><Solution>$(XenkoSolution).Vulkan.sln</Solution></UnitTest>
+    </ItemGroup>
+    
+    <!-- Compute TargetName and default Solution -->	
+	<ItemGroup>
+      <UnitTestPrerequisites>
+        <!-- Replace . into _ (needed for .sln targets) -->
         <TargetName>$([System.String]::Copy('%(Identity)').Replace('.','_'))</TargetName>
-      </UnitTest>
-    </ItemGroup>
-    <MSBuild Targets="@(UnitTest->'%(TargetName)')" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
-    <ItemGroup>
-      <AssembliesToTest Include="$(XenkoRootBin)Tests\**\SiliconStudio.*.Tests.*dll" />
-      <AssembliesToTest Include="$(XenkoRootBin)Tests\**\SiliconStudio.*.Tests.*exe" />
-    </ItemGroup>
+        <!-- Default solution -->
+        <Solution Condition="'%(UnitTestPrerequisites.Solution)' == ''">$(XenkoSolution).sln</Solution>
+	  </UnitTestPrerequisites>
+      <UnitTest>
+        <!-- Replace . into _ (needed for .sln targets) -->
+        <TargetName>$([System.String]::Copy('%(Identity)').Replace('.','_'))</TargetName>
+        <!-- Default solution -->
+        <Solution Condition="'%(UnitTest.Solution)' == ''">$(XenkoSolution).sln</Solution>
+	  </UnitTest>
+	</ItemGroup>
+	
+	<!-- First, build prerequisites -->
+	<Message Importance="High" Text="Going to build unit test prerequisites from solution %(Solution): @(UnitTestPrerequisites->'%(TargetName)')"/>
+    <MSBuild Targets="@(UnitTestPrerequisites->'%(TargetName)')" Projects="%(Solution)" Properties="$(BuildProperties);Platform=Mixed Platforms;DeployExtension=true"/>
+
+	<!-- Build unit tests -->
+	<Message Importance="High" Text="Going to build unit test from solution %(Solution): @(UnitTest->'%(TargetName)')"/>
+    <MSBuild Targets="@(UnitTest->'%(TargetName)')" Projects="%(Solution)" Properties="$(BuildProperties);Platform=Mixed Platforms;DeployExtension=true">
+        <Output TaskParameter="TargetOutputs" ItemName="AssembliesToTest" />
+    </MSBuild>
+	
+	<!-- Run unit tests -->
     <Error Text="Could not find [$(NUnitConsolePath)]" Condition="!Exists('$(NUnitConsolePath)')"/>
-    <Exec IgnoreExitCode="True" Command="$(NUnitConsolePath) --process=Separate --x86 @(AssembliesToTest->'Tests\%(RecursiveDir)%(Filename)%(Extension)', ' ')" WorkingDirectory="$(XenkoRootBin)">
+    <Exec IgnoreExitCode="True" Command="$(NUnitConsolePath) --process=Separate --x86 @(AssembliesToTest->'%(Identity)', ' ')" WorkingDirectory="$(XenkoRootBin)">
       <Output TaskParameter="ExitCode" ItemName="exitCode" />
     </Exec>
     <Error Text="Error while running tests" Condition="@(exitCode) &lt; 0" />
