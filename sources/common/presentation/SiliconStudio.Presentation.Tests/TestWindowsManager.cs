@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -131,7 +131,7 @@ namespace SiliconStudio.Presentation.Tests
                             throw new ArgumentOutOfRangeException();
                     }
                     await stepCompleted.Task;
-                    await dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+                    await dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background);
                     dispatcher.Invoke(() => AssertStep(step, mainWindow, modalWindow, blockingWindow));
                 }
             }
