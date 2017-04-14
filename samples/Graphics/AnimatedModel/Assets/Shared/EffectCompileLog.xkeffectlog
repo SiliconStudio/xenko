@@ -21,115 +21,6 @@ UsedParameters:
                                 GenericArguments: [Material.DiffuseValue]
                     - !ShaderMixinSource
                         Mixins:
-                            -   ClassName: MaterialSurfaceLightingAndShading
-                        Compositions:
-                            surfaces: !ShaderArraySource
-                                Values:
-                                    - !ShaderClassSource
-                                        ClassName: MaterialSurfaceShadingDiffuseLambert
-                                        GenericArguments: [false]
-    Material.PixelStageStreamInitializer: !ShaderMixinSource
-        Mixins:
-            -   ClassName: MaterialStream
-            -   ClassName: MaterialPixelShadingStream
-    Lighting.DirectLightGroups:
-        - !ShaderMixinSource
-            Mixins:
-                -   ClassName: LightDirectionalGroup
-                    GenericArguments: [2]
-    Lighting.EnvironmentLights:
-        - !ShaderClassSource
-            ClassName: LightSimpleAmbient
----
-!EffectCompileRequest
-EffectName: XenkoForwardShadingEffect
-UsedParameters:
-    Material.HasSkinningPosition: true
-    Material.HasSkinningNormal: true
-    Material.HasSkinningTangent: false
-    Material.SkinningMaxBones: 56
-    Material.PixelStageSurfaceShaders: !ShaderMixinSource
-        Mixins:
-            -   ClassName: MaterialSurfaceArray
-        Compositions:
-            layers: !ShaderArraySource
-                Values:
-                    - !ShaderMixinSource
-                        Mixins:
-                            -   ClassName: MaterialSurfaceDiffuse
-                        Compositions:
-                            diffuseMap: !ShaderClassSource
-                                ClassName: ComputeColorConstantColorLink
-                                GenericArguments: [Material.DiffuseValue]
-                    - !ShaderMixinSource
-                        Mixins:
-                            -   ClassName: MaterialSurfaceGlossinessMap
-                                GenericArguments: [false]
-                        Compositions:
-                            glossinessMap: !ShaderClassSource
-                                ClassName: ComputeColorConstantFloatLink
-                                GenericArguments: [Material.GlossinessValue]
-                    - !ShaderMixinSource
-                        Mixins:
-                            -   ClassName: MaterialSurfaceMetalness
-                        Compositions:
-                            metalnessMap: !ShaderClassSource
-                                ClassName: ComputeColorConstantFloatLink
-                                GenericArguments: [Material.MetalnessValue]
-                    - !ShaderMixinSource
-                        Mixins:
-                            -   ClassName: MaterialSurfaceLightingAndShading
-                        Compositions:
-                            surfaces: !ShaderArraySource
-                                Values:
-                                    - !ShaderClassSource
-                                        ClassName: MaterialSurfaceShadingDiffuseLambert
-                                        GenericArguments: [false]
-                                    - !ShaderMixinSource
-                                        Mixins:
-                                            -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
-                                        Compositions:
-                                            fresnelFunction: !ShaderClassSource
-                                                ClassName: MaterialSpecularMicrofacetFresnelSchlick
-                                            geometricShadowingFunction: !ShaderClassSource
-                                                ClassName: MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-                                            normalDistributionFunction: !ShaderClassSource
-                                                ClassName: MaterialSpecularMicrofacetNormalDistributionGGX
-    Material.PixelStageStreamInitializer: !ShaderMixinSource
-        Mixins:
-            -   ClassName: MaterialStream
-            -   ClassName: MaterialPixelShadingStream
-    Lighting.DirectLightGroups:
-        - !ShaderMixinSource
-            Mixins:
-                -   ClassName: LightDirectionalGroup
-                    GenericArguments: [2]
-    Lighting.EnvironmentLights:
-        - !ShaderClassSource
-            ClassName: LightSimpleAmbient
----
-!EffectCompileRequest
-EffectName: XenkoForwardShadingEffect
-UsedParameters:
-    Material.HasSkinningPosition: true
-    Material.HasSkinningNormal: true
-    Material.HasSkinningTangent: false
-    Material.SkinningMaxBones: 56
-    Material.PixelStageSurfaceShaders: !ShaderMixinSource
-        Mixins:
-            -   ClassName: MaterialSurfaceArray
-        Compositions:
-            layers: !ShaderArraySource
-                Values:
-                    - !ShaderMixinSource
-                        Mixins:
-                            -   ClassName: MaterialSurfaceDiffuse
-                        Compositions:
-                            diffuseMap: !ShaderClassSource
-                                ClassName: ComputeColorConstantColorLink
-                                GenericArguments: [Material.DiffuseValue]
-                    - !ShaderMixinSource
-                        Mixins:
                             -   ClassName: MaterialSurfaceNormalMap
                                 GenericArguments: [false, true]
                         Compositions:
@@ -183,6 +74,12 @@ UsedParameters:
     Lighting.EnvironmentLights:
         - !ShaderClassSource
             ClassName: LightSimpleAmbient
+    XenkoEffectBase.RenderTargetExtensions: !ShaderMixinSource
+        Macros:
+            -   Name: SILICON_STUDIO_RENDER_TARGET_COUNT
+                Definition: 1
+            -   Name: SILICON_STUDIO_MULTISAMPLE_COUNT
+                Definition: 1
 ---
 !EffectCompileRequest
 EffectName: XenkoForwardShadingEffect
@@ -221,22 +118,6 @@ UsedParameters:
                                 GenericArguments: [Material.MetalnessValue]
                     - !ShaderMixinSource
                         Mixins:
-                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
-                                GenericArguments: [matEmissive, rgba]
-                        Compositions:
-                            computeColorSource: !ShaderClassSource
-                                ClassName: ComputeColorConstantColorLink
-                                GenericArguments: [Material.EmissiveValue]
-                    - !ShaderMixinSource
-                        Mixins:
-                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
-                                GenericArguments: [matEmissiveIntensity, r]
-                        Compositions:
-                            computeColorSource: !ShaderClassSource
-                                ClassName: ComputeColorConstantFloatLink
-                                GenericArguments: [Material.EmissiveIntensity]
-                    - !ShaderMixinSource
-                        Mixins:
                             -   ClassName: MaterialSurfaceLightingAndShading
                         Compositions:
                             surfaces: !ShaderArraySource
@@ -254,9 +135,6 @@ UsedParameters:
                                                 ClassName: MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
                                             normalDistributionFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetNormalDistributionGGX
-                    - !ShaderClassSource
-                        ClassName: MaterialSurfaceEmissiveShading
-                        GenericArguments: [false]
     Material.PixelStageStreamInitializer: !ShaderMixinSource
         Mixins:
             -   ClassName: MaterialStream
@@ -269,6 +147,12 @@ UsedParameters:
     Lighting.EnvironmentLights:
         - !ShaderClassSource
             ClassName: LightSimpleAmbient
+    XenkoEffectBase.RenderTargetExtensions: !ShaderMixinSource
+        Macros:
+            -   Name: SILICON_STUDIO_RENDER_TARGET_COUNT
+                Definition: 1
+            -   Name: SILICON_STUDIO_MULTISAMPLE_COUNT
+                Definition: 1
 ---
 !EffectCompileRequest
 EffectName: XenkoForwardShadingEffect
@@ -376,6 +260,152 @@ UsedParameters:
     Lighting.EnvironmentLights:
         - !ShaderClassSource
             ClassName: LightSimpleAmbient
+    XenkoEffectBase.RenderTargetExtensions: !ShaderMixinSource
+        Macros:
+            -   Name: SILICON_STUDIO_RENDER_TARGET_COUNT
+                Definition: 1
+            -   Name: SILICON_STUDIO_MULTISAMPLE_COUNT
+                Definition: 1
+---
+!EffectCompileRequest
+EffectName: XenkoForwardShadingEffect
+UsedParameters:
+    Material.HasSkinningPosition: true
+    Material.HasSkinningNormal: true
+    Material.HasSkinningTangent: false
+    Material.SkinningMaxBones: 56
+    Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialSurfaceArray
+        Compositions:
+            layers: !ShaderArraySource
+                Values:
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceDiffuse
+                        Compositions:
+                            diffuseMap: !ShaderClassSource
+                                ClassName: ComputeColorConstantColorLink
+                                GenericArguments: [Material.DiffuseValue]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceGlossinessMap
+                                GenericArguments: [false]
+                        Compositions:
+                            glossinessMap: !ShaderClassSource
+                                ClassName: ComputeColorConstantFloatLink
+                                GenericArguments: [Material.GlossinessValue]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceMetalness
+                        Compositions:
+                            metalnessMap: !ShaderClassSource
+                                ClassName: ComputeColorConstantFloatLink
+                                GenericArguments: [Material.MetalnessValue]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
+                                GenericArguments: [matEmissive, rgba]
+                        Compositions:
+                            computeColorSource: !ShaderClassSource
+                                ClassName: ComputeColorConstantColorLink
+                                GenericArguments: [Material.EmissiveValue]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
+                                GenericArguments: [matEmissiveIntensity, r]
+                        Compositions:
+                            computeColorSource: !ShaderClassSource
+                                ClassName: ComputeColorConstantFloatLink
+                                GenericArguments: [Material.EmissiveIntensity]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceLightingAndShading
+                        Compositions:
+                            surfaces: !ShaderArraySource
+                                Values:
+                                    - !ShaderClassSource
+                                        ClassName: MaterialSurfaceShadingDiffuseLambert
+                                        GenericArguments: [false]
+                                    - !ShaderMixinSource
+                                        Mixins:
+                                            -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
+                                        Compositions:
+                                            fresnelFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetFresnelSchlick
+                                            geometricShadowingFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
+                                            normalDistributionFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetNormalDistributionGGX
+                    - !ShaderClassSource
+                        ClassName: MaterialSurfaceEmissiveShading
+                        GenericArguments: [false]
+    Material.PixelStageStreamInitializer: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialStream
+            -   ClassName: MaterialPixelShadingStream
+    Lighting.DirectLightGroups:
+        - !ShaderMixinSource
+            Mixins:
+                -   ClassName: LightDirectionalGroup
+                    GenericArguments: [2]
+    Lighting.EnvironmentLights:
+        - !ShaderClassSource
+            ClassName: LightSimpleAmbient
+    XenkoEffectBase.RenderTargetExtensions: !ShaderMixinSource
+        Macros:
+            -   Name: SILICON_STUDIO_RENDER_TARGET_COUNT
+                Definition: 1
+            -   Name: SILICON_STUDIO_MULTISAMPLE_COUNT
+                Definition: 1
+---
+!EffectCompileRequest
+EffectName: XenkoForwardShadingEffect
+UsedParameters:
+    Material.HasSkinningPosition: true
+    Material.HasSkinningNormal: true
+    Material.HasSkinningTangent: false
+    Material.SkinningMaxBones: 56
+    Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialSurfaceArray
+        Compositions:
+            layers: !ShaderArraySource
+                Values:
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceDiffuse
+                        Compositions:
+                            diffuseMap: !ShaderClassSource
+                                ClassName: ComputeColorConstantColorLink
+                                GenericArguments: [Material.DiffuseValue]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceLightingAndShading
+                        Compositions:
+                            surfaces: !ShaderArraySource
+                                Values:
+                                    - !ShaderClassSource
+                                        ClassName: MaterialSurfaceShadingDiffuseLambert
+                                        GenericArguments: [false]
+    Material.PixelStageStreamInitializer: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialStream
+            -   ClassName: MaterialPixelShadingStream
+    Lighting.DirectLightGroups:
+        - !ShaderMixinSource
+            Mixins:
+                -   ClassName: LightDirectionalGroup
+                    GenericArguments: [2]
+    Lighting.EnvironmentLights:
+        - !ShaderClassSource
+            ClassName: LightSimpleAmbient
+    XenkoEffectBase.RenderTargetExtensions: !ShaderMixinSource
+        Macros:
+            -   Name: SILICON_STUDIO_RENDER_TARGET_COUNT
+                Definition: 1
+            -   Name: SILICON_STUDIO_MULTISAMPLE_COUNT
+                Definition: 1
 ---
 !EffectCompileRequest
 EffectName: BackgroundShader
