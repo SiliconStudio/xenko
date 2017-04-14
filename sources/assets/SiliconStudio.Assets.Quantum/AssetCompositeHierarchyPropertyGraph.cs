@@ -616,9 +616,14 @@ namespace SiliconStudio.Assets.Quantum
                 if (isAlone)
                 {
                     Guid parentId;
-                    instancesCommonAncestors.TryGetValue(instanceId, out parentId);
-                    instanceParent = parentId != Guid.Empty ? Asset.Hierarchy.Parts[parentId] : null;
-                    insertIndex = 0;
+                    if (instancesCommonAncestors.TryGetValue(instanceId, out parentId) && parentId != Guid.Empty)
+                    {
+                        // FIXME: instancesCommonAncestors should be synchronized with existing instances, i.e. if the instance has been compltely removed then the common ancestor should have been cleared.
+                        if (Asset.Hierarchy.Parts.TryGetValue(parentId, out instanceParent))
+                        {
+                            insertIndex = 0;
+                        }
+                    }
                 }
             }
             return insertIndex;
@@ -751,7 +756,8 @@ namespace SiliconStudio.Assets.Quantum
                     TAssetPart existingPart;
 
                     // This add could actually be a move (remove + add). So we compare to the existing baseInstanceMapping and perform another remap if necessary
-                    if (baseInstanceMapping.TryGetValue(Tuple.Create(ids.Key, instanceId), out existingPart))
+                    var mappingKey = Tuple.Create(ids.Key, instanceId);
+                    if (!deletedPartsInstanceMapping.Contains(mappingKey) && baseInstanceMapping.TryGetValue(mappingKey, out existingPart))
                     {
                         // Replace the cloned part by the one to restore in the list of root if needed
                         if (baseHierarchy.RootPartIds.Remove(clone.Part.Id))
