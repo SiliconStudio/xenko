@@ -1,39 +1,36 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-/// <summary>
-/// Performs bounding ray.
-/// When Debug mode is on:
-///    -> Blue color outside the bounding boxes, no calculation for light shafts
-///    -> Green color inside bounding boxes, but distance to scene is closer, so no no calculation for light shafts
-///    -> Red color where light shafts calculation occurs
-/// </summary>
+
 /// <remarks>
-/// Debug: generic bool - enables debug mode.
+/// Debug: generic bool - enables debug mode, which highlights the areas where light shafts are generated.
 /// IsZReverse: generic bool - swaps minz and max z.
 /// NbSteps: generic int - number of iterations.
-/// DiscardOut: generic bool - discards unwanted samples.
 /// </remarks>
-shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps, bool DiscardOut> : ImageEffectShader, DepthBase, Transformation, Camera, Utilities, Global
+shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps> : ImageEffectShader, DepthBase, Transformation, Camera, Utilities, Global
 {
-    float4 ComputeColorOut() {
+    float4 ComputeColorOut() 
+    {
         return float4(0, 0, 0, 1);
     }
 
-    float3 ComputeColorIn(float4 positionS, float3 eyeVS, float stepSize, int stepIndex) {
+    float3 ComputeColorIn(float4 positionS, float3 eyeVS, float stepSize, int stepIndex) 
+    {
         return float3(0, 0, 0);
     }
 
-    float RayStepJitter(float3 positionVS, float stepSize) {
-        //return stepSize * Math.FastRandom(int(streams.ShadingPosition.x + streams.ShadingPosition.y * 6007));
+    float RayStepJitter(float3 positionVS, float stepSize) 
+    {
         return stepSize * Math.FastRandom(int(positionVS.x * 100 + positionVS.y * 6007 * 100));
     }
 
-    void ComputeDirection(inout float3 positionVS, inout float3 eyeVS, float minDistance, float maxDistance, float stepSize) {
+    void ComputeDirection(inout float3 positionVS, inout float3 eyeVS, float minDistance, float maxDistance, float stepSize) 
+    {
         // Place positionVS on background of boundingbox
         positionVS = -(maxDistance + RayStepJitter(positionVS, stepSize)) * eyeVS;
     }
 
-    float4 ComputeFinalColor(float3 lightAcc) {
+    float4 ComputeFinalColor(float3 lightAcc) 
+    {
         return float4(lightAcc, 1.0);
     }
 
@@ -44,25 +41,15 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps, bool Disc
             minmax.xy = minmax.yx;
 
         // If max == 0 or min-max = 0 then we are outside the bouding box
-        if (minmax.y == 0  || (minmax.x == 0 &&  minmax.y == 0)) {
+        if (minmax.y == 0  || (minmax.x < 0.01 && minmax.y > 0.99))
+        {
             if (Debug)
-                streams.ColorTarget = float4(0, 0, 1, 1);
+                streams.ColorTarget = 0;
             else
                 streams.ColorTarget = this.ComputeColorOut();
-
-            //if (DiscardOut)
-            //    discard;
         }
         else 
         {
-            // Compute Depth from UV
-            //float4 positionVS4 = mul(float4(1.0 - float2(streams.TexCoord.x, streams.TexCoord.y) * 2.0, 0.0f, 0.0f), ProjectionInverse);
-            //float3 positionVS = float3(positionVS4.xy, 1.0f) * this.ComputeDepthFromUV(streams.TexCoord.xy);
-            //float3 positionVS = float3((1.0 - streams.TexCoord.xy * 2.0) * float2(-1.0f, 1.0f) * float2(ProjectionInverse._11, ProjectionInverse._22) + float2(ProjectionInverse._41, ProjectionInverse._42), 1.0f) * this.ComputeDepthFromUV(streams.TexCoord.xy);
-
-            // Original:
-            //float3 positionVS = float3((1.0 - streams.TexCoord.xy * 2.0) * ProjScreenRay, 1.0f) * this.ComputeDepthFromUV(streams.TexCoord.xy);
-
             float4 positionClipSpace = float4((1.0 - streams.TexCoord.xy * 2.0) * float2(-1.0f, 1.0f), GetZProjDepthFromUV(streams.TexCoord.xy), 1.0f);
             float4 positionVS4 = mul(positionClipSpace, ProjectionInverse);
             float3 positionVS = positionVS4.xyz / positionVS4.w;
@@ -71,33 +58,26 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps, bool Disc
             float3 lightResult   = 0.0f;
 
             // Minmax is stored as 1.0 - depth
-            float bbNearDistance;
+            float bbNearDistance = ComputeDepthFromZProj(1.0 - minmax.x);
             float bbFarDistance = ComputeDepthFromZProj(1.0 - minmax.y);
             float currentDistance = -positionVS.z;
 
-            if (minmax.x == 0 || minmax.x < minmax.y) {
-                bbNearDistance = ComputeDepthFromZProj(IsZReverse ? 1.0 : 0.0);
-            }
-            else 
-            {
-                bbNearDistance = ComputeDepthFromZProj(1.0 - minmax.x);
-            }
-
             if (currentDistance <= bbNearDistance) 
             {
-                if (Debug)
-                    streams.ColorTarget = float4(0.1, 0, 0, 1);
+                if(Debug)
+                {
+                    streams.ColorTarget = 0;
+                }
                 else
+                {
                     streams.ColorTarget = this.ComputeColorOut();
-
-                //if (DiscardOut)
-                //    discard;
+                }
             }
             else
             {
                 if (Debug)
                 {
-                    streams.ColorTarget = float4(1, 0, 0, 1);
+                    streams.ColorTarget = 0.1 + (bbFarDistance - bbNearDistance);
                 }
                 else
                 {
@@ -111,7 +91,8 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps, bool Disc
                     // Compute direction
                     ComputeDirection(positionVS, eyeVS, minDistance, maxDistance, stepSize);
 
-                    for(int i = 0; i < NbSteps; i++) {
+                    for(int i = 0; i < NbSteps; i++) 
+                    {
                         float4 positionWS = mul(float4(positionVS, 1.0), ViewInverse);
                         lightResult += this.ComputeColorIn(positionWS, eyeVS, stepSize, i);
                         positionVS += stepSize * eyeVS;

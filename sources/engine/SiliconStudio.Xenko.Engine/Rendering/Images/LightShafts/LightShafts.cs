@@ -21,7 +21,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
     public class LightShafts : ImageEffect
     {
         private ImageEffectShader scatteringEffectShader;
-        private ImageEffectShader minmaxEffectShader;
         private ImageEffectShader applyLightEffectShader;
         private DynamicEffectInstance minmaxVolumeEffectShader;
         private GaussianBlur blur;
@@ -41,8 +40,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Light accumulation shader
             scatteringEffectShader = ToLoadAndUnload(new ImageEffectShader("LightShaftsShader"));
-
-            minmaxEffectShader = ToLoadAndUnload(new ImageEffectShader("PostEffectMinMax"));
 
             // Additive blending shader
             applyLightEffectShader = ToLoadAndUnload(new ImageEffectShader("AdditiveLightShader"));
@@ -113,7 +110,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
             int lightBufferDownsampleLevel = 2;
             var lightBuffer = NewScopedRenderTarget2D(depthInput.Width/lightBufferDownsampleLevel, depthInput.Height/lightBufferDownsampleLevel, PixelFormat.R16_Float);
             scatteringEffectShader.SetOutput(lightBuffer);
-            //scatteringEffectShader.SetOutput(GetSafeOutput(0));
             scatteringEffectShader.Parameters.Set(DepthBaseKeys.DepthStencil, depthInput); // Bind scene depth
 
             if (!Initialized)
@@ -122,31 +118,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var renderView = context.RenderContext.RenderView;
             var viewInverse = Matrix.Invert(renderView.View);
             scatteringEffectShader.Parameters.Set(TransformationKeys.ViewInverse, viewInverse);
-            /*scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.Eye, viewInverse.TranslationVector);
-
-            var viewProjectionInverse = Matrix.Invert(renderView.ViewProjection);
-            Vector3 center = new Vector3(0.0f, 0.0f, 0.0f);
-            Vector3 right = new Vector3(1.0f, 0.0f, 0.0f);
-            Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
-            center = Vector3.TransformCoordinate(center, viewProjectionInverse);
-            right = Vector3.TransformCoordinate(right, viewProjectionInverse) - center;
-            up = Vector3.TransformCoordinate(up, viewProjectionInverse) - center;
-
-            // Basis for constructing world space rays originating from the camera
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ViewBase, center);
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ViewRight, right);
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ViewUp, up);
-
-            // Used to project an arbitrary world space point into a linear depth value
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.CameraForward, viewInverse.Forward);
-
-            // Used to convert values from the depth buffer to linear depth
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ZProjection, CameraKeys.ZProjectionACalculate(renderView.NearClipPlane, renderView.FarClipPlane));
-
-            // Time % 1.0
-            //imageEffectShader.Parameters.Set(LightShaftsShaderKeys.Time, (float)(context.RenderContext.Time.Elapsed.TotalSeconds % 1.0));
-            // Time
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.Time, (float)(context.RenderContext.Time.Total.TotalSeconds));*/
 
             foreach (var lightShaft in lightShaftDatas)
             {
@@ -181,20 +152,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
                         // If nothing visible, skip second part
                         if (!DrawBoundingVolumeMinMax(context, currentBoundingVolumes))
                             continue;
-
-                        // Perform shadow map min max
-                        if (false) // Min-max optim currently disabled
-                        {
-                            if (shadowMapTexture.ShaderData is DirectionalShaderData)
-                            {
-                                var shaderData = (DirectionalShaderData)shadowMapTexture.ShaderData;
-                                minmaxEffectShader.Parameters.Set(PostEffectMinMaxKeys.MinMaxCoords, shaderData.TextureCoords[0]);
-                            }
-
-                            minmaxEffectShader.SetInput(0, shadowMapTexture.Atlas.Texture);
-                            minmaxEffectShader.SetOutput(minmaxBuffer);
-                            minmaxEffectShader.Draw(context);
-                        }
                     }
 
                     // Setup parameters for Z reconstruction
@@ -245,10 +202,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        public void Draw(RenderDrawContext drawContext, Texture inputDepthStencil, Texture output)
+        public void Draw(RenderDrawContext drawContext, RenderOutputValidator outputValidator, Texture[] inputs, Texture inputDepthStencil, Texture outputTarget)
         {
             SetInput(0, inputDepthStencil);
-            SetOutput(output);
+            int colorTarget = outputValidator.Find<ColorTargetSemantic>();
+            if(colorTarget < 0)
+                throw new InvalidOperationException("Missing color input");
+            SetOutput(inputs[colorTarget]);
             Draw(drawContext);
         }
 
@@ -270,7 +230,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
             scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.LightColor, lightShaft.LightComponent.Color);
 
             // Pass in world transform as offset and direction
-            //scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ShadowLightOffset, lightShaft.LightWorld.TranslationVector);
             scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ShadowLightOffset, lightShaft.LightWorld.TranslationVector);
             scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ShadowLightDirection, lightShaft.LightWorld.Forward);
 
