@@ -96,6 +96,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <userdoc>
         /// The max slope this character can climb
         /// </userdoc>
+        [Display("Maximum Slope")]
         [DataMember(85)]
         public AngleSingle MaxSlope
         {
