@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 6a8212fb-d3f3-4e1d-84be-67aca35be26e
-SerializedVersion: {Xenko: 1.10.0-beta03}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
@@ -8,9 +8,10 @@ Hierarchy:
     RootPartIds:
         - 163fe69c-57fb-43e8-82cb-c5e6ec95c450
         - 6581fcc3-7d6c-4fb6-8d64-08ccb25be862
-        - 71ba3d07-c95b-43b4-8dcb-820ad44f3cfd
-        - 6dea5e4c-ee6a-4a3e-aca5-d2748796eb3a
         - d14bba72-c4f0-4245-b8dd-99758a1bda46
+        - 7a3b7ec6-a5a4-4245-a139-2c4a51db90d8
+        - b024e761-901c-4d9f-bc85-2561afd9a296
+        - 0a243ac2-7c0e-42ef-932f-1e2080756821
         - 2ec79281-cf5a-4b8d-961e-4e070c8f43a8
         - 44c5bc97-f618-4988-9e92-05b892f095a6
         - fce550a1-75be-42db-b233-24f6c9e3bd08
@@ -20,43 +21,40 @@ Hierarchy:
         - 6cea5bcd-c61e-4eaf-8618-a2cd5d68a600
         - 5be06945-0111-4973-b75c-48db403e7675
         - 1a82230f-e174-4926-bfc6-79576fda24ee
-        - d8fd6a70-e5df-4a33-a6a4-6fed4b82a220
-        - 28c5b50a-f68f-4423-88a8-57bd597ad015
         - 6df18ec9-95cc-4a39-967e-dd42f9026345
         - 0bda35da-d45f-4011-9973-ebd5cef981fb
-        - 52b69f01-e4f0-4767-9702-5f586171140c
-        - 17bf1e46-4668-4cbf-a52a-5b67f26e45e4
-        - 06cb9112-a1c2-4731-a3ac-a900d2c99026
-        - 433436c7-fc9e-415f-846e-ab71f02de6dd
         - b64257c8-cd59-43bd-a709-74a96515ae2b
-        - c09f965b-401c-445f-90b0-170cdfeb56ce
-        - 13571fdf-4fe3-44bd-a899-7093b3b659bc
         - ddde1038-3405-4c04-838e-1cba39219169
         - e899ccad-7314-43fd-8291-777099fd4dfa
     Parts:
-        -   Folder: Level
-            Entity:
-                Id: 06cb9112-a1c2-4731-a3ac-a900d2c99026
-                Name: Cube (10)
+        -   Entity:
+                Id: 0a243ac2-7c0e-42ef-932f-1e2080756821
+                Name: Point light
                 Components:
-                    461576b04f201ec3ea32d233f6b510cd: !TransformComponent
-                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f00
-                        Position: {X: -2.0, Y: 6.00000048, Z: -3.88069272}
-                        Rotation: {X: -0.285732538, Y: -0.252055049, Z: 0.0781762, W: 0.921256542}
-                        Scale: {X: 3.0, Y: 0.2, Z: 3.0}
+                    12bc9e58e7e394e84063a523f20bf368: !TransformComponent
+                        Id: 7dc680e4-6288-4744-a138-8011f819edf5
+                        Position: {X: 12.79467, Y: -11.8042774, Z: 36.0710831}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
-                    4cfc02208a5e395ecdba0fd1ef41bdaa: !ModelComponent
-                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca810
-                        Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
-                        Materials: {}
-        -   Folder: Level
-            Entity:
+                    8b276221c9ade6ad13f5afc90768a718: !LightComponent
+                        Id: 677d7837-0fcd-4e44-b0e6-06185bc30a4a
+                        Type: !LightPoint
+                            Color: !ColorRgbProvider
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Radius: 400.0
+                            Shadow:
+                                Size: Small
+                                BiasParameters: {}
+                        Intensity: 100.0
+            Folder: null
+        -   Entity:
                 Id: 0bda35da-d45f-4011-9973-ebd5cef981fb
                 Name: Cube (3)
                 Components:
                     461576b04f201ec3ea32d233f6b510cd: !TransformComponent
                         Id: 5c064a80-7367-481a-9f78-2cfea7cc0f01
-                        Position: {X: 2.0, Y: 5.0, Z: 3.0}
+                        Position: {X: -1.72842014, Y: 0.0, Z: 1.163959}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 2.0, Y: 0.2, Z: 2.0}
                         Children: {}
@@ -64,30 +62,15 @@ Hierarchy:
                         Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca811
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Folder: Level
-            Entity:
-                Id: 13571fdf-4fe3-44bd-a899-7093b3b659bc
-                Name: Model
-                Components:
-                    f10967d5d05ffe62e94f3251fa1ee6d9: !TransformComponent
-                        Id: 01e6838b-ca6d-4ef5-981a-99464cbd2c15
-                        Position: {X: 7.25652075, Y: -15.0046635, Z: 10.487443}
-                        Rotation: {X: 0.0, Y: 0.134589732, Z: 0.0, W: 0.9909014}
-                        Scale: {X: 7.59692764, Y: 33.1999321, Z: 10.184639}
-                        Children: {}
-                    832679554425d302e131de7958771a90: !ModelComponent
-                        Id: e5f17fce-3449-419e-94d4-9ea9d6159d05
-                        Model: 879181e4-ed39-495f-8f1d-e586e650cc82:Model
-                        Materials:
-                            47ea5b5e38e12cbd1e42e7cbef9d8b6d~0: 6a254330-7598-451f-8d7b-7671199c5e46:MaterialTests/Base/MaterialDiffuseColor
+            Folder: Level
         -   Entity:
                 Id: 163fe69c-57fb-43e8-82cb-c5e6ec95c450
                 Name: Camera
                 Components:
                     06218d8251456b4f7a75e16824fc6e1e: !TransformComponent
                         Id: 548f9034-9f82-45b7-8f03-8d04680b826b
-                        Position: {X: -40.0, Y: -12.0, Z: 7.0}
-                        Rotation: {X: -3.29607786E-10, Y: -0.707106769, Z: 3.29607786E-10, W: 0.707106769}
+                        Position: {X: -45.1107063, Y: -12.0, Z: 43.56469}
+                        Rotation: {X: -4.264522E-10, Y: -0.4037556, Z: 1.88204966E-10, W: 0.914866865}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     08f5e2ef228205093b15efcac60386e4: !CameraComponent
@@ -95,23 +78,7 @@ Hierarchy:
                         Name: null
                         Projection: Perspective
                         Slot: {Index: 0}
-        -   Folder: Level
-            Entity:
-                Id: 17bf1e46-4668-4cbf-a52a-5b67f26e45e4
-                Name: Cube (9)
-                Components:
-                    461576b04f201ec3ea32d233f6b510cd: !TransformComponent
-                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f02
-                        Position: {X: -4.091305, Y: 6.44951725, Z: 0.458579063}
-                        Rotation: {X: -0.1312047, Y: -0.228972912, Z: -0.4795507, W: 0.8368918}
-                        Scale: {X: 3.0, Y: 0.2, Z: 3.0}
-                        Children: {}
-                    4cfc02208a5e395ecdba0fd1ef41bdaa: !ModelComponent
-                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca812
-                        Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
-                        Materials: {}
-        -   Folder: Level
-            Entity:
+        -   Entity:
                 Id: 1a82230f-e174-4926-bfc6-79576fda24ee
                 Name: Cube (14)
                 Components:
@@ -125,6 +92,7 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde80
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
+            Folder: Level
             Base:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: 714f23c7-a8f6-4d5b-823d-c65c1425f716
@@ -147,23 +115,7 @@ Hierarchy:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: e5bf512d-96b3-49b2-a76e-30e706ffedeb
                 InstanceId: 1c0068ff-c7d9-4aeb-bc83-3944aa9e409c
-        -   Folder: Level
-            Entity:
-                Id: 28c5b50a-f68f-4423-88a8-57bd597ad015
-                Name: Cube (6)
-                Components:
-                    461576b04f201ec3ea32d233f6b510cd: !TransformComponent
-                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f03
-                        Position: {X: -1.0, Y: 5.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 2.0, Y: 0.2, Z: 2.0}
-                        Children: {}
-                    4cfc02208a5e395ecdba0fd1ef41bdaa: !ModelComponent
-                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca813
-                        Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
-                        Materials: {}
-        -   Folder: Level
-            Entity:
+        -   Entity:
                 Id: 2ec79281-cf5a-4b8d-961e-4e070c8f43a8
                 Name: Cube
                 Components:
@@ -177,6 +129,7 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde82
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
+            Folder: Level
         -   Entity:
                 Id: 31567627-e196-4c7f-a2fc-9eebd6c9defb
                 Name: Cube (14)
@@ -195,8 +148,7 @@ Hierarchy:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: 714f23c7-a8f6-4d5b-823d-c65c1425f716
                 InstanceId: 1c0068ff-c7d9-4aeb-bc83-3944aa9e409c
-        -   Folder: Level
-            Entity:
+        -   Entity:
                 Id: 41a04b64-ab17-41ba-afe6-cc3a784982a0
                 Name: Cube (11)
                 Components:
@@ -210,27 +162,12 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde84
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
+            Folder: Level
             Base:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: e5bf512d-96b3-49b2-a76e-30e706ffedeb
                 InstanceId: a77f0985-9d4f-4e54-b497-7e7bb0013c14
-        -   Folder: Level
-            Entity:
-                Id: 433436c7-fc9e-415f-846e-ab71f02de6dd
-                Name: Cube (7)
-                Components:
-                    461576b04f201ec3ea32d233f6b510cd: !TransformComponent
-                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f04
-                        Position: {X: -1.0, Y: 3.58112431, Z: 2.302242}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 2.0, Y: 0.2, Z: 2.0}
-                        Children: {}
-                    4cfc02208a5e395ecdba0fd1ef41bdaa: !ModelComponent
-                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca814
-                        Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
-                        Materials: {}
-        -   Folder: Level
-            Entity:
+        -   Entity:
                 Id: 44c5bc97-f618-4988-9e92-05b892f095a6
                 Name: Cube (15)
                 Components:
@@ -244,23 +181,8 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde85
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Folder: Level
-            Entity:
-                Id: 52b69f01-e4f0-4767-9702-5f586171140c
-                Name: Cube (8)
-                Components:
-                    461576b04f201ec3ea32d233f6b510cd: !TransformComponent
-                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f05
-                        Position: {X: 2.0, Y: 10.0, Z: -8.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 2.0, Y: 0.2, Z: 2.0}
-                        Children: {}
-                    4cfc02208a5e395ecdba0fd1ef41bdaa: !ModelComponent
-                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca815
-                        Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
-                        Materials: {}
-        -   Folder: Level
-            Entity:
+            Folder: Level
+        -   Entity:
                 Id: 5be06945-0111-4973-b75c-48db403e7675
                 Name: Cube (13)
                 Components:
@@ -274,6 +196,7 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde86
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
+            Folder: Level
             Base:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: b52d69c0-517c-44d3-ab0d-f6e735d44bbb
@@ -284,7 +207,7 @@ Hierarchy:
                 Components:
                     360ec82f8c0ccda824eaa15e2daf1c7a: !TransformComponent
                         Id: af3ecc29-e2b9-4e2f-9342-8f2eb69e846b
-                        Position: {X: -0.8602584, Y: 32.54588, Z: -1.67684746}
+                        Position: {X: -0.732496142, Y: 17.7681084, Z: -1.67684746}
                         Rotation: {X: 0.7061995, Y: 0.287139833, Z: 0.10013444, W: -0.6393794}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
@@ -307,11 +230,10 @@ Hierarchy:
                     57618921eb96f05fc9eb77b464c5b906: !LightShaftComponent
                         Id: 780b7663-a294-4e8e-8c09-52c6bb41d543
                         ExtinctionFactor: 0.1
-                        ExtinctionRatio: 10.0
-                        DensityFactor: 0.02
+                        ExtinctionRatio: 0.1
+                        DensityFactor: 10.0
                         SeparateBoundingVolumes: true
-        -   Folder: Level
-            Entity:
+        -   Entity:
                 Id: 6cea5bcd-c61e-4eaf-8618-a2cd5d68a600
                 Name: Cube (12)
                 Components:
@@ -325,36 +247,18 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde87
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
+            Folder: Level
             Base:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: 3ca94d85-c01e-4fe6-80fb-54b079c16096
                 InstanceId: a77f0985-9d4f-4e54-b497-7e7bb0013c14
         -   Entity:
-                Id: 6dea5e4c-ee6a-4a3e-aca5-d2748796eb3a
-                Name: Skybox
-                Components:
-                    4b4a521bccfab296fee02c47b1baf636: !TransformComponent
-                        Id: 6520d66a-688c-48f3-afaa-22a9ef17dd29
-                        Position: {X: 0.0, Y: 2.0, Z: -2.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: {}
-                    86b4aab51c262a0e5b8bf3288e664481: !LightComponent
-                        Id: d3e3b5c5-6901-455b-af30-7c670504b87e
-                        Type: !LightSkybox
-                            Skybox: bf8844a5-1ce4-402f-a538-b8a7edb40fcf:Skybox
-                        Intensity: 0.1
-                    e4650e63c36742ddbd435e191ae1cff6: !BackgroundComponent
-                        Id: d95c1dac-de55-418e-8057-b172bb09c4ba
-                        Texture: 10360b72-66be-48f0-b0e9-a013a352ee95:skybox_texture_ldr
-        -   Folder: Level
-            Entity:
                 Id: 6df18ec9-95cc-4a39-967e-dd42f9026345
                 Name: Cube (4)
                 Components:
                     461576b04f201ec3ea32d233f6b510cd: !TransformComponent
                         Id: 5c064a80-7367-481a-9f78-2cfea7cc0f06
-                        Position: {X: 5.0, Y: 5.0, Z: 0.0}
+                        Position: {X: 1.27157986, Y: 0.0, Z: -1.83604121}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 2.0, Y: 0.2, Z: 2.0}
                         Children: {}
@@ -362,6 +266,7 @@ Hierarchy:
                         Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca816
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
+            Folder: Level
         -   Entity:
                 Id: 6e1b78ba-ea4b-44cf-9cd3-da0c31c20c21
                 Name: Cube (13)
@@ -381,39 +286,26 @@ Hierarchy:
                 BasePartId: b52d69c0-517c-44d3-ab0d-f6e735d44bbb
                 InstanceId: 1c0068ff-c7d9-4aeb-bc83-3944aa9e409c
         -   Entity:
-                Id: 71ba3d07-c95b-43b4-8dcb-820ad44f3cfd
-                Name: Directional light (2)
+                Id: 7a3b7ec6-a5a4-4245-a139-2c4a51db90d8
+                Name: Point light
                 Components:
-                    360ec82f8c0ccda824eaa15e2daf1c7a: !TransformComponent
-                        Id: af3ecc29-e2b9-4e2f-9342-8f2eb69e846c
-                        Position: {X: -7.848241, Y: 34.65651, Z: -6.13041067}
-                        Rotation: {X: 0.649349332, Y: 0.09529675, Z: 0.295110643, W: -0.6943874}
+                    12bc9e58e7e394e84063a523f20bf368: !TransformComponent
+                        Id: 3206e4af-265c-45f3-96ae-f5596ccb6d48
+                        Position: {X: -26.2958679, Y: -14.11629, Z: 36.0710831}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
-                    a3d25363acb5662b633fa2f202a1fbdd: !LightComponent
-                        Id: 31098483-28ce-49c4-9818-e8aa876e7931
-                        Enabled: false
-                        Type: !LightDirectional
+                    8b276221c9ade6ad13f5afc90768a718: !LightComponent
+                        Id: 041df9d2-57bd-43f8-a5a5-82f61f9cb091
+                        Type: !LightPoint
                             Color: !ColorRgbProvider
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Radius: 400.0
                             Shadow:
-                                Enabled: true
-                                Filter: !LightShadowMapFilterTypePcf
-                                    FilterSize: Filter5x5
-                                Size: Large
-                                CascadeCount: OneCascade
-                                DepthRange: {}
-                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic {}
-                                BiasParameters:
-                                    DepthBias: 0.0015
-                        Intensity: 0.5
-                    57618921eb96f05fc9eb77b464c5b906: !LightShaftComponent
-                        Id: 780b7663-a294-4e8e-8c09-52c6bb41d544
-                        Enabled: false
-                        ExtinctionFactor: 0.1
-                        ExtinctionRatio: 10.0
-                        DensityFactor: 0.02
-                        SeparateBoundingVolumes: true
+                                Size: Small
+                                BiasParameters: {}
+                        Intensity: 100.0
+            Folder: null
         -   Entity:
                 Id: 89e9e7a7-4c0e-406c-b848-857ce9b12817
                 Name: Cube (12)
@@ -432,8 +324,7 @@ Hierarchy:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: 3ca94d85-c01e-4fe6-80fb-54b079c16096
                 InstanceId: 1c0068ff-c7d9-4aeb-bc83-3944aa9e409c
-        -   Folder: Level
-            Entity:
+        -   Entity:
                 Id: 8a659fa3-54e3-432e-8817-f037c28b10d6
                 Name: Cube (18)
                 Components:
@@ -447,14 +338,35 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde8a
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Folder: Level
-            Entity:
+            Folder: Level
+        -   Entity:
+                Id: b024e761-901c-4d9f-bc85-2561afd9a296
+                Name: Point light
+                Components:
+                    12bc9e58e7e394e84063a523f20bf368: !TransformComponent
+                        Id: 009548a8-4201-4e31-a040-b953093eeb92
+                        Position: {X: 12.79467, Y: -11.8042774, Z: -8.48078}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
+                    8b276221c9ade6ad13f5afc90768a718: !LightComponent
+                        Id: f5ceb84b-a270-496f-bdb6-f67dbea7ad1d
+                        Type: !LightPoint
+                            Color: !ColorRgbProvider
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Radius: 400.0
+                            Shadow:
+                                Size: Small
+                                BiasParameters: {}
+                        Intensity: 100.0
+            Folder: null
+        -   Entity:
                 Id: b64257c8-cd59-43bd-a709-74a96515ae2b
                 Name: Cube (5)
                 Components:
                     461576b04f201ec3ea32d233f6b510cd: !TransformComponent
                         Id: 5c064a80-7367-481a-9f78-2cfea7cc0f07
-                        Position: {X: 5.0, Y: 5.0, Z: 3.0}
+                        Position: {X: 1.27157986, Y: 0.0, Z: 1.163959}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 2.0, Y: 0.2, Z: 2.0}
                         Children: {}
@@ -462,23 +374,8 @@ Hierarchy:
                         Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca817
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Folder: Level
-            Entity:
-                Id: c09f965b-401c-445f-90b0-170cdfeb56ce
-                Name: Model2 (2)
-                Components:
-                    e3b8b04fadb40b82ad3bf379db4d857b: !TransformComponent
-                        Id: 95cf743a-5515-43ed-b57e-dd448b809e97
-                        Position: {X: 2.97169781, Y: 10.9028435, Z: 7.36001348}
-                        Rotation: {X: -0.4195984, Y: 0.6935201, Z: 0.504802763, W: -0.2968857}
-                        Scale: {X: 2.67771149, Y: 2.67771149, Z: 2.67771149}
-                        Children: {}
-                    7ed5e6e5e1e1afdb5775a3dc7e72114c: !ModelComponent
-                        Id: 88936499-c6cf-41d3-b046-78aa2611020f
-                        Model: 878181e4-ea39-495f-8f1d-e586e650cc82:Model2
-                        Materials: {}
-        -   Folder: Level
-            Entity:
+            Folder: Level
+        -   Entity:
                 Id: d0f0fbe0-2c10-40d1-a59e-2313ef11a862
                 Name: Cube (16)
                 Components:
@@ -492,13 +389,14 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde8b
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
+            Folder: Level
         -   Entity:
                 Id: d14bba72-c4f0-4245-b8dd-99758a1bda46
                 Name: Point light
                 Components:
                     12bc9e58e7e394e84063a523f20bf368: !TransformComponent
                         Id: 2fde456b-351a-4293-b301-8a119d238786
-                        Position: {X: -24.1942787, Y: -13.04049, Z: -8.48078}
+                        Position: {X: -26.2958679, Y: -14.11629, Z: -8.48078}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
@@ -507,28 +405,12 @@ Hierarchy:
                         Type: !LightPoint
                             Color: !ColorRgbProvider
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
-                            Radius: 200.0
+                            Radius: 400.0
                             Shadow:
                                 Size: Small
                                 BiasParameters: {}
-                        Intensity: 70.0
-        -   Folder: Level
-            Entity:
-                Id: d8fd6a70-e5df-4a33-a6a4-6fed4b82a220
-                Name: Cube (2)
-                Components:
-                    461576b04f201ec3ea32d233f6b510ce: !TransformComponent
-                        Id: 5c064a80-7367-481a-9f78-2cfea7cc0f09
-                        Position: {X: -0.144419432, Y: 2.60336542, Z: -7.07169247}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 2.0, Y: 0.2, Z: 2.0}
-                        Children: {}
-                    4cfc02208a5e395ecdba0fd1ef41bdaf: !ModelComponent
-                        Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca819
-                        Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
-                        Materials: {}
-        -   Folder: Level
-            Entity:
+                        Intensity: 100.0
+        -   Entity:
                 Id: ddde1038-3405-4c04-838e-1cba39219169
                 Name: Cube (19)
                 Components:
@@ -542,27 +424,37 @@ Hierarchy:
                             1c4127337f9677d418105f1d8c6f6bed: ref!! 3bb538d1-c12c-4352-bd55-408ce75cbd61
                             4035dd511fc921fa0fe5db21bc5bb2dd: ref!! 3bb538d1-c12c-4352-bd55-408ce75cbd69
                             8fc7209de078aaa11555ff131fdb0c56: ref!! 3bb538d1-c12c-4352-bd55-408ce75cbd68
+            Folder: Level
         -   Entity:
                 Id: e899ccad-7314-43fd-8291-777099fd4dfa
                 Name: Entity
                 Components:
                     0c811157104b4c734664a11133d84549: !TransformComponent
                         Id: f9ca85e8-854a-4de6-af80-ab0e88758d62
-                        Position: {X: 2.0, Y: -12.9906836, Z: 1.13147175}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 24.0, Y: 35.0, Z: 24.0}
+                        Position: {X: 3.4085207, Y: -12.5632772, Z: 0.630912542}
+                        Rotation: {X: -0.0870589, Y: -0.0123456372, Z: 0.139859274, W: 0.98625946}
+                        Scale: {X: 21.98204, Y: 97.20623, Z: 21.98204}
                         Children: {}
                     e34162d900188a5bc7175f462041491e: !LightShaftBoundingVolumeComponent
                         Id: fd24d5e2-16d4-4191-9e0a-e314757b5a6c
                         Model: 879181e4-ed39-495f-8f1d-e586e650cc82:Model
                         LightShaft: ref!! 780b7663-a294-4e8e-8c09-52c6bb41d543
-                    a5256db6c65a31ed7e28f4336dbf4b2c: !ModelComponent
-                        Id: c3851f27-9625-49f5-85d4-4af98165dcd1
-                        Enabled: false
-                        Model: 879181e4-ed39-495f-8f1d-e586e650cc82:Model
-                        Materials: {}
-        -   Folder: Level
-            Entity:
+                    d1826804d19c6aeb37a24fdda10d47cc: !StaticColliderComponent
+                        Id: 7f2be5c5-8efd-4432-98f5-0a8b38879f40
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        ColliderShapes:
+                            d203d62d40a3990bcbdc3df9011c6f0c: !BoxColliderShapeDesc
+                                Is2D: false
+                                Size: {X: 1.0, Y: 1.0, Z: 1.0}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
                 Id: fce550a1-75be-42db-b233-24f6c9e3bd08
                 Name: Cube (17)
                 Components:
@@ -576,3 +468,4 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde8c
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
+            Folder: Level

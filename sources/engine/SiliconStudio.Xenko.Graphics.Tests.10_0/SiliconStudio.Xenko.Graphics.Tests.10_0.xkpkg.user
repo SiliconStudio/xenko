@@ -28,7 +28,7 @@ Settings:
     Package/SceneSettings:
         b47e4609-0125-41bd-a26e-0fdf9184327e:
             CamPosition: {X: 13.3692961, Y: 11.6500006, Z: 13.3692961}
-            CamPitchYaw: {X: -0.5235988, Y: 0.7853982}
+            CamPitchYaw: {X: -0.0666810945, Y: 4.770092}
             CamProjection: Perspective
             CamVerticalFieldOfView: 45.0
             CamOrthographicSize: 10.0
@@ -57,4 +57,38 @@ Settings:
                 - Transform
             VisibleNavigationGroups: []
             LightProbeWireframe: false
+            LightProbeBounces: 1
+            SceneLoaded: false
+        6a8212fb-d3f3-4e1d-84be-67aca35be26e:
+            CamPosition: {X: -24.2360821, Y: -2.97397828, Z: -35.3472}
+            CamPitchYaw: {X: -0.14885129, Y: -2.43923354}
+            CamProjection: Perspective
+            CamVerticalFieldOfView: 45.0
+            CamOrthographicSize: 10.0
+            CamNearClipPlane: 0.1
+            CamFarClipPlane: 1000.0
+            CamAspectRatio: 1.77777779
+            CamMoveSpeed: 3.0
+            TranslationSnapActive: false
+            TranslationSnapValue: 1.0
+            RotationSnapActive: false
+            RotationSnapValue: 22.5
+            ScaleSnapActive: false
+            ScaleSnapValue: 1.1
+            SceneUnit: 1.0
+            SelectionMaskVisible: true
+            GridVisible: true
+            GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+            CameraPreviewVisible: true
+            RenderMode: Lighting
+            ActiveStream: 
+            TransformationGizmoSize: 1.0
+            ComponentGizmoSize: 1.0
+            FixedSizeGizmos: false
+            HiddenGizmos:
+                - Physics
+                - Transform
+            VisibleNavigationGroups: []
+            LightProbeWireframe: false
+            LightProbeBounces: 1
             SceneLoaded: false
