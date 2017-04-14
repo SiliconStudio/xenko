@@ -90,10 +90,9 @@ namespace SiliconStudio.Xenko.Rendering
         public override void PrepareEffectPermutationsImpl(RenderDrawContext context)
         {
             // Setup ActiveMeshDraw
-            Dispatcher.ForEach(ObjectNodeReferences, objectNodeReference =>
+            Dispatcher.ForEach(RenderObjects, renderObject =>
             {
-                var objectNode = GetObjectNode(objectNodeReference);
-                var renderMesh = (RenderMesh)objectNode.RenderObject;
+                var renderMesh = (RenderMesh)renderObject;
 
                 renderMesh.ActiveMeshDraw = renderMesh.Mesh.Draw;
             });
