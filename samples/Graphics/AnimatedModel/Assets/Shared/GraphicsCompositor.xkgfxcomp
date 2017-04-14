@@ -57,9 +57,9 @@ RenderFeatures:
                 ShadowMapRenderer: null
     28e9bf54a5adbe063f59fb17acb2723e: !SiliconStudio.Xenko.Rendering.Sprites.SpriteRenderFeature,SiliconStudio.Xenko.Engine
         RenderStageSelectors:
-            d74665cff080638a2439c4422e542d85: !SiliconStudio.Xenko.Rendering.Sprites.SpriteTransparentRenderStageSelector,SiliconStudio.Xenko.Engine
-                OpaqueRenderStage: ref!! 50671147-a5c1-49d4-b4ad-3625f71439b3
-                TransparentRenderStage: ref!! 0fa30591-02ee-486d-9347-2b6aee83d035
+            d74665cff080638a2439c4422e542d85*: !SiliconStudio.Xenko.Rendering.SimpleGroupToRenderStageSelector,SiliconStudio.Xenko.Engine
+                RenderGroup*: All
+                RenderStage: ref!! 0fa30591-02ee-486d-9347-2b6aee83d035
                 EffectName: Test
     60780391e205770513fdd53e07279a01: !SiliconStudio.Xenko.Rendering.Background.BackgroundRenderFeature,SiliconStudio.Xenko.Engine
         RenderStageSelectors:
@@ -88,11 +88,33 @@ SharedRenderers:
         Clear:
             Id: 4bc4b2ca-027e-4e4a-94cb-2912709bef5f
             Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-        LightProbes: true
+        LightProbes: false
         OpaqueRenderStage: ref!! 50671147-a5c1-49d4-b4ad-3625f71439b3
         TransparentRenderStage: ref!! 0fa30591-02ee-486d-9347-2b6aee83d035
         ShadowMapRenderStages:
             fc4d1e0de5c2b0bbc27bcf96e9a848fd: ref!! c0524e55-4061-464d-84dd-7c4c70f70e0e
+        GBufferRenderStage: null
+        PostEffects: null
+        LightShafts: null
+        VRSettings:
+            Enabled: false
+            RequiredApis: {}
+            Overlays: {}
+        MSAALevel: None
+        MSAAResolver: {}
+    b83eea5d6052fff4db0c8d7efa7568f6: !SiliconStudio.Xenko.Rendering.Compositing.DebugRenderer,SiliconStudio.Xenko.Engine
+        Id: 2d551380-5cf6-4c45-b9c2-4983e6320ab0
+        DebugRenderStages: {}
+    5e26a9708283c4a37389cf296b83206d*: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine
+        Id: d9252557-23fc-4917-8973-0bd4354053a6
+        Clear:
+            Id: 77f6891e-f3b4-4ad2-b5e6-beab5f3251f5
+            Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
+        LightProbes: false
+        OpaqueRenderStage: ref!! 50671147-a5c1-49d4-b4ad-3625f71439b3
+        TransparentRenderStage: null
+        ShadowMapRenderStages:
+            424873e18e8323da2d5417b929d8db69: ref!! c0524e55-4061-464d-84dd-7c4c70f70e0e
         GBufferRenderStage: null
         PostEffects: null
         LightShafts: null
@@ -111,7 +133,7 @@ Game*: !SiliconStudio.Xenko.Rendering.Compositing.SceneRendererCollection,Silico
             Child: !SiliconStudio.Xenko.Rendering.Compositing.RenderTextureSceneRenderer,SiliconStudio.Xenko.Engine
                 Id: cc5c9b5d-a888-455f-a4ca-a1bd7c909415
                 RenderTexture: 2355d4e2-1680-48ca-8ad6-34d291c1489d:RenderTexture
-                Child: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+                Child: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! d9252557-23fc-4917-8973-0bd4354053a6
         cee6682ea104d5d6e73271576ca22678: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStudio.Xenko.Engine
             Id: 0f3e82cf-8863-4902-901b-e310a904d1ef
             Camera: {Index: 0}
@@ -122,5 +144,9 @@ Game*: !SiliconStudio.Xenko.Rendering.Compositing.SceneRendererCollection,Silico
                     03645ddeafe2406cbeb097d7d2e77fed: !SiliconStudio.Xenko.Rendering.Compositing.SingleStageRenderer,SiliconStudio.Xenko.Engine
                         Id: f90dbaaa-d050-4c2f-a63d-65a6a7d408ce
                         RenderStage: ref!! e40ae29a-9b90-4288-8169-9e21506ee3d9
+        2f9d9b0dfc8c5629466a76a2943ead39: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStudio.Xenko.Engine
+            Id: 6bb892e7-7a6d-4d9d-aa51-41a5d8ffb082
+            Camera: {Index: 0}
+            Child: !SiliconStudio.Xenko.Rendering.Compositing.DebugRenderer,SiliconStudio.Xenko.Engine ref!! 2d551380-5cf6-4c45-b9c2-4983e6320ab0
 SingleView: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
 Editor: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5

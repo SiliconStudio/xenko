@@ -9,7 +9,7 @@ Defaults:
         DefaultBackBufferWidth: 800
         DefaultBackBufferHeight: 480
         AdaptBackBufferToScreen: false
-        DefaultGraphicsProfile: Level_11_0
+        DefaultGraphicsProfile: Level_10_0
         ColorSpace: Linear
         DisplayOrientation: Default
         PreferredGraphicsPlatform: Default
