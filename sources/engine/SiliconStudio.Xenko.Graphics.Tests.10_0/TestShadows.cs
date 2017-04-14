@@ -185,7 +185,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             }
 
             // Create a camera entity and add it to the scene
-            cameraEntity = new Entity { new CameraComponent { Slot = SceneSystem.GraphicsCompositor.Cameras[0].ToSlotId() } };
+            cameraEntity = new Entity { new CameraComponent() };
             cameraEntity.Transform.Position = new Vector3(PlaneSize*1.5f, HalfPlaneSize, PlaneSize*1.5f);
             cameraEntity.Transform.RotationEulerXYZ = new Vector3(0.0f, MathUtil.PiOverFour, 0.0f);
             cameraEntity.Add(new LightComponent
