@@ -86,7 +86,7 @@ namespace SiliconStudio.Core.TypeConverters
                 new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M44))),
             });
         }
-
+        
         /// <inheritdoc/>
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
