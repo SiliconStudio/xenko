@@ -62,6 +62,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             // Add the cube to the scene
             scene.Entities.Add(cubeEntity);
 
+            // Use this graphics compositor
+            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(false, graphicsProfile: GraphicsProfile.Level_9_1);
+
             // Create a camera entity and add it to the scene
             var cameraEntity = new Entity { new CameraComponent { Slot = Services.GetServiceAs<SceneSystem>().GraphicsCompositor.Cameras[0].ToSlotId() } };
             cameraEntity.Transform.Position = new Vector3(0, 0, 5);
@@ -76,9 +79,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             lightEntity.Transform.Position = new Vector3(0, 0, 1);
             lightEntity.Transform.Rotation = Quaternion.RotationY(MathUtil.DegreesToRadians(45));
             scene.Entities.Add(lightEntity);
-
-            // Use this graphics compositor
-            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(false, graphicsProfile: GraphicsProfile.Level_9_1);
 
             // Create a scene instance
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);
@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         /// Run the test
         /// </summary>
         [Test]
-        public void RunCustomEffect()
+        public void RunSceneTests()
         {
             RunGameTest(new TestScene());
         }
