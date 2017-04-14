@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Silicon Studio Corporation")]
 [assembly: AssemblyProduct("ScriptTest")]
-[assembly: AssemblyCopyright("Copyright © 2011-2017 Silicon Studio Corporation")]
+[assembly: AssemblyCopyright("Copyright © 2011-2017 Silicon Studio Corp. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

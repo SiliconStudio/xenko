@@ -8,7 +8,7 @@ using System.Resources;
 [assembly: AssemblyConfiguration("All")]
 [assembly: AssemblyCompany("Silicon Studio Corporation")]
 [assembly: AssemblyProduct("FreeImage.NET Wrapper")]
-[assembly: AssemblyCopyright("Copyright © 2011-2017 Silicon Studio Corporation")]
+[assembly: AssemblyCopyright("Copyright © 2011-2017 Silicon Studio Corp. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyVersion("3.15.1.0")]
