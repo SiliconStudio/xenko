@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
 
             // Create a camera entity and add it to the scene
-            var cameraEntity = new Entity { new CameraComponent() };
+            var cameraEntity = new Entity { new CameraComponent { Slot = SceneSystem.GraphicsCompositor.Cameras[0].ToSlotId() } };
             cameraEntity.Transform.Position = new Vector3(0, 0, 5);
             scene.Entities.Add(cameraEntity);
 
