@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             await base.LoadContent();
 
             // setup the camera
-            var camera = new TestCamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor) { Yaw = 0, Pitch = 0, Position = new Vector3(0, 0, 1000), MoveSpeed = 100 };
+            var camera = new TestUICamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor) { Yaw = 0, Pitch = 0, Position = new Vector3(0, 0, 1000), MoveSpeed = 100 };
             CameraComponent = camera.Camera;
             Script.Add(camera);
 

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Linq;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
@@ -8,7 +9,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
@@ -49,9 +49,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             imageEntity3.Transform.Position = new Vector3(0, 0, -500);
             imageEntity3.Transform.Scale = new Vector3(250);
             Scene.Entities.Add(imageEntity3);
-            
+
             // setup the camera
-            var camera = new TestCamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor) { Yaw = MathUtil.Pi/4, Pitch = MathUtil.Pi/4, Position = new Vector3(500, 500, 500), MoveSpeed = 100 };
+            var camera = new TestUICamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor) { Yaw = MathUtil.Pi/4, Pitch = MathUtil.Pi/4, Position = new Vector3(500, 500, 500), MoveSpeed = 100 };
             camera.SetTarget(cube, true);
             CameraComponent = camera.Camera;
             Script.Add(camera);
