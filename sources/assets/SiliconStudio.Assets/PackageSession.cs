@@ -25,13 +25,18 @@ namespace SiliconStudio.Assets
     /// </summary>
     public sealed class PackageSession : IDisposable, IAssetFinder
     {
+        /// <summary>
+        /// The visual studio version property used for newly created project solution files
+        /// </summary>
+        public static readonly Version DefaultVisualStudioVersion = new Version("14.0.23107.0");
+
         private readonly ConstraintProvider constraintProvider = new ConstraintProvider();
         private readonly PackageCollection packagesCopy;
         private readonly object dependenciesLock = new object();
         private Package currentPackage;
         private AssetDependencyManager dependencies;
         private AssetSourceTracker sourceTracker;
-
+        private bool? packageUpgradeAllowed;
         public event DirtyFlagChangedDelegate<AssetItem> AssetDirtyChanged;
 
         /// <summary>
@@ -80,6 +85,11 @@ namespace SiliconStudio.Assets
         public UFile SolutionPath { get; set; }
 
         public AssemblyContainer AssemblyContainer { get; }
+
+        /// <summary>
+        /// The targeted visual studio version (if specified by the loaded package)
+        /// </summary>
+        public Version VisualStudioVersion { get; set; }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -567,64 +577,60 @@ namespace SiliconStudio.Assets
                         var assetItemOrPackage = fileIt.Value;
 
                         var assetItem = assetItemOrPackage as AssetItem;
-
-                        if (File.Exists(assetPath))
+                        try
                         {
-                            try
+                            //If we are within a csproj we need to remove the file from there as well
+                            if (assetItem?.SourceProject != null)
                             {
-                                //If we are within a csproj we need to remove the file from there as well
-                                if (assetItem?.SourceProject != null)
+                                var projectAsset = assetItem.Asset as IProjectAsset;
+                                if (projectAsset != null)
                                 {
-                                    var projectAsset = assetItem.Asset as IProjectAsset;
-                                    if (projectAsset != null)
+                                    var projectInclude = assetItem.GetProjectInclude();
+
+                                    Project project;
+                                    if (!vsProjs.TryGetValue(assetItem.SourceProject, out project))
                                     {
-                                        var projectInclude = assetItem.GetProjectInclude();
+                                        project = VSProjectHelper.LoadProject(assetItem.SourceProject);
+                                        vsProjs.Add(assetItem.SourceProject, project);
+                                    }
+                                    var projectItem = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == projectInclude);
+                                    if (projectItem != null)
+                                    {
+                                        project.RemoveItem(projectItem);
+                                    }
 
-                                        Project project;
-                                        if (!vsProjs.TryGetValue(assetItem.SourceProject, out project))
+                                    //delete any generated file as well
+                                    var generatorAsset = assetItem.Asset as IProjectFileGeneratorAsset;
+                                    if (generatorAsset != null)
+                                    {
+                                        var generatedAbsolutePath = assetItem.GetGeneratedAbsolutePath().ToWindowsPath();
+
+                                        File.Delete(generatedAbsolutePath);
+
+                                        var generatedInclude = assetItem.GetGeneratedInclude();
+                                        var generatedItem = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == generatedInclude);
+                                        if (generatedItem != null)
                                         {
-                                            project = VSProjectHelper.LoadProject(assetItem.SourceProject);
-                                            vsProjs.Add(assetItem.SourceProject, project);
-                                        }
-                                        var projectItem = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == projectInclude);
-                                        if (projectItem != null)
-                                        {
-                                            project.RemoveItem(projectItem);
-                                        }
-
-                                        //delete any generated file as well
-                                        var generatorAsset = assetItem.Asset as IProjectFileGeneratorAsset;
-                                        if (generatorAsset != null)
-                                        {
-                                            var generatedAbsolutePath = assetItem.GetGeneratedAbsolutePath().ToWindowsPath();
-
-                                            File.Delete(generatedAbsolutePath);
-
-                                            var generatedInclude = assetItem.GetGeneratedInclude();
-                                            var generatedItem = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == generatedInclude);
-                                            if (generatedItem != null)
-                                            {
-                                                project.RemoveItem(generatedItem);
-                                            }
+                                            project.RemoveItem(generatedItem);
                                         }
                                     }
                                 }
-
-                                File.Delete(assetPath);
                             }
-                            catch (Exception ex)
+
+                            File.Delete(assetPath);
+                        }
+                        catch (Exception ex)
+                        {
+                            if (assetItem != null)
                             {
-                                if (assetItem != null)
+                                log.Error(assetItem.Package, assetItem.ToReference(), AssetMessageCode.AssetCannotDelete, ex, assetPath);
+                            }
+                            else
+                            {
+                                var package = assetItemOrPackage as Package;
+                                if (package != null)
                                 {
-                                    log.Error(assetItem.Package, assetItem.ToReference(), AssetMessageCode.AssetCannotDelete, ex, assetPath);
-                                }
-                                else
-                                {
-                                    var package = assetItemOrPackage as Package;
-                                    if (package != null)
-                                    {
-                                        log.Error(package, null, AssetMessageCode.AssetCannotDelete, ex, assetPath);
-                                    }
+                                    log.Error(package, null, AssetMessageCode.AssetCannotDelete, ex, assetPath);
                                 }
                             }
                         }
@@ -860,7 +866,7 @@ namespace SiliconStudio.Assets
                 //    analysis.Run(log);
                 //}
                 // If the package doesn't have a meta name, fix it here (This is supposed to be done in the above disabled analysis - but we still need to do it!)
-                if (string.IsNullOrWhiteSpace(package.Meta.Name) && package.FullPath != null)
+                if (String.IsNullOrWhiteSpace(package.Meta.Name) && package.FullPath != null)
                 {
                     package.Meta.Name = package.FullPath.GetFileNameWithoutExtension();
                     package.IsDirty = true;
@@ -895,7 +901,7 @@ namespace SiliconStudio.Assets
             return null;
         }
 
-        private static bool TryLoadAssets(PackageSession session, ILogger log, Package package, PackageLoadParameters loadParameters)
+        private bool TryLoadAssets(PackageSession session, ILogger log, Package package, PackageLoadParameters loadParameters)
         {
             // Already loaded
             if (package.State >= PackageState.AssetsReady)
@@ -964,14 +970,19 @@ namespace SiliconStudio.Assets
 
                 if (pendingPackageUpgrades.Count > 0)
                 {
-                    var upgradeAllowed = true;
+                    var upgradeAllowed = packageUpgradeAllowed != false ? PackageUpgradeRequestedAnswer.Upgrade : PackageUpgradeRequestedAnswer.DoNotUpgrade;
+
                     // Need upgrades, let's ask user confirmation
-                    if (loadParameters.PackageUpgradeRequested != null)
+                    if (loadParameters.PackageUpgradeRequested != null && !packageUpgradeAllowed.HasValue)
                     {
                         upgradeAllowed = loadParameters.PackageUpgradeRequested(package, pendingPackageUpgrades);
+                        if (upgradeAllowed == PackageUpgradeRequestedAnswer.UpgradeAll)
+                            packageUpgradeAllowed = true;
+                        if (upgradeAllowed == PackageUpgradeRequestedAnswer.DoNotUpgradeAny)
+                            packageUpgradeAllowed = false;
                     }
 
-                    if (!upgradeAllowed)
+                    if (!PackageLoadParameters.ShouldUpgrade(upgradeAllowed))
                     {
                         log.Error($"Necessary package migration for [{package.Meta.Name}] has not been allowed");
                         return false;

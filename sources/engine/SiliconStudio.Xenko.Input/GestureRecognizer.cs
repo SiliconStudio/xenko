@@ -100,7 +100,8 @@ namespace SiliconStudio.Xenko.Input
                         break;
                     case PointerState.Move:
                         // just memorize the last position to avoid useless processing on move events
-                        fingerIdsToLastMovePos[id] = pos;
+                        if (FingerIdToBeginPositions.ContainsKey(id))
+                            fingerIdsToLastMovePos[id] = pos;
                         break;
                     case PointerState.Up:
                     case PointerState.Out:

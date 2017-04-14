@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.ComponentModel;
@@ -167,7 +167,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public DepthRangeParameters()
             {
                 IsAutomatic = true;
-                GuardDistance = DefaultGuardDistance;
                 ManualMinDistance = DefaultMinDistance;
                 ManualMaxDistance = DefaultMaxDistance;
                 IsBlendingCascades = true;
@@ -181,15 +180,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             [DefaultValue(true)]
             [Display("Automatic?")]
             public bool IsAutomatic { get; set; }
-
-
-            /// <summary>
-            /// Gets or sets the guard distance.
-            /// </summary>
-            /// <value>The guard distance.</value>
-            [DataMember(5)]
-            [DefaultValue(DefaultGuardDistance)]
-            public float GuardDistance { get; set; }
 
             /// <summary>
             /// Gets or sets the minimum distance in world space unit.

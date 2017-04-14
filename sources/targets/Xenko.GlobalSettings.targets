@@ -85,7 +85,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefineConstants>$(DefineConstants);$(SiliconStudioXenkoGraphicsApiDefines)</DefineConstants>
+    <DefineConstants>$(DefineConstants);$(SiliconStudioXenkoGraphicsApiDefines);SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE</DefineConstants>
   </PropertyGroup>
   
   <!--Building Xenko SDK itself?-->

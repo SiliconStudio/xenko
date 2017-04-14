@@ -186,7 +186,6 @@
     <Compile Include="Controls\ModalWindow.cs" />
     <Compile Include="Windows\WindowInfo.cs" />
     <Compile Include="Windows\WindowInitialPosition.cs" />
-    <Compile Include="Windows\WindowOwner.cs" />
     <Compile Include="XamlMarkdown.cs" />
     <Compile Include="MarkupExtensions\FalseExtension.cs" />
     <Compile Include="MarkupExtensions\IntExtension.cs" />

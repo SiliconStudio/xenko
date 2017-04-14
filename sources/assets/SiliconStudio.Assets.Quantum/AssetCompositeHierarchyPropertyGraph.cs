@@ -601,16 +601,9 @@ namespace SiliconStudio.Assets.Quantum
         }
         private void UpdateAssetPartBases()
         {
-            // Unregister to current base part events
-            foreach (var basePartAsset in basePartAssets.Keys)
-            {
-                basePartAsset.PartAdded -= PartAddedInBaseAsset;
-                basePartAsset.PartRemoved -= PartRemovedInBaseAsset;
-            }
-
-            // Clear collections tracking bases
-            basePartAssets.Clear();
-            instancesCommonAncestors.Clear();
+            // We need to subscribe to event of new base assets, but we don't want to unregister from previous one, in case the user is moving (remove + add)
+            // the single part of a base. In this case we wouldn't have any part linking to the base once it has been removed.
+            var newBasePartAsset = new HashSet<AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>>();
 
             // We want to enumerate parts that are actually "reachable", so we don't use Hierarchy.Parts for iteration - we iterate from the root parts instead.
             // We use Hierarchy.Parts at the end just to retrieve the part design from the actual part.
@@ -625,6 +618,7 @@ namespace SiliconStudio.Assets.Quantum
                     {
                         instanceIds = new HashSet<Guid>();
                         basePartAssets.Add(baseAssetGraph, instanceIds);
+                        newBasePartAsset.Add(baseAssetGraph);
                     }
                     instanceIds.Add(part.Base.InstanceId);
                 }
@@ -657,7 +651,7 @@ namespace SiliconStudio.Assets.Quantum
             }
 
             // Register to new base part events
-            foreach (var basePartAsset in basePartAssets.Keys)
+            foreach (var basePartAsset in newBasePartAsset)
             {
                 basePartAsset.PartAdded += PartAddedInBaseAsset;
                 basePartAsset.PartRemoved += PartRemovedInBaseAsset;

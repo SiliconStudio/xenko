@@ -30,7 +30,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public TransparencyTest()
         {
-            CurrentVersion = 8;
+            // CurrentVersion = 8;
+            CurrentVersion = 9; // Texture assets are not compressed anymore
         }
 
         protected override async Task LoadContent()

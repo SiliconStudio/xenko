@@ -1,8 +1,8 @@
 !GraphicsCompositorAsset
 Id: 5f2073ff-fa35-4484-a925-0b899d8e759d
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
-Archetype: 9af53371-51ba-49fc-b420-ee7874892e75:Compositing/DefaultGraphicsCompositorLevel9
+Archetype: 9af53371-51ba-49fc-b420-ee7874892e75:DefaultGraphicsCompositorLevel9
 Cameras:
     de2e75c3b2b23e54162686363f3f138e:
         Name: Main
@@ -44,13 +44,10 @@ RenderFeatures:
             65743b4380f4cc43b2b4bdc23cd0c07c: !SiliconStudio.Xenko.Rendering.Lights.ForwardLightingRenderFeature,SiliconStudio.Xenko.Engine
                 LightRenderers:
                     7ac2775468f53c4399b2f3f6357c85c9: !SiliconStudio.Xenko.Rendering.Lights.LightAmbientRenderer,SiliconStudio.Xenko.Engine {}
-                    7b68f9cd17404a4ba9e5f7df72e3b48d: !SiliconStudio.Xenko.Rendering.Lights.LightDirectionalGroupRenderer,SiliconStudio.Xenko.Engine
-                        NonShadowRenderer: null
+                    7b68f9cd17404a4ba9e5f7df72e3b48d: !SiliconStudio.Xenko.Rendering.Lights.LightDirectionalGroupRenderer,SiliconStudio.Xenko.Engine {}
                     411fdcfb9fc388449a0443173dfa3f27: !SiliconStudio.Xenko.Rendering.Lights.LightSkyboxRenderer,SiliconStudio.Xenko.Engine {}
-                    5890e37af0e4bbc2cfdc1de648ff07d4: !SiliconStudio.Xenko.Rendering.Lights.LightPointGroupRenderer,SiliconStudio.Xenko.Engine
-                        NonShadowRenderer: null
-                    2eda85523d76b3f9e1e7d3e55aab5280: !SiliconStudio.Xenko.Rendering.Lights.LightSpotGroupRenderer,SiliconStudio.Xenko.Engine
-                        NonShadowRenderer: null
+                    5890e37af0e4bbc2cfdc1de648ff07d4: !SiliconStudio.Xenko.Rendering.Lights.LightPointGroupRenderer,SiliconStudio.Xenko.Engine {}
+                    2eda85523d76b3f9e1e7d3e55aab5280: !SiliconStudio.Xenko.Rendering.Lights.LightSpotGroupRenderer,SiliconStudio.Xenko.Engine {}
                 ShadowMapRenderer: null
     28e9bf54a5adbe063f59fb17acb2723e: !SiliconStudio.Xenko.Rendering.Sprites.SpriteRenderFeature,SiliconStudio.Xenko.Engine
         RenderStageSelectors:
@@ -92,7 +89,7 @@ SharedRenderers:
         VRSettings:
             Enabled: false
             RequiredApis: {}
-            ResolutionScale: 1.0
+            Overlays: {}
         MSAALevel: None
         MSAAResolver: {}
 Game*: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStudio.Xenko.Engine

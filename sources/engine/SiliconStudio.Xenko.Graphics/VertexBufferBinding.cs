@@ -14,21 +14,15 @@ namespace SiliconStudio.Xenko.Graphics
     {
         private readonly int hashCode;
 
-        /// <summary>
-        /// Creates an instance of this object.
-        /// </summary>
-        /// <param name="vertexBuffer">The vertex buffer</param>
-        /// <param name="vertexDeclaration">The vertex declaration.</param>
-        /// <param name="vertexCount">The vertex count.</param>
-        /// <param name="vertexStride">The vertex stride.</param>
+        /// <param name="vertexStride">Jump size to the next element. if -1, it gets auto-discovered from the vertexDeclaration</param>
         /// <param name="vertexOffset">Offset (in Vertex ElementCount) from the beginning of the buffer to the first vertex to use.</param>
-        public VertexBufferBinding(Buffer vertexBuffer, VertexDeclaration vertexDeclaration, int vertexCount, int vertexStride = 0, int vertexOffset = 0) : this()
+        public VertexBufferBinding(Buffer vertexBuffer, VertexDeclaration vertexDeclaration, int vertexCount, int vertexStride = -1, int vertexOffset = 0) : this()
         {
             if (vertexBuffer == null) throw new ArgumentNullException("vertexBuffer");
             if (vertexDeclaration == null) throw new ArgumentNullException("vertexDeclaration");
 
             Buffer = vertexBuffer;
-            Stride = vertexStride != 0 ? vertexStride : vertexDeclaration.VertexStride;
+            Stride = vertexStride != -1 ? vertexStride : vertexDeclaration.VertexStride;
             Offset = vertexOffset;
             Count = vertexCount;
             Declaration = vertexDeclaration;

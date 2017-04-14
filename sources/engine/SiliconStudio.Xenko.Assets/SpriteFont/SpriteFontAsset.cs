@@ -3,10 +3,8 @@
 
 using System.ComponentModel;
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
@@ -16,16 +14,19 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [DataContract("SpriteFont")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Graphics.SpriteFont))]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.7.0-beta04")]
-    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha09", "1.7.0-beta02", typeof(FontTypeUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta02", "1.7.0-beta03", typeof(FontClassUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta03", "1.7.0-beta04", typeof(FontSizeUpgrader))]
     [Display(1400, "Sprite Font")]
     [CategoryOrder(10, "Font")]
     [CategoryOrder(30, "Rendering")]
-    public partial class SpriteFontAsset : Asset
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.7.0-beta04")]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta04", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
+    public class SpriteFontAsset : Asset
     {
+        private const string CurrentVersion = "2.0.0.0";
+
         /// <summary>
         /// The default file extension used by the <see cref="SpriteFontAsset"/>.
         /// </summary>
@@ -116,22 +117,5 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [DataMemberRange(-500, 500, 1, 10)]
         [Display(null, "Rendering")]
         public float LineGapBaseLineFactor { get; set; } = 1.0f;
-
-        class PremultiplyUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                if (asset.NoPremultiply != null)
-                {
-                    asset.IsPremultiplied = !(bool)asset.NoPremultiply;
-                    asset.NoPremultiply = DynamicYamlEmpty.Default;
-                }
-                if (asset.IsNotPremultiply != null)
-                {
-                    asset.IsPremultiplied = !(bool)asset.IsNotPremultiply;
-                    asset.IsNotPremultiply = DynamicYamlEmpty.Default;
-                }
-            }
-        }
     }
 }

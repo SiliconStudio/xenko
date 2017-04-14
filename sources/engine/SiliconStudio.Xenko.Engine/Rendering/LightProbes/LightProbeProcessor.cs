@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
         }
 
         /// <summary>
-        /// Updates only the coefficients of the light probes.
+        /// Updates only the coefficients of the light probes (from <see cref="LightProbeComponent.Coefficients"/> to <see cref="LightProbeRuntimeData.Coefficients"/>).
         /// </summary>
         public void UpdateLightProbeCoefficients()
         {

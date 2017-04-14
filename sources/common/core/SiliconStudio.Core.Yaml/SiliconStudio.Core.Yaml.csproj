@@ -105,6 +105,7 @@
     <Compile Include="Serialization\Serializers\CollectionSerializer.cs" />
     <Compile Include="Serialization\Serializers\DictionarySerializer.cs" />
     <Compile Include="Schemas\SchemaBase.cs" />
+    <Compile Include="Serialization\Serializers\ExceptionUtils.cs" />
     <Compile Include="Serialization\Serializers\ObjectSerializer.cs" />
     <Compile Include="Serialization\Serializers\ScalarSerializerBase.cs" />
     <Compile Include="Serialization\Serializers\TagTypeSerializer.cs" />

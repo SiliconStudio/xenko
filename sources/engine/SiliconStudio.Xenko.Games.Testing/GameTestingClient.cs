@@ -92,14 +92,14 @@ namespace SiliconStudio.Xenko.Games.Testing
                 Platform = (int)platform, Tester = true, Cmd = cmd, GameAssembly = gameName
             }).Wait();
 
-            var waitMs = 10000;
+            var waitMs = 30000;
             switch (platform)
             {
                 case PlatformType.Android:
-                    waitMs = 20000;
+                    waitMs *= 2;
                     break;
                 case PlatformType.iOS:
-                    waitMs = 40000;
+                    waitMs *= 2;
                     break;
             }
 

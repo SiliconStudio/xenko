@@ -222,12 +222,18 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             memberName = null;
 
             var currentDepth = objectContext.Reader.CurrentDepth;
+
+            // For a regular object, the key is expected to be a simple scalar
+            memberScalar = objectContext.Reader.Expect<Scalar>();
+
+            var currentEvent = objectContext.Reader.Parser.Current;
             bool result = true;
 
             bool skipMember = false;
             try
             {
-                var memberResult = TryReadMemberCore(ref objectContext, out memberScalar, out memberName);
+
+                var memberResult = TryReadMemberCore(ref objectContext, memberScalar, out memberName);
                 if (memberResult == ReadMemberState.Skip)
                 {
                     skipMember = true;
@@ -249,7 +255,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                 if (objectContext.SerializerContext.AllowErrors)
                 {
                     var logger = objectContext.SerializerContext.Logger;
-                    logger?.Warning("Ignored dictionary item that could not be deserialized", ex);
+                    logger?.Warning($"Ignored member [{objectContext.Descriptor?.Type.Name ?? "(Unknown)"}.{memberName ?? "(Unknown)"}] that could not be deserialized:\n{ex.Message}", ex);
                     skipMember = true;
                 }
                 else throw;
@@ -257,7 +263,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 
             if (skipMember)
             {
-                objectContext.Reader.Skip(currentDepth);
+                objectContext.Reader.Skip(currentDepth, currentEvent == objectContext.Reader.Parser.Current);
             }
 
             return result;
@@ -271,10 +277,8 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             Skip
         }
 
-        private ReadMemberState TryReadMemberCore(ref ObjectContext objectContext, out Scalar memberScalar, out string memberName)
+        private ReadMemberState TryReadMemberCore(ref ObjectContext objectContext, Scalar memberScalar, out string memberName)
         {
-            // For a regular object, the key is expected to be a simple scalar
-            memberScalar = objectContext.Reader.Expect<Scalar>();
             bool skipMember;
             memberName = ReadMemberName(ref objectContext, memberScalar.Value, out skipMember);
 
@@ -315,7 +319,15 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             // Value types need to be reassigned even if it was a Content
             if (memberAccessor.HasSet && (memberAccessor.Mode != DataMemberMode.Content || memberAccessor.Type.IsValueType || memberValue != oldMemberValue))
             {
-                memberAccessor.Set(objectContext.Instance, memberValue);
+                try
+                {
+                    memberAccessor.Set(objectContext.Instance, memberValue);
+                }
+                catch (Exception ex)
+                {
+                    ex = ex.Unwrap();
+                    throw new YamlException(objectContext.Reader.Parser.Current.Start, objectContext.Reader.Parser.Current.End, $"Cannot set member [{objectContext.Descriptor?.Type.Name ?? "(Unknown)"}.{memberName ?? "(Unknown)"}]:\n{ex.Message}");
+                }
             }
 
             return ReadMemberState.Sucess;

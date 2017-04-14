@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.UI.Panels
                 if (y == null)
                     return -1;
 
-                return x.DependencyProperties.Get(ZIndexPropertyKey) - y.DependencyProperties.Get(ZIndexPropertyKey);
+                return x.GetPanelZIndex() - y.GetPanelZIndex();
             }
         }
         /// <summary>

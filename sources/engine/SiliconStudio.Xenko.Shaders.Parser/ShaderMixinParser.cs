@@ -234,6 +234,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             {
                 var finalModule = finalModuleList[0];
                 //PerformanceLogger.Start(PerformanceStage.Mix);
+                parsingResult.Reflection = new EffectReflection();
                 var mixer = new XenkoShaderMixer(finalModule, parsingResult, mixinDictionary, externDict, new CloneContext(mixCloneContext));
                 mixer.Mix();
                 //PerformanceLogger.Stop(PerformanceStage.Mix);
@@ -248,7 +249,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                 var simplifier = new ExpressionSimplifierVisitor();
                 simplifier.Run(finalShader);
 
-                parsingResult.Reflection = new EffectReflection();
                 var xkShaderLinker = new ShaderLinker(parsingResult);
                 xkShaderLinker.Run(finalShader);
 

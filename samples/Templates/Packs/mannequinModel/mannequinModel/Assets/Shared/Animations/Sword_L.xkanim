@@ -1,6 +1,6 @@
 !Animation
 Id: 7650de68-b9f2-4ab1-a593-bd470dbb4e3d
-SerializedVersion: {Xenko: 1.10.0-alpha01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Source: ../../../Resources/Animation/Sword_L.fbx
 ClipDuration:
@@ -14,6 +14,6 @@ Skeleton: a0d324bd-326a-4fd8-88a9-fc5e4dcc62e5:Models/mannequinModel Skeleton
 RootMotion: false
 PreviewModel: f68ea240-695a-4de5-9884-60d77544fcd6:Models/mannequinModel
 AnimationTimeMinimum: 0:00:00:00.0000000
-AnimationTimeMaximum: 0:00:00:00.7000000
 ~SourceHashes:
     c4290f0fd785c8828f4547b28bd61aa9~../../../Resources/Animation/Sword_L.fbx: 2365a9c083adf41ff9beb9ab955604b6
+AnimationTimeMaximum: 0:00:00:00.7000000
