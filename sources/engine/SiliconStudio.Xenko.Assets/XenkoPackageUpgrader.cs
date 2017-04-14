@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets
 #endif
     public class XenkoPackageUpgrader : PackageUpgrader
     {
-        public const string CurrentVersion = "2.0.0.1";
+        public const string CurrentVersion = "2.0.0.2";
 
         public static readonly string DefaultGraphicsCompositorLevel9Url = "DefaultGraphicsCompositorLevel9";
         public static readonly string DefaultGraphicsCompositorLevel10Url = "DefaultGraphicsCompositorLevel10";
@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
-            if (dependency.Version.MinVersion < new PackageVersion("2.0.0.1"))
+            if (dependency.Version.MinVersion < new PackageVersion("2.0.0.2"))
             {
                 Guid defaultCompositorId = Guid.Empty;
 
