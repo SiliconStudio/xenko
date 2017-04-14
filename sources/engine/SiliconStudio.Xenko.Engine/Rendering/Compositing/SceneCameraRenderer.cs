@@ -1,3 +1,4 @@
+﻿using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -16,12 +17,16 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         [DataMemberIgnore]
         public RenderView RenderView { get; } = new RenderView();
 
+        public SceneCameraRenderer()
+        {
+
+        }
         /// <summary>
         /// Gets or sets the camera.
         /// </summary>
         /// <value>The camera.</value>
         /// <userdoc>The camera to use to render the scene.</userdoc>
-        public SceneCameraSlotIndex Camera { get; set; } = new SceneCameraSlotIndex(0);
+        public SceneCameraSlot Camera { get; set; }
 
         public ISceneRenderer Child { get; set; }
 
@@ -62,7 +67,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         protected virtual CameraComponent ResolveCamera(RenderContext renderContext)
         {
-            return renderContext.GetCameraFromSlot(Camera);
+            var camera = Camera?.Camera;
+            if (camera == null) throw new InvalidOperationException($"A {nameof(SceneCameraRenderer)} in use has not camera set. Make sure the camera component to use as its {nameof(CameraComponent.Slot)} property correctly set.");
+            return camera;
         }
 
         protected virtual void CollectInner(RenderContext renderContext)
