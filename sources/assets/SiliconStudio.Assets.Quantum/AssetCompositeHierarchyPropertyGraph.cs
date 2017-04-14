@@ -66,6 +66,11 @@ namespace SiliconStudio.Assets.Quantum
         protected IObjectNode HierarchyNode { get; }
 
         /// <summary>
+        /// Gets the name of the property targeting the part in the <see cref="TAssetPartDesign"/> type.
+        /// </summary>
+        protected virtual string PartName => nameof(IAssetPartDesign<TAssetPart>.Part);
+
+        /// <summary>
         /// Raised when a part is added to this asset.
         /// </summary>
         public event EventHandler<AssetPartChangeEventArgs> PartAdded;
@@ -755,7 +760,8 @@ namespace SiliconStudio.Assets.Quantum
                         // Overwrite the Ids of the cloned part with the id of the existing one so the cloned part will be considered as a proxy object by the fix reference pass
                         RewriteIds(clone.Part, existingPart);
                         // Replace the cloned part itself by the existing part.
-                        clone.Part = existingPart;
+                        var part = Container.NodeContainer.GetNode(clone);
+                        part[PartName].Update(existingPart);
                     }
                 }
 
