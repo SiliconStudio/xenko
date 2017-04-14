@@ -362,7 +362,8 @@ Example of use:
 	
 	<!-- Run unit tests -->
     <Error Text="Could not find [$(NUnitConsolePath)]" Condition="!Exists('$(NUnitConsolePath)')"/>
-    <Exec IgnoreExitCode="True" Command="$(NUnitConsolePath) --process=Separate --x86 @(AssembliesToTest->'%(Identity)', ' ')" WorkingDirectory="$(XenkoRootBin)">
+    <MakeDir Directories="$(MSBuildThisFileDirectory)TestResults"/>
+    <Exec IgnoreExitCode="True" Command="$(NUnitConsolePath) --process=Separate --x86 --result=&quot;$(MSBuildThisFileDirectory)TestResults\TestResult-$([System.DateTime]::Now.ToString(yyyyMMdd-HHmmss)).xml&quot;;format=nunit3 @(AssembliesToTest->'%(Identity)', ' ')" WorkingDirectory="$(XenkoRootBin)">
       <Output TaskParameter="ExitCode" ItemName="exitCode" />
     </Exec>
     <Error Text="Error while running tests" Condition="@(exitCode) &lt; 0" />
