@@ -1,0 +1,9 @@
+﻿shader TestGenerator
+{
+    cbuffer ConstantBuffer
+    {
+        float TestFloat;
+        [Color]
+        float3 TestColor;
+    }
+};

@@ -11,7 +11,7 @@ using SiliconStudio.Core.IO;
 using System.Diagnostics;
 using System.ServiceModel;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.VisualStudio.Debugging;
+using SiliconStudio.VisualStudio;
 
 namespace SiliconStudio.BuildEngine
 {
