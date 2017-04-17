@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                     if (slot.Id == camera.Slot.Id)
                     {
                         if (slot.Camera != null)
-                            throw new InvalidOperationException($"Unable to attach camera [{camera.Entity.Name}] to the graphics compositor, camera {slot.Camera.Entity.Name} is already attached to this slot.");
+                            throw new InvalidOperationException($"Unable to attach camera [{camera.Entity.Name}] to the graphics compositor because another camera [{slot.Camera.Entity.Name}] is enabled and already attached to this slot.");
 
                         slot.Camera = camera;
                         break;

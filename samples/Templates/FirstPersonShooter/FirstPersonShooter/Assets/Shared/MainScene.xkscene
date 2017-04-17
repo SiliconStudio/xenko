@@ -2366,7 +2366,7 @@ Hierarchy:
                         Id: 79c1cebd-d690-4e7f-b9d1-d3a9197c95a2
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: f1ef5817-0725-4b1a-abc9-845d101ec0e6
                     7e880022b3b3f743a0686a19d7ecd8e1: !FirstPersonShooter.FpsCamera,FirstPersonShooter.Game
                         Id: 2200887e-b3b3-43f7-a068-6a19d7ecd8e1
                         RotationSpeed: 0.02355

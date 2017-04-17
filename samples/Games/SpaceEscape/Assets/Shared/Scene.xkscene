@@ -162,4 +162,4 @@ Hierarchy:
                         NearClipPlane: 1.0
                         FarClipPlane: 340.0
                         AspectRatio: 0.563
-                        Slot: {Index: 0}
+                        Slot: 2a6bcd90-e26a-4017-87b2-5c322e57f92d

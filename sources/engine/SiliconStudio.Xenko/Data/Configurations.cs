@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Data
         macOS = 1 << PlatformType.macOS
     }
 
-    [DataContract]
+    [DataContract(Inherited = true)]
     public abstract class Configuration
     {
         [DataMemberIgnore]

@@ -5034,7 +5034,7 @@ Hierarchy:
                         Id: 65d1b71f-4862-4efc-b7c1-3c9d933979c7
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: 9aeac611-d1f6-46da-a235-e20cc154e170
                     cffbc9ddf95f8544a284e04ea2d27d8a: !ThirdPersonPlatformer.Camera.ThirdPersonCamera,ThirdPersonPlatformer.Game
                         Id: ddc9fbcf-5ff9-4485-a284-e04ea2d27d8a
                         DefaultDistance: 6.0
