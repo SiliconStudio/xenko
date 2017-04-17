@@ -32,8 +32,14 @@ namespace SiliconStudio.Xenko.Assets
         public static readonly string DefaultGraphicsCompositorLevel9Url = "DefaultGraphicsCompositorLevel9";
         public static readonly string DefaultGraphicsCompositorLevel10Url = "DefaultGraphicsCompositorLevel10";
 
+        public static readonly Guid DefaultGraphicsCompositorLevel9CameraSlot = new Guid("bbfef2cb-8c63-4cab-9caf-6ae48f44a8ba");
+        public static readonly Guid DefaultGraphicsCompositorLevel10CameraSlot = new Guid("d0a6bf72-b3cd-4bd4-94ca-69952999d537");
+
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
         {
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+            var defaultGraphicsCompositorCameraSlot = Guid.Empty;
+
             // Graphics Compositor asset
             if (dependency.Version.MinVersion < new PackageVersion("1.10.0-alpha02"))
             {
@@ -66,6 +72,8 @@ namespace SiliconStudio.Xenko.Assets
 
                         // Add graphics compositor asset by creating a derived asset of Compositing/DefaultGraphicsCompositor.xkgfxcomp
                         var graphicsCompositorUrl = graphicsProfile >= GraphicsProfile.Level_10_0 ? DefaultGraphicsCompositorLevel10Url : DefaultGraphicsCompositorLevel9Url;
+                        defaultGraphicsCompositorCameraSlot = graphicsProfile >= GraphicsProfile.Level_10_0 ? DefaultGraphicsCompositorLevel10CameraSlot : DefaultGraphicsCompositorLevel9CameraSlot;
+
                         var defaultGraphicsCompositor = dependencyPackage.Assets.Find(graphicsCompositorUrl);
                         if (defaultGraphicsCompositor == null)
                         {
@@ -166,24 +174,35 @@ namespace SiliconStudio.Xenko.Assets
                         dynamic asset = yamlAsset.DynamicRootNode;
                         int i = 0;
                         var localSlotIds = new Dictionary<int, Guid>();
-                        foreach (dynamic cameraSlot in asset.Cameras)
+                        if (asset.Cameras != null)
                         {
-                            var guid = Guid.NewGuid();
-                            Guid assetId;
-                            if (Guid.TryParse(asset.Id.ToString(), out assetId) && assetId == defaultCompositorId)
+                            // This upgrades a projects that already had a graphics compositor before (ie. an internal project created with 1.11)
+                            foreach (dynamic cameraSlot in asset.Cameras)
                             {
-                                slotIds.Add(i, guid);
+                                var guid = Guid.NewGuid();
+                                Guid assetId;
+                                if (Guid.TryParse(asset.Id.ToString(), out assetId) && assetId == defaultCompositorId)
+                                {
+                                    slotIds.Add(i, guid);
+                                }
+                                localSlotIds.Add(i, guid);
+                                cameraSlot.Value.Id = guid;
+                                ++i;
                             }
-                            localSlotIds.Add(i, guid);
-                            cameraSlot.Value.Id = guid;
-                            ++i;
+                            var indexString = asset.Game?.Camera?.Index?.ToString();
+                            int index;
+                            int.TryParse(indexString, out index);
+                            if (localSlotIds.ContainsKey(index) && asset.Game?.Camera != null)
+                            {
+                                asset.Game.Camera = $"ref!! {localSlotIds[index]}";
+                            }
                         }
-                        var indexString = asset.Game?.Camera?.Index?.ToString();
-                        int index;
-                        int.TryParse(indexString, out index);
-                        if (localSlotIds.ContainsKey(index) && asset.Game?.Camera != null)
+                        else if (defaultGraphicsCompositorCameraSlot != Guid.Empty)
                         {
-                            asset.Game.Camera = $"ref!! {localSlotIds[index]}";
+                            // This upgrades a projects that already had a graphics compositor before (ie. a project created with public 1.10)
+                            // In this case, the compositor that has been created above is empty, and the upgrade relies on reconciliation with base
+                            // to fill it properly, which means that for now we have no camera slot. Fortunately, we know the camera slot id from the archetype.
+                            slotIds.Add(0, defaultGraphicsCompositorCameraSlot);
                         }
                     }
                 }
@@ -216,6 +235,8 @@ namespace SiliconStudio.Xenko.Assets
                     }
                 }
             }
+#endif
+            // Put any new upgrader after this #endif
 
             return true;
         }
