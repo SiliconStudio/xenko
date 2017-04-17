@@ -140,7 +140,7 @@ Hierarchy:
                         Name: null
                         Projection: Orthographic
                         OrthographicSize: 21.0
-                        Slot: {Index: 0}
+                        Slot: 95fe37f1-35a8-41ff-9358-192ff159e956
         -   Entity:
                 Id: 40160bfc-cad8-4c09-806e-fc63188ab688
                 Name: NextScene

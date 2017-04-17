@@ -227,7 +227,7 @@ Hierarchy:
                         VerticalFieldOfView: 60.0
                         OrthographicSize: 720.0
                         AspectRatio: 1.777778
-                        Slot: {Index: 0}
+                        Slot: 39e59472-e064-4463-9097-403dadbc041e
         -   Entity:
                 Id: ef08d60e-261c-480b-abf4-c7b8ba929ca6
                 Name: Ball

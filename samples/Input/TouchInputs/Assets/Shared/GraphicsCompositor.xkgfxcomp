@@ -5,6 +5,7 @@ Tags: []
 Archetype: 9af53371-51ba-49fc-b420-ee7874892e75:DefaultGraphicsCompositorLevel9
 Cameras:
     de2e75c3b2b23e54162686363f3f138e:
+        Id: 74845038-d0c0-4824-981b-4cbe8565908d
         Name: Main
 RenderStages:
     47116750c1a5d449b4ad3625f71439b3:
@@ -78,7 +79,7 @@ SharedRenderers:
         Clear:
             Id: 4bc4b2ca-027e-4e4a-94cb-2912709bef5f
             Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-        LightProbes: true
+        LightProbes: false
         OpaqueRenderStage: ref!! 50671147-a5c1-49d4-b4ad-3625f71439b3
         TransparentRenderStage: ref!! 0fa30591-02ee-486d-9347-2b6aee83d035
         ShadowMapRenderStages:
@@ -92,8 +93,12 @@ SharedRenderers:
             Overlays: {}
         MSAALevel: None
         MSAAResolver: {}
+    b83eea5d6052fff4db0c8d7efa7568f6: !SiliconStudio.Xenko.Rendering.Compositing.DebugRenderer,SiliconStudio.Xenko.Engine
+        Id: af9da8de-7620-4208-b47d-4cd44d77c001
+        DebugRenderStages: {}
 Game*: !TouchInputs.TouchInputsRenderer,TouchInputs.Game
     Id: a3dee8f8-0b4e-4f57-919f-7bc7e59a18b7
     Background: c70d3cb5-77d2-4400-a715-382d092a2e19:XenkoBackground
 SingleView: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
 Editor: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+BlockPositions: {}

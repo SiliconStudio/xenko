@@ -29,7 +29,7 @@ Hierarchy:
                         Id: d8d38afa-0110-4116-a878-70e266cd78ea
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: 3217b71f-b48d-4321-bab1-7cb4da999c19
         -   Entity:
                 Id: 4855a6ef-94da-4170-abb8-e8c421efa246
                 Name: Background
