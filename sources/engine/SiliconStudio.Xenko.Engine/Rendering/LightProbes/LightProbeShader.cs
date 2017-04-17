@@ -18,7 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
 {
     public static partial class LightProbeShaderKeys
     {
-        public static readonly ValueParameterKey<bool> Enabled = ParameterKeys.NewValue<bool>();
         public static readonly ValueParameterKey<int> IgnoredProbeStart = ParameterKeys.NewValue<int>();
         public static readonly ObjectParameterKey<Texture> LightProbeTetrahedronIds = ParameterKeys.NewObject<Texture>();
         public static readonly ObjectParameterKey<Buffer> LightProbeTetrahedronProbeIndices = ParameterKeys.NewObject<Buffer>();
