@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -125,7 +125,7 @@ namespace SiliconStudio.Xenko.Engine.Events
 
         public void Dispose()
         {
-            link.Dispose();
+            link?.Dispose();
 
             GC.SuppressFinalize(this);
         }
