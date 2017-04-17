@@ -11,8 +11,51 @@ namespace SiliconStudio.Assets
 {
     [DataContract]
     [DataSerializer(typeof(BasePartDataSerializer))]
-    public class BasePart
+    public class BasePart : IEquatable<BasePart>
     {
+        /// <inheritdoc />
+        public bool Equals(BasePart other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(BasePartAsset, other.BasePartAsset) && BasePartId.Equals(other.BasePartId) && InstanceId.Equals(other.InstanceId);
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((BasePart)obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                // ReSharper disable NonReadonlyMemberInGetHashCode - this property is not supposed to be changed except by asset analysis
+                var hashCode = BasePartAsset != null ? BasePartAsset.GetHashCode() : 0;
+                // ReSharper restore NonReadonlyMemberInGetHashCode
+                hashCode = (hashCode * 397) ^ BasePartId.GetHashCode();
+                hashCode = (hashCode * 397) ^ InstanceId.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        /// <inheritdoc />
+        public static bool operator ==(BasePart left, BasePart right)
+        {
+            return Equals(left, right);
+        }
+
+        /// <inheritdoc />
+        public static bool operator !=(BasePart left, BasePart right)
+        {
+            return !Equals(left, right);
+        }
+
         public BasePart([NotNull] AssetReference basePartAsset, Guid basePartId, Guid instanceId)
         {
             if (basePartAsset == null) throw new ArgumentNullException(nameof(basePartAsset));
