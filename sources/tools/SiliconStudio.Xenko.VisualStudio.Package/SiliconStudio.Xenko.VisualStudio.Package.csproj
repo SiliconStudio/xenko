@@ -298,9 +298,7 @@
     <EmbeddedResource Include="NShader\Common\XenkoShaderKeywords.map" />
     <None Include="NShader\Common\ShaderMPLexer.lex" />
     <None Include="packages.config" />
-    <None Include="SiliconStudio.Xenko.VisualStudio.Package.nuspec">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="SiliconStudio.Xenko.VisualStudio.Package.nuspec" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
