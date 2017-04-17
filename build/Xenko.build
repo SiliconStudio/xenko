@@ -16,7 +16,7 @@ Example of use:
     <ILRepackPath>$(XenkoRootBin)ILRepack.exe</ILRepackPath>
     <NuGetPath>$(MSBuildThisFileDirectory).nuget\NuGet.exe</NuGetPath>
     <NUnitConsolePath>$(XenkoRoot)sources\common\deps\NUnit\nunit3-console.exe</NUnitConsolePath>
-    <SiliconStudioStoreUrl Condition="'$(SiliconStudioStoreUrl)' == ''">https://store.xenko.com</SiliconStudioStoreUrl>
+    <SiliconStudioStoreUrl Condition="'$(SiliconStudioStoreUrl)' == ''">https://packages-fc98fffedbea4e72b58b9ac0cdb50753.xenko.com/api/v2/package</SiliconStudioStoreUrl>
     <AdvancedInstallerPath Condition="'$(AdvancedInstallerPath)' == '' And Exists('$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 13.8.1\bin\x86\advinst.exe')">$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 13.8.1\bin\x86\advinst.exe</AdvancedInstallerPath>
   </PropertyGroup>
 
@@ -70,9 +70,9 @@ Example of use:
 
     <Delete Files="@(FilesToDeleteVSIX)"/>
 
-    <MSBuild Targets="91-VisualStudio\SiliconStudio_Xenko_VisualStudio_Package" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
-    <Exec Command='"$(NuGetPath)" pack "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package\SiliconStudio.Xenko.VisualStudio.Package.nuspec" -BasePath "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package\bin\Release"' />
-  </Target>  
+    <MSBuild Targets="91-VisualStudio\SiliconStudio_Xenko_VisualStudio_Package;91-VisualStudio\SiliconStudio_Xenko_VisualStudio_PackageInstall" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    <Exec Command='"$(NuGetPath)" pack "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package\SiliconStudio.Xenko.VisualStudio.Package.nuspec" -BasePath "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package"' />
+  </Target>
   
   <!--
   Package Installer: XenkoSetup.exe

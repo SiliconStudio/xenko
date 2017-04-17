@@ -76,8 +76,8 @@ namespace SiliconStudio.Presentation.Services
         bool CheckAccess();
 
         /// <summary>
-        /// Ensures that the current thread is the dispatcher thread. This method will throw an exception if it is not the case.
+        /// Ensures that the current thread is (or is not) the dispatcher thread. This method will throw an exception if it is not the case.
         /// </summary>
-        void EnsureAccess();
+        void EnsureAccess(bool inDispatcherThread = true);
     }
 }

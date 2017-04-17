@@ -1,132 +1,90 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Collections.Generic;
 using System.IO;
-
 using Microsoft.Win32;
+using Microsoft.VisualStudio.Setup.Configuration;
 
 namespace SiliconStudio.Core.VisualStudio
 {
+    public class IDEInfo
+    {
+        public override string ToString() => DisplayName;
+        public string DisplayName { get; set; }
+        public string InstallationPath { get; set; }
+
+        public string VsixInstallerPath { get; set; }
+    }
+
     public static class VisualStudioVersions
     {
-        public static readonly string[] KnownVersions =
+        private static List<IDEInfo> ideInfos;
+
+        public static IDEInfo DefaultIDE = new IDEInfo { DisplayName = "Default IDE", InstallationPath = null };
+
+        private static void BuildIDEInfos()
         {
-            VisualStudio2012,
-            VisualStudio2013,
-            VisualStudio2015,
-            VisualStudio15,
-            VisualCSharpExpress2012,
-            VisualCSharpExpress2013,
-            VisualCSharpExpress2015,
-            XamarinStudio
-        };
+            if (ideInfos != null)
+                return;
 
-        public const string DefaultIDE = "Default IDE";
-        public const string VisualStudio2012 = "Visual Studio 2012";
-        public const string VisualStudio2013 = "Visual Studio 2013";
-        public const string VisualStudio2015 = "Visual Studio 2015";
-        public const string VisualStudio15 = "Visual Studio 15";
-        public const string VisualCSharpExpress2012 = "Visual C# Express 2012";
-        public const string VisualCSharpExpress2013 = "Visual C# Express 2013";
-        public const string VisualCSharpExpress2015 = "Visual C# Express 2015";
-        public const string XamarinStudio = "Xamarin Studio";
+            ideInfos = new List<IDEInfo>();
 
-        public static IEnumerable<string> AvailableVisualStudioVersions
+            ideInfos.Add(DefaultIDE);
+
+            // Visual Studio 14.0 (2015)
+            var localMachine32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+            using (var subkey = localMachine32.OpenSubKey(string.Format(@"SOFTWARE\Microsoft\{0}\{1}", "VisualStudio", "14.0")))
+            {
+                var path = (string)subkey?.GetValue("InstallDir");
+
+                var vs14InstallPath = (path != null) ? Path.Combine(path, "devenv.exe") : null;
+                if (vs14InstallPath != null && File.Exists(vs14InstallPath))
+                {
+                    var vsixInstallerPath = Path.Combine(path, "VSIXInstaller.exe");
+                    if (!File.Exists(vsixInstallerPath))
+                        vsixInstallerPath = null;
+
+                    ideInfos.Add(new IDEInfo { DisplayName = "Visual Studio 2015", InstallationPath = vs14InstallPath, VsixInstallerPath = vsixInstallerPath });
+                }
+            }
+
+            // Visual Studio 15.0 (2017) and later
+            {
+                var configuration = new SetupConfiguration();
+
+                var instances = configuration.EnumAllInstances();
+                instances.Reset();
+                var inst = new ISetupInstance[1];
+                int pceltFetched;
+
+                while (true)
+                {
+                    instances.Next(1, inst, out pceltFetched);
+                    if (pceltFetched <= 0)
+                        break;
+
+                    var idePath = Path.Combine(inst[0].ResolvePath(), "Common7\\IDE");
+                    var path = Path.Combine(idePath, "devenv.exe");
+                    if (File.Exists(path))
+                    {
+                        var vsixInstallerPath = Path.Combine(idePath, "VSIXInstaller.exe");
+                        if (!File.Exists(vsixInstallerPath))
+                            vsixInstallerPath = null;
+
+                        ideInfos.Add(new IDEInfo { DisplayName = inst[0].GetDisplayName(), InstallationPath = path, VsixInstallerPath = vsixInstallerPath });
+                    }
+                } 
+            }
+        }
+
+        public static IEnumerable<IDEInfo> AvailableVisualStudioVersions
         {
             get
             {
-                // Default is always included first
-                yield return DefaultIDE;
+                BuildIDEInfos();
 
-                foreach (var visualStudioVersion in KnownVersions)
-                {
-                    if (GetVisualStudioPath(visualStudioVersion) != null)
-                        yield return visualStudioVersion;
-                }
-            }
-        }
-
-        public static string GetVersionNumber(string visualStudioVersion)
-        {
-            switch (visualStudioVersion)
-            {
-                case VisualStudio2012:
-                case VisualCSharpExpress2012:
-                    return ("11.0");
-                case VisualStudio2013:
-                case VisualCSharpExpress2013:
-                    return ("12.0");
-                case VisualStudio2015:
-                case VisualCSharpExpress2015:
-                    return ("14.0");
-                case VisualStudio15:
-                    return ("15.0");
-                default:
-                    return null;
-            }
-        }
-
-        public static bool IsExpressVersion(string visualStudioVersion)
-        {
-            switch (visualStudioVersion)
-            {
-                case VisualCSharpExpress2012:
-                case VisualCSharpExpress2013:
-                case VisualCSharpExpress2015:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        public static string GetVisualStudioPath(string visualStudioVersion)
-        {
-            switch (visualStudioVersion)
-            {
-                case VisualStudio2012:
-                case VisualStudio2013:
-                case VisualStudio2015:
-                case VisualCSharpExpress2012:
-                case VisualCSharpExpress2013:
-                case VisualCSharpExpress2015:
-                case VisualStudio15:
-                    return GetSpecificVisualStudioPath(GetVersionNumber(visualStudioVersion), IsExpressVersion(visualStudioVersion));
-                case XamarinStudio:
-                    return GetXamarinStudioPath();
-                default:
-                    return null;
-            }
-        }
-
-        private static string GetSpecificVisualStudioPath(string version, bool express)
-        {
-            var localMachine32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-            using (var subkey = localMachine32.OpenSubKey(string.Format(@"SOFTWARE\Microsoft\{0}\{1}", express ? "VCSExpress" : "VisualStudio", version)))
-            {
-                if (subkey == null)
-                    return null;
-
-                var path = (string)subkey.GetValue("InstallDir");
-                if (path == null)
-                    return null;
-
-                return Path.Combine(path, "devenv.exe");
-            }
-        }
-
-        private static string GetXamarinStudioPath()
-        {
-            var localMachine32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-            using (var subkey = localMachine32.OpenSubKey(string.Format(@"SOFTWARE\Xamarin\XamarinStudio")))
-            {
-                if (subkey == null)
-                    return null;
-
-                var path = (string)subkey.GetValue("Path");
-                if (path == null)
-                    return null;
-
-                return Path.Combine(path, @"bin\XamarinStudio.exe");
+                return ideInfos;
             }
         }
     }

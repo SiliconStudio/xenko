@@ -27,6 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\TestDesignExtensions.cs" />
+    <Compile Include="TestFileLock.cs" />
     <Compile Include="TestHelpers.cs" />
     <Compile Include="TestMemberPath.cs" />
     <Compile Include="TestDataMemberVisitor.cs" />

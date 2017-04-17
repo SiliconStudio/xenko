@@ -1,10 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using Microsoft.DotNet.Archive;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -139,6 +142,13 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                 }
             }
 
+            // Add files
+            builder.PopulateFiles(package.RootDirectory, files);
+            files.Clear();
+
+            var dataFiles = builder.Files.ToList();
+            builder.ClearFiles();
+
             // Create temp package for archive
             newPackage.TemplateFolders.Add(targetFolder);
             var newPackageFileName = "temp" + Guid.NewGuid() + ".xkpkg";
@@ -150,15 +160,23 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                 throw new InvalidOperationException(result.ToText());
                 // TODO throw error
             }
-            files.Add(NewFile(newPackageFileName, package.Meta.Name + Package.PackageFileExtension));
 
-            // Add files
+            // Add the package file
+            files.Add(NewFile(newPackageFileName, package.Meta.Name + Package.PackageFileExtension));
+            // Add entry point to decompress LZMA
+            files.Add(NewFile(@"tools\**\*.exe", "tools"));
+            files.Add(NewFile(@"tools\**\*.dll", "tools"));
+            // Add an empty .xz file so that it gets added to [Content_Types].xml
+            // This file will be removed later
+            files.Add(NewFile(@"tools\data_empty.xz", string.Empty));
+
+            // Repopulate with .xkpkg file
             builder.PopulateFiles(package.RootDirectory, files);
 
             outputDirectory = outputDirectory ?? Environment.CurrentDirectory;
 
             // Save the nupkg
-            var outputPath = GetOutputPath(builder,  outputDirectory);
+            var outputPath = GetOutputPath(builder, outputDirectory);
             bool isExistingPackage = File.Exists(outputPath);
             if (isExistingPackage)
             {
@@ -169,6 +187,29 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                 using (Stream stream = File.Create(outputPath))
                 {
                     builder.Save(stream);
+
+                    stream.Position = 0;
+
+                    // Add LZMA file as update so that it is stored without compression
+                    using (var archive = new ZipArchive(stream, ZipArchiveMode.Update, true))
+                    {
+                        // Delete data_empty.xz
+                        var dataEntry = archive.GetEntry("data_empty.xz");
+                        dataEntry.Delete();
+
+                        // Create data.xz (no compression since .xz is already compressed)
+                        dataEntry = archive.CreateEntry("data.xz", CompressionLevel.NoCompression);
+                        using (var dataStream = dataEntry.Open())
+                        {
+                            // Generate LZMA
+                            using (var indexedArchive = new IndexedArchive())
+                            {
+                                foreach (var file in dataFiles)
+                                    indexedArchive.AddFile(Path.Combine(package.RootDirectory, file.SourcePath), file.Path);
+                                indexedArchive.Save(dataStream, new ConsoleProgressReport());
+                             }
+                        }
+                    }
                 }
             }
             catch

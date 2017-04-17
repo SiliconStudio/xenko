@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <package>
   <metadata>
     <id>SiliconStudio.Xenko.VisualStudio.Package</id>
@@ -12,6 +12,7 @@
     <tags>internal</tags>
   </metadata>
   <files>
-    <file src="SiliconStudio.Xenko.vsix" target="tools" />
+    <file src="bin\Release\SiliconStudio.Xenko.vsix" target="tools" />
+    <file src="..\SiliconStudio.Xenko.VisualStudio.PackageInstall\bin\Release\packageinstall.exe" target="tools" />
   </files>
 </package>
