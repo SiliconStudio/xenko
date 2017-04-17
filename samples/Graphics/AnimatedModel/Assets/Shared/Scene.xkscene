@@ -32,7 +32,7 @@ Hierarchy:
                         Name: null
                         Projection: Perspective
                         AspectRatio: 0.56
-                        Slot: {Index: 1}
+                        Slot: b52cb3ea-3070-4405-af33-6d9d57a7e4e2
         -   Entity:
                 Id: 1c1ced43-f10b-4f46-93e7-9f75eb681c5e
                 Name: RenderToTexture
@@ -83,7 +83,7 @@ Hierarchy:
                         Name: null
                         Projection: Perspective
                         AspectRatio: 0.56
-                        Slot: {Index: 0}
+                        Slot: e68181f0-ebaf-457b-a0e2-b143569d8105
         -   Entity:
                 Id: aa9f45b3-a8f2-4b7c-8723-446504667459
                 Name: Front light

@@ -9,7 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.ServiceModel;
 using System.Threading;
-using SiliconStudio.VisualStudio.Debugging;
+using SiliconStudio.VisualStudio;
 
 namespace SiliconStudio.ExecServer
 {

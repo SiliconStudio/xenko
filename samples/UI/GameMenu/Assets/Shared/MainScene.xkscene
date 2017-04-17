@@ -7,6 +7,7 @@ Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - 50f9b452-2012-451b-95cd-57ff4f313e4b
+        - 61842ef8-3c8e-4dc2-b4f2-ac1fe5c59d4c
     Parts:
         -   Entity:
                 Id: 50f9b452-2012-451b-95cd-57ff4f313e4b
@@ -28,3 +29,18 @@ Hierarchy:
                         Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
                         ResolutionStretch: FixedWidthFixedHeight
+        -   Entity:
+                Id: 61842ef8-3c8e-4dc2-b4f2-ac1fe5c59d4c
+                Name: Camera
+                Components:
+                    f0579cf88e69edbff501962b0cc687b6: !TransformComponent
+                        Id: a26d3f09-03a2-444d-ae7f-178921be98de
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
+                    17f48cc185915718d5fdf5f71a32a186: !CameraComponent
+                        Id: 4d8f8be7-2a76-4003-a994-6fb4f3d1b001
+                        Name: null
+                        Projection: Perspective
+                        Slot: 33a02921-a3f4-4baa-91b2-b557748dca5e

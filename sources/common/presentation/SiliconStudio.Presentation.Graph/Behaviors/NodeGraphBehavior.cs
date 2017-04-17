@@ -220,6 +220,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         /// <param name="e"></param>
         private void OnEdgesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            // TODO: properly support reset!
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
@@ -227,12 +228,6 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     foreach (var oldItem in e.OldItems) { RemoveEdge(oldItem as NodeEdge); }
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                    break;
-                case NotifyCollectionChangedAction.Move:
-                    break;
-                case NotifyCollectionChangedAction.Reset:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -332,8 +327,8 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             if (graph.ContainsVertex(node))
             {
                 // TODO Need a better way to removing incoming edges
-                IEnumerable<EdgeControl> controls = AssociatedObject.EdgesList.Values.Where(x => ((NodeEdge)x.Edge).Target == node);
-                foreach (var control in controls)
+                var edgesToRemove = AssociatedObject.EdgesList.Values.Where(x => ((NodeEdge)x.Edge).Source == node || ((NodeEdge)x.Edge).Target == node).ToList();
+                foreach (var control in edgesToRemove)
                 {
                     var edge = (NodeEdge)control.Edge;
                     graph.RemoveEdge(edge);

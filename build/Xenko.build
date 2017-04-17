@@ -20,7 +20,7 @@ Example of use:
     <AdvancedInstallerPath Condition="'$(AdvancedInstallerPath)' == '' And Exists('$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 13.8.1\bin\x86\advinst.exe')">$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 13.8.1\bin\x86\advinst.exe</AdvancedInstallerPath>
   </PropertyGroup>
 
-  <UsingTask TaskName="SiliconStudio.Core.Tasks.PackageUpdateVersionTask" AssemblyFile="$(XenkoRoot)sources\common\core\SiliconStudio.Core.Tasks\bin\Release\SiliconStudio.Core.Tasks.dll" />
+  <UsingTask TaskName="SiliconStudio.Core.Tasks.PackageUpdateVersionTask" AssemblyFile="$(XenkoRoot)sources\common\core\SiliconStudio.Core.Tasks\bin\Release\SiliconStudio.Core.Tasks.exe" />
   <!-- TODO: those tasks will work only if the Direct3D11 files have been copied to top folder (currently works thanks to BuildEditorShaders being run before) -->
   <UsingTask TaskName="SiliconStudio.Xenko.Assets.Tasks.PackageArchiveTask" AssemblyFile="$(XenkoRootBin)SiliconStudio.Xenko.Assets.dll" />
   <UsingTask TaskName="SiliconStudio.Xenko.Assets.Tasks.PackageGetVersionTask" AssemblyFile="$(XenkoRootBin)SiliconStudio.Xenko.Assets.dll" />
@@ -268,7 +268,7 @@ Example of use:
   <Target Name="RunTestsWindows">
     <!-- By default, enable all known categories -->
     <PropertyGroup>
-      <SiliconStudioTestCategories Condition="'$(SiliconStudioTestCategories)' == ''">Simple;Game</SiliconStudioTestCategories>
+      <SiliconStudioTestCategories Condition="'$(SiliconStudioTestCategories)' == ''">Simple;Game;VSPackage</SiliconStudioTestCategories>
       <!-- We enclose everything with ;, so that we could do full word matches more easily with string.Contains() -->
       <SiliconStudioTestCategories>;$(SiliconStudioTestCategories);</SiliconStudioTestCategories>
     </PropertyGroup>
@@ -308,6 +308,13 @@ Example of use:
       <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.11_0.Windows"/>
       <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Audio.Tests.Windows"/>
       <UnitTest Include="71-XenkoAssets.Tests\SiliconStudio.Xenko.Assets.Tests"/>
+    </ItemGroup>
+
+    <!-- Unit tests for Visual Studio -->
+    <!-- Need to restore NuGet packages before running some part of the build (for example, VisualStudio Package needs Microsoft.VSSDK.BuildTools target files when loading project; note: the . after $(MSBuildThisFileDirectory) is necessary (NuGet doesn't like SolutionDir ending with \) -->
+    <Exec Condition="$(SiliconStudioTestCategories.Contains(';VSPackage;'))" Command='"$(NuGetPath)" restore -SolutionDir "$(MSBuildThisFileDirectory)." "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package"' />
+    <ItemGroup Condition="$(SiliconStudioTestCategories.Contains(';VSPackage;'))">
+      <UnitTest Include="91-VisualStudio\SiliconStudio.Xenko.VisualStudio.Package.Tests"/>
     </ItemGroup>
 
     <!-- Direct3D12 unit tests -->

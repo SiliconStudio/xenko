@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Compositing;
@@ -18,7 +18,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// </summary>
         public CameraProcessor()
         {
-            Cameras = new List<CameraComponent>();
             Order = -10;
         }
 
@@ -27,47 +26,131 @@ namespace SiliconStudio.Xenko.Engine.Processors
             return component;
         }
 
-        /// <summary>
-        /// Gets the current models to render.
-        /// </summary>
-        /// <value>The current models to render.</value>
-        public List<CameraComponent> Cameras { get; private set; }
-
         public override void Draw(RenderContext context)
         {
-            Cameras.Clear();
+            var graphicsCompositor = Services.GetServiceAs<SceneSystem>()?.GraphicsCompositor;
 
-            // Collect models for this frame
+            // First pass, handle proper detach
+            foreach (var matchingCamera in ComponentDatas)
+            {
+                var camera = matchingCamera.Value;
+                if (graphicsCompositor != null)
+                {
+
+                    if (camera.Slot.AttachedCompositor != null && camera.Slot.AttachedCompositor != graphicsCompositor)
+                    {
+                        // The graphics compositor has changed. Let's detach the camera from the old one...
+                        DetachCameraFromSlot(camera);
+                    }
+                    else if (camera.Enabled && camera.Slot.AttachedCompositor == null)
+                    {
+                        // Either the slot has been changed and need to be re-attached, or the camera has just been enabled.
+                        // Make sure this camera is detached from all slots, we'll re-attach it in the second pass.
+                        DetachCameraFromAllSlots(camera, graphicsCompositor);
+                    }
+                    else if (!camera.Enabled && camera.Slot.AttachedCompositor == graphicsCompositor)
+                    {
+                        // The camera has been disabled and need to be detached.
+                        DetachCameraFromSlot(camera);
+                    }
+                }
+            }
+
+            // Second pass, handle proper attach
             foreach (var matchingCamera in ComponentDatas)
             {
                 var camera = matchingCamera.Value;
 
-                // Skip disabled model components, or model components without a proper model set
-                if (!camera.Enabled)
+                if (graphicsCompositor != null)
                 {
-                    continue;
+                    if (camera.Enabled && camera.Slot.AttachedCompositor == null)
+                    {
+                        // Attach to the new slot
+                        AttachCameraToSlot(camera);
+                    }
+
                 }
 
                 // In case the camera has a custom aspect ratio, we can update it here
                 // otherwise it is screen-dependent and we can only update it in the CameraComponentRenderer.
-                if (camera.UseCustomAspectRatio)
+                if (camera.Enabled && camera.UseCustomAspectRatio)
                 {
                     camera.Update();
                 }
-
-                Cameras.Add(camera);
             }
+        }
 
-            // Assign cameras to camera slots based on name
+        protected override void OnEntityComponentAdding(Entity entity, CameraComponent component, CameraComponent data)
+        {
+            base.OnEntityComponentAdding(entity, component, data);
+
+            if (component.Enabled)
+                AttachCameraToSlot(component);
+        }
+
+        protected override void OnEntityComponentRemoved(Entity entity, CameraComponent component, CameraComponent data)
+        {
+            if (component.Slot.AttachedCompositor != null)
+                DetachCameraFromSlot(component);
+
+            base.OnEntityComponentRemoved(entity, component, data);
+        }
+
+        private void AttachCameraToSlot(CameraComponent camera)
+        {
+            if (!camera.Enabled) throw new InvalidOperationException($"The camera [{camera.Entity.Name}] cannot be attached because it is disabled");
+            if (camera.Slot.AttachedCompositor != null) throw new InvalidOperationException($"The camera [{camera.Entity.Name}] is already attached");
+
             var graphicsCompositor = Services.GetServiceAs<SceneSystem>()?.GraphicsCompositor;
             if (graphicsCompositor != null)
             {
-                foreach (var camera in Cameras)
+                for (var i = 0; i < graphicsCompositor.Cameras.Count; ++i)
                 {
-                    if (camera.Slot != null && camera.Slot < graphicsCompositor.Cameras.Count)
-                        graphicsCompositor.Cameras[camera.Slot].Camera = camera;
+                    var slot = graphicsCompositor.Cameras[i];
+                    if (slot.Id == camera.Slot.Id)
+                    {
+                        if (slot.Camera != null)
+                            throw new InvalidOperationException($"Unable to attach camera [{camera.Entity.Name}] to the graphics compositor because another camera [{slot.Camera.Entity.Name}] is enabled and already attached to this slot.");
+
+                        slot.Camera = camera;
+                        break;
+                    }
+                }
+                camera.Slot.AttachedCompositor = graphicsCompositor;
+            }
+        }
+
+        private static void DetachCameraFromSlot(CameraComponent camera)
+        {
+            if (camera.Slot.AttachedCompositor == null)
+                throw new InvalidOperationException($"The camera [{camera.Entity.Name}] is not attached");
+
+            for (var i = 0; i < camera.Slot.AttachedCompositor.Cameras.Count; ++i)
+            {
+                var slot = camera.Slot.AttachedCompositor.Cameras[i];
+                if (slot.Id == camera.Slot.Id)
+                {
+                    if (slot.Camera != camera)
+                        throw new InvalidOperationException($"Unable to detach camera [{camera.Entity.Name}] from the graphics compositor, another camera {slot.Camera.Entity.Name} is attached to this slot.");
+
+                    slot.Camera = null;
+                    break;
                 }
             }
+            camera.Slot.AttachedCompositor = null;
+        }
+
+        private static void DetachCameraFromAllSlots(CameraComponent camera, GraphicsCompositor graphicsCompositor)
+        {
+            for (var i = 0; i < graphicsCompositor.Cameras.Count; ++i)
+            {
+                var slot = graphicsCompositor.Cameras[i];
+                if (slot.Camera == camera)
+                {
+                    slot.Camera = null;
+                }
+            }
+            camera.Slot.AttachedCompositor = null;
         }
     }
 }

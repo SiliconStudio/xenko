@@ -376,7 +376,7 @@ Hierarchy:
                         Projection: Orthographic
                         OrthographicSize: 1.0
                         AspectRatio: 1.0
-                        Slot: {Index: 0}
+                        Slot: a070cf65-a750-4060-bcc0-e3303fca30b2
         -   Entity:
                 Id: a81bdcc6-04fd-4666-b58f-352cadc62179
                 Name: ConfettiBig

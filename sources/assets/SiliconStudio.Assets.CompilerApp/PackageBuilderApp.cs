@@ -17,7 +17,7 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.VisualStudio.Debugging;
+using SiliconStudio.VisualStudio;
 using SiliconStudio.Xenko.Assets.Models;
 using SiliconStudio.Xenko.Assets.SpriteFont;
 using SiliconStudio.Xenko.Graphics;

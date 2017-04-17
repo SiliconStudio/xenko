@@ -64,7 +64,7 @@ Hierarchy:
                         Name: null
                         Projection: Orthographic
                         FarClipPlane: 10.0
-                        Slot: {Index: 0}
+                        Slot: ed330d34-6073-4e57-97f8-6a6a29610451
         -   Entity:
                 Id: 3d8e427f-90f5-4579-b8dd-1f0264f1b47c
                 Name: GroundTop
