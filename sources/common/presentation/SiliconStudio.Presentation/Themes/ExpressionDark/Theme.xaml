@@ -38,6 +38,7 @@
 
   <SolidColorBrush x:Key="BackgroundBrush" Color="#FF434343"/>
   <SolidColorBrush x:Key="TextBrush" Color="#FFE0E0E0" />
+  <SolidColorBrush x:Key="HyperlinkBrush" Color="#FF00A0FF" />
   <SolidColorBrush x:Key="NormalBrush" Color="#FF595959" />
   <SolidColorBrush x:Key="NormalBorderBrush" Color="#FF333333" />
   <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}" />
@@ -376,13 +377,13 @@
   </Style>
 
   <Style TargetType="Hyperlink">
+    <Setter Property="Foreground" Value="{StaticResource HyperlinkBrush}"/>
+    <Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
     <Style.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
-        <Setter Property="Foreground" Value="{StaticResource SelectedBackgroundBrush}" />
+        <Setter Property="TextDecorations" Value="Underline"/>
       </Trigger>
     </Style.Triggers>
-    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-    <Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
   </Style>
 
   <Style x:Key="NuclearScrollViewer" TargetType="{x:Type ScrollViewer}" BasedOn="{x:Null}">
