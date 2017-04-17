@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 413fc3cf-56da-4cfd-ba3f-370f6a1f4b87
-SerializedVersion: {Xenko: 1.10.0-beta03}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
@@ -138,7 +138,7 @@ Hierarchy:
                         Id: cd6898f8-c09f-4361-ac6c-2ab28aef9437
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: 13aa7ab5-25e6-4d23-912b-299544a49a65
         -   Entity:
                 Id: 5b1812d9-0604-4511-a106-16324294502b
                 Name: DirectionalLightShadowOneCascade
