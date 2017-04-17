@@ -1,15 +1,11 @@
 ﻿using System;
-using System.ComponentModel;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
-using SerializerContext = SiliconStudio.Core.Serialization.SerializerContext;
 
 namespace SiliconStudio.Assets
 {
@@ -28,7 +24,8 @@ namespace SiliconStudio.Assets
         }
 
         [DataMember(10)]
-        public AssetReference BasePartAsset { get; }
+        // This property might be updated by asset analysis, we want to keep a public setter for that reason. But it shouldn't be used in normal cases! (until we get a better solution)
+        public AssetReference BasePartAsset { get; set; }
 
         [DataMember(20)]
         public Guid BasePartId { get; }

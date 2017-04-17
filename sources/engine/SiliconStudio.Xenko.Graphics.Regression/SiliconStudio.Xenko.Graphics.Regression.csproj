@@ -152,6 +152,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegressionHelpers.cs" />
     <Compile Include="NUnitLite\TextUI.cs" />
+    <Compile Include="TestCamera.cs" />
     <Compile Include="TestGraphicsDeviceManager.cs" />
     <Compile Include="TestResultImage.cs" />
     <Compile Include="TestRunnerMessageType.cs" />

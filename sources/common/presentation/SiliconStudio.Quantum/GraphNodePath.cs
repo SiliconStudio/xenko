@@ -325,11 +325,25 @@ namespace SiliconStudio.Quantum
         }
 
         /// <summary>
-        /// Retrieve the node targeted by this path.
+        /// Retrieves the node targeted by this path.
         /// </summary>
         /// <returns></returns>
         [Pure, NotNull]
         public IGraphNode GetNode() => this.Last();
+
+        /// <summary>
+        /// Retrieves an accessor to the target of the path.
+        /// </summary>
+        /// <returns></returns>
+        [Pure]
+        public NodeAccessor GetAccessor()
+        {
+            if (path.Count == 0)
+                return new NodeAccessor(RootNode, Index.Empty);
+
+            var lastItem = path[path.Count - 1];
+            return lastItem.Type == ElementType.Index ? new NodeAccessor(GetParent().GetNode(), lastItem.Index) : new NodeAccessor(GetNode(), Index.Empty);
+        }
 
         /// <summary>
         /// Retrieve the parent path.

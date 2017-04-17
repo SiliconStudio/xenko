@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets
 #endif
     public class XenkoPackageUpgrader : PackageUpgrader
     {
-        public const string CurrentVersion = "2.0.0.0";
+        public const string CurrentVersion = "2.0.0.2";
 
         public static readonly string DefaultGraphicsCompositorLevel9Url = "DefaultGraphicsCompositorLevel9";
         public static readonly string DefaultGraphicsCompositorLevel10Url = "DefaultGraphicsCompositorLevel10";
@@ -136,6 +136,84 @@ namespace SiliconStudio.Xenko.Assets
                     RunAssetUpgradersUntilVersion(log, dependentPackage, dependency.Name, gameSettingsAsset.Yield().ToList(), new PackageVersion("1.11.1.2"));
 
                     UpgradeNavigationMeshGroups(navigationMeshAssets, gameSettingsAsset);
+                }
+            }
+
+            if (dependency.Version.MinVersion < new PackageVersion("2.0.0.2"))
+            {
+                Guid defaultCompositorId = Guid.Empty;
+
+                // Step one: find the default compositor, that will be the reference one to patch scenes
+                var gameSettings = assetFiles.FirstOrDefault(x => x.AssetLocation == GameSettingsAsset.GameSettingsLocation);
+                if (gameSettings != null)
+                {
+                    using (var gameSettingsYaml = gameSettings.AsYamlAsset())
+                    {
+                        dynamic asset = gameSettingsYaml.DynamicRootNode;
+                        string compositorReference = asset.GraphicsCompositor?.ToString();
+                        var guidString = compositorReference?.Split(':').FirstOrDefault();
+                        Guid.TryParse(guidString, out defaultCompositorId);
+                    }
+                }
+
+                // Step two: add an Guid for each item in the SceneCameraSlotCollection of each graphics compositor
+                Dictionary<int, Guid> slotIds = new Dictionary<int, Guid>();
+                var graphicsCompositorAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkgfxcomp");
+                foreach (var graphicsCompositorAsset in graphicsCompositorAssets)
+                {
+                    using (var yamlAsset = graphicsCompositorAsset.AsYamlAsset())
+                    {
+                        dynamic asset = yamlAsset.DynamicRootNode;
+                        int i = 0;
+                        var localSlotIds = new Dictionary<int, Guid>();
+                        foreach (dynamic cameraSlot in asset.Cameras)
+                        {
+                            var guid = Guid.NewGuid();
+                            Guid assetId;
+                            if (Guid.TryParse(asset.Id.ToString(), out assetId) && assetId == defaultCompositorId)
+                            {
+                                slotIds.Add(i, guid);
+                            }
+                            localSlotIds.Add(i, guid);
+                            cameraSlot.Value.Id = guid;
+                            ++i;
+                        }
+                        var indexString = asset.Game?.Camera?.Index?.ToString();
+                        int index;
+                        int.TryParse(indexString, out index);
+                        if (localSlotIds.ContainsKey(index) && asset.Game?.Camera != null)
+                        {
+                            asset.Game.Camera = $"ref!! {localSlotIds[index]}";
+                        }
+                    }
+                }
+
+                // Step three: patch every CameraComponent to reference the Guid instead of an index
+                var entityHierarchyAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkscene" || f.FilePath.GetFileExtension() == ".xkprefab");
+                foreach (var entityHierarchyAsset in entityHierarchyAssets)
+                {
+                    using (var yamlAsset = entityHierarchyAsset.AsYamlAsset())
+                    {
+                        dynamic asset = yamlAsset.DynamicRootNode;
+                        foreach (var entity in asset.Hierarchy.Parts)
+                        {
+                            foreach (var component in entity.Entity.Components)
+                            {
+                                if (component.Value.Node.Tag == "!CameraComponent")
+                                {
+                                    var indexString = component.Value.Slot.Index.ToString();
+                                    int index;
+                                    if (int.TryParse(indexString, out index))
+                                    {
+                                        if (slotIds.ContainsKey(index))
+                                        {
+                                            component.Value.Slot = slotIds[index];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -476,73 +554,33 @@ namespace SiliconStudio.Xenko.Assets
 
             private void AddComponent(dynamic componentsNode, YamlMappingNode node, Guid id)
             {
-                try
-                {
-                    // New format (1.9)
-                    DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
-                    mapping.AddChild(new YamlScalarNode(Guid.NewGuid().ToString("N")), node);
-                    node.Add("Id", id.ToString("D"));
-                }
-                catch (Exception)
-                {
-                    // Old format (<= 1.8)
-                    DynamicYamlArray array = (DynamicYamlArray)componentsNode;
-                    node.Add("~Id", id.ToString("D")); // TODO
-                    array.Add(node);
-                }
+                // New format (1.9)
+                DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
+                mapping.AddChild(new YamlScalarNode(Guid.NewGuid().ToString("N")), node);
+                node.Add("Id", id.ToString("D"));
             }
 
             private void RemoveComponent(dynamic componentsNode, dynamic componentsEntry)
             {
-                try
-                {
-                    // New format (1.9)
-                    DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
-                    mapping.RemoveChild(componentsEntry.Key);
-                }
-                catch (Exception)
-                {
-                    // Old format (<= 1.8)
-                    DynamicYamlArray array = (DynamicYamlArray)componentsNode;
-                    for (int i = 0; i < array.Count; i++)
-                    {
-                        if (componentsNode[i].Node == componentsEntry.Node)
-                        {
-                            array.RemoveAt(i);
-                            return;
-                        }
-                    }
-                }
+                // New format (1.9)
+                DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
+                mapping.RemoveChild(componentsEntry.Key);
             }
 
             private DynamicYamlArray GetPartsArray(dynamic asset)
             {
                 var hierarchy = asset.Hierarchy;
-                if (hierarchy.Parts != null)
-                    return (DynamicYamlArray)hierarchy.Parts; // > 1.6.0
-                return (DynamicYamlArray)hierarchy.Entities; // <= 1.6.0
+                return (DynamicYamlArray)hierarchy.Parts; // > 1.6.0
             }
             
             private ComponentInfo GetComponentInfo(dynamic componentNode)
             {
-                if(componentNode.Key != null && componentNode.Value != null)
+                // New format (1.9)
+                return new ComponentInfo
                 {
-                    // New format (1.9)
-                    return new ComponentInfo
-                    {
-                        Id = (string)componentNode.Key,
-                        Component = componentNode.Value
-                    };
-                }
-                else
-                {
-                    // Old format (<= 1.8)
-                    return new ComponentInfo
-                    {
-                        Id = (string)componentNode["~Id"], // TODO
-                        Component = componentNode
-                    };
-                }
+                    Id = (string)componentNode.Key,
+                    Component = componentNode.Value
+                };
             }
 
             private struct SkyboxAssetInfo

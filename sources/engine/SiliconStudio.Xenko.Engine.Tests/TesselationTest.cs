@@ -14,6 +14,7 @@ using SiliconStudio.Xenko.Rendering.ProceduralModels;
 using SiliconStudio.Xenko.Rendering.Tessellation;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering.Compositing;
 
@@ -89,7 +90,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             entities.Add(megalodon);
             entities.Add(knight);
 
-            camera = new TestCamera();
+            camera = new TestCamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor);
             CameraComponent = camera.Camera;
             Script.Add(camera);
 

@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 11913d23-3ce0-4773-88a4-227aa4d933e7
-SerializedVersion: {Xenko: 1.10.0-beta03}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
@@ -1498,7 +1498,7 @@ Hierarchy:
                         Id: 2088ba78-bf4f-48e3-be7d-3f1bea581810
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: f70c25f8-3ab5-4afd-a6da-3f48277293b7
         -   Entity:
                 Id: c24ceacc-75d8-4668-ace4-ad5999dd4c96
                 Name: Entity

@@ -332,6 +332,7 @@
     <Compile Include="Rendering\GraphicsCompositorAsset.cs" />
     <Compile Include="Navigation\NavigationMeshAsset.cs" />
     <Compile Include="Navigation\NavigationMeshFactory.cs" />
+    <Compile Include="Serializers\SceneCameraSlotIdSerializer.cs" />
     <Compile Include="Textures\ColorTextureType.cs" />
     <Compile Include="Textures\GrayscaleTextureType.cs" />
     <Compile Include="Textures\ITextureType.cs" />

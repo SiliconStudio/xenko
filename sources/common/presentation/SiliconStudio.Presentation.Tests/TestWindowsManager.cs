@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -57,7 +57,6 @@ namespace SiliconStudio.Presentation.Tests
             HideBlocking,
         }
 
-        [Timeout(30000)] // Sometimes hang
         [TestCase(Step.ShowMain, Step.HideMain, Step.ShowModal, Step.HideModal, Step.ShowBlocking, Step.HideBlocking, TestName = "ShowMain, HideMain, ShowModal, HideModal, ShowBlocking, HideBlocking")]
         [TestCase(Step.ShowMain, Step.HideMain, Step.ShowBlocking, Step.HideBlocking, Step.ShowModal, Step.HideModal, TestName = "ShowMain, HideMain, ShowBlocking, HideBlocking, ShowModal, HideModal")]
         [TestCase(Step.ShowMain, Step.HideMain, Step.ShowBlocking, Step.ShowModal, Step.HideBlocking, Step.HideModal, TestName = "ShowMain, HideMain, ShowBlocking, ShowModal, HideBlocking, HideModal")]
@@ -131,7 +130,7 @@ namespace SiliconStudio.Presentation.Tests
                             throw new ArgumentOutOfRangeException();
                     }
                     await stepCompleted.Task;
-                    await dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+                    await dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background);
                     dispatcher.Invoke(() => AssertStep(step, mainWindow, modalWindow, blockingWindow));
                 }
             }

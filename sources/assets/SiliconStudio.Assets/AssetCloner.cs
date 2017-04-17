@@ -67,7 +67,12 @@ namespace SiliconStudio.Assets
                 writer.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, refFlag);
                 if (externalIdentifiables != null)
                 {
-                    this.externalIdentifiables = externalIdentifiables.ToDictionary(x => x.Id);
+                    this.externalIdentifiables = new Dictionary<Guid, IIdentifiable>();
+                    foreach (var externalIdentifiable in externalIdentifiables)
+                    {
+                        // Note: here we might have duplicate (possibly broken) references that point to the same object (same id). We can only keep one in the dictionary.
+                        this.externalIdentifiables[externalIdentifiable.Id] = externalIdentifiable;
+                    }
                     writer.Context.Set(MemberSerializer.ExternalIdentifiables, this.externalIdentifiables);
                 }
                 writer.SerializeExtended(value, ArchiveMode.Serialize);

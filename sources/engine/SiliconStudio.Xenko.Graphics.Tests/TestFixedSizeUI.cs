@@ -137,14 +137,14 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             scene.Entities.Add(GetUIEntity(arial16, false, new Vector3(-2, 0, 0)));
             scene.Entities.Add(GetUIEntity(arial16, false, new Vector3(2, 1, -2)));
 
+            // Use this graphics compositor
+            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(false, graphicsProfile: GraphicsProfile.Level_9_1);
 
             // Create a camera entity and add it to the scene
-            var cameraEntity = new Entity { new CameraComponent() };
+            var cameraEntity = new Entity { new CameraComponent { Slot = SceneSystem.GraphicsCompositor.Cameras[0].ToSlotId() } };
             cameraEntity.Transform.Position = new Vector3(0, 0, 5);
             scene.Entities.Add(cameraEntity);
 
-            // Use this graphics compositor
-            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(false, graphicsProfile: GraphicsProfile.Level_9_1);
 
             // Create a scene instance
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);
