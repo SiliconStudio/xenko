@@ -493,22 +493,22 @@ namespace SiliconStudio.Presentation.Controls
 
         private static void OnLargeIncreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
-            UpdateValueCommand(sender, x => x.Value ?? x.Minimum + x.LargeChange);
+            UpdateValueCommand(sender, x => (x.Value ?? x.Minimum) + x.LargeChange);
         }
 
         private static void OnLargeDecreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
-            UpdateValueCommand(sender, x => x.Value ?? x.Maximum - x.LargeChange);
+            UpdateValueCommand(sender, x => (x.Value ?? x.Maximum) - x.LargeChange);
         }
 
         private static void OnSmallIncreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
-            UpdateValueCommand(sender, x => x.Value ?? x.Minimum + x.SmallChange);
+            UpdateValueCommand(sender, x => (x.Value ?? x.Minimum) + x.SmallChange);
         }
 
         private static void OnSmallDecreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
-            UpdateValueCommand(sender, x => x.Value ?? x.Maximum - x.SmallChange);
+            UpdateValueCommand(sender, x => (x.Value ?? x.Maximum) - x.SmallChange);
         }
 
         private static void OnResetValueCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
