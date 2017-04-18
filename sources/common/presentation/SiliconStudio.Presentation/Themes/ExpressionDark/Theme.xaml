@@ -268,12 +268,14 @@
       </Setter.Value>
     </Setter>
   </Style>
-  <Style TargetType="{x:Type FlowDocument}" x:Key="{x:Static local:XamlMarkdown.DocumentStyleKey}">
+  <Style TargetType="{x:Type FlowDocument}">
     <Setter Property="FontFamily" Value="{DynamicResource {x:Static SystemFonts.MessageFontFamilyKey}}" />
     <Setter Property="FontSize" Value="{DynamicResource {x:Static SystemFonts.MessageFontSizeKey}}" />
     <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-    <Setter Property="PagePadding" Value="2,0" />
     <Setter Property="TextAlignment" Value="Left" />
+  </Style>
+  <Style x:Key="{x:Static local:XamlMarkdown.DocumentStyleKey}" TargetType="{x:Type FlowDocument}" BasedOn="{StaticResource {x:Type FlowDocument}}">
+    <Setter Property="PagePadding" Value="2,0" />
   </Style>
   <Style TargetType="{x:Type Inline}" x:Key="{x:Static local:XamlMarkdown.CodeStyleKey}">
     <Setter Property="FontFamily" Value="Courier New, Consolas" />
