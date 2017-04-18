@@ -34,73 +34,65 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps> : ImageEf
         return float4(lightAcc, 1.0);
     }
 
-    override void PSMain()
+    stage override void PSMain()
     {
+        // minmax.x = min
+        // minmax.y = max
         float2 minmax = Texture0.Sample(PointSampler, streams.TexCoord).xy;
         if (IsZReverse)
             minmax.xy = minmax.yx;
 
-        // If max == 0 or min-max = 0 then we are outside the bouding box
-        if (minmax.y == 0  || (minmax.x < 0.01 && minmax.y > 0.99))
-        {
-            if (Debug)
-                streams.ColorTarget = 0;
-            else
-                streams.ColorTarget = this.ComputeColorOut();
-        }
-        else 
-        {
+        // Need at least a maximum value for this pixel to be contained in the bounding box
+        if(minmax.y < 1)
+        {   
+            float bbNearDistance = ComputeDepthFromZProj(minmax.x);
+            float bbFarDistance = ComputeDepthFromZProj(minmax.y);
+
+            // Clamp actual starting distance to 0 in case we only have a max
+            if(minmax.x <= 0)
+                bbNearDistance = 0; 
+
             float4 positionClipSpace = float4((1.0 - streams.TexCoord.xy * 2.0) * float2(-1.0f, 1.0f), GetZProjDepthFromUV(streams.TexCoord.xy), 1.0f);
             float4 positionVS4 = mul(positionClipSpace, ProjectionInverse);
             float3 positionVS = positionVS4.xyz / positionVS4.w;
             float3 eyeVS = -normalize(positionVS);
 
-            float3 lightResult   = 0.0f;
+            float3 lightResult = 0.0f;
 
-            // Minmax is stored as 1.0 - depth
-            float bbNearDistance = ComputeDepthFromZProj(1.0 - minmax.x);
-            float bbFarDistance = ComputeDepthFromZProj(1.0 - minmax.y);
             float currentDistance = -positionVS.z;
 
-            if (currentDistance <= bbNearDistance) 
+            float minDistance = bbNearDistance;
+            float maxDistance = min(bbFarDistance, currentDistance);
+            float stepSize = (maxDistance - minDistance) / (float)NbSteps;
+
+            if(maxDistance > minDistance)
             {
-                if(Debug)
+                // Recalculate max distance by jittering the length of the ray to avoid banding artefacts
+                stepSize = (maxDistance - minDistance) / (float)NbSteps;
+
+                // Compute direction
+                ComputeDirection(positionVS, eyeVS, minDistance, maxDistance, stepSize);
+
+                for(int i = 0; i < NbSteps; i++) 
                 {
-                    streams.ColorTarget = 0;
-                }
-                else
-                {
-                    streams.ColorTarget = this.ComputeColorOut();
+                    float4 positionWS = mul(float4(positionVS, 1.0), ViewInverse);
+                    lightResult += this.ComputeColorIn(positionWS, eyeVS, stepSize, i);
+                    positionVS += stepSize * eyeVS;
                 }
             }
+
+            streams.ColorTarget = ComputeFinalColor(lightResult);
+
+            // In debug mode, output just the volume depth of this pixel
+            if (Debug)
+                streams.ColorTarget = maxDistance - minDistance;
+        }
+        else // Outside the bounding box
+        {
+            if (Debug)
+                streams.ColorTarget = 0;
             else
-            {
-                if (Debug)
-                {
-                    streams.ColorTarget = 0.1 + (bbFarDistance - bbNearDistance);
-                }
-                else
-                {
-                    float minDistance = bbNearDistance;
-                    float maxDistance = min(bbFarDistance, currentDistance);
-                    float stepSize = (maxDistance - minDistance) / (float)NbSteps;
-
-                    // Recalculate max distance by jittering the length of the ray to avoid banding artefacts
-                    stepSize = (maxDistance - minDistance) / (float)NbSteps;
-
-                    // Compute direction
-                    ComputeDirection(positionVS, eyeVS, minDistance, maxDistance, stepSize);
-
-                    for(int i = 0; i < NbSteps; i++) 
-                    {
-                        float4 positionWS = mul(float4(positionVS, 1.0), ViewInverse);
-                        lightResult += this.ComputeColorIn(positionWS, eyeVS, stepSize, i);
-                        positionVS += stepSize * eyeVS;
-                    }
-
-                    streams.ColorTarget = ComputeFinalColor(lightResult);
-                }
-            }
+                streams.ColorTarget = this.ComputeColorOut();
         }
     }
 };

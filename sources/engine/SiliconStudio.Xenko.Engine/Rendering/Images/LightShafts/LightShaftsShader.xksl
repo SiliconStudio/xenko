@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             positionDepth = positionLS.z / positionLS.w;
 
-            if (all(screenPosition > ShadowTextureFactor.xy) && all(screenPosition < ShadowTextureFactor.zw) )
+            if (all(screenPosition > ShadowTextureFactor.xy) && all(screenPosition < ShadowTextureFactor.zw))
             {
                 float weight = 0;
                 // Simple 2x2 PCF

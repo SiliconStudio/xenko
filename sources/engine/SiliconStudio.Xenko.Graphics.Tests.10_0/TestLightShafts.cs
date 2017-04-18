@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             Window.AllowUserResizing = true;
 
             var cameraEntity = SceneSystem.SceneInstance.First(x => x.Get<CameraComponent>() != null);
-            cameraEntity.Add(new FpsTestCamera());
+            cameraEntity.Add(new FpsTestCamera() {MoveSpeed = 10.0f });
         }
 
         protected override void RegisterTests()

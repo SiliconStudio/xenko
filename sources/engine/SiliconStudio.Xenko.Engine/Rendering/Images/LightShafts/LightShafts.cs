@@ -69,11 +69,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 minmaxPipelineState.State.BlendState.RenderTarget0.BlendEnable = true;
                 minmaxPipelineState.State.BlendState.RenderTarget0.ColorSourceBlend = Blend.One;
                 minmaxPipelineState.State.BlendState.RenderTarget0.ColorDestinationBlend = Blend.One;
-                minmaxPipelineState.State.BlendState.RenderTarget0.ColorBlendFunction = i == 0 ? BlendFunction.Min : BlendFunction.Max;
-                minmaxPipelineState.State.BlendState.RenderTarget0.ColorWriteChannels = i == 0 ? ColorWriteChannels.Green : ColorWriteChannels.Red;
-
-                minmaxPipelineState.State.RasterizerState.CullMode = i == 0 ? CullMode.Front : CullMode.Back;
+                minmaxPipelineState.State.BlendState.RenderTarget0.ColorBlendFunction = i == 0 ? BlendFunction.Max : BlendFunction.Min;
+                minmaxPipelineState.State.BlendState.RenderTarget0.ColorWriteChannels = i == 0 ? ColorWriteChannels.Red : ColorWriteChannels.Green;
+                
                 minmaxPipelineState.State.DepthStencilState.DepthBufferEnable = false;
+                minmaxPipelineState.State.DepthStencilState.DepthBufferWriteEnable = false;
+                minmaxPipelineState.State.RasterizerState.DepthClipEnable = false;
+                minmaxPipelineState.State.RasterizerState.CullMode = i == 0 ? CullMode.Back : CullMode.Front;
 
                 minmaxPipelineStates[i] = minmaxPipelineState;
             }
@@ -103,9 +105,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Create a min/max buffer generated from scene bounding volumes
             int boundingBoxBufferDownsampleLevel = 8;
             var boundingBoxBuffer = NewScopedRenderTarget2D(depthInput.Width / boundingBoxBufferDownsampleLevel, depthInput.Height / boundingBoxBufferDownsampleLevel, PixelFormat.R32G32_Float);
-
-            var minmaxBuffer = NewScopedRenderTarget2D(256, 256, PixelFormat.R32G32_Float);
-
+            
             // Create a single channel light buffer
             int lightBufferDownsampleLevel = 2;
             var lightBuffer = NewScopedRenderTarget2D(depthInput.Width/lightBufferDownsampleLevel, depthInput.Height/lightBufferDownsampleLevel, PixelFormat.R16_Float);
@@ -145,7 +145,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     using (context.PushRenderTargetsAndRestore())
                     {
                         // Clear bounding box buffer
-                        context.CommandList.Clear(boundingBoxBuffer, new Color4(0.0f, 1.0f, 0.0f, 1.0f));
+                        context.CommandList.Clear(boundingBoxBuffer, new Color4(0.0f, 1.0f, 0.0f, 0.0f));
 
                         context.CommandList.SetRenderTargetAndViewport(null, boundingBoxBuffer);
 
@@ -177,7 +177,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     // Set min/max input
                     scatteringEffectShader.SetInput(0, boundingBoxBuffer);
                     scatteringEffectShader.SetInput(1, shadowMapTexture.Atlas.Texture);
-                    scatteringEffectShader.SetInput(2, minmaxBuffer);
 
                     // Light accumulation pass (on low resolution buffer)
                     DrawLightShaft(context, lightShaft, shadowMapTexture);
@@ -248,7 +247,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             scatteringEffectShader.Draw(context, $"Light Shafts [{lightShaft.LightComponent.Entity.Name}]");
         }
-
+        
         private bool DrawBoundingVolumeMinMax(RenderDrawContext context, IReadOnlyList<LightShaftBoundingVolumeData> boundingVolumes)
         {
             var commandList = context.CommandList;
@@ -259,7 +258,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             var needEffectUpdate = effectUpdated || previousMinmaxEffectBytecode != minmaxVolumeEffectShader.Effect.Bytecode;
             bool visibleMeshes = false;
-
+            
             for (int pass = 0; pass < 2; ++pass)
             {
                 var minmaxPipelineState = minmaxPipelineStates[pass];
