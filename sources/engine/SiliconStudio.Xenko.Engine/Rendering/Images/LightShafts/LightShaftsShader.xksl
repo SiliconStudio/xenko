@@ -3,8 +3,11 @@
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
-    shader LightShaftsShader : ImageEffectShader, ShadowMapCommon<PerFrame>, PostEffectBoundingRay<0, 0, 16>
+    shader LightShaftsShader : ImageEffectShader, ShadowMapCommon<PerFrame>, PostEffectBoundingRay<0, 0, 16>, LightStream, NormalStream
     {
+        stage compose ShadowGroup shadowGroup;
+        stage compose LightShaftsAttenuation attenuation;
+
         cbuffer PerFrame
         {
             // World to shadow matrix
@@ -12,14 +15,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Shadow map boundary for the current shadow map in the shadow atlas
             stage float4 ShadowTextureFactor;
-
-            [Color]
-            stage float3 LightColor;
         
             // Light position (if applicable)
-            stage float3 ShadowLightOffset;
+            stage float3 LightPosition;
             // Light direction (if applicable)
-            stage float3 ShadowLightDirection;
+            stage float3 LightDirection;
 
             stage float ExtinctionFactor;
             stage float DensityFactor;
@@ -31,32 +31,37 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         override float ComputeColorIn(float4 positionWS, float3 eyeVS, float stepSize, int stepIndex)
         {
-            const float4 ScreenLimits = float4(-1, -1, 1, 1);
+            //const float4 ScreenLimits = float4(-1, -1, 1, 1);
             float3 lightResult = 0;
             float3 sigmaT = ComputeExtinction(positionWS);
             float3 sigmaS = ComputeInScattering(positionWS);
             float3 stepExtinction = exp(-sigmaT * stepSize);
 
-            float4 positionLS = mul(positionWS, ShadowViewProjection);
-            float positionDepth = dot(ShadowLightDirection, positionWS - ShadowLightOffset) / ShadowMapDistance;
-            float2 screenPosition = positionLS.xy / positionLS.w;
+            // Just because some shadow groups use some of these streams, clear them for now
+            ResetLightStream();
+            streams.NdotL = 1;
+            streams.normalWS = float3(0,1,0);
+            streams.lightPositionWS = LightPosition;
+            streams.lightDirectionWS = LightDirection;
 
-            positionDepth = positionLS.z / positionLS.w;
+            float atten = attenuation.Compute(positionWS);
+            lightResult = stepExtinction * sigmaS * stepSize * shadowGroup.ComputeShadow(positionWS.xyz, 0) * atten;
 
-            if (all(screenPosition > ShadowTextureFactor.xy) && all(screenPosition < ShadowTextureFactor.zw))
-            {
-                float weight = 0;
-                // Simple 2x2 PCF
-                for(int j = 0; j < 4; j++)
-                {
-                    float shadowMapDepth = Texture1.SampleLevel(PointSampler, screenPosition.xy, 0.0, int2(j&2, j/2)).x;
-                    if (positionDepth < shadowMapDepth) 
-                    {
-                        weight += 1.0/4.0f;
-                    }
-                }
-                lightResult = stepExtinction * sigmaS * stepSize * weight;
-            }
+            //if (all(screenPosition > ShadowTextureFactor.xy) && all(screenPosition < ShadowTextureFactor.zw))
+            //{
+            //    float weight = 0;
+            //    // Simple 2x2 PCF
+            //    for(int j = 0; j < 4; j++)
+            //    {
+            //        float shadowMapDepth = Texture1.SampleLevel(PointSampler, screenPosition.xy, 0.0, int2(j&2, j/2)).x;
+            //        if (positionDepth < shadowMapDepth) 
+            //        {
+            //            weight += 1.0/4.0f;
+            //        }
+            //    }
+            //    lightResult = stepExtinction * sigmaS * stepSize * weight;
+            //}
+
             return lightResult;
         }
 

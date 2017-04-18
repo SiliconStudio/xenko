@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    effect LightShaftsEffect
+    {
+        // Use code from the shadow receiver appropriate for the light this lightshaft is rendered for
+        using params LightShaftsEffectKeys;
+        mixin compose shadowGroup = (LightShaftsEffectKeys.ShadowGroup);
+        mixin compose attenuation = (LightShaftsEffectKeys.AttenuationModel);
+
+        mixin LightShaftsShader;
+    };
+}

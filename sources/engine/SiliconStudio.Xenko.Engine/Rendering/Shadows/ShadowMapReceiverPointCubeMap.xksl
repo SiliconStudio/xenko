@@ -15,11 +15,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float2 DepthParameters[TLightCount];
         };
 
-        override void ComputeShadow(int lightIndex)
+        override float3 ComputeShadow(float3 position, int lightIndex)
         {
-            // TODO: This already gets computed for lighting, so it's calculated a second time here while it should not be
             float3 lightPosition = streams.lightPositionWS.xyz;
-            float3 lightDelta = streams.PositionWS.xyz - lightPosition;
+            float3 lightDelta = position.xyz - lightPosition;
             float distanceToLight = length(lightDelta);
             float3 direction = lightDelta / distanceToLight;
             float3 directionAbs = abs(direction);
@@ -52,7 +51,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             faceIndex += int(-min(0.0, lightSpaceZDirection));
 
             // Map to texture space
-            float4 projectedPosition = mul(streams.PositionWS, WorldToShadow[lightIndex*6+faceIndex]);
+            float4 projectedPosition = mul(float4(position,1), WorldToShadow[lightIndex*6+faceIndex]);
             projectedPosition /= projectedPosition.w;
 
             // Apply bias
@@ -62,7 +61,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float depth = (distanceToLight - DepthParameters[lightIndex].x) * DepthParameters[lightIndex].y;
 
             // Compare distance to light to value inside of the shadow map
-            streams.shadowColor = FilterShadow(projectedPosition.xy, depth);
+            return FilterShadow(projectedPosition.xy, depth);
         }
     };
 }
