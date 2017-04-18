@@ -50,6 +50,9 @@ Example of use:
     </ItemGroup>
 
     <Delete Files="@(FilesToDeleteLauncher)"/>
+    
+    <!-- Delete store.config to make sure it is rebuilt next time, due to CustomInstaller modifying it (note: might be better if we were copying it, requires some work on installer) -->
+    <Delete Files="$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\bin\Release\store.config"/>
 
     <MSBuild Targets="60-Editor\SiliconStudio_LauncherApp" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
     <!-- IL Repack is not used anymore -->
@@ -77,11 +80,37 @@ Example of use:
   <!--
   Package Installer: XenkoSetup.exe
   -->
-  <Target Name="PackageInstaller" DependsOnTargets="PackageLauncher">
+  <Target Name="PackageInstallerSimple" DependsOnTargets="PackageLauncher">
     <Delete Files="XenkoSetup.exe"/>
+    <!-- Run advanced installer -->
     <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(XenkoRoot)sources\install\Setup\setup.aip"'/>
     <Copy SourceFiles="$(XenkoRoot)sources\install\Setup\setup-SetupFiles\XenkoSetup.exe" DestinationFolder="$(MSBuildThisFileDirectory)"/>
   </Target>
+  <Target Name="PackageInstallerCustom" DependsOnTargets="PackageLauncher">
+    <Error Condition="'$(CustomInstaller)' == '' Or '$(CustomInstallerStoreUrl)' == ''" Text="When CustomInstaller is set, CustomInstallerStoreUrl also needs to be defined"/>
+  
+    <Delete Files="XenkoSetup$(CustomInstaller).exe"/>
+    <!-- Make sure it is deleted otherwise Advanced Installer complains (in case previous run didn't complete -->
+    <Delete Files="$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip"/>
+    <!-- Duplicate setup.aip with different IDs -->
+    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup.aip" /DuplicateProject "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip"'/>
+    <!-- Edit a few parameters -->
+    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip" /SetProperty BuildExeName=XenkoSetup$(CustomInstaller)'/>
+    
+    <!-- Update store.config with additional parameters -->
+    <Exec Command='"$(NuGetPath)" sources Add -Name "Xenko $(CustomInstaller)" -Source "$(CustomInstallerStoreUrl)" -ConfigFile "$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\bin\Release\store.config"'/>
+
+    <!-- Run advanced installer -->
+    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip"'/>
+    <Copy SourceFiles="$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller)-SetupFiles\XenkoSetup$(CustomInstaller).exe" DestinationFolder="$(MSBuildThisFileDirectory)"/>
+    <Delete Files="$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip"/>
+  </Target>
+  <PropertyGroup>
+    <!-- Choose proper target to execute -->
+    <PackageInstallerTarget Condition="'$(CustomInstaller)' == ''">PackageInstallerSimple</PackageInstallerTarget>
+    <PackageInstallerTarget Condition="'$(CustomInstaller)' != ''">PackageInstallerCustom</PackageInstallerTarget>
+  </PropertyGroup>
+  <Target Name="PackageInstaller" DependsOnTargets="$(PackageInstallerTarget)"/>
   
   <!--
   Package Installer: install-prerequisites.exe
