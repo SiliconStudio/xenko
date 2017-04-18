@@ -88,24 +88,27 @@ Example of use:
   </Target>
   <Target Name="PackageInstallerCustom" DependsOnTargets="PackageLauncher">
     <Error Condition="'$(CustomInstaller)' == '' Or '$(CustomInstallerStoreUrl)' == ''" Text="When CustomInstaller is set, CustomInstallerStoreUrl also needs to be defined"/>
+    <PropertyGroup>
+      <CustomInstallerNoSpace>$(CustomInstaller.Replace(' ', ''))</CustomInstallerNoSpace>
+    </PropertyGroup>
   
-    <Delete Files="XenkoSetup$(CustomInstaller).exe"/>
+    <Delete Files="XenkoSetup$(CustomInstallerNoSpace).exe"/>
     <!-- Make sure it is deleted otherwise Advanced Installer complains (in case previous run didn't complete -->
-    <Delete Files="$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip"/>
+    <Delete Files="$(XenkoRoot)sources\install\Setup\setup-$(CustomInstallerNoSpace).aip"/>
     <!-- Duplicate setup.aip with different IDs -->
-    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup.aip" /DuplicateProject "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip"'/>
+    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup.aip" /DuplicateProject "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstallerNoSpace).aip"'/>
     <!-- Edit a few parameters -->
-    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip" /SetProperty BuildExeName="XenkoSetup$(CustomInstaller)"'/>
-    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip" /SetProperty ProductName="Xenko $(CustomInstaller)"'/>
-    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip" /SetProperty AI_PRODUCTNAME_ARP="Xenko $(CustomInstaller)"'/>
+    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstallerNoSpace).aip" /SetProperty BuildExeName="XenkoSetup$(CustomInstallerNoSpace)"'/>
+    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstallerNoSpace).aip" /SetProperty ProductName="Xenko $(CustomInstaller)"'/>
+    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstallerNoSpace).aip" /SetProperty AI_PRODUCTNAME_ARP="Xenko $(CustomInstaller)"'/>
     
     <!-- Update store.config with additional parameters -->
     <Exec Command='"$(NuGetPath)" sources Add -Name "Xenko $(CustomInstaller)" -Source "$(CustomInstallerStoreUrl)" -ConfigFile "$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\bin\Release\store.config"'/>
 
     <!-- Run advanced installer -->
-    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip"'/>
-    <Copy SourceFiles="$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller)-SetupFiles\XenkoSetup$(CustomInstaller).exe" DestinationFolder="$(MSBuildThisFileDirectory)"/>
-    <Delete Files="$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip"/>
+    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstallerNoSpace).aip"'/>
+    <Copy SourceFiles="$(XenkoRoot)sources\install\Setup\setup-$(CustomInstallerNoSpace)-SetupFiles\XenkoSetup$(CustomInstallerNoSpace).exe" DestinationFolder="$(MSBuildThisFileDirectory)"/>
+    <Delete Files="$(XenkoRoot)sources\install\Setup\setup-$(CustomInstallerNoSpace).aip"/>
   </Target>
   <PropertyGroup>
     <!-- Choose proper target to execute -->
