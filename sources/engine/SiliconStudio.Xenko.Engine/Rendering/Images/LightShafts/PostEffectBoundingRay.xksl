@@ -8,14 +8,14 @@
 /// </remarks>
 shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps> : ImageEffectShader, DepthBase, Transformation, Camera, Utilities, Global
 {
-    float4 ComputeColorOut() 
+    float ComputeColorOut() 
     {
-        return float4(0, 0, 0, 1);
+        return 0;
     }
 
-    float3 ComputeColorIn(float4 positionS, float3 eyeVS, float stepSize, int stepIndex) 
+    float ComputeColorIn(float4 positionS, float3 eyeVS, float stepSize, int stepIndex) 
     {
-        return float3(0, 0, 0);
+        return 0;
     }
 
     float RayStepJitter(float3 positionVS, float stepSize) 
@@ -29,9 +29,9 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps> : ImageEf
         positionVS = -(maxDistance + RayStepJitter(positionVS, stepSize)) * eyeVS;
     }
 
-    float4 ComputeFinalColor(float3 lightAcc) 
+    float ComputeFinalColor(float lightAcc) 
     {
-        return float4(lightAcc, 1.0);
+        return float4(lightAcc.xxx, 1.0);
     }
 
     stage override void PSMain()
@@ -52,7 +52,8 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps> : ImageEf
             if(minmax.x <= 0)
                 bbNearDistance = 0; 
 
-            float4 positionClipSpace = float4((1.0 - streams.TexCoord.xy * 2.0) * float2(-1.0f, 1.0f), GetZProjDepthFromUV(streams.TexCoord.xy), 1.0f);
+            float currentDepth = GetZProjDepthFromUV(streams.TexCoord.xy);
+            float4 positionClipSpace = float4((1.0 - streams.TexCoord.xy * 2.0) * float2(-1.0f, 1.0f), currentDepth, 1.0f);
             float4 positionVS4 = mul(positionClipSpace, ProjectionInverse);
             float3 positionVS = positionVS4.xyz / positionVS4.w;
             float3 eyeVS = -normalize(positionVS);
