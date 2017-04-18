@@ -95,8 +95,9 @@ Example of use:
     <!-- Duplicate setup.aip with different IDs -->
     <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup.aip" /DuplicateProject "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip"'/>
     <!-- Edit a few parameters -->
-    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip" /SetProperty BuildExeName=XenkoSetup$(CustomInstaller)'/>
+    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip" /SetProperty BuildExeName="XenkoSetup$(CustomInstaller)"'/>
     <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip" /SetProperty ProductName="Xenko $(CustomInstaller)"'/>
+    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip" /SetProperty AI_PRODUCTNAME_ARP="Xenko $(CustomInstaller)"'/>
     
     <!-- Update store.config with additional parameters -->
     <Exec Command='"$(NuGetPath)" sources Add -Name "Xenko $(CustomInstaller)" -Source "$(CustomInstallerStoreUrl)" -ConfigFile "$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\bin\Release\store.config"'/>
