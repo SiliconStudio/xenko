@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
@@ -16,6 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     /// <summary>
     /// Renders your game. It should use current <see cref="RenderContext.RenderView"/> and <see cref="CameraComponentRendererExtensions.GetCurrentCamera"/>.
     /// </summary>
+    [Display("Forward Renderer")]
     public partial class ForwardRenderer : SceneRendererBase, ISharedRenderer
     {
         // TODO: should we use GraphicsDeviceManager.PreferredBackBufferFormat?

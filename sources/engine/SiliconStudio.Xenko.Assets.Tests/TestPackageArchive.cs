@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             var defaultPackage = PackageStore.Instance.DefaultPackage;
 
-            PackageArchive.Build(GlobalLogger.GetLogger("PackageArchiveTest"), defaultPackage);
+            PackageArchive.Build(GlobalLogger.GetLogger("PackageArchiveTest"), defaultPackage, AppDomain.CurrentDomain.BaseDirectory);
         }
     }
 }

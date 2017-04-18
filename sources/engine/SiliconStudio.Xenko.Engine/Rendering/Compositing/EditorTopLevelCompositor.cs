@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 
@@ -11,6 +12,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     /// <summary>
     /// Used by editor as top level compositor.
     /// </summary>
+    [NonInstantiable]
     public partial class EditorTopLevelCompositor : SceneCameraRenderer, ISharedRenderer
     {
         public CameraComponent EditorCamera { get; set; }

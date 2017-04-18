@@ -16,11 +16,11 @@ Example of use:
     <ILRepackPath>$(XenkoRootBin)ILRepack.exe</ILRepackPath>
     <NuGetPath>$(MSBuildThisFileDirectory).nuget\NuGet.exe</NuGetPath>
     <NUnitConsolePath>$(XenkoRoot)sources\common\deps\NUnit\nunit3-console.exe</NUnitConsolePath>
-    <SiliconStudioStoreUrl Condition="'$(SiliconStudioStoreUrl)' == ''">https://store.xenko.com</SiliconStudioStoreUrl>
+    <SiliconStudioStoreUrl Condition="'$(SiliconStudioStoreUrl)' == ''">https://xenko-packages.azurewebsites.net/api/v2/package</SiliconStudioStoreUrl>
     <AdvancedInstallerPath Condition="'$(AdvancedInstallerPath)' == '' And Exists('$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 13.8.1\bin\x86\advinst.exe')">$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 13.8.1\bin\x86\advinst.exe</AdvancedInstallerPath>
   </PropertyGroup>
 
-  <UsingTask TaskName="SiliconStudio.Core.Tasks.PackageUpdateVersionTask" AssemblyFile="$(XenkoRoot)sources\common\core\SiliconStudio.Core.Tasks\bin\Release\SiliconStudio.Core.Tasks.dll" />
+  <UsingTask TaskName="SiliconStudio.Core.Tasks.PackageUpdateVersionTask" AssemblyFile="$(XenkoRoot)sources\common\core\SiliconStudio.Core.Tasks\bin\Release\SiliconStudio.Core.Tasks.exe" />
   <!-- TODO: those tasks will work only if the Direct3D11 files have been copied to top folder (currently works thanks to BuildEditorShaders being run before) -->
   <UsingTask TaskName="SiliconStudio.Xenko.Assets.Tasks.PackageArchiveTask" AssemblyFile="$(XenkoRootBin)SiliconStudio.Xenko.Assets.dll" />
   <UsingTask TaskName="SiliconStudio.Xenko.Assets.Tasks.PackageGetVersionTask" AssemblyFile="$(XenkoRootBin)SiliconStudio.Xenko.Assets.dll" />
@@ -50,6 +50,9 @@ Example of use:
     </ItemGroup>
 
     <Delete Files="@(FilesToDeleteLauncher)"/>
+    
+    <!-- Delete store.config to make sure it is rebuilt next time, due to CustomInstaller modifying it (note: might be better if we were copying it, requires some work on installer) -->
+    <Delete Files="$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\bin\Release\store.config"/>
 
     <MSBuild Targets="60-Editor\SiliconStudio_LauncherApp" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
     <!-- IL Repack is not used anymore -->
@@ -70,18 +73,45 @@ Example of use:
 
     <Delete Files="@(FilesToDeleteVSIX)"/>
 
-    <MSBuild Targets="91-VisualStudio\SiliconStudio_Xenko_VisualStudio_Package" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
-    <Exec Command='"$(NuGetPath)" pack "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package\SiliconStudio.Xenko.VisualStudio.Package.nuspec" -BasePath "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package\bin\Release"' />
-  </Target>  
+    <MSBuild Targets="91-VisualStudio\SiliconStudio_Xenko_VisualStudio_Package;91-VisualStudio\SiliconStudio_Xenko_VisualStudio_PackageInstall" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    <Exec Command='"$(NuGetPath)" pack "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package\SiliconStudio.Xenko.VisualStudio.Package.nuspec" -BasePath "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package"' />
+  </Target>
   
   <!--
   Package Installer: XenkoSetup.exe
   -->
-  <Target Name="PackageInstaller" DependsOnTargets="PackageLauncher">
+  <Target Name="PackageInstallerSimple" DependsOnTargets="PackageLauncher">
     <Delete Files="XenkoSetup.exe"/>
+    <!-- Run advanced installer -->
     <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(XenkoRoot)sources\install\Setup\setup.aip"'/>
     <Copy SourceFiles="$(XenkoRoot)sources\install\Setup\setup-SetupFiles\XenkoSetup.exe" DestinationFolder="$(MSBuildThisFileDirectory)"/>
   </Target>
+  <Target Name="PackageInstallerCustom" DependsOnTargets="PackageLauncher">
+    <Error Condition="'$(CustomInstaller)' == '' Or '$(CustomInstallerStoreUrl)' == ''" Text="When CustomInstaller is set, CustomInstallerStoreUrl also needs to be defined"/>
+  
+    <Delete Files="XenkoSetup$(CustomInstaller).exe"/>
+    <!-- Make sure it is deleted otherwise Advanced Installer complains (in case previous run didn't complete -->
+    <Delete Files="$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip"/>
+    <!-- Duplicate setup.aip with different IDs -->
+    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup.aip" /DuplicateProject "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip"'/>
+    <!-- Edit a few parameters -->
+    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip" /SetProperty BuildExeName=XenkoSetup$(CustomInstaller)'/>
+    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip" /SetProperty ProductName="Xenko $(CustomInstaller)"'/>
+    
+    <!-- Update store.config with additional parameters -->
+    <Exec Command='"$(NuGetPath)" sources Add -Name "Xenko $(CustomInstaller)" -Source "$(CustomInstallerStoreUrl)" -ConfigFile "$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\bin\Release\store.config"'/>
+
+    <!-- Run advanced installer -->
+    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip"'/>
+    <Copy SourceFiles="$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller)-SetupFiles\XenkoSetup$(CustomInstaller).exe" DestinationFolder="$(MSBuildThisFileDirectory)"/>
+    <Delete Files="$(XenkoRoot)sources\install\Setup\setup-$(CustomInstaller).aip"/>
+  </Target>
+  <PropertyGroup>
+    <!-- Choose proper target to execute -->
+    <PackageInstallerTarget Condition="'$(CustomInstaller)' == ''">PackageInstallerSimple</PackageInstallerTarget>
+    <PackageInstallerTarget Condition="'$(CustomInstaller)' != ''">PackageInstallerCustom</PackageInstallerTarget>
+  </PropertyGroup>
+  <Target Name="PackageInstaller" DependsOnTargets="$(PackageInstallerTarget)"/>
   
   <!--
   Package Installer: install-prerequisites.exe
@@ -268,7 +298,7 @@ Example of use:
   <Target Name="RunTestsWindows">
     <!-- By default, enable all known categories -->
     <PropertyGroup>
-      <SiliconStudioTestCategories Condition="'$(SiliconStudioTestCategories)' == ''">Simple;Game</SiliconStudioTestCategories>
+      <SiliconStudioTestCategories Condition="'$(SiliconStudioTestCategories)' == ''">Simple;Game;VSPackage</SiliconStudioTestCategories>
       <!-- We enclose everything with ;, so that we could do full word matches more easily with string.Contains() -->
       <SiliconStudioTestCategories>;$(SiliconStudioTestCategories);</SiliconStudioTestCategories>
     </PropertyGroup>
@@ -308,6 +338,13 @@ Example of use:
       <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.11_0.Windows"/>
       <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Audio.Tests.Windows"/>
       <UnitTest Include="71-XenkoAssets.Tests\SiliconStudio.Xenko.Assets.Tests"/>
+    </ItemGroup>
+
+    <!-- Unit tests for Visual Studio -->
+    <!-- Need to restore NuGet packages before running some part of the build (for example, VisualStudio Package needs Microsoft.VSSDK.BuildTools target files when loading project; note: the . after $(MSBuildThisFileDirectory) is necessary (NuGet doesn't like SolutionDir ending with \) -->
+    <Exec Condition="$(SiliconStudioTestCategories.Contains(';VSPackage;'))" Command='"$(NuGetPath)" restore -SolutionDir "$(MSBuildThisFileDirectory)." "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package"' />
+    <ItemGroup Condition="$(SiliconStudioTestCategories.Contains(';VSPackage;'))">
+      <UnitTest Include="91-VisualStudio\SiliconStudio.Xenko.VisualStudio.Package.Tests"/>
     </ItemGroup>
 
     <!-- Direct3D12 unit tests -->

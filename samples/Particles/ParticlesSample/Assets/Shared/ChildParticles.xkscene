@@ -695,7 +695,7 @@ Hierarchy:
                         Id: 2d3c6f87-3797-4988-95bd-0c6964dd3579
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: 3217b71f-b48d-4321-bab1-7cb4da999c19
                     293cc85b2678d649a70b5c6f5b9f20ee: !ParticlesSample.CameraOrbitScript,ParticlesSample.Game
                         Id: 5bc83c29-7826-49d6-a70b-5c6f5b9f20ee
                     1c34f9bc127f5742bbf9b3bd97b7e131: !ParticlesSample.NextSceneScript,ParticlesSample.Game

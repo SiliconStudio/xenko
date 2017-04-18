@@ -28,6 +28,11 @@ namespace SiliconStudio.Packages
         public string Path => packageFile.Path;
 
         /// <summary>
+        /// Gets the source path of the file on the hard drive (if it has a source).
+        /// </summary>
+        public string SourcePath => (packageFile as PhysicalPackageFile)?.SourcePath;
+
+        /// <summary>
         /// Access to the stream content in read mode.
         /// </summary>
         /// <returns>A new stream reading file pointed by <see cref="Path"/>.</returns>

@@ -5,6 +5,7 @@ using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core.Windows
@@ -101,8 +102,10 @@ namespace SiliconStudio.Core.Windows
             }
         }
 
+        [NotNull]
         private static FileStream BuildFileLock(string name)
         {
+            // We open with FileShare.ReadWrite mode so that we can implement `Wait`.
             return new FileStream(name, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
         }
     }

@@ -42,6 +42,7 @@
     <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
     <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
     <XenkoIncludeVSIX>BuiltProjectOutputGroup;BuiltProjectOutputGroupDependencies;GetCopyToOutputDirectoryItems</XenkoIncludeVSIX>
+    <VSSDKTargetPlatformRegRootSuffix>Xenko</VSSDKTargetPlatformRegRootSuffix>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -360,6 +361,13 @@
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.PackageInstall\SiliconStudio.Xenko.PackageInstall.csproj">
+      <Project>{bd176b28-49cd-4fad-a430-cdbcf1c2e514}</Project>
+      <Name>SiliconStudio.Xenko.PackageInstall</Name>
+    </ProjectReference>
+    <SuppressFromVsix Include="packageinstall.exe">
+      <Visible>false</Visible>
+    </SuppressFromVsix>
   </ItemGroup>
   <Import Project="..\..\assets\SiliconStudio.Assets.Yaml\SiliconStudio.Assets.Yaml.projitems" Label="Shared" />
   <PropertyGroup>

@@ -1,4 +1,4 @@
-using SiliconStudio.Core;
+﻿using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
 
@@ -8,6 +8,7 @@ namespace SiliconStudio.Xenko.Engine
     {
         private readonly ModelComponent parentModelComponent;
         private SkeletonUpdater skeleton;
+        private int nodesLength;
         private readonly bool forceRecursive;
         private string nodeName;
         private int nodeIndex = int.MaxValue;
@@ -30,11 +31,13 @@ namespace SiliconStudio.Xenko.Engine
                 parentModelComponent.Entity.Transform.UpdateWorldMatrix();
             }
 
-            if (parentModelComponent.Skeleton != skeleton)
+            if (parentModelComponent.Skeleton != skeleton || parentModelComponent.Skeleton != null && parentModelComponent.Skeleton.Nodes.Length != nodesLength)
             {
-                skeleton = parentModelComponent.Skeleton;
+                skeleton = parentModelComponent.Skeleton;               
                 if (skeleton != null)
                 {
+                    nodesLength = parentModelComponent.Skeleton.Nodes.Length;
+
                     // Find our node index
                     nodeIndex = int.MaxValue;
                     for (int index = 0; index < skeleton.Nodes.Length; index++)

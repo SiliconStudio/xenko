@@ -609,7 +609,7 @@ Hierarchy:
                         Id: 4d31ee61-664a-4a90-9544-cf5405d608c8
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: 3217b71f-b48d-4321-bab1-7cb4da999c19
         -   Entity:
                 Id: 8e06c8ea-c2ae-4c9c-8844-1c1e948c9bef
                 Name: Color Animation
