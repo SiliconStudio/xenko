@@ -283,7 +283,7 @@ Example of use:
   
   <Target Name="WritePackageVersionToFile">
     <PackageGetVersionTask File="$(XenkoPackage)">
-      <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>
+      <Output TaskParameter="NuGetVersion" PropertyName="XenkoPackageVersion"/>
     </PackageGetVersionTask>
     <Delete Files="$(MSBuildThisFileDirectory)Xenko.version"/>
     <WriteLinesToFile File="$(MSBuildThisFileDirectory)Xenko.version" Lines="$(XenkoPackageVersion)" />
@@ -291,9 +291,9 @@ Example of use:
   
   <Target Name="GitLinkPdb" Condition="'$(SiliconStudioOfficialBuild)' == 'true'">
     <PackageGetVersionTask File="$(XenkoPackage)">
-      <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>
+      <Output TaskParameter="NugetVersionSimpleNoRevision" PropertyName="XenkoPackageVersionNoRevision"/>
     </PackageGetVersionTask>
-    <Exec ContinueOnError="true" Command="$(XenkoRoot)deps\GitLink\GitLink.exe $(XenkoRoot) -f build\Xenko.sln -u https://github.com/SiliconStudio/xenko -s releases/$(XenkoPackageVersion)" />
+    <Exec ContinueOnError="true" Command="$(XenkoRoot)deps\GitLink\GitLink.exe $(XenkoRoot) -f build\Xenko.sln -u https://github.com/SiliconStudio/xenko -s releases/$(XenkoPackageVersionNoRevision)" />
   </Target>
   
   <Target Name="RunTestsWindows">
