@@ -289,7 +289,7 @@ Example of use:
     <WriteLinesToFile File="$(MSBuildThisFileDirectory)Xenko.version" Lines="$(XenkoPackageVersion)" />
   </Target>
   
-  <Target Name="GitLinkPdb">
+  <Target Name="GitLinkPdb" Condition="'$(SiliconStudioOfficialBuild)' == 'true'">
     <PackageGetVersionTask File="$(XenkoPackage)">
       <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>
     </PackageGetVersionTask>
