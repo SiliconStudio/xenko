@@ -12,7 +12,7 @@ using System.ServiceModel;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using SiliconStudio.VisualStudio.Debugging;
+using SiliconStudio.VisualStudio;
 using Binding = System.ServiceModel.Channels.Binding;
 
 namespace SiliconStudio.ExecServer

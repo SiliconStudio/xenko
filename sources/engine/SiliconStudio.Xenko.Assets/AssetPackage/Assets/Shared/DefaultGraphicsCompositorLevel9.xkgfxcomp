@@ -4,6 +4,7 @@ SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Cameras:
     de2e75c3b2b23e54162686363f3f138e:
+        Id: bbfef2cb-8c63-4cab-9caf-6ae48f44a8ba
         Name: Main
 RenderStages:
     47116750c1a5d449b4ad3625f71439b3:
@@ -96,7 +97,7 @@ SharedRenderers:
         DebugRenderStages: {}
 Game: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
-    Camera: {Index: 0}
+    Camera: ref!! bbfef2cb-8c63-4cab-9caf-6ae48f44a8ba
     Child: !SiliconStudio.Xenko.Rendering.Compositing.SceneRendererCollection,SiliconStudio.Xenko.Engine
         Id: e1b3f028-e125-4ffb-9b63-0942d78251d1
         Children:

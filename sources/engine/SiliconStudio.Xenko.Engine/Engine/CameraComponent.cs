@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Engine
         public float AspectRatio { get; set; }
 
         [DataMember(50)]
-        public SceneCameraSlotIndex Slot { get; set; }
+        public SceneCameraSlotId Slot;
 
         /// <summary>
         /// Gets or sets a value indicating whether to use custom <see cref="ViewMatrix"/>. Default is <c>false</c>

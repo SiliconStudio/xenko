@@ -5,6 +5,7 @@ Tags: []
 Archetype: 9af53371-51ba-49fc-b420-ee7874892e75:DefaultGraphicsCompositorLevel9
 Cameras:
     de2e75c3b2b23e54162686363f3f138e:
+        Id: 2a6bcd90-e26a-4017-87b2-5c322e57f92d
         Name: Main
 RenderStages:
     47116750c1a5d449b4ad3625f71439b3:
@@ -79,7 +80,7 @@ SharedRenderers:
         Clear:
             Id: 4bc4b2ca-027e-4e4a-94cb-2912709bef5f
             Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-        LightProbes: true
+        LightProbes: false
         OpaqueRenderStage: ref!! 2dd24df6-33f1-4fc5-8d49-79db348db785
         TransparentRenderStage: ref!! ab05402a-6b3f-4a95-a079-bedf1617419d
         ShadowMapRenderStages:
@@ -93,9 +94,17 @@ SharedRenderers:
             Overlays: {}
         MSAALevel: None
         MSAAResolver: {}
+    b83eea5d6052fff4db0c8d7efa7568f6: !SiliconStudio.Xenko.Rendering.Compositing.DebugRenderer,SiliconStudio.Xenko.Engine
+        Id: fae67d72-4491-4117-99ea-bd8250047c10
+        DebugRenderStages: {}
 Game: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
-    Camera: {Index: 0}
-    Child: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 3f5395d3-5cfe-4e1b-8be7-0988bec3b0c0
+    Camera: ref!! 2a6bcd90-e26a-4017-87b2-5c322e57f92d
+    Child: !SiliconStudio.Xenko.Rendering.Compositing.SceneRendererCollection,SiliconStudio.Xenko.Engine
+        Id: e1b3f028-e125-4ffb-9b63-0942d78251d1
+        Children:
+            ce29e81d8821fbf2a3d2264868e9921c: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 3f5395d3-5cfe-4e1b-8be7-0988bec3b0c0
+            6efe857054d875d04a6788c9b40428bc: !SiliconStudio.Xenko.Rendering.Compositing.DebugRenderer,SiliconStudio.Xenko.Engine ref!! fae67d72-4491-4117-99ea-bd8250047c10
 SingleView: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 3f5395d3-5cfe-4e1b-8be7-0988bec3b0c0
 Editor: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 3f5395d3-5cfe-4e1b-8be7-0988bec3b0c0
+BlockPositions: {}

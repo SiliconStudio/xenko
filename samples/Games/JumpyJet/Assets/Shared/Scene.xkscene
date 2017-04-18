@@ -49,7 +49,7 @@ Hierarchy:
                         OrthographicSize: 11.36
                         NearClipPlane: 1.0
                         AspectRatio: 0.56338
-                        Slot: {Index: 0}
+                        Slot: 3fdcf6a2-9504-426d-a9f6-d682e7cdac79
         -   Entity:
                 Id: ab6a210f-cea3-4f03-8b5d-af95e4a4fb44
                 Name: BackgroundScript

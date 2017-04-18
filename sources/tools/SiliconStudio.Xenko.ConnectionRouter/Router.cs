@@ -244,7 +244,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
 
                     if (!File.Exists(servicePath))
                     {
-                        Log.Error($"{RouterMessage.ClientRequestServer} action URL [{url}] references a process that doesn't seem to exist.");
+                        Log.Error($"{RouterMessage.ClientRequestServer} action URL [{url}] references a process that doesn't seem to exist (XenkoSdkDir: {xenkoSdkDir})");
                         throw new InvalidOperationException();
                     }
 

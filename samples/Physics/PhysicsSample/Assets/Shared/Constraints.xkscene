@@ -150,7 +150,7 @@ Hierarchy:
                         Name: null
                         Projection: Perspective
                         FarClipPlane: 100.0
-                        Slot: {Index: 0}
+                        Slot: 95fe37f1-35a8-41ff-9358-192ff159e956
         -   Entity:
                 Id: e6289325-fb51-4913-84a6-96f4faa42f40
                 Name: Ambient light

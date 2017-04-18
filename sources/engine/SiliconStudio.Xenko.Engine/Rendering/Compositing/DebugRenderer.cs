@@ -1,7 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
+    [Display("Debug Renderer")]
     public class DebugRenderer : SceneRendererBase, ISharedRenderer
     {
         public List<RenderStage> DebugRenderStages { get; } = new List<RenderStage>();

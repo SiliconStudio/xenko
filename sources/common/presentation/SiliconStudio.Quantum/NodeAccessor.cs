@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Quantum
 {
@@ -33,6 +35,45 @@ namespace SiliconStudio.Quantum
         /// Retrieves the value backed by this accessor.
         /// </summary>
         /// <returns>The value backed by this accessor.</returns>
+        [Pure]
         public object RetrieveValue() => Node.Retrieve(Index);
+
+        /// <summary>
+        /// Updates the value backed by this accessor.
+        /// </summary>
+        /// <param name="value">The new value to set.</param>
+        public void UpdateValue(object value)
+        {
+            if (Index != Index.Empty)
+            {
+                ((IObjectNode)Node).Update(value, Index);
+            }
+            else
+            {
+                ((IMemberNode)Node).Update(value);
+            }
+        }
+
+        /// <summary>
+        /// Indicates whether this accessor can accept a value of the given type to update the targeted node.
+        /// </summary>
+        /// <param name="type">The type to evaluate.</param>
+        /// <returns>True if this type is accepted, false otherwise.</returns>
+        [Pure]
+        public bool AcceptType(Type type)
+        {
+            return Node.Descriptor.GetInnerCollectionType().IsAssignableFrom(type);
+        }
+
+        /// <summary>
+        /// Indicates whether this accessor can accept the given value to update the targeted node.
+        /// </summary>
+        /// <param name="value">The value to evaluate.</param>
+        /// <returns>True if the value is accepted, false otherwise.</returns>
+        [Pure]
+        public bool AcceptValue(object value)
+        {
+            return value == null ? !Node.Descriptor.GetInnerCollectionType().IsValueType : Node.Descriptor.GetInnerCollectionType().IsInstanceOfType(value);
+        }
     }
 }

@@ -44,8 +44,6 @@ Bin/
 ipch/
 obj/
 Cache/
-setup-cache*/
-setup-SetupFiles*/
 /doc/xenko_doc_output/
 /build/.vs
 /build/Xenko.version

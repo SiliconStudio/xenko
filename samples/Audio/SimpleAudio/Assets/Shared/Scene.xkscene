@@ -25,7 +25,7 @@ Hierarchy:
                         Name: null
                         Projection: Orthographic
                         FarClipPlane: 10.0
-                        Slot: {Index: 0}
+                        Slot: 57e08c0b-503c-44d7-9d9b-8ba93e72fea6
         -   Entity:
                 Id: dececd10-b6ea-46fa-8129-c8683f4a6974
                 Name: SoundScript

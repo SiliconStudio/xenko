@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.IO;
@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             using (var pngImage = Image.Load(pngStream, GraphicsDevice.ColorSpace == ColorSpace.Linear))
                 png = Texture.New(GraphicsDevice, pngImage);
 
-            var camera = new Entity { new CameraComponent() };
+            var camera = new Entity { new CameraComponent { Slot = SceneSystem.GraphicsCompositor.Cameras[0].ToSlotId() } };
             var plane = new Entity { new BackgroundComponent { Texture = png } };
             Scene.Entities.Add(plane);
             Scene.Entities.Add(camera);

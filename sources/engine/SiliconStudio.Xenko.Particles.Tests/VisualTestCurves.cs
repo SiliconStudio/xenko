@@ -7,7 +7,10 @@ namespace SiliconStudio.Xenko.Particles.Tests
 {
     class VisualTestCurves : GameTest
     {
-        public VisualTestCurves() : base("VisualTestCurves") { }
+        public VisualTestCurves() : base("VisualTestCurves")
+        {
+            IndividualTestVersion = 1;  //  Changed the default rotation for paritcles using curve rotation
+        }
 
         [Test]
         public void RunVisualTests()

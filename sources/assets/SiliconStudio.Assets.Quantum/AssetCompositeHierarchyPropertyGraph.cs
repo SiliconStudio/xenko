@@ -26,6 +26,7 @@ namespace SiliconStudio.Assets.Quantum
         /// </summary>
         /// <remarks>Part stored here are preserved after being removed, in case they have to come back later, for example if a part in the base is being moved (removed + added again).</remarks>
         private readonly Dictionary<Tuple<Guid, Guid>, TAssetPart> baseInstanceMapping = new Dictionary<Tuple<Guid, Guid>, TAssetPart>();
+
         /// <summary>
         /// A mapping of (base part id, instance id) corresponding to deleted parts in specific instances of this asset which base part exists in the base asset.
         /// </summary>
@@ -63,6 +64,11 @@ namespace SiliconStudio.Assets.Quantum
         public new AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> Asset => (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)base.Asset;
 
         protected IObjectNode HierarchyNode { get; }
+
+        /// <summary>
+        /// Gets the name of the property targeting the part in the <see cref="TAssetPartDesign"/> type.
+        /// </summary>
+        protected virtual string PartName => nameof(IAssetPartDesign<TAssetPart>.Part);
 
         /// <summary>
         /// Raised when a part is added to this asset.
@@ -610,9 +616,14 @@ namespace SiliconStudio.Assets.Quantum
                 if (isAlone)
                 {
                     Guid parentId;
-                    instancesCommonAncestors.TryGetValue(instanceId, out parentId);
-                    instanceParent = parentId != Guid.Empty ? Asset.Hierarchy.Parts[parentId] : null;
-                    insertIndex = 0;
+                    if (instancesCommonAncestors.TryGetValue(instanceId, out parentId) && parentId != Guid.Empty)
+                    {
+                        // FIXME: instancesCommonAncestors should be synchronized with existing instances, i.e. if the instance has been compltely removed then the common ancestor should have been cleared.
+                        if (Asset.Hierarchy.Parts.TryGetValue(parentId, out instanceParent))
+                        {
+                            insertIndex = 0;
+                        }
+                    }
                 }
             }
             return insertIndex;
@@ -745,7 +756,8 @@ namespace SiliconStudio.Assets.Quantum
                     TAssetPart existingPart;
 
                     // This add could actually be a move (remove + add). So we compare to the existing baseInstanceMapping and perform another remap if necessary
-                    if (baseInstanceMapping.TryGetValue(Tuple.Create(ids.Key, instanceId), out existingPart))
+                    var mappingKey = Tuple.Create(ids.Key, instanceId);
+                    if (!deletedPartsInstanceMapping.Contains(mappingKey) && baseInstanceMapping.TryGetValue(mappingKey, out existingPart))
                     {
                         // Replace the cloned part by the one to restore in the list of root if needed
                         if (baseHierarchy.RootPartIds.Remove(clone.Part.Id))
@@ -754,7 +766,8 @@ namespace SiliconStudio.Assets.Quantum
                         // Overwrite the Ids of the cloned part with the id of the existing one so the cloned part will be considered as a proxy object by the fix reference pass
                         RewriteIds(clone.Part, existingPart);
                         // Replace the cloned part itself by the existing part.
-                        clone.Part = existingPart;
+                        var part = Container.NodeContainer.GetNode(clone);
+                        part[PartName].Update(existingPart);
                     }
                 }
 
