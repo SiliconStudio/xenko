@@ -166,6 +166,12 @@ namespace SiliconStudio.Xenko.Assets
 
                 // Step two: add an Guid for each item in the SceneCameraSlotCollection of each graphics compositor
                 Dictionary<int, Guid> slotIds = new Dictionary<int, Guid>();
+
+                // This upgrades a projects that already had a graphics compositor before (ie. a project created with public 1.10)
+                // In this case, the compositor that has been created above is empty, and the upgrade relies on reconciliation with base
+                // to fill it properly, which means that for now we have no camera slot. Fortunately, we know the camera slot id from the archetype.
+                slotIds.Add(0, defaultGraphicsCompositorCameraSlot);
+
                 var graphicsCompositorAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkgfxcomp");
                 foreach (var graphicsCompositorAsset in graphicsCompositorAssets)
                 {
@@ -183,7 +189,7 @@ namespace SiliconStudio.Xenko.Assets
                                 Guid assetId;
                                 if (Guid.TryParse(asset.Id.ToString(), out assetId) && assetId == defaultCompositorId)
                                 {
-                                    slotIds.Add(i, guid);
+                                    slotIds[i] = guid;
                                 }
                                 localSlotIds.Add(i, guid);
                                 cameraSlot.Value.Id = guid;
@@ -196,13 +202,6 @@ namespace SiliconStudio.Xenko.Assets
                             {
                                 asset.Game.Camera = $"ref!! {localSlotIds[index]}";
                             }
-                        }
-                        else if (defaultGraphicsCompositorCameraSlot != Guid.Empty)
-                        {
-                            // This upgrades a projects that already had a graphics compositor before (ie. a project created with public 1.10)
-                            // In this case, the compositor that has been created above is empty, and the upgrade relies on reconciliation with base
-                            // to fill it properly, which means that for now we have no camera slot. Fortunately, we know the camera slot id from the archetype.
-                            slotIds.Add(0, defaultGraphicsCompositorCameraSlot);
                         }
                     }
                 }
@@ -227,6 +226,10 @@ namespace SiliconStudio.Xenko.Assets
                                         if (slotIds.ContainsKey(index))
                                         {
                                             component.Value.Slot = slotIds[index];
+                                        }
+                                        else
+                                        {
+                                            component.Value.Slot = Guid.Empty.ToString();
                                         }
                                     }
                                 }
