@@ -113,10 +113,10 @@ namespace SiliconStudio.Xenko.Engine.Processors
                             throw new InvalidOperationException($"Unable to attach camera [{camera.Entity.Name}] to the graphics compositor because another camera [{slot.Camera.Entity.Name}] is enabled and already attached to this slot.");
 
                         slot.Camera = camera;
+                        camera.Slot.AttachedCompositor = graphicsCompositor;
                         break;
                     }
                 }
-                camera.Slot.AttachedCompositor = graphicsCompositor;
             }
         }
 
