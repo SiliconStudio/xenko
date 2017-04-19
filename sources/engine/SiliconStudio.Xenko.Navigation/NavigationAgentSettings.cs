@@ -19,27 +19,43 @@ namespace SiliconStudio.Xenko.Navigation
         /// <summary>
         /// Height of the actor
         /// </summary>
+        /// <userdoc>
+        /// The height of the entities in this group. Entities can't enter areas with ceilings lower than this value.
+        /// </userdoc>
+        [DataMember(0)]
         [DataMemberRange(0, float.MaxValue)]
         public float Height;
 
         /// <summary>
-        /// Radius of the actor
-        /// </summary>
-        [DataMemberRange(0, float.MaxValue)]
-        public float Radius;
-
-        /// <summary>
         /// Maximum vertical distance this agent can climb
         /// </summary>
-        [Display("Maximum Climb Height")]
+        /// <userdoc>
+        /// The maximum height that entities in this group can climb. 
+        /// </userdoc>
+        [DataMember(1)]
+        [Display("Maximum climb height")]
         [DataMemberRange(0, float.MaxValue)]
         public float MaxClimb;
 
         /// <summary>
-        /// Maximum slope angle this agent can climb (in degrees)
+        /// Maximum slope angle this agent can climb
         /// </summary>
-        [Display("Maximum Slope")]
+        /// <userdoc>
+        /// The maximum incline (in degrees) that entities in this group can climb. Entities can't go up or down slopes higher than this value. 
+        /// </userdoc>
+        [Display("Maximum slope")]
+        [DataMember(2)]
         public AngleSingle MaxSlope;
+
+        /// <summary>
+        /// Radius of the actor
+        /// </summary>
+        /// <userdoc>
+        /// The larger this value, the larger the area of the navigation mesh entities use. Entities can't pass through gaps of less than twice the radius.
+        /// </userdoc>
+        [DataMember(3)]
+        [DataMemberRange(0, float.MaxValue)]
+        public float Radius;
 
         public override int GetHashCode()
         {

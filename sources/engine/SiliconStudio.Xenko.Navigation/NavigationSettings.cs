@@ -22,24 +22,36 @@ namespace SiliconStudio.Xenko.Navigation
         /// <summary>
         /// If set to <c>true</c>, navigation meshes will be built at runtime. This allows for scene streaming and dynamic obstacles
         /// </summary>
+        /// <userdoc>
+        /// Enable dynamic navigation on navigation components that have no assigned navigation mesh
+        /// </userdoc>
         [DataMember(0)]
         public bool EnableDynamicNavigationMesh { get; set; }
 
         /// <summary>
         /// Collision filter that indicates which colliders are used in navmesh generation
         /// </summary>
+        /// <userdoc>
+        /// Set which collision groups dynamically-generated navigation meshes use
+        /// </userdoc>
         [DataMember(10)]
         public CollisionFilterGroupFlags IncludedCollisionGroups { get; set; } = CollisionFilterGroupFlags.AllFilter;
 
         /// <summary>
         /// Build settings used by Recast
         /// </summary>
+        /// <userdoc>
+        /// Advanced settings for dynamically-generated navigation meshes
+        /// </userdoc>
         [DataMember(20)]
         public NavigationMeshBuildSettings BuildSettings { get; set; }
 
         /// <summary>
         /// Settings for agents used with the dynamic navigation mesh
         /// </summary>
+        /// <userdoc>
+        /// The groups that use the dynamic navigation mesh
+        /// </userdoc>
         [DataMember(30)]
         public List<NavigationMeshGroup> Groups = new List<NavigationMeshGroup>();
     }
