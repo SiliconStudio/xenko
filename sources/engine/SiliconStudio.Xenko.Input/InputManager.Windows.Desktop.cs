@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.Input
             {
                 // We need to check the scan code to check which SHIFT key it is.
                 var scanCode = (lParam & 0x00FF0000) >> 16;
-                return (scanCode != 36) ? WinFormsKeys.LShiftKey : WinFormsKeys.RShiftKey;
+                return (scanCode != 0x36) ? WinFormsKeys.LShiftKey : WinFormsKeys.RShiftKey;
             }
             if (virtualKey == WinFormsKeys.Menu)
             {
