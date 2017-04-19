@@ -1,6 +1,7 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
+MinimumVisualStudioVersion = 15.0.26228.4
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AtitcWrapper", "AtitcWrapper\AtitcWrapper.vcxproj", "{0CD6FFE0-3EAD-47A9-993C-9AF5B69FB0C3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DxtWrapper", "DxtWrapper\DxtWrapper.vcxproj", "{29F41E6E-532D-440E-941B-0CD13EE96B6F}"
