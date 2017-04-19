@@ -17,24 +17,28 @@ namespace SiliconStudio.Xenko.Navigation
     [DataContract]
     [Display("Navigation Settings")]
     [ObjectFactory(typeof(NavigationSettingsFactory))]
+    [CategoryOrder(0, "Dynamic navigation mesh", Expand = ExpandRule.Never)]
     public class NavigationSettings : Configuration
     {
         /// <summary>
         /// If set to <c>true</c>, navigation meshes will be built at runtime. This allows for scene streaming and dynamic obstacles
         /// </summary>
         [DataMember(0)]
+        [Display("Enabled", "Dynamic navigation mesh")]
         public bool EnableDynamicNavigationMesh { get; set; }
 
         /// <summary>
         /// Collision filter that indicates which colliders are used in navmesh generation
         /// </summary>
         [DataMember(10)]
+        [Display(category: "Dynamic navigation mesh")]
         public CollisionFilterGroupFlags IncludedCollisionGroups { get; set; } = CollisionFilterGroupFlags.AllFilter;
 
         /// <summary>
         /// Build settings used by Recast
         /// </summary>
         [DataMember(20)]
+        [Display(category: "Dynamic navigation mesh")]
         public NavigationMeshBuildSettings BuildSettings { get; set; }
 
         /// <summary>
