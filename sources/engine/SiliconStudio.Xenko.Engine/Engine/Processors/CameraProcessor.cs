@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Compositing;
 
@@ -13,6 +14,9 @@ namespace SiliconStudio.Xenko.Engine.Processors
     /// </summary>
     public class CameraProcessor : EntityProcessor<CameraComponent>
     {
+        private GraphicsCompositor currentCompositor;
+        private bool cameraSlotsDirty = true;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CameraProcessor"/> class.
         /// </summary>
@@ -30,19 +34,55 @@ namespace SiliconStudio.Xenko.Engine.Processors
         {
             var graphicsCompositor = Services.GetServiceAs<SceneSystem>()?.GraphicsCompositor;
 
-            // First pass, handle proper detach
+            // Monitor changes in the camera slots of the current compositor
+            if (graphicsCompositor != currentCompositor)
+            {
+                if (currentCompositor != null)
+                {
+                    currentCompositor.Cameras.CollectionChanged -= OnCameraSlotsChanged;
+                }
+                currentCompositor = graphicsCompositor;
+                if (currentCompositor != null)
+                {
+                    currentCompositor.Cameras.CollectionChanged += OnCameraSlotsChanged;
+                }
+                cameraSlotsDirty = true;
+            }
+
+            // The compositor, or at least the list of slots, has changed. Let's detach everything
+            if (cameraSlotsDirty)
+            {
+                if (currentCompositor != null)
+                {
+                    // If we have a current compositor, let's clear all camera that are attached to it.
+                    for (var i = 0; i < currentCompositor.Cameras.Count; ++i)
+                    {
+                        var cameraSlot = currentCompositor.Cameras[i];
+                        if (cameraSlot.Camera != null)
+                        {
+                            cameraSlot.Camera.Slot.AttachedCompositor = null;
+                            cameraSlot.Camera = null;
+                        }
+                    }
+                }
+                // Let's also check on all cameras if they are still attached to a compositor, then let's detach them.
+                foreach (var matchingCamera in ComponentDatas)
+                {
+                    var camera = matchingCamera.Value;
+                    if (camera.Slot.AttachedCompositor != null)
+                    {
+                        DetachCameraFromSlot(camera);
+                    }
+                }
+            }
+
+            // First pass, handle proper detach when Enabled changed
             foreach (var matchingCamera in ComponentDatas)
             {
                 var camera = matchingCamera.Value;
                 if (graphicsCompositor != null)
                 {
-
-                    if (camera.Slot.AttachedCompositor != null && camera.Slot.AttachedCompositor != graphicsCompositor)
-                    {
-                        // The graphics compositor has changed. Let's detach the camera from the old one...
-                        DetachCameraFromSlot(camera);
-                    }
-                    else if (camera.Enabled && camera.Slot.AttachedCompositor == null)
+                    if (camera.Enabled && camera.Slot.AttachedCompositor == null)
                     {
                         // Either the slot has been changed and need to be re-attached, or the camera has just been enabled.
                         // Make sure this camera is detached from all slots, we'll re-attach it in the second pass.
@@ -68,7 +108,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
                         // Attach to the new slot
                         AttachCameraToSlot(camera);
                     }
-
                 }
 
                 // In case the camera has a custom aspect ratio, we can update it here
@@ -80,20 +119,17 @@ namespace SiliconStudio.Xenko.Engine.Processors
             }
         }
 
-        protected override void OnEntityComponentAdding(Entity entity, CameraComponent component, CameraComponent data)
-        {
-            base.OnEntityComponentAdding(entity, component, data);
-
-            if (component.Enabled)
-                AttachCameraToSlot(component);
-        }
-
         protected override void OnEntityComponentRemoved(Entity entity, CameraComponent component, CameraComponent data)
         {
             if (component.Slot.AttachedCompositor != null)
                 DetachCameraFromSlot(component);
 
             base.OnEntityComponentRemoved(entity, component, data);
+        }
+
+        private void OnCameraSlotsChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
+        {
+            cameraSlotsDirty = true;
         }
 
         private void AttachCameraToSlot(CameraComponent camera)
@@ -113,10 +149,10 @@ namespace SiliconStudio.Xenko.Engine.Processors
                             throw new InvalidOperationException($"Unable to attach camera [{camera.Entity.Name}] to the graphics compositor because another camera [{slot.Camera.Entity.Name}] is enabled and already attached to this slot.");
 
                         slot.Camera = camera;
+                        camera.Slot.AttachedCompositor = graphicsCompositor;
                         break;
                     }
                 }
-                camera.Slot.AttachedCompositor = graphicsCompositor;
             }
         }
 
