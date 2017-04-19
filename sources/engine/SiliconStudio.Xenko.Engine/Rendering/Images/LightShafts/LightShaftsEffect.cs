@@ -24,17 +24,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             {
 
                 {
-                    var __mixinToCompose__ = (context.GetParam(LightShaftsEffectKeys.ShadowGroup));
+                    var __mixinToCompose__ = (context.GetParam(LightShaftsEffectKeys.LightGroup));
                     var __subMixin = new ShaderMixinSource();
-                    context.PushComposition(mixin, "shadowGroup", __subMixin);
-                    context.Mixin(__subMixin, __mixinToCompose__);
-                    context.PopComposition();
-                }
-
-                {
-                    var __mixinToCompose__ = (context.GetParam(LightShaftsEffectKeys.AttenuationModel));
-                    var __subMixin = new ShaderMixinSource();
-                    context.PushComposition(mixin, "attenuation", __subMixin);
+                    context.PushComposition(mixin, "lightGroup", __subMixin);
                     context.Mixin(__subMixin, __mixinToCompose__);
                     context.PopComposition();
                 }

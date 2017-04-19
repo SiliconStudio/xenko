@@ -55,9 +55,6 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps>
 
             float currentDepth = GetZProjDepthFromUV(streams.TexCoord.xy);
 
-            // Expected by the directional shadow map to compute the cascades
-            streams.DepthVS = currentDepth;
-
             float4 positionClipSpace = float4((1.0 - streams.TexCoord.xy * 2.0) * float2(-1.0f, 1.0f), currentDepth, 1.0f);
             float4 positionVS4 = mul(positionClipSpace, ProjectionInverse);
             float3 positionVS = positionVS4.xyz / positionVS4.w;
@@ -71,6 +68,8 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps>
             float maxDistance = min(bbFarDistance, currentDistance);
             float stepSize = (maxDistance - minDistance) / (float)NbSteps;
 
+            // Expected by the directional shadow map to compute the cascades
+            streams.DepthVS = minDistance;
             if(maxDistance > minDistance)
             {
                 // Recalculate max distance by jittering the length of the ray to avoid banding artefacts
@@ -84,6 +83,7 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps>
                     float4 positionWS = mul(float4(positionVS, 1.0), ViewInverse);
                     lightResult += this.ComputeColorIn(positionWS, eyeVS, stepSize, i);
                     positionVS += stepSize * eyeVS;
+                    streams.DepthVS += stepSize;
                 }
             }
 

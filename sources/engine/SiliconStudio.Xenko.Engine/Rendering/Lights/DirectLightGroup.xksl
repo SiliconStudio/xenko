@@ -47,5 +47,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         void PrepareDirectLightCore(int lightIndex)
         {
         }
+
+        float ComputeAttenuation(float3 position, int lightIndex)
+        {
+            return 1;
+        }
     };
 }

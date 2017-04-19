@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         override float3 ComputeShadow(float3 position, int lightIndex)
         {
-            float3 lightPosition = streams.lightPositionWS.xyz;
+            float3 lightPosition = LightPointGroup<TLightCount>.Lights[lightIndex].PositionWS.xyz;
             float3 lightDelta = position.xyz - lightPosition;
             float distanceToLight = length(lightDelta);
             float3 direction = lightDelta / distanceToLight;

@@ -7,7 +7,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     public static class LightShaftsEffectKeys
     {
-        public static readonly PermutationParameterKey<ShaderSource> ShadowGroup = ParameterKeys.NewPermutation<ShaderSource>();
-        public static readonly PermutationParameterKey<ShaderSource> AttenuationModel = ParameterKeys.NewPermutation<ShaderSource>();
+        public static readonly PermutationParameterKey<ShaderSource> LightGroup = ParameterKeys.NewPermutation<ShaderSource>();
     }
 }

@@ -18,13 +18,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     public static partial class LightShaftsShaderKeys
     {
-        public static readonly ValueParameterKey<Matrix> ShadowViewProjection = ParameterKeys.NewValue<Matrix>();
-        public static readonly ValueParameterKey<Vector4> ShadowTextureFactor = ParameterKeys.NewValue<Vector4>();
-        public static readonly ValueParameterKey<Vector3> LightPosition = ParameterKeys.NewValue<Vector3>();
-        public static readonly ValueParameterKey<Vector3> LightDirection = ParameterKeys.NewValue<Vector3>();
         public static readonly ValueParameterKey<float> ExtinctionFactor = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<float> DensityFactor = ParameterKeys.NewValue<float>();
-        public static readonly ValueParameterKey<float> ShadowMapDistance = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<float> ExtinctionRatio = ParameterKeys.NewValue<float>();
     }
 }

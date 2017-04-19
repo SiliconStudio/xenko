@@ -21,7 +21,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [DataContract("LightShafts")]
     public class LightShafts : ImageEffect
     {
+        // TODO: Permutations
         private ImageEffectShader lightShaftsEffectShader;
+
         private ImageEffectShader applyLightEffectShader;
         private DynamicEffectInstance minmaxVolumeEffectShader;
         private GaussianBlur blur;
@@ -34,6 +36,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private EffectBytecode previousMinmaxEffectBytecode;
 
         private LightShaftBoundingVolumeData[] singleBoundingVolume = new LightShaftBoundingVolumeData[1];
+
 
         protected override void InitializeCore()
         {
@@ -111,22 +114,23 @@ namespace SiliconStudio.Xenko.Rendering.Images
             int lightBufferDownsampleLevel = 2;
             var lightBuffer = NewScopedRenderTarget2D(depthInput.Width/lightBufferDownsampleLevel, depthInput.Height/lightBufferDownsampleLevel, PixelFormat.R16_Float);
             lightShaftsEffectShader.SetOutput(lightBuffer);
-            lightShaftsEffectShader.Parameters.Set(DepthBaseKeys.DepthStencil, depthInput); // Bind scene depth
+            var lightShaftsParameters = lightShaftsEffectShader.Parameters;
+            lightShaftsParameters.Set(DepthBaseKeys.DepthStencil, depthInput); // Bind scene depth
 
             if (!Initialized)
                 Initialize(context.RenderContext);
 
             var renderView = context.RenderContext.RenderView;
             var viewInverse = Matrix.Invert(renderView.View);
-            lightShaftsEffectShader.Parameters.Set(TransformationKeys.ViewInverse, viewInverse);
+            lightShaftsParameters.Set(TransformationKeys.ViewInverse, viewInverse);
 
             // Setup parameters for Z reconstruction
-            lightShaftsEffectShader.Parameters.Set(CameraKeys.ZProjection, CameraKeys.ZProjectionACalculate(renderView.NearClipPlane, renderView.FarClipPlane));
-            lightShaftsEffectShader.Parameters.Set(TransformationKeys.ProjScreenRay, new Vector2(-1.0f / renderView.Projection.M11, 1.0f / renderView.Projection.M22));
-            lightShaftsEffectShader.Parameters.Set(TransformationKeys.Projection, renderView.Projection);
+            lightShaftsParameters.Set(CameraKeys.ZProjection, CameraKeys.ZProjectionACalculate(renderView.NearClipPlane, renderView.FarClipPlane));
+            lightShaftsParameters.Set(TransformationKeys.ProjScreenRay, new Vector2(-1.0f / renderView.Projection.M11, 1.0f / renderView.Projection.M22));
+            lightShaftsParameters.Set(TransformationKeys.Projection, renderView.Projection);
             Matrix projectionInverse;
             Matrix.Invert(ref renderView.Projection, out projectionInverse);
-            lightShaftsEffectShader.Parameters.Set(TransformationKeys.ProjectionInverse, projectionInverse);
+            lightShaftsParameters.Set(TransformationKeys.ProjectionInverse, projectionInverse);
 
             foreach (var lightShaft in lightShaftDatas)
             {
@@ -138,11 +142,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     continue; // Skip lights without shadow map
 
                 // Setup the shader group used for sampling shadows
-                SetupLight(context, lightShaft, shadowMapTexture);
-
-                // Additional information needed for some shadows
-                lightShaftsEffectShader.Parameters.Set(LightShaftsShaderKeys.LightPosition, lightShaft.LightWorld.TranslationVector);
-                lightShaftsEffectShader.Parameters.Set(LightShaftsShaderKeys.LightDirection, lightShaft.LightWorld.Forward);
+                SetupLight(context, lightShaft, shadowMapTexture, lightShaftsParameters);
 
                 var boundingVolumes = lightShaftBoundingVolumeProcessor.GetBoundingVolumesForComponent(lightShaft.Component);
                 if (boundingVolumes == null)
@@ -218,44 +218,44 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Draw(drawContext);
         }
 
-        private void SetupLight(RenderDrawContext context, LightShaftData lightShaft, LightShadowMapTexture shadowMapTexture)
+        private void SetupLight(RenderDrawContext context, LightShaftData lightShaft, LightShadowMapTexture shadowMapTexture, ParameterCollection lightParameterCollection)
         {
-            var group = shadowMapTexture.Renderer.CreateShaderGroupData(shadowMapTexture.ShadowType);
-            group.UpdateLayout("shadowGroup");
-
-            // Create a temporary group of 1 light so we can sample shadows in the same way as the forward rendering does
-            group.UpdateLightCount(1, 1);
-            FastListStruct<LightDynamicEntry> lights = new FastListStruct<LightDynamicEntry>(new FastList<LightDynamicEntry>(1));
-            lights.Add(new LightDynamicEntry(lightShaft.LightComponent, shadowMapTexture));
-
-            ShaderMixinSource source = new ShaderMixinSource();
-            group.ApplyShader(source);
-            lightShaftsEffectShader.Parameters.Set(LightShaftsEffectKeys.ShadowGroup, source);
-
+            var shadowGroup = shadowMapTexture.Renderer.CreateShaderGroupData(shadowMapTexture.ShadowType);
             BoundingBoxExt box = new BoundingBoxExt(new Vector3(-float.MaxValue), new Vector3(float.MaxValue)); // TODO
 
-            group.ApplyDrawParameters(context, lightShaftsEffectShader.Parameters, lights, ref box);
-            group.ApplyViewParameters(context, lightShaftsEffectShader.Parameters, lights);
-
-            string attenuationShaderClassName = "LightShaftsAttenuation";
-            var pointLight = lightShaft.Light as LightPoint;
-            if (pointLight != null)
+            // Some testing
+            LightGroupRendererDynamic groupRenderer = null;
+            if (lightShaft.Light is LightPoint)
             {
-                var invSquareRadius = pointLight.InvSquareRadius;
-                lightShaftsEffectShader.Parameters.Set(LightShaftsPointAttenuationKeys.InvSquareRadius, invSquareRadius);
-                attenuationShaderClassName = "LightShaftsPointAttenuation";
+                groupRenderer = new LightPointGroupRenderer();
+            }
+            else if (lightShaft.Light is LightSpot)
+            {
+                groupRenderer = new LightSpotGroupRenderer();
+            }
+            else if (lightShaft.Light is LightDirectional)
+            {
+                groupRenderer = new LightDirectionalGroupRenderer();
             }
             else
             {
-                var spotLight = lightShaft.Light as LightSpot;
-                if (spotLight != null)
-                {
-                    var angleOffsetAndInvSquareRadius = new Vector3(spotLight.LightAngleScale, spotLight.LightAngleOffset, spotLight.InvSquareRange);
-                    lightShaftsEffectShader.Parameters.Set(LightShaftsSpotAttenuationKeys.AngleOffsetAndInvSquareRadius, angleOffsetAndInvSquareRadius);
-                    attenuationShaderClassName = "LightShaftsSpotAttenuation";
-                }
+                throw new InvalidOperationException("Unsupported light type");
             }
-            lightShaftsEffectShader.Parameters.Set(LightShaftsEffectKeys.AttenuationModel, new ShaderClassSource(attenuationShaderClassName));
+            
+            // TODO: Caching
+            var directLightGroup = groupRenderer.CreateLightShaderGroup(context, shadowGroup);
+            directLightGroup.SetViews(new FastList<RenderView>(new []{ context.RenderContext.RenderView }));
+            directLightGroup.AddView(0, context.RenderContext.RenderView, 1);
+            directLightGroup.AddLight(lightShaft.LightComponent, shadowMapTexture);
+            directLightGroup.UpdateLayout("lightGroup");
+            
+            lightParameterCollection.Set(LightShaftsEffectKeys.LightGroup, directLightGroup.ShaderSource);
+
+            // Update the effect here so the layout is correct
+            lightShaftsEffectShader.EffectInstance.UpdateEffect(GraphicsDevice);
+
+            directLightGroup.ApplyViewParameters(context, 0, lightParameterCollection);
+            directLightGroup.ApplyDrawParameters(context, 0, lightParameterCollection, ref box);
         }
 
         private void DrawLightShaft(RenderDrawContext context, LightShaftData lightShaft)
