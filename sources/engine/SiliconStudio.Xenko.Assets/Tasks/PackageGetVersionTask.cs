@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -20,41 +21,18 @@ namespace SiliconStudio.Xenko.Assets.Tasks
         public ITaskItem File { get; set; }
 
         [Output]
-        public string Version { get; set; }
+        public string NuGetVersion { get; set; }
+
+        [Output]
+        public string NugetVersionSimpleNoRevision { get; set; }
 
         public override bool Execute()
         {
-            var result = new LoggerResult();
-            var package = Package.Load(result, File.ItemSpec, new PackageLoadParameters()
-                {
-                    AutoCompileProjects = false,
-                    LoadAssemblyReferences = false,
-                    AutoLoadTemporaryAssets = false,
-                });
+            NuGetVersion = XenkoVersion.NuGetVersion;
 
-            foreach (var message in result.Messages)
-            {
-                if (message.Type >= LogMessageType.Error)
-                {
-                    Log.LogError(message.ToString());
-                }
-                else if (message.Type == LogMessageType.Warning)
-                {
-                    Log.LogWarning(message.ToString());
-                }
-                else
-                {
-                    Log.LogMessage(message.ToString());
-                }
-            }
-
-            // If we have errors loading the package, exit
-            if (result.HasErrors)
-            {
-                return false;
-            }
-
-            Version = package.Meta.Version.ToString();
+            var nugetVersionSimple = new Version(XenkoVersion.NuGetVersionSimple);
+            nugetVersionSimple = new Version(nugetVersionSimple.Major, nugetVersionSimple.Minor, nugetVersionSimple.Build);
+            NugetVersionSimpleNoRevision = nugetVersionSimple.ToString();
             return true;
         }
     }
