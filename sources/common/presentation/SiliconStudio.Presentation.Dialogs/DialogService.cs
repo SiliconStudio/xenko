@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using SiliconStudio.Core.Annotations;
@@ -94,21 +95,44 @@ namespace SiliconStudio.Presentation.Dialogs
             return DialogHelper.BlockingCheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, checkboxMessage, buttons, image);
         }
 
-        public void CloseMainWindow(Action onClosed)
+        public async void CloseMainWindow(Action onClosed)
         {
             var window = Application.Current.MainWindow;
             if (window != null)
             {
-                onClosedAction = onClosed;
-                window.Closed -= MainWindowClosed;
-                window.Closed += MainWindowClosed;
-                window.Close();
+                var asyncClosable = window as IAsyncClosableWindow;
+                if (asyncClosable != null)
+                {
+                    var closed = await asyncClosable.TryClose();
+                    if (closed)
+                    {
+                        onClosed?.Invoke();
+                    }
+                }
+                else
+                {
+                    onClosedAction = onClosed;
+                    window.Closing -= MainWindowClosing;
+                    window.Closing += MainWindowClosing;
+                    window.Closed -= MainWindowClosed;
+                    window.Closed += MainWindowClosed;
+                    window.Close();
+                }
+            }
+        }
+
+        private void MainWindowClosing(object sender, CancelEventArgs e)
+        {
+            if (e.Cancel)
+            {
+                ((Window)sender).Closed -= MainWindowClosed;
             }
         }
 
         private void MainWindowClosed(object sender, EventArgs e)
         {
             onClosedAction?.Invoke();
+            ((Window)sender).Closed -= MainWindowClosed;
         }
     }
 }
