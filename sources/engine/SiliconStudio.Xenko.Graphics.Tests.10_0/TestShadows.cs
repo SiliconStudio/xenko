@@ -201,7 +201,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             cameraEntity.Add(camera);
 
             // Load default graphics compositor
-            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(true);// Content.Load<GraphicsCompositor>("GraphicsCompositor");
+            SceneSystem.GraphicsCompositor = GraphicsCompositorHelper.CreateDefault(true);// Content.Load<GraphicsCompositor>("GraphicsCompositor");
             cameraEntity.Get<CameraComponent>().Slot = SceneSystem.GraphicsCompositor.Cameras[0].ToSlotId();
 
             // Create a scene instance

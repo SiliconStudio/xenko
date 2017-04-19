@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             base.PrepareContext();
 
             SceneSystem.InitialSceneUrl = "LightShafts";
-            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(true);
+            SceneSystem.GraphicsCompositor = GraphicsCompositorHelper.CreateDefault(true);
             var fwr = ((SceneSystem.GraphicsCompositor.Game as SceneCameraRenderer).Child as ForwardRenderer);
             fwr.LightShafts = new LightShafts();
         }
