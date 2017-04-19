@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             scene.Entities.Add(cubeEntity);
 
             // Use this graphics compositor
-            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(false, graphicsProfile: GraphicsProfile.Level_9_1);
+            SceneSystem.GraphicsCompositor = GraphicsCompositorHelper.CreateDefault(false, graphicsProfile: GraphicsProfile.Level_9_1);
 
             // Create a camera entity and add it to the scene
             var cameraEntity = new Entity { new CameraComponent { Slot = Services.GetServiceAs<SceneSystem>().GraphicsCompositor.Cameras[0].ToSlotId() } };
