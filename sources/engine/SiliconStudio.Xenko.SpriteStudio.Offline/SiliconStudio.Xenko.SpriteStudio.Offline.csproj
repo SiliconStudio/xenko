@@ -102,10 +102,6 @@
     <None Include="Templates\Assets\SpriteStudio\DefaultSpriteStudioModel.xktpl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\.xktpl\SpriteStudioAnimation.png" />
-    <None Include="Templates\.xktpl\SpriteStudioModel.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Templates\Assets\.xktpl\SpriteStudioAnimation.png" />
     <None Include="Templates\Assets\.xktpl\SpriteStudioModel.png" />
   </ItemGroup>
