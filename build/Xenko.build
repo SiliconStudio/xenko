@@ -305,6 +305,8 @@ Example of use:
       <SiliconStudioTestCategories Condition="'$(SiliconStudioTestCategories)' == ''">Simple;Game;VSPackage</SiliconStudioTestCategories>
       <!-- We enclose everything with ;, so that we could do full word matches more easily with string.Contains() -->
       <SiliconStudioTestCategories>;$(SiliconStudioTestCategories);</SiliconStudioTestCategories>
+	  <SiliconStudioTestExtraTargets></SiliconStudioTestExtraTargets>
+      <SiliconStudioTestExtraTargets Condition="$(SiliconStudioTestCategories.Contains(';GameAndroid;'))">$(SiliconStudioTestExtraTargets);SignAndroidPackage</SiliconStudioTestExtraTargets>
     </PropertyGroup>
     
     <!-- Simple standalone unit tests -->
@@ -335,6 +337,16 @@ Example of use:
       <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.UI.Tests.Windows"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <UnitTestGameAndroid Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Engine.Tests.Android"/>
+      <UnitTestGameAndroid Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.10_0.Android"/>
+      <UnitTestGameAndroid Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.Android"/>
+      <UnitTestGameAndroid Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Input.Tests.Android"/>
+      <UnitTestGameAndroid Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Particles.Tests.Android"/>
+      <UnitTestGameAndroid Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Physics.Tests.Android"/>
+      <UnitTestGameAndroid Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.UI.Tests.Android"/>
+    </ItemGroup>
+    
     <!-- Direct3D11 unit tests -->
     <ItemGroup Condition="$(SiliconStudioTestCategories.Contains(';Game;'))">
       <UnitTest Include="@(UnitTestGame)"/>
@@ -374,6 +386,12 @@ Example of use:
       <UnitTestPrerequisites Include="@(UnitTestGame)"/>
       <UnitTest Include="@(UnitTestGame)"><Solution>$(XenkoSolution).Vulkan.sln</Solution></UnitTest>
     </ItemGroup>
+	
+	<!-- Android unit tests -->
+    <ItemGroup Condition="$(SiliconStudioTestCategories.Contains(';GameAndroid;'))">
+      <UnitTestPrerequisites Include="@(UnitTestGame)"/>
+      <UnitTest Include="@(UnitTestGameAndroid)"><Solution>$(XenkoSolution).Android.sln</Solution></UnitTest> 
+    </ItemGroup>
     
     <!-- Compute TargetName and default Solution -->    
     <ItemGroup>
@@ -397,7 +415,7 @@ Example of use:
 
     <!-- Build unit tests -->
     <Message Importance="High" Text="Going to build unit test from solution %(Solution): @(UnitTest->'%(TargetName)')"/>
-    <MSBuild Targets="@(UnitTest->'%(TargetName)')" Projects="%(Solution)" Properties="$(BuildProperties);Platform=Mixed Platforms;DeployExtension=true">
+    <MSBuild Targets="@(UnitTest->'%(TargetName)');$(SiliconStudioTestExtraTargets)" Projects="%(Solution)" Properties="$(BuildProperties);DeployExtension=true">
         <Output TaskParameter="TargetOutputs" ItemName="AssembliesToTest" />
     </MSBuild>
     
@@ -408,5 +426,51 @@ Example of use:
       <Output TaskParameter="ExitCode" ItemName="exitCode" />
     </Exec>
     <Error Text="Error while running tests" Condition="@(exitCode) &lt; 0" />
+  </Target>
+  
+  <Target Name="RunTestsMobile">
+    <PropertyGroup>
+      <XenkoRoot>$(MSBuildThisFileDirectory)..\</XenkoRoot>
+      <XenkoRootBin>$(XenkoRoot)Bin\Windows\</XenkoRootBin>
+      <XenkoPlatform></XenkoPlatform>
+      <XenkoPlatform Condition="'$(PlatformToBuild)' == 'iOS'">Platform=iPhone</XenkoPlatform>
+      <XenkoPlatform Condition="'$(PlatformToBuild)' == 'Android'">Platform=Android</XenkoPlatform>
+      <XenkoBuildOptions></XenkoBuildOptions>
+      <XenkoBuildOptions Condition="'$(PlatformToBuild)' == 'iOS'">ServerAddress=pc13095;ServerUser=virgile;BuildIpa=true;MtouchUseLlvm=true</XenkoBuildOptions>
+      <XenkoBuildTargets>Rebuild</XenkoBuildTargets>
+      <XenkoBuildTargets Condition="'$(PlatformToBuild)' == 'Android'">SignAndroidPackage</XenkoBuildTargets>
+      <XenkoBuildConfig>Release</XenkoBuildConfig>
+      <XenkoBuildConfig Condition="'$(PlatformToBuild)' == 'Windows'">Debug</XenkoBuildConfig>
+    </PropertyGroup>
+  
+    <MSBuild Projects="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Engine.Tests\SiliconStudio.Xenko.Engine.Tests.$(PlatformToBuild).csproj" Properties="SolutionName=Xenko.Android; SolutionDir=$(MSBuildThisFileDirectory);$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="$(XenkoBuildTargets)" />
+    <MSBuild Projects="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Audio.Tests\SiliconStudio.Xenko.Audio.Tests.$(PlatformToBuild).csproj" Properties="SolutionName=Xenko.Android; SolutionDir=$(MSBuildThisFileDirectory);$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="$(XenkoBuildTargets)" />
+    <MSBuild Projects="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Graphics.Tests\SiliconStudio.Xenko.Graphics.Tests.$(PlatformToBuild).csproj" Properties="SolutionName=Xenko.Android; SolutionDir=$(MSBuildThisFileDirectory);$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="$(XenkoBuildTargets)" />
+    <MSBuild Projects="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Graphics.Tests.10_0\SiliconStudio.Xenko.Graphics.Tests.10_0.$(PlatformToBuild).csproj" Properties="SolutionName=Xenko.Android; SolutionDir=$(MSBuildThisFileDirectory);$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="$(XenkoBuildTargets)" />
+    <MSBuild Projects="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Input.Tests\SiliconStudio.Xenko.Input.Tests.$(PlatformToBuild).csproj" Properties="SolutionName=Xenko.Android; SolutionDir=$(MSBuildThisFileDirectory);$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="$(XenkoBuildTargets)" />
+    <MSBuild Projects="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Particles.Tests\SiliconStudio.Xenko.Particles.Tests.$(PlatformToBuild).csproj" Properties="SolutionName=Xenko.Android; SolutionDir=$(MSBuildThisFileDirectory);$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="$(XenkoBuildTargets)" />
+    <MSBuild Projects="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Physics.Tests\SiliconStudio.Xenko.Physics.Tests.$(PlatformToBuild).csproj" Properties="SolutionName=Xenko.Android; SolutionDir=$(MSBuildThisFileDirectory);$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="$(XenkoBuildTargets)" />
+    
+    <Exec Condition="'$(PlatformToBuild)' == 'Android'" IgnoreExitCode="True" Command="$(XenkoRootBin)SiliconStudio.Xenko.TestRunner.exe $(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Engine.Tests\SiliconStudio.Xenko.Engine.Tests-Signed.apk" WorkingDirectory="$(XenkoRootBin)">
+      <Output TaskParameter="ExitCode" ItemName="exitCode" />
+    </Exec>
+    <Exec Condition="'$(PlatformToBuild)' == 'Android'" IgnoreExitCode="True" Command="$(XenkoRootBin)SiliconStudio.Xenko.TestRunner.exe $(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Audio.Tests\SiliconStudio.Xenko.Audio.Tests-Signed.apk" WorkingDirectory="$(XenkoRootBin)">
+      <Output TaskParameter="ExitCode" ItemName="exitCode" />
+    </Exec>
+    <Exec Condition="'$(PlatformToBuild)' == 'Android'" IgnoreExitCode="True" Command="$(XenkoRootBin)SiliconStudio.Xenko.TestRunner.exe $(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Graphics.Tests.10_0\SiliconStudio.Xenko.Graphics.Tests_10_0-Signed.apk" WorkingDirectory="$(XenkoRootBin)">
+      <Output TaskParameter="ExitCode" ItemName="exitCode" />
+    </Exec>
+    <Exec Condition="'$(PlatformToBuild)' == 'Android'" IgnoreExitCode="True" Command="$(XenkoRootBin)SiliconStudio.Xenko.TestRunner.exe $(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Graphics.Tests\SiliconStudio.Xenko.Graphics.Tests-Signed.apk" WorkingDirectory="$(XenkoRootBin)">
+      <Output TaskParameter="ExitCode" ItemName="exitCode" />
+    </Exec>
+    <Exec Condition="'$(PlatformToBuild)' == 'Android'" IgnoreExitCode="True" Command="$(XenkoRootBin)SiliconStudio.Xenko.TestRunner.exe $(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Input.Tests\SiliconStudio.Xenko.Input.Tests-Signed.apk" WorkingDirectory="$(XenkoRootBin)">
+      <Output TaskParameter="ExitCode" ItemName="exitCode" />
+    </Exec>
+    <Exec Condition="'$(PlatformToBuild)' == 'Android'" IgnoreExitCode="True" Command="$(XenkoRootBin)SiliconStudio.Xenko.TestRunner.exe $(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Particles.Tests\SiliconStudio.Xenko.Particles.Tests-Signed.apk" WorkingDirectory="$(XenkoRootBin)">
+      <Output TaskParameter="ExitCode" ItemName="exitCode" />
+    </Exec>
+    <Exec Condition="'$(PlatformToBuild)' == 'Android'" IgnoreExitCode="True" Command="$(XenkoRootBin)SiliconStudio.Xenko.TestRunner.exe $(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Physics.Tests\SiliconStudio.Xenko.Physics.Tests-Signed.apk" WorkingDirectory="$(XenkoRootBin)">
+      <Output TaskParameter="ExitCode" ItemName="exitCode" />
+    </Exec>
   </Target>
 </Project>
