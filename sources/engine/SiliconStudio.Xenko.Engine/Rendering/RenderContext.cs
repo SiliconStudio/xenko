@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         private const string SharedImageEffectContextKey = "__SharedRenderContext__";
         private readonly ThreadLocal<RenderDrawContext> threadContext;
+        private readonly object threadContextLock = new object();
 
         // Used for API that don't support multiple command lists
         internal CommandList SharedCommandList;
@@ -37,7 +38,13 @@ namespace SiliconStudio.Xenko.Rendering
             GraphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
             Allocator = services.GetServiceAs<GraphicsContext>().Allocator ?? new GraphicsResourceAllocator(GraphicsDevice).DisposeBy(GraphicsDevice);
 
-            threadContext = new ThreadLocal<RenderDrawContext>(() => new RenderDrawContext(Services, this, new GraphicsContext(GraphicsDevice, Allocator)), true);
+            threadContext = new ThreadLocal<RenderDrawContext>(() =>
+            {
+                lock (threadContextLock)
+                {
+                    return new RenderDrawContext(Services, this, new GraphicsContext(GraphicsDevice, Allocator));
+                }
+            }, true);
         }
 
         /// <summary>
