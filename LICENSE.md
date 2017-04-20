@@ -1,11 +1,10 @@
-﻿Xenko 2.x End User License Agreement [Xenko Pro / Xenko Pro Plus / Xenko Education / Xenko Personal]
-===
+﻿<h4 style="text-align: center;"> Xenko 2.x End User License Agreement <br>[Xenko Pro / Xenko Pro Plus / Xenko Education / Xenko Personal]</h4>
 
 Last updated: April 24, 2017
 
 IMPORTANT: PLEASE READ THIS XENKO 2.X END USER LICENSE AGREEMENT (“AGREEMENT”) CAREFULLY BEFORE INSTALLING OR USING THE PROPRIETARY COMPUTER SOFTWARE KNOWN AS “***XENKO PRO*** 2.X VERSION” (“XENKO PRO”), “***XENKO PRO PLUS*** 2.X VERSION” (“XENKO PRO PLUS”), “***XENKO EDUCATION*** 2.X VERSION” ("XENKO EDUCATION") OR “***XENKO PERSONAL*** 2.X VERSION” (“XENKO PERSONAL”) (BOTH BINARY OR CODE FORM. INCLUDING, BUT NOT LIMITED TO, RELATED DOCUMENTS, ALL ITS UPDATES AND UPGRADES. COLLECTIVELY, “SOFTWARE”), SO THAT YOU UNDERSTAND THE TERMS AND CONDITIONS FOR OBTAINING A LICENSE TO USE THE SOFTWARE. 
 
-`*` What is written in this Agreement will be the terms and conditions of the contract between you and Silicon Studio Corporation (“SS”) concerning use of the Software. Please retain a copy of this Agreement if necessary. 
+\* What is written in this Agreement will be the terms and conditions of the contract between you and Silicon Studio Corporation (“SS”) concerning use of the Software. Please retain a copy of this Agreement if necessary. 
 
 IF YOU AGREE TO ALL OF THE PROVISIONS IN THIS AGREEMENT APPLICABLE TO THE LICENSE OBTAINED BY YOU, PLEASE CHOOSE THE COLUMN [I AGREE TO THE PROVISIONS OF THE XENKO 2.X END USER LICENSE AGREEMENT] BELOW AND PROCEED TO INSTALLATION. THIS WILL EXECUTE THIS AGREEMENT BETWEEN YOU AND SS, AND SS WILL GRANT YOU A LICENSE TO INSTALL AND USE THE SOFTWARE PURSUANT TO THIS AGREEMENT. 
 
