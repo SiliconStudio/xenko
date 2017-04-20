@@ -14,10 +14,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             stage float ExtinctionRatio;
         };
 
-        override float ComputeColorIn(float4 positionWS, float3 eyeVS, float stepSize, int stepIndex)
+        override float ComputeColorIn(float4 positionWS, float stepSize, int stepIndex)
         {
             float3 lightResult = 0;
-            float3 sigmaT = ComputeExtinction(positionWS);
+            float3 sigmaT = ComputeDensity(positionWS) * ExtinctionFactor;
             float3 sigmaS = sigmaT * ExtinctionRatio;
             float3 stepExtinction = exp(-sigmaT * stepSize);
 
@@ -39,14 +39,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
             return lightResult;
         }
 
+        override float ComputeColorOut()
+        {
+            return 0;
+        }
+
         float ComputeDensity(float positionVS)
         {
             return DensityFactor;
-        }
-
-        float ComputeExtinction(float positionVS)
-        {
-            return ;
         }
     };
 }

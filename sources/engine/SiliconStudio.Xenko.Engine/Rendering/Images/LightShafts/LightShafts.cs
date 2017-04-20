@@ -123,6 +123,20 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var renderView = context.RenderContext.RenderView;
             var viewInverse = Matrix.Invert(renderView.View);
             lightShaftsParameters.Set(TransformationKeys.ViewInverse, viewInverse);
+            lightShaftsParameters.Set(TransformationKeys.Eye, new Vector4(viewInverse.TranslationVector, 1));
+
+            var viewProjectionInverse = Matrix.Invert(renderView.ViewProjection);
+            Vector3 center = new Vector3(0.0f, 0.0f, 0.0f);
+            Vector3 right = new Vector3(1.0f, 0.0f, 0.0f);
+            Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
+            center = Vector3.TransformCoordinate(center, viewProjectionInverse);
+            right = Vector3.TransformCoordinate(right, viewProjectionInverse) - center;
+            up = Vector3.TransformCoordinate(up, viewProjectionInverse) - center;
+
+            // Basis for constructing world space rays originating from the camera
+            lightShaftsParameters.Set(PostEffectBoundingRayKeys.ViewBase, center);
+            lightShaftsParameters.Set(PostEffectBoundingRayKeys.ViewRight, right);
+            lightShaftsParameters.Set(PostEffectBoundingRayKeys.ViewUp, up);
 
             // Setup parameters for Z reconstruction
             lightShaftsParameters.Set(CameraKeys.ZProjection, CameraKeys.ZProjectionACalculate(renderView.NearClipPlane, renderView.FarClipPlane));

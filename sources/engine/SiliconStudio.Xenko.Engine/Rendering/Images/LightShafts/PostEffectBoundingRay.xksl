@@ -9,25 +9,29 @@
 shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps> 
     : ImageEffectShader, DepthBase, Transformation, Camera, Utilities, Global, PositionStream4
 {
+    cbuffer PerFrame
+    {
+        // (0,0,0) in view space projected into world space
+        stage float3 ViewBase;
+        // Offset of '(1,0,0) in view space projected into world space' from ViewBase
+        stage float3 ViewRight;
+        // Offset of '(0,1,0) in view space projected into world space' from ViewBase
+        stage float3 ViewUp;
+    }
+
     float ComputeColorOut() 
     {
         return 0;
     }
 
-    float ComputeColorIn(float4 positionS, float3 eyeVS, float stepSize, int stepIndex) 
+    float ComputeColorIn(float4 positionWS, float stepSize, int stepIndex) 
     {
         return 0;
     }
 
-    float RayStepJitter(float3 positionVS, float stepSize) 
+    float RayStepJitter(float2 input, float stepSize) 
     {
-        return stepSize * Math.FastRandom(int(positionVS.x * 100 + positionVS.y * 6007 * 100));
-    }
-
-    void ComputeDirection(inout float3 positionVS, inout float3 eyeVS, float minDistance, float maxDistance, float stepSize) 
-    {
-        // Place positionVS on background of boundingbox
-        positionVS = -(maxDistance + RayStepJitter(positionVS, stepSize)) * eyeVS;
+        return stepSize * Math.FastRandom(int(input.x * 10000 + input.y * 6007 * 10000));
     }
 
     float ComputeFinalColor(float lightAcc) 
@@ -53,16 +57,17 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps>
             if(minmax.x <= 0)
                 bbNearDistance = 0; 
 
-            float currentDepth = GetZProjDepthFromUV(streams.TexCoord.xy);
-
-            float4 positionClipSpace = float4((1.0 - streams.TexCoord.xy * 2.0) * float2(-1.0f, 1.0f), currentDepth, 1.0f);
-            float4 positionVS4 = mul(positionClipSpace, ProjectionInverse);
-            float3 positionVS = positionVS4.xyz / positionVS4.w;
-            float3 eyeVS = -normalize(positionVS);
+             // Compute world space ray
+            float2 ndc = streams.TexCoord * 2.0f - 1.0f;
+            ndc.y = -ndc.y;
+            float3 traceTarget = ViewBase;
+            traceTarget += ViewRight * ndc.x;
+            traceTarget += ViewUp * ndc.y;
+            float4 directionWS = float4(normalize(traceTarget - Eye),0);
 
             float3 lightResult = 0.0f;
 
-            float currentDistance = -positionVS.z;
+            float currentDistance = ComputeDepthFromUV(streams.TexCoord);
 
             float minDistance = bbNearDistance;
             float maxDistance = min(bbFarDistance, currentDistance);
@@ -75,14 +80,13 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps>
                 // Recalculate max distance by jittering the length of the ray to avoid banding artefacts
                 stepSize = (maxDistance - minDistance) / (float)NbSteps;
 
-                // Compute direction
-                ComputeDirection(positionVS, eyeVS, minDistance, maxDistance, stepSize);
+                // Starting position
+                float4 positionWS = Eye + (minDistance + RayStepJitter(streams.TexCoord, stepSize)) * directionWS;
 
                 for(int i = 0; i < NbSteps; i++) 
                 {
-                    float4 positionWS = mul(float4(positionVS, 1.0), ViewInverse);
-                    lightResult += this.ComputeColorIn(positionWS, eyeVS, stepSize, i);
-                    positionVS += stepSize * eyeVS;
+                    lightResult += this.ComputeColorIn(positionWS, stepSize, i);
+                    positionWS.xyz += stepSize * directionWS;
                     streams.DepthVS += stepSize;
                 }
             }
