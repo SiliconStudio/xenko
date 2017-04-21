@@ -135,7 +135,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         /// <inheritdoc/>
         public override NodeAccessor GetNodeAccessor()
         {
-            return default(NodeAccessor);
+            return AssociatedNode;
         }
 
         private void AssociatedNodeChanging(object sender, INodeChangeEventArgs e)
