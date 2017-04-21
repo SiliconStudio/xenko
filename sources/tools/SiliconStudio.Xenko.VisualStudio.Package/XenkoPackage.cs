@@ -108,6 +108,7 @@ namespace SiliconStudio.Xenko.VisualStudio
             IDEBuildLogger.UserRegistryRoot = UserRegistryRoot;
 
             solutionEventsListener = new SolutionEventsListener(this);
+            solutionEventsListener.BeforeSolutionClosed += solutionEventsListener_BeforeSolutionClosed;
             solutionEventsListener.AfterSolutionBackgroundLoadComplete += solutionEventsListener_AfterSolutionBackgroundLoadComplete;
             solutionEventsListener.AfterActiveConfigurationChange += SolutionEventsListener_AfterActiveConfigurationChange;
             solutionEventsListener.StartupProjectChanged += SolutionEventsListener_OnStartupProjectChanged;
@@ -335,6 +336,12 @@ namespace SiliconStudio.Xenko.VisualStudio
             }
         }
 
+        private void solutionEventsListener_BeforeSolutionClosed()
+        {
+            // Disable UIContext (this will hide Xenko menus)
+            UpdateCommandVisibilityContext(false);
+        }
+
         private void InitializeCommandProxy()
         {
             // Initialize the command proxy from the current solution's package
@@ -345,8 +352,13 @@ namespace SiliconStudio.Xenko.VisualStudio
             // Get General Output pane (for error logging)
             var generalOutputPane = GetGeneralOutputPane();
 
-            // If a package is associated with the solution, check if the correct version was found
             var xenkoPackageInfo = XenkoCommandsProxy.CurrentPackageInfo;
+
+            // Enable UIContext depending on wheter it is a Xenko project. This will show or hide Xenko menus.
+            var isXenkoSolution = xenkoPackageInfo.LoadedVersion != null;
+            UpdateCommandVisibilityContext(isXenkoSolution);
+
+            // If a package is associated with the solution, check if the correct version was found
             if (xenkoPackageInfo.ExpectedVersion != null && xenkoPackageInfo.ExpectedVersion != xenkoPackageInfo.LoadedVersion)
             {
                 if (xenkoPackageInfo.ExpectedVersion < XenkoCommandsProxy.MinimumVersion)
@@ -412,6 +424,15 @@ namespace SiliconStudio.Xenko.VisualStudio
                     }
                 });
             thread.Start();
+        }
+
+        private void UpdateCommandVisibilityContext(bool enabled)
+        {
+            IVsMonitorSelection selMon = (IVsMonitorSelection)GetService(typeof(SVsShellMonitorSelection));
+            uint cmdUIContextXenko;
+            var cmdSet = GuidList.guidXenko_VisualStudio_PackageCmdSet;
+            if (selMon.GetCmdUIContextCookie(ref cmdSet, out cmdUIContextXenko) == VSConstants.S_OK)
+                selMon.SetCmdUIContext(cmdUIContextXenko, enabled ? 1 : 0);
         }
 
         protected override void Dispose(bool disposing)

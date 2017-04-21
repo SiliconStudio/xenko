@@ -40,6 +40,8 @@
       </Menu>-->
       <Menu guid="guidXenko_VisualStudio_PackageCmdSet" id="XenkoTopMenu" priority="0x0800" type="Menu" >
         <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Xenko</ButtonText>
           <CommandName>Xenko</CommandName>
@@ -94,6 +96,11 @@
     </Bitmaps>
  
   </Commands>
+
+  <VisibilityConstraints>
+    <!-- Make our menu become autovisible when our cmdSet GUID becomes active -->
+    <VisibilityItem context="guidXenko_VisualStudio_PackageCmdSet" guid="guidXenko_VisualStudio_PackageCmdSet" id="XenkoTopMenu"/>
+  </VisibilityConstraints>
 
 
   <Symbols>
