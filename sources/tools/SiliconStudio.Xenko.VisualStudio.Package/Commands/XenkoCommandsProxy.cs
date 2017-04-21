@@ -21,6 +21,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
 
         public struct PackageInfo
         {
+            public string StorePath;
             public string SdkPath;
 
             public Version ExpectedVersion;
@@ -308,6 +309,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
             // If we are in a dev directory, assume we have the right version
             if (File.Exists(Path.Combine(xenkoSdkDir, "build\\Xenko.sln")))
             {
+                packageInfo.StorePath = xenkoSdkDir;
                 packageInfo.SdkPath = xenkoSdkDir;
                 packageInfo.LoadedVersion = packageInfo.ExpectedVersion;
                 return packageInfo;
@@ -334,6 +336,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
                 // Return the loaded version and the sdk path
                 var packageDirectory = store.GetPackageDirectory(xenkoPackage);
                 packageInfo.LoadedVersion = GetVersion(xenkoPackage);
+                packageInfo.StorePath = xenkoSdkDir;
                 packageInfo.SdkPath = Path.Combine(xenkoSdkDir, store.RepositoryPath, packageDirectory);
             }
 
