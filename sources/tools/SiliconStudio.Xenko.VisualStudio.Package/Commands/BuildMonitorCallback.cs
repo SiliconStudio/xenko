@@ -5,12 +5,14 @@ using EnvDTE80;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.VisualStudio.Commands
 {
     public class BuildMonitorCallback : MarshalByRefObject, IBuildMonitorCallback
     {
-        private IVsOutputWindowPane buildPane;
+        private const string MessageHeader = "[Xenko.AssetCompiler]";
+        private readonly IVsOutputWindowPane buildPane;
 
         public BuildMonitorCallback()
         {
@@ -29,8 +31,23 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
 
         public void Message(string type, string module, string text)
         {
-            if (buildPane != null)
-                buildPane.OutputString(string.Format("[BuildEngine] {0}: {1}\r\n", type[0], text));
+            buildPane?.OutputString($"{MessageHeader} {type}: {text}\r\n");
+        }
+
+        public static bool FilterMessage(string message, out string messageType)
+        {
+            messageType = null;
+
+            if (!message.StartsWith(MessageHeader))
+                return false;
+
+            var typeStartIndex = MessageHeader.Length + 1;
+            var typeEndIndex = message.IndexOf(":", typeStartIndex);
+            if (typeEndIndex == -1)
+                return false;
+
+            messageType = message.Substring(typeStartIndex, typeEndIndex - typeStartIndex);
+            return true;
         }
     }
 }

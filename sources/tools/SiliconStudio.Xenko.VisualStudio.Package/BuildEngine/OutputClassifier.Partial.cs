@@ -4,23 +4,24 @@ using System.Windows.Media;
 
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
-
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.VisualStudio.BuildEngine;
 
 namespace SiliconStudio.Xenko.VisualStudio
 {
     public partial class OutputClassifier
     {
-        private Dictionary<char, string> classificationTypes = new Dictionary<char, string>();
+        private Dictionary<string, string> classificationTypes = new Dictionary<string, string>();
 
         private void InitializeClassifiers()
         {
-            classificationTypes.Add('D', BuildEngineDebug);
-            classificationTypes.Add('V', BuildEngineVerbose);
-            classificationTypes.Add('I', BuildEngineInfo);
-            classificationTypes.Add('W', BuildEngineWarning);
-            classificationTypes.Add('E', BuildEngineError);
-            classificationTypes.Add('F', BuildEngineFatal);
+            // IMPORTANT NOTE: KEEP old ones as string if LogMessageType entries are removed/changed! (VSPackage supports older version of Xenko)
+            classificationTypes.Add(nameof(LogMessageType.Debug), BuildEngineDebug);
+            classificationTypes.Add(nameof(LogMessageType.Verbose), BuildEngineVerbose);
+            classificationTypes.Add(nameof(LogMessageType.Info), BuildEngineInfo);
+            classificationTypes.Add(nameof(LogMessageType.Warning), BuildEngineWarning);
+            classificationTypes.Add(nameof(LogMessageType.Error), BuildEngineError);
+            classificationTypes.Add(nameof(LogMessageType.Fatal), BuildEngineFatal);
         }
 
         public const string BuildEngineDebug = "xk.buildengine.debug";
