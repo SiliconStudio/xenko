@@ -3918,9 +3918,10 @@
                                      WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
-            <ToggleButton x:Name="PART_ToggleButton" Grid.Column="4" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
+            <!-- TODO: fix this button (need to be re-implemented differently, view-model side -->
+            <!--<ToggleButton x:Name="PART_ToggleButton" Grid.Column="4" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
                           ClickMode="Release" IsThreeState="True"
-                          IsChecked="{Binding EditingMode, Converter={cvt:VectorEditingModeToBool}, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>
+                          IsChecked="{Binding EditingMode, Converter={cvt:VectorEditingModeToBool}, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>-->
           </Grid>
         </ControlTemplate>
       </Setter.Value>
@@ -3987,9 +3988,10 @@
                                      WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
-            <ToggleButton x:Name="PART_ToggleButton" Grid.Column="6" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
+            <!-- TODO: fix this button (need to be re-implemented differently, view-model side -->
+            <!--<ToggleButton x:Name="PART_ToggleButton" Grid.Column="6" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
                           ClickMode="Release" IsThreeState="True"
-                          IsChecked="{Binding EditingMode, Converter={cvt:VectorEditingModeToBool}, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>
+                          IsChecked="{Binding EditingMode, Converter={cvt:VectorEditingModeToBool}, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>-->
           </Grid>
         </ControlTemplate>
       </Setter.Value>
@@ -4070,9 +4072,10 @@
                                      WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
-            <ToggleButton x:Name="PART_ToggleButton" Grid.Column="8" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
+            <!-- TODO: fix this button (need to be re-implemented differently, view-model side -->
+            <!--<ToggleButton x:Name="PART_ToggleButton" Grid.Column="8" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
                           ClickMode="Release" IsThreeState="True"
-                          IsChecked="{Binding EditingMode, Converter={cvt:VectorEditingModeToBool}, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>
+                          IsChecked="{Binding EditingMode, Converter={cvt:VectorEditingModeToBool}, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>-->
           </Grid>
         </ControlTemplate>
       </Setter.Value>
