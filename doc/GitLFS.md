@@ -2,7 +2,7 @@
 
 ## Rationale
 
-We recently ditched submodules and switched to Git LFS to simplify our workflow for large files, and be able to place them wherever we want.
+From version 1.6, we ditched submodules and switched to Git LFS to simplify our workflow for large files, and be able to place them wherever we want.
 
 ## Requirements
 
