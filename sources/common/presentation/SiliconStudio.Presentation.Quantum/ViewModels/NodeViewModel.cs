@@ -80,6 +80,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             {
                 nodePresenter.ValueChanging -= ValueChanging;
                 nodePresenter.ValueChanged -= ValueChanged;
+                nodePresenter.Dispose();
             }
             base.Destroy();
         }
