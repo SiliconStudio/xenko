@@ -54,7 +54,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     [DataContract("Package")]
     [NonIdentifiableCollectionItems]
-    [AssetDescription(PackageFileExtensions)]
+    [AssetDescription(PackageFileExtension)]
     [DebuggerDisplay("Id: {Id}, Name: {Meta.Name}, Version: {Meta.Version}, Assets [{Assets.Count}]")]
     [AssetFormatVersion("Assets", PackageFileVersion)]
     [AssetUpgrader("Assets", 0, 1, typeof(RemoveRawImports))]

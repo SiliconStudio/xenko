@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     {
         private const string CurrentVersion = "2.0.0.0";
 
-        public const string FileSceneExtension = ".xkscene;.pdxscene";
+        public const string FileSceneExtension = ".xkscene";
 
         /// <summary>
         /// A collection of identifier of all the children of this scene..

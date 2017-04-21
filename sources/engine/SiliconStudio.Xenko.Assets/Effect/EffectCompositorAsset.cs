@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
         /// <summary>
         /// The default file extension used by the <see cref="EffectCompositorAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkfx;.pdxfx";
+        public const string FileExtension = ".xkfx";
 
         public override string Generator => "XenkoShaderKeyGenerator";
 

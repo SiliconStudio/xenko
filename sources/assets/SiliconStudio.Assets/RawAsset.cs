@@ -17,7 +17,7 @@ namespace SiliconStudio.Assets
     [Display(1050, "Raw Asset")]
     public sealed class RawAsset : AssetWithSource
     {
-        public const string FileExtension = ".xkraw;.pdxraw";
+        public const string FileExtension = ".xkraw";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RawAsset"/> class.
