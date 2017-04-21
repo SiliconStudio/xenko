@@ -93,31 +93,7 @@ namespace SiliconStudio.Xenko.VisualStudio
         {
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", ToString()));
         }
-
-        /// <summary>
-        ///     This function is called when the user clicks the menu item that shows the
-        ///     tool window. See the Initialize method to see how the menu item is associated to
-        ///     this function using the OleMenuCommandService service and the MenuCommand class.
-        /// </summary>
-        private void ShowToolWindow(object sender, EventArgs e)
-        {
-            // Get the instance number 0 of this tool window. This window is single instance so this instance
-            // is actually the only one.
-            // The last flag is set to true so that if the tool window does not exists it will be created.
-            //ToolWindowPane window = FindToolWindow(typeof (MyToolWindow), 0, true);
-            //if ((null == window) || (null == window.Frame))
-            //{
-            //    throw new NotSupportedException(Resources.CanNotCreateWindow);
-            //}
-            //var windowFrame = (IVsWindowFrame) window.Frame;
-            //ErrorHandler.ThrowOnFailure(windowFrame.Show());
-        }
-
-        private void MenuItemCallback(object sender, EventArgs e)
-        {
-            Environment.SetEnvironmentVariable("Test1", "Test2");
-        }
-
+        
         #region Package Members
 
         /// <summary>
