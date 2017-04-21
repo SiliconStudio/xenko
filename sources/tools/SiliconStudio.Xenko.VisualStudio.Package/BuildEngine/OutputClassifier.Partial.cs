@@ -4,7 +4,7 @@ using System.Windows.Media;
 
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
-using SiliconStudio.Core.Diagnostics;
+
 using SiliconStudio.Xenko.VisualStudio.BuildEngine;
 
 namespace SiliconStudio.Xenko.VisualStudio
@@ -15,149 +15,148 @@ namespace SiliconStudio.Xenko.VisualStudio
 
         private void InitializeClassifiers()
         {
-            // IMPORTANT NOTE: KEEP old ones as string if LogMessageType entries are removed/changed! (VSPackage supports older version of Xenko)
-            classificationTypes.Add(nameof(LogMessageType.Debug), BuildEngineDebug);
-            classificationTypes.Add(nameof(LogMessageType.Verbose), BuildEngineVerbose);
-            classificationTypes.Add(nameof(LogMessageType.Info), BuildEngineInfo);
-            classificationTypes.Add(nameof(LogMessageType.Warning), BuildEngineWarning);
-            classificationTypes.Add(nameof(LogMessageType.Error), BuildEngineError);
-            classificationTypes.Add(nameof(LogMessageType.Fatal), BuildEngineFatal);
+            classificationTypes.Add("Debug", AssetCompilerDebug);
+            classificationTypes.Add("Verbose", AssetCompilerVerbose);
+            classificationTypes.Add("Info", AssetCompilerInfo);
+            classificationTypes.Add("Warning", AssetCompilerWarning);
+            classificationTypes.Add("Error", AssetCompilerError);
+            classificationTypes.Add("Fatal", AssetCompilerFatal);
         }
 
-        public const string BuildEngineDebug = "xk.buildengine.debug";
-        public const string BuildEngineVerbose = "xk.buildengine.verbose";
-        public const string BuildEngineInfo = "xk.buildengine.info";
-        public const string BuildEngineWarning = "xk.buildengine.warning";
-        public const string BuildEngineError = "xk.buildengine.error";
-        public const string BuildEngineFatal = "xk.buildengine.fatal";
+        public const string AssetCompilerDebug = "Xenko.AssetCompiler.Debug";
+        public const string AssetCompilerVerbose = "Xenko.AssetCompiler.Verbose";
+        public const string AssetCompilerInfo = "Xenko.AssetCompiler.Info";
+        public const string AssetCompilerWarning = "Xenko.AssetCompiler.Warning";
+        public const string AssetCompilerError = "Xenko.AssetCompiler.Error";
+        public const string AssetCompilerFatal = "Xenko.AssetCompiler.Fatal";
 
         [Export]
-        [Name(BuildEngineDebug)]
-        internal static ClassificationTypeDefinition buildEngineDebug = null;
+        [Name(AssetCompilerDebug)]
+        internal static ClassificationTypeDefinition assetCompilerDebug = null;
 
         [Export]
-        [Name(BuildEngineVerbose)]
-        internal static ClassificationTypeDefinition buildEngineVerbose = null;
+        [Name(AssetCompilerVerbose)]
+        internal static ClassificationTypeDefinition assetCompilerVerbose = null;
 
         [Export]
-        [Name(BuildEngineInfo)]
-        internal static ClassificationTypeDefinition buildEngineInfo = null;
+        [Name(AssetCompilerInfo)]
+        internal static ClassificationTypeDefinition assetCompilerInfo = null;
 
         [Export]
-        [Name(BuildEngineWarning)]
-        internal static ClassificationTypeDefinition buildEngineWarning = null;
+        [Name(AssetCompilerWarning)]
+        internal static ClassificationTypeDefinition assetCompilerWarning = null;
 
         [Export]
-        [Name(BuildEngineError)]
-        internal static ClassificationTypeDefinition buildEngineError = null;
+        [Name(AssetCompilerError)]
+        internal static ClassificationTypeDefinition assetCompilerError = null;
 
         [Export]
-        [Name(BuildEngineFatal)]
-        internal static ClassificationTypeDefinition buildEngineFatal = null;
+        [Name(AssetCompilerFatal)]
+        internal static ClassificationTypeDefinition assetCompilerFatal = null;
 
         [Export(typeof(EditorFormatDefinition))]
-        [ClassificationType(ClassificationTypeNames = BuildEngineDebug)]
-        [Name(BuildEngineDebug)]
+        [ClassificationType(ClassificationTypeNames = AssetCompilerDebug)]
+        [Name(AssetCompilerDebug)]
         [UserVisible(true)] //this should be visible to the end user
         [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
-        internal sealed class BuildEngineDebugFormat : ClassificationFormatDefinition
+        internal sealed class AssetCompilerDebugFormat : ClassificationFormatDefinition
         {
             [ImportingConstructor]
-            public BuildEngineDebugFormat(OutputClassificationColorManager colorManager)
+            public AssetCompilerDebugFormat(OutputClassificationColorManager colorManager)
             {
-                DisplayName = "Xenko BuildEngine Debug";
+                DisplayName = "Xenko AssetCompiler Debug";
                 this.IsBold = false;
-                var classificationColor = colorManager.GetClassificationColor(BuildEngineDebug);
+                var classificationColor = colorManager.GetClassificationColor(AssetCompilerDebug);
                 ForegroundColor = classificationColor.ForegroundColor;
                 BackgroundColor = classificationColor.BackgroundColor;
             }
         }
 
         [Export(typeof(EditorFormatDefinition))]
-        [ClassificationType(ClassificationTypeNames = BuildEngineVerbose)]
-        [Name(BuildEngineVerbose)]
+        [ClassificationType(ClassificationTypeNames = AssetCompilerVerbose)]
+        [Name(AssetCompilerVerbose)]
         [UserVisible(true)] //this should be visible to the end user
         [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
-        internal sealed class BuildEngineVerboseFormat : ClassificationFormatDefinition
+        internal sealed class AssetCompilerVerboseFormat : ClassificationFormatDefinition
         {
             [ImportingConstructor]
-            public BuildEngineVerboseFormat(OutputClassificationColorManager colorManager)
+            public AssetCompilerVerboseFormat(OutputClassificationColorManager colorManager)
             {
-                DisplayName = "Xenko BuildEngine Verbose";
+                DisplayName = "Xenko AssetCompiler Verbose";
                 this.IsBold = false;
-                var classificationColor = colorManager.GetClassificationColor(BuildEngineVerbose);
+                var classificationColor = colorManager.GetClassificationColor(AssetCompilerVerbose);
                 ForegroundColor = classificationColor.ForegroundColor;
                 BackgroundColor = classificationColor.BackgroundColor;
             }
         }
 
         [Export(typeof(EditorFormatDefinition))]
-        [ClassificationType(ClassificationTypeNames = BuildEngineInfo)]
-        [Name(BuildEngineInfo)]
+        [ClassificationType(ClassificationTypeNames = AssetCompilerInfo)]
+        [Name(AssetCompilerInfo)]
         [UserVisible(true)] //this should be visible to the end user
         [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
-        internal sealed class BuildEngineInfoFormat : ClassificationFormatDefinition
+        internal sealed class AssetCompilerInfoFormat : ClassificationFormatDefinition
         {
             [ImportingConstructor]
-            public BuildEngineInfoFormat(OutputClassificationColorManager colorManager)
+            public AssetCompilerInfoFormat(OutputClassificationColorManager colorManager)
             {
-                DisplayName = "Xenko BuildEngine Info";
+                DisplayName = "Xenko AssetCompiler Info";
                 this.IsBold = false;
-                var classificationColor = colorManager.GetClassificationColor(BuildEngineInfo);
+                var classificationColor = colorManager.GetClassificationColor(AssetCompilerInfo);
                 ForegroundColor = classificationColor.ForegroundColor;
                 BackgroundColor = classificationColor.BackgroundColor;
             }
         }
 
         [Export(typeof(EditorFormatDefinition))]
-        [ClassificationType(ClassificationTypeNames = BuildEngineWarning)]
-        [Name(BuildEngineWarning)]
+        [ClassificationType(ClassificationTypeNames = AssetCompilerWarning)]
+        [Name(AssetCompilerWarning)]
         [UserVisible(true)] //this should be visible to the end user
         [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
-        internal sealed class BuildEngineWarningFormat : ClassificationFormatDefinition
+        internal sealed class AssetCompilerWarningFormat : ClassificationFormatDefinition
         {
             [ImportingConstructor]
-            public BuildEngineWarningFormat(OutputClassificationColorManager colorManager)
+            public AssetCompilerWarningFormat(OutputClassificationColorManager colorManager)
             {
-                DisplayName = "Xenko BuildEngine Warning";
+                DisplayName = "Xenko AssetCompiler Warning";
                 this.IsBold = false;
-                var classificationColor = colorManager.GetClassificationColor(BuildEngineWarning);
+                var classificationColor = colorManager.GetClassificationColor(AssetCompilerWarning);
                 ForegroundColor = classificationColor.ForegroundColor;
                 BackgroundColor = classificationColor.BackgroundColor;
             }
         }
 
         [Export(typeof(EditorFormatDefinition))]
-        [ClassificationType(ClassificationTypeNames = BuildEngineError)]
-        [Name(BuildEngineError)]
+        [ClassificationType(ClassificationTypeNames = AssetCompilerError)]
+        [Name(AssetCompilerError)]
         [UserVisible(true)] //this should be visible to the end user
         [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
-        internal sealed class BuildEngineErrorFormat : ClassificationFormatDefinition
+        internal sealed class AssetCompilerErrorFormat : ClassificationFormatDefinition
         {
             [ImportingConstructor]
-            public BuildEngineErrorFormat(OutputClassificationColorManager colorManager)
+            public AssetCompilerErrorFormat(OutputClassificationColorManager colorManager)
             {
-                DisplayName = "Xenko BuildEngine Error";
+                DisplayName = "Xenko AssetCompiler Error";
                 this.IsBold = true;
-                var classificationColor = colorManager.GetClassificationColor(BuildEngineError);
+                var classificationColor = colorManager.GetClassificationColor(AssetCompilerError);
                 ForegroundColor = classificationColor.ForegroundColor;
                 BackgroundColor = classificationColor.BackgroundColor;
             }
         }
 
         [Export(typeof(EditorFormatDefinition))]
-        [ClassificationType(ClassificationTypeNames = BuildEngineFatal)]
-        [Name(BuildEngineFatal)]
+        [ClassificationType(ClassificationTypeNames = AssetCompilerFatal)]
+        [Name(AssetCompilerFatal)]
         [UserVisible(true)] //this should be visible to the end user
         [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
-        internal sealed class BuildEngineFatalFormat : ClassificationFormatDefinition
+        internal sealed class AssetCompilerFatalFormat : ClassificationFormatDefinition
         {
             [ImportingConstructor]
-            public BuildEngineFatalFormat(OutputClassificationColorManager colorManager)
+            public AssetCompilerFatalFormat(OutputClassificationColorManager colorManager)
             {
-                DisplayName = "Xenko BuildEngine Fatal";
+                DisplayName = "Xenko AssetCompiler Fatal";
                 this.IsBold = true;
-                var classificationColor = colorManager.GetClassificationColor(BuildEngineFatal);
+                var classificationColor = colorManager.GetClassificationColor(AssetCompilerFatal);
                 ForegroundColor = classificationColor.ForegroundColor;
                 BackgroundColor = classificationColor.BackgroundColor;
             }

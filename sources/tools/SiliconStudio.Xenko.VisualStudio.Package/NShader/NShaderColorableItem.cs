@@ -1,4 +1,4 @@
-#region Header Licence
+﻿#region Header Licence
 //  ---------------------------------------------------------------------
 // 
 //  Copyright (c) 2009 Alexandre Mutel and Microsoft Corporation.  

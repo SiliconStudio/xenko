@@ -72,14 +72,14 @@ namespace NShader
 
             m_colorableItems = new NShaderColorableItem[]
                                    {
-                                        /*1*/ new NShaderColorableItem(currentTheme, "Xenko Shader Language - Keyword", "Xenko Shader Language - Keyword", COLORINDEX.CI_BLUE, COLORINDEX.CI_AQUAMARINE, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(86, 156, 214), Color.Empty, FONTFLAGS.FF_DEFAULT),
-                                        /*2*/ new NShaderColorableItem(currentTheme, "Xenko Shader Language - Comment", "Xenko Shader Language - Comment", COLORINDEX.CI_DARKGREEN, COLORINDEX.CI_GREEN, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(87, 166, 74), Color.Empty, FONTFLAGS.FF_DEFAULT),
-                                        /*3*/ new NShaderColorableItem(currentTheme, "Xenko Shader Language - Identifier", "Xenko Shader Language - Identifier", COLORINDEX.CI_SYSPLAINTEXT_FG, COLORINDEX.CI_SYSPLAINTEXT_FG, COLORINDEX.CI_USERTEXT_BK, FONTFLAGS.FF_DEFAULT),
-                                        /*4*/ new NShaderColorableItem(currentTheme, "Xenko Shader Language - String", "Xenko Shader Language - String", COLORINDEX.CI_RED, COLORINDEX.CI_RED, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(214, 157, 133), Color.Empty, FONTFLAGS.FF_DEFAULT),
-                                        /*5*/ new NShaderColorableItem(currentTheme, "Xenko Shader Language - Number", "Xenko Shader Language - Number", COLORINDEX.CI_DARKBLUE, COLORINDEX.CI_BLUE, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(181, 206, 168), Color.Empty, FONTFLAGS.FF_DEFAULT),
-                                        /*6*/ new NShaderColorableItem(currentTheme, "Xenko Shader Language - Intrinsic", "Xenko Shader Language - Intrinsic", COLORINDEX.CI_MAROON, COLORINDEX.CI_CYAN, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(239, 242, 132), Color.Empty, FONTFLAGS.FF_BOLD),
-                                        /*7*/ new NShaderColorableItem(currentTheme, "Xenko Shader Language - Special", "Xenko Shader Language - Special", COLORINDEX.CI_AQUAMARINE, COLORINDEX.CI_MAGENTA, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(78, 201, 176), Color.Empty, FONTFLAGS.FF_DEFAULT),
-                                        /*8*/ new NShaderColorableItem(currentTheme, "Xenko Shader Language - Preprocessor", "Xenko Shader Language - Preprocessor", COLORINDEX.CI_DARKGRAY, COLORINDEX.CI_LIGHTGRAY, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(155, 155, 155), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*1*/ new NShaderColorableItem(currentTheme, "Xenko.ShaderLanguage.Keyword", "Xenko Shader Language - Keyword", COLORINDEX.CI_BLUE, COLORINDEX.CI_AQUAMARINE, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(86, 156, 214), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*2*/ new NShaderColorableItem(currentTheme, "Xenko.ShaderLanguage.Comment", "Xenko Shader Language - Comment", COLORINDEX.CI_DARKGREEN, COLORINDEX.CI_GREEN, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(87, 166, 74), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*3*/ new NShaderColorableItem(currentTheme, "Xenko.ShaderLanguage.Identifier", "Xenko Shader Language - Identifier", COLORINDEX.CI_SYSPLAINTEXT_FG, COLORINDEX.CI_SYSPLAINTEXT_FG, COLORINDEX.CI_USERTEXT_BK, FONTFLAGS.FF_DEFAULT),
+                                        /*4*/ new NShaderColorableItem(currentTheme, "Xenko.ShaderLanguage.String", "Xenko Shader Language - String", COLORINDEX.CI_RED, COLORINDEX.CI_RED, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(214, 157, 133), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*5*/ new NShaderColorableItem(currentTheme, "Xenko.ShaderLanguage.Number", "Xenko Shader Language - Number", COLORINDEX.CI_DARKBLUE, COLORINDEX.CI_BLUE, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(181, 206, 168), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*6*/ new NShaderColorableItem(currentTheme, "Xenko.ShaderLanguage.Intrinsic", "Xenko Shader Language - Intrinsic", COLORINDEX.CI_MAROON, COLORINDEX.CI_CYAN, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(239, 242, 132), Color.Empty, FONTFLAGS.FF_BOLD),
+                                        /*7*/ new NShaderColorableItem(currentTheme, "Xenko.ShaderLanguage.Special", "Xenko Shader Language - Special", COLORINDEX.CI_AQUAMARINE, COLORINDEX.CI_MAGENTA, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(78, 201, 176), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*8*/ new NShaderColorableItem(currentTheme, "Xenko.ShaderLanguage.Preprocessor", "Xenko Shader Language - Preprocessor", COLORINDEX.CI_DARKGRAY, COLORINDEX.CI_LIGHTGRAY, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(155, 155, 155), Color.Empty, FONTFLAGS.FF_DEFAULT),
                                    };
         }
 
@@ -100,29 +100,41 @@ namespace NShader
         {
             var colorUtilities = Site.GetService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorUtilities;
             var currentTheme = themeEngine.GetCurrentTheme();
+            var isDarkTheme = currentTheme == VisualStudioTheme.Dark || currentTheme == VisualStudioTheme.UnknownDark;
 
             var store = Package.GetGlobalService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorStorage;
-            store.OpenCategory(DefGuidList.guidTextEditorFontCategory, (uint)(__FCSTORAGEFLAGS.FCSF_LOADDEFAULTS | __FCSTORAGEFLAGS.FCSF_NOAUTOCOLORS | __FCSTORAGEFLAGS.FCSF_PROPAGATECHANGES));
+            if (store == null)
+                return;
 
-            // Update each colorable item
-            foreach (var colorableItem in m_colorableItems)
+            if (store.OpenCategory(DefGuidList.guidTextEditorFontCategory, (uint)(__FCSTORAGEFLAGS.FCSF_LOADDEFAULTS | __FCSTORAGEFLAGS.FCSF_PROPAGATECHANGES)) != VSConstants.S_OK)
+                return;
+
+            try
             {
-                // Get display name of setting
-                string displayName;
-                colorableItem.GetDisplayName(out displayName);
-                
-                // Get new color
-                var hiColor = currentTheme == VisualStudioTheme.Dark ? colorableItem.HiForeColorDark : colorableItem.HiForeColorLight;
-                var colorIndex = currentTheme == VisualStudioTheme.Dark ? colorableItem.ForeColorDark : colorableItem.ForeColorLight;
-                
-                uint color;
-                if (hiColor != Color.Empty)
-                    color = hiColor.R | ((uint)hiColor.G << 8) | ((uint)hiColor.B << 16);
-                else
-                    colorUtilities.EncodeIndexedColor(colorIndex, out color);
+                // Update each colorable item
+                foreach (var colorableItem in m_colorableItems)
+                {
+                    string canonicalName;
+                    var colorInfos = new ColorableItemInfo[1];
+                    if (colorableItem.GetCanonicalName(out canonicalName) == VSConstants.S_OK && store.GetItem(canonicalName, colorInfos) == VSConstants.S_OK)
+                    {
+                        // Get new color
+                        var hiColor = isDarkTheme ? colorableItem.HiForeColorDark : colorableItem.HiForeColorLight;
+                        var colorIndex = isDarkTheme ? colorableItem.ForeColorDark : colorableItem.ForeColorLight;
 
-                // Update color in settings
-                store.SetItem(displayName, new[] { new ColorableItemInfo { bForegroundValid = 1, crForeground = color } });
+                        if (hiColor != Color.Empty)
+                            colorInfos[0].crForeground = hiColor.R | ((uint)hiColor.G << 8) | ((uint)hiColor.B << 16);
+                        else
+                            colorUtilities.EncodeIndexedColor(colorIndex, out colorInfos[0].crForeground);
+
+                        // Update color in settings
+                        store.SetItem(canonicalName, colorInfos);
+                    }
+                }
+            }
+            finally
+            {
+                store.CloseCategory();
             }
         }
 
