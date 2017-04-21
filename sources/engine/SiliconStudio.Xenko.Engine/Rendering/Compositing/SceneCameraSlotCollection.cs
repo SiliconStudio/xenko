@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
@@ -12,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     /// A collection of <see cref="CameraComponent"/>.
     /// </summary>
     [DataContract("SceneCameraSlotCollection")]
-    public sealed class SceneCameraSlotCollection : List<SceneCameraSlot>
+    public sealed class SceneCameraSlotCollection : FastTrackingCollection<SceneCameraSlot>
     {
         /// <summary>
         /// Property key to access the current collection of <see cref="CameraComponent"/> from <see cref="RenderContext.Tags"/>.

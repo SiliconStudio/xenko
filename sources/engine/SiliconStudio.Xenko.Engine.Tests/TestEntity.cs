@@ -107,6 +107,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
             // Check that CustomEntityComponent can be added multiple times
             Assert.True(EntityComponentAttributes.Get<CustomEntityComponent>().AllowMultipleComponents);
 
+            // Check that DerivedEntityComponentBase can be added multiple times
+            Assert.True(EntityComponentAttributes.Get<DerivedEntityComponent>().AllowMultipleComponents);
+
             var entity = new Entity();
 
             var transform = entity.Get<TransformComponent>();
@@ -252,6 +255,15 @@ namespace SiliconStudio.Xenko.Engine.Tests
         public Entity Link { get; set; }
 
         public object CustomObject { get; set; }
+    }
+
+    [AllowMultipleComponents]
+    public class MultipleEntityComponentBase : CustomEntityComponentBase
+    {
+    }
+
+    public sealed class DerivedEntityComponent : MultipleEntityComponentBase
+    {
     }
 
     [DataContract()]

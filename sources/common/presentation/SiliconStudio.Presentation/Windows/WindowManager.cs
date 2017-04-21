@@ -216,14 +216,15 @@ namespace SiliconStudio.Presentation.Windows
                 return;
             }
 
-            if (eventType == NativeHelper.EVENT_OBJECT_SHOW)
+            // idObject == 0 means it is the window itself, not a child object
+            if (eventType == NativeHelper.EVENT_OBJECT_SHOW && idObject == 0)
             {
                 if (dispatcher.CheckAccess())
                     WindowShown(hwnd);
                 else
                     dispatcher.InvokeAsync(() => WindowShown(hwnd));
             }
-            if (eventType == NativeHelper.EVENT_OBJECT_HIDE)
+            if (eventType == NativeHelper.EVENT_OBJECT_HIDE && idObject == 0)
             {
                 if (dispatcher.CheckAccess())
                     WindowHidden(hwnd);
@@ -358,7 +359,6 @@ namespace SiliconStudio.Presentation.Windows
                         // when their original parent closes, reactivating the main window causes the still living children to close.
                         ActivateMainWindow();
                     }
-                    ActivateMainWindow();
                 }
             }
         }

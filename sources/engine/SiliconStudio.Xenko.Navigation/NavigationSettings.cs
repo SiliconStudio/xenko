@@ -17,6 +17,7 @@ namespace SiliconStudio.Xenko.Navigation
     [DataContract]
     [Display("Navigation Settings")]
     [ObjectFactory(typeof(NavigationSettingsFactory))]
+    [CategoryOrder(0, "Dynamic navigation mesh", Expand = ExpandRule.Never)]
     public class NavigationSettings : Configuration
     {
         /// <summary>
@@ -26,6 +27,7 @@ namespace SiliconStudio.Xenko.Navigation
         /// Enable dynamic navigation on navigation components that have no assigned navigation mesh
         /// </userdoc>
         [DataMember(0)]
+        [Display("Enabled", "Dynamic navigation mesh")]
         public bool EnableDynamicNavigationMesh { get; set; }
 
         /// <summary>
@@ -35,6 +37,7 @@ namespace SiliconStudio.Xenko.Navigation
         /// Set which collision groups dynamically-generated navigation meshes use
         /// </userdoc>
         [DataMember(10)]
+        [Display(category: "Dynamic navigation mesh")]
         public CollisionFilterGroupFlags IncludedCollisionGroups { get; set; } = CollisionFilterGroupFlags.AllFilter;
 
         /// <summary>
@@ -44,6 +47,7 @@ namespace SiliconStudio.Xenko.Navigation
         /// Advanced settings for dynamically-generated navigation meshes
         /// </userdoc>
         [DataMember(20)]
+        [Display(category: "Dynamic navigation mesh")]
         public NavigationMeshBuildSettings BuildSettings { get; set; }
 
         /// <summary>

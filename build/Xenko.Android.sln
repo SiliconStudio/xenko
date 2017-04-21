@@ -1,7 +1,6 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26403.0
 MinimumVisualStudioVersion = 14.0.23107.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "10-CoreRuntime", "10-CoreRuntime", "{2E93E2B5-4500-4E47-9B65-E705218AB578}"
 EndProject
@@ -29,6 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Private", "00-Ta
 		..\sources\targets\Xenko.PostSettings.targets = ..\sources\targets\Xenko.PostSettings.targets
 		..\sources\targets\Xenko.PostSettings.User.targets = ..\sources\targets\Xenko.PostSettings.User.targets
 		..\sources\targets\Xenko.PreSettings.targets = ..\sources\targets\Xenko.PreSettings.targets
+		..\sources\targets\Xenko.PreSettings.UnitTests.targets = ..\sources\targets\Xenko.PreSettings.UnitTests.targets
 		..\sources\targets\Xenko.PreSettings.User.targets = ..\sources\targets\Xenko.PreSettings.User.targets
 		..\sources\targets\Xenko.UnitTests.DisableBuild.targets = ..\sources\targets\Xenko.UnitTests.DisableBuild.targets
 		..\sources\targets\Xenko.UnitTests.targets = ..\sources\targets\Xenko.UnitTests.targets
@@ -191,7 +191,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Navigat
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{7af4b563-aad3-42ff-b91e-84b9d34d904a}*SharedItemsImports = 4
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{b33e576f-2279-4bfc-a438-d9b84343b56b}*SharedItemsImports = 13
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{c121a566-555e-42b9-9b0a-1696529a9088}*SharedItemsImports = 4
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{e8b3553f-a79f-4e50-b75b-acee771c320c}*SharedItemsImports = 4
@@ -659,12 +658,12 @@ Global
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|Android.ActiveCfg = Release|Android
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|Android.Build.0 = Release|Android
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|Android.Deploy.0 = Release|Android
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Debug|Android.ActiveCfg = CoreCLR_Debug|Android
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Debug|Android.Build.0 = CoreCLR_Debug|Android
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Debug|Android.Deploy.0 = CoreCLR_Debug|Android
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Release|Android.ActiveCfg = CoreCLR_Release|Android
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Release|Android.Build.0 = CoreCLR_Release|Android
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Release|Android.Deploy.0 = CoreCLR_Release|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Debug|Android.ActiveCfg = Debug|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Debug|Android.Build.0 = Debug|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Debug|Android.Deploy.0 = Debug|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Release|Android.ActiveCfg = Release|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Release|Android.Build.0 = Release|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Release|Android.Deploy.0 = Release|Android
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|Android.ActiveCfg = Debug|Android
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|Android.Build.0 = Debug|Android
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|Android.Deploy.0 = Debug|Android

@@ -180,7 +180,6 @@
     <Compile Include="LightingTests.cs" />
     <Compile Include="MaterialTests.cs" />
     <Compile Include="NextGen\NextGenTest1.cs" />
-    <Compile Include="NextGen\TestCamera.cs" />
     <Compile Include="GraphicTestGameBase.cs" />
     <Compile Include="TestImageEffect.cs" />
     <Compile Include="TestLightShafts.cs" />

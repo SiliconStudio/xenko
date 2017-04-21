@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
     /// </summary>
     public sealed class ScriptSystem : GameSystemBase
     {
-        private const long UpdateBit = 1 << 32;
+        private const long UpdateBit = 1L << 32;
 
         internal readonly static Logger Log = GlobalLogger.GetLogger("ScriptSystem");
 
@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             {
                 // Update priority
                 var updateSchedulerNode = syncScript.UpdateSchedulerNode;
-                updateSchedulerNode.Value.Priority = syncScript.Priority & UpdateBit;
+                updateSchedulerNode.Value.Priority = syncScript.Priority | UpdateBit;
 
                 // Schedule
                 Scheduler.Schedule(updateSchedulerNode, ScheduleMode.Last);

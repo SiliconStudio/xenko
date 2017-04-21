@@ -166,6 +166,7 @@
     <Compile Include="TestEntity.cs" />
     <Compile Include="TestEntityManager.Benchmark.cs" />
     <Compile Include="TestEntityManager.cs" />
+    <Compile Include="TestCameraProcessor.cs" />
     <Compile Include="TestTransformComponent.cs" />
     <Compile Include="TestUpdateEngine.cs" />
     <None Include="Build\TestSerializer.cs" />

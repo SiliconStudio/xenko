@@ -149,6 +149,7 @@
     <Compile Include="Rendering\Compositing\ForwardRenderer.LightProbes.cs" />
     <Compile Include="Rendering\Compositing\ForwardRenderer.VRUtils.cs" />
     <Compile Include="Rendering\Compositing\GraphicsCompositor.cs" />
+    <Compile Include="Rendering\Compositing\GraphicsCompositorHelper.cs" />
     <Compile Include="Rendering\Compositing\IRenderTargetSemantic.cs" />
     <Compile Include="Rendering\Compositing\MSAAResolver.cs" />
     <None Include="packages.config" />

@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Engine
     {
         private readonly Entity entity;
 
-        internal EntityComponentCollection()
+        public EntityComponentCollection()
         {
         }
 

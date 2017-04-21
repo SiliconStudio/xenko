@@ -1,10 +1,8 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Interop;
 using System.Windows.Threading;
 using NUnit.Framework;
 using SiliconStudio.Core.Diagnostics;
@@ -16,9 +14,16 @@ namespace SiliconStudio.Presentation.Tests
     internal static class WindowManagerHelper
     {
         private const int TimeoutDelay = 10000;
+        // This must remains a field to prevent garbage collection!
+        private static TaskCompletionSource<int> nextWindowShown = new TaskCompletionSource<int>();
+        private static TaskCompletionSource<int> nextWindowHidden = new TaskCompletionSource<int>();
         private static bool forwardingToConsole;
 
         public static Task Timeout => !Debugger.IsAttached ? Task.Delay(TimeoutDelay) : new TaskCompletionSource<int>().Task;
+
+        public static Task NextWindowShown => nextWindowShown.Task;
+
+        public static Task NextWindowHidden => nextWindowHidden.Task;
 
         public static Task<Dispatcher> CreateUIThread()
         {
@@ -75,20 +80,77 @@ namespace SiliconStudio.Presentation.Tests
             return manager;
         }
 
+
         private class WindowManagerWrapper : IDisposable
         {
+            private static NativeHelper.WinEventDelegate winEventProc;
+            private static IntPtr hook;
+            private static Dispatcher localDispatcher;
             private readonly WindowManager manager;
-            private readonly Dispatcher localDispatcher;
 
             public WindowManagerWrapper(Dispatcher dispatcher)
             {
                 localDispatcher = Dispatcher.CurrentDispatcher;
-                manager = localDispatcher.Invoke(() => new WindowManager(dispatcher));
+                manager = localDispatcher.Invoke(() =>
+                {
+                    winEventProc = WinEventProc;
+                    var processId = (uint)Process.GetCurrentProcess().Id;
+                    hook = NativeHelper.SetWinEventHook(NativeHelper.EVENT_OBJECT_SHOW, NativeHelper.EVENT_OBJECT_HIDE, IntPtr.Zero, winEventProc, processId, 0, NativeHelper.WINEVENT_OUTOFCONTEXT);
+                    if (hook == IntPtr.Zero) throw new InvalidOperationException("Unable to initialize the window manager.");
+                    return new WindowManager(dispatcher);
+                });
             }
 
             public void Dispose()
             {
-                localDispatcher.Invoke(() => manager.Dispose());
+                localDispatcher.Invoke(() =>
+                {
+                    manager.Dispose();
+                    if (!NativeHelper.UnhookWinEvent(hook)) throw new InvalidOperationException("An error occurred while disposing the window manager.");
+                    hook = IntPtr.Zero;
+                    winEventProc = null;
+                });
+            }
+
+            private static void WinEventProc(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
+            {
+                if (hwnd == IntPtr.Zero)
+                    return;
+
+                var rootHwnd = NativeHelper.GetAncestor(hwnd, NativeHelper.GetAncestorFlags.GetRoot);
+                if (rootHwnd != IntPtr.Zero && rootHwnd != hwnd)
+                    return;
+
+                // idObject == 0 means it is the window itself, not a child object
+                if (eventType == NativeHelper.EVENT_OBJECT_SHOW && idObject == 0)
+                {
+                    if (localDispatcher.CheckAccess())
+                        WindowShown(hwnd);
+                    else
+                        localDispatcher.InvokeAsync(() => WindowShown(hwnd));
+                }
+                if (eventType == NativeHelper.EVENT_OBJECT_HIDE && idObject == 0)
+                {
+                    if (localDispatcher.CheckAccess())
+                        WindowHidden();
+                    else
+                        localDispatcher.InvokeAsync(WindowHidden);
+                }
+            }
+
+            private static void WindowShown(IntPtr hwnd)
+            {
+                if (!HwndHelper.HasStyleFlag(hwnd, NativeHelper.WS_VISIBLE))
+                    return;
+
+                nextWindowShown.SetResult(0);
+                nextWindowShown = new TaskCompletionSource<int>();
+            }
+
+            private static void WindowHidden()
+            {
+                nextWindowHidden.SetResult(0);
+                nextWindowHidden = new TaskCompletionSource<int>();
             }
         }
     }

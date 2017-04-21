@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 0a97d04d-6d2c-4cfb-81b6-13b641b363ff
-SerializedVersion: {Xenko: 1.10.0-beta03}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
@@ -136,7 +136,7 @@ Hierarchy:
                         Id: 6d8c5dbd-0330-4c3a-b687-8f4187b97c9a
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: 00000000-0000-0000-0000-000000000000
         -   Entity:
                 Id: 8b03f317-5605-499a-8fce-dad1714fc7e3
                 Name: Rock

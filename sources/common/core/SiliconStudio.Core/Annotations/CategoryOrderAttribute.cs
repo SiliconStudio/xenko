@@ -19,12 +19,12 @@ namespace SiliconStudio.Core.Annotations
         /// <summary>
         /// Gets or sets the name of the category.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; }
 
         /// <summary>
         /// Gets or sets the order value of the category.
         /// </summary>
-        public int Order { get; set; }
+        public int Order { get; }
 
         /// <summary>
         /// Gets or sets whether to expand the category in the UI.
