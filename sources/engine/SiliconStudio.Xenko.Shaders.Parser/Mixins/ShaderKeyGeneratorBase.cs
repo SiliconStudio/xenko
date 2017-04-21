@@ -306,7 +306,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             if (typeBase != null)
             {
                 // Unhandled types only
-                if (!(typeBase is TypeName || typeBase is ScalarType || typeBase is MatrixType || typeBase is TextureType || typeBase.IsStateType() || typeBase is ArrayType))
+                if (!(typeBase is TypeName || typeBase is ScalarType || typeBase is MatrixType || typeBase is TextureType || typeBase.IsStateType() || typeBase is ArrayType || typeBase is VarType))
                 {
                     Write(typeBase.Name);
                     ProcessInitialValueStatus = true;
