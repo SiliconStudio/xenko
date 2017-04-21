@@ -445,7 +445,9 @@ Example of use:
   
     <MSBuild Projects="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Engine.Tests\SiliconStudio.Xenko.Engine.Tests.$(PlatformToBuild).csproj" Properties="SolutionName=Xenko.Android; SolutionDir=$(MSBuildThisFileDirectory);$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="$(XenkoBuildTargets)" />
 	<MSBuild Projects="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Physics.Tests\SiliconStudio.Xenko.Physics.Tests.$(PlatformToBuild).csproj" Properties="SolutionName=Xenko.Android; SolutionDir=$(MSBuildThisFileDirectory);$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="$(XenkoBuildTargets)" />
+	<!--
     <MSBuild Projects="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Audio.Tests\SiliconStudio.Xenko.Audio.Tests.$(PlatformToBuild).csproj" Properties="SolutionName=Xenko.Android; SolutionDir=$(MSBuildThisFileDirectory);$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="$(XenkoBuildTargets)" />
+	-->
     <MSBuild Projects="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Graphics.Tests\SiliconStudio.Xenko.Graphics.Tests.$(PlatformToBuild).csproj" Properties="SolutionName=Xenko.Android; SolutionDir=$(MSBuildThisFileDirectory);$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="$(XenkoBuildTargets)" />
     <MSBuild Projects="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Graphics.Tests.10_0\SiliconStudio.Xenko.Graphics.Tests.10_0.$(PlatformToBuild).csproj" Properties="SolutionName=Xenko.Android; SolutionDir=$(MSBuildThisFileDirectory);$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="$(XenkoBuildTargets)" />
     <MSBuild Projects="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Input.Tests\SiliconStudio.Xenko.Input.Tests.$(PlatformToBuild).csproj" Properties="SolutionName=Xenko.Android; SolutionDir=$(MSBuildThisFileDirectory);$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="$(XenkoBuildTargets)" />
@@ -458,9 +460,11 @@ Example of use:
 	<Exec Condition="'$(PlatformToBuild)' == 'Android'" IgnoreExitCode="True" Command="$(XenkoRootBin)SiliconStudio.Xenko.TestRunner.exe $(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Physics.Tests\SiliconStudio.Xenko.Physics.Tests-Signed.apk" WorkingDirectory="$(XenkoRootBin)">
       <Output TaskParameter="ExitCode" ItemName="exitCode" />
     </Exec>
+	<!--
     <Exec Condition="'$(PlatformToBuild)' == 'Android'" IgnoreExitCode="True" Command="$(XenkoRootBin)SiliconStudio.Xenko.TestRunner.exe $(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Audio.Tests\SiliconStudio.Xenko.Audio.Tests-Signed.apk" WorkingDirectory="$(XenkoRootBin)">
       <Output TaskParameter="ExitCode" ItemName="exitCode" />
     </Exec>
+	-->
     <Exec Condition="'$(PlatformToBuild)' == 'Android'" IgnoreExitCode="True" Command="$(XenkoRootBin)SiliconStudio.Xenko.TestRunner.exe $(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Graphics.Tests.10_0\SiliconStudio.Xenko.Graphics.Tests_10_0-Signed.apk" WorkingDirectory="$(XenkoRootBin)">
       <Output TaskParameter="ExitCode" ItemName="exitCode" />
     </Exec>
