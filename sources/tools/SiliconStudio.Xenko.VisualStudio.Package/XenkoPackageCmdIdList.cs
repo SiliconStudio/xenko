@@ -9,7 +9,6 @@ namespace SiliconStudio.Xenko.VisualStudio
     static class XenkoPackageCmdIdList
     {
         public const uint cmdXenkoPlatformSelect =        0x100;
-        public const uint cmdXenkoView =    0x101;
         public const uint cmdXenkoOpenWithGameStudio = 0x101;
         public const uint cmdXenkoPlatformSelectList = 0x102;
         public const uint cmdXenkoCleanIntermediateAssetsSolutionCommand = 0x103;
