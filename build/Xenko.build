@@ -455,8 +455,7 @@ Example of use:
   
     <MSBuild Projects ="@(ProjectsToBuild)" 
              Targets="SignAndroidPackage"
-             Properties="Configuration=$(Configuration);Platform=$(Platform);SolutionName=$(SolutionName);SolutionDir=$(SolutionDir);AndroidDeploymentMode=AndroidAPKDeployment">
-      <Output ItemName="OutputFiles" TaskParameter="TargetOutputs"/>
+             Properties="SolutionName=Xenko.Android; SolutionDir=$(MSBuildThisFileDirectory);$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)">
     </MSBuild>
     
     <Exec Condition="'$(PlatformToBuild)' == 'Android'" IgnoreExitCode="True" Command="$(XenkoRootBin)SiliconStudio.Xenko.TestRunner.exe $(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Engine.Tests\SiliconStudio.Xenko.Engine.Tests-Signed.apk" WorkingDirectory="$(XenkoRootBin)">
