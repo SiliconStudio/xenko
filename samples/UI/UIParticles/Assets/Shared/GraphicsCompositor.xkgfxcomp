@@ -74,7 +74,7 @@ RenderFeatures:
     9013eab3ea0ef6c98bf133b86c173d45: !SiliconStudio.Xenko.Particles.Rendering.ParticleEmitterRenderFeature,SiliconStudio.Xenko.Particles
         RenderStageSelectors:
             af1bd241305893ef8ff7952184e1cb0b: !SiliconStudio.Xenko.Particles.Rendering.ParticleEmitterTransparentRenderStageSelector,SiliconStudio.Xenko.Particles
-                RenderGroup*: Group1
+                RenderGroup*: All
                 OpaqueRenderStage*: ref!! 1131b093-3589-47d1-bb60-62166a6647a3
                 TransparentRenderStage*: ref!! 1131b093-3589-47d1-bb60-62166a6647a3
                 EffectName: null
@@ -108,9 +108,12 @@ Game: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStud
     Child*: !SiliconStudio.Xenko.Rendering.Compositing.SceneRendererCollection,SiliconStudio.Xenko.Engine
         Id: cac20e52-d7fa-43d5-b4dc-e7038d008a9e
         Children:
-            ce29e81d8821fbf2a3d2264868e9921c: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
-            6efe857054d875d04a6788c9b40428bc: !SiliconStudio.Xenko.Rendering.Compositing.DebugRenderer,SiliconStudio.Xenko.Engine ref!! 77660a58-73b5-428e-bce5-c3407a62de31
-SingleView: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+            ce29e81d8821fbf2a3d2264868e9921c*: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+            6efe857054d875d04a6788c9b40428bc*: !SiliconStudio.Xenko.Rendering.Compositing.SingleStageRenderer,SiliconStudio.Xenko.Engine
+                Id: 70784831-182a-490d-8fe4-b9ece8b7dbcf
+                RenderStage: ref!! 1131b093-3589-47d1-bb60-62166a6647a3
+            5c3efec9389bbcda4a9ec8113c233439*: !SiliconStudio.Xenko.Rendering.Compositing.DebugRenderer,SiliconStudio.Xenko.Engine ref!! 77660a58-73b5-428e-bce5-c3407a62de31
+SingleView: null
 Editor*: !SiliconStudio.Xenko.Rendering.Compositing.SceneRendererCollection,SiliconStudio.Xenko.Engine
     Id: c3f5d39a-57e9-4cd8-9895-ca0e78582b8a
     Children:
