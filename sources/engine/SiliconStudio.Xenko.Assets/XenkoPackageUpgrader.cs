@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Assets
         {
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
             // Graphics Compositor asset
-            if (dependency.Version.MinVersion < new PackageVersion("1.10.0-alpha02"))
+            if (dependency.Version.MinVersion < new PackageVersion("1.11.0.0"))
             {
                 // Find game settings (if there is none, it's not a game and nothing to do)
                 var gameSettings = assetFiles.FirstOrDefault(x => x.AssetLocation == GameSettingsAsset.GameSettingsLocation);
