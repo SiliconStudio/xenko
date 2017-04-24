@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core;
@@ -22,6 +22,10 @@ namespace SiliconStudio.Xenko.Graphics.Data
             {
                 var services = stream.Context.Tags.Get(ServiceRegistry.ServiceRegistryKey);
                 var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
+
+                // TODO: serialize TextureAsset.IsStreamable
+                //bool isStreamable = stream.ReadBoolean();
+                bool isStreamable = true;
 
                 // TODO: Error handling?
                 using (var textureData = Image.Load(stream.NativeStream))
