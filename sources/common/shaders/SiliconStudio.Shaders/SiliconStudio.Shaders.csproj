@@ -1,0 +1,327 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+  </PropertyGroup>
+  <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Shaders</RootNamespace>
+    <AssemblyName>SiliconStudio.Shaders</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--serialization</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="('$(SiliconStudioPlatform)' == 'UWP')">
+      <ItemGroup>
+        <Reference Include="CppNet">
+          <HintPath>..\..\deps\CppNet\Store\CppNet.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(SiliconStudioRuntime)' != ''">
+      <ItemGroup>
+        <Reference Include="CppNet">
+          <HintPath>..\..\deps\CppNet\$(SiliconStudioRuntime)\CppNet.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="CppNet">
+          <HintPath>..\..\deps\CppNet\CppNet.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Xml" />
+        <Reference Include="System.Xml.Linq" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Ast\Xenko\ClassIdentifierGeneric.cs" />
+    <Compile Include="Ast\Xenko\EnumType.cs" />
+    <Compile Include="Ast\Xenko\ForEachStatement.cs" />
+    <Compile Include="Ast\Xenko\IGenericStringArgument.cs" />
+    <Compile Include="Ast\Xenko\ImportBlockStatement.cs" />
+    <Compile Include="Ast\Xenko\LinkType.cs" />
+    <Compile Include="Ast\Xenko\LiteralIdentifier.cs" />
+    <Compile Include="Ast\Xenko\MemberName.cs" />
+    <Compile Include="Ast\Xenko\MixinStatement.cs" />
+    <Compile Include="Ast\Xenko\MixinStatementType.cs" />
+    <Compile Include="Ast\Xenko\NamespaceBlock.cs" />
+    <Compile Include="Ast\Xenko\ParametersBlock.cs" />
+    <Compile Include="Ast\Xenko\SemanticType.cs" />
+    <Compile Include="Ast\Xenko\EffectBlock.cs" />
+    <Compile Include="Ast\Xenko\ShaderClassType.cs" />
+    <Compile Include="Ast\Xenko\ShaderRootClassType.cs" />
+    <Compile Include="Ast\Xenko\ShaderTypeName.cs" />
+    <Compile Include="Ast\Xenko\StreamsType.cs" />
+    <Compile Include="Ast\Xenko\TypelIdentifier.cs" />
+    <Compile Include="Ast\Xenko\UsingParametersStatement.cs" />
+    <Compile Include="Ast\Xenko\UsingStatement.cs" />
+    <Compile Include="Ast\Xenko\VarType.cs" />
+    <Compile Include="Ast\Xenko\XenkoAttributes.cs" />
+    <Compile Include="Ast\Xenko\XenkoConstantBufferType.cs" />
+    <Compile Include="Ast\Xenko\XenkoStorageQualifier.cs" />
+    <Compile Include="Ast\Xenko\XenkoTags.cs" />
+    <Compile Include="Convertor\BreakContinueVisitor.cs" />
+    <Compile Include="Convertor\GlslShaderPlatform.cs" />
+    <Compile Include="Convertor\SamplerTextureKey.cs" />
+    <Compile Include="GoldParser\GoldParserException.cs" />
+    <Compile Include="Grammar\Xenko\XenkoGrammar.Ast.cs" />
+    <Compile Include="Grammar\Xenko\XenkoGrammar.cs" />
+    <Compile Include="Properties\Resources.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Utility\Hlsl\MessageCode.Hlsl.cs" />
+    <Compile Include="Convertor\CallstackVisitor.cs" />
+    <Compile Include="Convertor\ConstantBufferLayoutRule.cs" />
+    <Compile Include="Convertor\GlobalUniformVisitor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Convertor\GlslKeywords.cs" />
+    <Compile Include="Convertor\HlslToGlslConvertor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Convertor\HlslTypes.cs" />
+    <Compile Include="Convertor\MapRule.cs" />
+    <Compile Include="Convertor\ShaderModel.cs" />
+    <Compile Include="Convertor\VariableLayoutRule.cs" />
+    <Compile Include="Convertor\PipelineStage.cs" />
+    <Compile Include="Convertor\SamplerMappingVisitor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Analysis\AnalysisBase.cs" />
+    <Compile Include="Analysis\CastHelper.cs" />
+    <Compile Include="Analysis\Hlsl\HlslSemanticAnalysis.cs" />
+    <Compile Include="Analysis\SemanticAnalysis.cs" />
+    <Compile Include="Ast\ArrayInitializerExpression.cs" />
+    <Compile Include="Ast\ArrayType.cs" />
+    <Compile Include="Ast\AssignmentExpression.cs" />
+    <Compile Include="Ast\AssignmentOperator.cs" />
+    <Compile Include="Ast\AttributeBase.cs" />
+    <Compile Include="Ast\BinaryExpression.cs" />
+    <Compile Include="Ast\BinaryOperator.cs" />
+    <Compile Include="Ast\BlockStatement.cs" />
+    <Compile Include="Ast\CaseStatement.cs" />
+    <Compile Include="Ast\CompositeEnum.cs" />
+    <Compile Include="Ast\ConditionalExpression.cs" />
+    <Compile Include="Ast\EmptyStatement.cs" />
+    <Compile Include="Ast\EmptyExpression.cs" />
+    <Compile Include="Ast\Glsl\LayoutKeyValue.cs" />
+    <Compile Include="Ast\Glsl\LayoutQualifier.cs" />
+    <Compile Include="Ast\Glsl\ParameterQualifier.cs" />
+    <Compile Include="Ast\Glsl\InterfaceType.cs" />
+    <Compile Include="Ast\Hlsl\ClassType.Helpers.cs" />
+    <Compile Include="Ast\Hlsl\StreamTypeName.cs" />
+    <Compile Include="Ast\Node.Clone.Extension.cs" />
+    <Compile Include="Ast\ExpressionList.cs" />
+    <Compile Include="Ast\GenericDeclaration.cs" />
+    <Compile Include="Ast\GenericParameterConstraint.cs" />
+    <Compile Include="Ast\GenericParameterType.cs" />
+    <Compile Include="Ast\Hlsl\GenericType.Extensions.cs" />
+    <Compile Include="Ast\Hlsl\IdentifierGeneric.cs" />
+    <Compile Include="Ast\Hlsl\IdentifierNs.cs" />
+    <Compile Include="Ast\Hlsl\IdentifierDot.cs" />
+    <Compile Include="Ast\Hlsl\TextureType.cs" />
+    <Compile Include="Ast\Hlsl\SamplerType.cs" />
+    <Compile Include="Ast\IGenerics.cs" />
+    <Compile Include="Ast\IQualifiers.cs" />
+    <Compile Include="Ast\Node.Extensions.cs" />
+    <Compile Include="Ast\DeclarationStatement.cs" />
+    <Compile Include="Ast\Expression.cs" />
+    <Compile Include="Ast\ExpressionStatement.cs" />
+    <Compile Include="Ast\ForStatement.cs" />
+    <Compile Include="Ast\GenericType.cs" />
+    <Compile Include="Ast\GenericBaseType.cs" />
+    <Compile Include="Ast\Hlsl\Annotations.cs" />
+    <Compile Include="Ast\Hlsl\AsmExpression.cs" />
+    <Compile Include="Ast\Hlsl\AttributeDeclaration.cs" />
+    <Compile Include="Ast\Hlsl\CastExpression.cs" />
+    <Compile Include="Ast\Hlsl\ClassType.cs" />
+    <Compile Include="Ast\Hlsl\CompileExpression.cs" />
+    <Compile Include="Ast\Hlsl\CompositeIdentifier.cs" />
+    <Compile Include="Ast\Hlsl\ConstantBuffer.cs" />
+    <Compile Include="Ast\Hlsl\ConstantBufferType.cs" />
+    <Compile Include="Ast\Hlsl\FloatQualifier.cs" />
+    <Compile Include="Ast\Hlsl\InterfaceType.cs" />
+    <Compile Include="Ast\Hlsl\PackOffset.cs" />
+    <Compile Include="Ast\Hlsl\ParameterQualifier.cs" />
+    <Compile Include="Ast\Hlsl\Pass.cs" />
+    <Compile Include="Ast\Hlsl\RegisterLocation.cs" />
+    <Compile Include="Ast\Hlsl\Semantic.cs" />
+    <Compile Include="Ast\Hlsl\StateExpression.cs" />
+    <Compile Include="Ast\Hlsl\StateInitializer.cs" />
+    <Compile Include="Ast\Hlsl\StorageQualifier.cs" />
+    <Compile Include="Ast\Hlsl\Technique.cs" />
+    <Compile Include="Ast\Hlsl\Typedef.cs" />
+    <Compile Include="Ast\IAttributes.cs" />
+    <Compile Include="Ast\IDeclaration.cs" />
+    <Compile Include="Ast\Identifier.cs" />
+    <Compile Include="Ast\IfStatement.cs" />
+    <Compile Include="Ast\IndexerExpression.cs" />
+    <Compile Include="Ast\IronyBrowsableNode.cs" />
+    <Compile Include="Ast\IScopeContainer.cs" />
+    <Compile Include="Ast\ITypeInferencer.cs" />
+    <Compile Include="Ast\KeywordExpression.cs" />
+    <Compile Include="Ast\Literal.cs" />
+    <Compile Include="Ast\LiteralExpression.cs" />
+    <Compile Include="Ast\MatrixType.cs" />
+    <Compile Include="Ast\MemberReferenceExpression.cs" />
+    <Compile Include="Ast\MethodDeclaration.cs" />
+    <Compile Include="Ast\MethodDefinition.cs" />
+    <Compile Include="Ast\MethodInvocationExpression.cs" />
+    <Compile Include="Ast\Node.cs" />
+    <Compile Include="Ast\NodeProcessorContext.cs" />
+    <Compile Include="Ast\ObjectType.cs" />
+    <Compile Include="Ast\Parameter.cs" />
+    <Compile Include="Ast\ParameterQualifier.cs" />
+    <Compile Include="Ast\ParenthesizedExpression.cs" />
+    <Compile Include="Ast\Qualifier.cs" />
+    <Compile Include="Ast\ReturnStatement.cs" />
+    <Compile Include="Ast\ScalarType.cs" />
+    <Compile Include="Ast\Shader.cs" />
+    <Compile Include="Ast\SourceLocation.cs" />
+    <Compile Include="Ast\SourceSpan.cs" />
+    <Compile Include="Ast\Statement.cs" />
+    <Compile Include="Ast\StatementList.cs" />
+    <Compile Include="Ast\StorageQualifier.cs" />
+    <Compile Include="Ast\StructType.cs" />
+    <Compile Include="Ast\SwitchCaseGroup.cs" />
+    <Compile Include="Ast\SwitchStatement.cs" />
+    <Compile Include="Ast\TypeBase.cs" />
+    <Compile Include="Ast\TypeInference.cs" />
+    <Compile Include="Ast\TypeName.cs" />
+    <Compile Include="Ast\TypeReferenceExpression.cs" />
+    <Compile Include="Ast\UnaryExpression.cs" />
+    <Compile Include="Ast\UnaryOperator.cs" />
+    <Compile Include="Ast\Variable.cs" />
+    <Compile Include="Ast\VariableReferenceExpression.cs" />
+    <Compile Include="Ast\VectorType.cs" />
+    <Compile Include="Ast\VisitorIgnoreAttribute.cs" />
+    <Compile Include="Ast\WhileStatement.cs" />
+    <Compile Include="GoldParser\DfaState.cs" />
+    <Compile Include="GoldParser\Grammar.cs" />
+    <Compile Include="GoldParser\LRAction.cs" />
+    <Compile Include="GoldParser\LRState.cs" />
+    <Compile Include="GoldParser\LRStateAction.cs" />
+    <Compile Include="GoldParser\ObjectMap.cs" />
+    <Compile Include="GoldParser\ParseMessage.cs" />
+    <Compile Include="GoldParser\Parser.cs" />
+    <Compile Include="GoldParser\Rule.cs" />
+    <Compile Include="GoldParser\SourceLineReadCallback.cs" />
+    <Compile Include="GoldParser\SR.cs" />
+    <Compile Include="GoldParser\Symbol.cs" />
+    <Compile Include="GoldParser\SymbolType.cs" />
+    <Compile Include="Grammar\BnfTermExtensions.Helpers.cs" />
+    <Compile Include="Grammar\CustomScanner.cs" />
+    <Compile Include="Grammar\DynamicKeyTerm.cs" />
+    <Compile Include="Grammar\NamedBlockKeyTerm.cs" />
+    <Compile Include="Grammar\Hlsl\HlslGrammar.Ast.cs" />
+    <Compile Include="Grammar\Hlsl\HlslGrammar.cs" />
+    <Compile Include="Grammar\Hlsl\HlslGrammar.Helpers.cs" />
+    <Compile Include="Ast\Hlsl\StateType.cs" />
+    <Compile Include="Grammar\IdentifierResolverHint.cs" />
+    <Compile Include="Grammar\ShaderGrammar.Ast.cs" />
+    <Compile Include="Grammar\ShaderGrammar.cs" />
+    <Compile Include="Grammar\ShaderGrammar.Helpers.cs" />
+    <Compile Include="Grammar\ShaderLanguageData.cs" />
+    <Compile Include="Grammar\TokenCategory.cs" />
+    <Compile Include="Grammar\TokenInfo.cs" />
+    <Compile Include="Grammar\Tokenizer.cs" />
+    <Compile Include="Grammar\TokenType.cs" />
+    <Compile Include="Parser\Hlsl\HlslParser.cs" />
+    <Compile Include="Utility\LoggerResult.cs" />
+    <Compile Include="Parser\ParsingResult.cs" />
+    <Compile Include="Parser\PreProcessor.cs" />
+    <Compile Include="Utility\MessageCode.cs" />
+    <Compile Include="Utility\ReportMessage.cs" />
+    <Compile Include="Utility\ReportMessageLevel.cs" />
+    <Compile Include="Parser\ShaderMacro.cs" />
+    <Compile Include="Parser\ShaderParser.cs" />
+    <Compile Include="Utility\ReferenceEqualityComparer.cs" />
+    <Compile Include="Utility\OrderedHashSet.cs" />
+    <Compile Include="Utility\SpanConverter.cs" />
+    <Compile Include="Visitor\ExpressionEvaluator.cs" />
+    <Compile Include="Visitor\ExpressionResult.cs" />
+    <Compile Include="Visitor\ScopeDeclaration.cs" />
+    <Compile Include="Visitor\SearchVisitor.cs" />
+    <Compile Include="Visitor\ShaderVisitor.cs" />
+    <Compile Include="Visitor\VisitorBase.cs" />
+    <Compile Include="Convertor\HlslToGlslWriter.cs" />
+    <Compile Include="Visitor\VisitorGenerated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VisitorGenerated.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Writer\Hlsl\HlslWriter.cs" />
+    <Compile Include="Writer\ShaderWriter.cs" />
+    <Compile Include="Analysis\CastAnalysis.cs" />
+    <Compile Include="Visitor\StripVisitor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Convertor\Ast.Extensions.cs" />
+    <CodeAnalysisDictionary Include="Convertor\Keywords.glsl" />
+    <None Include="Grammar\Tokenizer.cgt" />
+    <None Include="Grammar\Tokenizer.grm" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Analysis\Hlsl\HlslDeclarations.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Irony\Irony.csproj">
+      <Project>{d81f5c91-d7db-46e5-bc99-49488fb6814c}</Project>
+      <Name>Irony</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Resources.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Resources.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Visitor\VisitorGenerated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>VisitorGenerated.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

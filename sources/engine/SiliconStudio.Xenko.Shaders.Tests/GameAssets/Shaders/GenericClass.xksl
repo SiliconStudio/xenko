@@ -1,0 +1,25 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+shader GenericClass<
+    Texture2D Texture,// = Texturing.Texture0,
+    SamplerState Sampler,// = Texturing.Sampler,
+    Semantic NAME, // = TEXCOORD0
+    LinkType myLink,
+    unorm float constFloat,
+    int2 constInt2,
+    uint3 constUInt3,
+    float4 constUNormFloat4,
+    float linkVariable
+> : TestBaseClass<NAME, myLink, constUNormFloat4>
+{
+    [Link("GenericLink.myLink")]
+    stage float3 uniformVariable;
+
+    stage stream float2 texCoord : NAME;
+    
+    float genericCompute()
+    {
+        float4 value0 = TestBaseClass<NAME, myLink, constUNormFloat4>.Value;
+        return streams.texCoord.x * Texture.Sample(Sampler, streams.texCoord).x;
+    }
+};

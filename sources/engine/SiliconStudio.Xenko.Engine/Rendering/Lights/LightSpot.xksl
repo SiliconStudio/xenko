@@ -1,0 +1,49 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Lights
+{
+    /// <summary>
+    /// Defines a spot light
+    /// </summary>
+    shader LightSpot : LightUtil, LightStream, PositionStream4
+    {
+        struct SpotLightData
+        {
+            float3 PositionWS;
+            float3 DirectionWS;
+            float3 AngleOffsetAndInvSquareRadius;
+            [Color]
+            float3 Color;
+        };
+
+        struct SpotLightDataInternal
+        {
+            float3 PositionWS;
+            float3 DirectionWS;
+            float3 AngleOffsetAndInvSquareRadius;
+            [Color]
+            float3 Color;
+        };
+
+        void ProcessLight(SpotLightDataInternal light)
+        {
+            float3 lightVector = light.PositionWS - streams.PositionWS.xyz;
+            float lightVectorLength = length(lightVector);
+            float3 lightVectorNorm = lightVector / lightVectorLength;
+
+            float3 lightAngleOffsetAndInvSquareRadius = light.AngleOffsetAndInvSquareRadius;
+            float2 lightAngleAndOffset = lightAngleOffsetAndInvSquareRadius.xy;
+            float lightInvSquareRadius = lightAngleOffsetAndInvSquareRadius.z;
+
+            // TODO: Add support for disk based Directional light
+            float3 lightDirection = -light.DirectionWS;
+
+            float attenuation = 1;
+            attenuation *= GetDistanceAttenuation(lightVector , lightInvSquareRadius);
+            attenuation *= GetAngleAttenuation(lightVectorNorm, lightDirection, lightAngleAndOffset.x, lightAngleAndOffset.y);
+
+            streams.lightColor = light.Color * attenuation;
+            streams.lightDirectionWS = lightVectorNorm;
+        }
+    };
+}

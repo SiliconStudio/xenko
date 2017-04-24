@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <ProjectGuid>{C904D2C6-5A15-4E0B-8432-33967E1735AA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SiliconStudio.Xenko.Assets.Models</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Assets.Models</AssemblyName>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
+    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AdditiveAnimationBaseMode.cs" />
+    <Compile Include="AnimationAsset.cs" />
+    <Compile Include="AnimationAsset.Upgrader.cs" />
+    <Compile Include="AnimationAssetCompiler.cs" />
+    <Compile Include="AnimationAssetDuration.cs" />
+    <Compile Include="AnimationAssetType.cs" />
+    <Compile Include="AssimpAssetImporter.cs" />
+    <Compile Include="DefaultFactories.cs" />
+    <Compile Include="FbxAssetImporter.cs" />
+    <Compile Include="IModelAsset.cs" />
+    <Compile Include="ImportAssimpCommand.cs" />
+    <Compile Include="ImportFbxCommand.cs" />
+    <Compile Include="ImportModelCommand.cs" />
+    <Compile Include="ImportModelCommand.SkeletonMapping.cs" />
+    <Compile Include="ImportModelCommand.Model.cs" />
+    <Compile Include="ImportModelCommand.Skeleton.cs" />
+    <Compile Include="ImportModelCommand.Animation.cs" />
+    <Compile Include="ModelAsset.cs" />
+    <Compile Include="ModelAssetCompiler.cs" />
+    <Compile Include="ModelAssetImporter.cs" />
+    <Compile Include="ModelMaterial.cs" />
+    <Compile Include="Module.cs" />
+    <Compile Include="NodeInformation.cs" />
+    <Compile Include="PrefabModelAsset.cs" />
+    <Compile Include="PrefabModelAssetCompiler.cs" />
+    <Compile Include="ProceduralModelAsset.cs" />
+    <Compile Include="ProceduralModelAssetCompiler.cs" />
+    <Compile Include="ProceduralModelFactories.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SkeletonAsset.cs" />
+    <Compile Include="SkeletonAssetCompiler.cs" />
+    <Compile Include="TextureFactories.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\assets\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
+      <Project>{1e54a9a2-4439-4444-ae57-6d2ed3c0dc47}</Project>
+      <Name>SiliconStudio.Assets</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\assets\SiliconStudio.Packages\SiliconStudio.Packages.csproj">
+      <Project>{acd2c831-bda2-4512-b4cc-75e8e1804f73}</Project>
+      <Name>SiliconStudio.Packages</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">
+      <Project>{7732cb84-a39a-4adf-b740-fd32a352fa8a}</Project>
+      <Name>SiliconStudio.BuildEngine.Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
+      <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
+      <Name>SiliconStudio.Core.Design</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210fb81-b807-49bb-af0d-31fb6a83a572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
+      <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
+      <Name>SiliconStudio.Core.Yaml</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\tools\SiliconStudio.Xenko.Importer.Assimp\SiliconStudio.Xenko.Importer.Assimp.vcxproj">
+      <Project>{c2306552-6c42-464c-8981-32fef4f9458d}</Project>
+      <Name>SiliconStudio.Xenko.Importer.Assimp</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\tools\SiliconStudio.Xenko.Importer.Common\SiliconStudio.Xenko.Importer.Common.vcxproj">
+      <Project>{43a6e62e-1b1c-4630-abb8-c3f716004645}</Project>
+      <Name>SiliconStudio.Xenko.Importer.Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\tools\SiliconStudio.Xenko.Importer.FBX\SiliconStudio.Xenko.Importer.FBX.vcxproj">
+      <Project>{0467d515-fd66-4b8a-a128-cb642c2ed03f}</Project>
+      <Name>SiliconStudio.Xenko.Importer.FBX</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Assets\SiliconStudio.Xenko.Assets.csproj">
+      <Project>{39ae9c77-e94b-404f-8768-b6261b3c1e0e}</Project>
+      <Name>SiliconStudio.Xenko.Assets</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
+      <Project>{c121a566-555e-42b9-9b0a-1696529a9088}</Project>
+      <Name>SiliconStudio.Xenko.Engine</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
+      <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
+      <Name>SiliconStudio.Xenko.Games</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
+      <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
+      <Project>{273bdd15-7392-4078-91f0-af23594a3d7b}</Project>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Analysis\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,26 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Shadows
+{
+    /// <summary>
+    /// Defines the textures used for shadow mapping.
+    /// </summary>
+    shader ShadowMapCommon<MemberName PerLighting>
+    {
+        rgroup PerLighting
+        {
+            [Link("ShadowMap.Texture")]
+            Texture2D ShadowMapTexture;
+        }
+
+        cbuffer PerLighting
+        {
+            [Link("ShadowMap.TextureSize")]
+            float2 ShadowMapTextureSize;
+
+            [Link("ShadowMap.TextureTexelSize")]
+            float2 ShadowMapTextureTexelSize;
+            // TODO: We could have different types (Texture2DArray for optimized paths, TextureCube for omni...etc.)
+        }
+    };
+}

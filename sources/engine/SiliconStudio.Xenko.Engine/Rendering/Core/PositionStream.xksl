@@ -1,0 +1,17 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Gets the correct shader to have a position stream in a float4 (even if attribute is a float2).
+/// </summary>
+/// <remarks>
+/// PDX_USE_FLOAT_INPUT: Macro - Switch between float2 of float4 position attribute.
+/// </remarks>
+#ifdef PDX_USE_FLOAT2_INPUT_INPUT
+shader PositionStream : PositionStream2
+{
+};
+#else
+shader PositionStream : PositionStream4
+{
+};
+#endif

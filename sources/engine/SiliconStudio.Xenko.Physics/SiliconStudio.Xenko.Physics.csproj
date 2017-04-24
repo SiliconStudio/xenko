@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+  </PropertyGroup>
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DD592516-B341-40FE-9100-1B0FA784A060}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Xenko.Physics</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Physics</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+    <XenkoBulletPlatform>Windows</XenkoBulletPlatform>
+    <XenkoBulletPlatform Condition="'$(SiliconStudioPlatform)' == 'iOS'">iOS</XenkoBulletPlatform>
+    <XenkoBulletSignedDir Condition="'$(SiliconStudioSign)' == 'true'">Signed\</XenkoBulletSignedDir>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="'$(SiliconStudioPlatform)' == 'Windows'">
+      <ItemGroup>
+        <SiliconStudioNativeLib Include="..\..\..\deps\VHACD\**\VHACD.dll">
+          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+        </SiliconStudioNativeLib>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <SiliconStudioNativeLib Include="..\..\..\deps\BulletPhysics\$(SiliconStudioPlatform)\**\libbulletc.*">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </SiliconStudioNativeLib>
+    <SiliconStudioContent Condition="'$(SiliconStudioPlatform)' == 'Linux'" Include="..\..\..\deps\BulletPhysics\BulletSharp.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </SiliconStudioContent>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="BulletSharp">
+      <HintPath>..\..\..\deps\BulletPhysics\$(XenkoBulletPlatform)\$(XenkoBulletSignedDir)BulletSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="Bullet2PhysicsSystem.cs" />
+    <Compile Include="Collision.cs" />
+    <Compile Include="Data\BoxColliderShapeDesc.cs" />
+    <Compile Include="Data\CapsuleColliderShapeDesc.cs" />
+    <Compile Include="Data\ConvexHullColliderShapeDesc.cs" />
+    <Compile Include="Data\ConeColliderShapeDesc.cs" />
+    <Compile Include="Data\CylinderColliderShapeDesc.cs" />
+    <Compile Include="Data\IColliderShapeDesc.cs" />
+    <Compile Include="Elements\CharacterComponent.cs" />
+    <Compile Include="Data\SphereColliderShapeDesc.cs" />
+    <Compile Include="Data\StaticPlaneColliderShapeDesc.cs" />
+    <Compile Include="Data\ColliderShapeAssetDesc.cs" />
+    <Compile Include="Engine\PhysicsComponent.cs" />
+    <Compile Include="Elements\PhysicsSkinnedComponentBase.cs" />
+    <Compile Include="Elements\PhysicsTriggerComponentBase.cs" />
+    <Compile Include="Elements\RigidbodyComponent.cs" />
+    <Compile Include="Elements\StaticColliderComponent.cs" />
+    <Compile Include="Engine\PhysicsColliderShape.cs" />
+    <Compile Include="Engine\PhysicsDebugShapeMaterial.cs" />
+    <Compile Include="Engine\PhysicsShapesRenderingService.cs" />
+    <Compile Include="Engine\PhysicsProcessor.cs" />
+    <Compile Include="IPhysicsSystem.cs" />
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="IRelative.cs" />
+    <Compile Include="Module.cs" />
+    <Compile Include="PhysicsConfiguration.cs" />
+    <Compile Include="PhysicsProfilingKeys.cs" />
+    <Compile Include="PhysicsScriptComponentExtensions.cs" />
+    <Compile Include="Shaders.Bytecode\PhysicsDebugEffect.bytecode.Vulkan.Level_9_1.cs" />
+    <Compile Include="Shapes\ConeColliderShape.cs" />
+    <Compile Include="XenkoMotionState.cs" />
+    <Compile Include="ShapeOrientation.cs" />
+    <Compile Include="Shapes\BoxColliderShape.cs" />
+    <Compile Include="Shapes\CapsuleColliderShape.cs" />
+    <Compile Include="ColliderShape.cs" />
+    <Compile Include="Shapes\CompoundColliderShape.cs" />
+    <Compile Include="Constraints\ConeTwistConstraint.cs" />
+    <Compile Include="Constraint.cs" />
+    <Compile Include="Shapes\ConvexHullColliderShape.cs" />
+    <Compile Include="Shapes\CylinderColliderShape.cs" />
+    <Compile Include="Shapes\HeightfieldColliderShape.cs" />
+    <Compile Include="Simulation.cs" />
+    <Compile Include="Constraints\GearConstraint.cs" />
+    <Compile Include="Constraints\Generic6DoFConstraint.cs" />
+    <Compile Include="Constraints\Generic6DoFSpringConstraint.cs" />
+    <Compile Include="Constraints\HingeConstraint.cs" />
+    <Compile Include="Constraints\Point2PointConstraint.cs" />
+    <Compile Include="Constraints\RotationalLimitMotor.cs" />
+    <Compile Include="Constraints\SliderConstraint.cs" />
+    <Compile Include="Shapes\SphereColliderShape.cs" />
+    <Compile Include="Shapes\StaticPlaneColliderShape.cs" />
+    <Compile Include="Constraints\TranslationalLimitMotor.cs" />
+    <Compile Include="ColliderShapeTypes.cs" />
+    <Compile Include="Elements\CollisionFilterGroups.cs" />
+    <Compile Include="ConstraintTypes.cs" />
+    <Compile Include="ContactPoint.cs" />
+    <Compile Include="HitResult.cs" />
+    <Compile Include="PhysicsEngineFlags.cs" />
+    <Compile Include="RigidBodyTypes.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
+      <Project>{1320f627-ee43-4115-8e89-19d1753e51f2}</Project>
+      <Name>SiliconStudio.Core.MicroThreading</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210fb81-b807-49bb-af0d-31fb6a83a572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
+      <Project>{c121a566-555e-42b9-9b0a-1696529a9088}</Project>
+      <Name>SiliconStudio.Xenko.Engine</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
+      <Project>{42780cbd-3fe7-48e3-bd5b-59945ea20137}</Project>
+      <Name>SiliconStudio.Xenko.Games</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
+      <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
+      <Project>{273bdd15-7392-4078-91f0-af23594a3d7b}</Project>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

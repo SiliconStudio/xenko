@@ -1,0 +1,33 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Defines the methods to get the normal in view space and inserts them in the pipeline.
+/// </summary>
+shader NormalBase : NormalStream, ShaderBase
+{
+    override stage void VSMain()
+    {
+        base.VSMain();
+
+        // Perform normal generation at the end in case vNormal is modified.
+        // TODO: Another mechanism (compute on first access?)
+        GenerateNormal_VS();
+    }
+
+    override stage void PSMain()
+    {
+        // Perform normal generation at beginning so that it is accessible during PS.
+        // TODO: Another mechanism (compute on first access?)
+        GenerateNormal_PS();
+        base.PSMain();
+    }
+
+    stage void GenerateNormal_VS()
+    {
+        streams.normalWS = 0.0f;
+    }
+
+    stage void GenerateNormal_PS()
+    {
+    }
+};

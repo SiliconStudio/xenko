@@ -1,0 +1,53 @@
+﻿<!-- Build file pre-included by all Silicon Studio projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Setup this part according to your project if you want your .csproj to compile individually without going through the .sln file -->
+  <PropertyGroup>
+    <SolutionDir Condition=" '$(SolutionDir)' == '' ">$(MSBuildThisFileDirectory)..\..\..\build\</SolutionDir>
+    <SolutionName Condition=" '$(SolutionName)' == '' ">Xenko</SolutionName>
+    <SolutionPath Condition=" '$(SolutionPath)' == '' ">$(SolutionDir)$(SolutionName).sln</SolutionPath>
+  </PropertyGroup>
+
+  <!--Import Local Pre Settings for the solution being loaded -->
+  <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
+  <Import Project="$(SolutionDir)SiliconStudio.PreSettings.Local.targets" Condition="Exists('$(SolutionDir)SiliconStudio.PreSettings.Local.targets')" />
+
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <GenerateProjectSpecificOutputFolder>false</GenerateProjectSpecificOutputFolder>
+
+    <!-- Defines the language of the project being compiled CSharp or Cpp - defined by default to CSharp, must be overriden to Cpp in a Cpp project -->
+    <SiliconStudioProjectType Condition="'$(SiliconStudioProjectType)' == ''">CSharp</SiliconStudioProjectType>
+
+    <!-- Flag used per-project settings to specify that it should only be compiled on Windows Desktop-->
+    <SiliconStudioWindowsOnly Condition="'$(SiliconStudioWindowsOnly)' == ''">false</SiliconStudioWindowsOnly>
+
+    <!-- Default values -->
+    <SiliconStudioPlatform Condition=" '$(SiliconStudioPlatform)' == '' ">Windows</SiliconStudioPlatform>
+    <SiliconStudioUI Condition="'$(SiliconStudioUI)' == '' AND '$(SiliconStudioPlatform)' == 'Windows'">SDL;WINFORMS;WPF</SiliconStudioUI>
+
+    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioPlatformFullName)' == ''">$(SiliconStudioPlatform)</SiliconStudioPlatformFullName>
+    
+    <SiliconStudioGlobalSettingsTargets Condition="'$(SiliconStudioGlobalSettingsTargets)' == ''">$(MSBuildThisFileDirectory)SiliconStudio.GlobalSettings.targets</SiliconStudioGlobalSettingsTargets>
+    <SiliconStudioPostSettingsTargets Condition="'$(SiliconStudioPostSettingsTargets)' == ''">$(MSBuildThisFileDirectory)SiliconStudio.PostSettings.targets</SiliconStudioPostSettingsTargets>
+  </PropertyGroup>
+
+  <!-- Build the SiliconStudioUIList using the value of SiliconStudioUI -->
+  <ItemGroup Condition="'$(SiliconStudioUIList)' == ''">
+    <SiliconStudioUIList Condition="'$(SiliconStudioUI)' != ''" Include="$(SiliconStudioUI)" />
+    <SiliconStudioUIList Condition="'$(SiliconStudioUI)' == ''" Include="None" />
+  </ItemGroup>
+
+  <!-- Ensure appropriate Solution Platform are available -->
+  <Choose>
+    <When  Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
+      <PropertyGroup Condition=" '$(Platform)' == 'Android' "/>
+    </When>
+    <When  Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
+      <PropertyGroup Condition=" '$(Platform)' == 'iPhone' "/>
+      <PropertyGroup Condition=" '$(Platform)' == 'iPhoneSimulator' "/>
+    </When>
+  </Choose>
+
+  <!--Import Global Settings-->
+  <Import Project="$(SiliconStudioGlobalSettingsTargets)"/>
+</Project>

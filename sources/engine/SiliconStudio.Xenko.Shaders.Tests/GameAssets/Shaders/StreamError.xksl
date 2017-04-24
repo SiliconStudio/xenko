@@ -1,0 +1,16 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+shader StreamError
+{
+    stream float myStream;
+
+    void test0(inout float value)
+    {
+        value = 2.0*value;
+    }
+
+    void test1()
+    {
+        test0(streams.myStream);
+    }
+};

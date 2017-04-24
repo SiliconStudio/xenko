@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <ProjectGuid>{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Xenko.Games.Testing</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Games.Testing</AssemblyName>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
+    <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\SiliconStudio.Xenko.Graphics.Regression\TestResultImage.cs">
+      <Link>TestResultImage.cs</Link>
+    </Compile>
+    <Compile Include="Requests\KeySimulationRequest.cs" />
+    <Compile Include="Requests\LogRequest.cs" />
+    <Compile Include="Module.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Requests\ScreenShotPayload.cs" />
+    <Compile Include="Requests\ScreenshotRequest.cs" />
+    <Compile Include="Requests\ScreenshotStored.cs" />
+    <Compile Include="Requests\StatusMessageRequest.cs" />
+    <Compile Include="Requests\TapSimulationRequest.cs" />
+    <Compile Include="Requests\TestAbortedRequest.cs" />
+    <Compile Include="Requests\TestRequestBase.cs" />
+    <Compile Include="GameTestingSystem.cs" />
+    <Compile Include="Requests\TestEndedRequest.cs" />
+    <Compile Include="GameTestingClient.cs" />
+    <Compile Include="Requests\TestRegistrationRequest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210fb81-b807-49bb-af0d-31fb6a83a572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
+      <Project>{c121a566-555e-42b9-9b0a-1696529a9088}</Project>
+      <Name>SiliconStudio.Xenko.Engine</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
+      <Project>{42780cbd-3fe7-48e3-bd5b-59945ea20137}</Project>
+      <Name>SiliconStudio.Xenko.Games</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
+      <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Input\SiliconStudio.Xenko.Input.csproj">
+      <Project>{84deb606-77ed-49cd-9aed-d2b13c1f5a1e}</Project>
+      <Name>SiliconStudio.Xenko.Input</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Navigation\SiliconStudio.Xenko.Navigation.csproj">
+      <Project>{fbe1fa7b-e699-4bb2-9c8f-41f4c9f3f088}</Project>
+      <Name>SiliconStudio.Xenko.Navigation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

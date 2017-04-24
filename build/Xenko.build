@@ -1,0 +1,475 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+Build file used to build Xenko and package it from the command line.
+Example of use: 
+"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" Xenko.build /t:PackageLauncher
+-->
+<Project ToolsVersion="15.0" DefaultTarget="Help" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <XenkoRoot>$(MSBuildThisFileDirectory)..\</XenkoRoot>
+    <XenkoRootBin>$(XenkoRoot)Bin\Windows\</XenkoRootBin>
+    <XenkoPackage>$(XenkoRoot)Xenko.xkpkg</XenkoPackage>
+    <XenkoSolution>$(XenkoRoot)build\Xenko</XenkoSolution>
+    <BuildProperties>Configuration=Release;NoWarn=1591;DeployExtension=false</BuildProperties>
+    <BuildProperties Condition="'$(SiliconStudioSign)' != ''">$(BuildProperties);SiliconStudioSign=$(SiliconStudioSign)</BuildProperties>
+    <BuildProperties Condition="'$(SiliconStudioOfficialBuild)' != ''">$(BuildProperties);SiliconStudioOfficialBuild=$(SiliconStudioOfficialBuild)</BuildProperties>
+    <ILRepackPath>$(XenkoRootBin)ILRepack.exe</ILRepackPath>
+    <NuGetPath>$(MSBuildThisFileDirectory).nuget\NuGet.exe</NuGetPath>
+    <NUnitConsolePath>$(XenkoRoot)sources\common\deps\NUnit\nunit3-console.exe</NUnitConsolePath>
+    <SiliconStudioStoreUrl Condition="'$(SiliconStudioStoreUrl)' == ''">https://xenko-packages.azurewebsites.net/api/v2/package</SiliconStudioStoreUrl>
+    <AdvancedInstallerPath Condition="'$(AdvancedInstallerPath)' == '' And Exists('$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 13.8.1\bin\x86\advinst.exe')">$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 13.8.1\bin\x86\advinst.exe</AdvancedInstallerPath>
+  </PropertyGroup>
+
+  <UsingTask TaskName="SiliconStudio.Core.Tasks.PackageUpdateVersionTask" AssemblyFile="$(XenkoRoot)sources\common\core\SiliconStudio.Core.Tasks\bin\Release\SiliconStudio.Core.Tasks.exe" />
+  <!-- TODO: those tasks will work only if the Direct3D11 files have been copied to top folder (currently works thanks to BuildEditorShaders being run before) -->
+  <UsingTask TaskName="SiliconStudio.Xenko.Assets.Tasks.PackageArchiveTask" AssemblyFile="$(XenkoRootBin)SiliconStudio.Xenko.Assets.dll" />
+  <UsingTask TaskName="SiliconStudio.Xenko.Assets.Tasks.PackageGetVersionTask" AssemblyFile="$(XenkoRootBin)SiliconStudio.Xenko.Assets.dll" />
+  
+  <Target Name="Help">
+    <Message Importance="high" Text="TODO"/>
+  </Target>
+  
+  <!--
+  Package Xenko to a nupkg
+  -->
+  <Target Name="Package" DependsOnTargets="GitLinkPdb">
+    <ItemGroup>
+        <FilesToDeletePackage Include="$(MSBuildThisFileDirectory)Xenko*.nupkg"/>
+    </ItemGroup>    
+    
+    <Delete Files="@(FilesToDeletePackage)"/>
+    <PackageArchiveTask File="$(XenkoPackage)"/>
+  </Target>
+
+  <!--
+  Package Launcher
+  -->
+  <Target Name="PackageLauncher" DependsOnTargets="LauncherPrerequisitesInstaller">
+    <ItemGroup>
+      <FilesToDeleteLauncher Include="$(MSBuildThisFileDirectory)SiliconStudio.Launcher*.nupkg"/>
+    </ItemGroup>
+
+    <Delete Files="@(FilesToDeleteLauncher)"/>
+    
+    <!-- Delete store.config to make sure it is rebuilt next time, due to CustomInstaller modifying it (note: might be better if we were copying it, requires some work on installer) -->
+    <Delete Files="$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\bin\Release\store.config"/>
+
+    <MSBuild Targets="60-Editor\SiliconStudio_LauncherApp" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    <!-- IL Repack is not used anymore -->
+    <!--<Exec Command='"$(ILRepackPath)" SiliconStudio.LauncherApp.exe Nuget.Core.dll /out:Xenko.exe' WorkingDirectory="$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"/>-->
+    <!-- Generate the nuget package for the launcher application -->
+    <Exec Command='"$(NuGetPath)" pack "$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\SiliconStudio.LauncherApp.nuspec" -BasePath "$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"' />
+  </Target>
+
+  <!--
+  VSIX Xenko plugin
+  Don't forget to build for VS2013 by using MSBuild 12.0, 
+  or if you're using a newer version of MSBuild, pass the flag /p:VisualStudioVersion=12.0 when calling MSBuild in the command line.
+  -->
+  <Target Name="VSIXPlugin">
+    <ItemGroup>
+      <FilesToDeleteVSIX Include="$(MSBuildThisFileDirectory)SiliconStudio.Xenko.VisualStudio.Package.*.nupkg"/>
+    </ItemGroup>
+
+    <Delete Files="@(FilesToDeleteVSIX)"/>
+
+    <MSBuild Targets="91-VisualStudio\SiliconStudio_Xenko_VisualStudio_Package;91-VisualStudio\SiliconStudio_Xenko_VisualStudio_PackageInstall" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    <Exec Command='"$(NuGetPath)" pack "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package\SiliconStudio.Xenko.VisualStudio.Package.nuspec" -BasePath "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package"' />
+  </Target>
+  
+  <!--
+  Package Installer: XenkoSetup.exe
+  -->
+  <Target Name="PackageInstallerSimple" DependsOnTargets="PackageLauncher">
+    <Delete Files="XenkoSetup.exe"/>
+    <!-- Run advanced installer -->
+    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(XenkoRoot)sources\install\Setup\setup.aip"'/>
+    <Copy SourceFiles="$(XenkoRoot)sources\install\Setup\setup-SetupFiles\XenkoSetup.exe" DestinationFolder="$(MSBuildThisFileDirectory)"/>
+  </Target>
+  <Target Name="PackageInstallerCustom" DependsOnTargets="PackageLauncher">
+    <Error Condition="'$(CustomInstaller)' == '' Or '$(CustomInstallerStoreUrl)' == ''" Text="When CustomInstaller is set, CustomInstallerStoreUrl also needs to be defined"/>
+    <PropertyGroup>
+      <CustomInstallerNoSpace>$(CustomInstaller.Replace(' ', ''))</CustomInstallerNoSpace>
+    </PropertyGroup>
+  
+    <Delete Files="XenkoSetup$(CustomInstallerNoSpace).exe"/>
+    <!-- Make sure it is deleted otherwise Advanced Installer complains (in case previous run didn't complete -->
+    <Delete Files="$(XenkoRoot)sources\install\Setup\setup-$(CustomInstallerNoSpace).aip"/>
+    <!-- Duplicate setup.aip with different IDs -->
+    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup.aip" /DuplicateProject "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstallerNoSpace).aip"'/>
+    <!-- Edit a few parameters -->
+    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstallerNoSpace).aip" /SetProperty BuildExeName="XenkoSetup$(CustomInstallerNoSpace)"'/>
+    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstallerNoSpace).aip" /SetProperty ProductName="Xenko $(CustomInstaller)"'/>
+    <Exec Command='"$(AdvancedInstallerPath)" /edit "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstallerNoSpace).aip" /SetProperty AI_PRODUCTNAME_ARP="Xenko $(CustomInstaller)"'/>
+    
+    <!-- Update store.config with additional parameters -->
+    <Exec Command='"$(NuGetPath)" sources Add -Name "Xenko $(CustomInstaller)" -Source "$(CustomInstallerStoreUrl)" -ConfigFile "$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\bin\Release\store.config"'/>
+
+    <!-- Run advanced installer -->
+    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(XenkoRoot)sources\install\Setup\setup-$(CustomInstallerNoSpace).aip"'/>
+    <Copy SourceFiles="$(XenkoRoot)sources\install\Setup\setup-$(CustomInstallerNoSpace)-SetupFiles\XenkoSetup$(CustomInstallerNoSpace).exe" DestinationFolder="$(MSBuildThisFileDirectory)"/>
+    <Delete Files="$(XenkoRoot)sources\install\Setup\setup-$(CustomInstallerNoSpace).aip"/>
+  </Target>
+  <PropertyGroup>
+    <!-- Choose proper target to execute -->
+    <PackageInstallerTarget Condition="'$(CustomInstaller)' == ''">PackageInstallerSimple</PackageInstallerTarget>
+    <PackageInstallerTarget Condition="'$(CustomInstaller)' != ''">PackageInstallerCustom</PackageInstallerTarget>
+  </PropertyGroup>
+  <Target Name="PackageInstaller" DependsOnTargets="$(PackageInstallerTarget)"/>
+  
+  <!--
+  Package Installer: install-prerequisites.exe
+  -->
+  <Target Name="PrerequisitesInstaller">
+    <Delete Files="$(XenkoRoot)Bin\Prerequisites\install-prerequisites.exe"/>
+    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(XenkoRoot)sources\install\Prerequisites\prerequisites.aip"'/>
+    <Copy SourceFiles="$(XenkoRoot)sources\install\Prerequisites\install-prerequisites.exe" DestinationFolder="$(XenkoRoot)Bin\Prerequisites"/>
+  </Target>
+
+  <!--
+  Package Installer: launcher-prerequisites.exe
+  -->
+  <Target Name="LauncherPrerequisitesInstaller">
+    <Delete Files="$(XenkoRoot)Bin\Prerequisites\launcher-prerequisites.exe"/>
+    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(XenkoRoot)sources\install\Prerequisites\launcher-prerequisites.aip"'/>
+  </Target>
+
+  <!--
+  Perform a full build: Build, Package and PackageInstaller
+  -->
+  <Target Name="FullBuild">
+    <CallTarget Targets="Build"/>
+    <CallTarget Targets="Package"/>
+    <CallTarget Targets="PackageInstaller"/>
+    <CallTarget Targets="PrerequisitesInstaller"/>
+    <CallTarget Targets="VSIXPlugin"/>
+  </Target>
+  
+  <!--
+  Publish Xenko nupkg from this folder to the store
+  -->
+  <Target Name="Publish">
+    <Error Condition="'$(SiliconStudioStoreApiKey)' == ''" Text="Missing env variable SiliconStudioStoreApiKey"/>
+    <!-- Waiting 30min in case NuGet.Gallery/Server takes time to process -->
+    <Exec Command='"$(NuGetPath)" push Xenko*.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) -Timeout 1800 '/>
+  </Target>
+
+  <!--
+  Publish Launcher nupkg from this folder to the store
+  -->
+  <Target Name="PublishLauncher">
+    <Error Condition="'$(SiliconStudioStoreApiKey)' == ''" Text="Missing env variable SiliconStudioStoreApiKey"/>
+    <Exec Command='"$(NuGetPath)" push SiliconStudio.Launcher*.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) "'/>
+  </Target>
+
+  <!--
+  Publish VSIX nupkg from this folder to the store
+  -->
+  <Target Name="PublishVSIX">
+    <Error Condition="'$(SiliconStudioStoreApiKey)' == ''" Text="Missing env variable SiliconStudioStoreApiKey"/>
+    <Exec Command='"$(NuGetPath)" push SiliconStudio.Xenko.VisualStudio.Package*.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) "'/>
+  </Target>
+  
+  <!--
+  Build Xenko: Windows, Android, iOS, Windows 10 (UWP)
+  -->
+  <Target Name="Clean">
+    <Exec Command="RMDIR /Q /S $(XenkoRoot)\Bin"/>
+  </Target>
+  
+  <!-- Package -->
+  <Target Name="PreparePackageBuild">
+    <PropertyGroup>
+      <BuildProperties>$(BuildProperties);SiliconStudioGenerateDoc=true;SiliconStudioPackageBuild=true</BuildProperties>
+    </PropertyGroup>
+    
+    <!-- Need to restore NuGet packages before running some part of the build (for example, VisualStudio Package needs Microsoft.VSSDK.BuildTools target files when loading project; note: the . after $(MSBuildThisFileDirectory) is necessary (NuGet doesn't like SolutionDir ending with \) -->
+    <Exec Command='"$(NuGetPath)" restore -SolutionDir "$(MSBuildThisFileDirectory)." "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package"' />
+    
+    <!-- Make sure SiliconStudio.Assets is built to run the task to update package version.
+         It might be better to move it to a prebuilt assembly if that becomes a problem.
+    -->
+    <MSBuild Targets="30-CoreDesign\SiliconStudio_Core_Tasks" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    
+    <!-- Create SharedAssemblyInfo.NuGet.cs with Git information (different between official build and internal builds) -->
+    <PackageUpdateVersionTask Condition="'$(SiliconStudioOfficialBuild)' == 'true'" PackageFile="$(XenkoPackage)" VersionFile="$(XenkoRoot)sources\shared\SharedAssemblyInfo.cs" GeneratedVersionFile="$(XenkoRoot)sources\shared\SharedAssemblyInfo.NuGet.cs" />
+    <PackageUpdateVersionTask Condition="'$(SiliconStudioOfficialBuild)' != 'true'" PackageFile="$(XenkoPackage)" VersionFile="$(XenkoRoot)sources\shared\SharedAssemblyInfo.cs" GeneratedVersionFile="$(XenkoRoot)sources\shared\SharedAssemblyInfo.NuGet.cs" SpecialVersion="beta" SpecialVersionGitHeight="true" SpecialVersionGitCommit="true" />
+  </Target>
+  <Target Name="BuildForPackageMinimal" DependsOnTargets="PreparePackageBuild;BuildWindows;BuildEditorShaders;VSIXPlugin"/>
+  <Target Name="BuildForPackage" DependsOnTargets="PreparePackageBuild;BuildWindows;BuildWindowsDirect3D12;BuildWindowsOpenGL;BuildWindowsOpenGLES;BuildEditorShaders;BuildAndroid;BuildiOS;BuildUWP;BuildWindowsVulkan;BuildLinux;BuildLinuxVulkan;BuildLinuxCoreCLR;BuildLinuxCoreCLRVulkan;VSIXPlugin"/>
+  <Target Name="GeneratePackage" DependsOnTargets="PreparePackageBuild;PrerequisitesInstaller;PackageLauncher;Package;PackageInstaller;WritePackageVersionToFile"/>
+  
+  <Target Name="CopyXenkoKey">
+    <Copy Condition="'$(SiliconStudioSign)' == 'true' And Exists('$(LOCALAPPDATA)\SiliconStudio\XenkoBuildKey\xenko.snk')" SourceFiles="$(LOCALAPPDATA)\SiliconStudio\XenkoBuildKey\xenko.snk" DestinationFolder="$(MSBuildThisFileDirectory)"/>
+  </Target>
+
+  <Target Name="BuildEditorShaders">
+    <Exec Command="$(XenkoRoot)sources\editor\SiliconStudio.Xenko.Assets.Presentation\EditorPackage\generate-editor-package.bat" WorkingDirectory="$(XenkoRoot)sources\editor\SiliconStudio.Xenko.Assets.Presentation\EditorPackage"/>
+  </Target>
+
+  <Target Name="BuildWindows" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+  </Target>
+
+  <Target Name="BuildWindowsDirect3D11" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).Direct3D.sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+  </Target>
+  
+  <Target Name="BuildWindowsDirect3D12" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).Direct3D12.sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+  </Target>
+
+  <Target Name="BuildWindowsOpenGL" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).OpenGL.sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+  </Target>
+
+  <Target Name="BuildWindowsOpenGLES" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).OpenGLES.sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+  </Target>
+
+  <Target Name="BuildWindowsDirect3D11CoreCLR" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).Direct3D.CoreCLR.sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+  </Target>
+
+  <Target Name="BuildAndroid" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).Android.sln" Properties="$(BuildProperties);Platform=Android"/>
+  </Target>
+
+  <Target Name="BuildiOS" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).iOS.sln" Properties="$(BuildProperties);Platform=iPhone"/>
+  </Target>
+  
+  <Target Name="BuildWindowsStore" DependsOnTargets="CopyXenkoKey">
+    <!-- Only a warning since build servers might still call this target for old branches -->
+    <Warning Text="Windows Store doesn't exist anymore"/>
+  </Target>
+
+  <Target Name="BuildWindows10" DependsOnTargets="BuildUWP" />
+
+  <Target Name="BuildUWP" DependsOnTargets="CopyXenkoKey">
+    <Exec Command='"$(NuGetPath)" restore "$(MSBuildThisFileDirectory)project.json"' />
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).UWP.sln" Properties="$(BuildProperties);Platform=UWP"/>
+  </Target>
+  
+  <Target Name="BuildWindowsPhone" DependsOnTargets="CopyXenkoKey">
+    <!-- Only a warning since build servers might still call this target for old branches -->
+    <Warning Text="Windows Phone doesn't exist anymore"/>
+  </Target>
+  
+  <Target Name="BuildWindowsVulkan" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).Vulkan.sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+  </Target>
+  
+  <Target Name="BuildLinux" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).Linux.sln" Properties="$(BuildProperties);Platform=Linux"/>
+  </Target> 
+
+  <Target Name="BuildLinuxVulkan" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).Linux.Vulkan.sln" Properties="$(BuildProperties);Platform=Linux"/>
+  </Target> 
+  
+  <Target Name="BuildLinuxCoreCLR" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).Linux.CoreCLR.sln" Properties="$(BuildProperties);Platform=Linux"/>
+  </Target> 
+  
+  <Target Name="BuildLinuxCoreCLRVulkan" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).Linux.Vulkan.CoreCLR.sln" Properties="$(BuildProperties);Platform=Linux"/>
+  </Target> 
+
+  <Target Name="BuildmacOS" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).macOS.sln" Properties="$(BuildProperties);Platform=macOS"/>
+  </Target> 
+
+  <Target Name="BuildmacOSCoreCLR" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Build" Projects="$(XenkoSolution).macOS.CoreCLR.sln" Properties="$(BuildProperties);Platform=macOS"/>
+  </Target> 
+  
+  <Target Name="WritePackageVersionToFile">
+    <PackageGetVersionTask File="$(XenkoPackage)">
+      <Output TaskParameter="NuGetVersion" PropertyName="XenkoPackageVersion"/>
+    </PackageGetVersionTask>
+    <Delete Files="$(MSBuildThisFileDirectory)Xenko.version"/>
+    <WriteLinesToFile File="$(MSBuildThisFileDirectory)Xenko.version" Lines="$(XenkoPackageVersion)" />
+  </Target>
+  
+  <Target Name="GitLinkPdb" Condition="'$(SiliconStudioOfficialBuild)' == 'true'">
+    <PackageGetVersionTask File="$(XenkoPackage)">
+      <Output TaskParameter="NugetVersionSimpleNoRevision" PropertyName="XenkoPackageVersionNoRevision"/>
+    </PackageGetVersionTask>
+    <Exec ContinueOnError="true" Command="$(XenkoRoot)deps\GitLink\GitLink.exe $(XenkoRoot) -f build\Xenko.sln -u https://github.com/SiliconStudio/xenko -s releases/$(XenkoPackageVersionNoRevision)" />
+  </Target>
+  
+  <Target Name="RunTestsWindows">
+    <!-- By default, enable all known categories -->
+    <PropertyGroup>
+      <SiliconStudioTestCategories Condition="'$(SiliconStudioTestCategories)' == ''">Simple;Game;VSPackage</SiliconStudioTestCategories>
+      <!-- We enclose everything with ;, so that we could do full word matches more easily with string.Contains() -->
+      <SiliconStudioTestCategories>;$(SiliconStudioTestCategories);</SiliconStudioTestCategories>
+	  <SiliconStudioTestExtraTargets></SiliconStudioTestExtraTargets>
+      <SiliconStudioTestExtraTargets Condition="$(SiliconStudioTestCategories.Contains(';GameAndroid;'))">$(SiliconStudioTestExtraTargets);SignAndroidPackage</SiliconStudioTestExtraTargets>
+    </PropertyGroup>
+    
+    <!-- Simple standalone unit tests -->
+    <ItemGroup Condition="$(SiliconStudioTestCategories.Contains(';Simple;'))">
+      <UnitTest Include="11-CoreRuntime.Tests\SiliconStudio.Core.Tests"/>
+      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Shaders.Tests.Windows"/>
+      <UnitTest Include="31-CoreDesign.Tests\SiliconStudio.BuildEngine.Tests"/>
+      <UnitTest Include="31-CoreDesign.Tests\SiliconStudio.Core.Design.Tests"/>
+      <UnitTest Include="31-CoreDesign.Tests\SiliconStudio.Core.Yaml.Tests"/>
+      <UnitTest Include="41-Assets.Tests\SiliconStudio.Assets.Quantum.Tests"/>
+      <UnitTest Include="41-Assets.Tests\SiliconStudio.Assets.Tests"/>
+      <!-- Need fix <UnitTest Include="51-Presentation.Tests\SiliconStudio.Presentation.Quantum.Tests"/>-->
+      <UnitTest Include="51-Presentation.Tests\SiliconStudio.Presentation.Tests"/>
+      <UnitTest Include="51-Presentation.Tests\SiliconStudio.Quantum.Tests"/>
+      <UnitTest Include="61-Editor.Tests\SiliconStudio.Assets.Editor.Tests"/>
+      <UnitTest Include="61-Editor.Tests\SiliconStudio.Xenko.GameStudio.Tests"/>
+      <UnitTest Include="71-XenkoAssets.Tests\SiliconStudio.Xenko.Assets.Tests2"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Engine.Tests.Windows"/>
+      <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.10_0.Windows"/>
+      <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.Windows"/>
+      <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Navigation.Tests.Windows"/>
+      <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Input.Tests.Windows"/>
+      <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Particles.Tests.Windows"/>
+      <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Physics.Tests.Windows"/>
+      <UnitTestGame Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.UI.Tests.Windows"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <UnitTestGameAndroid Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Engine.Tests.Android"/>
+      <UnitTestGameAndroid Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.10_0.Android"/>
+      <UnitTestGameAndroid Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.Android"/>
+      <UnitTestGameAndroid Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Input.Tests.Android"/>
+      <UnitTestGameAndroid Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Particles.Tests.Android"/>
+      <UnitTestGameAndroid Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Physics.Tests.Android"/>
+      <UnitTestGameAndroid Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.UI.Tests.Android"/>
+    </ItemGroup>
+    
+    <!-- Direct3D11 unit tests -->
+    <ItemGroup Condition="$(SiliconStudioTestCategories.Contains(';Game;'))">
+      <UnitTest Include="@(UnitTestGame)"/>
+      <!-- Other graphics platforms don't support compute shaders and tessellation yet -->
+      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Graphics.Tests.11_0.Windows"/>
+      <UnitTest Include="21-XenkoRuntime.Tests\SiliconStudio.Xenko.Audio.Tests.Windows"/>
+      <UnitTest Include="71-XenkoAssets.Tests\SiliconStudio.Xenko.Assets.Tests"/>
+    </ItemGroup>
+
+    <!-- Unit tests for Visual Studio -->
+    <!-- Need to restore NuGet packages before running some part of the build (for example, VisualStudio Package needs Microsoft.VSSDK.BuildTools target files when loading project; note: the . after $(MSBuildThisFileDirectory) is necessary (NuGet doesn't like SolutionDir ending with \) -->
+    <Exec Condition="$(SiliconStudioTestCategories.Contains(';VSPackage;'))" Command='"$(NuGetPath)" restore -SolutionDir "$(MSBuildThisFileDirectory)." "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package"' />
+    <ItemGroup Condition="$(SiliconStudioTestCategories.Contains(';VSPackage;'))">
+      <UnitTest Include="91-VisualStudio\SiliconStudio.Xenko.VisualStudio.Package.Tests"/>
+    </ItemGroup>
+
+    <!-- Direct3D12 unit tests -->
+    <ItemGroup Condition="$(SiliconStudioTestCategories.Contains(';GameDirect3D12;'))">
+      <UnitTestPrerequisites Include="@(UnitTestGame)"/>
+      <UnitTest Include="@(UnitTestGame)"><Solution>$(XenkoSolution).Direct3D12.sln</Solution></UnitTest>
+    </ItemGroup>
+
+    <!-- OpenGL unit tests -->
+    <ItemGroup Condition="$(SiliconStudioTestCategories.Contains(';GameOpenGL;'))">
+      <UnitTestPrerequisites Include="@(UnitTestGame)"/>
+      <UnitTest Include="@(UnitTestGame)"><Solution>$(XenkoSolution).OpenGL.sln</Solution></UnitTest>
+    </ItemGroup>
+
+    <!-- OpenGLES unit tests -->
+    <ItemGroup Condition="$(SiliconStudioTestCategories.Contains(';GameOpenGLES;'))">
+      <UnitTestPrerequisites Include="@(UnitTestGame)"/>
+      <UnitTest Include="@(UnitTestGame)"><Solution>$(XenkoSolution).OpenGLES.sln</Solution></UnitTest>
+    </ItemGroup>
+    
+    <!-- Vulkan unit tests -->
+    <ItemGroup Condition="$(SiliconStudioTestCategories.Contains(';GameVulkan;'))">
+      <UnitTestPrerequisites Include="@(UnitTestGame)"/>
+      <UnitTest Include="@(UnitTestGame)"><Solution>$(XenkoSolution).Vulkan.sln</Solution></UnitTest>
+    </ItemGroup>
+	
+	<!-- Android unit tests -->
+    <ItemGroup Condition="$(SiliconStudioTestCategories.Contains(';GameAndroid;'))">
+      <UnitTestPrerequisites Include="@(UnitTestGame)"/>
+      <UnitTest Include="@(UnitTestGameAndroid)"><Solution>$(XenkoSolution).Android.sln</Solution></UnitTest> 
+    </ItemGroup>
+    
+    <!-- Compute TargetName and default Solution -->    
+    <ItemGroup>
+      <UnitTestPrerequisites>
+        <!-- Replace . into _ (needed for .sln targets) -->
+        <TargetName>$([System.String]::Copy('%(Identity)').Replace('.','_'))</TargetName>
+        <!-- Default solution -->
+        <Solution Condition="'%(UnitTestPrerequisites.Solution)' == ''">$(XenkoSolution).sln</Solution>
+      </UnitTestPrerequisites>
+      <UnitTest>
+        <!-- Replace . into _ (needed for .sln targets) -->
+        <TargetName>$([System.String]::Copy('%(Identity)').Replace('.','_'))</TargetName>
+        <!-- Default solution -->
+        <Solution Condition="'%(UnitTest.Solution)' == ''">$(XenkoSolution).sln</Solution>
+      </UnitTest>
+    </ItemGroup>
+    
+    <!-- First, build prerequisites -->
+    <Message Importance="High" Text="Going to build unit test prerequisites from solution %(Solution): @(UnitTestPrerequisites->'%(TargetName)')"/>
+    <MSBuild Targets="@(UnitTestPrerequisites->'%(TargetName)')" Projects="%(Solution)" Properties="$(BuildProperties);Platform=Mixed Platforms;DeployExtension=true"/>
+
+    <!-- Build unit tests -->
+    <Message Importance="High" Text="Going to build unit test from solution %(Solution): @(UnitTest->'%(TargetName)')"/>
+    <MSBuild Targets="@(UnitTest->'%(TargetName)');$(SiliconStudioTestExtraTargets)" Projects="%(Solution)" Properties="$(BuildProperties);DeployExtension=true">
+        <Output TaskParameter="TargetOutputs" ItemName="AssembliesToTest" />
+    </MSBuild>
+    
+    <!-- Run unit tests -->
+    <Error Text="Could not find [$(NUnitConsolePath)]" Condition="!Exists('$(NUnitConsolePath)')"/>
+    <MakeDir Directories="$(MSBuildThisFileDirectory)TestResults"/>
+    <Exec IgnoreExitCode="True" Command="$(NUnitConsolePath) --process=Separate --x86 --result=&quot;$(MSBuildThisFileDirectory)TestResults\TestResult-$([System.DateTime]::Now.ToString(yyyyMMdd-HHmmss)).xml&quot;;format=nunit3 @(AssembliesToTest->'%(Identity)', ' ')" WorkingDirectory="$(XenkoRootBin)">
+      <Output TaskParameter="ExitCode" ItemName="exitCode" />
+    </Exec>
+    <Error Text="Error while running tests" Condition="@(exitCode) &lt; 0" />
+  </Target>
+  
+  <ItemGroup>
+    <MobileUnitTestProject Include="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Engine.Tests\SiliconStudio.Xenko.Engine.Tests.$(PlatformToBuild).csproj"/>
+    <MobileUnitTestProject Include="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Audio.Tests\SiliconStudio.Xenko.Audio.Tests.$(PlatformToBuild).csproj"/>
+    <MobileUnitTestProject Include="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Graphics.Tests\SiliconStudio.Xenko.Graphics.Tests.$(PlatformToBuild).csproj"/>
+    <MobileUnitTestProject Include="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Graphics.Tests.10_0\SiliconStudio.Xenko.Graphics.Tests.10_0.$(PlatformToBuild).csproj"/>
+    <MobileUnitTestProject Include="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Input.Tests\SiliconStudio.Xenko.Input.Tests.$(PlatformToBuild).csproj"/>
+    <MobileUnitTestProject Include="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Particles.Tests\SiliconStudio.Xenko.Particles.Tests.$(PlatformToBuild).csproj"/>
+    <MobileUnitTestProject Include="$(XenkoRoot)sources\engine\SiliconStudio.Xenko.Physics.Tests\SiliconStudio.Xenko.Physics.Tests.$(PlatformToBuild).csproj"/>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <MobileUnitTestApk Include="$(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Engine.Tests\SiliconStudio.Xenko.Engine.Tests-Signed.apk"/>
+    <MobileUnitTestApk Include="$(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Physics.Tests\SiliconStudio.Xenko.Physics.Tests-Signed.apk"/>
+    <MobileUnitTestApk Include="$(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Audio.Tests\SiliconStudio.Xenko.Audio.Tests-Signed.apk"/>
+    <MobileUnitTestApk Include="$(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Graphics.Tests.10_0\SiliconStudio.Xenko.Graphics.Tests_10_0-Signed.apk"/>
+    <MobileUnitTestApk Include="$(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Graphics.Tests\SiliconStudio.Xenko.Graphics.Tests-Signed.apk"/>
+    <MobileUnitTestApk Include="$(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Input.Tests\SiliconStudio.Xenko.Input.Tests-Signed.apk"/>
+    <MobileUnitTestApk Include="$(XenkoRoot)\Bin\Android\Tests\OpenGLES\SiliconStudio.Xenko.Particles.Tests\SiliconStudio.Xenko.Particles.Tests-Signed.apk"/>
+  </ItemGroup>
+  
+  <Target Name="RunTestsMobile" Outputs="%(MobileUnitTestProject.Identity)">
+    <PropertyGroup>
+      <XenkoRoot>$(MSBuildThisFileDirectory)..\</XenkoRoot>
+      <XenkoRootBin>$(XenkoRoot)Bin\Windows\</XenkoRootBin>
+      <XenkoPlatform></XenkoPlatform>
+      <XenkoPlatform Condition="'$(PlatformToBuild)' == 'iOS'">Platform=iPhone</XenkoPlatform>
+      <XenkoPlatform Condition="'$(PlatformToBuild)' == 'Android'">Platform=Android</XenkoPlatform>
+      <XenkoBuildOptions></XenkoBuildOptions>
+      <XenkoBuildOptions Condition="'$(PlatformToBuild)' == 'iOS'">ServerAddress=pc13095;ServerUser=virgile;BuildIpa=true;MtouchUseLlvm=true</XenkoBuildOptions>
+      <XenkoBuildTargets>Rebuild</XenkoBuildTargets>
+      <XenkoBuildTargets Condition="'$(PlatformToBuild)' == 'Android'">SignAndroidPackage</XenkoBuildTargets>
+      <XenkoBuildConfig>Release</XenkoBuildConfig>
+      <XenkoBuildConfig Condition="'$(PlatformToBuild)' == 'Windows'">Debug</XenkoBuildConfig>
+    </PropertyGroup>
+  
+    <MSBuild Projects ="%(MobileUnitTestProject.Identity)" Targets="SignAndroidPackage"
+             Properties="SolutionName=Xenko.Android; SolutionDir=$(MSBuildThisFileDirectory);$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)">
+    </MSBuild>
+    <Exec IgnoreExitCode="True" Command='taskkill /F /FI "Imagename eq SiliconStudio.Assets.CompilerApp*"' />
+    
+    <Exec Condition="'$(PlatformToBuild)' == 'Android'" IgnoreExitCode="True" Command="$(XenkoRootBin)SiliconStudio.Xenko.TestRunner.exe %(MobileUnitTestApk.Identity)" WorkingDirectory="$(XenkoRootBin)">
+      <Output TaskParameter="ExitCode" ItemName="exitCode" />
+    </Exec>
+  </Target>
+</Project>

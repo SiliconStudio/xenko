@@ -1,0 +1,12 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Returns the white opaque color.
+/// </summary>
+shader ComputeColorOne : ComputeColor
+{
+    override float4 Compute()
+    {
+        return 1;
+    }
+};

@@ -1,0 +1,22 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    // Temporary code for testing IMaterialSurface
+    shader MaterialSurfaceDomainStageCompositor : TessellationBase
+    {
+        compose IMaterialSurface materialDomainStage;
+        compose IStreamInitializer streamInitializerDomainStage;
+
+        stage override void TessellateDomain()
+        {
+            base.TessellateDomain();
+
+            // Reset material streams 
+            streamInitializerDomainStage.ResetStream();
+
+            // Compute the shading of the surface
+            materialDomainStage.Compute();
+        }
+    };
+}

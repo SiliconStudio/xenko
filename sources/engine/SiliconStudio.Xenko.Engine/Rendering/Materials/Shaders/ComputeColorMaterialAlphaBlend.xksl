@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+shader ComputeColorMaterialAlphaBlend : ComputeColor, MaterialPixelStream
+{
+    compose ComputeColor color;
+
+    override float4 Compute()
+    {
+        var alpha = 2.0 * color.Compute().x;
+        float specularFactor = min(1, alpha);
+        float diffuseFactor = max(0, alpha - 1.0);
+        return float4(diffuseFactor, specularFactor, 0, 0);
+    }
+};

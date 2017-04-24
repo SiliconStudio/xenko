@@ -1,0 +1,19 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    /// <summary>
+    /// Emissive shading
+    /// </summary>
+    shader MaterialSurfaceEmissiveShading<bool TUseAlphaFromEmissive> : IMaterialSurfacePixel, MaterialPixelShadingStream
+    {
+        override void Compute()
+        {
+            streams.shadingColor += streams.matEmissive.rgb * streams.matEmissiveIntensity;
+            if (TUseAlphaFromEmissive)
+            {
+                streams.shadingColorAlpha = streams.matEmissive.a;
+            }
+        }
+    };
+}

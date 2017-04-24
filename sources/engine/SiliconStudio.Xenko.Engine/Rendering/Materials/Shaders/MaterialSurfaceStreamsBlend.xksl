@@ -1,0 +1,25 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    shader MaterialSurfaceStreamsBlend : IMaterialSurface
+    {
+        compose IMaterialSurface layer;
+
+        compose IMaterialStreamBlend blends[];
+
+        override void Compute()
+        {
+            var backup = streams;
+
+            // Compute the layer
+            layer.Compute();
+
+            // Compute the blending of this layer
+            foreach(var blendStep in blends)
+            {
+                blendStep.Compute(backup);
+            }
+        }
+    };
+}

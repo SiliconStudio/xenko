@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
+    <ProjectGuid>{5E241BE1-FFB6-49F2-98B4-7869BA7D9F5A}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SiliconStudio.ExecServer</RootNamespace>
+    <AssemblyName>SiliconStudio.ExecServer</AssemblyName>
+    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\common\core\SiliconStudio.Core\Native\NativeLibraryInternal.cs">
+      <Link>NativeLibraryInternal.cs</Link>
+    </Compile>
+    <Compile Include="AppDomainShadow.cs" />
+    <Compile Include="AppDomainShadowManager.cs" />
+    <Compile Include="ExecServerRemote.cs" />
+    <Compile Include="ExecServerApp.cs" />
+    <Compile Include="IExecServerRemote.cs" />
+    <Compile Include="IServerLogger.cs" />
+    <Compile Include="ProcessHelper.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="..\SiliconStudio.VisualStudio\SiliconStudio.VisualStudio.projitems" Label="Shared" />
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

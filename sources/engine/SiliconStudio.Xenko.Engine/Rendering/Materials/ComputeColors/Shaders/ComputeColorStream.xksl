@@ -1,0 +1,11 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Returns the color attribute of the mesh.
+/// </summary>
+shader ComputeColorStream : ComputeColor, ColorBase
+{
+    override float4 Compute() {
+        return streams.Color;
+    }
+};

@@ -1,0 +1,51 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Lights
+{
+    /// <summary>
+    /// Defines a group of similar lights (directional, spot...etc.)
+    /// </summary>
+    shader DirectLightGroup : LightStream, ShadowGroup, NormalStream
+    {
+        int GetMaxLightCount()
+        {
+            return 0;
+        }
+
+        /// <summary>
+        /// Gets the number of lights of this group
+        /// </summary>
+        int GetLightCount()
+        {
+            return 0;
+        }
+
+        /// <summary>
+        /// One-time initialization before the light loop.
+        /// </summary>
+        void PrepareDirectLights()
+        {
+        }
+
+        /// <summary>
+        /// Compute the light color/direction for the specified index within this group
+        /// </summary>
+        void PrepareDirectLight(int lightIndex)
+        {
+            PrepareDirectLightCore(lightIndex);
+
+            // Compute NdotL
+            streams.NdotL = max(dot(streams.normalWS, streams.lightDirectionWS), 0.0001f);
+
+            // Computes the shadowColor
+            ComputeShadow(lightIndex);
+
+            // Compute the final color with NdotL
+            streams.lightColorNdotL = streams.lightColor * streams.shadowColor * streams.NdotL * streams.lightDirectAmbientOcclusion;
+        }
+
+        void PrepareDirectLightCore(int lightIndex)
+        {
+        }
+    };
+}

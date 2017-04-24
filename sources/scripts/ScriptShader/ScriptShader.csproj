@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{457D4B45-85B9-4098-8389-6CBC012D140F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ScriptShader</RootNamespace>
+    <AssemblyName>ScriptShader</AssemblyName>
+    <XenkoScript>true</XenkoScript>
+    <AppxGeneratePriEnabled>false</AppxGeneratePriEnabled>
+    <QuickGraphPath>QuickGraph.dll</QuickGraphPath>
+    <QuickGraphPath Condition="'$(SiliconStudioPlatform)' == 'Android'">QuickGraph.Android.dll</QuickGraphPath>
+    <SiliconStudioBuildTags>Windows</SiliconStudioBuildTags>
+    <SiliconStudioCompilerTargetsEnable>false</SiliconStudioCompilerTargetsEnable>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="Effects\Deprecated\AOPlugin.cs" />
+    <None Include="Effects\Deprecated\CascadeShadowMapLevel.cs" />
+    <None Include="Effects\Deprecated\PostEffectGraphPlugin.cs" />
+    <None Include="Effects\Deprecated\PostEffectMeshPlugin.cs" />
+    <None Include="Effects\Deprecated\PostEffectSeparateShaderPlugin.cs" />
+    <None Include="Effects\Deprecated\SlideShowPlugin.cs" />
+    <None Include="Effects\Deprecated\ParticleProcessor.cs" />
+    <None Include="Effects\Deprecated\DirectionalLight.cs" />
+    <None Include="Effects\Deprecated\HeatShimmerPlugin.cs" />
+    <None Include="Effects\Deprecated\Light.cs" />
+    <None Include="Effects\Deprecated\LightingPermutation.cs" />
+    <None Include="Effects\Deprecated\LightReceiverComponent.cs" />
+    <None Include="Effects\Deprecated\LightReceiverProcessor.cs" />
+    <None Include="Effects\Deprecated\LightShaftsProcessor.cs" />
+    <None Include="Effects\Deprecated\MaterialShaderPlugin.cs" />
+    <None Include="Effects\Deprecated\MinMaxShaderPlugin.cs" />
+    <None Include="Effects\Deprecated\NoisePlugin.cs" />
+    <None Include="Effects\Deprecated\ParticlePlugin.cs" />
+    <None Include="Effects\Deprecated\ParticleUtils.cs" />
+    <None Include="Effects\Deprecated\PickingPlugin.cs" />
+    <None Include="Effects\Deprecated\PickingShaderPlugin.cs" />
+    <None Include="Effects\Deprecated\RenderStreamPlugin.cs" />
+    <None Include="Effects\Deprecated\ShadowMap.cs" />
+    <None Include="Effects\Deprecated\ShadowMapData.cs" />
+    <None Include="Effects\Deprecated\ShadowMapFilter.cs" />
+    <None Include="Effects\Deprecated\ShadowMapFilterDefault.cs" />
+    <None Include="Effects\Deprecated\ShadowMapFilterVsm.cs" />
+    <None Include="Effects\Deprecated\ShadowMapPermutation.cs" />
+    <None Include="Effects\Deprecated\ShadowMapPermutationArray.cs" />
+    <None Include="Effects\Deprecated\LightingPlugin.cs" />
+    <None Include="Effects\Deprecated\ShadowMapReceiverInfo.cs" />
+    <None Include="Effects\Deprecated\ShadowMapReceiverVsmInfo.cs" />
+    <None Include="Effects\Deprecated\LightingShaderPlugin.cs" />
+    <None Include="Effects\Deprecated\StateShaderPlugin.cs" />
+    <None Include="Effects\Deprecated\LightShaftsPlugin.cs" />
+    <None Include="Effects\Deprecated\ShadowMapMode.cs" />
+    <None Include="Effects\Deprecated\SkyBoxPlugin.cs" />
+    <None Include="Effects\Deprecated\LightProcessor.cs" />
+    <None Include="Effects\Deprecated\PostEffectShaderPlugin.cs" />
+    <None Include="Effects\Deprecated\MainPlugin.cs" />
+    <None Include="Effects\Deprecated\DeferredLightingShaderPlugin.cs" />
+    <None Include="Effects\Deprecated\GBufferPlugin.cs" />
+    <None Include="Effects\Deprecated\GBufferShaderPlugin.cs" />
+    <None Include="Effects\Deprecated\PostEffectPlugin.cs" />
+    <None Include="Effects\Deprecated\RenderTargetsPlugin.cs" />
+    <None Include="Effects\Deprecated\LightingPrepassPlugin.cs" />
+    <None Include="Effects\Deprecated\LightingPrepassShaderPlugin.cs" />
+    <None Include="Effects\Deprecated\LightPlugin.cs" />
+    <None Include="Effects\Deprecated\TessellationPlugin.cs" />
+    <None Include="Effects\Deprecated\WireframeShaderPlugin.cs" />
+    <None Include="Effects\Deprecated\YebisPlugin.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="Deprecated\RenderingSetup.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
+      <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
+      <Name>SiliconStudio.Xenko.Engine</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
+      <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
+      <Name>SiliconStudio.Xenko.Games</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
+      <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
+      <Project>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</Project>
+      <Name>SiliconStudio.Core.IO</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\engine\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
+      <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
+      <Name>SiliconStudio.Xenko.Shaders.Compiler</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
+      <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\data\renorm.bin">
+      <Link>GameAssets\renorm.bin</Link>
+    </None>
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

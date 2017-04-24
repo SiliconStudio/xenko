@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+  </PropertyGroup>
+  <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1320F627-EE43-4115-8E89-19D1753E51F2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Core.MicroThreading</RootNamespace>
+    <AssemblyName>SiliconStudio.Core.MicroThreading</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="AsyncSignal.cs" />
+    <Compile Include="Channel.cs" />
+    <Compile Include="ChannelMicroThreadAwaiter.cs" />
+    <Compile Include="ChannelPreference.cs" />
+    <Compile Include="IMicroThreadSynchronizationContext.cs" />
+    <Compile Include="MicroThread.cs" />
+    <Compile Include="MicroThreadEvent.cs" />
+    <Compile Include="MicroThreadFlags.cs" />
+    <Compile Include="MicroThreadLocal.cs" />
+    <Compile Include="MicroThreadProfilingKeys.cs" />
+    <Compile Include="MicrothreadProxySynchronizationContext.cs" />
+    <Compile Include="MicroThreadState.cs" />
+    <Compile Include="MicroThreadSynchronizationContext.cs" />
+    <Compile Include="MicroThreadYieldAwaiter.cs" />
+    <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="XenkoScriptAttribute.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScheduleMode.cs" />
+    <Compile Include="Scheduler.cs" />
+    <Compile Include="SchedulerEntry.cs" />
+    <Compile Include="SchedulerEventArgs.cs" />
+    <Compile Include="ScriptFlags.cs" />
+    <Compile Include="SwitchToAwaiter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

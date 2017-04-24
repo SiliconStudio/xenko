@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+  </PropertyGroup>
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{273BDD15-7392-4078-91F0-AF23594A3D7B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Xenko.Shaders</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Shaders</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Compiler\CompilerResults.cs" />
+    <Compile Include="Compiler\CompilerParameters.cs" />
+    <Compile Include="Compiler\EffectBytecodeCacheLoadSource.cs" />
+    <Compile Include="Compiler\EffectBytecodeCompilerResult.cs" />
+    <Compile Include="Compiler\EffectCompilerParameters.cs" />
+    <Compile Include="Compiler\NullEffectCompiler.cs" />
+    <Compile Include="Compiler\EffectPriorityScheduler.cs" />
+    <Compile Include="Compiler\TaskOrResult.cs" />
+    <Compile Include="EffectTypeMemberDescription.cs" />
+    <Compile Include="EffectTypeDescription.cs" />
+    <Compile Include="EffectSamplerStateBinding.cs" />
+    <Compile Include="EffectSourceCodeKeys.cs" />
+    <Compile Include="HashSourceCollection.cs" />
+    <Compile Include="Compiler\EffectCompilerChain.cs" />
+    <Compile Include="Compiler\EffectCompilerCache.cs" />
+    <Compile Include="Compiler\IEffectCompiler.cs" />
+    <Compile Include="Compiler\EffectCompilerBase.cs" />
+    <Compile Include="IShaderMixinBuilderExtended.cs" />
+    <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="ParameterKeyHashSerializer.cs" />
+    <Compile Include="EffectConstantBufferDescription.cs" />
+    <Compile Include="ShaderInputBytecode.cs" />
+    <Compile Include="ShaderInputAttributeDescription.cs" />
+    <Compile Include="ShaderLevelBytecode.cs" />
+    <Compile Include="ShaderMixinDiscardException.cs" />
+    <Compile Include="ShaderMixinGeneratorSource.cs" />
+    <Compile Include="ShaderMixinObjectId.cs" />
+    <Compile Include="ShaderArraySource.cs" />
+    <Compile Include="EffectBytecode.cs" />
+    <Compile Include="IShaderMixinBuilder.cs" />
+    <Compile Include="ConstantBufferType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="EffectParameterKeyInfo.cs" />
+    <Compile Include="EffectResourceBindingDescription.cs" />
+    <Compile Include="EffectValueDescription.cs" />
+    <Compile Include="EffectReflection.cs" />
+    <Compile Include="ShaderBytecode.cs" />
+    <Compile Include="ShaderClassSource.cs" />
+    <Compile Include="ShaderMacro.cs" />
+    <Compile Include="ShaderMixinContext.cs" />
+    <Compile Include="ShaderMixinManager.cs" />
+    <Compile Include="ShaderMixinSource.cs" />
+    <Compile Include="EffectParameterClass.cs" />
+    <Compile Include="ShaderMixinParameters.cs" />
+    <Compile Include="EffectParameterType.cs" />
+    <Compile Include="ShaderSource.cs" />
+    <Compile Include="ShaderSourceCollection.cs" />
+    <Compile Include="ShaderStage.cs" />
+    <Compile Include="ShaderStreamOutputDeclarationEntry.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
+      <Project>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</Project>
+      <Name>SiliconStudio.Core.IO</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

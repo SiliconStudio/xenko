@@ -1,0 +1,38 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Packs and stores the normals into the GBuffer. Expected texture output format: float4.
+/// </summary>
+shader NormalPack : Texturing
+{
+    [Link("GBuffer.NormalPack")]
+    stage Texture2D NormalPackTexture;
+
+    float3 EncodeNormal(float3 vNormal)
+    {
+      // renormalize (needed only if any blending or interpolation happened before)
+      vNormal.xyz = normalize(vNormal.xyz);
+      // get unsigned normal for the cubemap lookup
+      float3 vNormalUns = abs(vNormal.xyz);
+      // get the main axis for cubemap lookup
+      float maxNAbs = max(vNormalUns.z, max(vNormalUns.x, vNormalUns.y));
+      // get texture coordinates in a collapsed cubemap
+      float2 vTexCoord = vNormalUns.z<maxNAbs?(vNormalUns.y<maxNAbs?vNormalUns.yz:vNormalUns.xz):vNormalUns.xy;
+      vTexCoord = vTexCoord.x < vTexCoord.y ? vTexCoord.yx : vTexCoord.xy;
+      vTexCoord.y /= vTexCoord.x;
+      // fit normal into the edge of unit cube
+      vNormal.xyz /= maxNAbs;
+      // look-up fitting length and scale the normal to get the best fit
+      float fFittingScale = NormalPackTexture.SampleLevel(PointSampler, vTexCoord, 1.0).a;
+      // scale the normal to get the best fit
+      vNormal.xyz *= fFittingScale;
+      // wrap to [0;1] unsigned form
+      vNormal.xyz = vNormal.xyz * .5f + .5f;  
+      return vNormal;
+    }
+
+    //float3 DecodeNormal(float3 encoded)
+    //{
+        //return normalize(encoded * 2 - 1);
+    //}
+};

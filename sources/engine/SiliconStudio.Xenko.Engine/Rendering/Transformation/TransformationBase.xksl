@@ -1,0 +1,32 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Defines the 3 transformations steps used in the pipeline.
+/// The first is performed at the end of the VS.
+/// The second is performed after the tessellation.
+/// The third is performed at the end of the geometry pipeline.
+/// </summary>
+shader TransformationBase : ShaderBase
+{
+    // End of the VS (usually skinning)
+    stage void PreTransformPosition() {}
+
+    // End of tessellation (usually displacement mapping in world space, etc...)
+    stage void TransformPosition() {}
+
+    // At the end of the geometry pipeline (to generate ShadingPosition)
+    stage void PostTransformPosition() {}
+
+    stage void BaseTransformVS()
+    {
+        this.PreTransformPosition();
+        this.TransformPosition();
+        this.PostTransformPosition();
+    }
+
+    stage override void VSMain()
+    {
+        base.VSMain();
+        this.BaseTransformVS();
+    }
+};

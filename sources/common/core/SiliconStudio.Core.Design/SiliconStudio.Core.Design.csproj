@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{66581DAD-70AD-4475-AE47-C6C0DF1EC5E2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Core</RootNamespace>
+    <AssemblyName>SiliconStudio.Core.Design</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
+    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\build\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <!-- Include platform dependent assembly when specified -->
+  <Choose>
+    <When Condition="'$(SiliconStudioPlatform)' == 'UWP'">
+      <ItemGroup>
+        <Reference Include="SharpDX">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\SiliconStudio.Core.Serialization\IO\NativeLockFile.cs">
+      <Link>Windows\NativeLockFile.cs</Link>
+    </Compile>
+    <Compile Include="AbsoluteId.cs" />
+    <Compile Include="Annotations\BaseTypeRequiredAttribute.cs" />
+    <Compile Include="Annotations\CollectionAccessAttribute.cs" />
+    <Compile Include="Annotations\MustUseReturnValueAttribute.cs" />
+    <Compile Include="Annotations\NoEnumerationAttribute.cs" />
+    <Compile Include="Collections\HybridDictionary.cs" />
+    <Compile Include="Extensions\AnonymousEqualityComparer.cs" />
+    <Compile Include="Extensions\DesignExtensions.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Extensions\ExceptionExtensions.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
+    <Compile Include="Extensions\TaskExtensions.cs" />
+    <Compile Include="Extensions\TypeDescriptorExtensions.cs" />
+    <Compile Include="IAsyncDisposable.cs" />
+    <Compile Include="IDestroyable.cs" />
+    <Compile Include="IO\UDirectory.cs" />
+    <Compile Include="IO\UDirectorySerializer.cs" />
+    <Compile Include="IO\UFile.cs" />
+    <Compile Include="IO\UFileSerializer.cs" />
+    <Compile Include="IO\UPath.cs" />
+    <Compile Include="IO\UPathType.cs" />
+    <Compile Include="IO\UPathTypeConverter.cs" />
+    <Compile Include="ISyncLockable.cs" />
+    <Compile Include="KeyValuePair.cs" />
+    <Compile Include="MicroThreadLock.cs" />
+    <Compile Include="Module.cs" />
+    <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="NamingHelper.cs" />
+    <Compile Include="ObjectCache.cs" />
+    <Compile Include="PackageVersion.cs" />
+    <Compile Include="PackageVersionRange.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reflection\AssemblyContainer.cs" />
+    <Compile Include="Reflection\DataVisitorBase.cs" />
+    <Compile Include="Reflection\IDataCustomVisitor.cs" />
+    <Compile Include="Reflection\IDataVisitor.cs" />
+    <Compile Include="Reflection\ShadowObject.cs" />
+    <Compile Include="Reflection\ShadowObjectPropertyKey.cs" />
+    <Compile Include="Reflection\VisitorContext.cs" />
+    <Compile Include="Settings\ChangesValidatedEventArgs.cs" />
+    <Compile Include="Settings\FileModifiedEventArgs.cs" />
+    <Compile Include="Settings\NamespaceDoc.cs" />
+    <Compile Include="Settings\SettingsDictionary.cs" />
+    <Compile Include="Settings\SettingsDictionarySerializer.cs" />
+    <Compile Include="Settings\SettingsEntryChangeValueOperation.cs" />
+    <Compile Include="Settings\SettingsProfileSerializer.cs" />
+    <Compile Include="Threading\AsyncLock.cs" />
+    <Compile Include="Threading\IAsyncWaitQueue.cs" />
+    <Compile Include="Threading\AwaitableDisposable.cs" />
+    <Compile Include="Threading\Internal\DefaultAsyncWaitQueue.cs" />
+    <Compile Include="Threading\Internal\Dequeue.cs" />
+    <Compile Include="Threading\Internal\ExceptionHelpers.cs" />
+    <Compile Include="Threading\Internal\IdManager.cs" />
+    <Compile Include="Threading\Internal\TaskCompletionSourceExtensions.cs" />
+    <Compile Include="Transactions\DiscardReason.cs" />
+    <Compile Include="Transactions\IAsyncTransaction.cs" />
+    <Compile Include="Transactions\IMergeableOperation.cs" />
+    <Compile Include="Transactions\IOperation.cs" />
+    <Compile Include="Transactions\IReadOnlyTransaction.cs" />
+    <Compile Include="Transactions\ITransaction.cs" />
+    <Compile Include="Transactions\ITransactionStack.cs" />
+    <Compile Include="Transactions\Operation.cs" />
+    <Compile Include="Transactions\Transaction.cs" />
+    <Compile Include="Transactions\TransactionEventArgs.cs" />
+    <Compile Include="Transactions\TransactionException.cs" />
+    <Compile Include="Transactions\TransactionFlags.cs" />
+    <Compile Include="Transactions\TransactionsDiscardedEventArgs.cs" />
+    <Compile Include="Transactions\TransactionStack.cs" />
+    <Compile Include="Transactions\TransactionStackFactory.cs" />
+    <Compile Include="TypeConverters\Color3Converter.cs" />
+    <Compile Include="TypeConverters\TypeConverterHelper.cs" />
+    <Compile Include="Windows\FileLock.cs" />
+    <Compile Include="Windows\GlobalMutex.cs" />
+    <Compile Include="Yaml\AssetIdSerializer.cs" />
+    <Compile Include="Yaml\PropertyKeyNameResolver.cs" />
+    <Compile Include="Yaml\ParsingEventListEmitter.cs" />
+    <Compile Include="Settings\SettingsEntry.cs" />
+    <Compile Include="Settings\SettingsEntryValue.cs" />
+    <Compile Include="Settings\SettingsFile.cs" />
+    <Compile Include="Settings\SettingsFileLoadedEventArgs.cs" />
+    <Compile Include="Settings\SettingsKey.cs" />
+    <Compile Include="Settings\SettingsProfile.cs" />
+    <Compile Include="Settings\SettingsContainer.cs" />
+    <Compile Include="Settings\Utils.cs" />
+    <Compile Include="StringSpan.cs" />
+    <Compile Include="StringSpanExtensions.cs" />
+    <Compile Include="TypeConverters\BaseConverter.cs" />
+    <Compile Include="TypeConverters\Color4Converter.cs" />
+    <Compile Include="TypeConverters\ColorConverter.cs" />
+    <Compile Include="TypeConverters\FieldPropertyDescriptor.cs" />
+    <Compile Include="TypeConverters\Half2Converter.cs" />
+    <Compile Include="TypeConverters\Half3Converter.cs" />
+    <Compile Include="TypeConverters\Half4Converter.cs" />
+    <Compile Include="TypeConverters\HalfConverter.cs" />
+    <Compile Include="TypeConverters\MatrixConverter.cs" />
+    <Compile Include="TypeConverters\NamespaceDoc.cs" />
+    <Compile Include="TypeConverters\QuaternionConverter.cs" />
+    <Compile Include="TypeConverters\Vector2Converter.cs" />
+    <Compile Include="TypeConverters\Vector3Converter.cs" />
+    <Compile Include="TypeConverters\Vector4Converter.cs" />
+    <Compile Include="VisualStudio\KeyedCollectionExtensions.cs" />
+    <Compile Include="VisualStudio\KnownProjectTypeGuid.cs" />
+    <Compile Include="VisualStudio\Project.cs" />
+    <Compile Include="VisualStudio\ProjectCollection.cs" />
+    <Compile Include="VisualStudio\PropertyItem.cs" />
+    <Compile Include="VisualStudio\PropertyItemCollection.cs" />
+    <Compile Include="VisualStudio\Section.cs" />
+    <Compile Include="VisualStudio\SectionCollection.cs" />
+    <Compile Include="VisualStudio\Solution.cs" />
+    <Compile Include="VisualStudio\SolutionFileException.cs" />
+    <Compile Include="VisualStudio\SolutionReader.cs" />
+    <Compile Include="VisualStudio\SolutionWriter.cs" />
+    <Compile Include="VisualStudio\VisualStudioVersions.cs" />
+    <Compile Include="Windows\AppHelper.cs" />
+    <Compile Include="Yaml\AssetScalarSerializerBase.cs" />
+    <Compile Include="Yaml\GuidSerializer.cs" />
+    <Compile Include="Yaml\ObjectIdSerializer.cs" />
+    <Compile Include="Yaml\PropertyKeyYamlSerializer.cs" />
+    <Compile Include="Settings\SettingsYamlSerializer.cs" />
+    <Compile Include="Yaml\UDirectorySerializer.cs" />
+    <Compile Include="Yaml\UFileSerializer.cs" />
+    <Compile Include="Yaml\YamlSerializer.cs" />
+    <Compile Include="Yaml\YamlSerializerBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
+      <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
+      <Name>SiliconStudio.Core.MicroThreading</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
+      <Project>{0be7189b-f04e-4c0c-bbe9-f347c0a59fee}</Project>
+      <Name>SiliconStudio.Core.Reflection</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
+      <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
+      <Name>SiliconStudio.Core.Yaml</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.Setup.Configuration.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\build\packages\Microsoft.VisualStudio.Setup.Configuration.Interop.1.8.24\lib\net35\Microsoft.VisualStudio.Setup.Configuration.Interop.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="System.Management" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

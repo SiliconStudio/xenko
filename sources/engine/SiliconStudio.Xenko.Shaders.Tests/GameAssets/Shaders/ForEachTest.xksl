@@ -1,0 +1,16 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+shader ForEachTest
+{
+    float collec[5];
+
+    float test()
+    {
+        float res = 0.0;
+        foreach (var val in collec)
+        {
+            res += val;
+        }
+        return res;
+    }
+};

@@ -1,0 +1,7 @@
+﻿namespace SiliconStudio.Xenko.Rendering
+{
+    partial effect Picking
+    {
+        mixin PickingShader;
+    };
+}

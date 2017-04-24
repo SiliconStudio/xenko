@@ -1,0 +1,20 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    class MaterialCelShadingLightRamp
+	 :  IMaterialCelShadingLightFunction, Texturing
+    {
+        rgroup PerMaterial
+        {
+			stage Texture2D CelShaderRamp;
+        }
+
+        override float3 Compute(float lightIn)
+        {
+            float2 texCoord = float2(clamp(lightIn, 0, 1), 0.5);
+			return CelShaderRamp.SampleLevel(LinearSampler, texCoord, 0).rgb;
+        }
+    };
+}

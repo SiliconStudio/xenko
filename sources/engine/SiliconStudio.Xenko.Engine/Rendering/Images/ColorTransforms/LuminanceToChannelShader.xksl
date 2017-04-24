@@ -1,0 +1,18 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    /// <summary>
+    /// A color transform for to output the luminance to the specified channel.
+    /// </summary>
+    internal shader LuminanceToChannelShader<MemberName TChannel> : ColorTransformShader
+    {
+        override float4 Compute(float4 color)
+        {
+			float4 outColor = color;
+			outColor.TChannel = LuminanceUtils.Luma(color.rgb);
+	        return outColor;
+        }
+    };
+}

@@ -1,0 +1,28 @@
+﻿<!-- Build file post-included by all Xenko projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <SiliconStudioNETFrameworkVersion>v4.5</SiliconStudioNETFrameworkVersion>
+  </PropertyGroup>
+  
+  <!-- On Windows platform automatically add the following references -->
+  <Choose>
+    <When Condition=" '$(SiliconStudioIsExecutable)' == 'true' And '$(SiliconStudioUnitTest)' != 'true' ">
+      <ItemGroup>
+        <Reference Include="SiliconStudio.Xenko.Shaders.Compiler">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioXenkoGraphicsApi)\SiliconStudio.Xenko.Shaders.Compiler.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+
+  <!-- Copy native libraries to output -->
+  <Target Name="_SiliconStudioSetupNativeLibraries" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <None Include="@(_SiliconStudioDependencyNativeLib)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+  </Target>
+
+</Project>

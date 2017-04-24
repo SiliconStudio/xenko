@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+  </PropertyGroup>
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{14A47447-2A24-4ECD-B24D-6571499DCD4C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Xenko.Shaders.Parser</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Shaders.Parser</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Analysis\AssignmentOperatorStatus.cs" />
+    <Compile Include="Analysis\ExpressionNodeCouple.cs" />
+    <Compile Include="Analysis\MemberReferenceExpressionNodeCouple.cs" />
+    <Compile Include="Analysis\XenkoParsingInfo.cs" />
+    <Compile Include="Analysis\XenkoSemanticAnalysis.cs" />
+    <Compile Include="Analysis\XenkoTypeAnalysis.cs" />
+    <Compile Include="Analysis\StatementNodeCouple.cs" />
+    <Compile Include="Mixins\CompositionDictionary.cs" />
+    <Compile Include="Mixins\ExpressionSimplifierVisitor.cs" />
+    <Compile Include="Mixins\MethodDeclarationShaderCouple.cs" />
+    <Compile Include="Mixins\MixinVirtualTable.cs" />
+    <Compile Include="Mixins\ModuleMixin.cs" />
+    <Compile Include="Mixins\ModuleMixinInfo.cs" />
+    <Compile Include="Mixins\XenkoAssignmentCloner.cs" />
+    <Compile Include="Mixins\XenkoClassInstantiator.cs" />
+    <Compile Include="Mixins\XenkoReplaceAppend.cs" />
+    <Compile Include="Mixins\XenkoReplaceExtern.cs" />
+    <Compile Include="Mixins\XenkoReplaceVisitor.cs" />
+    <Compile Include="Mixins\XenkoShaderLibrary.cs" />
+    <Compile Include="Mixins\XenkoShaderMixer.cs" />
+    <Compile Include="Mixins\XenkoStreamAnalyzer.cs" />
+    <Compile Include="Mixins\XenkoStreamCreator.cs" />
+    <Compile Include="Mixins\XenkoTagCleaner.cs" />
+    <Compile Include="Mixins\XenkoTypeCleaner.cs" />
+    <Compile Include="Mixins\XenkoVariableUsageVisitor.cs" />
+    <Compile Include="Mixins\ReferencesPool.cs" />
+    <Compile Include="Mixins\ShaderCompilationContext.cs" />
+    <Compile Include="Mixins\ShaderDependencyVisitor.cs" />
+    <Compile Include="Mixins\ShaderKeyGeneratorBase.cs" />
+    <Compile Include="Mixins\ShaderLoader.cs" />
+    <Compile Include="Mixins\ShaderMixinCodeGen.cs" />
+    <Compile Include="Mixins\ShaderSourceManager.cs" />
+    <Compile Include="Mixins\ShaderVirtualTable.cs" />
+    <Compile Include="Mixins\StreamFieldVisitor.cs" />
+    <Compile Include="Mixins\StreamOutputParser.cs" />
+    <Compile Include="Mixins\VariableShaderCouple.cs" />
+    <Compile Include="XenkoShaderCleaner.cs" />
+    <Compile Include="Parser.cs" />
+    <Compile Include="Performance\GenerateShaderPerformance.cs" />
+    <Compile Include="Performance\MixPerformance.cs" />
+    <Compile Include="Performance\PerformanceLogger.cs" />
+    <Compile Include="Performance\SemanticPerformance.cs" />
+    <Compile Include="Performance\StreamCreatorPerformance.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShaderExtensions.cs" />
+    <Compile Include="ShaderMixinParser.cs" />
+    <Compile Include="ShaderLinker.cs" />
+    <Compile Include="ShaderMixinParsingResult.cs" />
+    <Compile Include="ShaderNavigation.cs" />
+    <Compile Include="ShaderNavigationResult.cs" />
+    <Compile Include="Utility\XenkoMessageCode.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
+      <Project>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</Project>
+      <Name>SiliconStudio.Core.IO</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\shaders\Irony\Irony.csproj">
+      <Project>{d81f5c91-d7db-46e5-bc99-49488fb6814c}</Project>
+      <Name>Irony</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
+      <Project>{f2d52edb-bc17-4243-b06d-33cd20f87a7f}</Project>
+      <Name>SiliconStudio.Shaders</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
+      <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

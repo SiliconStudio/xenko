@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+shader BaseTestChild : BaseTestInter
+{
+    override void test1()
+    {
+        base.test1();
+    }
+    
+    override void test2()
+    {
+        this.test1();
+        base.test2();
+    }
+};

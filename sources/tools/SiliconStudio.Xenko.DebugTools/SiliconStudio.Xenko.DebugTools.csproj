@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{466DA6D1-42C7-417B-BB16-293D6F700939}</ProjectGuid>
+    <OutputType>library</OutputType>
+    <RootNamespace>Xenko.DebugTools</RootNamespace>
+    <AssemblyName>Xenko.DebugTools</AssemblyName>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="QuickGraph">
+      <HintPath>$(XenkoDependenciesDir)QuickGraph\QuickGraph.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Interactivity">
+      <HintPath>$(SiliconStudioDependenciesDir)ExpressionBlendSDK\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Behaviors\TimeBarCurrentTimeSetterBehavior.cs" />
+    <Compile Include="DataStructures\FrameInfo.cs" />
+    <Compile Include="DataStructures\MicroThreadInfo.cs" />
+    <Compile Include="DataStructures\PendingState.cs" />
+    <Compile Include="DataStructures\ProcessInfo.cs" />
+    <Compile Include="DataStructures\ThreadInfo.cs" />
+    <Compile Include="MicroThreadMonitoringManager.cs" />
+    <Compile Include="ProcessInfoRenderer.cs" />
+    <Compile Include="ProcessSnapshotControl.xaml.cs">
+      <DependentUpon>ProcessSnapshotControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyGridTest1Control.xaml.cs">
+      <DependentUpon>PropertyGridTest1Control.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyGridTest2Control.xaml.cs">
+      <DependentUpon>PropertyGridTest2Control.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ScriptListControl.xaml.cs">
+      <DependentUpon>ScriptListControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ScriptManagerControl.xaml.cs">
+      <DependentUpon>ScriptManagerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\MicroThreadViewModel.cs" />
+    <Compile Include="ViewModels\ScriptTypeViewModel.cs" />
+    <Compile Include="ViewModels\RootViewModel.cs" />
+    <Compile Include="ViewModels\ScriptAssemblyViewModel.cs" />
+    <Compile Include="ViewModels\ScriptMethodViewModel.cs" />
+    <Page Include="DataTemplates.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ProcessSnapshotControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PropertyGridTest1Control.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PropertyGridTest2Control.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ScriptEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="ScriptEditorControl.xaml.cs">
+      <DependentUpon>ScriptEditorControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="ScriptListControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ScriptManagerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
+      <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
+      <Name>SiliconStudio.Xenko.Engine</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\presentation\SiliconStudio.Presentation\SiliconStudio.Presentation.csproj">
+      <Project>{47afcc2e-e9f0-47d6-9d75-9e646546a92b}</Project>
+      <Name>SiliconStudio.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

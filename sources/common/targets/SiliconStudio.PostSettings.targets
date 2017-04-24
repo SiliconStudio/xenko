@@ -1,0 +1,127 @@
+﻿<!-- Build file post-included by all Silicon Studio projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Add Default targets used by Msbuild for undefined Platforms / or when skipping compilation under a platform -->
+  <Target Name="Build"/>
+  <Target Name="Clean"/>
+  <Target Name="ReBuild"/>
+  <Target Name="Publish"/>
+  <Target Name="GetTargetPath"/>
+  <Target Name="GetNativeManifest"/>
+  <Target Name="GetPackagingOutputs"/>
+
+  <!--Import Local Post Settings for the solution being loaded -->
+  <Import Project="$(SolutionDir)$(SolutionName).PostSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PostSettings.Local.targets')" />
+  <Import Project="$(SolutionDir)SiliconStudio.PostSettings.Local.targets" Condition="Exists('$(SolutionDir)SiliconStudio.PostSettings.Local.targets')" />
+
+  <!-- Include platform dependent assembly when specified -->
+  <Choose>
+    <When Condition="'$(SiliconStudioPlatformDependent)' == 'true'">
+      <Choose>
+        <When Condition=" '$(SiliconStudioPlatform)' == 'Android'">
+          <ItemGroup>
+            <Reference Include="Mono.Android" />
+          </ItemGroup>
+        </When>
+        <When Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
+          <ItemGroup>
+            <Reference Include="Xamarin.iOS" />
+          </ItemGroup>
+        </When>
+      </Choose>
+    </When>
+  </Choose>
+
+  <!-- Setup VisualStudioVersion -->
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
+    <VisualStudioVersion>11.0</VisualStudioVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(SiliconStudioPublicApi)' == 'true'">
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)public_api.ruleset</CodeAnalysisRuleSet>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- Setup compiler targets per platform / language -->
+  <PropertyGroup>
+    <!-- On Android, everything is library (even Exe) -->
+    <OutputType Condition=" '$(SiliconStudioPlatform)' == 'Android' ">Library</OutputType>
+
+    <SiliconStudioGenerateDoc Condition="'$(SiliconStudioPublicApi)' == 'true'">true</SiliconStudioGenerateDoc>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(SiliconStudioGenerateDoc)' == 'true' ">
+    <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
+  </PropertyGroup>
+
+  <Choose>
+    <When Condition="'$(SiliconStudioRuntime)' != ''">
+      <!-- When compiling for a specific runtime, we only use the same file regardless of the platform -->
+      <PropertyGroup>
+        <SiliconStudioCompilerTargets>$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioRuntime).$(SiliconStudioProjectType).targets</SiliconStudioCompilerTargets>
+      </PropertyGroup>
+    </When>
+    <When Condition="!Exists('$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioPlatform).$(SiliconStudioProjectType).targets')">
+      <PropertyGroup>
+        <SiliconStudioCompilerTargets>$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioProjectType).targets</SiliconStudioCompilerTargets>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <SiliconStudioCompilerTargets>$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioPlatform).$(SiliconStudioProjectType).targets</SiliconStudioCompilerTargets>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
+  <PropertyGroup>
+    <SiliconStudioCompilerTargetsEnable Condition="!Exists('$(SiliconStudioCompilerTargets)')">false</SiliconStudioCompilerTargetsEnable>
+    <SiliconStudioCompilerTargetsEnable Condition=" '$(SiliconStudioPlatform)' != 'Windows' and $(SiliconStudioWindowsOnly) == 'true'">false</SiliconStudioCompilerTargetsEnable>
+
+    <!-- Skip unit tests if requested -->
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioSkipUnitTests)' == 'true' And $(SiliconStudioXenkoOutputFolder.StartsWith('Tests'))">false</SiliconStudioCompilerTargetsEnable>
+  </PropertyGroup>
+
+  <!-- Import the specific compiler targets for the selected platform/language if it exists and if `SiliconStudioWindowsOnly` is true, makes sure
+  to do nothing if this is not a Windows platform -->
+  <Import Condition="'$(SiliconStudioCompilerTargetsEnable)' != 'false'" Project="$(SiliconStudioCompilerTargets)" />
+
+  <UsingTask TaskName="AssemblyProcessorTask" AssemblyFile="$(SiliconStudioAssemblyProcessorPath)" Condition=" '$(SiliconStudioAssemblyProcessorPath)' != '' And '$(SiliconStudioAssemblyProcessorDev)' != 'true' "/>
+  
+  <Target Name="RunSiliconStudioAssemblyProcessor" AfterTargets="CoreCompile" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true' and '$(SiliconStudioAssemblyProcessorPath)' != '' and '$(SiliconStudioAssemblyProcessorGlobal)' == 'true' and '$(SiliconStudioAssemblyProcessorOptions)' != '' ">
+    <PropertyGroup Condition="'$(XenkoUserBuild)' != 'true'">
+      <!-- Add SiliconStudio.Core path to assembly search directory -->
+      <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioCoreAssemblyPath)' != ''">$(SiliconStudioAssemblyProcessorOptions) --assembly="$(SiliconStudioCoreAssemblyPath)"</SiliconStudioAssemblyProcessorOptions>
+    </PropertyGroup>
+
+    <WriteLinesToFile File="$(IntermediateOutputPath)XenkoReferences.cache" Lines="@(ReferencePath)" Overwrite="true" />
+
+    <!--Add platform and target framework to assembly processor options-->
+    <PropertyGroup>
+      <SiliconStudioAssemblyProcessorOptions>--platform=$(SiliconStudioPlatform) --targetFramework=$(TargetFrameworkVersion) $(SiliconStudioAssemblyProcessorOptions)</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --references-file="$(IntermediateOutputPath)XenkoReferences.cache"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --signkeyfile="$(AssemblyOriginatorKeyFile)"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions Condition="'$(DocumentationFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --docfile="$(DocumentationFile)"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --Werror</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) "$(IntermediateOutputPath)$(TargetName)$(TargetExt)" --delete-output-on-error</SiliconStudioAssemblyProcessorOptions>
+    </PropertyGroup>
+
+    <!-- Run assembly processor -->
+    <Message Condition=" '$(SiliconStudioAssemblyProcessorDev)' != 'true' " Importance="normal" Text="&quot;$(SiliconStudioAssemblyProcessorPath)&quot; $(SiliconStudioAssemblyProcessorOptions)"/>
+    <AssemblyProcessorTask Condition=" '$(SiliconStudioAssemblyProcessorDev)' != 'true' " Arguments="$(SiliconStudioAssemblyProcessorOptions)"/>
+    <!-- Dev mode: don't use task to avoid locking the file -->
+    <Exec Condition=" '$(SiliconStudioAssemblyProcessorDev)' == 'true' " Command="&quot;$(SiliconStudioAssemblyProcessorPath)&quot; $(SiliconStudioAssemblyProcessorOptions)"/>
+  </Target>
+
+  <Target Name="SetPrivateOnProjectReferences" BeforeTargets="BeforeCompile">
+    <!-- Automatically add Private on project references if they are already built in same folder as output folder -->
+    <ItemGroup Condition="'$(OutputPath)' == '$(SiliconStudioOutputCommonDir)'">
+      <ProjectReferenceNew Include="@(ProjectReference)">
+        <Private>False</Private>
+      </ProjectReferenceNew>
+      <ProjectReference Remove="@(ProjectReference)"/>
+      <ProjectReference Include="@(ProjectReferenceNew)"/>
+    </ItemGroup>
+  </Target>
+
+  <Import Project="$(MSBuildThisFileDirectory)SiliconStudio.PostSettings.Dependencies.targets"/>
+</Project>

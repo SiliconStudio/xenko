@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+    <SiliconStudioXenkoGraphicsApiDependent>true</SiliconStudioXenkoGraphicsApiDependent>
+  </PropertyGroup>
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <ProjectGuid>{D002FEB1-00A6-4AB1-A83F-1F253465E64D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Xenko.Graphics.Regression</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Graphics.Regression</AssemblyName>
+    <SiliconStudioXenkoPlatformFilter>Windows;Android;iOS;Linux;macOS;UWP</SiliconStudioXenkoPlatformFilter>
+    <DefineConstants>$(DefineConstants);XAMCORE_2_0</DefineConstants>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="('$(SiliconStudioRuntime)' == '') and (('$(SiliconStudioPlatform)' == 'Windows') or ('$(SiliconStudioPlatform)' == 'Linux') or ('$(SiliconStudioPlatform)' == 'macOS'))">
+      <ItemGroup>
+        <Reference Include="nunit.framework">
+          <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="('$(SiliconStudioRuntime)' == 'CoreCLR') or ('$(SiliconStudioPlatform)' == 'UWP')">
+      <ItemGroup>
+        <Reference Include="nunitlite">
+          <HintPath>$(SiliconStudioDependenciesDir)NUnitLite\Portable\nunitlite.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+      <ItemGroup>
+        <Reference Include="nunit.framework">
+          <HintPath>$(SiliconStudioDependenciesDir)NUnitLite\Portable\nunit.framework.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(SiliconStudioPlatform)' == 'iOS'">
+      <ItemGroup>
+        <Reference Include="MonoTouch.NUnitLite" />
+        <Reference Include="MonoTouch.Dialog-1" />
+        <Reference Include="OpenTK-1.1">
+          <HintPath>$(XenkoDependenciesDir)OpenTK\iOS\OpenTK-1.1.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+      <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'iOS'">
+        <Compile Include="TouchRunner\NUnitOutputTextWriter.cs" />
+        <Compile Include="TouchRunner\TestCaseElement.cs" />
+        <Compile Include="TouchRunner\TestElement.cs" />
+        <Compile Include="TouchRunner\TestResultElement.cs" />
+        <Compile Include="TouchRunner\TestRocks.cs" />
+        <Compile Include="TouchRunner\TestSuiteElement.cs" />
+        <Compile Include="TouchRunner\TouchOptions.cs" />
+        <Compile Include="TouchRunner\TouchRunner.cs" />
+        <Compile Include="TouchRunner\TouchViewController.cs" />
+      </ItemGroup>
+    </When>
+    <When Condition="'$(SiliconStudioPlatform)' == 'Android'">
+      <ItemGroup>
+        <Reference Include="Xamarin.Android.NUnitLite" />
+      </ItemGroup>
+      <ItemGroup>
+        <Compile Include="AndroidGameTestActivity.cs" />
+        <Compile Include="AndrRunner\Activities\CreditsActivity.cs" />
+        <Compile Include="AndrRunner\Activities\RunnerActivity.cs" />
+        <Compile Include="AndrRunner\Activities\TestResultActivity.cs" />
+        <Compile Include="AndrRunner\Activities\TestSuiteActivity.cs" />
+        <Compile Include="AndrRunner\AndroidRunner.cs" />
+        <Compile Include="AndrRunner\Elements\ActionElement.cs" />
+        <Compile Include="AndrRunner\Elements\ActivityElement.cs" />
+        <Compile Include="AndrRunner\Elements\FormattedElement.cs" />
+        <Compile Include="AndrRunner\Elements\FormattedSection.cs" />
+        <Compile Include="AndrRunner\Elements\TestCaseElement.cs" />
+        <Compile Include="AndrRunner\Elements\TestElement.cs" />
+        <Compile Include="AndrRunner\Elements\TestSuiteElement.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\BindingContext.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\BooleanElement.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\ButtonElement.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\CheckboxElement.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\DateTimeElement.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\DialogActivity.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\DialogAdapter.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\DialogHelper.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\DroidResources.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\Element.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\EntryElement.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\FloatElement.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\Group.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\HtmlElement.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\IElementSizing.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\ImageElement.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\MultilineElement.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\RadioElement.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\Reflect.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\RootElement.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\Section.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\SectionAdapter.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\StringElement.cs" />
+        <Compile Include="AndrRunner\MonoDroid.Dialog\ViewElement.cs" />
+        <Compile Include="AndrRunner\TestRocks.cs" />
+        <AndroidResource Include="Resources\layout\dialog_achievements.axml" />
+        <AndroidResource Include="Resources\layout\dialog_boolfieldleft.axml" />
+        <AndroidResource Include="Resources\layout\dialog_boolfieldright.axml" />
+        <AndroidResource Include="Resources\layout\dialog_boolfieldsubleft.axml" />
+        <AndroidResource Include="Resources\layout\dialog_boolfieldsubright.axml" />
+        <AndroidResource Include="Resources\layout\dialog_button.axml" />
+        <AndroidResource Include="Resources\layout\dialog_datefield.axml" />
+        <AndroidResource Include="Resources\layout\dialog_fieldsetlabel.axml" />
+        <AndroidResource Include="Resources\layout\dialog_floatimage.axml" />
+        <AndroidResource Include="Resources\layout\dialog_labelfieldbelow.axml" />
+        <AndroidResource Include="Resources\layout\dialog_labelfieldright.axml" />
+        <AndroidResource Include="Resources\layout\dialog_onofffieldright.axml" />
+        <AndroidResource Include="Resources\layout\dialog_panel.axml" />
+        <AndroidResource Include="Resources\layout\dialog_root.axml" />
+        <AndroidResource Include="Resources\layout\dialog_selectlist.axml" />
+        <AndroidResource Include="Resources\layout\dialog_selectlistfield.axml" />
+        <AndroidResource Include="Resources\layout\dialog_textarea.axml" />
+        <AndroidResource Include="Resources\layout\dialog_textfieldbelow.axml" />
+        <AndroidResource Include="Resources\layout\dialog_textfieldright.axml" />
+        <AndroidResource Include="Resources\drawable\dialog_disclosure.png" />
+        <AndroidResource Include="Resources\drawable\dialog_expander_ic_minimized.9.png" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="BackBufferSizeMode.cs" />
+    <Compile Include="FpsTestCamera.cs" />
+    <Compile Include="FrameGameSystem.cs" />
+    <Compile Include="GameTester.cs" />
+    <Compile Include="GameTestBase.cs" />
+    <Compile Include="ImageTester.cs" />
+    <Compile Include="iOSDeviceType.cs" />
+    <Compile Include="iOSGameTestControler.cs" />
+    <Compile Include="NUnitLite\NamespaceAssemblyBuilder.cs" />
+    <Compile Include="NUnitLite\NUnit2XmlOutputWriter.cs" />
+    <Compile Include="NUnitLite\TestNamespace.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegressionHelpers.cs" />
+    <Compile Include="NUnitLite\TextUI.cs" />
+    <Compile Include="TestCamera.cs" />
+    <Compile Include="TestGraphicsDeviceManager.cs" />
+    <Compile Include="TestResultImage.cs" />
+    <Compile Include="TestRunnerMessageType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
+      <Project>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</Project>
+      <Name>SiliconStudio.Core.IO</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
+      <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
+      <Name>SiliconStudio.Core.MicroThreading</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
+      <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
+      <Name>SiliconStudio.Xenko.Engine</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
+      <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
+      <Name>SiliconStudio.Xenko.Games</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
+      <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Input\SiliconStudio.Xenko.Input.csproj">
+      <Project>{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}</Project>
+      <Name>SiliconStudio.Xenko.Input</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripts\RunAndroidTest.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\RunAndroidUnitTest.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\RunUniqueAndroidTest.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\RunUniqueWindowsTest.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Web\jquery-2.1.0.min.js" />
+    <None Include="Web\tableBuilder.js" />
+    <None Include="Web\Vizualizer.html" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
+    <ProjectGuid>{7F7BFF79-C400-435F-B359-56A2EF8956E0}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SiliconStudio.TextureConverter</RootNamespace>
+    <AssemblyName>SiliconStudio.TextureConverter</AssemblyName>
+    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Backend\Requests\ArrayCreationRequest.cs" />
+    <Compile Include="Backend\Requests\ArrayExtractionRequest.cs" />
+    <Compile Include="Backend\Requests\ArrayInsertionRequest.cs" />
+    <Compile Include="Backend\Requests\ArrayElementRemovalRequest.cs" />
+    <Compile Include="Backend\Requests\ArrayUpdateRequest.cs" />
+    <Compile Include="Backend\Requests\AtlasCreationRequest.cs" />
+    <Compile Include="Backend\Requests\AtlasExtractionRequest.cs" />
+    <Compile Include="Backend\Requests\AtlasUpdateRequest.cs" />
+    <Compile Include="Backend\Requests\ColorKeyRequest.cs" />
+    <Compile Include="Backend\Requests\ConvertingRequest.cs" />
+    <Compile Include="Backend\Requests\CubeCreationRequest.cs" />
+    <Compile Include="Backend\Requests\FlippingSubRequest.cs" />
+    <Compile Include="Backend\Requests\GammaCorrectionRequest.cs" />
+    <Compile Include="Backend\Requests\InvertYUpdateRequest.cs" />
+    <Compile Include="Backend\Requests\NormalMapGenerationRequest.cs" />
+    <Compile Include="Backend\Requests\PreMultiplyAlphaRequest.cs" />
+    <Compile Include="Backend\Requests\SwappingRequest.cs" />
+    <Compile Include="Backend\Requests\TextureQuality.cs" />
+    <Compile Include="Backend\TexLibraries\ArrayTexLib.cs" />
+    <Compile Include="Backend\TexLibraries\AtitcTexLibrary.cs" />
+    <Compile Include="Backend\TexLibraries\AtlasTexLibrary.cs" />
+    <Compile Include="Backend\TexLibraries\ColorKeyTexLibrary.cs" />
+    <Compile Include="Backend\TexLibraries\DxtTexLib.cs" />
+    <Compile Include="Backend\TexLibraries\XenkoTexLibrary.cs" />
+    <Compile Include="Backend\TexLibraries\PvrttTexLib.cs" />
+    <Compile Include="Frontend\AlphaLevels.cs" />
+    <Compile Include="Frontend\Enumeration\Filter.cs" />
+    <Compile Include="Backend\Tools.cs" />
+    <Compile Include="Backend\Wrappers\AtitcNetWrapper.cs" />
+    <Compile Include="Backend\Wrappers\DxtNetWrapper.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Classes\FreeImageBitmap.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Classes\FreeImageEngine.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Classes\FreeImagePlugin.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Classes\FreeImageStreamIO.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Classes\GifInformation.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Classes\ImageMetadata.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Classes\LocalPlugin.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Classes\MemoryArray.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Classes\MetadataModel.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Classes\MetadataModels.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Classes\MetadataTag.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Classes\Palette.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Classes\PluginRepository.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Classes\Scanline.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Classes\StreamWrapper.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Delegates.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\DisposalMethodType.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_COLOR_CHANNEL.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_COLOR_DEPTH.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_COLOR_OPTIONS.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_COLOR_TYPE.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_COMPARE_FLAGS.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_DITHER.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_FILTER.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_FORMAT.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_JPEG_OPERATION.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_LOAD_FLAGS.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_MDMODEL.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_MDTYPE.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_METADATA_COPY.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_QUANTIZE.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_SAVE_FLAGS.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_TMO.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\FREE_IMAGE_TYPE.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\ICC_FLAGS.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Enumerations\MD_SEARCH_FLAGS.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\FreeImageStaticImports.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\FreeImageWrapper.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\BITMAP.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\BITMAPINFO.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\BITMAPINFOHEADER.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FI16RGB555.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FI16RGB565.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FI1BIT.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FI4BIT.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FIBITMAP.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FICOMPLEX.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FIICCPROFILE.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FIMEMORY.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FIMETADATA.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FIMULTIBITMAP.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FIRational.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FIRGB16.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FIRGBA16.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FIRGBAF.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FIRGBF.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FITAG.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FIURational.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\fi_handle.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\FreeImageIO.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\Plugin.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\RGBQUAD.cs" />
+    <Compile Include="Backend\Wrappers\FINetWrapper\Structs\RGBTRIPLE.cs" />
+    <Compile Include="Backend\Wrappers\PvrttNetWrapper.cs" />
+    <Compile Include="Backend\TexLibraries\FITexLib.cs" />
+    <Compile Include="Frontend\Enumeration\Orientation.cs" />
+    <Compile Include="Frontend\Exceptions\TextureToolsException.cs" />
+    <Compile Include="Backend\Requests\CompressingRequest.cs" />
+    <Compile Include="Backend\Requests\DecompressingRequest.cs" />
+    <Compile Include="Backend\Requests\ExportRequest.cs" />
+    <Compile Include="Backend\Requests\ExportToXenkoRequest.cs" />
+    <Compile Include="Backend\Requests\FactorRescalingRequest.cs" />
+    <Compile Include="Backend\Requests\FixedRescalingRequest.cs" />
+    <Compile Include="Backend\Requests\FlippingRequest.cs" />
+    <Compile Include="Backend\Requests\LoadingRequest.cs" />
+    <Compile Include="Backend\Enumeration\RequestType.cs" />
+    <Compile Include="Backend\Requests\MipMapsGenerationRequest.cs" />
+    <Compile Include="Backend\Requests\RescalingRequest.cs" />
+    <Compile Include="Backend\Requests\SwitchingBRChannelsRequest.cs" />
+    <Compile Include="..\..\shared\ConsoleProgram.cs">
+      <Link>Frontend\Console\ConsoleProgram.cs</Link>
+    </Compile>
+    <Compile Include="Frontend\Console\Program.cs" />
+    <Compile Include="Frontend\TexAtlas.cs" />
+    <Compile Include="Frontend\TextureTool.cs" />
+    <Compile Include="Backend\Interfaces\ITexLibrary.cs" />
+    <Compile Include="Backend\Interfaces\IRequest.cs" />
+    <Compile Include="Frontend\TexImage.cs" />
+    <Compile Include="Backend\Interfaces\ITextureLibraryData.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <SiliconStudioNativeLib Include="$(XenkoDependenciesDir)FreeImage\Release\**\*.dll">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </SiliconStudioNativeLib>
+    <SiliconStudioNativeLib Include="$(XenkoDependenciesDir)TextureWrappers\Release\**\*.dll">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </SiliconStudioNativeLib>
+    <SiliconStudioNativeLib Include="$(XenkoDependenciesDir)PVRTT\**\*.dll">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </SiliconStudioNativeLib>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
+      <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,19 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Defines streams for object space position when the corresponding attribute is a float2. Sets its value in a float4.
+/// </summary>
+shader PositionStream2 : ShaderBase
+{
+    // The position attribute
+    stage stream float2 Position2 : POSITION;
+    
+    // The position as a float4
+    stage stream float4 Position : ExpandedPosition4;
+    
+    override stage void VSMain()
+    {
+        streams.Position = float4(streams.Position2, 0.0f, 1.0f);
+        base.VSMain();
+    }
+};

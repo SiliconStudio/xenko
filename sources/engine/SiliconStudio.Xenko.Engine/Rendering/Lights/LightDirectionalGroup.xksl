@@ -1,0 +1,30 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Lights
+{
+    /// <summary>
+    /// Defines a group of directional lights
+    /// </summary>
+    shader LightDirectionalGroup<int TMaxLightCount> : DirectLightGroupPerView, LightDirectional
+    {
+        cbuffer PerView.Lighting
+        {
+            DirectionalLightData Lights[TMaxLightCount];
+        }
+
+        override int GetMaxLightCount()
+        {
+            return TMaxLightCount;
+        }
+
+        /// <summary>
+        /// Compute the light color/direction for the specified index within this group
+        /// </summary>
+        override void PrepareDirectLightCore(int lightIndex)
+        {
+            streams.lightColor = Lights[lightIndex].Color;
+            // TODO: Add support for disk based Directional light
+            streams.lightDirectionWS = -Lights[lightIndex].DirectionWS;
+        }
+    };
+}

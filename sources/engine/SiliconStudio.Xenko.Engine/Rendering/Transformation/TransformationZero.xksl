@@ -1,0 +1,13 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Resets the position to the origin.
+/// </summary>
+shader TransformationZero : TransformationBase
+{
+    stage override void BaseTransformVS()
+    {
+        streams.PositionStream4.Position = float4(0.0f, 0.0f, 0.0f, 1.0f);
+        base.BaseTransformVS();
+    }
+};

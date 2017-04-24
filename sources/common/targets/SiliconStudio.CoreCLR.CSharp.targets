@@ -1,0 +1,9 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TargetFrameworkRootPath>$(MSBuildThisFileDirectory)\..\..\..\deps\CoreFX</TargetFrameworkRootPath>
+    <FrameworkPathOverride>$(TargetFrameworkRootPath)\CoreCLR\v5.0</FrameworkPathOverride>
+    <!-- The following line is commented out until Mono.Cecil or its replacement supports the new portable PDB format -->
+<!--    <DebugType>portable</DebugType> -->
+  </PropertyGroup>
+  <Import Project="$(TargetFrameworkRootPath)\configs\CoreCLR.CSharp.targets"/>
+</Project>

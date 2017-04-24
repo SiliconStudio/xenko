@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Returns a fixed color.
+/// </summary>
+/// <remarks>
+/// TVALUE: generic float4 - the color (as a float4).
+/// </remarks>
+shader ComputeColorFixed<float4 TVALUE> : ComputeColor
+{
+    override float4 Compute()
+    {
+        return TVALUE;
+    }
+};

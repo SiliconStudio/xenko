@@ -1,0 +1,121 @@
+﻿<!-- Build file post-included by all Silicon Studio projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Include platform dependent assembly when specified -->
+  <Choose>
+    <When Condition="'$(XenkoProjectPlatformDependentWindows)' == 'true'">
+      <Choose>
+        <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'OpenGL' Or '$(SiliconStudioXenkoGraphicsApi)' == 'OpenGLES' ">
+          <Choose>
+            <When Condition="('$(SiliconStudioPlatform)' == 'Linux') or ('$(SiliconStudioPlatform)' == 'macOS')">
+              <ItemGroup>
+                <Reference Include="OpenTK">
+                  <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioPlatform)\OpenTK.dll</HintPath>
+                  <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\$(SiliconStudioPlatform)\OpenTK.dll</HintPath>
+                </Reference>
+              </ItemGroup>
+            </When>
+            <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+              <ItemGroup>
+                <Reference Include="OpenTK">
+                  <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
+                  <HintPath Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\$(SiliconStudioPlatform)\OpenTK.dll</HintPath>
+                </Reference>
+              </ItemGroup>
+            </When>
+            <When Condition=" '$(SiliconStudioPlatform)' == 'Android' Or '$(SiliconStudioPlatform)' == 'iOS' ">
+              <ItemGroup>
+                <Reference Include="OpenTK-1.1">
+                  <HintPath Condition="'$(SiliconStudioPlatform)' == 'Android'">$(XenkoDependenciesDir)OpenTK\Android\OpenTK-1.1.dll</HintPath>
+                  <HintPath Condition="'$(SiliconStudioPlatform)' == 'iOS'">$(XenkoDependenciesDir)OpenTK\iOS\OpenTK-1.1.dll</HintPath>
+                </Reference>
+              </ItemGroup>
+            </When>
+          </Choose>
+        </When>
+      </Choose>
+      <Choose>
+        <When  Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+          <Choose>
+            <When Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' Or '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12'">
+              <ItemGroup>
+                <Reference Include="SharpDX">
+                  <SpecificVersion>False</SpecificVersion>
+                  <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
+                </Reference>
+              </ItemGroup>
+            </When>
+          </Choose>
+          <Choose>
+            <When Condition="'$(AutoIncludeSystemAssembly)' != 'true'">
+              <ItemGroup>
+                <Reference Include="System.Data" />
+                <Reference Include="System.Xaml" />
+              </ItemGroup>
+            </When>
+          </Choose>
+          <Choose>
+            <When Condition="'$(SiliconStudioRuntime)' == ''">
+              <ItemGroup>
+                <Reference Include="PresentationFramework" />
+                <Reference Include="PresentationCore" />
+                <Reference Include="WindowsBase" />
+              </ItemGroup>
+            </When>
+          </Choose>
+          <Choose>
+            <When Condition="('' == '') OR ($(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))) OR ($(SiliconStudioUI.Contains('OPENTK')) AND ('$(SiliconStudioRuntime)' == ''))">
+              <ItemGroup>
+                <Reference Include="System.Drawing" />
+              </ItemGroup>
+            </When>
+          </Choose>
+          <Choose>
+            <When Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))">
+              <ItemGroup>
+                <Reference Include="System.Windows.Forms" />
+              </ItemGroup>
+            </When>
+          </Choose>
+        </When>
+      </Choose>
+    </When>
+  </Choose>  
+  
+  <!-- Setup compiler targets per platform / language -->
+  <PropertyGroup>
+    <!-- Process by default scripts with AssemblyProcessor -->
+    <SiliconStudioAssemblyProcessor Condition="'$(XenkoScript)' == 'true'">true</SiliconStudioAssemblyProcessor>
+
+    <SiliconStudioIsExecutable Condition=" '$(OutputType)' == 'Exe'">true</SiliconStudioIsExecutable>
+    <SiliconStudioIsExecutable Condition=" '$(OutputType)' == 'WinExe'">true</SiliconStudioIsExecutable>
+
+    <!--By default, use AssemblyProcessor from solution, unless this is a user build-->
+    <XenkoSdkToolsDir Condition="'$(XenkoSdkToolsDir)' == ''">$(SolutionDir)Bin\Windows\Tools\</XenkoSdkToolsDir>
+    <XenkoSdkToolsDir Condition="'$(XenkoUserBuild)' == 'true'">$(XenkoSdkDir)\Bin\Windows\Tools\</XenkoSdkToolsDir>
+    <XenkoAssetCompilerCommand>$(XenkoSdkToolsDir)SiliconStudio.Assets.CompilerApp.exe</XenkoAssetCompilerCommand>
+  </PropertyGroup>
+
+  <!--Import Silicon Studio common settings-->
+  <Import Project="$(MSBuildThisFileDirectory)..\common\targets\SiliconStudio.PostSettings.targets"/>
+  
+  <!-- If it exists, replace SharedAssemblyInfo.cs with the Package one (which contain NuGet and git versions) -->
+  <PropertyGroup>
+    <PrepareResourcesDependsOn>
+      SiliconStudioXenkoReplaceVersionInfo;
+      $(PrepareResourcesDependsOn)
+    </PrepareResourcesDependsOn>
+  </PropertyGroup>
+
+  <Target Name="SiliconStudioXenkoReplaceVersionInfo" Condition="'$(SiliconStudioPackageBuild)' == 'true'">
+    <Error Condition="!Exists('$(MSBuildThisFileDirectory)..\shared\SharedAssemblyInfo.NuGet.cs')" Text="File SharedAssemblyInfo.NuGet.cs doesn't seem to have been generated. Please make sure Xenko.build PackageEnvironment target has been run succesfully."/>
+    <ItemGroup>
+      <XenkoSharedAssemblyFile Include="@(Compile)" Condition="'%(Compile.FullPath)' == '$([System.IO.Path]::GetFullPath(`$(MSBuildThisFileDirectory)..\shared\SharedAssemblyInfo.cs`))'"/>
+      <Compile Remove="@(XenkoSharedAssemblyFile)" />
+      <Compile Include="@(XenkoSharedAssemblyFile->'$(MSBuildThisFileDirectory)..\shared\SharedAssemblyInfo.NuGet.cs')" />
+    </ItemGroup>
+  </Target>
+  
+  <!-- Import target to handle ProjectReference for executables -->
+  <Import Project="$(MSBuildThisFileDirectory)Xenko.InternalReferences.targets"/>
+</Project>

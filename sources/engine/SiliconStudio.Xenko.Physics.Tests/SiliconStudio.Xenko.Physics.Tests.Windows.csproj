@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <!--Import Local Pre Settings for the solution being loaded -->
+  <Import Project="..\..\targets\Xenko.PreSettings.UnitTests.targets" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4F0E7E04-F067-4CE8-B8C8-1105F319D123}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SiliconStudio.Xenko.Physics.Tests</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Physics.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+    <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>Windows</SiliconStudioBuildProfile>
+    <SiliconStudioPackageGuid>{6d251236-da95-409a-8f4b-7d42ae1fd32c}</SiliconStudioPackageGuid>
+    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == ''">Direct3D11</SiliconStudioXenkoGraphicsApi>
+    <SiliconStudioXenkoOutputFolder>Tests\$(SiliconStudioXenkoGraphicsApi)\$(AssemblyName)</SiliconStudioXenkoOutputFolder>
+    <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Physics.Tests.xkpkg</SiliconStudioCurrentPackagePath>
+    <OutputPath>..\..\..\Bin\$(SiliconStudioPlatformFullName)\$(SiliconStudioXenkoOutputFolder)</OutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(SiliconStudioPlatformFullName)-$(SiliconStudioXenkoGraphicsApi)\$(Configuration)</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
+      <Name>SiliconStudio.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
+      <Project>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</Project>
+      <Name>SiliconStudio.Core.IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
+      <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
+      <Name>SiliconStudio.Core.MicroThreading</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
+      <Name>SiliconStudio.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+    </ProjectReference>
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
+      <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
+      <Name>SiliconStudio.Xenko.Shaders.Compiler</Name>
+    </ProjectReference>
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Xenko.Shaders.Parser\SiliconStudio.Xenko.Shaders.Parser.csproj">
+      <Project>{14A47447-2A24-4ECD-B24D-6571499DCD4C}</Project>
+      <Name>SiliconStudio.Xenko.Shaders.Parser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
+      <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
+      <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
+      <Name>SiliconStudio.Xenko.Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
+      <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
+    </ProjectReference>
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
+      <Project>{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}</Project>
+      <Name>SiliconStudio.Shaders</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
+      <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
+      <Name>SiliconStudio.Xenko.Games</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Graphics.Regression\SiliconStudio.Xenko.Graphics.Regression.csproj">
+      <Project>{D002FEB1-00A6-4AB1-A83F-1F253465E64D}</Project>
+      <Name>SiliconStudio.Xenko.Graphics.Regression</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Input\SiliconStudio.Xenko.Input.csproj">
+      <Project>{84deb606-77ed-49cd-9aed-d2b13c1f5a1e}</Project>
+      <Name>SiliconStudio.Xenko.Input</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
+      <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
+      <Name>SiliconStudio.Xenko.Native</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Particles\SiliconStudio.Xenko.Particles.csproj">
+      <Project>{f32fda80-b6dd-47a8-8681-437e2c0d3f31}</Project>
+      <Name>SiliconStudio.Xenko.Particles</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj">
+      <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
+      <Name>SiliconStudio.Xenko.Physics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.UI\SiliconStudio.Xenko.UI.csproj">
+      <Project>{bb9deeef-f18c-40d8-b016-6434cc71b8c3}</Project>
+      <Name>SiliconStudio.Xenko.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.SpriteStudio.Runtime\SiliconStudio.Xenko.SpriteStudio.Runtime.csproj">
+      <Project>{9BC63BEC-F305-451D-BB31-262938EA964D}</Project>
+      <Name>SiliconStudio.Xenko.SpriteStudio.Runtime</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.VirtualReality\SiliconStudio.Xenko.VirtualReality.csproj">
+      <Project>{53782603-3096-40c2-abd3-f8f311bae4be}</Project>
+      <Name>SiliconStudio.Xenko.VirtualReality</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Navigation\SiliconStudio.Xenko.Navigation.csproj">
+      <Project>{fbe1fa7b-e699-4bb2-9c8f-41f4c9f3f088}</Project>
+      <Name>SiliconStudio.Xenko.Navigation</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CharacterTest.cs" />
+    <Compile Include="ColliderShapesTest.cs" />
+    <Compile Include="GameTest.cs" />
+    <Compile Include="SkinnedTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SiliconStudio.Xenko.Physics.Tests.xkpkg" />
+  </ItemGroup>
+  <Import Condition="'$(SiliconStudioRuntime)' == ''" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />
+  <Import Project="$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets" Condition="Exists('$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets')" />
+  <Target Name="EnsureSiliconStudioXenkoInstalled" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(SiliconStudioXenkoDir)' == ''" Text="Xenko SDK was not found. Check Xenko is installed and the global env variable [SiliconStudioXenkoDir] is setup correctly" />
+    <Error Condition="!Exists('$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets')" Text="Invalid Xenko SDK installation. Target file [$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets] was not found." />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+    Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

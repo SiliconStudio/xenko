@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
+    <ProjectGuid>{C485CE61-3006-4C99-ACB3-A737F5CEBAE7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SiliconStudio.TextureConverter.Tests</RootNamespace>
+    <AssemblyName>SiliconStudio.TextureConverter.Tests</AssemblyName>
+    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
+    <SiliconStudioXenkoOutputFolder>Tests\$(AssemblyName)</SiliconStudioXenkoOutputFolder>
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\..\data\tests\TextureConverter\**\*.*">
+      <Link>InputImages\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ArrayTexLibraryTest.cs" />
+    <Compile Include="AtitcTexLibraryTest.cs" />
+    <Compile Include="AtlasTexLibraryTest.cs" />
+    <Compile Include="Module.cs" />
+    <Compile Include="TestFindSprites.cs" />
+    <Compile Include="DxtTexLibTest.cs" />
+    <Compile Include="FITexLibTest.cs" />
+    <Compile Include="XenkoTexLibraryTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PvrttTexLibTest.cs" />
+    <Compile Include="TestTools.cs" />
+    <Compile Include="TexImageTest.cs" />
+    <Compile Include="TexLibraryTest.cs" />
+    <Compile Include="TexThread.cs" />
+    <Compile Include="TextureTool.Extensions.cs" />
+    <Compile Include="TextureToolTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
+      <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\tools\SiliconStudio.TextureConverter\SiliconStudio.TextureConverter.csproj">
+      <Project>{7f7bff79-c400-435f-b359-56a2ef8956e0}</Project>
+      <Name>SiliconStudio.TextureConverter</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

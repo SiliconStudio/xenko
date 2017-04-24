@@ -1,0 +1,7 @@
+!Texture
+Id: 51144a89-25ee-4065-9f5b-34f57c7640a6
+SerializedVersion: {Xenko: 1.11.1.2}
+Tags: []
+Source: ../../../data/tests/basicDisplacement.png
+Type: !GrayscaleTextureType {}
+GenerateMipmaps: false

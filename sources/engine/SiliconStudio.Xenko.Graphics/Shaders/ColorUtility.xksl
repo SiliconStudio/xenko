@@ -1,0 +1,24 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+shader ColorUtility
+{
+    // Converts an srgb color to linear space
+    float ToLinear(float sRGB)
+    {
+        // http://chilliant.blogspot.jp/2012/08/srgb-approximations-for-hlsl.html
+        return sRGB * (sRGB * (sRGB * 0.305306011 + 0.682171111) + 0.012522878);
+    }
+
+    // Converts an srgb color to linear space
+    float3 ToLinear(float3 sRGB)
+    {
+        return sRGB * (sRGB * (sRGB * 0.305306011 + 0.682171111) + 0.012522878);
+    }
+
+    // Converts an srgb color to linear space
+    float4 ToLinear(float4 sRGBa)
+    {
+        float3 sRGB = sRGBa.rgb;
+        return float4(sRGB * (sRGB * (sRGB * 0.305306011 + 0.682171111) + 0.012522878), sRGBa.a);
+    }
+};

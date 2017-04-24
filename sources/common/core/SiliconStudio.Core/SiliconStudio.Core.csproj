@@ -1,0 +1,336 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+    <XenkoNativeOutputName>libcore</XenkoNativeOutputName>
+  </PropertyGroup>
+  <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Core</RootNamespace>
+    <AssemblyName>SiliconStudio.Core</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.XML" />
+        <Reference Include="System.XML.Linq" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
+      <ItemGroup>
+        <Reference Include="Mono.Android" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
+      <ItemGroup>
+        <Reference Include="Xamarin.iOS" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioRuntime)' == 'CoreCLR' ">
+      <ItemGroup>
+        <None Include="..\..\..\data\Linux\runtimeconfig.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\..\data\Linux\CoreCLRSetup.sh">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="AccessorMetadata.cs" />
+    <Compile Include="Annotations\CanBeNullAttribute.cs" />
+    <Compile Include="Annotations\CategoryOrderAttribute.cs" />
+    <Compile Include="Annotations\ItemCanBeNullAttribute.cs" />
+    <Compile Include="Annotations\ItemNotNullAttribute.cs" />
+    <Compile Include="Annotations\MemberCollectionAttribute.cs" />
+    <Compile Include="Annotations\DynamicTypeAttributeBase.cs" />
+    <Compile Include="Annotations\InlinePropertyAttribute.cs" />
+    <Compile Include="Annotations\NonIdentifiableCollectionItemsAttribute.cs" />
+    <Compile Include="Annotations\NonInstantiableAttribute.cs" />
+    <Compile Include="Annotations\NonOverridableAttribute.cs" />
+    <Compile Include="Annotations\NotNullAttribute.cs" />
+    <Compile Include="AnonymousDisposable.cs" />
+    <Compile Include="BrowsableAttribute.cs" />
+    <Compile Include="CategoryAttribute.cs" />
+    <Compile Include="Collections\ArrayHelper.cs" />
+    <Compile Include="Collections\FastTrackingCollection.cs" />
+    <Compile Include="Collections\FastTrackingCollectionChangedEventArgs.cs" />
+    <Compile Include="Collections\OrderedCollection.cs" />
+    <Compile Include="Collections\FastCollection.cs" />
+    <Compile Include="Collections\ITrackingCollectionChanged.cs" />
+    <Compile Include="Collections\KeyedSortedList.cs" />
+    <Compile Include="Collections\PoolListStruct.cs" />
+    <Compile Include="Collections\SafeList.cs" />
+    <Compile Include="Annotations\DataMemberRangeAttribute.cs" />
+    <Compile Include="DataAliasAttribute.cs" />
+    <Compile Include="Diagnostics\ForwardingLoggerResult.cs" />
+    <Compile Include="Diagnostics\ProfilingCustomValue.cs" />
+    <Compile Include="DisplayAttribute.cs" />
+    <Compile Include="DisposeBase.cs" />
+    <Compile Include="Native\lz4\NativeLZ4Base.cs" />
+    <Compile Include="Native\NativeInvoke.cs" />
+    <Compile Include="Native\NativeLibrary.cs" />
+    <Compile Include="Native\NativeLibraryInternal.cs" />
+    <Compile Include="PropertyContainerClass.cs" />
+    <Compile Include="Reflection\AssemblyScanAttribute.cs" />
+    <Compile Include="Reflection\TypeHelper.cs" />
+    <Compile Include="IL\RemoveInitLocalsAttribute.cs" />
+    <Compile Include="RuntimeIdHelper.cs" />
+    <Compile Include="IIdentifiable.cs" />
+    <Compile Include="IO\NativeFile.cs" />
+    <Compile Include="IO\NativeFile.UWP.cs" />
+    <Compile Include="PlatformFolders.cs" />
+    <Compile Include="Reflection\IObjectFactory.cs" />
+    <Compile Include="Reflection\ObjectFactoryRegistry.cs" />
+    <Compile Include="Annotations\ObjectFactoryAttribute.cs" />
+    <Compile Include="Serialization\GenericSerializerFactory.cs" />
+    <Compile Include="Serialization\NullSerializer.cs" />
+    <Compile Include="Serialization\SerializerFactory.cs" />
+    <Compile Include="Serialization\Serializers\HashSetSerializer.cs" />
+    <Compile Include="Storage\ObjectIdSimpleBuilder.cs" />
+    <Compile Include="Native\SuppressUnmanagedCodeSecurityAttribute.cs" />
+    <Compile Include="ThreadHelper.UWP.cs" />
+    <Compile Include="Collections\PriorityNodeQueue.cs" />
+    <Compile Include="DataMemberCustomSerializerAttribute.cs" />
+    <Compile Include="Diagnostics\ConsoleLogMode.cs" />
+    <Compile Include="Diagnostics\ILogMessage.cs" />
+    <Compile Include="Diagnostics\IProgressStatus.cs" />
+    <Compile Include="Diagnostics\MessageLoggedEventArgs.cs" />
+    <Compile Include="Diagnostics\ProfilingEvent.cs" />
+    <Compile Include="Collections\PriorityQueue.cs" />
+    <Compile Include="Collections\PriorityQueueNode.cs" />
+    <Compile Include="Diagnostics\ExceptionInfo.cs" />
+    <Compile Include="Diagnostics\LogMessageExtensions.cs" />
+    <Compile Include="Diagnostics\ProfilingKeyFlags.cs" />
+    <Compile Include="Diagnostics\ProgressStatusEventArgs.cs" />
+    <Compile Include="Diagnostics\SafeAction.cs" />
+    <Compile Include="Diagnostics\SerializableLogMessage.cs" />
+    <Compile Include="Diagnostics\VTuneProfiler.cs" />
+    <Compile Include="NullDisposable.cs" />
+    <Compile Include="PlatformType.cs" />
+    <Compile Include="Collections\ConstrainedList.cs" />
+    <Compile Include="Collections\FastList.cs" />
+    <Compile Include="Collections\FastListStruct.cs" />
+    <Compile Include="Collections\IReadOnlySet.cs" />
+    <Compile Include="Collections\MultiValueSortedDictionary.cs" />
+    <Compile Include="Collections\MultiValueSortedList.cs" />
+    <Compile Include="Collections\NamespaceDoc.cs" />
+    <Compile Include="Collections\ReadOnlySet.cs" />
+    <Compile Include="Collections\SortedList.cs" />
+    <Compile Include="Collections\TrackingCollection.cs" />
+    <Compile Include="Collections\TrackingCollectionChangedEventArgs.cs" />
+    <Compile Include="Collections\TrackingDictionary.cs" />
+    <Compile Include="Collections\TrackingHashSet.cs" />
+    <Compile Include="ComponentBase.cs" />
+    <Compile Include="ComponentBaseExtensions.cs" />
+    <Compile Include="DataContractIgnoreAttribute.cs" />
+    <Compile Include="DefaultValueMetadata.cs" />
+    <Compile Include="Diagnostics\CallerInfo.cs" />
+    <Compile Include="Diagnostics\CollectionDebugView.cs" />
+    <Compile Include="Diagnostics\ComponentEventInfo.cs" />
+    <Compile Include="Diagnostics\ComponentEventType.cs" />
+    <Compile Include="Diagnostics\ConsoleLogListener.cs" />
+    <Compile Include="Diagnostics\DebugLogListener.cs" />
+    <Compile Include="Diagnostics\GlobalLogger.cs" />
+    <Compile Include="Diagnostics\ILogger.cs" />
+    <Compile Include="Diagnostics\Logger.Extensions.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Logger.Extensions.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Diagnostics\Logger.cs" />
+    <Compile Include="Diagnostics\LoggerResult.cs" />
+    <Compile Include="Diagnostics\ILogger.Extensions.cs">
+      <DependentUpon>ILogger.Extensions.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Diagnostics\LoggerConfig.cs" />
+    <Compile Include="Diagnostics\LogListener.cs" />
+    <Compile Include="Diagnostics\LogMessage.cs" />
+    <Compile Include="Diagnostics\LogMessageType.cs" />
+    <Compile Include="Diagnostics\NamespaceDoc.cs" />
+    <Compile Include="Diagnostics\NullLogger.cs" />
+    <Compile Include="Diagnostics\PerformanceReport.cs" />
+    <Compile Include="Diagnostics\ProfilingKey.cs" />
+    <Compile Include="Diagnostics\ProfilingMessage.cs" />
+    <Compile Include="Diagnostics\ProfilingMessageType.cs" />
+    <Compile Include="Diagnostics\Profiler.cs" />
+    <Compile Include="Diagnostics\ProfilingState.cs" />
+    <Compile Include="Diagnostics\TextWriterLogListener.cs" />
+    <Compile Include="Diagnostics\TimestampLocalLogger.cs" />
+    <Compile Include="Extensions\ArrayExtensions.cs" />
+    <Compile Include="Extensions\CollectionExtensions.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\NamespaceDoc.cs" />
+    <Compile Include="ICollector.cs" />
+    <Compile Include="IContentUrl.cs" />
+    <Compile Include="IO\NamespaceDoc.cs" />
+    <Compile Include="IO\NativeMemoryStream.cs" />
+    <Compile Include="IO\NativeStream.cs" />
+    <Compile Include="IO\NativeStreamExtensions.cs" />
+    <Compile Include="IO\NativeStreamWrapper.cs" />
+    <Compile Include="IServiceRegistry.cs" />
+    <Compile Include="ModuleInitializerAttribute.cs" />
+    <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="ObjectCollector.cs" />
+    <Compile Include="ObjectInvalidationMetadata.cs" />
+    <Compile Include="PlatformAndroid.cs" />
+    <Compile Include="PropertyChangedExtendedEventArgs.cs" />
+    <Compile Include="ReferenceCounting\ReferenceCountingExtensions.cs" />
+    <Compile Include="ReferenceEqualityComparer.cs" />
+    <Compile Include="Reflection\AssemblyCommonCategories.cs" />
+    <Compile Include="Reflection\AssemblyRegisteredEventArgs.cs" />
+    <Compile Include="Reflection\AssemblyRegistry.cs" />
+    <Compile Include="Reflection\ModuleRuntimeHelpers.cs" />
+    <Compile Include="Reflection\NamespaceDoc.cs" />
+    <Compile Include="Serialization\ArchiveMode.cs" />
+    <Compile Include="Serialization\Binary\BinarySerialization.cs" />
+    <Compile Include="Serialization\Binary\BinarySerializationReader.cs" />
+    <Compile Include="Serialization\Binary\BinarySerializationWriter.cs" />
+    <Compile Include="Serialization\Binary\HashSerializationWriter.cs" />
+    <Compile Include="Serialization\Binary\StringHashHelper.cs" />
+    <Compile Include="Serialization\ClassDataSerializer.cs" />
+    <Compile Include="DataMemberAttribute.cs" />
+    <Compile Include="DataMemberMode.cs" />
+    <Compile Include="Storage\ObjectId.FromObject.cs" />
+    <Compile Include="Storage\ObjectId.Serializer.cs" />
+    <Compile Include="Serialization\DataSerializer.cs" />
+    <Compile Include="DataStyle.cs" />
+    <Compile Include="DataStyleAttribute.cs" />
+    <Compile Include="ScalarStyle.cs" />
+    <Compile Include="Serialization\DataSerializerFactory.cs" />
+    <Compile Include="Serialization\IDataSerializerGenericInstantiation.cs" />
+    <Compile Include="Serialization\MemberSerializer.cs" />
+    <Compile Include="Serialization\EmptyDataSerializer.cs" />
+    <Compile Include="Serialization\MemberSerializerGenerated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MemberSerializerGenerated.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Serialization\NamespaceDoc.cs" />
+    <Compile Include="Serialization\NullSerializationStream.cs" />
+    <Compile Include="Storage\ObjectId.cs" />
+    <Compile Include="Storage\ObjectIdBuilder.cs" />
+    <Compile Include="Serialization\SerializationStream.cs" />
+    <Compile Include="Serialization\SerializeClassFlags.cs" />
+    <Compile Include="Serialization\SerializerExtensions.cs" />
+    <Compile Include="Serialization\SerializerSelector.cs" />
+    <Compile Include="Serialization\Serializers\ByteArraySerializer.cs" />
+    <Compile Include="Serialization\Serializers\CollectionSerializers.cs" />
+    <Compile Include="Serialization\Serializers\KeyedSortedListSerializer.cs" />
+    <Compile Include="Serialization\Serializers\ComplexTypeSerializerFlags.cs" />
+    <Compile Include="Serialization\DataSerializerAttribute.cs" />
+    <Compile Include="Serialization\DataSerializerGenericMode.cs" />
+    <Compile Include="Serialization\Serializers\NamespaceDoc.cs" />
+    <Compile Include="Serialization\Serializers\NullableSerializer.cs" />
+    <Compile Include="Serialization\Serializers\PrimitiveTypeSerializers.cs" />
+    <Compile Include="Serialization\Serializers\PropertyInfoSerializer.cs" />
+    <Compile Include="Serialization\Serializers\PropertyKeySerializer.cs" />
+    <Compile Include="Serialization\DataSerializerGlobalAttribute.cs" />
+    <Compile Include="Serialization\Serializers\TupleSerializer.cs">
+      <DependentUpon>TupleSerializer.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Serialization\Serializers\TypeSerializer.cs" />
+    <Compile Include="ServiceEventArgs.cs" />
+    <Compile Include="ServiceNotFoundException.cs" />
+    <Compile Include="ServiceRegistry.cs" />
+    <Compile Include="ServiceRegistryExtensions.cs" />
+    <Compile Include="StringExtensions.cs" />
+    <Compile Include="FrameworkResources.Designer.cs">
+      <DependentUpon>FrameworkResources.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="IComponent.cs" />
+    <Compile Include="IReferencable.cs" />
+    <Compile Include="Platform.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyContainer.cs" />
+    <Compile Include="PropertyKey.cs" />
+    <Compile Include="PropertyKeyMetadata.cs" />
+    <Compile Include="ReferenceBase.cs" />
+    <Compile Include="Reflection\CustomAttributeExtensions.cs" />
+    <Compile Include="DataMemberIgnoreAttribute.cs" />
+    <Compile Include="DataContractAttribute.cs" />
+    <Compile Include="Threading\ConcurrentCollector.cs" />
+    <Compile Include="Threading\ConcurrentPool.cs" />
+    <Compile Include="Threading\Dispatcher.cs" />
+    <Compile Include="Threading\IPooledClosure.cs" />
+    <Compile Include="Threading\PooledAttribute.cs" />
+    <Compile Include="Threading\PooledDelegateHelper.cs" />
+    <Compile Include="Threading\ThreadPool.cs" />
+    <Compile Include="UnmanagedArray.cs" />
+    <Compile Include="Utilities.cs" />
+    <Compile Include="Utilities.Interop.cs" />
+    <Compile Include="ValidateValueMetadata.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FrameworkResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FrameworkResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Diagnostics\ILogger.Extensions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ILogger.Extensions.cs</LastGenOutput>
+    </None>
+    <None Include="Diagnostics\Logger.Extensions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Logger.Extensions.cs</LastGenOutput>
+    </None>
+    <None Include="Serialization\MemberSerializerClass.ttinclude" />
+    <None Include="Serialization\MemberSerializerCore.ttinclude" />
+    <None Include="Serialization\MemberSerializerGenerated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>MemberSerializerGenerated.cs</LastGenOutput>
+    </None>
+    <None Include="Serialization\Serializers\TupleSerializer.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TupleSerializer.cs</LastGenOutput>
+    </None>
+    <SiliconStudioContent Include="SiliconStudio.Core.dll.config"/>
+    <None Include="Native\lz4\lz4.c" />
+    <None Include="Native\lz4\lz4.h" />
+    <None Include="Native\lz4\lz4hc.c" />
+    <None Include="Native\lz4\lz4hc.h" />
+    <None Include="Native\CoreNative.c" />
+    <None Include="Native\CoreNative.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <Import Project="..\..\..\native\Xenko.Native.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

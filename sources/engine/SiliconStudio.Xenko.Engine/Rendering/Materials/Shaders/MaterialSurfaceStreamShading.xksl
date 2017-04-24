@@ -1,0 +1,18 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    // Temporary code for testing IMaterialSurface
+    shader MaterialSurfaceStreamShading<MemberName TStreamName, MemberName TStreamRGB, bool RemapSigned> : ShadingBase, MaterialPixelShadingStream
+    {
+        stage override float4 Shading()
+        {
+            // Run surface shading but don't take the result
+            base.Shading();
+            var value = streams.TStreamName;
+            if (RemapSigned)
+                value = value * 0.5f + 0.5f;
+            return float4(value.TStreamRGB, 1.0f);
+        }
+    };
+}

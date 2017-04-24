@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+    <SiliconStudioXenkoGraphicsApiDependent>true</SiliconStudioXenkoGraphicsApiDependent>
+    <XenkoNativeOutputName>libxenkovr</XenkoNativeOutputName>
+  </PropertyGroup>
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{53782603-3096-40C2-ABD3-F8F311BAE4BE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Xenko.VirtualReality</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.VirtualReality</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Android' OR '$(SiliconStudioPlatform)' == 'iOS' ">
+      <ItemGroup>
+        <Reference Include="OpenTK-1.1">
+          <HintPath Condition="'$(SiliconStudioPlatform)' == 'Android'">$(XenkoDependenciesDir)OpenTK\Android\OpenTK-1.1.dll</HintPath>
+          <HintPath Condition="'$(SiliconStudioPlatform)' == 'iOS'">$(XenkoDependenciesDir)OpenTK\iOS\OpenTK-1.1.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Android'">
+      <ItemGroup>
+        <Reference Include="Mono.Android" />
+        <Reference Include="GoogleVRJava">
+          <HintPath>..\..\..\deps\GoogleVR\lib\Android\GoogleVRJava.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
+      <ItemGroup>
+        <Reference Include="Xamarin.iOS" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' Or '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
+      <ItemGroup>
+        <Reference Include="SharpDX">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="SharpDX.D3DCompiler">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="SharpDX.DXGI">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+      <ItemGroup>
+        <SiliconStudioNativeLib Include="..\..\..\deps\OpenVR\$(SiliconStudioPlatform)\**\openvr_api.*">
+          <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </SiliconStudioNativeLib>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' ">
+      <ItemGroup>
+        <Reference Include="SharpDX.Direct3D11">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
+      <ItemGroup>
+        <Reference Include="SharpDX.Direct3D12">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="DeviceState.cs" />
+    <Compile Include="DummyDevice.cs" />
+    <Compile Include="Eyes.cs" />
+    <Compile Include="Fove\Fove.cs" />
+    <Compile Include="Fove\FoveHmd.cs" />
+    <Compile Include="GoogleVR\GoogleVR.cs" />
+    <Compile Include="GoogleVR\GoogleVrHmd.cs" />
+    <Compile Include="OculusOVR\OculusOverlay.cs" />
+    <Compile Include="OculusOVR\OculusTouchController.cs" />
+    <Compile Include="OpenVR\OpenVROverlay.cs" />
+    <Compile Include="VRDevice.cs" />
+    <Compile Include="VRApi.cs" />
+    <Compile Include="NativeInvoke.cs" />
+    <Compile Include="OculusOVR\OculusOVR.cs" />
+    <Compile Include="OculusOVR\OculusOVRHmd.cs" />
+    <Compile Include="OpenVR\OpenVRHmd.cs" />
+    <Compile Include="OpenVR\OpenVRTouchController.cs" />
+    <Compile Include="OpenVR\OpenVR.cs" />
+    <Compile Include="OpenVR\openvr_api.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TouchController.cs" />
+    <Compile Include="TouchControllerButton.cs" />
+    <Compile Include="TouchControllerHand.cs" />
+    <Compile Include="VRDeviceSystem.cs" />
+    <Compile Include="VROverlay.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
+      <Project>{42780cbd-3fe7-48e3-bd5b-59945ea20137}</Project>
+      <Name>SiliconStudio.Xenko.Games</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
+      <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <SiliconStudioContent Include="SiliconStudio.Xenko.VirtualReality.dll.config" />
+    <None Include="Xenko.Native.Libs.targets">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="GoogleVR\GoogleVR.cpp" />
+    <None Include="OculusOVR\OculusOVR.cpp" />
+    <None Include="Fove\Fove.cpp" />
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <Import Project="..\..\native\Xenko.Native.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

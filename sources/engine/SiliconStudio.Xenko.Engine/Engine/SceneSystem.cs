@@ -1,0 +1,286 @@
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
+using System.Threading.Tasks;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Compositing;
+
+namespace SiliconStudio.Xenko.Engine
+{
+    /// <summary>
+    /// The scene system handles the scenes of a game.
+    /// </summary>
+    public class SceneSystem : GameSystemBase
+    {
+        private static readonly Logger Log = GlobalLogger.GetLogger("SceneSystem");
+
+        private RenderContext renderContext;
+        private RenderDrawContext renderDrawContext;
+
+        private int previousWidth;
+        private int previousHeight;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameSystemBase" /> class.
+        /// </summary>
+        /// <param name="registry">The registry.</param>
+        /// <remarks>The GameSystem is expecting the following services to be registered: <see cref="IGame" /> and <see cref="IContentManager" />.</remarks>
+        public SceneSystem(IServiceRegistry registry)
+            : base(registry)
+        {
+            registry.AddService(typeof(SceneSystem), this);
+            Enabled = true;
+            Visible = true;
+            GraphicsCompositor = new GraphicsCompositor();
+        }
+
+        /// <summary>
+        /// Gets or sets the root scene.
+        /// </summary>
+        /// <value>The scene.</value>
+        /// <exception cref="System.ArgumentNullException">Scene cannot be null</exception>
+        public SceneInstance SceneInstance { get; set; }
+
+        /// <summary>
+        /// URL of the initial scene that should be used upon loading
+        /// </summary>
+        public string InitialSceneUrl { get; set; }
+
+        /// <summary>
+        /// URL of the initial graphics compositor that should be used upon loading
+        /// </summary>
+        public string InitialGraphicsCompositorUrl { get; set; }
+
+        /// <summary>
+        /// URL of the splash screen texture that should be used upon loading
+        /// </summary>
+        public string SplashScreenUrl { get; set; }
+
+        /// <summary>
+        /// Splash screen background color
+        /// </summary>
+        public Color4 SplashScreenColor { get; set; }
+
+        /// <summary>
+        /// If splahs screen rendering is enabeld, true if a splash screen texture is present, and only happens in release builds
+        /// </summary>
+        public bool SplashScreenEnabled { get; set; }
+
+        public GraphicsCompositor GraphicsCompositor { get; set; }
+
+        private Task<Scene> sceneTask;
+        private Task<GraphicsCompositor> compositorTask;
+
+        private const double MinSplashScreenTime = 4.0f;
+        private const float SplashScreenFadeTime = 1.0f;
+
+        private double fadeTime;
+        private Texture splashScreenTexture;
+
+        public enum SplashScreenState
+        {
+            Invalid,
+            Intro,
+            FadingIn,
+            Showing,
+            FadingOut
+        }
+
+        private SplashScreenState splashScreenState = SplashScreenState.Invalid;
+
+        protected override void LoadContent()
+        {
+            var content = Services.GetSafeServiceAs<ContentManager>();
+            var graphicsContext = Services.GetSafeServiceAs<GraphicsContext>();
+
+            if (SplashScreenUrl != null && content.Exists(SplashScreenUrl))
+            {
+                splashScreenTexture = content.Load<Texture>(SplashScreenUrl);
+                splashScreenState = splashScreenTexture != null ? SplashScreenState.Intro : SplashScreenState.Invalid;
+                SplashScreenEnabled = true;
+            }
+
+            // Preload the scene if it exists and show splash screen
+            if (InitialSceneUrl != null && content.Exists(InitialSceneUrl))
+            {
+                if(SplashScreenEnabled)
+                    sceneTask = content.LoadAsync<Scene>(InitialSceneUrl);
+                else
+                    SceneInstance = new SceneInstance(Services, content.Load<Scene>(InitialSceneUrl));
+            }
+
+            if (InitialGraphicsCompositorUrl != null && content.Exists(InitialGraphicsCompositorUrl))
+            {
+                if (SplashScreenEnabled)
+                    compositorTask = content.LoadAsync<GraphicsCompositor>(InitialGraphicsCompositorUrl);
+                else
+                    GraphicsCompositor = content.Load<GraphicsCompositor>(InitialGraphicsCompositorUrl);
+            }
+
+            // Create the drawing context
+            renderContext = RenderContext.GetShared(Services);
+            renderDrawContext = new RenderDrawContext(Services, renderContext, graphicsContext);
+        }
+
+        protected override void Destroy()
+        {
+            if (SceneInstance != null)
+            {
+                ((IReferencable)SceneInstance).Release();
+                SceneInstance = null;
+            }
+
+            base.Destroy();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            // Execute Update step of SceneInstance
+            // This will run entity processors
+            SceneInstance?.Update(gameTime);
+        }
+
+        private void RenderSplashScreen(Color4 color, BlendStateDescription blendState)
+        {
+            var renderTarget = Game.GraphicsContext.CommandList.RenderTarget;
+            Game.GraphicsContext.CommandList.Clear(renderTarget, SplashScreenColor);
+
+            int width;
+            int height;
+            if (renderTarget.Height > renderTarget.Width) //portrait
+            {
+                width = height = renderTarget.Width;
+            }
+            else //landscape
+            {
+                width = height = renderTarget.Height;
+            }
+
+            var viewport = Game.GraphicsContext.CommandList.Viewport;
+
+            var x = -width / 2;
+            var y = -height / 2;
+            x += renderTarget.Width / 2;
+            y += renderTarget.Height / 2;
+            Game.GraphicsContext.CommandList.SetViewport(new Viewport(x, y, width, height));
+
+            Game.GraphicsContext.DrawTexture(splashScreenTexture, color, blendState);
+
+            Game.GraphicsContext.CommandList.SetViewport(viewport);
+        }
+
+        public override void Draw(GameTime gameTime)
+        {
+            // Reset the context
+            renderContext.Reset();
+
+            var renderTarget = renderDrawContext.CommandList.RenderTarget;
+
+            // If the width or height changed, we have to recycle all temporary allocated resources.
+            // NOTE: We assume that they are mostly resolution dependent.
+            if (previousWidth != renderTarget.ViewWidth || previousHeight != renderTarget.ViewHeight)
+            {
+                // Force a recycle of all allocated temporary textures
+                renderContext.Allocator.Recycle(link => true);
+            }
+
+            previousWidth = renderTarget.ViewWidth;
+            previousHeight = renderTarget.ViewHeight;
+
+            // Update the entities at draw time.
+            renderContext.Time = gameTime;
+
+            // Execute Draw step of SceneInstance
+            // This will run entity processors
+            SceneInstance?.Draw(renderContext);
+
+            // Render phase
+            // TODO GRAPHICS REFACTOR
+            //context.GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
+            //context.GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
+
+            // Push context (pop after using)
+            using (renderDrawContext.RenderContext.PushTagAndRestore(SceneInstance.Current, SceneInstance))
+            {
+                GraphicsCompositor?.Draw(renderDrawContext);
+            }
+
+            //do this here, make sure GCompositor and Scene are updated/rendered the next frame!
+            if (sceneTask != null && compositorTask != null)
+            {
+                switch (splashScreenState)
+                {
+                    case SplashScreenState.Invalid:
+                    {
+                        if (sceneTask.IsCompleted && compositorTask.IsCompleted)
+                        {
+                            SceneInstance = new SceneInstance(Services, sceneTask.Result);
+                            GraphicsCompositor = compositorTask.Result;
+                            sceneTask = null;
+                            compositorTask = null;
+                        }
+                    }
+                        break;
+                    case SplashScreenState.Intro:
+                    {
+                        Game.GraphicsContext.CommandList.Clear(Game.GraphicsContext.CommandList.RenderTarget, SplashScreenColor);
+
+                        if (gameTime.Total.TotalSeconds > SplashScreenFadeTime)
+                        {
+                            splashScreenState = SplashScreenState.FadingIn;
+                            fadeTime = 0.0f;
+                        }
+                    }
+                        break;
+                    case SplashScreenState.FadingIn:
+                    {
+                        var color = Color4.White;
+                        var factor = MathUtil.SmoothStep((float)fadeTime / SplashScreenFadeTime);
+                        color *= factor;
+                        if (factor >= 1.0f)
+                        {
+                            splashScreenState = SplashScreenState.Showing;
+                        }
+
+                        fadeTime += gameTime.Elapsed.TotalSeconds;
+
+                        RenderSplashScreen(color, BlendStates.AlphaBlend);
+                    }
+                        break;
+                    case SplashScreenState.Showing:
+                    {
+                        RenderSplashScreen(Color4.White, BlendStates.Default);
+
+                        if (gameTime.Total.TotalSeconds > MinSplashScreenTime && sceneTask.IsCompleted && compositorTask.IsCompleted)
+                        {
+                            splashScreenState = SplashScreenState.FadingOut;
+                            fadeTime = 0.0f;
+                        }
+                    }
+                        break;
+                    case SplashScreenState.FadingOut:
+                    {
+                        var color = Color4.White;
+                        var factor = (MathUtil.SmoothStep((float)fadeTime / SplashScreenFadeTime) * -1) + 1;
+                        color *= factor;
+                        if (factor <= 0.0f)
+                        {
+                            splashScreenState = SplashScreenState.Invalid;
+                        }
+
+                        fadeTime += gameTime.Elapsed.TotalSeconds;
+
+                        RenderSplashScreen(color, BlendStates.AlphaBlend);
+                    }
+                        break;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+shader TestMacros : PositionVertexTransform, ShadingBase
+{
+    compose MacroTest macros0;
+    compose MacroTest macros1;
+    compose MacroTest macros2;
+
+    stage override void PSMain()
+    {
+        base.PSMain();
+        float4 color = macros0.u * streams.ColorTarget + macros1.u * macros2.u;
+        streams.ColorTarget = color;
+    }
+};

@@ -1,0 +1,16 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Defines a Texture2D.
+/// </summary>
+/// <remarks>
+/// TEXTURE_KEY: generic LinkType - the name of the ParameterKey that will link to this texture.
+/// </remarks>
+shader DynamicSampler<LinkType TSampler, MemberName LocalResourceGroup>
+{
+    rgroup LocalResourceGroup
+    {
+        [Link("TSampler")]
+        stage SamplerState Sampler;
+    }
+};

@@ -1,0 +1,16 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Graphics.Tests
+{
+    shader MultipleRenderTargetsEffectShader: ShadingBase
+    {    
+        stage override void PSMain()
+        {
+            base.PSMain();
+            streams.ColorTarget = this.Shading();            
+            streams.ColorTarget1 = this.Shading() * float4(0, 0, 1, 1);
+            streams.ColorTarget2 = this.Shading() * float4(1, 1, 0, 1);
+        }
+    };
+}

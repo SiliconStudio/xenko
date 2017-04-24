@@ -1,0 +1,30 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    /// <summary>
+    /// A log luminance shader (by default using luma/Perceptive luminance Y'601)
+    /// </summary>
+    shader LuminanceLogShader : ImageEffectShader
+    {
+        float GetLuminance(float3 color)
+        {
+            return LuminanceUtils.Luma(color);
+        }
+
+        stage override float4 Shading()
+        {
+            float3 color = Texture0.Sample(PointSampler, streams.TexCoord).rgb;
+
+            // TODO: Make the Luma configurable from the LuminanceLogEffect
+            // Make sure that we don't go beyond max half float (65504), so we cap values here
+            var lum = GetLuminance(color);
+			if (lum < 0.001)
+			{
+				lum = 0.001;
+			}
+            return float4(log2(lum), 1.0, 1.0, 1.0);
+        }
+    };
+}

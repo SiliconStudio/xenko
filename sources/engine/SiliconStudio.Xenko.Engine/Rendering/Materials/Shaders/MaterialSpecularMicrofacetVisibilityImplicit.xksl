@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    /// <summary>
+    /// Interface for a microfacet Geometric Shadowing function
+    /// </summary>
+    shader MaterialSpecularMicrofacetVisibilityImplicit : IMaterialSpecularMicrofacetVisibilityFunction
+    {
+        override float Compute()
+        {
+            return VisibilityImplicit(streams.NdotL, streams.NdotV);
+        }
+    };
+}

@@ -1,0 +1,9 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+shader ChildError : Parent
+{
+    float AddBaseValue(float inValue)
+    {
+        return inValue + base.AddBaseValue(inValue);
+    }
+};

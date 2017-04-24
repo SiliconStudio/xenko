@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BF32DE1B-6276-4341-B212-F8862ADBBA7A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Core.Yaml</RootNamespace>
+    <AssemblyName>SiliconStudio.Core.Yaml</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
+    <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
+    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="CharacterAnalyzer.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Emitter.cs" />
+    <Compile Include="EmitterState.cs" />
+    <Compile Include="EventReader.cs" />
+    <Compile Include="Events\AnchorAlias.cs" />
+    <Compile Include="Events\DocumentEnd.cs" />
+    <Compile Include="Events\DocumentStart.cs" />
+    <Compile Include="Events\EventType.cs" />
+    <Compile Include="Events\NodeEvent.cs" />
+    <Compile Include="Events\ParsingEvent.cs" />
+    <Compile Include="Events\MappingEnd.cs" />
+    <Compile Include="Events\MappingStart.cs" />
+    <Compile Include="Events\Scalar.cs" />
+    <Compile Include="Events\SequenceEnd.cs" />
+    <Compile Include="Events\SequenceStart.cs" />
+    <Compile Include="MemoryParser.cs" />
+    <Compile Include="Serialization\AnchorEventEmitter.cs" />
+    <Compile Include="Serialization\DynamicMemberDescriptorBase.cs" />
+    <Compile Include="Serialization\FlatNamingConvention.cs" />
+    <Compile Include="Serialization\IOrderedDictionary.cs" />
+    <Compile Include="Serialization\ISerializerFactorySelector.cs" />
+    <Compile Include="Serialization\ITagTypeResolver.cs" />
+    <Compile Include="Serialization\ObjectContext.cs" />
+    <Compile Include="Serialization\OrderedDictionary.cs" />
+    <Compile Include="Serialization\SerializerContextSettings.cs" />
+    <Compile Include="Serialization\SerializerFactorySelector.cs" />
+    <Compile Include="Serialization\Serializers\DefaultObjectSerializerBackend.cs" />
+    <Compile Include="Serialization\IObjectSerializerBackend.cs" />
+    <Compile Include="Events\StreamEnd.cs" />
+    <Compile Include="Events\StreamStart.cs" />
+    <Compile Include="FakeList.cs" />
+    <Compile Include="IEmitter.cs" />
+    <Compile Include="ILookAheadBuffer.cs" />
+    <Compile Include="InsertionQueue.cs" />
+    <Compile Include="IParser.cs" />
+    <Compile Include="LookAheadBuffer.cs" />
+    <Compile Include="Mark.cs" />
+    <Compile Include="Parser.cs" />
+    <Compile Include="ParserState.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scanner.cs" />
+    <Compile Include="Schemas\CoreSchema.cs" />
+    <Compile Include="Schemas\ExtendedSchema.cs" />
+    <Compile Include="Schemas\FailsafeSchema.cs" />
+    <Compile Include="Schemas\IYamlSchema.cs" />
+    <Compile Include="Schemas\JsonSchema.cs" />
+    <Compile Include="SemanticErrorException.cs" />
+    <Compile Include="Serialization\AnchorNotFoundException.cs" />
+    <Compile Include="Serialization\ChainedObjectFactory.cs" />
+    <Compile Include="Serialization\DefaultObjectFactory.cs" />
+    <Compile Include="Serialization\DocumentLoadingState.cs" />
+    <Compile Include="Serialization\DuplicateAnchorException.cs" />
+    <Compile Include="Serialization\EmitterState.cs" />
+    <Compile Include="Serialization\IObjectFactory.cs" />
+    <Compile Include="Serialization\ITagTypeRegistry.cs" />
+    <Compile Include="Serialization\IYamlVisitor.cs" />
+    <Compile Include="Serialization\LambdaObjectFactory.cs" />
+    <Compile Include="Serialization\Serializers\AnchorSerializer.cs" />
+    <Compile Include="Serialization\ChainedEventEmitter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\Serializers\ArraySerializer.cs" />
+    <Compile Include="Serialization\Serializers\ChainedSerializer.cs" />
+    <Compile Include="Serialization\EventInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\IdentityEqualityComparer.cs" />
+    <Compile Include="Serialization\IEventEmitter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\IYamlSerializable.cs" />
+    <Compile Include="Serialization\IYamlSerializableFactory.cs" />
+    <Compile Include="Serialization\JsonEventEmitter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\Serializers\CollectionSerializer.cs" />
+    <Compile Include="Serialization\Serializers\DictionarySerializer.cs" />
+    <Compile Include="Schemas\SchemaBase.cs" />
+    <Compile Include="Serialization\Serializers\ExceptionUtils.cs" />
+    <Compile Include="Serialization\Serializers\ObjectSerializer.cs" />
+    <Compile Include="Serialization\Serializers\ScalarSerializerBase.cs" />
+    <Compile Include="Serialization\Serializers\TagTypeSerializer.cs" />
+    <Compile Include="Serialization\Serializers\PrimitiveSerializer.cs" />
+    <Compile Include="Serialization\Serializers\RoutingSerializer.cs" />
+    <Compile Include="Serialization\SerializerContext.cs" />
+    <Compile Include="Serialization\YamlAssemblyRegistry.cs" />
+    <Compile Include="Serialization\WriterEventEmitter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\YamlAliasNode.cs" />
+    <Compile Include="Serialization\YamlDocument.cs" />
+    <Compile Include="Serialization\YamlMappingNode.cs" />
+    <Compile Include="Serialization\YamlNode.cs" />
+    <Compile Include="Serialization\YamlNodeIdentityEqualityComparer.cs" />
+    <Compile Include="Serialization\YamlScalarNode.cs" />
+    <Compile Include="Serialization\YamlSequenceNode.cs" />
+    <Compile Include="Serialization\Serializer.cs" />
+    <Compile Include="Serialization\SerializerSettings.cs" />
+    <Compile Include="Serialization\YamlSerializerFactoryAttribute.cs" />
+    <Compile Include="Serialization\ProfileSerializerFactorySelector.cs" />
+    <Compile Include="Serialization\YamlStream.cs" />
+    <Compile Include="Serialization\YamlVisitor.cs" />
+    <Compile Include="SimpleKey.cs" />
+    <Compile Include="SortedDictionary.cs" />
+    <Compile Include="StringLookAheadBuffer.cs" />
+    <Compile Include="SyntaxErrorException.cs" />
+    <Compile Include="TagDirectiveCollection.cs" />
+    <Compile Include="Tokens\AnchorAlias.cs" />
+    <Compile Include="Tokens\Anchor.cs" />
+    <Compile Include="Tokens\BlockEnd.cs" />
+    <Compile Include="Tokens\BlockEntry.cs" />
+    <Compile Include="Tokens\BlockMappingStart.cs" />
+    <Compile Include="Tokens\BlockSequenceStart.cs" />
+    <Compile Include="Tokens\DocumentEnd.cs" />
+    <Compile Include="Tokens\DocumentStart.cs" />
+    <Compile Include="Tokens\FlowEntry.cs" />
+    <Compile Include="Tokens\FlowMappingEnd.cs" />
+    <Compile Include="Tokens\FlowMappingStart.cs" />
+    <Compile Include="Tokens\FlowSequenceEnd.cs" />
+    <Compile Include="Tokens\FlowSequenceStart.cs" />
+    <Compile Include="Tokens\Key.cs" />
+    <Compile Include="Tokens\Scalar.cs" />
+    <Compile Include="Tokens\StreamEnd.cs" />
+    <Compile Include="Tokens\StreamStart.cs" />
+    <Compile Include="Tokens\Tag.cs" />
+    <Compile Include="Tokens\TagDirective.cs" />
+    <Compile Include="Tokens\Token.cs" />
+    <Compile Include="Tokens\Value.cs" />
+    <Compile Include="Tokens\VersionDirective.cs" />
+    <Compile Include="Version.cs" />
+    <Compile Include="YamlException.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
+      <Project>{0be7189b-f04e-4c0c-bbe9-f347c0a59fee}</Project>
+      <Name>SiliconStudio.Core.Reflection</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

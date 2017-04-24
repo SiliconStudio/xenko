@@ -1,0 +1,22 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    /// <summary>
+    /// Material displacement map
+    /// </summary>
+    shader MaterialSurfaceDisplacement<MemberName TPosition, MemberName TNormal, bool TScaleNormal> : IMaterialSurface, MaterialDisplacementStream, PositionStream, NormalStream, Transformation
+    {
+        override void Compute()
+        {
+            float3 scaledNormal = streams.TNormal;
+            if(TScaleNormal)
+            {
+                scaledNormal *= WorldScale;
+            }
+
+            streams.TPosition = float4(streams.TPosition.xyz + streams.matDisplacement * scaledNormal, streams.TPosition.w);
+        }
+    };
+}

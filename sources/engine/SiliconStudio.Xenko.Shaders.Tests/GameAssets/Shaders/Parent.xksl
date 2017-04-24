@@ -1,0 +1,14 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+shader Parent
+{
+    float baseValue = 2.0f;
+    Texture2D parentTexture;
+
+    float AddBaseValue(float inValue)
+    {
+        float a0 = 0.0f,
+              a1 = 1.0f;
+        return inValue + baseValue + a0 + a1;
+    }
+};

@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
+    <ProjectGuid>{8D783A73-0BE3-423E-8FF6-984125C07BFE}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SiliconStudio.Assets.CompilerClient</RootNamespace>
+    <AssemblyName>SiliconStudio.Assets.CompilerClient</AssemblyName>
+    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\common\core\SiliconStudio.Core\ModuleInitializerAttribute.cs">
+      <Link>ModuleInitializerAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\..\shared\ToolAssemblyResolveModuleInitializer.cs">
+      <Link>ToolAssemblyResolveModuleInitializer.cs</Link>
+    </Compile>
+    <Compile Include="..\SiliconStudio.Assets\DirectoryHelper.cs">
+      <Link>DirectoryHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\SiliconStudio.Assets\Package.Constants.cs">
+      <Link>Package.Constants.cs</Link>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\tools\SiliconStudio.ExecServer\SiliconStudio.ExecServer.csproj">
+      <Project>{5e241be1-ffb6-49f2-98b4-7869ba7d9f5a}</Project>
+      <Name>SiliconStudio.ExecServer</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,32 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    /// <summary>
+    /// A gaussian blur shader
+    /// </summary>
+    internal shader GaussianBlurShader<int BlurCount, bool IsVertical> : ImageEffectShader
+    {
+        stage float2 OffsetsWeights[BlurCount];
+
+        stage override float4 Shading()
+        {
+            // Direction in texel size: (float2(1,0) or float2(0,1)) * texel size
+            float2 direction = (IsVertical ? float2(0, 1) : float2(1, 0)) * Texture0TexelSize;
+
+            // Add center
+            float3 value = Texture0.Sample(LinearSampler, streams.TexCoord).rgb * OffsetsWeights[0].y;
+
+            // mirrored samples using bilinear filtering
+            [unroll]
+            for(int i = 1; i < BlurCount; i++)
+            {
+                value += Texture0.Sample(LinearSampler, streams.TexCoord - direction * OffsetsWeights[i].x).rgb * OffsetsWeights[i].y;
+                value += Texture0.Sample(LinearSampler, streams.TexCoord + direction * OffsetsWeights[i].x).rgb * OffsetsWeights[i].y;
+            }
+
+            return float4(value, 1);
+        }
+    };
+}

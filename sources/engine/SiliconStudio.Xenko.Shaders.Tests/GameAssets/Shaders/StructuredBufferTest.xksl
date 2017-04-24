@@ -1,0 +1,14 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+shader StructuredBufferTest
+{
+    StructuredBuffer<StaticMixin> sbtest;
+    RWStructuredBuffer<StaticMixin> rwsbtest;
+
+    void test()
+    {
+        uint numStructs;
+        uint stride;
+        sbtest.GetDimensions(numStructs, stride);
+    }
+};

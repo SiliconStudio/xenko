@@ -1,0 +1,16 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    /// <summary>
+    /// Combines the different blur levels depending on the pixel's CoC.
+    /// Specific for the front out-of-focus objects. 
+    /// </summary>
+    effect CombineFrontCoCEffect
+    {
+        using params CombineLevelsFromCoCKeys;
+
+        // Mixin 
+        mixin CombineFrontCoCShader<CombineLevelsFromCoCKeys.LevelCount>;
+    };
+}

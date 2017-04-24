@@ -1,0 +1,47 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace Test1
+{
+    params SubParameters
+    {
+        bool   param1;
+        int    param2 = 1;
+        string param3 = "ok";
+    };
+
+    params TestParameters
+    {
+        SubParameters subParam1;
+        SubParameters subParameters[];
+    };
+
+    effect DefaultComplexParams
+    {
+        using params TestParameters;
+        using params SubParameters;
+
+        mixin A;
+        mixin B;
+        mixin C;
+
+        int x = 1;
+        foreach (params TestParameters.subParameters)
+        {
+            if (SubParameters.param1)
+            {
+                mixin "C" + x;
+            }
+            
+            x++;
+        }
+        
+        using params TestParameters.subParam1
+        {
+        
+            if (SubParameters.param2 == 1)
+            {
+                mixin D;
+            }
+        }
+    };
+}

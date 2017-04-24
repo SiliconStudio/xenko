@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3ED4CEA3-D7DB-4E2D-86CB-58F4543FBD4B}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SimpleTeapot</RootNamespace>
+    <AssemblyName>SimpleTeapot</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Effects\ShaderCompilerD3D11.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\engine\Xenko.Effects.Modules\Xenko.Effects.Modules.csproj">
+      <Project>{0342C3E7-4A38-46B4-A8EC-E728D50085D3}</Project>
+      <Name>Xenko.Effects.Modules</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\engine\Xenko.Engine.D3D\Xenko.Engine.D3D.csproj">
+      <Project>{277482AC-7EAE-4DF1-896E-539E0ED0C90D}</Project>
+      <Name>Xenko.Engine.D3D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\engine\Xenko.Engine\Xenko.Engine.csproj">
+      <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
+      <Name>Xenko.Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\framework\Xenko.Framework.Graphics.Direct3D\Xenko.Framework.Graphics.Direct3D.csproj">
+      <Project>{94E5C98F-B906-4103-AAD8-BCBBF5A12648}</Project>
+      <Name>Xenko.Framework.Graphics.Direct3D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\framework\Xenko.Framework.Graphics\Xenko.Framework.Graphics.csproj">
+      <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
+      <Name>Xenko.Framework.Graphics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\framework\Xenko.Framework.Shaders\Xenko.Framework.Shaders.csproj">
+      <Project>{E9D4E7D3-9345-48E4-8F1C-78CD6B2D8142}</Project>
+      <Name>Xenko.Framework.Shaders</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

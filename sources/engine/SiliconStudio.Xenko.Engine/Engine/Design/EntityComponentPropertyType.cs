@@ -1,0 +1,15 @@
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
+using SiliconStudio.Core;
+
+namespace SiliconStudio.Xenko.Engine.Design
+{
+    [DataContract]
+    public enum EntityComponentPropertyType
+    {
+        Field,
+        Property,
+        ExternalProperty,
+    }
+}

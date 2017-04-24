@@ -1,0 +1,23 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.ComputeEffect
+{
+    /// <summary>
+    /// The effect for compute effect
+    /// </summary>
+    effect ComputeEffectShader
+    {
+        using params ComputeEffectShaderKeys;
+                
+        mixin macro ThreadNumberX = ComputeEffectShaderKeys.ThreadNumbers.X;
+        mixin macro ThreadNumberY = ComputeEffectShaderKeys.ThreadNumbers.Y;            
+        mixin macro ThreadNumberZ = ComputeEffectShaderKeys.ThreadNumbers.Z;
+
+        // base effect for computing
+        mixin ComputeShaderBase;
+
+        // user computing effect
+        mixin ComputeEffectShaderKeys.ComputeShaderName;
+    };
+}

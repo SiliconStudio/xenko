@@ -1,0 +1,12 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+shader NonStageStreamTest
+{
+    compose StreamParent2 ext0;
+    compose StreamParent2 ext1;
+
+    float test()
+    {
+        return streams.ext0.parentStream + streams.ext1.parentStream + streams.ext0.stageStream + streams.ext1.stageStream;;
+    }
+};

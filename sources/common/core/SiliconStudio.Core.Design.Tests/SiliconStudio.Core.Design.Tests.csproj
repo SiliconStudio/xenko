@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4D13D69B-C8E8-4675-8198-1BE2785FFB6D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Core.Design.Tests</RootNamespace>
+    <AssemblyName>SiliconStudio.Core.Design.Tests</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
+    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
+    <SiliconStudioXenkoOutputFolder>Tests\$(AssemblyName)</SiliconStudioXenkoOutputFolder>
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="nunit.framework">
+      <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Extensions\TestDesignExtensions.cs" />
+    <Compile Include="TestFileLock.cs" />
+    <Compile Include="TestHelpers.cs" />
+    <Compile Include="TestMemberPath.cs" />
+    <Compile Include="TestDataMemberVisitor.cs" />
+    <Compile Include="TestMemberPathBase.cs" />
+    <Compile Include="TestMicroThreadLock.cs" />
+    <Compile Include="TestNamingHelper.cs" />
+    <Compile Include="TestObjectCache.cs" />
+    <Compile Include="TestSettings.cs" />
+    <Compile Include="TestShadowObject.cs" />
+    <Compile Include="TestTypeConverter.cs" />
+    <Compile Include="TestUPath.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Transactions\OrderedOperation.cs" />
+    <Compile Include="Transactions\SimpleOperation.cs" />
+    <Compile Include="Transactions\TestTransaction.cs" />
+    <Compile Include="Transactions\TestTransactionEvent.cs" />
+    <Compile Include="Transactions\TestTransactionStack.cs" />
+    <Compile Include="TestUPathOld.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
+      <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
+      <Name>SiliconStudio.Core.MicroThreading</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
+      <Project>{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}</Project>
+      <Name>SiliconStudio.Core.Reflection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
+      <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
+      <Name>SiliconStudio.Core.Yaml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
+      <Name>SiliconStudio.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
+      <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
+      <Name>SiliconStudio.Core.Design</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

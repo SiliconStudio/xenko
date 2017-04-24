@@ -1,0 +1,18 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    /// <summary>
+    /// Constantlty outputs the depth of a given point in the image. 
+    /// </summary>
+    shader PointDepth: ImageEffectShader
+    {
+        float2 Coordinate;
+
+        stage override float4 Shading()
+        {
+            return Texture0.Sample(Sampler, Coordinate).y;
+        }
+    };
+}

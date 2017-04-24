@@ -1,0 +1,29 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    /// <summary>
+    /// Outputs CoC and linear depth.
+    /// Expects as input:
+    /// - Texture0: the raw depth-buffer used to render the original scene
+    /// </summary>
+    shader CoCLinearDepthShader : ImageEffectShader, Camera, CircleOfConfusion
+    {
+
+        stage override float4 Shading()
+        {
+            // Linearizes the depth for view space
+            float depth = Texture0.Sample(Sampler, streams.TexCoord).x;
+            float linearDepth = ZProjection.y / (depth - ZProjection.x);
+
+            // Debug: use this to visualize with a color in the [0, 1] range
+            // color = 1.0 - linearDepth / FarClipPlane;
+
+            // Calculates the CoC based on the linearized depth
+            float CoC = getCoCFactor(linearDepth);
+
+            return float4(CoC, linearDepth, 0.0, 0.0);
+        }
+    };
+}

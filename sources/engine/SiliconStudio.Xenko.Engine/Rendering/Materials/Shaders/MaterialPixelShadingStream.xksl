@@ -1,0 +1,44 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    shader MaterialPixelShadingStream : MaterialPixelStream, LightStream
+    {
+        // Output of shading a material surface
+        stage stream float3 shadingColor;
+
+        // Output of the shading color alpha
+        stage stream float  shadingColorAlpha;
+
+        // Half vector (sum of normalWS + lightDirectionWS)
+        stage stream float3 H;
+
+        // normal dot half vector
+        stage stream float NdotH;
+
+        // light dot half vector
+        stage stream float LdotH;
+
+        // view dot half vector
+        stage stream float VdotH;
+
+        override void ResetStream()
+        {
+            base.ResetStream();
+            streams.shadingColorAlpha = 1.0f;
+        }
+
+        // Computes material attributes per light
+        stage void PrepareMaterialPerDirectLight()
+        {
+            // TODO: This is not plug-n-play
+            // Used by microfacet
+            streams.H = normalize(streams.viewWS + streams.lightDirectionWS);
+            // Make sure that NdotL and NdotV != 0 as they are used as denominator in BRDF and causing NANs if not correctly clamped
+            streams.NdotH = max(dot(streams.normalWS, streams.H), 0.0001f);
+            streams.LdotH = max(dot(streams.lightDirectionWS, streams.H), 0.0001f);
+            streams.VdotH = streams.LdotH;
+        }
+    };
+}
+

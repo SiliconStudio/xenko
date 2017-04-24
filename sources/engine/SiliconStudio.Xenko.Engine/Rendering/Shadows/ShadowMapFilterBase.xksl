@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Shadows
+{
+    /// <summary>
+    /// Defines shadow filtering method.
+    /// </summary>
+    shader ShadowMapFilterBase<MemberName PerLighting> : ShadowMapCommon<PerLighting>, Texturing
+    {
+        /// <summary>
+        /// Calculate the shadow factor based the position and shadow map distance.
+        /// </summary>
+        abstract float FilterShadow(float2 position, float positionDepth);
+    };
+}

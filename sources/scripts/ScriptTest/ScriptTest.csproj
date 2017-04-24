@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6142C284-ABA2-4F66-B6DE-62BA32E534B8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ScriptTest</RootNamespace>
+    <AssemblyName>ScriptTest</AssemblyName>
+    <XenkoScript>true</XenkoScript>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssetBrowserEnumerator.cs" />
+    <Compile Include="PickingSystem.cs" />
+    <Compile Include="BulletEmitterDescription.cs" />
+    <Compile Include="BulletParticleEmitterComponent.cs" />
+    <Compile Include="ScriptParticleSmoke.cs" />
+    <Compile Include="ScriptParticles.cs" />
+    <Compile Include="ScriptPermutation.cs" />
+    <Compile Include="ScriptSingleSphere.cs" />
+    <Compile Include="ScriptColor.cs" />
+    <Compile Include="EffectEnumerator.cs" />
+    <Compile Include="ScriptCave.cs" />
+    <Compile Include="EntityComponentEnumerator.cs" />
+    <Compile Include="EntityHierarchyEnumerator.cs" />
+    <Compile Include="LightScript.cs" />
+    <Compile Include="MicroThreadEnumerator.cs" />
+    <Compile Include="RenderPassHierarchyEnumerator.cs" />
+    <Compile Include="RenderPassPluginEnumerator.cs" />
+    <Compile Include="ScriptAssemblyEnumerator.cs" />
+    <Compile Include="Script1.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScriptDebug.cs" />
+    <Compile Include="ScriptCube.cs" />
+    <Compile Include="ScriptMulticore.cs" />
+    <Compile Include="ScriptSceneSerialization.cs" />
+    <Compile Include="SmokeEmitterDescription.cs" />
+    <Compile Include="SmokeParticleEmitterComponent.cs" />
+    <Compile Include="ParticleUpdaters.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\presentation\SiliconStudio.Quantum\SiliconStudio.Quantum.csproj">
+      <Project>{1D4210BD-FA51-4709-951B-50647617F97E}</Project>
+      <Name>SiliconStudio.Quantum</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Effects.Yebis\SiliconStudio.Xenko.Effects.Yebis.csproj">
+      <Project>{9a7fbc3e-0198-49bc-bba7-4bd5ad2a9e34}</Project>
+      <Name>SiliconStudio.Xenko.Effects.Yebis</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
+      <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
+      <Name>SiliconStudio.Xenko.Engine</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
+      <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\shaders\SiliconStudio.Xenko.Effects.csproj">
+      <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
+      <Name>SiliconStudio.Xenko.Effects</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ScriptShader\ScriptShader.csproj">
+      <Project>{457D4B45-85B9-4098-8389-6CBC012D140F}</Project>
+      <Name>ScriptShader</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ScriptTest2\ScriptTest2.csproj">
+      <Project>{866B3401-078A-4907-8886-B5B1DD960120}</Project>
+      <Name>ScriptTest2</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

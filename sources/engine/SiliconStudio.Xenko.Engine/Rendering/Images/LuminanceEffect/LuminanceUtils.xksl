@@ -1,0 +1,23 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    /// <summary>
+    /// A utility shader for luminance.
+    /// </summary>
+    shader LuminanceUtils
+    {
+        /// <summary>
+        /// Calculate the perceptive luminance (601Y')
+        /// </summary>
+        /// <remarks>
+        /// http://en.wikipedia.org/wiki/HSL_and_HSV#Lightness
+        /// http://www.poynton.com/PDFs/YUV_and_luminance_harmful.pdf
+        /// </remarks>
+        static float Luma(float3 color)
+        {
+            return max(dot(color, float3(0.299, 0.587, 0.114)), 0.0001);
+        }
+    };
+}

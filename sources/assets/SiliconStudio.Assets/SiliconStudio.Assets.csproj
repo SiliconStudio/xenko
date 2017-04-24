@@ -1,0 +1,402 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1E54A9A2-4439-4444-AE57-6D2ED3C0DC47}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Assets</RootNamespace>
+    <AssemblyName>SiliconStudio.Assets</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\build\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Build, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.Build.15.1.548\lib\net46\Microsoft.Build.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Build.Engine, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.Build.Engine.15.1.548\lib\net46\Microsoft.Build.Engine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Build.Framework, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.Build.Framework.15.1.548\lib\net46\Microsoft.Build.Framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Build.Tasks.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.Build.Tasks.Core.15.1.548\lib\net46\Microsoft.Build.Tasks.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Build.Utilities.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.Build.Utilities.Core.15.1.548\lib\net46\Microsoft.Build.Utilities.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Diagnostics.Tracing, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\System.Diagnostics.Tracing.4.3.0\lib\net462\System.Diagnostics.Tracing.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Extensions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\System.Runtime.Extensions.4.3.0\lib\net462\System.Runtime.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\System.Runtime.InteropServices.4.3.0\lib\net462\System.Runtime.InteropServices.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\System.Threading.Tasks.Dataflow.4.6.0\lib\netstandard1.1\System.Threading.Tasks.Dataflow.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Thread, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\System.Threading.Thread.4.3.0\lib\net46\System.Threading.Thread.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Analysis\AssetAnalysis.cs" />
+    <Compile Include="Analysis\AssetAnalysisParameters.cs" />
+    <Compile Include="Analysis\AssetBaseAnalysis.cs" />
+    <Compile Include="Analysis\AssetLink.cs" />
+    <Compile Include="Analysis\AssetDependencyManager.cs" />
+    <Compile Include="Analysis\AssetDependencies.cs" />
+    <Compile Include="Analysis\AssetDependencySearchOptions.cs" />
+    <Compile Include="Analysis\AssetFileChangedEvent.cs" />
+    <Compile Include="Analysis\AssetFileChangedEventSquasher.cs" />
+    <Compile Include="Analysis\AssetFileChangedType.cs" />
+    <Compile Include="Analysis\AssetInheritanceSearchOptions.cs" />
+    <Compile Include="Analysis\AssetReferenceAnalysis.cs" />
+    <Compile Include="Analysis\AssetReferenceLink.cs" />
+    <Compile Include="Analysis\AssetPartsAnalysis.cs" />
+    <Compile Include="Analysis\BuildAssetNode.cs" />
+    <Compile Include="Analysis\BuildDependencyManager.cs" />
+    <Compile Include="Analysis\BuildDependencyType.cs" />
+    <Compile Include="Analysis\CollectionItemIdsAnalysis.cs" />
+    <Compile Include="Analysis\IAssetDependencyManager.cs" />
+    <Compile Include="Analysis\IdentifiableObjectAnalysis.cs" />
+    <Compile Include="AssetCollectionItemIdHelper.cs" />
+    <Compile Include="AssetCompositeHierarchy.cs" />
+    <Compile Include="AssetCompositeHierarchyData.cs" />
+    <Compile Include="AssetCompositeHierarchyExtensions.cs" />
+    <Compile Include="AssetContentTypeAttribute.cs" />
+    <Compile Include="AssetItemExtensions.cs" />
+    <Compile Include="AssetLogger.cs" />
+    <Compile Include="AssetPartCollection.cs" />
+    <Compile Include="AssetTracker.cs" />
+    <Compile Include="BasePart.cs" />
+    <Compile Include="CollectionIdGenerator.cs" />
+    <Compile Include="Compiler\AssetCompilationContext.cs" />
+    <Compile Include="Compiler\AssetCompilerAttribute.cs" />
+    <Compile Include="Compiler\ICompilationContext.cs" />
+    <Compile Include="Diagnostics\AssetSerializableLogMessage.cs" />
+    <Compile Include="DynamicYaml\DynamicYamlExtensions.cs" />
+    <Compile Include="TextAccessors\FileTextAccessor.cs" />
+    <Compile Include="IAssetFinder.cs" />
+    <Compile Include="IAssetPartDesign.cs" />
+    <Compile Include="IProjectAsset.cs" />
+    <Compile Include="IProjectFileGeneratorAsset.cs" />
+    <Compile Include="TextAccessors\ISerializableTextAccessor.cs" />
+    <Compile Include="TextAccessors\ITextAccessor.cs" />
+    <Compile Include="Package.Constants.cs" />
+    <Compile Include="Package.cs" />
+    <Compile Include="PackageAssetCollection.cs" />
+    <Compile Include="PackageBuildConfiguration.cs" />
+    <Compile Include="PackageCollection.cs" />
+    <Compile Include="PackageDependency.cs" />
+    <Compile Include="PackageExtensions.cs" />
+    <Compile Include="PackageLoadedAssembly.cs" />
+    <Compile Include="PackageLoadingAssetFile.cs" />
+    <Compile Include="PackageLoadParameters.cs" />
+    <Compile Include="PackageMeta.cs" />
+    <Compile Include="PackageProfile.cs" />
+    <Compile Include="PackageReference.cs" />
+    <Compile Include="PackageReferenceBase.cs" />
+    <Compile Include="PackageSaveParameters.cs" />
+    <Compile Include="PackageSession.cs" />
+    <Compile Include="PackageSession.Extensions.cs" />
+    <Compile Include="PackageSessionHelper.cs" />
+    <Compile Include="PackageSessionHelper.Solution.cs" />
+    <Compile Include="PackageSessionProfilingKeys.cs" />
+    <Compile Include="PackageSessionResult.cs" />
+    <Compile Include="PackageStore.cs" />
+    <Compile Include="PackageUpgrader.cs" />
+    <Compile Include="PackageUpgraderAttribute.cs" />
+    <Compile Include="PackageUpgradeRequestedAnswer.cs" />
+    <Compile Include="PackageUserSettings.cs" />
+    <Compile Include="PackageVersionRangeExtensions.cs" />
+    <Compile Include="Reflection\CollectionItemIdentifiers.cs" />
+    <Compile Include="Reflection\CollectionItemIdHelper.cs" />
+    <Compile Include="Reflection\ItemId.cs" />
+    <Compile Include="Reflection\OverrideTarget.cs" />
+    <Compile Include="Serializers\AssetPartContainedAttribute.cs" />
+    <Compile Include="Serializers\FixupObjectReferences.cs" />
+    <Compile Include="Serializers\IAssetPartReference.cs" />
+    <Compile Include="Serializers\IdentifiableAssetPartReference.cs" />
+    <Compile Include="Serializers\IdentifiableAssetPartReferenceSerializer.cs" />
+    <Compile Include="Serializers\IdentifiableObjectSerializer.cs" />
+    <Compile Include="TextAccessors\StringTextAccessor.cs" />
+    <Compile Include="TextAccessors\DefaultTextAccessor.cs" />
+    <Compile Include="Yaml\AttachedYamlAssetMetadata.cs" />
+    <Compile Include="Yaml\IYamlAssetMetadata.cs" />
+    <Compile Include="Serializers\ScalarOrObjectSerializer.cs" />
+    <Compile Include="Yaml\YamlAssetMetadata.cs" />
+    <Compile Include="Tracking\AssetSourceTracker.cs" />
+    <Compile Include="Analysis\CommonAnalysis.cs" />
+    <Compile Include="Analysis\IContentLink.cs" />
+    <Compile Include="Analysis\ContentLinkType.cs" />
+    <Compile Include="Analysis\PackageAnalysis.cs" />
+    <Compile Include="Analysis\PackageAnalysisParameters.cs" />
+    <Compile Include="Analysis\PackageSessionAnalysisBase.cs" />
+    <Compile Include="Tracking\SourceFileChangeType.cs" />
+    <Compile Include="Tracking\SourceFilesCollector.cs" />
+    <Compile Include="Tracking\SourceHashesHelper.cs" />
+    <Compile Include="Tracking\TrackedAsset.cs" />
+    <Compile Include="Tracking\SourceFileChangedData.cs" />
+    <Compile Include="AssetCloner.cs" />
+    <Compile Include="Analysis\AssetCollision.cs" />
+    <Compile Include="AssetClonerFlags.cs" />
+    <Compile Include="AssetComposite.cs" />
+    <Compile Include="AssetFactory.cs" />
+    <Compile Include="AssetHash.cs" />
+    <Compile Include="AssetWithSource.cs" />
+    <Compile Include="AssetImporterParameters.cs" />
+    <Compile Include="AssetMember.cs" />
+    <Compile Include="AssetMigrationContext.cs" />
+    <Compile Include="AssetPart.cs" />
+    <Compile Include="AssetReferenceDataSerializer.cs" />
+    <Compile Include="AssetSelector.cs" />
+    <Compile Include="AssetFormatVersionAttribute.cs" />
+    <Compile Include="AssetUpgraderAttribute.cs" />
+    <Compile Include="AssetUpgraderBase.cs" />
+    <Compile Include="AssetUpgraderCollection.cs" />
+    <Compile Include="Bundle.cs" />
+    <Compile Include="BundleCollection.cs" />
+    <Compile Include="Compiler\AssetBuildStep.cs" />
+    <Compile Include="Compiler\AssetDependenciesCompiler.cs" />
+    <Compile Include="AssetImporterBase.cs" />
+    <Compile Include="Compiler\IPackageCompilerSource.cs" />
+    <Compile Include="Compiler\IPackageCompiler.cs" />
+    <Compile Include="Compiler\PackageAssetEnumerator.cs" />
+    <Compile Include="Compiler\RootPackageAssetEnumerator.cs" />
+    <Compile Include="DefaultAssetFactory.cs" />
+    <Compile Include="DirectoryHelper.cs" />
+    <Compile Include="DirtyFlagChangedDelegate.cs" />
+    <Compile Include="EmptyAssetUpgrader.cs" />
+    <Compile Include="FileVersionManager.cs" />
+    <Compile Include="Compiler\AssetCommand.cs" />
+    <Compile Include="Compiler\AssetCompiledArgs.cs" />
+    <Compile Include="Compiler\AssetCompilerBase.cs" />
+    <Compile Include="Compiler\AssetCompilerContext.cs" />
+    <Compile Include="Compiler\AssetCompilerRegistry.cs" />
+    <Compile Include="Compiler\FailedCommand.cs" />
+    <Compile Include="IAssetComposite.cs" />
+    <Compile Include="IAssetFactory.cs" />
+    <Compile Include="IAssetUpgrader.cs" />
+    <Compile Include="IFileSynchronizable.cs" />
+    <Compile Include="Analysis\AssetResolver.cs" />
+    <Compile Include="IO\FileExtensionCollection.cs" />
+    <Compile Include="AssetMigration.cs" />
+    <Compile Include="OverrideUpgraderHint.cs" />
+    <Compile Include="Compiler\CompilerAttribute.cs" />
+    <Compile Include="Compiler\CompilerContext.cs" />
+    <Compile Include="Compiler\AssetCompilerResult.cs" />
+    <Compile Include="Compiler\IAssetCompiler.cs" />
+    <Compile Include="Compiler\ImportStreamCommand.cs" />
+    <Compile Include="Compiler\ItemListCompiler.cs" />
+    <Compile Include="Compiler\PackageCompiler.cs" />
+    <Compile Include="ProjectFileGeneratorAsset.cs" />
+    <Compile Include="ProjectSourceCodeAsset.cs" />
+    <Compile Include="RawAsset.cs" />
+    <Compile Include="RootAssetCollection.cs" />
+    <Compile Include="Serializers\AssetItemSerializer.cs" />
+    <Compile Include="Serializers\YamlAssetSerializer.cs" />
+    <Compile Include="Serializers\InvariantObjectCloneSerializer.cs" />
+    <Compile Include="SolutionPlatformCollection.cs" />
+    <Compile Include="SourceFileMemberAttribute.cs" />
+    <Compile Include="TemplateFolder.cs" />
+    <Compile Include="Templates\TemplateAssetDescription.cs" />
+    <Compile Include="Templates\TemplateGeneratorBase.cs" />
+    <Compile Include="Templates\TemplateSampleDescription.cs" />
+    <Compile Include="Templates\TemplateScope.cs" />
+    <Compile Include="Templates\TemplateGeneratorContext.cs" />
+    <Compile Include="Templates\TemplateStatus.cs" />
+    <Compile Include="RawAssetCompiler.cs" />
+    <Compile Include="RawAssetImporter.cs" />
+    <Compile Include="UPathAttribute.cs" />
+    <Compile Include="Visitors\AssetMemberVisitorBase.cs" />
+    <Compile Include="VSProjectHelper.cs" />
+    <Compile Include="ProjectReference.cs" />
+    <Compile Include="ProjectType.cs" />
+    <Compile Include="Serializers\PackageReferenceSerializer.cs" />
+    <Compile Include="Selectors\PathSelector.cs" />
+    <Compile Include="Serializers\PackageVersionRangeSerializer.cs" />
+    <Compile Include="Serializers\IAssetSerializer.cs" />
+    <Compile Include="Serializers\ContentReferenceSerializer.cs" />
+    <Compile Include="Serializers\PackageVersionSerializer.cs" />
+    <Compile Include="Serializers\PropertyKeyYamlSerializer.cs" />
+    <Compile Include="Serializers\UriYamlSerializer.cs" />
+    <Compile Include="SolutionPlatform.cs" />
+    <Compile Include="SourceCodeAsset.cs" />
+    <Compile Include="Serializers\SourceCodeAssetSerializer.cs" />
+    <Compile Include="AssetFolder.cs" />
+    <Compile Include="AssetFolderCollection.cs" />
+    <Compile Include="TagCollection.cs" />
+    <Compile Include="Selectors\TagSelector.cs" />
+    <Compile Include="Templates\TemplateDescription.cs" />
+    <Compile Include="Templates\ITemplateGenerator.cs" />
+    <Compile Include="Templates\TemplateGeneratorParameters.cs" />
+    <Compile Include="Templates\TemplateManager.cs" />
+    <Compile Include="Visitors\AssetVisitorBase.cs" />
+    <Compile Include="AssetException.cs" />
+    <Compile Include="AssetDescriptionAttribute.cs" />
+    <Compile Include="Asset.cs" />
+    <Compile Include="AssetFileSerializer.cs" />
+    <Compile Include="Diagnostics\AssetLoggerExtensions.cs" />
+    <Compile Include="Diagnostics\AssetLogMessage.cs" />
+    <Compile Include="Diagnostics\AssetMessageCode.cs" />
+    <Compile Include="Diagnostics\AssetMessageStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AssetMessageStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="AssetReference.cs" />
+    <Compile Include="AssetAliasAttribute.cs" />
+    <Compile Include="Module.cs" />
+    <Compile Include="Serializers\AssetReferenceSerializer.cs" />
+    <Compile Include="AssetRegistry.cs" />
+    <Compile Include="AssetItem.cs" />
+    <Compile Include="IO\FileUtility.cs" />
+    <Compile Include="IAssetImporter.cs" />
+    <Compile Include="PropertyCollection.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="IO\SearchDirection.cs" />
+    <Compile Include="Serializers\YamlAssetProfile.cs" />
+    <Compile Include="UnloadableObjectRemover.cs" />
+    <Compile Include="Yaml\AssetYamlSerializer.cs" />
+    <Compile Include="Yaml\CollectionWithIdsSerializer.cs" />
+    <Compile Include="Yaml\CollectionWithIdsSerializerBase.cs" />
+    <Compile Include="Yaml\CollectionWithItemIds.cs" />
+    <Compile Include="Yaml\ContextAttributeSerializer.cs" />
+    <Compile Include="Yaml\AssetObjectSerializerBackend.cs" />
+    <Compile Include="Yaml\DeletedKeyWithId.cs" />
+    <Compile Include="Yaml\DictionaryWithIdsSerializer.cs" />
+    <Compile Include="Yaml\DictionaryWithItemIds.cs" />
+    <Compile Include="Yaml\ErrorRecoverySerializer.cs" />
+    <Compile Include="Yaml\IKeyWithId.cs" />
+    <Compile Include="Yaml\ItemIdSerializer.cs" />
+    <Compile Include="Yaml\ItemIdSerializerBase.cs" />
+    <Compile Include="Yaml\IUnloadable.cs" />
+    <Compile Include="Yaml\KeyValuePairSerializer.cs" />
+    <Compile Include="Yaml\KeyWithId.cs" />
+    <Compile Include="Yaml\KeyWithIdSerializer.cs" />
+    <Compile Include="Yaml\UnloadableObjectInstantiator.cs" />
+    <Compile Include="Yaml\YamlAssetPath.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">
+      <Project>{7732cb84-a39a-4adf-b740-fd32a352fa8a}</Project>
+      <Name>SiliconStudio.BuildEngine.Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
+      <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
+      <Name>SiliconStudio.Core.Design</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
+      <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
+      <Name>SiliconStudio.Core.MicroThreading</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
+      <Project>{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}</Project>
+      <Name>SiliconStudio.Core.Reflection</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
+      <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
+      <Name>SiliconStudio.Core.Yaml</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
+      <Project>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</Project>
+      <Name>SiliconStudio.Core.IO</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Packages\SiliconStudio.Packages.csproj">
+      <Project>{acd2c831-bda2-4512-b4cc-75e8e1804f73}</Project>
+      <Name>SiliconStudio.Packages</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Analysis\PackageSessionAnalysis.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Diagnostics\AssetMessageStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AssetMessageStrings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Diagrams\AssetsDiagram.cd" />
+    <None Include="Diagrams\BuildCommands.cd" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\deps\Nuget\NuGet.exe">
+      <Link>NuGet.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="..\..\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems" Label="Shared" />
+  <Import Project="..\SiliconStudio.Assets.Yaml\SiliconStudio.Assets.Yaml.projitems" Label="Shared" />
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

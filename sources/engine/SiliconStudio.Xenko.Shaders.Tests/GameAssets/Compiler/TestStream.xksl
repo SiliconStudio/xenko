@@ -1,0 +1,26 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+shader TestStream : ShaderBase
+{
+    stage stream float2 Position : POSITION;
+    stage stream float blend;
+
+    stage override void VSMain() 
+    {
+        streams.ShadingPosition = float4(streams.Position, 0.0f, 1.0f);
+    }
+
+    stage override void PSMain() 
+    {
+        var backup = streams;
+        Toto(backup);
+
+        streams.ColorTarget = float4(streams.Position, 0, 1);
+    }
+
+
+    void Toto(Streams backup)
+    {
+        streams.Position = lerp(streams.Position, backup.Position, backup.blend);
+    }
+};

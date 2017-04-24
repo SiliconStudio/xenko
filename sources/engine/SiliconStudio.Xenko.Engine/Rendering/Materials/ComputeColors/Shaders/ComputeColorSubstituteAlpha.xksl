@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+shader ComputeColorSubstituteAlpha : ComputeColor
+{
+    compose ComputeColor color1;
+    compose ComputeColor color2;
+
+    override float4 Compute()
+    {
+        float4 tex1 = color1.Compute();
+        float4 tex2 = color2.Compute();
+
+        return float4(tex1.rgb, tex2.a);
+    }
+};

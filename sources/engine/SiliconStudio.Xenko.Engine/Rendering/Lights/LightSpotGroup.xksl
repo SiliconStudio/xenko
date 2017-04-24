@@ -1,0 +1,35 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Lights
+{
+    /// <summary>
+    /// Defines a group of spot lights
+    /// </summary>
+    shader LightSpotGroup<int TMaxLightCount> : DirectLightGroupPerDraw, LightSpot
+    {
+        cbuffer PerDraw.Lighting
+        {
+            SpotLightData Lights[TMaxLightCount];
+        }
+
+        override int GetMaxLightCount()
+        {
+            return TMaxLightCount;
+        }
+
+        /// <summary>
+        /// Compute the light color/direction for the specified index within this group
+        /// </summary>
+        override void PrepareDirectLightCore(int lightIndex)
+        {
+            // TODO: Workaraound for SPIR-V compiler. Revert later
+            SpotLightDataInternal data;
+            data.PositionWS = Lights[lightIndex].PositionWS;
+            data.DirectionWS = Lights[lightIndex].DirectionWS;
+            data.AngleOffsetAndInvSquareRadius = Lights[lightIndex].AngleOffsetAndInvSquareRadius;
+            data.Color = Lights[lightIndex].Color;
+
+            ProcessLight(data);
+        }
+    };
+}

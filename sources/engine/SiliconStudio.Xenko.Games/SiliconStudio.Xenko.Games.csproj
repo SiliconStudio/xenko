@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+    <SiliconStudioXenkoGraphicsApiDependent>true</SiliconStudioXenkoGraphicsApiDependent>
+  </PropertyGroup>
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Xenko.Games</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Games</AssemblyName>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
+    <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets" />
+  <Choose>
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' Or '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
+      <ItemGroup>
+        <Reference Include="SharpDX">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
+        </Reference>
+        <Reference Include="SharpDX.DXGI">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' ">
+      <ItemGroup>
+        <Reference Include="SharpDX.Direct3D11" Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' ">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
+      <ItemGroup>
+        <Reference Include="SharpDX.Direct3D12" Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Android\AndroidXenkoGameView.cs" />
+    <Compile Include="Android\GamePlatform.Android.cs" />
+    <Compile Include="Android\GameWindow.Android.cs" />
+    <Compile Include="AssemblyDoc.cs" />
+    <Compile Include="Desktop\GameForm.cs" />
+    <Compile Include="Desktop\GamePlatform.Windows.cs" />
+    <Compile Include="Desktop\GameWindow.Windows.Desktop.cs" />
+    <Compile Include="Desktop\Win32Native.cs" />
+    <Compile Include="Desktop\WindowsMessageLoop.cs" />
+    <Compile Include="GameBase.cs" />
+    <Compile Include="GameContext.Android.cs" />
+    <Compile Include="GameContext.SDL.cs" />
+    <Compile Include="GameContext.Windows.cs" />
+    <Compile Include="GameContext.Windows.Desktop.cs" />
+    <Compile Include="GameContext.Windows.OpenTK.cs" />
+    <Compile Include="GameContext.UWP.cs" />
+    <Compile Include="GameContext.cs" />
+    <Compile Include="GameContext.iOS.cs" />
+    <Compile Include="GameContextFactory.cs" />
+    <Compile Include="GameGraphicsParameters.cs" />
+    <Compile Include="GamePlatform.cs" />
+    <Compile Include="GameProfilingKeys.cs" />
+    <Compile Include="GameState.cs" />
+    <Compile Include="GameSystemBase.cs" />
+    <Compile Include="GameSystemCollection.cs" />
+    <Compile Include="GameSystemState.cs" />
+    <Compile Include="GameTime.cs" />
+    <Compile Include="GameUnhandledExceptionEventArgs.cs" />
+    <Compile Include="GameWindow.cs" />
+    <Compile Include="GameWindowRenderer.cs" />
+    <Compile Include="GraphicsDeviceInformation.cs" />
+    <Compile Include="GraphicsDeviceManager.cs" />
+    <Compile Include="GraphicsDeviceManagerProfilingKeys.cs" />
+    <Compile Include="IContentable.cs" />
+    <Compile Include="IDrawable.cs" />
+    <Compile Include="IGame.cs" />
+    <Compile Include="IGamePlatform.cs" />
+    <Compile Include="IGameSystemBase.cs" />
+    <Compile Include="IGameSystemCollection.cs" />
+    <Compile Include="IGraphicsDeviceFactory.cs" />
+    <Compile Include="IGraphicsDeviceManager.cs" />
+    <Compile Include="iOS\iOSWindow.cs" />
+    <Compile Include="IUpdateable.cs" />
+    <Compile Include="LaunchParameters.cs" />
+    <Compile Include="ListBoundExtensions.cs" />
+    <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="OpenTK\GamePlatform.Windows.OpenTK.cs" />
+    <Compile Include="OpenTK\GameWindow.Windows.OpenTK.cs" />
+    <Compile Include="PreparingDeviceSettingsEventArgs.cs" />
+    <Compile Include="SDL\GameForm.SDL.cs" />
+    <Compile Include="SDL\GameWindow.SDL.cs" />
+    <Compile Include="Time\AbsoluteStopwatch.cs" />
+    <Compile Include="Time\ITimedValue.cs" />
+    <Compile Include="Time\TimerTick.cs" />
+    <Compile Include="WindowsStore\GamePlatform.UWP.cs" />
+    <Compile Include="WindowsStore\GameWindow.UWP.cs" />
+    <Compile Include="XenkoGameController.iOS.cs" />
+    <Compile Include="iOS\GamePlatform.iOS.cs" />
+    <Compile Include="iOS\GameWindow.iOS.cs" />
+    <Compile Include="iOS\IAnimatedGameView.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\GameResources.Designer.cs" Condition=" '$(SiliconStudioPlatform)' == 'Windows'">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GameResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210fb81-b807-49bb-af0d-31fb6a83a572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
+      <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\GameResources.resx" Condition=" '$(SiliconStudioPlatform)' == 'Windows'">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>GameResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Logo.ico" Condition=" '$(SiliconStudioPlatform)' == 'Windows'" />
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

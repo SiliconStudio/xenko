@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+shader Child : Parent
+{
+    SamplerState childSampler;
+    Texture2D childTexture;
+
+    override float AddBaseValue(float inValue)
+    {
+        childTexture.Sample(childSampler, float2(0.0f, 0.0f));
+        parentTexture.Sample(childSampler, float2(0.0f, 0.0f));
+        Parent.parentTexture.Sample(childSampler, float2(0.0f, 0.0f));
+        return inValue + baseValue + base.AddBaseValue(inValue);
+    }
+};

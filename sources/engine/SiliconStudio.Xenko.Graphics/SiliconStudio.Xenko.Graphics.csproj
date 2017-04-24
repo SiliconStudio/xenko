@@ -1,0 +1,669 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+    <SiliconStudioXenkoGraphicsApiDependent>true</SiliconStudioXenkoGraphicsApiDependent>
+  </PropertyGroup>
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Xenko.Graphics</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Graphics</AssemblyName>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
+    <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+    <DefineConstants>$(DefineConstants);SILICONSTUDIO_XENKO_GRAPHICS_NO_DESCRIPTOR_COPIES</DefineConstants>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets" />
+  <Choose>
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' Or '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
+      <ItemGroup>
+        <Reference Include="SharpDX">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
+        </Reference>
+        <Reference Include="SharpDX.D3DCompiler">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
+        </Reference>
+        <Reference Include="SharpDX.DXGI">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' ">
+      <ItemGroup>
+        <Reference Include="SharpDX.Direct3D11">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
+      <ItemGroup>
+        <Reference Include="SharpDX.Direct3D12">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan' ">
+      <Choose>
+        <When Condition=" '$(SiliconStudioPlatform)' == 'Windows'">
+          <ItemGroup>
+            <Reference Include="SharpVulkan">
+              <SpecificVersion>False</SpecificVersion>
+              <HintPath>$(XenkoDependenciesDir)\SharpVulkan\Windows\SharpVulkan.dll</HintPath>
+            </Reference>
+          </ItemGroup>
+        </When>
+        <Otherwise>
+          <ItemGroup>
+            <Reference Include="SharpVulkan">
+              <SpecificVersion>False</SpecificVersion>
+              <HintPath>$(XenkoDependenciesDir)\SharpVulkan\Other\SharpVulkan.dll</HintPath>
+            </Reference>
+          </ItemGroup>
+        </Otherwise>
+      </Choose>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(SiliconStudioUI.Contains('SDL'))">
+      <ItemGroup>
+        <SiliconStudioNativeLib Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\*SDL2*">
+          <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </SiliconStudioNativeLib>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <SiliconStudioNativeLib Include="$(XenkoDependenciesDir)\freetype\$(SiliconStudioPlatform)\**\*.*">
+      <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </SiliconStudioNativeLib>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
+    <Reference Include="SharpFont">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(XenkoDependenciesDir)SharpFont\iOS\SharpFont.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(SiliconStudioPlatform)' != 'iOS'">
+    <Reference Include="SharpFont">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(XenkoDependenciesDir)SharpFont\Portable\SharpFont.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <!-- Files for Direct3D  -->
+  <ItemGroup>
+    <Compile Include="AppContextType.cs" />
+    <Compile Include="BatchBase.cs" />
+    <Compile Include="BufferPool.cs" />
+    <Compile Include="BufferPoolAllocationResult.cs" />
+    <Compile Include="CommandList.cs" />
+    <Compile Include="CompiledCommandList.cs" />
+    <Compile Include="DefaultCommandListLock.cs" />
+    <Compile Include="Direct3D12\CompiledCommandList.Direct3D12.cs" />
+    <Compile Include="Direct3D\SharpDXInterop.cs" />
+    <Compile Include="Font\SignedDistanceFieldSpriteFont.cs" />
+    <Compile Include="Null\CommandList.Null.cs" />
+    <Compile Include="Null\DescriptorPool.Null.cs" />
+    <Compile Include="Null\DescriptorSet.Null.cs" />
+    <Compile Include="Null\DescriptorSetLayout.Null.cs" />
+    <Compile Include="Null\GraphicsOutput.Null.cs" />
+    <Compile Include="Null\NullHelper.cs" />
+    <Compile Include="Null\PipelineState.Null.cs" />
+    <Compile Include="Null\SwapChainGraphicsPresenter.Null.cs" />
+    <Compile Include="OpenGL\GraphicsResource.OpenGL.cs" />
+    <Compile Include="Font\SignedDistanceFieldSpriteFontContentSerializer.cs" />
+    <Compile Include="OpenGL\MappedResource.OpenGL.cs" />
+    <Compile Include="Font\SignedDistanceFieldSpriteFontSerializer.cs" />
+    <Compile Include="PipelineStateDescriptionWithHash.cs" />
+    <Compile Include="RenderingSettings.cs" />
+    <Compile Include="Data\TextureContentSerializer.cs" />
+    <Compile Include="DescriptorPool.cs" />
+    <Compile Include="DescriptorSet.cs" />
+    <Compile Include="DescriptorSetEntry.cs" />
+    <Compile Include="DescriptorSetLayout.cs" />
+    <Compile Include="DescriptorSetLayoutBuilder.cs" />
+    <Compile Include="DescriptorSetLayoutEntry.cs" />
+    <Compile Include="DescriptorTypeCount.cs" />
+    <Compile Include="Direct3D12\Buffer.Direct3D12.cs" />
+    <Compile Include="Direct3D12\CommandList.Direct3D12.cs" />
+    <Compile Include="Direct3D12\DescriptorSet.Direct3D12.cs" />
+    <Compile Include="Direct3D12\DescriptorPool.Direct3D12.cs" />
+    <Compile Include="Direct3D12\DescriptorSetLayout.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsDevice.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsDeviceFeatures.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsOutput.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsResource.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsResourceBase.Direct3D12.cs" />
+    <Compile Include="Direct3D12\MappedResource.Direct3D12.cs" />
+    <Compile Include="Direct3D12\PipelineState.Direct3D12.cs" />
+    <Compile Include="Direct3D12\SamplerState.Direct3D12.cs" />
+    <Compile Include="Direct3D12\Texture.Direct3D12.cs" />
+    <Compile Include="Direct3D\PipelineState.Direct3D.cs" />
+    <Compile Include="Rendering\EffectInstance.cs" />
+    <Compile Include="Rendering\EffectParameterUpdater.cs" />
+    <Compile Include="Rendering\EffectParameterUpdaterLayout.cs" />
+    <Compile Include="GraphicsContext.cs" />
+    <Compile Include="InputClassification.cs" />
+    <Compile Include="InputElementDescription.cs" />
+    <Compile Include="MutablePipelineState.cs" />
+    <Compile Include="RenderOutputDescription.cs" />
+    <Compile Include="OpenGL\CommandList.OpenGL.cs" />
+    <Compile Include="OpenGL\PipelineState.OpenGL.cs" />
+    <Compile Include="ResourceBinder.cs" />
+    <Compile Include="ResourceGroupAllocator.cs" />
+    <Compile Include="ResourceGroupBufferUploader.cs" />
+    <Compile Include="EffectDescriptorSetReflection.cs" />
+    <Compile Include="Font\RuntimeRasterizedSpriteFontContentSerializer.cs" />
+    <Compile Include="Font\FontDataFactory.cs" />
+    <Compile Include="Font\OfflineRasterizedSpriteFontContentSerializer.cs" />
+    <Compile Include="Font\OfflineRasterizedSpriteFontSerializer.cs" />
+    <Compile Include="Font\RuntimeRasterizedSpriteFontSerializer.cs" />
+    <Compile Include="GraphicsDeviceServiceLocal.cs" />
+    <Compile Include="ParameterCollectionLayoutExtensions.cs" />
+    <Compile Include="PipelineState.cs" />
+    <Compile Include="Data\BufferData.cs" />
+    <Compile Include="Data\GraphicsSerializerExtensions.cs" />
+    <Compile Include="Data\BufferSerializer.cs" />
+    <Compile Include="Data\TextureSerializer.cs" />
+    <Compile Include="Direct3D\DisplayMode.Direct3D.cs" />
+    <Compile Include="Direct3D\GraphicsOutput.Direct3D.cs" />
+    <Compile Include="Direct3D\Rational.Direct3D.cs" />
+    <Compile Include="ResourceGroup.cs" />
+    <Compile Include="ResourceGroupLayout.cs" />
+    <Compile Include="ResourceStates.cs" />
+    <Compile Include="RootSignature.cs" />
+    <Compile Include="SDL\Application.cs" />
+    <Compile Include="SDL\Cursor.cs" />
+    <Compile Include="SDL\FormBorderStyle.cs" />
+    <Compile Include="SDL\FormWindowState.cs" />
+    <Compile Include="SDL\SDLMessageLoop.cs" />
+    <Compile Include="SDL\Window.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.Null.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.Vulkan.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.Null.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.OpenGL.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.Vulkan.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteEffect.bytecode.Null.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteEffect.bytecode.Vulkan.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\UIEffect.bytecode.Null.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\UIEffect.bytecode.Vulkan.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.Null.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.OpenGL.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.Extensions.cs" />
+    <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.Vulkan.Level_9_1.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Direct3D11.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Null.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.Extensions.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Direct3D11.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Null.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
+    <Compile Include="Shaders\ColorUtility.cs">
+      <DependentUpon>ColorUtility.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Shaders\SignedDistanceFieldFontShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SignedDistanceFieldFontShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\SignedDistanceFieldFont.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SignedDistanceFieldFont.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\SpriteSignedDistanceFieldFontShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SpriteSignedDistanceFieldFontShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\SpriteSuperSampler.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SpriteSuperSampler.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\UIEffect.cs">
+      <DependentUpon>UIEffect.xkfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Shaders\SpriteBatch.cs">
+      <DependentUpon>SpriteBatch.xkfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Sprite3DBatch.cs" />
+    <Compile Include="Shaders\ShaderBaseStream.cs">
+      <DependentUpon>ShaderBaseStream.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="SpriteFontType.cs" />
+    <Compile Include="VertexHelper.cs" />
+    <Compile Include="Font\FontAntiAliasMode.cs" />
+    <Compile Include="Font\FontStyleExtensions.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Cone.cs" />
+    <Compile Include="GraphicsDeviceExtensions.cs" />
+    <Compile Include="GraphicsOutput.cs" />
+    <Compile Include="GraphicsResourceAllocator.cs" />
+    <Compile Include="GraphicsResourceAllocatorExtensions.cs" />
+    <Compile Include="GraphicsResourceLink.cs" />
+    <Compile Include="GraphicsResourceRecyclePolicyDelegate.cs" />
+    <Compile Include="Sprite.cs" />
+    <Compile Include="SpriteSheet.cs" />
+    <Compile Include="ImageOrientation.cs" />
+    <Compile Include="OpenGL\OpenGLUtils.cs" />
+    <Compile Include="OpenGL\GraphicsOutput.OpenGL.cs" />
+    <Compile Include="OpenGL\VertexAttrib.cs" />
+    <Compile Include="ResumeManager.cs" />
+    <Compile Include="Effects\Effect.cs" />
+    <Compile Include="Effects\EffectSerializer.cs" />
+    <Compile Include="Font\FontHelper.cs" />
+    <Compile Include="Font\FontManager.cs" />
+    <Compile Include="Font\CharacterBitmap.cs" />
+    <Compile Include="Font\RuntimeRasterizedSpriteFont.cs" />
+    <Compile Include="Font\FontCacheManager.cs" />
+    <Compile Include="Font\CharacterSpecification.cs" />
+    <Compile Include="Font\FontStyle.cs" />
+    <Compile Include="Font\FontSystem.cs" />
+    <Compile Include="Font\IFontFactory.cs" />
+    <Compile Include="Font\OfflineRasterizedSpriteFont.cs" />
+    <Compile Include="FrameworkResources.Designer.cs">
+      <DependentUpon>FrameworkResources.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="GeometricPrimitives\GeometricMeshData.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Capsule.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Cube.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Cylinder.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.GeoSphere.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Plane.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Sphere.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Teapot.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Torus.cs" />
+    <Compile Include="GraphicsDeviceSharedDataType.cs" />
+    <Compile Include="GraphicsResourceState.cs" />
+    <Compile Include="IVertex.cs" />
+    <Compile Include="MappedResource.cs" />
+    <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="OpenGL\SwapChainGraphicsPresenter.iOS.cs" />
+    <Compile Include="PrimitiveQuad.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.Direct3D11.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.OpenGL.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteEffect.bytecode.Direct3D11.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteEffect.bytecode.OpenGL.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteEffect.bytecode.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\UIEffect.bytecode.Direct3D11.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\UIEffect.bytecode.OpenGL.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\UIEffect.bytecode.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders\TexturingKeys.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.Extensions.cs" />
+    <Compile Include="Shaders\SpriteBase.cs">
+      <DependentUpon>SpriteBase.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Shaders\SpriteBatchShader.cs">
+      <DependentUpon>SpriteBatchShader.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Shaders\ShaderBase.cs">
+      <DependentUpon>ShaderBase.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Shaders\SpriteEffect.cs">
+      <DependentUpon>SpriteEffect.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Shaders.Bytecodes\SpriteEffect.Extensions.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBaseKeys.cs" />
+    <Compile Include="Shaders\Texturing.cs">
+      <DependentUpon>Texturing.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Shaders.Bytecodes\UIEffect.Extensions.cs" />
+    <Compile Include="Shaders\UIEffectShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>UIEffectShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Sprite.Extensions.cs" />
+    <Compile Include="SpriteBatch.cs" />
+    <Compile Include="SpriteEffects.cs" />
+    <Compile Include="SpriteFont.cs" />
+    <Compile Include="SpriteFrame.cs" />
+    <Compile Include="SpriteSortMode.cs" />
+    <Compile Include="DeviceCreationFlags.cs" />
+    <Compile Include="GraphicsDeviceStatus.cs" />
+    <Compile Include="GraphicsException.cs" />
+    <Compile Include="OpenGL\SwapChainGraphicsPresenter.Android.cs" />
+    <Compile Include="GraphicsPresenter.cs" />
+    <Compile Include="IGraphicsDeviceService.cs" />
+    <Compile Include="OpenGL\SwapChainGraphicsPresenter.OpenTK.cs" />
+    <Compile Include="OpenGL\UseOpenGLCreationContext.cs" />
+    <Compile Include="RenderTargetGraphicsPresenter.cs" />
+    <Compile Include="Direct3D\GraphicsResource.Direct3D.cs" />
+    <Compile Include="OpenGL\EffectProgram.OpenGL.cs" />
+    <Compile Include="OpenGL\OpenGLShaderBytecodeData.cs" />
+    <Compile Include="Direct3D\GraphicsDeviceFeatures.Direct3D.cs" />
+    <Compile Include="FormatSupport.cs" />
+    <Compile Include="GraphicsDeviceFeatures.cs" />
+    <Compile Include="Null\GraphicsDeviceFeatures.Null.cs" />
+    <Compile Include="OpenGL\GraphicsDeviceFeatures.OpenGL.cs" />
+    <Compile Include="Rational.cs" />
+    <Compile Include="Direct3D\SwapChainGraphicsPresenter.Direct3D.cs" />
+    <Compile Include="SwizzleMode.cs" />
+    <Compile Include="TextAlignment.cs" />
+    <Compile Include="Direct3D\Buffer.Direct3D.cs" />
+    <Compile Include="Direct3D\ColorHelper.cs" />
+    <Compile Include="Direct3D\CommandList.Direct3D.cs" />
+    <Compile Include="Direct3D\GraphicsAdapter.Direct3D.cs" />
+    <Compile Include="Direct3D\GraphicsAdapterFactory.Direct3D.cs" />
+    <Compile Include="Direct3D\GraphicsDevice.Direct3D.cs" />
+    <Compile Include="Direct3D\GraphicsProfileHelper.cs" />
+    <Compile Include="Direct3D\GraphicsResourceBase.Direct3D.cs" />
+    <Compile Include="Direct3D\SamplerState.Direct3D.cs" />
+    <Compile Include="Direct3D\Texture.Direct3D.cs" />
+    <Compile Include="TextureDescription.ExtensionsCube.cs" />
+    <Compile Include="TextureDescription.Extensions3D.cs" />
+    <Compile Include="TextureDescription.Extensions2D.cs" />
+    <Compile Include="TextureDescription.Extensions1D.cs" />
+    <Compile Include="Texture.Extensions.cs" />
+    <Compile Include="TextureViewDescription.cs" />
+    <Compile Include="UIBatch.cs" />
+    <Compile Include="VertexPosition2.cs" />
+    <Compile Include="VertexPositionColorTexture.cs" />
+    <Compile Include="VertexPositionColorTextureSwizzle.cs" />
+    <Compile Include="VertexPositionNormalColor.cs" />
+    <Compile Include="VertexPositionNormalTexture.cs" />
+    <Compile Include="VertexPositionTexture.cs" />
+    <Compile Include="Vulkan\Buffer.Vulkan.cs" />
+    <Compile Include="Vulkan\ColorHelper.cs" />
+    <Compile Include="Vulkan\CommandList.Vulkan.cs" />
+    <Compile Include="Vulkan\CompiledCommandList.Vulkan.cs" />
+    <Compile Include="Vulkan\DescriptorPool.Vulkan.cs" />
+    <Compile Include="Vulkan\DescriptorSet.Vulkan.cs" />
+    <Compile Include="Vulkan\DescriptorSetLayout.Vulkan.cs" />
+    <Compile Include="Vulkan\DisplayMode.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsAdapter.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsAdapterFactory.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsDevice.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsDeviceFeatures.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsOutput.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsProfileHelper.cs" />
+    <Compile Include="Vulkan\GraphicsResource.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsResourceBase.Vulkan.cs" />
+    <Compile Include="Vulkan\MappedResource.Vulkan.cs" />
+    <Compile Include="Vulkan\PipelineState.Vulkan.cs" />
+    <Compile Include="Vulkan\SamplerState.Vulkan.cs" />
+    <Compile Include="Vulkan\SwapChainGraphicsPresenter.Vulkan.cs" />
+    <Compile Include="Vulkan\Texture.Vulkan.cs" />
+    <Compile Include="Vulkan\VulkanConvertExtensions.cs" />
+    <Compile Include="WindowContext.cs" />
+  </ItemGroup>
+  <!-- Files for Null device -->
+  <ItemGroup>
+    <Compile Include="Null\Buffer.Null.cs" />
+    <Compile Include="Null\GraphicsAdapter.Null.cs" />
+    <Compile Include="Null\GraphicsAdapterFactory.Null.cs" />
+    <Compile Include="Null\GraphicsDevice.Null.cs" />
+    <Compile Include="Null\GraphicsResourceBase.Null.cs" />
+    <Compile Include="Null\SamplerState.Null.cs" />
+    <Compile Include="Null\Texture.Null.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="OpenGL\BlendState.OpenGL.cs" />
+    <Compile Include="OpenGL\Buffer.OpenGL.cs" />
+    <Compile Include="OpenGL\DepthStencilState.OpenGL.cs" />
+    <Compile Include="OpenGL\GraphicsAdapter.OpenGL.cs" />
+    <Compile Include="OpenGL\GraphicsAdapterFactory.OpenGL.cs" />
+    <Compile Include="OpenGL\GraphicsDevice.OpenGL.cs" />
+    <Compile Include="OpenGL\GraphicsResourceBase.OpenGL.cs" />
+    <Compile Include="OpenGL\OpenGLConvertExtensions.cs" />
+    <Compile Include="OpenGL\RasterizerState.OpenGL.cs" />
+    <Compile Include="OpenGL\SamplerState.OpenGL.cs" />
+    <Compile Include="OpenGL\Texture.OpenGL.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Buffer.Argument.cs" />
+    <Compile Include="Buffer.Constant.cs" />
+    <Compile Include="Buffer.Index.cs" />
+    <Compile Include="Buffer.Raw.cs" />
+    <Compile Include="Buffer.Structured.cs" />
+    <Compile Include="Buffer.Typed.cs" />
+    <Compile Include="Buffer.Vertex.cs" />
+    <Compile Include="BufferFlags.cs" />
+    <Compile Include="Blend.cs" />
+    <Compile Include="BlendFunction.cs" />
+    <Compile Include="BlendStateDescription.cs" />
+    <Compile Include="BufferDescription.cs" />
+    <Compile Include="ResourceRegion.cs" />
+    <Compile Include="TextureFlags.cs" />
+    <Compile Include="MultisampleLevel.cs" />
+    <Compile Include="GraphicsResourceBase.cs" />
+    <Compile Include="GraphicsAdapterFactory.cs" />
+    <Compile Include="IndexBufferBinding.cs" />
+    <Compile Include="SamplerStateSerializer.cs" />
+    <Compile Include="Texture.Extensions1D.cs" />
+    <Compile Include="DepthStencilStencilOpDescription.cs" />
+    <Compile Include="GraphicsResourceMap.cs" />
+    <Compile Include="IndexElementSize.cs" />
+    <Compile Include="MapMode.cs" />
+    <Compile Include="RasterizerStateDescription.cs" />
+    <Compile Include="RasterizerStates.cs" />
+    <Compile Include="SamplerStateFactory.cs" />
+    <Compile Include="SamplerState.cs" />
+    <Compile Include="TextureDescription.cs" />
+    <Compile Include="GraphicsDeviceFactory.cs" />
+    <Compile Include="DepthStencilStates.cs" />
+    <Compile Include="GraphicsAdapter.cs" />
+    <Compile Include="GraphicsFactory.cs" />
+    <Compile Include="Buffer.cs" />
+    <Compile Include="DepthStencilClearOptions.cs" />
+    <Compile Include="ColorWriteChannels.cs" />
+    <Compile Include="CubeMapFace.cs" />
+    <Compile Include="CullMode.cs" />
+    <Compile Include="DepthStencilStateDescription.cs" />
+    <Compile Include="DisplayMode.cs" />
+    <Compile Include="FillMode.cs" />
+    <Compile Include="GraphicsDevice.cs" />
+    <Compile Include="GraphicsResourceFactoryBase.cs" />
+    <Compile Include="GraphicsResource.cs" />
+    <Compile Include="GraphicsResourceUsage.cs" />
+    <Compile Include="BlendStates.cs" />
+    <Compile Include="BlendStateRenderTargetDescription.cs" />
+    <Compile Include="PresentationParameters.cs" />
+    <Compile Include="PresentInterval.cs" />
+    <Compile Include="PrimitiveType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StencilOperation.cs" />
+    <Compile Include="Texture.cs" />
+    <Compile Include="Texture.Extensions2D.cs" />
+    <Compile Include="Texture.Extensions3D.cs" />
+    <Compile Include="Texture.ExtensionsCube.cs" />
+    <Compile Include="VertexBufferBinding.cs" />
+    <Compile Include="VertexDeclaration.cs" />
+    <Compile Include="VertexElement.cs" />
+    <Compile Include="VertexElementUsage.cs" />
+    <Compile Include="VertexElementValidator.cs" />
+    <Compile Include="VertexElementWithOffset.cs" />
+    <Compile Include="Viewport.cs" />
+    <Compile Include="ViewType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
+      <Project>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</Project>
+      <Name>SiliconStudio.Core.IO</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210fb81-b807-49bb-af0d-31fb6a83a572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
+      <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
+      <Name>SiliconStudio.Xenko.Native</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
+      <Project>{273bdd15-7392-4078-91f0-af23594a3d7b}</Project>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FrameworkResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FrameworkResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="Shaders.Bytecodes\CompileShaders.cmd" />
+    <None Include="Shaders.Bytecodes\Graphics.xkpkg" />
+    <None Include="Shaders.Bytecodes\Shaders.xkeffectlog" />
+    <None Include="Shaders\SignedDistanceFieldFontShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SignedDistanceFieldFontShader.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SignedDistanceFieldFont.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SignedDistanceFieldFont.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SpriteSignedDistanceFieldFontShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SpriteSignedDistanceFieldFontShader.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SpriteSuperSampler.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SpriteSuperSampler.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\UIEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>UIEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SpriteBatch.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SpriteBatch.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\ShaderBaseStream.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ShaderBaseStream.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\ColorUtility.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ColorUtility.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SpriteBase.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SpriteBase.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SpriteBatchShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SpriteBatchShader.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\ShaderBase.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ShaderBase.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SpriteEffect.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SpriteEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\Texturing.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>Texturing.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\UIEffectShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>UIEffectShader.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <Import Project="..\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems" Label="Shared" />
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

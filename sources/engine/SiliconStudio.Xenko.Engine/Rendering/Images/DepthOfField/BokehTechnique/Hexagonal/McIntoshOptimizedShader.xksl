@@ -1,0 +1,31 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    compose DepthAwareDirectionalBlurShader blurShader;
+
+    /// <summary>
+    /// Optimized version of the McIntosh bokeh effect. 
+    /// Based on a first blur pass, computes the 2 diagonal blurs and keeps the minimum. 
+    /// Expects as input: 
+    ///  - Texture0: a color buffer with a first directional blur
+    ///  - Texture1: the corresponding depth buffer
+    /// </summary>
+    shader McIntoshOptimizedShader : ImageEffectShader
+    {
+        compose ComputeColor directionalBlurA;
+        compose ComputeColor directionalBlurB;
+
+        stage override float4 Shading()
+        {
+            // First diagonal blur
+            float4 blurColorA = directionalBlurA.Compute();
+
+            // Second diagonal blur
+            float4 blurColorB = directionalBlurB.Compute();
+
+            return min(blurColorA, blurColorB);
+        }
+    };
+}

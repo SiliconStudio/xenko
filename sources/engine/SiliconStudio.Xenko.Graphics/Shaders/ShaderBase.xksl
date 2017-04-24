@@ -1,0 +1,11 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+// Base shader for all the graphics shaders
+shader ShaderBase : ShaderBaseStream
+{
+    // Declare Vertex shader main method
+    stage void VSMain() {}
+
+    // Declare Pixel shader main method
+    stage void PSMain() {}
+};

@@ -1,0 +1,39 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Shadows
+{
+    /// <summary>
+    /// Selects the shadow map and computes the shadow factor.
+    /// </summary>
+    /// <remarks>
+    /// TCascadeCountBase: Number of cascades.
+    /// TCascadeDebug: Flag to enable debug mode (1 color per cascade).
+    /// </remarks>
+    internal shader ShadowMapReceiverBase<MemberName PerLighting, int TCascadeCountBase, int TLightCountBase> : MaterialPixelShadingStream, ShadowMapGroup<PerLighting>, ShadowMapFilterBase<PerLighting>, PositionStream4
+    {
+        cbuffer PerLighting // TODO: Use a proper cbuffer for this?
+        {
+            float4x4 WorldToShadowCascadeUV[TCascadeCountBase * TLightCountBase];
+            float DepthBiases[TLightCountBase];
+            float OffsetScales[TLightCountBase];
+        };
+
+        float3 GetShadowPositionOffset(float offsetScale, float nDotL, float3 normal)
+        {
+            float normalOffsetScale = saturate(1.0f - nDotL);
+            return 2.0f * ShadowMapTextureTexelSize.x * offsetScale * normalOffsetScale * normal;
+        }
+
+        float ComputeShadowFromCascade(float3 shadowPositionWS, int cascadeIndex, int lightIndex)
+        {
+            //float3 shadowPositionWSddx = ddx_fine(shadowPositionWS);
+            //float3 shadowPositionWSddy = ddy_fine(shadowPositionWS);
+
+            float4 shadowPosition = mul(float4(shadowPositionWS, 1), WorldToShadowCascadeUV[cascadeIndex + lightIndex * TCascadeCountBase]);
+            shadowPosition.z -= DepthBiases[lightIndex];
+            shadowPosition.xyz /= shadowPosition.w;
+
+            return FilterShadow(shadowPosition.xy, shadowPosition.z);
+        }
+    };
+}

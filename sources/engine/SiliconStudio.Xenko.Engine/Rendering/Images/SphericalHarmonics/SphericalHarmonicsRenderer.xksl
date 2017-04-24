@@ -1,0 +1,36 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    /// <summary>
+    /// A shader performing Lambertian pre-filtering.
+    /// </summary>
+    internal shader SphericalHarmonicsRenderer<int THarmonicsOrder>: SphericalHarmonicsBase<THarmonicsOrder>, ImageEffectShader, Texturing
+    {    
+        [Color] stage float3 SHCoefficients[CoefficientsCount];
+
+        // Shading of the sprite
+        stage override void PSMain()
+        {
+            float3 ColorTargets[6];
+            for( uint i=0; i<6; ++i)
+            {
+                var direction = normalize(CubemapUtils.ConvertTexcoordsNoFlip(streams.TexCoord, i)); // remarks: TexCoord points to the center of the pixel (what we want)
+
+                EvaluateSHBases(direction);
+                
+                ColorTargets[i] = float3(0, 0, 0);
+                for(int k=0; k<CoefficientsCount; ++k)
+                    ColorTargets[i] += SHCoefficients[k] * streams.SHBaseValues[k];
+            }
+            
+            streams.ColorTarget  = float4(ColorTargets[0], 1);
+            streams.ColorTarget1 = float4(ColorTargets[1], 1);
+            streams.ColorTarget2 = float4(ColorTargets[2], 1);
+            streams.ColorTarget3 = float4(ColorTargets[3], 1);
+            streams.ColorTarget4 = float4(ColorTargets[4], 1);
+            streams.ColorTarget5 = float4(ColorTargets[5], 1);
+        }
+    };
+}

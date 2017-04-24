@@ -1,0 +1,26 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Utils
+{
+    /// <summary>
+    /// A shader used to output the id of the model component, mesh and material for a particular RenderMesh
+    /// </summary>
+    shader ModelComponentPickingShader : ShaderBase
+    {
+        [Color]
+        stage float4 ModelComponentId;
+
+        [Color]
+        stage float4 MeshId;
+
+        [Color]
+        stage float4 MaterialId;
+
+        stage override void PSMain()
+        {
+            streams.ColorTarget = ModelComponentId;
+            streams.ColorTarget1 = MeshId;
+            streams.ColorTarget2 = MaterialId;
+        }
+    };
+}

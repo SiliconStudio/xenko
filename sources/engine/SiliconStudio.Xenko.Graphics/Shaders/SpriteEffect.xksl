@@ -1,0 +1,14 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+shader SpriteEffect : SpriteBase
+{
+    // Color used to tint the sprite
+    [Color]
+    stage float4 Color = float4(1,1,1,1);
+
+    // Shading of the sprite
+    stage override float4 Shading()
+    {
+        return base.Shading() * Color;
+    }
+};

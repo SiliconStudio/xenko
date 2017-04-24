@@ -1,0 +1,130 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    shader MaterialPixelStream : MaterialStream, NormalStream, LightStream
+    {
+        // --------------------------------------------------
+        // Values defined by materials
+        // --------------------------------------------------
+
+        // Surface attributes
+        stage stream float3 matNormal;
+
+        // The color base attributes
+        stage stream float4 matColorBase;
+
+        // Diffuse attributes
+        stage stream float4 matDiffuse;
+
+        // Microsurface attributes
+        stage stream float  matGlossiness;
+
+        // Specular attributes
+        stage stream float3 matSpecular;
+
+        stage stream float  matSpecularIntensity;
+        // Occlusion attributes
+        stage stream float  matAmbientOcclusion;
+        stage stream float  matAmbientOcclusionDirectLightingFactor;
+        stage stream float  matCavity;
+        stage stream float  matCavityDiffuse;
+        stage stream float  matCavitySpecular;
+
+        // Emissive attributes
+        stage stream float4  matEmissive;
+        stage stream float   matEmissiveIntensity;
+
+        // Transparent attributes
+        stage stream float2  matDiffuseSpecularAlphaBlend;
+        stage stream float3  matAlphaBlendColor;
+        stage stream float   matAlphaDiscard;
+
+        // Inputs while shading a material surface
+        stage stream float3 viewWS;
+    
+        // --------------------------------------------------
+        // Values Precomputed before lighting
+        // --------------------------------------------------
+        
+        stage stream float3 matDiffuseVisible;
+        
+        stage stream float alphaRoughness; // disney-burley roughness
+
+        stage stream float3 matSpecularVisible;
+        
+        stage stream float NdotV; // normal dot view
+
+        override void ResetStream()
+        {
+            base.ResetStream();
+
+            // Reset all values for material stream to avoid pulling from a different stage (VS...etc.)
+            // TODO: It might be interesting to support pulling from VS, but this should be done from the IMaterialSurface and dedicated ComputerColors
+            streams.matNormal = float3(0, 0, 1);
+
+            streams.matColorBase = 0.0f;
+            streams.matDiffuse = 0.0f; 
+            streams.matDiffuseVisible = 0.0f;      
+
+            streams.matSpecular = 0.0f;        
+            streams.matSpecularVisible = 0.0f;      
+            streams.matSpecularIntensity = 1.0f;
+
+            streams.matGlossiness = 0.0f;
+            streams.alphaRoughness = 1.0f;
+
+            streams.matAmbientOcclusion = 1.0f;  // 0.0: occluded, 1.0: not occluded
+            streams.matAmbientOcclusionDirectLightingFactor = 0.0f;
+
+            streams.matCavity = 1.0f;
+            streams.matCavityDiffuse = 0.0f;
+            streams.matCavitySpecular = 0.0f;
+
+            streams.matEmissive = 0.0f;
+            streams.matEmissiveIntensity = 0.0f;
+
+            streams.matDiffuseSpecularAlphaBlend = 1.0f;
+            streams.matAlphaBlendColor = 1.0f;
+            streams.matAlphaDiscard = 0.0f;
+        }
+
+        float GetFilterSquareRoughnessAdjustment(float3 averageNormal)
+        {
+            // Normal/roughness specular anti-aliasing using vMF 
+            // See http://blog.selfshadow.com/2011/07/22/specular-showdown/
+            // See https://mynameismjp.wordpress.com/2013/07/28/siggraph-follow-up/
+            // TODO: Make this part pluggable/modifiable via mixin
+            float r = length(streams.matNormal);
+			float roughnessAdjust = 0.0f;
+			if (r < 1.0f) 
+			    roughnessAdjust = 0.5 * (1 - r*r) / (3 * r - r * r * r);
+
+            return roughnessAdjust;            
+        }
+
+        void PrepareMaterialForLightingAndShading()
+        {
+            // Direct lighting can be slightly influenced by AO map
+            streams.lightDirectAmbientOcclusion = lerp(1.0, streams.matAmbientOcclusion, streams.matAmbientOcclusionDirectLightingFactor);
+
+            // Diffuse visible 
+            streams.matDiffuseVisible = streams.matDiffuse.rgb * lerp(1.0f, streams.matCavity, streams.matCavityDiffuse) * streams.matDiffuseSpecularAlphaBlend.r * streams.matAlphaBlendColor;
+            streams.matSpecularVisible = streams.matSpecular.rgb * streams.matSpecularIntensity * lerp(1.0f, streams.matCavity, streams.matCavitySpecular) * streams.matDiffuseSpecularAlphaBlend.g * streams.matAlphaBlendColor;
+
+            streams.NdotV = max(dot(streams.normalWS, streams.viewWS), 0.0001f);
+
+            // Calculate shading roughtness using Disney-Burley method
+            var roughness = 1.0f - streams.matGlossiness;
+
+            // Calculate roughness adjustment based on normal average
+			float roughnessAdjust = GetFilterSquareRoughnessAdjustment(streams.matNormal);
+
+            // Make sure alphaRoughness is not going below a certain value as it can generate Infinity with some specular model
+            // roughness-burley = roughness^2 = (1 - glossy)^2
+            streams.alphaRoughness = max(roughness * roughness + roughnessAdjust, 0.001); 
+            // TODO: precalculate alphaRoughness^2
+        }
+    };
+}
+

@@ -1,0 +1,12 @@
+﻿<!-- Build file pre-included by all Xenko projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioGlobalSettingsTargets>$(MSBuildThisFileDirectory)Xenko.GlobalSettings.targets</SiliconStudioGlobalSettingsTargets>
+    <SiliconStudioPostSettingsTargets>$(MSBuildThisFileDirectory)Xenko.PostSettings.targets</SiliconStudioPostSettingsTargets>
+    <SiliconStudioAssemblyProcessorGlobal>true</SiliconStudioAssemblyProcessorGlobal>
+    <SiliconStudioAssemblyProcessorDefaultOptions>--auto-notify-property --parameter-key --auto-module-initializer --serialization</SiliconStudioAssemblyProcessorDefaultOptions>
+  </PropertyGroup>
+
+  <!--Import Xenko settings-->
+  <Import Project="$(MSBuildThisFileDirectory)..\common\targets\SiliconStudio.PreSettings.targets"/>
+</Project>

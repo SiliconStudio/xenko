@@ -1,0 +1,38 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    /// <summary>
+    /// Performs a Microfacet shading
+    /// </summary>
+    shader MaterialSurfaceShadingSpecularMicrofacet : IMaterialSurfaceShading, MaterialPixelShadingStream, Math, BRDFMicrofacet
+    {
+        compose IMaterialSpecularMicrofacetFresnelFunction fresnelFunction;
+
+        compose IMaterialSpecularMicrofacetVisibilityFunction geometricShadowingFunction;
+
+        compose IMaterialSpecularMicrofacetNormalDistributionFunction normalDistributionFunction;
+
+        override float3 ComputeDirectLightContribution()
+        {
+            var specularColor = streams.matSpecularVisible;
+
+            var fresnel = fresnelFunction.Compute(specularColor);
+            var geometricShadowing = geometricShadowingFunction.Compute();
+            var normalDistribution = normalDistributionFunction.Compute();
+
+            var reflected = fresnel * geometricShadowing * normalDistribution / 4;
+
+            return reflected * streams.lightColorNdotL * streams.matDiffuseSpecularAlphaBlend.y;
+        }
+
+        override float3 ComputeEnvironmentLightContribution()
+        {
+            var specularColor = streams.matSpecularVisible;
+
+            // TODO: Allow plugability of this function (pb is that it is a combination of fresnel, visibility and NDF)
+            //return specularColor * streams.envLightSpecularColor;
+            return EnvironmentLightingDFG_GGX_Fresnel_SmithSchlickGGX(specularColor, streams.alphaRoughness, streams.NdotV) * streams.envLightSpecularColor;
+        }
+    };
+}

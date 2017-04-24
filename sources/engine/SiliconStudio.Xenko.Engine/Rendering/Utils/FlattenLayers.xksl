@@ -1,0 +1,21 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Outputs the result of a compute color (useful to perform offline texture creation).
+/// </summary>
+shader FlattenLayers : ShaderBase, PositionStream4
+{
+    compose ComputeColor outColor;
+    
+    stage override void VSMain()
+    {
+        base.VSMain();
+        streams.ShadingPosition = streams.Position;
+    }
+    
+    stage override void PSMain()
+    {
+        base.PSMain();
+        streams.ColorTarget = outColor.Compute();
+    }
+};

@@ -1,0 +1,50 @@
+<!-- Build file post-included by all Xenko projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioIsExecutable Condition=" '$(AndroidApplication)' == 'true'">true</SiliconStudioIsExecutable>
+    <SiliconStudioNETFrameworkVersion>v2.3</SiliconStudioNETFrameworkVersion>
+  </PropertyGroup>
+
+  <!-- Copy native libraries to output -->
+  <Target Name="_SiliconStudioSetupNativeLibraries" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <AndroidNativeLibrary Include="@(_SiliconStudioDependencyNativeLib)"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_SiliconStudioEmbedNativeLibraries" Condition=" '$(SiliconStudioIsExecutable)' == 'true'" BeforeTargets="Build">
+    <!-- Expand native libraries into Content items for the different supported CPU architectures -->
+    <ItemGroup>
+      <!-- Note: Xamarin can automatically probe Abi using containing folder name -->
+      <AndroidNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)x86\%(Filename).so')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)x86\%(SiliconStudioEmbeddedNativeLibrary.Filename).so')"/>
+      <AndroidNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)$(SiliconStudioXenkoGraphicsApi)\x86\%(Filename).so')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)$(SiliconStudioXenkoGraphicsApi)\x86\%(SiliconStudioEmbeddedNativeLibrary.Filename).so')"/>
+      <AndroidNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)x86_64\%(Filename).so')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)x86_64\%(SiliconStudioEmbeddedNativeLibrary.Filename).so')"/>
+      <AndroidNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)$(SiliconStudioXenkoGraphicsApi)\x86_64\%(Filename).so')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)$(SiliconStudioXenkoGraphicsApi)\x86_64\%(SiliconStudioEmbeddedNativeLibrary.Filename).so')"/>
+      <AndroidNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)armeabi\%(Filename).so')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)armeabi\%(SiliconStudioEmbeddedNativeLibrary.Filename).so')"/>
+      <AndroidNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)$(SiliconStudioXenkoGraphicsApi)\armeabi\%(Filename).so')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)$(SiliconStudioXenkoGraphicsApi)\armeabi\%(SiliconStudioEmbeddedNativeLibrary.Filename).so')"/>
+      <AndroidNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)armeabi-v7a\%(Filename).so')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)armeabi-v7a\%(SiliconStudioEmbeddedNativeLibrary.Filename).so')"/>
+      <AndroidNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)$(SiliconStudioXenkoGraphicsApi)\armeabi-v7a\%(Filename).so')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)$(SiliconStudioXenkoGraphicsApi)\armeabi-v7a\%(SiliconStudioEmbeddedNativeLibrary.Filename).so')"/>
+      <AndroidNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)arm64-v8a\%(Filename).so')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)arm64-v8a\%(SiliconStudioEmbeddedNativeLibrary.Filename).so')"/>
+      <AndroidNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary->'%(RootDir)%(Directory)$(SiliconStudioXenkoGraphicsApi)\arm64-v8a\%(Filename).so')" Condition="Exists('%(SiliconStudioEmbeddedNativeLibrary.RootDir)%(SiliconStudioEmbeddedNativeLibrary.Directory)$(SiliconStudioXenkoGraphicsApi)\arm64-v8a\%(SiliconStudioEmbeddedNativeLibrary.Filename).so')"/>
+    </ItemGroup>
+  </Target>
+
+  <!-- Target to get signed .apk name -->
+  <Target Name="GetAndroidPackage" DependsOnTargets="_ValidateAndroidPackageProperties" Returns="$(_AndroidPackage)"/>
+
+  <!-- Register Android asset deployment task -->
+  <PropertyGroup>
+    <PrepareForRunDependsOn>
+      $(PrepareForRunDependsOn);
+      DeployAndroidCustom
+    </PrepareForRunDependsOn>
+  </PropertyGroup>
+  
+  <Target Name="DeployAndroidCustom">
+    <!-- Add .bundle to list of uncompressed extensions -->
+    <PropertyGroup>
+      <AndroidStoreUncompressedFileExtensions>$(AndroidStoreUncompressedFileExtensions);.bundle</AndroidStoreUncompressedFileExtensions>
+    </PropertyGroup>
+  </Target>  
+  
+</Project>

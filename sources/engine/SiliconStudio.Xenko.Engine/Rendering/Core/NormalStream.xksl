@@ -1,0 +1,49 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Defines the normal, view space normal and tangent streams.
+/// </summary>
+shader NormalStream
+{
+    // The normal attribute from the mesh
+    stage stream float3 meshNormal : NORMAL;
+    
+    // The tangent attribute from the mesh
+    stage stream float4 meshTangent : TANGENT;
+    
+    // The normal in world space
+    stage stream float3 normalWS : NORMALWS;
+
+    // The tangent to view matrix to transform a tangent normal vector to normal vector in viewspace
+    stage stream float3x3 tangentToWorld;
+
+    float3x3 GetTangentMatrix()
+    {
+        float3x3 tangentMatrix;
+
+        streams.meshNormal = normalize(streams.meshNormal);
+        var tangent = normalize(streams.meshTangent.xyz);
+        float3 bitangent = streams.meshTangent.w * cross(streams.meshNormal, tangent);
+        tangentMatrix = float3x3(tangent, bitangent, streams.meshNormal);
+
+        return tangentMatrix;
+    }
+
+    stage void UpdateTangentToWorld()
+    {
+        var tangentMatrix = GetTangentMatrix();
+        var tangentWorldTransform = GetTangentWorldTransform();
+        streams.tangentToWorld =  mul(tangentMatrix, tangentWorldTransform);
+    }
+
+    float3x3 GetTangentWorldTransform()
+    {
+        return float3x3(1,0,0, 0,1,0, 0,0,1);
+    }
+
+    // This method is called by the MaterialSurfaceLightingAndShading to calculate the effective normal
+    stage void UpdateNormalFromTangentSpace(float3 normalInTangentSpace)
+    {
+        streams.normalWS = normalize(mul(normalInTangentSpace, streams.tangentToWorld));
+    }
+};

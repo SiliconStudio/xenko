@@ -1,0 +1,13 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Performs skinning on the normals.
+/// </summary>
+shader NormalMeshSkinning : TransformationSkinning, NormalStream
+{
+    override stage void PreTransformPosition()
+    {
+        base.PreTransformPosition();
+        streams.meshNormal = normalize(mul(streams.meshNormal, (float3x3)streams.skinningBlendMatrix));
+    }
+};

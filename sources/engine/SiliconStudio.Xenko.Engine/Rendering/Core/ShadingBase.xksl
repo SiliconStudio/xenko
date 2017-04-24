@@ -1,0 +1,73 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Base shader to perfom shading. Defines the basic method and inserts it in the pipeline.
+/// </summary>
+/// <remarks>
+/// SILICON_STUDIO_RENDER_TARGET_COUNT: Macro - Number of render targets.
+/// </remarks>
+
+#ifndef SILICON_STUDIO_RENDER_TARGET_COUNT
+# define SILICON_STUDIO_RENDER_TARGET_COUNT 1
+#endif
+
+shader ShadingBase : ShaderBase
+{
+    compose ComputeColor ShadingColor0;
+
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 1
+    compose ComputeColor ShadingColor1;
+#endif
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 2
+    compose ComputeColor ShadingColor2;
+#endif
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 3
+    compose ComputeColor ShadingColor3;
+#endif
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 4
+    compose ComputeColor ShadingColor4;
+#endif
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 5
+    compose ComputeColor ShadingColor5;
+#endif
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 6
+    compose ComputeColor ShadingColor6;
+#endif
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 7
+    compose ComputeColor ShadingColor7;
+#endif
+
+    // method computing color
+    stage float4 Shading()
+    {
+        return ShadingColor0.Compute();
+    }
+    
+    stage override void PSMain()
+    {
+        base.PSMain();
+        streams.ColorTarget = this.Shading();
+
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 1
+        streams.ColorTarget1 = ShadingColor1.Compute();
+#endif
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 2
+        streams.ColorTarget2 = ShadingColor2.Compute();
+#endif
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 3
+        streams.ColorTarget3 = ShadingColor3.Compute();
+#endif
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 4
+        streams.ColorTarget4 = ShadingColor4.Compute();
+#endif
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 5
+        streams.ColorTarget5 = ShadingColor5.Compute();
+#endif
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 6
+        streams.ColorTarget6 = ShadingColor6.Compute();
+#endif
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 7
+        streams.ColorTarget7 = ShadingColor7.Compute();
+#endif
+    }
+};

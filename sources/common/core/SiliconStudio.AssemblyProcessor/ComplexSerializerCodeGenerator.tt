@@ -1,0 +1,87 @@
+﻿<#@ template language="C#" visibility="internal" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Mono.Cecil" #>
+<#@ import namespace="SiliconStudio.Core.Serialization" #>
+
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization.Serializers;
+using SiliconStudio.DataSerializers;
+
+[assembly: AssemblyVersion("<#=assembly.Name.Version.ToString()#>")]
+<# if (targetFramework != null) { #>
+[assembly: System.Runtime.Versioning.TargetFramework(<#=targetFramework#>)]
+<# } #>
+
+[assembly: SiliconStudio.Core.Serialization.Serializers.AssemblySerializerFactory(Type = typeof(SiliconStudio.DataSerializers.<#=assemblySerializerFactoryClassName#>))]
+
+namespace SiliconStudio.Core.Serialization.Serializers
+{
+	class AssemblySerializerFactoryAttribute : Attribute
+	{
+		public Type Type;
+	}
+}
+
+namespace SiliconStudio.DataSerializers
+{
+    // Assembly attributes that defines supported serializer (only generics one so that other assemblies can do generic instantiations by themselves)
+<# foreach (var profile in cecilSerializerContext.SerializableTypesProfiles) {
+       foreach (var type in profile.Value.SerializableTypes.Where(x => x.Value.Local)) { #>
+    [DataSerializerGlobalAttribute(<#= type.Value.SerializerType != null ? $"typeof({type.Value.SerializerType.ConvertCSharp(false)})" : "null" #>, typeof(<#= type.Key.ConvertCSharp(false) #>), DataSerializerGenericMode.<#= type.Value.Mode.ToString() #>, <#=type.Value.Inherited ? "true" : "false"#>, <#=type.Value.ComplexSerializer ? "true" : "false"#>, Profile = "<#=profile.Key#>")]
+<#     }
+       foreach (var type in profile.Value.GenericSerializableTypes.Where(x => x.Value.Local)) {#>
+    [DataSerializerGlobalAttribute(<#= type.Value.SerializerType != null ? $"typeof({type.Value.SerializerType.ConvertCSharp(true)})" : "null" #>, typeof(<#= type.Key.ConvertCSharp(true) #>), DataSerializerGenericMode.<#= type.Value.Mode.ToString() #>, <#=type.Value.Inherited ? "true" : "false"#>, <#=type.Value.ComplexSerializer ? "true" : "false"#>, Profile = "<#=profile.Key#>")]
+<#     }
+   } #>
+   	public static class <#=assemblySerializerFactoryClassName#>
+	{
+	    [SiliconStudio.Core.ModuleInitializer(-1000)]
+        internal static void Initialize()
+        {
+			var assemblySerializers = new AssemblySerializers(typeof(<#=assemblySerializerFactoryClassName#>).GetTypeInfo().Assembly);
+
+			// Register data contract aliases
+<# foreach (var alias in cecilSerializerContext.DataContractAliases) { #>
+			assemblySerializers.DataContractAliases.Add(new AssemblySerializers.DataContractAlias(@"<#= alias.Item1 #>", typeof(<#= alias.Item2.ConvertCSharp(true) #>), <#=alias.Item3 ? "true" : "false"#>));
+<# } #>
+
+<# foreach (var referencedAssemblySerializerFactoryType in referencedAssemblySerializerFactoryTypes) { #>
+			assemblySerializers.Modules.Add(typeof(<#=referencedAssemblySerializerFactoryType.ConvertCSharp()#>).GetTypeInfo().Module);
+<# } #>
+
+<# foreach (var profile in cecilSerializerContext.SerializableTypesProfiles) { #>
+			{
+				var assemblySerializersProfile = new AssemblySerializersPerProfile();
+				assemblySerializers.Profiles["<#=profile.Key#>"] = assemblySerializersProfile;
+
+<#   foreach (var type in profile.Value.SerializableTypes.Where(x => x.Value.Local)) { #>
+				assemblySerializersProfile.Add(new AssemblySerializerEntry(<#=type.Key.ConvertTypeId()#>, typeof(<#= type.Key.ConvertCSharp() #>), <# if (type.Value.SerializerType != null) { #>typeof(<#= type.Value.SerializerType.ConvertCSharp() #>)<# } else { #>null<# } #>));
+<#       if (type.Value.SerializerType?.Resolve()?.Methods.Any(x => x.IsConstructor && x.IsStatic) == true) {
+			// Some data serializer have static constructor, force them to run
+			// TODO: It is currently used for update engine registration, but we could also make a specific method to not mix it with static ctor. #>
+				System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(<#=type.Value.SerializerType.ConvertCSharp()#>).TypeHandle);
+<#       } #>
+<#   } #>
+			}
+<# } #>
+
+			DataSerializerFactory.RegisterSerializationAssembly(assemblySerializers);
+            AssemblyRegistry.Register(typeof(<#=assemblySerializerFactoryClassName#>).GetTypeInfo().Assembly, AssemblyCommonCategories.Engine);
+        }
+	}
+}
+
+<#
+// Generate complex serializers
+foreach (var complexType in cecilSerializerContext.ComplexTypes)
+{
+	var complexClassSerializerGenerator = new ComplexClassSerializerGenerator(complexType.Key, complexType.Value.ComplexSerializerProcessParentType);
+	Write(complexClassSerializerGenerator.TransformText());
+} #>

@@ -1,0 +1,17 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Transform the position of the vertex with the given matrix.
+/// </summary>
+/// <remarks>
+/// TRANSFORMATION_MATRIX: generic float4x4 - The transformation matrix.
+/// </remarks>
+shader TransformationMatrix<float4x4 TRANSFORMATION_MATRIX> : TransformationBase, PositionStream4, PositionHStream4
+{
+    stage override void PostTransformPosition()
+    {
+        base.PostTransformPosition();
+        streams.ShadingPosition = mul(streams.Position, TRANSFORMATION_MATRIX);
+        streams.PositionH = streams.ShadingPosition;
+    }
+};

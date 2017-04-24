@@ -1,0 +1,12 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Defines a stream with custom attribute (usually texcoord).
+/// </summary>
+/// <remarks>
+/// NAME: generic Semantic - the name of the texcoord (e.g. TEXCOORD0).
+/// </remarks>
+shader DynamicTextureStream<Semantic NAME>
+{
+    stream float2 TexCoord : NAME;
+};

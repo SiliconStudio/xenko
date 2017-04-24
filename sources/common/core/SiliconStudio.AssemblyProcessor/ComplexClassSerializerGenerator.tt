@@ -1,0 +1,92 @@
+﻿<#@ template language="C#" visibility="internal" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Mono.Cecil" #>
+
+<#
+    var className = SerializerTypeName(type, true, true);
+	var parentType = hasParentSerializer ? ResolveGenericsVisitor.Process(type, type.BaseType) : null;
+#>
+
+namespace SiliconStudio.DataSerializers
+{
+	<# if (type.HasGenericParameters) {#>public <#}#>sealed class <#=className#> : <#=type.IsClass && !type.IsValueType && !type.IsAbstract && !type.IsInterface && HasEmptyConstructor(type) ? "Class" : string.Empty#>DataSerializer<<#=type.ConvertCSharp()#>><#=GenerateGenericConstraints(type)#>
+	{
+<#if (hasParentSerializer) {#>
+		private DataSerializer<<#=parentType.ConvertCSharp()#>> parentSerializer;
+<#}
+var serializableItems = GetSerializableItems(type, true).ToArray();
+#>
+<#foreach (var serializableItem in serializableItems) {#>
+		private DataSerializer<<#=serializableItem.Type.ConvertCSharp()#>> <#=serializableItem.MemberInfo.Name#>Serializer;
+<#}#>
+
+		public override void Initialize(SerializerSelector serializerSelector)
+		{
+<#if (hasParentSerializer) {#>
+			// Get parent serializer
+			parentSerializer = serializerSelector.GetSerializer<<#=parentType.ConvertCSharp()#>>();
+			if (parentSerializer == null)
+				throw new InvalidOperationException(string.Format("Could not find parent serializer for type {0}", @"<#=parentType.ConvertCSharp()#>"));
+<#}#>
+			// Cache member serializers
+<#var serializerMemberMapping = new Dictionary<string, string>();
+  foreach (var serializableItemGroup in serializableItems.GroupBy(x => x.Type.ConvertCSharp()))
+  {
+    // Share same serializer for members of same type
+    var firstSerializableMemberName = serializableItemGroup.First().MemberInfo.Name;
+  	foreach (var serializableItem in serializableItemGroup)
+	{
+	  serializerMemberMapping[serializableItem.MemberInfo.Name] = firstSerializableMemberName;
+	}#>
+			<#=firstSerializableMemberName#>Serializer = MemberSerializer<<#=serializableItemGroup.Key#>>.Create(serializerSelector);
+<#}#>
+		}
+
+		public override void Serialize(ref <#=type.ConvertCSharp()#> obj, ArchiveMode mode, SerializationStream stream)
+		{
+<#if (hasParentSerializer) {#>
+			// Serialize parent (for now we don't copy reference back because it shouldn't change)
+			<#=parentType.ConvertCSharp()#> parentObj = obj;
+			parentSerializer.Serialize(ref parentObj, mode, stream);
+			obj = (<#=type.ConvertCSharp()#>)parentObj;
+
+<#}
+foreach (var serializableItem in serializableItems) {
+	var memberType = serializableItem.Type;
+	var memberTypeName = serializableItem.Type.ConvertCSharp();
+	var memberName = serializableItem.MemberInfo.Name;
+	var memberAssignBack = serializableItem.AssignBack;
+	var memberVariableName = (serializableItem.MemberInfo is PropertyDefinition || !memberAssignBack) ? CreateMemberVariableName(serializableItem.MemberInfo) : null;
+	var memberAccessName = memberVariableName != null ? memberVariableName : "obj." + memberName;
+
+	if (serializableItem.HasFixedAttribute)
+	{#>
+		throw new NotImplementedException("FixedBuffer attribute is not supported.");
+<#	}
+	else
+	{
+		if (memberVariableName != null)
+		{#>
+            <#=memberTypeName#> <#=memberVariableName#> = <# if (memberAssignBack) { #>mode == ArchiveMode.Serialize ? obj.<#=memberName#> : default(<#=memberTypeName#>)<#} else {#>obj.<#=memberName#><#}#>;
+<#}#>
+            <#=serializerMemberMapping[serializableItem.MemberInfo.Name]#>Serializer.Serialize(ref <#=memberAccessName#>, mode, stream);
+<#if (memberVariableName != null && memberAssignBack)
+		{#>
+            if (mode == ArchiveMode.Deserialize)
+                obj.<#=memberName#> = <#=memberVariableName#>;
+<#}
+	}
+}#>
+		}
+
+		internal static void ForceGenericInstantiation()
+		{
+<#
+foreach (var memberSerializerType in EnumerateSerializerTypes(serializableItems.Select(x => x.Type))){#>
+			typeof(<#=memberSerializerType.ConvertCSharp()#>).ToString();
+<#}#>
+		}
+	}
+}

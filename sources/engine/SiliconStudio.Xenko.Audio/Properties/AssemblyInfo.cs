@@ -1,0 +1,16 @@
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Reflection;
+using System.Runtime.CompilerServices;
+
+[assembly: AssemblyProduct("SiliconStudio.Xenko.Audio")]
+[assembly: AssemblyTitle("SiliconStudio.Xenko.Audio")]
+[assembly: AssemblyDescription("Xenko Audio Framework assembly")]
+
+#pragma warning disable 436 // SiliconStudio.PublicKeys is defined in multiple assemblies
+
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Audio.Serializers" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Audio.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudioXenkoAudioTests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Assets" + SiliconStudio.PublicKeys.Default)]

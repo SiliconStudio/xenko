@@ -1,0 +1,31 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Graphics.Tests
+{
+    /// <summary>
+    /// A shader performing Lambertian pre-filtering.
+    /// </summary>
+    internal shader ComputeShaderTest<int TNbOfIterations>: ComputeShaderBase
+    {    
+        stage Texture2D<float4> input;
+        stage RWTexture2D<float4> output;
+
+        override void Compute()
+        {
+            float4 Sum = float4(0,0,0,0);
+
+            [unroll]
+            for(int i=0; i<TNbOfIterations; ++i)
+            {                
+                [unroll]
+                for(int u=0; u<TNbOfIterations; ++u)
+                {
+                    Sum += input[streams.GroupId.xy*TNbOfIterations + float2(i,u)];
+                }
+            }
+
+            output[streams.GroupId.xy] = Sum;
+        }
+    };
+}

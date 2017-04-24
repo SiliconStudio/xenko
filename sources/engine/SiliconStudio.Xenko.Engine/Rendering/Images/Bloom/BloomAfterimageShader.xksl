@@ -1,0 +1,32 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    /// <summary>
+    /// Simulates retina persistence / afterimage with bright ghost slowly fading out. 
+    /// </summary>
+    internal shader BloomAfterimageShader : ImageEffectShader
+    {
+        // Fade-out speed of the persistence image
+        stage float FadeOutSpeed;
+
+        // How much sensitive we are to the bright light
+        stage float Sensitivity;
+
+        stage override float4 Shading()
+        {
+	        float3 currentColor = Texture0.Sample(LinearSampler, streams.TexCoord).rgb;
+            float3 persistenceColor = Texture1.Sample(LinearSampler, streams.TexCoord).rgb;
+
+            persistenceColor *= FadeOutSpeed;
+
+            var newPersistence = persistenceColor + currentColor * Sensitivity;
+
+            // Never go brighter than the current brightness
+            if ( any(newPersistence > currentColor)) newPersistence = persistenceColor;
+
+	        return float4(newPersistence, 1.0);
+        }
+    };
+}

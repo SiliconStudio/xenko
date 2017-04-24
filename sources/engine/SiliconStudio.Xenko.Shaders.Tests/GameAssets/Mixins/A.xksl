@@ -1,0 +1,18 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+shader A : ShaderBase
+{
+    compose ComputeColor SubCompute1;
+    compose ComputeColor SubCompute2;
+    compose ComputeColor SubComputes[];
+
+    override stage void PSMain()
+    {
+        streams.ColorTarget = SubCompute1.Compute(float4(1,1,1,1)) + SubCompute2.Compute(float4(1,1,1,1));
+
+        foreach(var subCompute in SubComputes)
+        {
+            streams.ColorTarget = subCompute.Compute(streams.ColorTarget);
+        }
+    }
+};

@@ -1,0 +1,26 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    params LambertianPrefilteringSHParameters
+    {   
+        int BlockSize;
+    }
+
+    effect LambertianPrefilteringSHEffectPass1
+    {
+        using params SphericalHarmonicsParameters;
+        using params LambertianPrefilteringSHParameters;
+
+        mixin LambertianPrefilteringSHPass1<LambertianPrefilteringSHParameters.BlockSize, SphericalHarmonicsParameters.HarmonicsOrder>;
+    };
+
+    effect LambertianPrefilteringSHEffectPass2
+    {
+        using params SphericalHarmonicsParameters;
+        using params LambertianPrefilteringSHParameters;
+
+        mixin LambertianPrefilteringSHPass2<LambertianPrefilteringSHParameters.BlockSize, SphericalHarmonicsParameters.HarmonicsOrder>;
+    };
+}

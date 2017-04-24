@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+  </PropertyGroup>
+  <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Core</RootNamespace>
+    <AssemblyName>SiliconStudio.Core.Serialization</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.XML" />
+        <Reference Include="System.XML.Linq" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Assets\AssetId.cs" />
+    <Compile Include="IO\IDatabaseStream.cs" />
+    <Compile Include="IO\NativeLockFile.cs" />
+    <Compile Include="LZ4\ILZ4Service.cs" />
+    <Compile Include="LZ4\LZ4Codec.cs" />
+    <Compile Include="LZ4\LZ4Stream.cs" />
+    <Compile Include="LZ4\Services\NativeLz4Service.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serialization\Contents\ContentManager.ReferenceCounting.cs" />
+    <Compile Include="Serialization\Contents\ContentManagerException.cs" />
+    <Compile Include="Serialization\Contents\ContentManagerLoaderSettings.cs" />
+    <Compile Include="Serialization\Contents\ContentManagerStats.cs" />
+    <Compile Include="Serialization\Contents\ContentProfilingKeys.cs" />
+    <Compile Include="Serialization\Contents\ContentManager.Reference.cs" />
+    <Compile Include="Serialization\Contents\DataContentSerializerWithReuse.cs" />
+    <Compile Include="Serialization\Contents\NamespaceDoc.cs" />
+    <Compile Include="IO\DatabaseFileProvider.cs" />
+    <Compile Include="IO\DictionaryStore.cs" />
+    <Compile Include="IO\ListStore.cs" />
+    <Compile Include="IO\Store.cs" />
+    <Compile Include="Serialization\Contents\ContentIndexMap.cs" />
+    <Compile Include="Serialization\Contents\ContentManager.cs" />
+    <Compile Include="Serialization\Contents\ContentSerializer.cs" />
+    <Compile Include="Serialization\Contents\ChunkHeader.cs" />
+    <Compile Include="Serialization\Contents\IContentIndexMap.cs" />
+    <Compile Include="Serialization\Contents\IContentManager.cs" />
+    <Compile Include="Serialization\Contents\ObjectUrl.cs" />
+    <Compile Include="Serialization\Contents\UrlType.cs" />
+    <Compile Include="Serialization\Contents\ContentReferenceState.cs" />
+    <Compile Include="Serialization\Contents\ContentReference.cs" />
+    <Compile Include="Serialization\Contents\ContentReferenceDataSerializer.cs" />
+    <Compile Include="Serialization\Contents\IContentData.cs" />
+    <Compile Include="Serialization\Contents\ILoadableReference.cs" />
+    <Compile Include="Serialization\Contents\IReference.cs" />
+    <Compile Include="Serialization\AttachedReference.cs" />
+    <Compile Include="Serialization\AttachedReferenceManager.cs" />
+    <Compile Include="Serialization\Contents\ReferenceSerializer.cs" />
+    <Compile Include="Serialization\Contents\ReferenceSerializerAttribute.cs" />
+    <Compile Include="Storage\Blob.cs" />
+    <Compile Include="Storage\BlobStream.cs" />
+    <Compile Include="Storage\BundleDescription.cs" />
+    <Compile Include="Storage\DigestStream.cs" />
+    <Compile Include="Storage\FileOdbBackend.cs" />
+    <Compile Include="Storage\IOdbBackend.cs" />
+    <Compile Include="Storage\NamespaceDoc.cs" />
+    <Compile Include="Storage\ObjectDatabase.cs" />
+    <Compile Include="Storage\ObjectDatabaseContentIndexMap.cs" />
+    <Compile Include="Storage\ObjectType.cs" />
+    <Compile Include="Storage\OdbStreamWriter.cs" />
+    <Compile Include="Storage\BundleOdbBackend.cs" />
+    <Compile Include="Serialization\Contents\ContentData.cs" />
+    <Compile Include="Serialization\Contents\ChunkReference.cs" />
+    <Compile Include="Serialization\Contents\ContentSerializerAttribute.cs" />
+    <Compile Include="Serialization\Contents\ContentSerializerBase.cs" />
+    <Compile Include="Serialization\Contents\ContentSerializerContext.cs" />
+    <Compile Include="Serialization\Contents\DataContentSerializer.cs" />
+    <Compile Include="Serialization\Contents\IContentSerializer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
+      <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
+      <Name>SiliconStudio.Core.MicroThreading</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
+      <Project>{1de01410-22c9-489b-9796-1addab1f64e5}</Project>
+      <Name>SiliconStudio.Core.IO</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Reflection\" />
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <Target Name="AfterBuild">
+    <!-- Copy self and dependent assemblies to AssemblyProcessor output folder -->
+    <!--<ItemGroup>
+      <SiliconStudioSerializationAssemblies Include="$(OutDir)*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SiliconStudioSerializationAssemblies)" DestinationFolder="$([System.IO.Path]::GetDirectoryName('$(SiliconStudioAssemblyProcessorPath)'))\" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"/>-->
+    <!-- Execute assembly processor on Serialization.Core. It can only be done after SiliconStudio.Core.Serialization exists. -->
+    <!--<MSBuild Projects="$(MSBuildThisFileDirectory)..\SiliconStudio.Core\SiliconStudio.Core.csproj" Targets="RunSiliconStudioAssemblyProcessor" Properties="Configuration=$(Configuration);SiliconStudioSecondPassAssemblyProcessor=true" />-->
+  </Target>
+</Project>

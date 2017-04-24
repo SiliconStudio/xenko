@@ -1,0 +1,22 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    /// <summary>
+    /// Outputs the minium of 2 textures. (Final pass of the McIntosh bokeh effect.)
+    /// Expects as input: 
+    ///  - Texture0: a color buffer with diagonal blur
+    ///  - Texture1: a color buffer with diagonal blur
+    /// </summary>
+    shader McIntoshCombineShader : ImageEffectShader
+    {
+
+        stage override float4 Shading()
+        {
+            float4 minimum =  min( Texture0.Sample(Sampler, streams.TexCoord),
+                                   Texture1.Sample(Sampler, streams.TexCoord) );
+            return minimum;
+        }
+    };
+}

@@ -1,0 +1,31 @@
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Skyboxes
+{
+    shader SkyboxShader : SpriteBase, SkyboxStream
+    {
+        stage float Intensity;
+        stage TextureCube CubeMap;
+        stage float4x4 ProjectionInverse;
+        stage float4x4 ViewInverse;
+        stage float4x4 SkyMatrix;
+
+        override stage void VSMain()
+        {
+            base.VSMain();
+            var screenPosition = streams.ShadingPosition / streams.ShadingPosition.w;
+            var position = float4(screenPosition.x, screenPosition.y, 1.0f, 1.0f);
+            var directionVS = mul(position, ProjectionInverse).xyz;
+            var directionWS = mul(float4(directionVS,0), ViewInverse).xyz;
+            streams.skyboxViewDirection = mul(directionWS, (float3x3)SkyMatrix);
+        }
+
+        override stage float4 Shading()
+        {
+            var samplingDir = normalize(streams.skyboxViewDirection);
+            var color = CubeMap.Sample(LinearSampler, float3(samplingDir.x, samplingDir.y, -samplingDir.z)).rgb;
+            return float4(color * Intensity, 1.0);
+        }
+    };
+}

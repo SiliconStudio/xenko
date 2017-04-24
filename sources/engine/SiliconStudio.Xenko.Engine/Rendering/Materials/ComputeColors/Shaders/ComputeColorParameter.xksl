@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Returns the color from a parameter.
+/// </summary>
+shader ComputeColorParameter : ComputeColor
+{
+    [Color]
+    stage float4 ColorParameter;
+
+    override float4 Compute()
+    {
+        return ColorParameter;
+    }
+};

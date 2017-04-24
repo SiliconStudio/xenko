@@ -1,0 +1,21 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    /// <summary>
+    /// Performs a Lambert shading
+    /// </summary>
+    shader MaterialSurfaceShadingSpecularBlinnPhong : IMaterialSurfaceShading, NormalStream
+    {
+        override float3 ComputeDirectLightContribution()
+        {
+            float k = BRDFBlinnPhong.Compute(streams.lightDirectionWS, streams.normalWS, streams.viewWS, streams.matSpecularPower);
+
+            var specularColor = streams.matSpecular * streams.matCavity * streams.matCavitySpecular;
+
+            // TODO: integrate AO/Cavity...etc.
+            // TODO: Check if we need to divide by PI
+            return specularColor * k * streams.lightColorNdotL * streams.matDiffuseSpecularAlphaBlend.y;
+        }
+    };
+}

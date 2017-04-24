@@ -1,0 +1,13 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Provides a stream with the view space position (vertex or fragment) from the vertex attributes.
+/// </summary>
+shader PositionVertexTransform : ShaderBase, Transformation, PositionStream
+{
+    stage override void VSMain()
+    {
+        base.VSMain();
+        streams.PositionWS = mul(streams.Position, World);
+    }
+};

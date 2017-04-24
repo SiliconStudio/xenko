@@ -1,0 +1,19 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Skyboxes
+{
+    /// <summary>
+    /// Sample a cubemap using the MaterialPixelShadingStream roughness parameter.
+    /// </summary>
+    shader LevelCubeMapEnvironmentColor : IComputeEnvironmentColor, Texturing
+    {
+        TextureCube CubeMap;
+        float MipLevel;
+
+        override float4 Compute(float3 direction)
+        {
+            return CubeMap.SampleLevel(LinearSampler, direction, MipLevel);
+        }
+    };
+}

@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+    <XenkoNativeOutputName>libxenkoaudio</XenkoNativeOutputName>
+  </PropertyGroup>
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DE042125-C270-4D1D-9270-0759C167567A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Xenko.Audio</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Audio</AssemblyName>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="AudioDevice.cs" />
+    <Compile Include="AudioEmitter.cs" />
+    <Compile Include="AudioEngine.cs" />
+    <Compile Include="AudioEngine.iOS.cs" />
+    <Compile Include="AudioEngineSettings.cs" />
+    <Compile Include="AudioEngineState.cs" />
+    <Compile Include="AudioExceptions.cs" />
+    <Compile Include="AudioListener.cs" />
+    <Compile Include="AudioEngineFactory.cs" />
+    <Compile Include="Module.cs" />
+    <Compile Include="Native\AudioLayer.cs" />
+    <Compile Include="Native\Celt.cs" />
+    <Compile Include="CompressedSoundPacket.cs" />
+    <Compile Include="CompressedSoundSource.cs" />
+    <Compile Include="IPositionableSound.cs" />
+    <Compile Include="IPlayableSound.cs" />
+    <Compile Include="IRecorder.cs" />
+    <Compile Include="Microphone.cs" />
+    <Compile Include="Microphone.Windows.cs" />
+    <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="NativeInvoke.cs" />
+    <Compile Include="Native\HrtfEnvironment.cs" />
+    <Compile Include="PlayRange.cs" />
+    <Compile Include="RecorderState.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sound.cs" />
+    <Compile Include="IAudioEngineProvider.cs" />
+    <Compile Include="SoundInstance.cs" />
+    <Compile Include="SoundPlayState.cs" />
+    <Compile Include="SoundSerializer.cs" />
+    <Compile Include="DynamicSoundSource.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
+      <Project>{1de01410-22c9-489b-9796-1addab1f64e5}</Project>
+      <Name>SiliconStudio.Core.IO</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210fb81-b807-49bb-af0d-31fb6a83a572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
+      <Project>{1DBBC150-F085-43EF-B41D-27C72D133770}</Project>
+      <Name>SiliconStudio.Xenko.Native</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Native\Celt.cpp" />
+    <SiliconStudioContent Include="SiliconStudio.Xenko.Audio.dll.config" />
+    <None Include="Xenko.Native.Libs.targets">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Native\Common.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Native\OpenAL.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Native\OpenSLES.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Native\XAudio2.cpp" />
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <Import Project="..\..\native\Xenko.Native.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

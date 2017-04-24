@@ -1,0 +1,28 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    // Temporary code for testing IMaterialSurface
+    shader MaterialSurfacePixelStageCompositor : ShadingBase, Transformation, PositionStream, MaterialPixelShadingStream, DirectLightGroupArray, EnvironmentLightArray
+    {
+        compose IMaterialSurface materialPixelStage;
+        compose IStreamInitializer streamInitializerPixelStage;
+
+        stage override float4 Shading()
+        {
+            // Prepare global streams (temp)
+            streams.viewWS = normalize(Eye.xyz - streams.PositionWS.xyz);
+            streams.shadingColor = 0;
+
+            // Reset material streams
+            streamInitializerPixelStage.ResetStream();
+
+            // Compute the shading of the surface
+            // TODO: separate between material attributes blending and material lighting/shadow shading
+            materialPixelStage.Compute();
+
+            // Return the actual shading color
+            return float4(streams.shadingColor, streams.shadingColorAlpha);
+        }
+    };
+}

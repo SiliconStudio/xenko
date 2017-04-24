@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+  </PropertyGroup>
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{72390339-B2A1-4F61-A800-31ED0975B515}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Xenko</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko</AssemblyName>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' AND ($(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF')))">
+      <ItemGroup>
+        <Reference Include="System.Drawing" />
+        <Reference Include="System.Windows.Forms" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets" />
+  <Choose>
+    <!-- SharpDX is needed for WIC -->
+    <When Condition=" '$(SiliconStudioPlatform)' == 'UWP' ">
+      <ItemGroup>
+        <Reference Include="SharpDX">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
+        </Reference>
+        <Reference Include="SharpDX.DXGI">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
+        </Reference>
+        <Reference Include="SharpDX.Direct2D1">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct2D1.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Data\Configurations.cs" />
+    <Compile Include="Data\ParameterCollectionHashSerializer.cs" />
+    <Compile Include="Effects\AssemblyEffectKeysAttribute.cs" />
+    <Compile Include="Effects\ParameterCollectionSerializer.cs" />
+    <Compile Include="CompilationMode.cs" />
+    <Compile Include="Graphics\ColorExtensions.cs" />
+    <Compile Include="Graphics\ColorSpace.cs" />
+    <Compile Include="Graphics\CompareFunction.cs" />
+    <Compile Include="Graphics\DataBox.cs" />
+    <Compile Include="Graphics\DataPointer.cs" />
+    <Compile Include="Graphics\DataRectangle.cs" />
+    <Compile Include="Graphics\DDS.cs" />
+    <Compile Include="Graphics\DDSFlags.cs" />
+    <Compile Include="Graphics\DDSHelper.cs" />
+    <Compile Include="Graphics\DisplayOrientation.cs" />
+    <Compile Include="Graphics\Font\Glyph.cs" />
+    <Compile Include="Graphics\Font\Kerning.cs" />
+    <Compile Include="Graphics\FourCC.cs" />
+    <Compile Include="Graphics\GraphicsPlatform.cs" />
+    <Compile Include="Graphics\GraphicsProfile.cs" />
+    <Compile Include="Graphics\Image.cs" />
+    <Compile Include="Graphics\ImageDescription.cs" />
+    <Compile Include="Graphics\ImageFileType.cs" />
+    <Compile Include="Graphics\ImageHelper.cs" />
+    <Compile Include="Graphics\ImageSerializer.cs" />
+    <Compile Include="Graphics\MipMapCount.cs" />
+    <Compile Include="Graphics\MipMapDescription.cs" />
+    <Compile Include="Graphics\PixelBuffer.cs" />
+    <Compile Include="Graphics\PixelBufferArray.cs" />
+    <Compile Include="Graphics\PixelFormat.cs" />
+    <Compile Include="Graphics\PixelFormat.Extensions.cs" />
+    <Compile Include="Graphics\SamplerStateDescription.cs" />
+    <Compile Include="Graphics\StandardImageHelper.Android.cs" />
+    <Compile Include="Graphics\StandardImageHelper.cs" />
+    <Compile Include="Graphics\StandardImageHelper.UWP.cs" />
+    <Compile Include="Graphics\StandardImageHelper.Windows.cs" />
+    <Compile Include="Graphics\TextureAddressMode.cs" />
+    <Compile Include="Graphics\TextureDimension.cs" />
+    <Compile Include="Graphics\TextureFilter.cs" />
+    <Compile Include="Graphics\WICHelper.cs" />
+    <Compile Include="Graphics\WICFlags.cs" />
+    <Compile Include="Effects\ParameterCollectionExtensions.cs" />
+    <Compile Include="Effects\ParameterKey.cs" />
+    <Compile Include="Effects\ParameterKeyValueMetadata.cs" />
+    <Compile Include="Effects\ParameterKeys.cs" />
+    <Compile Include="Effects\ParameterKeySerializer.cs" />
+    <Compile Include="Data\PlatformConfigurations.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rendering\ParameterCollection.cs" />
+    <Compile Include="Rendering\ParameterCollectionLayout.cs" />
+    <Compile Include="Rendering\ParameterKeyInfo.cs" />
+    <Compile Include="Rendering\PermutationParameter.cs" />
+    <Compile Include="Rendering\ObjectParameterAccessor.cs" />
+    <Compile Include="Rendering\ValueParameter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
+      <Project>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</Project>
+      <Name>SiliconStudio.Core.IO</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210fb81-b807-49bb-af0d-31fb6a83a572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Graphics\StandardImageHelper.iOS.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

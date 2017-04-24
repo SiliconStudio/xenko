@@ -1,0 +1,12 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+shader TestVertexStream : TestScreenPosition
+{
+    stream float4 Position;
+
+    void VSMain()
+    {
+        // TODO: remove extra code for this type check (float * floatX)
+        streams.ScreenPosition = 2.0*streams.Position;
+    }
+};

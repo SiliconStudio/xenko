@@ -1,0 +1,22 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    /// <summary>
+    /// Converts diffuse color
+    /// </summary>
+    shader MaterialSurfaceDiffuse : IMaterialSurfacePixel
+    {
+        compose ComputeColor diffuseMap;
+
+        override void Compute()
+        {
+            var colorBase = diffuseMap.Compute();
+            streams.matDiffuse = colorBase;
+
+            // Because matDiffuse can be modified when using a metalness, we are storing the colorBase into matColorBase
+            // so that we are able to query the original diffuse color without any modifications.
+            streams.matColorBase = colorBase;
+        }
+    };
+}

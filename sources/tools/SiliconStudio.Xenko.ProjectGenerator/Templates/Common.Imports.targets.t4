@@ -1,0 +1,8 @@
+﻿<#@ template inherits="ProjectTemplateTransformation" language="C#" #>
+  <Import Project="<#= ProjectName #>.Shared.targets" />
+  <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />
+  <Import Project="$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets" Condition="Exists('$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets')" />
+  <Target Name="EnsureSiliconStudioXenkoInstalled" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(SiliconStudioXenkoDir)' == ''" Text="Xenko SDK was not found. Check Xenko is installed and the global env variable [SiliconStudioXenkoDir] is setup correctly" />
+    <Error Condition="!Exists('$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets')" Text="Invalid Xenko SDK installation. Target file [$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets] was not found." />
+  </Target>

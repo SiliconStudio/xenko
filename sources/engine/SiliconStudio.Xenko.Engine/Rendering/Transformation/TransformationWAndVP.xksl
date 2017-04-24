@@ -1,0 +1,21 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Transforms the position of the vertex in world space first then in projection space
+/// </summary>
+shader TransformationWAndVP : TransformationBase, PositionStream4, PositionHStream4
+{
+    stage override void PreTransformPosition()
+    {
+        base.PreTransformPosition();
+        streams.PositionWS = mul(streams.Position, Transformation.World);
+    }
+
+    stage override void PostTransformPosition()
+    {
+        base.PostTransformPosition();
+        streams.ShadingPosition = mul(streams.PositionWS, Transformation.ViewProjection);
+        streams.PositionH = streams.ShadingPosition;
+        streams.DepthVS = streams.ShadingPosition.w;
+    }
+};

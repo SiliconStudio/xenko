@@ -1,0 +1,41 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
+using System.Reflection;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Storage;
+
+namespace SiliconStudio.Core.Serialization
+{
+<#
+var className = "MemberNullableSerializer";
+var supportsNullDataSerializer = false;
+var supportsNonSealed = false;
+var supportsGenerics = false;
+var supportsValueType = false;
+var supportsReuseReferences = false;
+var supportsExternalIdentifiableAsGuid = false; #>
+<#@ include file="MemberSerializerClass.ttinclude" #>
+
+<#
+className = "MemberNonSealedSerializer";
+supportsNonSealed = true;
+supportsValueType = false;
+supportsReuseReferences = false;
+supportsExternalIdentifiableAsGuid = false; #>
+<#@ include file="MemberSerializerClass.ttinclude" #>
+
+<#
+className = "MemberReuseSerializer";
+supportsNonSealed = true;
+supportsValueType = false;
+supportsReuseReferences = true;
+supportsExternalIdentifiableAsGuid = true; #>
+<#@ include file="MemberSerializerClass.ttinclude" #>
+}

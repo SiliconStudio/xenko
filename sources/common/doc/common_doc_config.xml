@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!--
+// Copyright (c) 2010-2013 Xenko - Silicon Studio
+// 
+// TODO: Insert proper license text here
+// *****************************************************************************
+// Config file for Xenko documentation
+// *****************************************************************************
+-->
+<config xmlns="SharpDoc">
+  <!-- Title of the generated documentation -->
+  <title>SiliconStudio.NET Framework Documentation</title>
+
+  <!-- Defines the styles used. Apply first SiliconStudio and after Standard style -->
+  <style>SiliconStudio</style>
+  <style-dir>Style</style-dir>
+
+  <!-- Generate default and docpak -->
+  <output-dir>.\doc_output</output-dir>
+
+  <!-- If a new topic is referenced but the file is not yet created, use sharpdoc-template.html file as a template -->
+  <!-- Disabled for the moment
+  <topic-template>xenko-template.html</topic-template>
+  -->
+
+  <!-- Topics -->
+  <topic id="SiliconStudio" page-id="main" name="SiliconStudio.NET Framework Documentation" webdoc="Documentation">
+
+    <!-- Copy the whole content of images to the output html/images directory -->
+    <!-- <resource>images</resource> -->
+    
+    <topic id="Presentation+Framework" name="Presentation Framework" webdoc="Presentation+Framework">
+      <topic id="Introduction" name="Introduction" webdoc="Introduction"/>
+      <topic id="Action+Stack" name="Action Stack" webdoc="Action+Stack"/>
+      <topic id="Quantum" name="Quantum" webdoc="Quantum"/>
+      <topic id="Behaviors" name="Behaviors" webdoc="Behaviors"/>
+    </topic>
+
+    <!-- Special topic X:ClassLibrary to include generated class library references. No filename to setup as it is generated -->
+    <topic id="X:ClassLibraryReference" page-id="api" name="Class Library Reference" index="100" on-url="true"/>
+  </topic>
+
+  <!-- List the assemblies to include for the class library-->
+  
+  <!-- Standard Binaries -->
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows\SiliconStudio.Core.xml">..\Bin\Windows\SiliconStudio.Core.dll</source>
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows\SiliconStudio.Core.IO.xml">..\Bin\Windows\SiliconStudio.Core.IO.dll</source>
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows\SiliconStudio.Core.Mathematics.xml">..\Bin\Windows\SiliconStudio.Core.Mathematics.dll</source>
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows\SiliconStudio.Core.MicroThreading.xml">..\Bin\Windows\SiliconStudio.Core.MicroThreading.dll</source>
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows\SiliconStudio.Core.Serialization.xml">..\Bin\Windows\SiliconStudio.Core.Serialization.dll</source>
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows\SiliconStudio.ActionStack.xml">..\Bin\Windows\SiliconStudio.ActionStack.dll</source>
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows\SiliconStudio.Presentation.xml">..\Bin\Windows\SiliconStudio.Presentation.dll</source>
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows\SiliconStudio.Presentation.Quantum.xml">..\Bin\Windows\SiliconStudio.Presentation.Quantum.dll</source>
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows\SiliconStudio.Quantum.xml">..\Bin\Windows\SiliconStudio.Quantum.dll</source>
+ </config>

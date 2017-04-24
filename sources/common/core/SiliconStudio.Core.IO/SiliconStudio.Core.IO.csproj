@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+  </PropertyGroup>
+  <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Core.IO</RootNamespace>
+    <AssemblyName>SiliconStudio.Core.IO</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <!-- Include platform dependent assembly when specified -->
+  <Choose>
+    <When Condition="'$(SiliconStudioPlatform)' == 'UWP'">
+      <ItemGroup>
+        <Reference Include="SharpDX">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
+      <ItemGroup>
+        <Compile Include="System.IO.Compression.Zip\ApkExpansionSupport.cs" />
+        <Compile Include="System.IO.Compression.Zip\Compression.cs" />
+        <Compile Include="System.IO.Compression.Zip\Crc32.cs" />
+        <Compile Include="System.IO.Compression.Zip\ExpansionZipFile.cs" />
+        <Compile Include="System.IO.Compression.Zip\ZipFile.cs" />
+        <Compile Include="System.IO.Compression.Zip\ZipFileEntry.cs" />
+        <Compile Include="System.IO.Compression.Zip\ZipFileValidationHandler.cs" />
+        <Compile Include="System.IO.Compression.Zip\ZipStream.cs" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="AndroidAssetProvider.cs" />
+    <Compile Include="DirectoryWatcher.Windows.cs" />
+    <Compile Include="StreamFlags.cs" />
+    <Compile Include="ZipFileSystemProvider.cs" />
+    <Compile Include="DirectoryWatcher.cs" />
+    <Compile Include="DriveFileProvider.cs" />
+    <Compile Include="FileEvent.cs" />
+    <Compile Include="FileEventChangeType.cs" />
+    <Compile Include="FileSystemProvider.MonoMobile.cs" />
+    <Compile Include="FileSystemProvider.cs" />
+    <Compile Include="FileSystemProvider.Windows.cs" />
+    <Compile Include="FileSystemProvider.UWP.cs" />
+    <Compile Include="IVirtualFileProvider.cs" />
+    <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TemporaryDirectory.cs" />
+    <Compile Include="TemporaryFile.cs" />
+    <Compile Include="VirtualFileAccess.cs" />
+    <Compile Include="VirtualFileMode.cs" />
+    <Compile Include="VirtualFileProviderBase.cs" />
+    <Compile Include="VirtualFileShare.cs" />
+    <Compile Include="VirtualFileStream.cs" />
+    <Compile Include="VirtualFileSystem.Android.cs" />
+    <Compile Include="VirtualFileSystem.cs" />
+    <Compile Include="VirtualSearchOption.cs" />
+    <Compile Include="VirtualWatcherChangeTypes.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
