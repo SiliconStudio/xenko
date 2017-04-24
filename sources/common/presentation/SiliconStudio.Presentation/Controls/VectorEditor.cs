@@ -24,15 +24,16 @@ namespace SiliconStudio.Presentation.Controls
         {
             base.OnApplyTemplate();
 
-            var toggleButton = GetTemplateChild(ToggleButtonPartName) as ToggleButton;
-            if (toggleButton == null)
-                throw new InvalidOperationException($"A part named '{ToggleButtonPartName}' must be present in the ControlTemplate, and must be of type '{typeof(ToggleButton).FullName}'.");
+            // TODO: the toggle button has been disabled
+            //var toggleButton = GetTemplateChild(ToggleButtonPartName) as ToggleButton;
+            //if (toggleButton == null)
+            //    throw new InvalidOperationException($"A part named '{ToggleButtonPartName}' must be present in the ControlTemplate, and must be of type '{typeof(ToggleButton).FullName}'.");
 
-            var toggleButtonStyle = Application.Current.TryFindResource(VectorEditorResources.ToggleButtonStyleKey) as Style;
-            if (toggleButtonStyle != null)
-            {
-                toggleButton.Style = toggleButtonStyle;
-            }
+            //var toggleButtonStyle = Application.Current.TryFindResource(VectorEditorResources.ToggleButtonStyleKey) as Style;
+            //if (toggleButtonStyle != null)
+            //{
+            //    toggleButton.Style = toggleButtonStyle;
+            //}
         }
     }
 
