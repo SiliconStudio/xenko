@@ -456,7 +456,7 @@ Example of use:
     </ItemGroup>
   
     <MSBuild Projects ="@(ProjectsToBuild)" 
-             Targets="SignAndroidPackage"
+             Targets="Clean;SignAndroidPackage"
              Properties="SolutionName=Xenko.Android; SolutionDir=$(MSBuildThisFileDirectory);$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)">
     </MSBuild>
     
