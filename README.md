@@ -46,7 +46,7 @@ Ask for help or report issues:
 
 ### Build Xenko
 
-1. Clone Xenko with LFS: `git lfs clone git@github.com:SiliconStudio/xenko.git`
+1. Clone Xenko with LFS: `git lfs clone git@git.xenko.com:xenko/Xenko-Runtime.git`
 2. Set *SiliconStudioXenkoDir* environment variable to point to your `<XenkoDir>`
 3. Open `<XenkoDir>\build\Xenko.sln` with Visual Studio 2017, and build.
 4. Open `<XenkoDir>\samples\XenkoSamples.sln` and play with the samples.
