@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using Microsoft.VisualStudio.Setup.Configuration;
 
@@ -29,6 +30,7 @@ namespace SiliconStudio.Core.VisualStudio
 
     public static class VisualStudioVersions
     {
+        private const int REGDB_E_CLASSNOTREG = unchecked((int)0x80040154);
         private static List<IDEInfo> ideInfos;
 
         public static IDEInfo DefaultIDE = new IDEInfo { DisplayName = "Default IDE", InstallationPath = null };
@@ -60,6 +62,7 @@ namespace SiliconStudio.Core.VisualStudio
             }
 
             // Visual Studio 15.0 (2017) and later
+            try
             {
                 var configuration = new SetupConfiguration();
 
@@ -97,6 +100,10 @@ namespace SiliconStudio.Core.VisualStudio
                         ideInfos.Add(ideInfo);
                     }
                 } 
+            }
+            catch (COMException comException) when (comException.HResult == REGDB_E_CLASSNOTREG)
+            {
+                // COM is not registered. Assuming no instances are installed.
             }
         }
 
