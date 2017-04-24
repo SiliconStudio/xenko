@@ -204,7 +204,6 @@
     <Compile Include="Compiler\AssetCompilerContext.cs" />
     <Compile Include="Compiler\AssetCompilerRegistry.cs" />
     <Compile Include="Compiler\FailedCommand.cs" />
-    <Compile Include="IAssetCompileTimeDependencies.cs" />
     <Compile Include="IAssetComposite.cs" />
     <Compile Include="IAssetFactory.cs" />
     <Compile Include="IAssetUpgrader.cs" />
