@@ -518,7 +518,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     }
 
                     // Shafts if we have them
-                    LightShafts?.Draw(drawContext, depthStencil, ViewOutputTarget);
+                    LightShafts?.Draw(drawContext, depthStencil, renderTargets[colorTargetIndex]);
 
                     // Run post effects
                     // Note: OpaqueRenderStage can't be null otherwise colorTargetIndex would be -1
