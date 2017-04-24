@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.PackageInstall
         private static readonly string[] NecessaryVS2017Workloads = new[] { "Microsoft.VisualStudio.Workload.ManagedDesktop" };
         private static readonly string[] NecessaryBuildTools2017Workloads = new[] { "Microsoft.VisualStudio.Workload.MSBuildTools", "Microsoft.Net.Component.4.6.1.TargetingPack" };
         private static readonly Guid NET461TargetingPackProductCode = new Guid("8BC3EEC9-090F-4C53-A8DA-1BEC913040F9");
-        private const bool AllowVisualStudioOnly = false; // Somehow this doesn't work well yet, so disabled for now
+        private const bool AllowVisualStudioOnly = true; // Somehow this doesn't work well yet, so disabled for now
 
         static int Main(string[] args)
         {
