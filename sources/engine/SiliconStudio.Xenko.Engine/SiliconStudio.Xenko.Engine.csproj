@@ -103,6 +103,7 @@
     <Compile Include="Engine\LightProbeComponent.cs" />
     <Compile Include="Engine\LightShaftBoundingVolumeComponent.cs" />
     <Compile Include="Engine\LightShaftComponent.cs" />
+    <Compile Include="Engine\Processors\LightShaftProcessor.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
     <Compile Include="Engine\Network\ClientRouterMessage.cs" />

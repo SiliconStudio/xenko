@@ -2,11 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 /// <remarks>
-/// Debug: generic bool - enables debug mode, which highlights the areas where light shafts are generated.
-/// IsZReverse: generic bool - swaps minz and max z.
-/// NbSteps: generic int - number of iterations.
+/// SampleCount: generic int - number of iterations.
+/// Animate: generic bool - animate jitter
 /// </remarks>
-shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps> 
+shader PostEffectBoundingRay<int SampleCount, bool Animated> 
     : ImageEffectShader, DepthBase, Transformation, Camera, Utilities, Global, PositionStream4
 {
     cbuffer PerFrame
@@ -31,6 +30,10 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps>
 
     float RayStepJitter(float2 input, float stepSize) 
     {
+        if(Animated)
+        {
+            return stepSize * Math.FastRandom(int(input.x * 10000 + input.y * 6007 * 10000 + Time * 1000000));
+        }
         return stepSize * Math.FastRandom(int(input.x * 10000 + input.y * 6007 * 10000));
     }
 
@@ -44,8 +47,6 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps>
         // minmax.x = min
         // minmax.y = max
         float2 minmax = Texture0.Sample(PointSampler, streams.TexCoord).xy;
-        if (IsZReverse)
-            minmax.xy = minmax.yx;
 
         // Need at least a maximum value for this pixel to be contained in the bounding box
         if(minmax.y < 1)
@@ -71,19 +72,19 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps>
 
             float minDistance = bbNearDistance;
             float maxDistance = min(bbFarDistance, currentDistance);
-            float stepSize = (maxDistance - minDistance) / (float)NbSteps;
+            float stepSize = (maxDistance - minDistance) / (float)SampleCount;
 
             // Expected by the directional shadow map to compute the cascades
             streams.DepthVS = minDistance;
             if(maxDistance > minDistance)
             {
                 // Recalculate max distance by jittering the length of the ray to avoid banding artefacts
-                stepSize = (maxDistance - minDistance) / (float)NbSteps;
+                stepSize = (maxDistance - minDistance) / (float)SampleCount;
 
                 // Starting position
                 float4 positionWS = Eye + (minDistance + RayStepJitter(streams.TexCoord, stepSize)) * directionWS;
 
-                for(int i = 0; i < NbSteps; i++) 
+                for(int i = 0; i < SampleCount; i++) 
                 {
                     lightResult += this.ComputeColorIn(positionWS, stepSize, i);
                     positionWS.xyz += stepSize * directionWS;
@@ -92,17 +93,10 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps>
             }
 
             streams.ColorTarget = ComputeFinalColor(lightResult);
-
-            // In debug mode, output just the volume depth of this pixel
-            if (Debug)
-                streams.ColorTarget = maxDistance - minDistance;
         }
         else // Outside the bounding box
         {
-            if (Debug)
-                streams.ColorTarget = 0;
-            else
-                streams.ColorTarget = this.ComputeColorOut();
+            streams.ColorTarget = this.ComputeColorOut();
         }
     }
 };

@@ -9,6 +9,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         using params LightShaftsEffectKeys;
         mixin compose lightGroup = (LightShaftsEffectKeys.LightGroup);
 
-        mixin LightShaftsShader;
+        mixin LightShaftsShader<LightShaftsEffectKeys.SampleCount, LightShaftsEffectKeys.Animated>;
     };
 }

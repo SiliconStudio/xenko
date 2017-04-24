@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     context.Mixin(__subMixin, __mixinToCompose__);
                     context.PopComposition();
                 }
-                context.Mixin(mixin, "LightShaftsShader");
+                context.Mixin(mixin, "LightShaftsShader", context.GetParam(LightShaftsEffectKeys.SampleCount), context.GetParam(LightShaftsEffectKeys.Animated));
             }
 
             [ModuleInitializer]

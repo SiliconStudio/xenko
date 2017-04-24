@@ -5,10 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Lights;
@@ -21,6 +23,23 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [DataContract("LightShafts")]
     public class LightShafts : ImageEffect
     {
+        /// <summary>
+        /// The number of times the resolution is lowered for the light buffer
+        /// </summary>
+        [DataMemberRange(1,32)]
+        public int LightBufferDownsampleLevel { get; set; } = 2;
+
+        /// <summary>
+        /// The amount of time the resolution is lowered for the bounding volume buffer
+        /// </summary>
+        [DataMemberRange(1, 32)]
+        public int BoundingVolumeBufferDownsampleLevel { get; set; } = 8;
+
+        /// <summary>
+        /// Animate jitter
+        /// </summary>
+        public bool Animated { get; set; } = false;
+
         // TODO: Permutations
         private ImageEffectShader lightShaftsEffectShader;
 
@@ -37,7 +56,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         private LightShaftBoundingVolumeData[] singleBoundingVolume = new LightShaftBoundingVolumeData[1];
 
-
+        private float time = 0.0f;
+        
         protected override void InitializeCore()
         {
             base.InitializeCore();
@@ -102,17 +122,20 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (lightShaftProcessor == null || lightShaftBoundingVolumeProcessor == null)
                 return; // Not collected
 
+            if(LightBufferDownsampleLevel < 1)
+                throw new ArgumentOutOfRangeException(nameof(LightBufferDownsampleLevel));
+            if (BoundingVolumeBufferDownsampleLevel < 1)
+                throw new ArgumentOutOfRangeException(nameof(BoundingVolumeBufferDownsampleLevel));
+
             var lightShaftDatas = lightShaftProcessor.LightShafts;
 
             var depthInput = GetSafeInput(0);
 
             // Create a min/max buffer generated from scene bounding volumes
-            int boundingBoxBufferDownsampleLevel = 8;
-            var boundingBoxBuffer = NewScopedRenderTarget2D(depthInput.Width / boundingBoxBufferDownsampleLevel, depthInput.Height / boundingBoxBufferDownsampleLevel, PixelFormat.R32G32_Float);
+            var boundingBoxBuffer = NewScopedRenderTarget2D(depthInput.Width / BoundingVolumeBufferDownsampleLevel, depthInput.Height / BoundingVolumeBufferDownsampleLevel, PixelFormat.R32G32_Float);
             
             // Create a single channel light buffer
-            int lightBufferDownsampleLevel = 2;
-            var lightBuffer = NewScopedRenderTarget2D(depthInput.Width/lightBufferDownsampleLevel, depthInput.Height/lightBufferDownsampleLevel, PixelFormat.R16_Float);
+            var lightBuffer = NewScopedRenderTarget2D(depthInput.Width/ LightBufferDownsampleLevel, depthInput.Height/ LightBufferDownsampleLevel, PixelFormat.R16_Float);
             lightShaftsEffectShader.SetOutput(lightBuffer);
             var lightShaftsParameters = lightShaftsEffectShader.Parameters;
             lightShaftsParameters.Set(DepthBaseKeys.DepthStencil, depthInput); // Bind scene depth
@@ -140,6 +163,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Setup parameters for Z reconstruction
             lightShaftsParameters.Set(CameraKeys.ZProjection, CameraKeys.ZProjectionACalculate(renderView.NearClipPlane, renderView.FarClipPlane));
+
             lightShaftsParameters.Set(TransformationKeys.ProjScreenRay, new Vector2(-1.0f / renderView.Projection.M11, 1.0f / renderView.Projection.M22));
             lightShaftsParameters.Set(TransformationKeys.Projection, renderView.Projection);
             Matrix projectionInverse;
@@ -196,6 +220,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
                         lightShaftsEffectShader.BlendState = BlendStates.Additive;
                     }
 
+                    if (lightShaft.SampleCount < 1)
+                        throw new ArgumentOutOfRangeException(nameof(lightShaft.SampleCount));
+
                     // Set min/max input
                     lightShaftsEffectShader.SetInput(0, boundingBoxBuffer);
 
@@ -207,11 +234,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 if (!lightBufferUsed)
                     continue;
 
-                // Blur the result
-                blur.Radius = lightBufferDownsampleLevel;
-                blur.SetInput(lightBuffer);
-                blur.SetOutput(lightBuffer);
-                blur.Draw(context);
+                if (LightBufferDownsampleLevel != 1)
+                {
+                    // Blur the result
+                    blur.Radius = LightBufferDownsampleLevel;
+                    blur.SetInput(lightBuffer);
+                    blur.SetOutput(lightBuffer);
+                    blur.Draw(context);
+                }
 
                 // Additive blend pass
                 Color3 lightColor = lightShaft.Light.ComputeColor(context.GraphicsDevice.ColorSpace, lightShaft.LightComponent.Intensity);
@@ -220,6 +250,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 applyLightEffectShader.SetOutput(GetSafeOutput(0));
                 applyLightEffectShader.Draw(context);
             }
+
+            if(Animated)
+                time += (float)Context.Time.Elapsed.TotalSeconds;
         }
 
         public void Draw(RenderDrawContext drawContext, Texture inputDepthStencil, Texture output)
@@ -229,7 +262,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Draw(drawContext);
         }
 
-        private void SetupLight(RenderDrawContext context, LightShaftData lightShaft, LightShadowMapTexture shadowMapTexture, ParameterCollection lightParameterCollection)
+        private void SetupLight(RenderDrawContext context, LightShaftProcessor.Data lightShaft, LightShadowMapTexture shadowMapTexture, ParameterCollection lightParameterCollection)
         {
             var shadowGroup = shadowMapTexture.Renderer.CreateShaderGroupData(shadowMapTexture.ShadowType);
             BoundingBoxExt box = new BoundingBoxExt(new Vector3(-float.MaxValue), new Vector3(float.MaxValue)); // TODO
@@ -261,6 +294,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             directLightGroup.UpdateLayout("lightGroup");
             
             lightParameterCollection.Set(LightShaftsEffectKeys.LightGroup, directLightGroup.ShaderSource);
+            lightParameterCollection.Set(LightShaftsEffectKeys.SampleCount, lightShaft.SampleCount);
+            lightParameterCollection.Set(LightShaftsEffectKeys.Animated, Animated);
 
             // Update the effect here so the layout is correct
             lightShaftsEffectShader.EffectInstance.UpdateEffect(GraphicsDevice);
@@ -269,11 +304,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
             directLightGroup.ApplyDrawParameters(context, 0, lightParameterCollection, ref box);
         }
 
-        private void DrawLightShaft(RenderDrawContext context, LightShaftData lightShaft)
+        private void DrawLightShaft(RenderDrawContext context, LightShaftProcessor.Data lightShaft)
         {
             lightShaftsEffectShader.Parameters.Set(LightShaftsShaderKeys.ExtinctionFactor, lightShaft.ExtinctionFactor);
             lightShaftsEffectShader.Parameters.Set(LightShaftsShaderKeys.ExtinctionRatio, lightShaft.ExtinctionRatio);
             lightShaftsEffectShader.Parameters.Set(LightShaftsShaderKeys.DensityFactor, lightShaft.DensityFactor);
+            lightShaftsEffectShader.Parameters.Set(GlobalKeys.Time, time);
             
             lightShaftsEffectShader.Draw(context, $"Light Shafts [{lightShaft.LightComponent.Entity.Name}]");
         }
