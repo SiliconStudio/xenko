@@ -22,71 +22,80 @@ namespace SiliconStudio.Xenko.PackageInstall
 
         static int Main(string[] args)
         {
-            if (args.Length == 0)
+            try
             {
-                throw new Exception("Expecting a parameter such as /install, /repair or /uninstall");
-            }
-
-            bool isRepair = false;
-            switch (args[0])
-            {
-                case "/install":
+                if (args.Length == 0)
                 {
-                    // In repair mode, we check if data.xz exists (means install failed)
-                    if (!isRepair || File.Exists(@"..\data.xz"))
+                    throw new Exception("Expecting a parameter such as /install, /repair or /uninstall");
+                }
+
+                bool isRepair = false;
+                switch (args[0])
+                {
+                    case "/install":
                     {
-                        var indexedArchive = new IndexedArchive();
-
-                        // Note: there is 2 phases while decompressing: Decompress (LZMA) and Expanding (file copying using index.txt)
-                        var progressReport = new XenkoLauncherProgressReport(2);
-
-                        // Extract files from LZMA archive
-                        indexedArchive.Extract(@"..\data.xz", @"..", progressReport);
-
-                        File.Delete(@"..\data.xz");
-                    }
-
-                    // Run prerequisites installer (if it exists)
-                    var prerequisitesInstallerPath = @"..\Bin\Prerequisites\install-prerequisites.exe";
-                    if (File.Exists(prerequisitesInstallerPath))
-                    {
-                        var prerequisitesInstalled = false;
-                        while (!prerequisitesInstalled)
+                        // In repair mode, we check if data.xz exists (means install failed)
+                        if (!isRepair || File.Exists(@"..\data.xz"))
                         {
-                            try
+                            var indexedArchive = new IndexedArchive();
+
+                            // Note: there is 2 phases while decompressing: Decompress (LZMA) and Expanding (file copying using index.txt)
+                            var progressReport = new XenkoLauncherProgressReport(2);
+
+                            // Extract files from LZMA archive
+                            indexedArchive.Extract(@"..\data.xz", @"..", progressReport);
+
+                            File.Delete(@"..\data.xz");
+                        }
+
+                        // Run prerequisites installer (if it exists)
+                        var prerequisitesInstallerPath = @"..\Bin\Prerequisites\install-prerequisites.exe";
+                        if (File.Exists(prerequisitesInstallerPath))
+                        {
+                            var prerequisitesInstalled = false;
+                            while (!prerequisitesInstalled)
                             {
-                                var prerequisitesInstallerProcess = Process.Start(prerequisitesInstallerPath);
-                                if (prerequisitesInstallerProcess == null)
-                                    throw new InvalidOperationException();
-                                prerequisitesInstallerProcess.WaitForExit();
-                                if (prerequisitesInstallerProcess.ExitCode != 0)
-                                   throw new InvalidOperationException();
-                                prerequisitesInstalled = true;
-                            }
-                            catch
-                            {
-                                // We'll enter this if UAC has been declined, but also if it timed out (which is a frequent case
-                                // if you don't stay in front of your computer during the installation.
-                                var result = MessageBox.Show("The installation of prerequisites has been canceled by user or failed to run. Do you want to run it again?", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                                if (result != DialogResult.Yes)
-                                    break;
+                                try
+                                {
+                                    var prerequisitesInstallerProcess = Process.Start(prerequisitesInstallerPath);
+                                    if (prerequisitesInstallerProcess == null)
+                                        throw new InvalidOperationException();
+                                    prerequisitesInstallerProcess.WaitForExit();
+                                    if (prerequisitesInstallerProcess.ExitCode != 0)
+                                        throw new InvalidOperationException();
+                                    prerequisitesInstalled = true;
+                                }
+                                catch
+                                {
+                                    // We'll enter this if UAC has been declined, but also if it timed out (which is a frequent case
+                                    // if you don't stay in front of your computer during the installation.
+                                    var result = MessageBox.Show("The installation of prerequisites has been canceled by user or failed to run. Do you want to run it again?", "Error",
+                                        MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                                    if (result != DialogResult.Yes)
+                                        break;
+                                }
                             }
                         }
+
+                        // Make sure we have the proper VS2017/BuildTools prerequisites
+                        CheckVisualStudioAndBuildTools();
+
+                        break;
                     }
-
-                    // Make sure we have the proper VS2017/BuildTools prerequisites
-                    CheckVisualStudioAndBuildTools();
-
-                    break;
+                    case "/repair":
+                    {
+                        isRepair = true;
+                        goto case "/install";
+                    }
                 }
-                case "/repair":
-                {
-                    isRepair = true;
-                    goto case "/install";
-                }
+
+                return 0;
             }
-
-            return 0;
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error: {e}");
+                return 1;
+            }
         }
 
         private static void CheckVisualStudioAndBuildTools()
