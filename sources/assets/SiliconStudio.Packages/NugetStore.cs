@@ -391,6 +391,25 @@ namespace SiliconStudio.Packages
         }
 
         /// <summary>
+        /// Locate the main executable from a given package installation path. It throws exceptions if not found.
+        /// </summary>
+        /// <param name="packagePath">The package installation path.</param>
+        /// <returns>The main executable.</returns>
+        public string LocateMainExecutable(string packagePath)
+        {
+            var mainExecutableList = GetMainExecutables();
+            if (string.IsNullOrWhiteSpace(mainExecutableList))
+            {
+                throw new InvalidOperationException($"Invalid configuration. Expecting [{NugetStore.MainExecutablesKey}] in config");
+            }
+            var fullExePath = mainExecutableList.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => Path.Combine(packagePath, x)).FirstOrDefault(File.Exists);
+            if (fullExePath == null)
+                throw new InvalidOperationException("Unable to locate the executable for the selected version");
+
+            return fullExePath;
+        }
+
+        /// <summary>
         /// Name of prerequisites executable of current store.
         /// </summary>
         /// <returns>Name of the executable.</returns>
