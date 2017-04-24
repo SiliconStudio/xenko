@@ -1,4 +1,4 @@
-# Getting Started
+# Building instructions
 
 ## Prerequisites
 
@@ -8,16 +8,16 @@
 4. [FBX SDK 2016.1.1 VS2015](http://usa.autodesk.com/adsk/servlet/pc/item?id=24735038&siteID=123112)
 5. [.NET Framework 4.5.2 Developer Pack](https://www.microsoft.com/en-us/download/details.aspx?id=42637)
 
-## Build Instructions
+## Building
 
-1. Clone Xenko with LFS: `git lfs clone git@github.com:SiliconStudio/xenko.git`
-2. Set *SiliconStudioXenkoDir* environment variable to point to your `<XenkoDir>`
-3. Open `<XenkoDir>\build\Xenko.sln` with Visual Studio 2013, and build.
+1. Clone Xenko with LFS: `git lfs clone git@git.xenko.com:xenko/Xenko-Runtime.git`
+2. Set the *SiliconStudioXenkoDir* environment variable to point to your `<XenkoDir>`
+3. Open `<XenkoDir>\build\Xenko.sln` with Visual Studio 2017 and build.
 4. Open `<XenkoDir>\samples\XenkoSamples.sln` and play with the samples.
-5. Optionally, open and build `Xenko.Android.sln`, `Xenko.iOS.sln`, etc...
+5. Optionally, open and build `Xenko.Android.sln`, `Xenko.iOS.sln`, etc.
 
 ## Using the editor
 
-Since the Editor depends on Telerik and is not currently included in the source release, you can still use the binaries from the Binary Release version.
+The runtime repository does not contain the editor source code. You can still use the editor from the Binary Release to work on you modified runtime.
 
-You can still use the editor from the Binary Release.
+If you are subscribed to a Xenko version that includes editor sources, use `git lfs clone git@git.xenko.com:xenko/Xenko-Full.git` instead.

@@ -34,17 +34,12 @@ You can ask for help or report issues on the following sites:
 * [Discuss topics on our forums](http://forums.xenko.com/)
 * [Report engine issues](https://github.com/SiliconStudio/xenko/issues)
 
-## Clone the repository
+## Building from source
 
-TODO explanation on how to clone this repo (git lfs)
-
-* [Git LFS](doc/GitLFS.md): read about our recent switch to LFS (if you need to upgrade a non-LFS Xenko repository or an existing non-LFS Xenko branch)
-
-## Build the repository
-
-TODO explanation on how to build xenko and started modified version of the engine.
-
-* [Build Instructions](doc/GettingStarted.md)
+To modify or contribute to Xenko:
+* Clone the sources: `git lfs clone git@git.xenko.com:xenko/Xenko-Runtime.git`
+* [Using Git LFS](doc/GitLFS.md): Read about our recent switch to LFS (if you need to upgrade a non-LFS Xenko repository or an existing non-LFS Xenko branch)
+* [Build instructions](doc/GettingStarted.md)
 
 ## Structure of the repository
 
