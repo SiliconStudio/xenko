@@ -84,6 +84,10 @@ namespace SiliconStudio.Core.VisualStudio
                         if (inst2 == null)
                             continue;
 
+                        // Only considers setups that are installed
+                        if ((inst2.GetState() & InstanceState.Local) == 0)
+                            continue;
+
                         var idePath = Path.Combine(inst2.GetInstallationPath(), "Common7\\IDE");
                         var path = Path.Combine(idePath, "devenv.exe");
                         if (File.Exists(path))
@@ -105,7 +109,7 @@ namespace SiliconStudio.Core.VisualStudio
                     }
                     catch (Exception)
                     {
-                        // Something might have happened inside Visual Studio Setup code (had FileNotFoundException in GetInstallationPath() for example)
+                        // Something might have happened inside Visual Studio Setup code (had FileNotFoundException in GetInstallationPath() for example -- might have been because InstanceState.Local was not checked)
                         // Let's ignore this instance
                     }
                 } 
