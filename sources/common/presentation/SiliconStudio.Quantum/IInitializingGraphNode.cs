@@ -1,4 +1,6 @@
-﻿namespace SiliconStudio.Quantum
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+namespace SiliconStudio.Quantum
 {
     /// <summary>
     /// An interface representing an <see cref="IGraphNode"/> during its initialization phase.
