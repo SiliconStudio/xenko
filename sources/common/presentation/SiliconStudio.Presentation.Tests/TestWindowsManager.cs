@@ -6,6 +6,7 @@ using System.Windows.Threading;
 using NUnit.Framework;
 using NUnitAsync;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Tests.WPF;
 using SiliconStudio.Presentation.Windows;
 
@@ -89,53 +90,55 @@ namespace SiliconStudio.Presentation.Tests
                     TestWindow window;
                     var windowsEvent = new TaskCompletionSource<int>();
                     Task windowsManagerTask;
+                    Task dispatcherTask;
                     switch (step)
                     {
                         case Step.ShowMain:
                             Assert.IsNull(mainWindow);
                             windowsManagerTask = WindowManagerHelper.NextWindowShown;
-                            window = dispatcher.Invoke(() => new TestWindow());
+                            window = dispatcher.Invoke(() => new TestWindow("MainWindow"));
                             window.Shown += (sender, e) => { mainWindow = window; windowsEvent.SetResult(0); };
-                            dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
+                            dispatcherTask = dispatcher.InvokeAsync(() => WindowManager.ShowMainWindow(window)).Task;
                             break;
                         case Step.ShowModal:
                             Assert.IsNull(modalWindow);
                             windowsManagerTask = WindowManagerHelper.NextWindowShown;
-                            window = dispatcher.Invoke(() => new TestWindow());
+                            window = dispatcher.Invoke(() => new TestWindow("ModalWindow"));
                             window.Shown += (sender, e) => { modalWindow = window; windowsEvent.SetResult(0); };
-                            dispatcher.InvokeAsync(() => window.ShowDialog());
+                            dispatcherTask = dispatcher.InvokeAsync(() => window.ShowDialog()).Task;
                             break;
                         case Step.ShowBlocking:
                             Assert.IsNull(blockingWindow);
                             windowsManagerTask = WindowManagerHelper.NextWindowShown;
-                            window = dispatcher.Invoke(() => new TestWindow());
+                            window = dispatcher.Invoke(() => new TestWindow("BlockingWindow"));
                             window.Shown += (sender, e) => { blockingWindow = window; windowsEvent.SetResult(0); };
-                            dispatcher.Invoke(() => WindowManager.ShowBlockingWindow(window));
+                            dispatcherTask = dispatcher.InvokeAsync(() => WindowManager.ShowBlockingWindow(window)).Task;
                             break;
                         case Step.HideMain:
                             Assert.IsNotNull(mainWindow);
                             windowsManagerTask = WindowManagerHelper.NextWindowHidden;
                             window = mainWindow;
                             window.Closed += (sender, e) => { mainWindow = null; blockingWindow = null; windowsEvent.SetResult(0); };
-                            dispatcher.Invoke(() => window.Close());
+                            dispatcherTask = dispatcher.InvokeAsync(() => window.Close()).Task;
                             break;
                         case Step.HideModal:
                             Assert.IsNotNull(modalWindow);
                             windowsManagerTask = WindowManagerHelper.NextWindowHidden;
                             window = modalWindow;
                             window.Closed += (sender, e) => { modalWindow = null; windowsEvent.SetResult(0); };
-                            dispatcher.Invoke(() => window.Close());
+                            dispatcherTask = dispatcher.InvokeAsync(() => window.Close()).Task;
                             break;
                         case Step.HideBlocking:
                             Assert.IsNotNull(blockingWindow);
                             windowsManagerTask = WindowManagerHelper.NextWindowHidden;
                             window = blockingWindow;
                             window.Closed += (sender, e) => { blockingWindow = null; windowsEvent.SetResult(0); };
-                            dispatcher.Invoke(() => window.Close());
+                            dispatcherTask = dispatcher.InvokeAsync(() => window.Close()).Task;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
+                    dispatcherTask.Forget();
                     await windowsEvent.Task;
                     await windowsManagerTask;
                     // Wait one more "frame" to be sure everything has been run.

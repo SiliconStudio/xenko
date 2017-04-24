@@ -7,6 +7,12 @@ namespace SiliconStudio.Presentation.Tests.WPF
     /// </summary>
     public partial class TestWindow
     {
+        public TestWindow(string title)
+            : this()
+        {
+            Title = title;
+        }
+
         public TestWindow()
         {
             InitializeComponent();

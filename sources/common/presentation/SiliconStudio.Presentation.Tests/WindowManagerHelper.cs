@@ -44,8 +44,6 @@ namespace SiliconStudio.Presentation.Tests
 
         public static void ShutdownUIThread(Dispatcher dispatcher)
         {
-            // Wait a bit to make sure everything window-related has been executed before shutting down
-            Thread.Sleep(100);
             Thread thread = null;
             dispatcher.Invoke(() => thread = Thread.CurrentThread);
             dispatcher.InvokeShutdown();
@@ -80,30 +78,29 @@ namespace SiliconStudio.Presentation.Tests
             return manager;
         }
 
-
         private class WindowManagerWrapper : IDisposable
         {
+            private static Dispatcher uiDispatcher;
             private static NativeHelper.WinEventDelegate winEventProc;
             private static IntPtr hook;
-            private static Dispatcher localDispatcher;
             private readonly WindowManager manager;
 
             public WindowManagerWrapper(Dispatcher dispatcher)
             {
-                localDispatcher = Dispatcher.CurrentDispatcher;
-                manager = localDispatcher.Invoke(() =>
+                uiDispatcher = dispatcher;
+                manager = uiDispatcher.Invoke(() =>
                 {
                     winEventProc = WinEventProc;
                     var processId = (uint)Process.GetCurrentProcess().Id;
                     hook = NativeHelper.SetWinEventHook(NativeHelper.EVENT_OBJECT_SHOW, NativeHelper.EVENT_OBJECT_HIDE, IntPtr.Zero, winEventProc, processId, 0, NativeHelper.WINEVENT_OUTOFCONTEXT);
                     if (hook == IntPtr.Zero) throw new InvalidOperationException("Unable to initialize the window manager.");
-                    return new WindowManager(dispatcher);
+                    return new WindowManager(uiDispatcher);
                 });
             }
 
             public void Dispose()
             {
-                localDispatcher.Invoke(() =>
+                uiDispatcher.Invoke(() =>
                 {
                     manager.Dispose();
                     if (!NativeHelper.UnhookWinEvent(hook)) throw new InvalidOperationException("An error occurred while disposing the window manager.");
@@ -124,17 +121,13 @@ namespace SiliconStudio.Presentation.Tests
                 // idObject == 0 means it is the window itself, not a child object
                 if (eventType == NativeHelper.EVENT_OBJECT_SHOW && idObject == 0)
                 {
-                    if (localDispatcher.CheckAccess())
-                        WindowShown(hwnd);
-                    else
-                        localDispatcher.InvokeAsync(() => WindowShown(hwnd));
+                    Assert.True(uiDispatcher.CheckAccess());
+                    WindowShown(hwnd);
                 }
                 if (eventType == NativeHelper.EVENT_OBJECT_HIDE && idObject == 0)
                 {
-                    if (localDispatcher.CheckAccess())
-                        WindowHidden();
-                    else
-                        localDispatcher.InvokeAsync(WindowHidden);
+                    Assert.True(uiDispatcher.CheckAccess());
+                    WindowHidden();
                 }
             }
 
@@ -143,14 +136,16 @@ namespace SiliconStudio.Presentation.Tests
                 if (!HwndHelper.HasStyleFlag(hwnd, NativeHelper.WS_VISIBLE))
                     return;
 
-                nextWindowShown.SetResult(0);
+                var oldTcs = nextWindowShown;
                 nextWindowShown = new TaskCompletionSource<int>();
+                oldTcs.SetResult(0);
             }
 
             private static void WindowHidden()
             {
-                nextWindowHidden.SetResult(0);
+                var oldTcs = nextWindowHidden;
                 nextWindowHidden = new TaskCompletionSource<int>();
+                oldTcs.SetResult(0);
             }
         }
     }
