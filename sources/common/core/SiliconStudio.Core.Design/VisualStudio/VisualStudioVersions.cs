@@ -1,6 +1,7 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -77,27 +78,35 @@ namespace SiliconStudio.Core.VisualStudio
                     if (pceltFetched <= 0)
                         break;
 
-                    var inst2 = inst[0] as ISetupInstance2;
-                    if (inst2 == null)
-                        continue;
-
-                    var idePath = Path.Combine(inst2.ResolvePath(), "Common7\\IDE");
-                    var path = Path.Combine(idePath, "devenv.exe");
-                    if (File.Exists(path))
+                    try
                     {
-                        var vsixInstallerPath = Path.Combine(idePath, "VSIXInstaller.exe");
-                        if (!File.Exists(vsixInstallerPath))
-                            vsixInstallerPath = null;
+                        var inst2 = inst[0] as ISetupInstance2;
+                        if (inst2 == null)
+                            continue;
 
-                        var ideInfo = new IDEInfo { DisplayName = inst2.GetDisplayName(), InstallationPath = path, VsixInstallerVersion = VSIXInstallerVersion.VS2017AndFutureVersions, VsixInstallerPath = vsixInstallerPath };
-
-                        // Fill packages
-                        foreach (var package in inst2.GetPackages())
+                        var idePath = Path.Combine(inst2.GetInstallationPath(), "Common7\\IDE");
+                        var path = Path.Combine(idePath, "devenv.exe");
+                        if (File.Exists(path))
                         {
-                            ideInfo.PackageVersions[package.GetId()] = package.GetVersion();
-                        }
+                            var vsixInstallerPath = Path.Combine(idePath, "VSIXInstaller.exe");
+                            if (!File.Exists(vsixInstallerPath))
+                                vsixInstallerPath = null;
 
-                        ideInfos.Add(ideInfo);
+                            var ideInfo = new IDEInfo { DisplayName = inst2.GetDisplayName(), InstallationPath = path, VsixInstallerVersion = VSIXInstallerVersion.VS2017AndFutureVersions, VsixInstallerPath = vsixInstallerPath };
+
+                            // Fill packages
+                            foreach (var package in inst2.GetPackages())
+                            {
+                                ideInfo.PackageVersions[package.GetId()] = package.GetVersion();
+                            }
+
+                            ideInfos.Add(ideInfo);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // Something might have happened inside Visual Studio Setup code (had FileNotFoundException in GetInstallationPath() for example)
+                        // Let's ignore this instance
                     }
                 } 
             }
