@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.PackageInstall
         private static readonly string[] NecessaryVS2017Workloads = new[] { "Microsoft.VisualStudio.Workload.ManagedDesktop" };
         private static readonly string[] NecessaryBuildTools2017Workloads = new[] { "Microsoft.VisualStudio.Workload.MSBuildTools", "Microsoft.Net.Component.4.6.1.TargetingPack" };
         private static readonly Guid NET461TargetingPackProductCode = new Guid("8BC3EEC9-090F-4C53-A8DA-1BEC913040F9");
+        private const bool AllowVisualStudioOnly = false; // Somehow this doesn't work well yet, so disabled for now
 
         static int Main(string[] args)
         {
@@ -101,12 +102,12 @@ namespace SiliconStudio.Xenko.PackageInstall
         private static void CheckVisualStudioAndBuildTools()
         {
             // Check if there is any VS2017 installed with necessary workloads
-            if (!VisualStudioVersions.AvailableVisualStudioVersions.Any(x => NecessaryVS2017Workloads.All(workload => x.PackageVersions.ContainsKey(workload))))
+            if (!AllowVisualStudioOnly || !VisualStudioVersions.AvailableVisualStudioVersions.Any(x => NecessaryVS2017Workloads.All(workload => x.PackageVersions.ContainsKey(workload))))
             {
                 // Check if there is actually a VS2017+ installed
                 var existingVisualStudio2017Install = VisualStudioVersions.AvailableVisualStudioVersions.FirstOrDefault(x => x.PackageVersions.ContainsKey("Microsoft.VisualStudio.Component.CoreEditor"));
                 var vsInstallerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Microsoft Visual Studio\Installer\vs_installer.exe");
-                if (existingVisualStudio2017Install != null && File.Exists(vsInstallerPath))
+                if (AllowVisualStudioOnly && existingVisualStudio2017Install != null && File.Exists(vsInstallerPath))
                 {
                     var vsInstaller = Process.Start(vsInstallerPath, $"modify --passive --norestart --installPath \"{existingVisualStudio2017Install.InstallationPath}\" {string.Join(" ", NecessaryVS2017Workloads.Select(x => $"--add {x}"))}");
                     if (vsInstaller == null)
