@@ -50,7 +50,9 @@ namespace SiliconStudio.Xenko.UI.Controls
                 Debug.Assert(game.Context is GameContextUWP, "There is only one possible descendant of GameContext for Windows Store.");
 
                 gameContext = (GameContextUWP)game.Context;
-                var swapChainPanel = gameContext.Control;
+
+                // TODO Enable EditText
+//                var swapChainPanel = gameContext.Control;
 
                 // Detach previous EditText (if any)
                 if (activeEditText != null)
@@ -58,15 +60,15 @@ namespace SiliconStudio.Xenko.UI.Controls
                 activeEditText = this;
 
                 // Make sure it doesn't have a parent (another text box being edited)
-                editText = gameContext.EditTextBox;
-                editText.Text = text;
-                swapChainPanel.Children.Add(new Windows.UI.Xaml.Controls.StackPanel { Children = { editText } });
+//                editText = gameContext.EditTextBox;
+//                editText.Text = text;
+//                swapChainPanel.Children.Add(new Windows.UI.Xaml.Controls.StackPanel { Children = { editText } });
 
-                editText.TextChanged += EditText_TextChanged;
-                editText.KeyDown += EditText_KeyDown;
+//                editText.TextChanged += EditText_TextChanged;
+//                editText.KeyDown += EditText_KeyDown;
 
                 // Focus
-                editText.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+//                editText.Focus(Windows.UI.Xaml.FocusState.Programmatic);
             }
         }
 
@@ -111,7 +113,8 @@ namespace SiliconStudio.Xenko.UI.Controls
                 editText.KeyDown -= EditText_KeyDown;
                 var stackPanel = (Windows.UI.Xaml.Controls.Panel)editText.Parent;
                 stackPanel.Children.Remove(editText);
-                gameContext.Control.Children.Remove(stackPanel);
+
+//                gameContext.Control.Children.Remove(stackPanel);
 
                 editText = null;
                 activeEditText = null;

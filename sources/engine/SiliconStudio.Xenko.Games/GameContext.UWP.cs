@@ -22,21 +22,22 @@
 // THE SOFTWARE.
 #if SILICONSTUDIO_PLATFORM_UWP
 using System;
-using Windows.UI.Xaml.Controls;
+using Windows.UI.Core;
+//using Windows.UI.Xaml.Controls;
 
 namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="Control"/>.
     /// </summary>
-    public partial class GameContextUWP : GameContextWindows<SwapChainPanel>
+    public partial class GameContextUWP : GameContextWindows<CoreWindow>
     {
         // Used internally by systems such as UI to capture input in a TextBox
-        internal TextBox EditTextBox = new TextBox();
+//        internal TextBox EditTextBox = new TextBox();
 
         /// <inheritDoc/>
-        public GameContextUWP(SwapChainPanel control, int requestedWidth = 0, int requestedHeight = 0)
-            : base (control ?? new SwapChainPanel(), requestedWidth, requestedHeight)
+        public GameContextUWP(CoreWindow control, int requestedWidth = 0, int requestedHeight = 0)
+            : base (control ?? CoreWindow.GetForCurrentThread(), requestedWidth, requestedHeight)
         {
             ContextType = AppContextType.UWP;
         }
@@ -45,7 +46,7 @@ namespace SiliconStudio.Xenko.Games
     [Obsolete("Use GameContextUWP instead")]
     public class GameContextWindowsRuntime : GameContextUWP
     {
-        public GameContextWindowsRuntime(SwapChainPanel control, int requestedWidth = 0, int requestedHeight = 0)
+        public GameContextWindowsRuntime(CoreWindow control, int requestedWidth = 0, int requestedHeight = 0)
             : base(control, requestedWidth, requestedHeight)
         {
         }
