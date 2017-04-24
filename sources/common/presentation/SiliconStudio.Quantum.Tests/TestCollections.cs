@@ -1,4 +1,6 @@
-﻿using System.Collections;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Collections;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under Apache 2.0 License. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ZipFile.cs" company="Matthew Leibowitz">
@@ -113,13 +113,13 @@ namespace System.IO.Compression.Zip
         /// <summary>
         /// DOS Date and time are packed values with the following format:
         ///   MS-DOS date bits description:
-        ///     0-4 Day of the month (1ÅE1) 
+        ///     0-4 Day of the month (1ÔøΩE1) 
         ///     5-8 Month (1 = January, 2 = February, and so on) 
         ///     9-15 Year offset from 1980 (add 1980 to get actual year) 
         ///   MS-DOS time bits description:
         ///     0-4 Second divided by 2 
-        ///     5-10 Minute (0ÅE9) 
-        ///     11-15 Hour (0ÅE3 on a 24-hour clock) 
+        ///     5-10 Minute (0ÔøΩE9) 
+        ///     11-15 Hour (0ÔøΩE3 on a 24-hour clock) 
         /// </summary>
         /// <param name="dateTime">
         /// The date Time.
@@ -482,13 +482,13 @@ namespace System.IO.Compression.Zip
         /// <summary>
         /// DOS Date and time are packed values with the following format:
         ///   MS-DOS date bits description:
-        ///     0-4 Day of the month (1ÅE1) 
+        ///     0-4 Day of the month (1ÔøΩE1) 
         ///     5-8 Month (1 = January, 2 = February, and so on) 
         ///     9-15 Year offset from 1980 (add 1980 to get actual year) 
         ///   MS-DOS time bits description:
         ///     0-4 Second divided by 2 
-        ///     5-10 Minute (0ÅE9) 
-        ///     11-15 Hour (0ÅE3 on a 24-hour clock) 
+        ///     5-10 Minute (0ÔøΩE9) 
+        ///     11-15 Hour (0ÔøΩE3 on a 24-hour clock) 
         /// </summary>
         /// <param name="dosDateTime">
         /// The dos Date Time.

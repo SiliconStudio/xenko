@@ -28,6 +28,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>  
     <Compile Include="DialogService.cs" />
     <Compile Include="FileOpenModalDialog.cs" />
     <Compile Include="FileSaveModalDialog.cs" />

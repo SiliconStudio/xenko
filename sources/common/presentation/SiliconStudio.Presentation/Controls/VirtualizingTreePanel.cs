@@ -1,4 +1,6 @@
-﻿#define DEBUGVIRTUALIZATIONno
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+#define DEBUGVIRTUALIZATIONno
 
 using System;
 using System.Collections.Generic;
