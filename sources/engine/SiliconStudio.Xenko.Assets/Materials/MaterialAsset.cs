@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
         /// <summary>
         /// The default file extension used by the <see cref="MaterialAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkmat;.pdxmat";
+        public const string FileExtension = ".xkmat";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialAsset"/> class.

@@ -8,7 +8,5 @@ namespace SiliconStudio.Assets
         /// The file extension used for <see cref="Package"/>.
         /// </summary>
         public const string PackageFileExtension = ".xkpkg";
-
-        public const string PackageFileExtensions = PackageFileExtension + ";.pdxpkg";
     }
 }

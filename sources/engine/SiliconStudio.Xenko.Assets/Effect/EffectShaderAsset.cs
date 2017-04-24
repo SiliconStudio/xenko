@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
         /// <summary>
         /// The default file extension used by the <see cref="EffectShaderAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xksl;.pdxsl";
+        public const string FileExtension = ".xksl";
 
         public static Regex Regex = new Regex(@"(^|\s)(class)($|\s)");
 

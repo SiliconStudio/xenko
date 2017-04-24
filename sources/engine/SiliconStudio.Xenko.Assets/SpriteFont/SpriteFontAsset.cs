@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// <summary>
         /// The default file extension used by the <see cref="SpriteFontAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkfnt;.pdxfnt";
+        public const string FileExtension = ".xkfnt";
 
         [NotNull]
         [DataMember(10)]

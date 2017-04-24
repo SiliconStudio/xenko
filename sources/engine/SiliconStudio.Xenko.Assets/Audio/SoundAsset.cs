@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
         /// <summary>
         /// The default file extension used by the <see cref="SoundAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xksnd;.pdxsnd";
+        public const string FileExtension = ".xksnd";
 
         [DefaultValue(44100)]
         public int SampleRate { get; set; } = 44100;

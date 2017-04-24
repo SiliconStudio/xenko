@@ -1,8 +1,6 @@
-#Third Pary Softwares
+# Third Party Software
 
-Xenko uses several open-source products.
-
-Here is the list of products that we are using and their respective license:
+Xenko uses the following open-source products:
 
 * [SharpDX](http://sharpdx.org/) (MIT License)
 * [SharpVulkan] (https://github.com/jwollen/SharpVulkan) (MIT License)

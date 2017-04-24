@@ -20,7 +20,6 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Assets
 {
@@ -54,13 +53,9 @@ namespace SiliconStudio.Assets
     /// </summary>
     [DataContract("Package")]
     [NonIdentifiableCollectionItems]
-    [AssetDescription(PackageFileExtensions)]
+    [AssetDescription(PackageFileExtension)]
     [DebuggerDisplay("Id: {Id}, Name: {Meta.Name}, Version: {Meta.Version}, Assets [{Assets.Count}]")]
     [AssetFormatVersion("Assets", PackageFileVersion)]
-    [AssetUpgrader("Assets", 0, 1, typeof(RemoveRawImports))]
-    [AssetUpgrader("Assets", 1, 2, typeof(RenameSystemPackage))]
-    [AssetUpgrader("Assets", 2, 3, typeof(RemoveWindowsStoreAndPhone))]
-    [AssetUpgrader("Assets", 3, 4, typeof(RemoveProperties))]
     public sealed partial class Package : IIdentifiable, IFileSynchronizable, IAssetFinder
     {
         private const int PackageFileVersion = 4;
@@ -1417,85 +1412,6 @@ namespace SiliconStudio.Assets
                 foreach (var codePath in codePaths)
                 {
                     list.Add(new PackageLoadingAssetFile(codePath, parentDir, realFullPath));
-                }
-            }
-        }
-
-        private class RemoveRawImports : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                if (asset.Profiles != null)
-                {
-                    var profiles = asset.Profiles;
-
-                    foreach (var profile in profiles)
-                    {
-                        var folders = profile.AssetFolders;
-                        if (folders != null)
-                        {
-                            foreach (var folder in folders)
-                            {
-                                if (folder.RawImports != null)
-                                {
-                                    folder.RemoveChild("RawImports");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private class RenameSystemPackage : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                var dependencies = asset.Meta?.Dependencies;
-
-                if (dependencies != null)
-                {
-                    foreach (var dependency in dependencies)
-                    {
-                        if (dependency.Name == "Paradox")
-                            dependency.Name = "Xenko";
-                    }
-                }
-            }
-        }
-
-        private class RemoveWindowsStoreAndPhone : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                if (asset.Profiles != null)
-                {
-                    var profiles = asset.Profiles;
-
-                    for (int i = 0; i < profiles.Count; ++i)
-                    {
-                        var profile = profiles[i];
-                        if (profile.Platform == "WindowsStore" || profile.Platform == "WindowsPhone")
-                        {
-                            profiles.RemoveAt(i--);
-                            context.Log.Warning($"Platform [{profile.Platform}] is not supported anymore, it will be removed from your package (but kept in solution as a backup). Please use Windows 10 (UWP) instead.");
-                        }
-                        else if (profile.Platform == nameof(PlatformType.Windows10))
-                        {
-                            profile.Platform = nameof(PlatformType.UWP);
-                        }
-                    }
-                }
-            }
-        }
-
-        private class RemoveProperties : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                foreach (var profile in asset["Profiles"])
-                {
-                    profile["Properties"] = DynamicYamlEmpty.Default;
                 }
             }
         }

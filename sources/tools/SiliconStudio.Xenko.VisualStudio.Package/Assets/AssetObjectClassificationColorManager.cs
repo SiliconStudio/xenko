@@ -28,6 +28,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Assets
 
             themeColors.Add(VisualStudioTheme.Blue, lightColors);
             themeColors.Add(VisualStudioTheme.Light, lightColors);
+            themeColors.Add(VisualStudioTheme.UnknownLight, lightColors);
             themeColors.Add(VisualStudioTheme.Unknown, lightColors);
 
             // Dark theme colors
@@ -41,6 +42,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Assets
             };
 
             themeColors.Add(VisualStudioTheme.Dark, darkColors);
+            themeColors.Add(VisualStudioTheme.UnknownDark, darkColors);
         }
     }
 }

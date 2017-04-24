@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// <summary>
         /// The default file extension used by the <see cref="AnimationAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkanim;.pdxanim";
+        public const string FileExtension = ".xkanim";
 
         public static readonly TimeSpan LongestTimeSpan = TimeSpan.FromMinutes(30);  // Avoid TimeSpan.MaxValue because it results in overflow exception when used in some calculations
 

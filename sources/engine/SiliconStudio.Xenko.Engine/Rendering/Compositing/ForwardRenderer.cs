@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -516,9 +516,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                         depthStencil = ViewDepthStencilNoMSAA;
                     }
-                    
-                    // Render light shafts on top of the output if we have them
-                    LightShafts?.Draw(drawContext, OpaqueRenderStage.OutputValidator, renderTargets.Items, depthStencil, ViewOutputTarget);
+
+                    // Shafts if we have them
+                    LightShafts?.Draw(drawContext, depthStencil, renderTargets[colorTargetIndex]);
 
                     // Run post effects
                     // Note: OpaqueRenderStage can't be null otherwise colorTargetIndex would be -1

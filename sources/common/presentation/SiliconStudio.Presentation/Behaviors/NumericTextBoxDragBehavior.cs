@@ -140,6 +140,8 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <inheritdoc />
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
+            // We have to release the mouse first, in case Validate triggers a Detach of this behavior.
+            ReleaseMouseCapture();
             if (dragState == DragState.Starting)
             {
                 AssociatedObject.Select(0, AssociatedObject.Text.Length);
@@ -163,7 +165,6 @@ namespace SiliconStudio.Presentation.Behaviors
             }
 
             e.Handled = true;
-            ReleaseMouseCapture();
             Mouse.OverrideCursor = null;
             dragState = DragState.None;
         }

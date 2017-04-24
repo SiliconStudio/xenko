@@ -38,8 +38,6 @@ namespace SiliconStudio.Xenko.Assets
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
         {
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
-            var defaultGraphicsCompositorCameraSlot = Guid.Empty;
-
             // Graphics Compositor asset
             if (dependency.Version.MinVersion < new PackageVersion("1.10.0-alpha02"))
             {
@@ -72,7 +70,6 @@ namespace SiliconStudio.Xenko.Assets
 
                         // Add graphics compositor asset by creating a derived asset of Compositing/DefaultGraphicsCompositor.xkgfxcomp
                         var graphicsCompositorUrl = graphicsProfile >= GraphicsProfile.Level_10_0 ? DefaultGraphicsCompositorLevel10Url : DefaultGraphicsCompositorLevel9Url;
-                        defaultGraphicsCompositorCameraSlot = graphicsProfile >= GraphicsProfile.Level_10_0 ? DefaultGraphicsCompositorLevel10CameraSlot : DefaultGraphicsCompositorLevel9CameraSlot;
 
                         var defaultGraphicsCompositor = dependencyPackage.Assets.Find(graphicsCompositorUrl);
                         if (defaultGraphicsCompositor == null)
@@ -149,7 +146,10 @@ namespace SiliconStudio.Xenko.Assets
 
             if (dependency.Version.MinVersion < new PackageVersion("2.0.0.2"))
             {
+                RunAssetUpgradersUntilVersion(log, dependentPackage, dependency.Name, assetFiles, new PackageVersion("2.0.0.0"));
+
                 Guid defaultCompositorId = Guid.Empty;
+                var defaultGraphicsCompositorCameraSlot = Guid.Empty;
 
                 // Step one: find the default compositor, that will be the reference one to patch scenes
                 var gameSettings = assetFiles.FirstOrDefault(x => x.AssetLocation == GameSettingsAsset.GameSettingsLocation);
@@ -161,6 +161,28 @@ namespace SiliconStudio.Xenko.Assets
                         string compositorReference = asset.GraphicsCompositor?.ToString();
                         var guidString = compositorReference?.Split(':').FirstOrDefault();
                         Guid.TryParse(guidString, out defaultCompositorId);
+
+                        // Figure out graphics profile; default is Level_10_0 (which is same as GraphicsCompositor default)
+                        var graphicsProfile = GraphicsProfile.Level_10_0;
+                        try
+                        {
+                            foreach (var mapping in gameSettingsYaml.DynamicRootNode.Defaults)
+                            {
+                                if (mapping.Node.Tag == "!SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics")
+                                {
+                                    if (mapping.DefaultGraphicsProfile != null)
+                                        Enum.TryParse((string)mapping.DefaultGraphicsProfile, out graphicsProfile);
+                                    break;
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            // If something goes wrong, keep going with the default value
+                        }
+
+                        // store the camera slot of the default graphics compositor, because the one from the project will be empty since upgrade relies on reconcile with base, which happens after
+                        defaultGraphicsCompositorCameraSlot = graphicsProfile >= GraphicsProfile.Level_10_0 ? DefaultGraphicsCompositorLevel10CameraSlot : DefaultGraphicsCompositorLevel9CameraSlot;
                     }
                 }
 
@@ -219,13 +241,13 @@ namespace SiliconStudio.Xenko.Assets
                             {
                                 if (component.Value.Node.Tag == "!CameraComponent")
                                 {
-                                    var indexString = component.Value.Slot.Index.ToString();
+                                    var indexString = component.Value.Slot?.Index?.ToString() ?? "0";
                                     int index;
                                     if (int.TryParse(indexString, out index))
                                     {
                                         if (slotIds.ContainsKey(index))
                                         {
-                                            component.Value.Slot = slotIds[index];
+                                            component.Value.Slot = slotIds[index].ToString();
                                         }
                                         else
                                         {

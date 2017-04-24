@@ -25,9 +25,10 @@ namespace SiliconStudio.Xenko.VisualStudio.PackageInstall
                 case "/install":
                 case "/repair":
                 {
-                    // Start from latest versions first
-                    foreach (var visualStudioVersion in VisualStudioVersions.AvailableVisualStudioVersions.Reverse())
+                    // Run it once per VSIX installer version (VS2015 and VS2017+ are separate)
+                    foreach (var visualStudioVersionByVsixVersion in VisualStudioVersions.AvailableVisualStudioVersions.GroupBy(x => x.VsixInstallerVersion).Where(x => x.Key != VSIXInstallerVersion.None))
                     {
+                        var visualStudioVersion = visualStudioVersionByVsixVersion.Last();
                         if (visualStudioVersion.VsixInstallerPath != null && File.Exists(visualStudioVersion.VsixInstallerPath))
                         {
                             var exitCode = RunVsixInstaller(visualStudioVersion.VsixInstallerPath, "\"" + vsixFile + "\"");
@@ -38,9 +39,11 @@ namespace SiliconStudio.Xenko.VisualStudio.PackageInstall
                     break;
                 }
                 case "/uninstall":
-                    // Start from latest versions first
-                    foreach (var visualStudioVersion in VisualStudioVersions.AvailableVisualStudioVersions.Reverse())
+                {
+                    // Run it once per VSIX installer version (VS2015 and VS2017+ are separate)
+                    foreach (var visualStudioVersionByVsixVersion in VisualStudioVersions.AvailableVisualStudioVersions.GroupBy(x => x.VsixInstallerVersion).Where(x => x.Key != VSIXInstallerVersion.None))
                     {
+                        var visualStudioVersion = visualStudioVersionByVsixVersion.Last();
                         if (visualStudioVersion.VsixInstallerPath != null && File.Exists(visualStudioVersion.VsixInstallerPath))
                         {
                             var exitCode = RunVsixInstaller(visualStudioVersion.VsixInstallerPath, "/uninstall:b0b8feb1-7b83-43fc-9fc0-70065ddb80a1");
@@ -49,6 +52,7 @@ namespace SiliconStudio.Xenko.VisualStudio.PackageInstall
                         }
                     }
                     break;
+                }
             }
 
             return 0;
