@@ -228,7 +228,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             public override void UpdateLayout(string compositionName)
             {
-                // TODO: Naming consistency on parameter
                 shadowMapTextureKey = ShadowMapKeys.Texture.ComposeWith(compositionName);
                 shadowMapTextureSizeKey = ShadowMapKeys.TextureSize.ComposeWith(compositionName);
                 shadowMapTextureTexelSizeKey = ShadowMapKeys.TextureTexelSize.ComposeWith(compositionName);

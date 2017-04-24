@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -198,14 +198,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 return new ShaderClassSource(ShaderName, lightCurrentCount, (ShadowType & LightShadowType.Debug) != 0);
             }
 
-            public override void UpdateLayout(string compositionKey)
+            public override void UpdateLayout(string compositionName)
             {
-                shadowMapTextureKey = ShadowMapKeys.Texture.ComposeWith(compositionKey);
-                shadowMapTextureSizeKey = ShadowMapKeys.TextureSize.ComposeWith(compositionKey);
-                shadowMapTextureTexelSizeKey = ShadowMapKeys.TextureTexelSize.ComposeWith(compositionKey);
-                worldToShadowCascadeUVsKey = ShadowMapReceiverBaseKeys.WorldToShadowCascadeUV.ComposeWith(compositionKey);
-                depthBiasesKey = ShadowMapReceiverBaseKeys.DepthBiases.ComposeWith(compositionKey);
-                offsetScalesKey = ShadowMapReceiverBaseKeys.OffsetScales.ComposeWith(compositionKey);
+                shadowMapTextureKey = ShadowMapKeys.Texture.ComposeWith(compositionName);
+                shadowMapTextureSizeKey = ShadowMapKeys.TextureSize.ComposeWith(compositionName);
+                shadowMapTextureTexelSizeKey = ShadowMapKeys.TextureTexelSize.ComposeWith(compositionName);
+                worldToShadowCascadeUVsKey = ShadowMapReceiverBaseKeys.WorldToShadowCascadeUV.ComposeWith(compositionName);
+                depthBiasesKey = ShadowMapReceiverBaseKeys.DepthBiases.ComposeWith(compositionName);
+                offsetScalesKey = ShadowMapReceiverBaseKeys.OffsetScales.ComposeWith(compositionName);
             }
 
             public override void UpdateLightCount(int lightLastCount, int lightCurrentCount)
