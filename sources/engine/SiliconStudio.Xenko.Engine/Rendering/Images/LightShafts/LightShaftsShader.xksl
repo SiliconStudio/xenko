@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
-    shader LightShaftsShader : ImageEffectShader, ShadowMapCommon<PerFrame>, PostEffectBoundingRay<0, 0, 16>, LightStream, NormalStream
+    shader LightShaftsShader : ImageEffectShader, ShadowMapCommon<PerFrame>, PostEffectBoundingRay<16>, LightStream, NormalStream
     {
         stage compose DirectLightGroup lightGroup;
 

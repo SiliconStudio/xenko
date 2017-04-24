@@ -222,13 +222,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        public void Draw(RenderDrawContext drawContext, RenderOutputValidator outputValidator, Texture[] inputs, Texture inputDepthStencil, Texture outputTarget)
+        public void Draw(RenderDrawContext drawContext, Texture inputDepthStencil, Texture output)
         {
             SetInput(0, inputDepthStencil);
-            int colorTarget = outputValidator.Find<ColorTargetSemantic>();
-            if(colorTarget < 0)
-                throw new InvalidOperationException("Missing color input");
-            SetOutput(inputs[colorTarget]);
+            SetOutput(output);
             Draw(drawContext);
         }
 
