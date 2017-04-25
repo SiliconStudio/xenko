@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             Id = Guid.NewGuid();
         }
 
-        //[NonOverridable]
+        [NonOverridable]
         [DataMember(5)]
         public Guid Id { get; set; }
 
