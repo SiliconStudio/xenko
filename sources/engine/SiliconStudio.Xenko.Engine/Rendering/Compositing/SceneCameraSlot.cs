@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             Id = Guid.NewGuid();
         }
 
-        [NonOverridable]
+        //[NonOverridable]
         [DataMember(5)]
         public Guid Id { get; set; }
 
