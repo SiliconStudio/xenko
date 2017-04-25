@@ -14,6 +14,7 @@ namespace SiliconStudio.Core.VisualStudio
     {
         public override string ToString() => DisplayName;
         public string DisplayName { get; internal set; }
+        public string DevenvPath { get; internal set; }
         public string InstallationPath { get; internal set; }
 
         public VSIXInstallerVersion VsixInstallerVersion { get; internal set; }
@@ -34,7 +35,7 @@ namespace SiliconStudio.Core.VisualStudio
         private const int REGDB_E_CLASSNOTREG = unchecked((int)0x80040154);
         private static List<IDEInfo> ideInfos;
 
-        public static IDEInfo DefaultIDE = new IDEInfo { DisplayName = "Default IDE", InstallationPath = null };
+        public static IDEInfo DefaultIDE = new IDEInfo { DisplayName = "Default IDE", DevenvPath = null };
 
         private static void BuildIDEInfos()
         {
@@ -58,7 +59,7 @@ namespace SiliconStudio.Core.VisualStudio
                     if (!File.Exists(vsixInstallerPath))
                         vsixInstallerPath = null;
 
-                    ideInfos.Add(new IDEInfo { DisplayName = "Visual Studio 2015", InstallationPath = vs14InstallPath, VsixInstallerVersion = VSIXInstallerVersion.VS2015, VsixInstallerPath = vsixInstallerPath });
+                    ideInfos.Add(new IDEInfo { DisplayName = "Visual Studio 2015", DevenvPath = vs14InstallPath, VsixInstallerVersion = VSIXInstallerVersion.VS2015, VsixInstallerPath = vsixInstallerPath });
                 }
             }
 
@@ -92,7 +93,7 @@ namespace SiliconStudio.Core.VisualStudio
                             if (!File.Exists(vsixInstallerPath))
                                 vsixInstallerPath = null;
 
-                            var ideInfo = new IDEInfo { DisplayName = inst2.GetDisplayName(), InstallationPath = path, VsixInstallerVersion = VSIXInstallerVersion.VS2017AndFutureVersions, VsixInstallerPath = vsixInstallerPath };
+                            var ideInfo = new IDEInfo { DisplayName = inst2.GetDisplayName(), InstallationPath = inst2.GetInstallationPath(), DevenvPath = path, VsixInstallerVersion = VSIXInstallerVersion.VS2017AndFutureVersions, VsixInstallerPath = vsixInstallerPath };
 
                             // Fill packages
                             foreach (var package in inst2.GetPackages())
