@@ -217,7 +217,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     else
                     {
                         // Then: add
-                        lightShaftsEffectShader.BlendState = BlendStates.Additive;
+                        var desc = BlendStates.Additive;
+                        desc.RenderTarget0.ColorSourceBlend = Blend.One; // But without multiplying alpha
+                        lightShaftsEffectShader.BlendState = desc;
                     }
 
                     if (lightShaft.SampleCount < 1)
