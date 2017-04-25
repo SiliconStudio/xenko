@@ -186,15 +186,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 if (boundingVolumes == null)
                     continue;
 
-                // Check if we can pack bounding volumes together or need to draw them one by one
-                var boundingVolumeLoop = lightShaft.SeparateBoundingVolumes ? boundingVolumes.Count : 1;
+                // Draw bounding boxes as separate light shafts, since we don't have a way to make minimum-depth work correctly
+                //  from inside bounding boxes if we combine them
                 var lightBufferUsed = false;
-                for (int i = 0; i < boundingVolumeLoop; ++i)
+                for (int i = 0; i < boundingVolumes.Count; ++i)
                 {
-                    // Generate list of bounding volume (either all or one by one depending on SeparateBoundingVolumes)
-                    var currentBoundingVolumes = (lightShaft.SeparateBoundingVolumes) ? singleBoundingVolume : boundingVolumes;
-                    if (lightShaft.SeparateBoundingVolumes)
-                        singleBoundingVolume[0] = boundingVolumes[i];
+                    singleBoundingVolume[0] = boundingVolumes[i];
 
                     using (context.PushRenderTargetsAndRestore())
                     {
@@ -204,7 +201,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                         context.CommandList.SetRenderTargetAndViewport(null, boundingBoxBuffer);
 
                         // If nothing visible, skip second part
-                        if (!DrawBoundingVolumeMinMax(context, currentBoundingVolumes))
+                        if (!DrawBoundingVolumeMinMax(context, singleBoundingVolume))
                             continue;
                     }
 
