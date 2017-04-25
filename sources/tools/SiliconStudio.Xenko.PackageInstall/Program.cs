@@ -102,7 +102,13 @@ namespace SiliconStudio.Xenko.PackageInstall
         private static void CheckVisualStudioAndBuildTools()
         {
             // Check if there is any VS2017 installed with necessary workloads
-            if (!AllowVisualStudioOnly || !VisualStudioVersions.AvailableVisualStudioVersions.Any(x => NecessaryVS2017Workloads.All(workload => x.PackageVersions.ContainsKey(workload))))
+            var matchingVisualStudioInstallation = VisualStudioVersions.AvailableVisualStudioVersions.FirstOrDefault(x => NecessaryVS2017Workloads.All(workload => x.PackageVersions.ContainsKey(workload)));
+            if (AllowVisualStudioOnly && matchingVisualStudioInstallation != null)
+            {
+                if (!matchingVisualStudioInstallation.Complete)
+                    MessageBox.Show("We detected Visual Studio 2017 was already installed but is not in a complete state.\r\nYou probably have to reboot, otherwise Xenko projects won't properly compile.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
             {
                 // Check if there is actually a VS2017+ installed
                 var existingVisualStudio2017Install = VisualStudioVersions.AvailableVisualStudioVersions.FirstOrDefault(x => x.PackageVersions.ContainsKey("Microsoft.VisualStudio.Component.CoreEditor"));
@@ -113,6 +119,8 @@ namespace SiliconStudio.Xenko.PackageInstall
                     if (vsInstaller == null)
                         throw new InvalidOperationException("Could not run vs_installer.exe");
                     vsInstaller.WaitForExit();
+
+                    MessageBox.Show("Visual Studio 2017 was missing the .NET desktop develpment workload.\r\nWe highly recommend a reboot after the installation is finished, otherwise Xenko projects won't compile.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
