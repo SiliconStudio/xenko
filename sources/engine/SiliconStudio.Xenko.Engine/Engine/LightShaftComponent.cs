@@ -31,10 +31,5 @@ namespace SiliconStudio.Xenko.Engine
         /// Number of samples taken per pixel
         /// </userdoc>
         public int SampleCount { get; set; } = 16;
-
-        /// <summary>
-        /// If true, all bounding volumes will be drawn one by one. If not, they will be combined (but lower quality if they overlap)
-        /// </summary>
-        public bool SeparateBoundingVolumes { get; set; } = true;
     }
 }

@@ -41,7 +41,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 data.ExtinctionRatio = pair.Key.ExtinctionRatio;
                 data.DensityFactor = pair.Key.DensityFactor;
                 data.SampleCount = pair.Key.SampleCount;
-                data.SeparateBoundingVolumes = pair.Key.SeparateBoundingVolumes;
             }
         }
 
@@ -54,7 +53,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
             public float ExtinctionFactor;
             public float ExtinctionRatio;
             public float DensityFactor;
-            public bool SeparateBoundingVolumes;
             public int SampleCount;
         }
     }
