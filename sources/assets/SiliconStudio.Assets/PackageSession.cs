@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
@@ -16,6 +17,7 @@ using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Packages;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Assets
@@ -38,6 +40,7 @@ namespace SiliconStudio.Assets
         private AssetSourceTracker sourceTracker;
         private bool? packageUpgradeAllowed;
         public event DirtyFlagChangedDelegate<AssetItem> AssetDirtyChanged;
+        private TaskCompletionSource<int> saveCompletion;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageSession"/> class.
@@ -77,6 +80,12 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The user packages.</value>
         public IEnumerable<Package> LocalPackages => Packages.Where(package => !package.IsSystem);
+
+        /// <summary>
+        /// Gets a task that completes when the session is finished saving.
+        /// </summary>
+        [NotNull]
+        public Task SaveCompletion => saveCompletion?.Task ?? Task.CompletedTask;
 
         /// <summary>
         /// Gets or sets the solution path (sln) in case the session was loaded from a solution.
@@ -530,14 +539,15 @@ namespace SiliconStudio.Assets
         /// <param name="saveParameters">The parameters for the save operation.</param>
         public void Save(LoggerResult log, PackageSaveParameters saveParameters = null)
         {
-            bool packagesSaved = false;
-
             //var clock = Stopwatch.StartNew();
             using (var profile = Profiler.Begin(PackageSessionProfilingKeys.Saving))
             {
+                var packagesSaved = false;
                 var packagesDirty = false;
                 try
                 {
+                    saveCompletion = new TaskCompletionSource<int>();
+
                     saveParameters = saveParameters ?? PackageSaveParameters.Default();
                     var assetsOrPackagesToRemove = BuildAssetsOrPackagesToRemove();
 
@@ -672,6 +682,8 @@ namespace SiliconStudio.Assets
                     {
                         PackageSessionHelper.SaveSolution(this, log);
                     }
+                    saveCompletion?.SetResult(0);
+                    saveCompletion = null;
                 }
 
                 //System.Diagnostics.Trace.WriteLine("Elapsed saved: " + clock.ElapsedMilliseconds);
