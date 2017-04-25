@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
@@ -20,13 +20,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
         public override void Update(GameTime time)
         {
             base.Update(time);
-
-            // TODO: prevent doing this every time
-            // Link bounding volumes to light shafts
-            foreach (var v in ComponentDatas.Values)
-            {
-                v.BoundingVolumes.Clear();
-            }
 
             activeLightShafts.Clear();
             foreach (var pair in ComponentDatas)
@@ -60,7 +53,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
             public float DensityFactor;
             public bool SeparateBoundingVolumes;
             public int SampleCount;
-            public readonly List<LightShaftBoundingVolumeComponent> BoundingVolumes = new List<LightShaftBoundingVolumeComponent>();
         }
     }
 }
