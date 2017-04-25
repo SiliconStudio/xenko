@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private MutablePipelineState[] minmaxPipelineStates = new MutablePipelineState[2];
         private EffectBytecode previousMinmaxEffectBytecode;
 
-        private LightShaftBoundingVolumeData[] singleBoundingVolume = new LightShaftBoundingVolumeData[1];
+        private LightShaftBoundingVolumeProcessor.Data[] singleBoundingVolume = new LightShaftBoundingVolumeProcessor.Data[1];
 
         private float time = 0.0f;
         
@@ -316,7 +316,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             lightShaftsEffectShader.Draw(context, $"Light Shafts [{lightShaft.LightComponent.Entity.Name}]");
         }
         
-        private bool DrawBoundingVolumeMinMax(RenderDrawContext context, IReadOnlyList<LightShaftBoundingVolumeData> boundingVolumes)
+        private bool DrawBoundingVolumeMinMax(RenderDrawContext context, IReadOnlyList<LightShaftBoundingVolumeProcessor.Data> boundingVolumes)
         {
             var commandList = context.CommandList;
 
