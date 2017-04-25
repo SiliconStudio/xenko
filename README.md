@@ -56,7 +56,7 @@ SiliconStudio .NET is a collection of shared C#/.NET code that is project indepe
 
 ## Folders and projects layout
 
-###core###
+### core
 
 * __SiliconStudio.Core__:
    Reference counting, dependency property system (PropertyContainer/PropertyKey), low-level serialization, low-level memory operations (Utilities and NativeStream).
@@ -71,13 +71,13 @@ SiliconStudio .NET is a collection of shared C#/.NET code that is project indepe
 * __SiliconStudio.AssemblyProcessor__:
    Internal tool used to patch assemblies to add various features, such as Serialization auto-generation, various memory/pinning operations, module initializers, etc...
    
-###presentation###
+### presentation
 
 * __SiliconStudio.Presentation__: WPF UI library (themes, controls such as propertygrid, behaviors, etc...)
 * __SiliconStudio.SampleApp__: Simple property grid example.
 * __SiliconStudio.Quantum__: Advanced ViewModel library that gives ability to synchronize view-models over network (w/ diff), and at requested time intervals. That way, view models can be defined within engine without any UI dependencies.
 
-###buildengine###
+### buildengine
 
 * __SiliconStudio.BuildEngine.Common__:
    Common parts of the build engine. It can be reused to add new build steps, build commands, and also to build a new custom build engine client.
@@ -86,11 +86,11 @@ SiliconStudio .NET is a collection of shared C#/.NET code that is project indepe
 * __SiliconStudio.BuildEngine.Editor__: WPF Build engine rules editor
 and used by most projects.
 
-###shaders###
+### shaders
 
 * __Irony__: Parsing library, used by SiliconStudio.Shaders. Should later be replaced by ANTLR4.
 * __SiliconStudio.Shaders__: Shader parsing, type analysis and conversion library (used by HLSL->GLSL and Xenko Shader Language)
 
-###targets###
+### targets
 
 * MSBuild target files to create easily cross-platform solutions (Android, iOS, WinRT, WinPhone, etc...), and define behaviors and targets globally. Extensible.
