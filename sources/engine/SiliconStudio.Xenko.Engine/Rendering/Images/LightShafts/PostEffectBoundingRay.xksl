@@ -78,7 +78,7 @@ shader PostEffectBoundingRay<int SampleCount, bool Animated>
             streams.DepthVS = minDistance;
             if(maxDistance > minDistance)
             {
-                // Recalculate max distance by jittering the length of the ray to avoid banding artefacts
+                // Recalculate max distance by jittering the length of the ray to avoid banding artifacts
                 stepSize = (maxDistance - minDistance) / (float)SampleCount;
 
                 // Starting position
