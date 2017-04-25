@@ -1,4 +1,6 @@
-﻿using SiliconStudio.Assets.Diagnostics;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization.Contents;
 

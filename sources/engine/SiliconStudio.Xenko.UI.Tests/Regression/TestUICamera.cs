@@ -1,4 +1,6 @@
-﻿using SiliconStudio.Xenko.Graphics.Regression;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.UI.Tests.Regression

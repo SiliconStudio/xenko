@@ -1,4 +1,6 @@
-﻿using SiliconStudio.Xenko.Shaders;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering
 {

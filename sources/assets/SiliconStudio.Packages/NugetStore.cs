@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NuGet;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Windows;
 // Nuget v2.0 types
 using ISettings = NuGet.ISettings;
@@ -674,10 +675,18 @@ namespace SiliconStudio.Packages
         {
             NugetPackageUninstalling?.Invoke(sender, new PackageOperationEventArgs(args));
 
-            var packageInstallPath = Path.Combine(args.InstallPath, "tools\\packageinstall.exe");
-            if (File.Exists(packageInstallPath))
+            try
             {
-                RunPackageInstall(packageInstallPath, "/uninstall", currentProgressReport);
+                var packageInstallPath = Path.Combine(args.InstallPath, "tools\\packageinstall.exe");
+                if (File.Exists(packageInstallPath))
+                {
+                    RunPackageInstall(packageInstallPath, "/uninstall", currentProgressReport);
+                }
+            }
+            catch (Exception)
+            {
+                // We mute errors during uninstall since they are usually non-fatal (OTOH, if we don't catch the exception, the NuGet package isn't uninstalled, which is probably not what we want)
+                // If we really wanted to deal with them at some point, we should use another mechanism than exception (i.e. log)
             }
         }
 

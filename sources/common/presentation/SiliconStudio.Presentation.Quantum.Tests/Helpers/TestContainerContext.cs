@@ -1,4 +1,6 @@
-﻿using System.Windows.Threading;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Windows.Threading;
 using SiliconStudio.Presentation.View;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;

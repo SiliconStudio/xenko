@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Animations
         public void Fitting(Func<CompressedTimeSpan, float> originalCurve, CompressedTimeSpan stepSize, float maxErrorThreshold)
         {
             // Some info: http://wscg.zcu.cz/wscg2008/Papers_2008/full/A23-full.pdf
-            // Compression of Temporal Video Data by Catmull-Rom Spline and Quadratic Bézier Curve Fitting
+            // Compression of Temporal Video Data by Catmull-Rom Spline and Quadratic Bï¿½zier Curve Fitting
             // And: http://bitsquid.blogspot.jp/2009/11/bitsquid-low-level-animation-system.html
 
             // Only one or zero keys: no need to do anything.

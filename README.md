@@ -36,12 +36,18 @@ Ask for help or report issues:
 
 ## Building from source
 
-Modify or contribute to Xenko:
-* Clone the sources: `git lfs clone git@git.xenko.com:xenko/Xenko-Runtime.git`
-* [Using Git LFS](doc/GitLFS.md): Read about our recent switch to LFS (if you need to upgrade a non-LFS Xenko repository or an existing non-LFS Xenko branch)
-* [Build instructions](doc/GettingStarted.md)
+### Prerequisites
 
-## Structure of the repository
+1. [Git](https://git-scm.com/downloads) with Git LFS option, or install [Git LFS](https://git-lfs.github.com/) separately.
+2. [Visual Studio 2017](https://www.visualstudio.com/downloads/) with the following workloads:
+  * .NET desktop development
+  * Desktop development with C++ (with C++/CLI and VC++ 2015.3 v140 toolset optional components)
+3. [FBX SDK 2017.0.1 VS2015](http://usa.autodesk.com/adsk/servlet/pc/item?siteID=123112&id=25408427)
 
-TODO explain main folders, assembly diagram, Silicon Studio .NET. Navites, etc. 
-Note this can be done in the documentation too
+### Build Xenko
+
+1. Clone Xenko with LFS: `git lfs clone git@git.xenko.com:xenko/Xenko-Runtime.git`
+2. Set *SiliconStudioXenkoDir* environment variable to point to your `<XenkoDir>`
+3. Open `<XenkoDir>\build\Xenko.sln` with Visual Studio 2017, and build.
+4. Open `<XenkoDir>\samples\XenkoSamples.sln` and play with the samples.
+5. Optionally, open and build `Xenko.Android.sln`, `Xenko.iOS.sln`, etc...

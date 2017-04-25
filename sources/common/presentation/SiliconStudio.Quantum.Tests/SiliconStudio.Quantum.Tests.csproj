@@ -24,6 +24,9 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>  
     <Compile Include="Helper.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Obsolete\ObsoleteTestDictionaries.cs" />
