@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         
         private Vector2 GetLightClippingPlanes(LightPoint pointLight)
         {
-            // Note: we don't take exactly the required depth range since this will result in a very poor resolution in most light's radius
+            // Note: we don't take exactly the required depth range since this will result in a very poor resolution in most of the light's range
             return new Vector2(0.1f, pointLight.Radius*2);
         }
 
@@ -88,6 +88,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 case 5: // Down
                     rotation *= Matrix.RotationX(MathUtil.PiOverTwo);
                     break;
+                default:
+                    throw new IndexOutOfRangeException(nameof(index));
             }
 
             view *= rotation;
