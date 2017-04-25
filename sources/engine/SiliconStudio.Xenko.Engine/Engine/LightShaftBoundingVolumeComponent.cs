@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Engine
         }
     }
 
-    [Display("Light Shaft Bounding Volume")]
+    [Display("Light shaft bounding volume")]
     [DataContract("LightShaftBoundingVolumeComponent")]
     [DefaultEntityComponentProcessor(typeof(LightShaftBoundingVolumeProcessor))]
     public class LightShaftBoundingVolumeComponent : ActivableEntityComponent

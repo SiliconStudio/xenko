@@ -25,18 +25,22 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         void ProcessLight(PointLightDataInternal light)
         {
-            float3 lightVector = light.PositionWS - streams.PositionWS.xyz;
-            float lightVectorLength = length(lightVector);
-            float3 lightVectorNorm = lightVector / lightVectorLength;
-
-            float lightInvSquareRadius = light.InvSquareRadius;
-
-            float attenuation = 1;
-            attenuation *= GetDistanceAttenuation(lightVector, lightInvSquareRadius);
+            float3 lightVectorNorm;
+            float attenuation = ComputeAttenuation(light, streams.PositionWS.xyz, lightVectorNorm);
 
             streams.lightPositionWS = light.PositionWS;
             streams.lightColor = light.Color * attenuation;
             streams.lightDirectionWS = lightVectorNorm;
+        }
+
+        float ComputeAttenuation(PointLightDataInternal light, float3 position, inout float3 lightVectorNorm)
+        {
+            float3 lightVector = light.PositionWS - position;
+            float lightVectorLength = length(lightVector);
+            lightVectorNorm = lightVector / lightVectorLength;
+
+            float lightInvSquareRadius = light.InvSquareRadius;
+            return GetDistanceAttenuation(lightVector, lightInvSquareRadius);
         }
     };
 }

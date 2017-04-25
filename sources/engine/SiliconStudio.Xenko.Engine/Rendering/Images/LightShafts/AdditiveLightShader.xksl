@@ -5,15 +5,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     shader AdditiveLightShader : ImageEffectShader, Texturing
     {
-		cbuffer PerFrame
-		{
-			[Color]
-			stage float3 LightColor;
-		}
-		
+        cbuffer PerFrame
+        {
+            [Color]
+            stage float3 LightColor;
+        }
+
         stage override float4 Shading()
         {
-	        float4 color = Texture0.Sample(LinearSampler, streams.TexCoord);
+            float4 color = Texture0.Sample(LinearSampler, streams.TexCoord);
             return float4(color.rrr * LightColor, 1);
         }
     };

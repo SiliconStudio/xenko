@@ -103,6 +103,7 @@
     <Compile Include="Engine\LightProbeComponent.cs" />
     <Compile Include="Engine\LightShaftBoundingVolumeComponent.cs" />
     <Compile Include="Engine\LightShaftComponent.cs" />
+    <Compile Include="Engine\Processors\LightShaftProcessor.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
     <Compile Include="Engine\Network\ClientRouterMessage.cs" />
@@ -210,6 +211,19 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Images\ImageScaler\SamplingPattern.cs" />
+    <Compile Include="Rendering\Images\LightShafts\LightShaftsAttenuation.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LightShaftsAttenuation.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\LightShafts\LightShaftsEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LightShaftsEffect.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\LightShafts\LightShaftsEffectKeys.cs" />
     <Compile Include="Rendering\Images\RangeConversion\RangeCompressorShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -228,12 +242,6 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>PostEffectBoundingRay.xksl</DependentUpon>
-    </Compile>
-    <Compile Include="Rendering\Images\LightShafts\PostEffectMinMax.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>PostEffectMinMax.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Images\PostProcessingEffects.cs" />
     <Compile Include="Rendering\Images\LightShafts\AdditiveLightShader.cs">
@@ -320,6 +328,14 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MSAAResolverShader.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Images\LightShafts\LightShaftsAttenuation.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LightShaftsAttenuation.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LightShafts\LightShaftsEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LightShaftsEffect.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Images\RangeConversion\RangeCompressorShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>RangeCompressorShader.cs</LastGenOutput>
@@ -345,10 +361,6 @@
     <None Include="Rendering\Images\LightShafts\PostEffectBoundingRay.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>PostEffectBoundingRay.cs</LastGenOutput>
-    </None>
-    <None Include="Rendering\Images\LightShafts\PostEffectMinMax.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>PostEffectMinMax.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\LightShafts\VolumeMinMaxShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -4009,7 +4021,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Rendering\Gizmos\" />
-    <Folder Include="Rendering\Lightshafts\" />
     <Folder Include="Rendering\Lights\obsolete\" />
     <Folder Include="Rendering\Shadows\obsolete\" />
   </ItemGroup>

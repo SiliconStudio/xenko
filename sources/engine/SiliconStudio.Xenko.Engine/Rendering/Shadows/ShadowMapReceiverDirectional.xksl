@@ -16,10 +16,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float CascadeDepthSplits[TCascadeCount * TLightCount];
         };
 
-        override void ComputeShadow(int lightIndex)
+        override float3 ComputeShadow(float3 position, int lightIndex)
         {
-            base.ComputeShadow(lightIndex);
-
             int cascadeIndexBase = lightIndex * TCascadeCount;
 
             // Only support a single light per group
@@ -33,26 +31,28 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     cascadeIndex = i + 1;
                 }
             }
-
             float shadow = 1.0;
 
             // Offset the shadow position
-            float3 shadowPosition = streams.PositionWS.xyz;
+            float3 shadowPosition = position.xyz;
             shadowPosition += GetShadowPositionOffset(OffsetScales[lightIndex], streams.NdotL, streams.normalWS);
-
             // If we are within the cascades
             if (cascadeIndex < TCascadeCount)
             {
                 shadow = ComputeShadowFromCascade(shadowPosition, cascadeIndex, lightIndex);
 
                 float nextSplit = CascadeDepthSplits[cascadeIndexBase + cascadeIndex];
-                float splitSize = cascadeIndex == 0 ? nextSplit : nextSplit - CascadeDepthSplits[cascadeIndexBase + cascadeIndex - 1];
+                float splitSize = nextSplit;
+                if(cascadeIndex > 0)
+                {
+                    splitSize = nextSplit - CascadeDepthSplits[cascadeIndexBase + cascadeIndex - 1];
+                }
                 float splitDist = (nextSplit - streams.DepthVS) / splitSize;
 
                 if (splitDist < 0.2)
                 {
                     float lerpAmt = smoothstep(0.0, 0.2, splitDist);
-
+                
                     if (cascadeIndex == TCascadeCount - 1)
                     {
                         if (!TDepthRangeAuto)
@@ -67,18 +67,18 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     }
                 }
             }
-
+            
             // Output the shadow color
             if (TCascadeDebug)
             {
                 //// Display Cascade with colors in debug mode
                 ////                                   GREEN          BLUE           PURPLE         RED            WHITE           
                 static const float3 colors[5] = { float3(0,1,0), float3(0,0,1), float3(1,0,1), float3(1,0,0), float3(1,1,1)};
-                streams.shadowColor = colors[cascadeIndex] * shadow;
+                return colors[cascadeIndex] * shadow;
             }
             else
             {
-                streams.shadowColor = shadow;
+                return shadow;
             }
         }
     };

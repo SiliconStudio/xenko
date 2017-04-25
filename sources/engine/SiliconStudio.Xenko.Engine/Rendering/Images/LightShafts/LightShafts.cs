@@ -5,9 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Lights;
@@ -20,8 +23,26 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [DataContract("LightShafts")]
     public class LightShafts : ImageEffect
     {
-        private ImageEffectShader scatteringEffectShader;
-        private ImageEffectShader minmaxEffectShader;
+        /// <summary>
+        /// The number of times the resolution is lowered for the light buffer
+        /// </summary>
+        [DataMemberRange(1,32)]
+        public int LightBufferDownsampleLevel { get; set; } = 2;
+
+        /// <summary>
+        /// The amount of time the resolution is lowered for the bounding volume buffer
+        /// </summary>
+        [DataMemberRange(1, 32)]
+        public int BoundingVolumeBufferDownsampleLevel { get; set; } = 8;
+
+        /// <summary>
+        /// Animate jitter
+        /// </summary>
+        public bool Animated { get; set; } = false;
+
+        // TODO: Permutations
+        private ImageEffectShader lightShaftsEffectShader;
+
         private ImageEffectShader applyLightEffectShader;
         private DynamicEffectInstance minmaxVolumeEffectShader;
         private GaussianBlur blur;
@@ -35,14 +56,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         private LightShaftBoundingVolumeData[] singleBoundingVolume = new LightShaftBoundingVolumeData[1];
 
+        private float time = 0.0f;
+        
         protected override void InitializeCore()
         {
             base.InitializeCore();
 
             // Light accumulation shader
-            scatteringEffectShader = ToLoadAndUnload(new ImageEffectShader("LightShaftsShader"));
-
-            minmaxEffectShader = ToLoadAndUnload(new ImageEffectShader("PostEffectMinMax"));
+            lightShaftsEffectShader = ToLoadAndUnload(new ImageEffectShader("LightShaftsEffect"));
 
             // Additive blending shader
             applyLightEffectShader = ToLoadAndUnload(new ImageEffectShader("AdditiveLightShader"));
@@ -72,11 +93,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 minmaxPipelineState.State.BlendState.RenderTarget0.BlendEnable = true;
                 minmaxPipelineState.State.BlendState.RenderTarget0.ColorSourceBlend = Blend.One;
                 minmaxPipelineState.State.BlendState.RenderTarget0.ColorDestinationBlend = Blend.One;
-                minmaxPipelineState.State.BlendState.RenderTarget0.ColorBlendFunction = i == 0 ? BlendFunction.Min : BlendFunction.Max;
-                minmaxPipelineState.State.BlendState.RenderTarget0.ColorWriteChannels = i == 0 ? ColorWriteChannels.Green : ColorWriteChannels.Red;
-
-                minmaxPipelineState.State.RasterizerState.CullMode = i == 0 ? CullMode.Front : CullMode.Back;
+                minmaxPipelineState.State.BlendState.RenderTarget0.ColorBlendFunction = i == 0 ? BlendFunction.Max : BlendFunction.Min;
+                minmaxPipelineState.State.BlendState.RenderTarget0.ColorWriteChannels = i == 0 ? ColorWriteChannels.Red : ColorWriteChannels.Green;
+                
                 minmaxPipelineState.State.DepthStencilState.DepthBufferEnable = false;
+                minmaxPipelineState.State.DepthStencilState.DepthBufferWriteEnable = false;
+                minmaxPipelineState.State.RasterizerState.DepthClipEnable = false;
+                minmaxPipelineState.State.RasterizerState.CullMode = i == 0 ? CullMode.Back : CullMode.Front;
 
                 minmaxPipelineStates[i] = minmaxPipelineState;
             }
@@ -99,30 +122,31 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (lightShaftProcessor == null || lightShaftBoundingVolumeProcessor == null)
                 return; // Not collected
 
+            if(LightBufferDownsampleLevel < 1)
+                throw new ArgumentOutOfRangeException(nameof(LightBufferDownsampleLevel));
+            if (BoundingVolumeBufferDownsampleLevel < 1)
+                throw new ArgumentOutOfRangeException(nameof(BoundingVolumeBufferDownsampleLevel));
+
             var lightShaftDatas = lightShaftProcessor.LightShafts;
 
             var depthInput = GetSafeInput(0);
 
             // Create a min/max buffer generated from scene bounding volumes
-            int boundingBoxBufferDownsampleLevel = 8;
-            var boundingBoxBuffer = NewScopedRenderTarget2D(depthInput.Width / boundingBoxBufferDownsampleLevel, depthInput.Height / boundingBoxBufferDownsampleLevel, PixelFormat.R32G32_Float);
-
-            var minmaxBuffer = NewScopedRenderTarget2D(256, 256, PixelFormat.R32G32_Float);
-
+            var boundingBoxBuffer = NewScopedRenderTarget2D(depthInput.Width / BoundingVolumeBufferDownsampleLevel, depthInput.Height / BoundingVolumeBufferDownsampleLevel, PixelFormat.R32G32_Float);
+            
             // Create a single channel light buffer
-            int lightBufferDownsampleLevel = 2;
-            var lightBuffer = NewScopedRenderTarget2D(depthInput.Width/lightBufferDownsampleLevel, depthInput.Height/lightBufferDownsampleLevel, PixelFormat.R16_Float);
-            scatteringEffectShader.SetOutput(lightBuffer);
-            //scatteringEffectShader.SetOutput(GetSafeOutput(0));
-            scatteringEffectShader.Parameters.Set(DepthBaseKeys.DepthStencil, depthInput); // Bind scene depth
+            var lightBuffer = NewScopedRenderTarget2D(depthInput.Width/ LightBufferDownsampleLevel, depthInput.Height/ LightBufferDownsampleLevel, PixelFormat.R16_Float);
+            lightShaftsEffectShader.SetOutput(lightBuffer);
+            var lightShaftsParameters = lightShaftsEffectShader.Parameters;
+            lightShaftsParameters.Set(DepthBaseKeys.DepthStencil, depthInput); // Bind scene depth
 
             if (!Initialized)
                 Initialize(context.RenderContext);
 
             var renderView = context.RenderContext.RenderView;
             var viewInverse = Matrix.Invert(renderView.View);
-            scatteringEffectShader.Parameters.Set(TransformationKeys.ViewInverse, viewInverse);
-            /*scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.Eye, viewInverse.TranslationVector);
+            lightShaftsParameters.Set(TransformationKeys.ViewInverse, viewInverse);
+            lightShaftsParameters.Set(TransformationKeys.Eye, new Vector4(viewInverse.TranslationVector, 1));
 
             var viewProjectionInverse = Matrix.Invert(renderView.ViewProjection);
             Vector3 center = new Vector3(0.0f, 0.0f, 0.0f);
@@ -133,20 +157,18 @@ namespace SiliconStudio.Xenko.Rendering.Images
             up = Vector3.TransformCoordinate(up, viewProjectionInverse) - center;
 
             // Basis for constructing world space rays originating from the camera
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ViewBase, center);
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ViewRight, right);
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ViewUp, up);
+            lightShaftsParameters.Set(PostEffectBoundingRayKeys.ViewBase, center);
+            lightShaftsParameters.Set(PostEffectBoundingRayKeys.ViewRight, right);
+            lightShaftsParameters.Set(PostEffectBoundingRayKeys.ViewUp, up);
 
-            // Used to project an arbitrary world space point into a linear depth value
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.CameraForward, viewInverse.Forward);
+            // Setup parameters for Z reconstruction
+            lightShaftsParameters.Set(CameraKeys.ZProjection, CameraKeys.ZProjectionACalculate(renderView.NearClipPlane, renderView.FarClipPlane));
 
-            // Used to convert values from the depth buffer to linear depth
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ZProjection, CameraKeys.ZProjectionACalculate(renderView.NearClipPlane, renderView.FarClipPlane));
-
-            // Time % 1.0
-            //imageEffectShader.Parameters.Set(LightShaftsShaderKeys.Time, (float)(context.RenderContext.Time.Elapsed.TotalSeconds % 1.0));
-            // Time
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.Time, (float)(context.RenderContext.Time.Total.TotalSeconds));*/
+            lightShaftsParameters.Set(TransformationKeys.ProjScreenRay, new Vector2(-1.0f / renderView.Projection.M11, 1.0f / renderView.Projection.M22));
+            lightShaftsParameters.Set(TransformationKeys.Projection, renderView.Projection);
+            Matrix projectionInverse;
+            Matrix.Invert(ref renderView.Projection, out projectionInverse);
+            lightShaftsParameters.Set(TransformationKeys.ProjectionInverse, projectionInverse);
 
             foreach (var lightShaft in lightShaftDatas)
             {
@@ -156,6 +178,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 var shadowMapTexture = shadowMapRenderer.FindShadowMap(renderView.LightingView ?? renderView, lightShaft.LightComponent);
                 if (shadowMapTexture == null)
                     continue; // Skip lights without shadow map
+
+                // Setup the shader group used for sampling shadows
+                SetupLight(context, lightShaft, shadowMapTexture, lightShaftsParameters);
 
                 var boundingVolumes = lightShaftBoundingVolumeProcessor.GetBoundingVolumesForComponent(lightShaft.Component);
                 if (boundingVolumes == null)
@@ -174,67 +199,49 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     using (context.PushRenderTargetsAndRestore())
                     {
                         // Clear bounding box buffer
-                        context.CommandList.Clear(boundingBoxBuffer, new Color4(0.0f, 1.0f, 0.0f, 1.0f));
+                        context.CommandList.Clear(boundingBoxBuffer, new Color4(0.0f, 1.0f, 0.0f, 0.0f));
 
                         context.CommandList.SetRenderTargetAndViewport(null, boundingBoxBuffer);
 
                         // If nothing visible, skip second part
                         if (!DrawBoundingVolumeMinMax(context, currentBoundingVolumes))
                             continue;
-
-                        // Perform shadow map min max
-                        if (false) // Min-max optim currently disabled
-                        {
-                            if (shadowMapTexture.ShaderData is DirectionalShaderData)
-                            {
-                                var shaderData = (DirectionalShaderData)shadowMapTexture.ShaderData;
-                                minmaxEffectShader.Parameters.Set(PostEffectMinMaxKeys.MinMaxCoords, shaderData.TextureCoords[0]);
-                            }
-
-                            minmaxEffectShader.SetInput(0, shadowMapTexture.Atlas.Texture);
-                            minmaxEffectShader.SetOutput(minmaxBuffer);
-                            minmaxEffectShader.Draw(context);
-                        }
                     }
-
-                    // Setup parameters for Z reconstruction
-                    scatteringEffectShader.Parameters.Set(CameraKeys.ZProjection, CameraKeys.ZProjectionACalculate(renderView.NearClipPlane, renderView.FarClipPlane));
-                    scatteringEffectShader.Parameters.Set(TransformationKeys.ProjScreenRay, new Vector2(-1.0f/renderView.Projection.M11, 1.0f/renderView.Projection.M22));
-                    scatteringEffectShader.Parameters.Set(TransformationKeys.Projection, renderView.Projection);
-                    Matrix projectionInverse;
-                    Matrix.Invert(ref renderView.Projection, out projectionInverse);
-                    scatteringEffectShader.Parameters.Set(TransformationKeys.ProjectionInverse, projectionInverse);
 
                     if (!lightBufferUsed)
                     {
                         // First pass: replace (avoid a clear and blend state)
-                        scatteringEffectShader.BlendState = BlendStates.Opaque;
+                        lightShaftsEffectShader.BlendState = BlendStates.Opaque;
                         lightBufferUsed = true;
                     }
                     else
                     {
                         // Then: add
-                        scatteringEffectShader.BlendState = BlendStates.Additive;
+                        lightShaftsEffectShader.BlendState = BlendStates.Additive;
                     }
 
+                    if (lightShaft.SampleCount < 1)
+                        throw new ArgumentOutOfRangeException(nameof(lightShaft.SampleCount));
+
                     // Set min/max input
-                    scatteringEffectShader.SetInput(0, boundingBoxBuffer);
-                    scatteringEffectShader.SetInput(1, shadowMapTexture.Atlas.Texture);
-                    scatteringEffectShader.SetInput(2, minmaxBuffer);
+                    lightShaftsEffectShader.SetInput(0, boundingBoxBuffer);
 
                     // Light accumulation pass (on low resolution buffer)
-                    DrawLightShaft(context, lightShaft, shadowMapTexture);
+                    DrawLightShaft(context, lightShaft);
                 }
 
                 // Everything was outside, skip
                 if (!lightBufferUsed)
                     continue;
 
-                // Blur the result
-                blur.Radius = lightBufferDownsampleLevel;
-                blur.SetInput(lightBuffer);
-                blur.SetOutput(lightBuffer);
-                blur.Draw(context);
+                if (LightBufferDownsampleLevel != 1)
+                {
+                    // Blur the result
+                    blur.Radius = LightBufferDownsampleLevel;
+                    blur.SetInput(lightBuffer);
+                    blur.SetOutput(lightBuffer);
+                    blur.Draw(context);
+                }
 
                 // Additive blend pass
                 Color3 lightColor = lightShaft.Light.ComputeColor(context.GraphicsDevice.ColorSpace, lightShaft.LightComponent.Intensity);
@@ -243,6 +250,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 applyLightEffectShader.SetOutput(GetSafeOutput(0));
                 applyLightEffectShader.Draw(context);
             }
+
+            if(Animated)
+                time += (float)Context.Time.Elapsed.TotalSeconds;
         }
 
         public void Draw(RenderDrawContext drawContext, Texture inputDepthStencil, Texture output)
@@ -252,44 +262,58 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Draw(drawContext);
         }
 
-        private void DrawLightShaft(RenderDrawContext context, LightShaftData lightShaft, LightShadowMapTexture shadowMapTexture)
+        private void SetupLight(RenderDrawContext context, LightShaftProcessor.Data lightShaft, LightShadowMapTexture shadowMapTexture, ParameterCollection lightParameterCollection)
         {
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ExtinctionFactor, lightShaft.ExtinctionFactor);
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ExtinctionRatio, lightShaft.ExtinctionRatio);
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.DensityFactor, lightShaft.DensityFactor);
+            var shadowGroup = shadowMapTexture.Renderer.CreateShaderGroupData(shadowMapTexture.ShadowType);
+            BoundingBoxExt box = new BoundingBoxExt(new Vector3(-float.MaxValue), new Vector3(float.MaxValue)); // TODO
 
-            // Bind shadow atlas
-            var texture = shadowMapTexture.Atlas.Texture;
-            scatteringEffectShader.Parameters.Set(ShadowMapKeys.Texture, texture);
-
-            var shadowMapTextureSize = new Vector2(texture.Width, texture.Height);
-            var shadowMapTextureTexelSize = 1.0f/shadowMapTextureSize;
-            scatteringEffectShader.Parameters.Set(ShadowMapKeys.TextureSize, shadowMapTextureSize);
-            scatteringEffectShader.Parameters.Set(ShadowMapKeys.TextureTexelSize, shadowMapTextureTexelSize);
-
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.LightColor, lightShaft.LightComponent.Color);
-
-            // Pass in world transform as offset and direction
-            //scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ShadowLightOffset, lightShaft.LightWorld.TranslationVector);
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ShadowLightOffset, lightShaft.LightWorld.TranslationVector);
-            scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ShadowLightDirection, lightShaft.LightWorld.Forward);
-
-            // Change inputs depending on light type
-            if (shadowMapTexture.ShaderData is DirectionalShaderData)
+            // Some testing
+            LightGroupRendererDynamic groupRenderer = null;
+            if (lightShaft.Light is LightPoint)
             {
-                var shaderData = (DirectionalShaderData)shadowMapTexture.ShaderData;
-
-                scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ShadowTextureFactor, shaderData.TextureCoords[0]);
-
-                // Use cascade 0 of directional light
-                scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ShadowViewProjection, shaderData.WorldToShadowCascadeUV[0]);
-
-                scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ShadowMapDistance, shaderData.CascadeSplits[0]);
+                groupRenderer = new LightPointGroupRenderer();
             }
+            else if (lightShaft.Light is LightSpot)
+            {
+                groupRenderer = new LightSpotGroupRenderer();
+            }
+            else if (lightShaft.Light is LightDirectional)
+            {
+                groupRenderer = new LightDirectionalGroupRenderer();
+            }
+            else
+            {
+                throw new InvalidOperationException("Unsupported light type");
+            }
+            
+            // TODO: Caching
+            var directLightGroup = groupRenderer.CreateLightShaderGroup(context, shadowGroup);
+            directLightGroup.SetViews(new FastList<RenderView>(new []{ context.RenderContext.RenderView }));
+            directLightGroup.AddView(0, context.RenderContext.RenderView, 1);
+            directLightGroup.AddLight(lightShaft.LightComponent, shadowMapTexture);
+            directLightGroup.UpdateLayout("lightGroup");
+            
+            lightParameterCollection.Set(LightShaftsEffectKeys.LightGroup, directLightGroup.ShaderSource);
+            lightParameterCollection.Set(LightShaftsEffectKeys.SampleCount, lightShaft.SampleCount);
+            lightParameterCollection.Set(LightShaftsEffectKeys.Animated, Animated);
 
-            scatteringEffectShader.Draw(context, $"Light Shafts [{lightShaft.LightComponent.Entity.Name}]");
+            // Update the effect here so the layout is correct
+            lightShaftsEffectShader.EffectInstance.UpdateEffect(GraphicsDevice);
+
+            directLightGroup.ApplyViewParameters(context, 0, lightParameterCollection);
+            directLightGroup.ApplyDrawParameters(context, 0, lightParameterCollection, ref box);
         }
 
+        private void DrawLightShaft(RenderDrawContext context, LightShaftProcessor.Data lightShaft)
+        {
+            lightShaftsEffectShader.Parameters.Set(LightShaftsShaderKeys.ExtinctionFactor, lightShaft.ExtinctionFactor);
+            lightShaftsEffectShader.Parameters.Set(LightShaftsShaderKeys.ExtinctionRatio, lightShaft.ExtinctionRatio);
+            lightShaftsEffectShader.Parameters.Set(LightShaftsShaderKeys.DensityFactor, lightShaft.DensityFactor);
+            lightShaftsEffectShader.Parameters.Set(GlobalKeys.Time, time);
+            
+            lightShaftsEffectShader.Draw(context, $"Light Shafts [{lightShaft.LightComponent.Entity.Name}]");
+        }
+        
         private bool DrawBoundingVolumeMinMax(RenderDrawContext context, IReadOnlyList<LightShaftBoundingVolumeData> boundingVolumes)
         {
             var commandList = context.CommandList;
@@ -300,7 +324,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             var needEffectUpdate = effectUpdated || previousMinmaxEffectBytecode != minmaxVolumeEffectShader.Effect.Bytecode;
             bool visibleMeshes = false;
-
+            
             for (int pass = 0; pass < 2; ++pass)
             {
                 var minmaxPipelineState = minmaxPipelineStates[pass];

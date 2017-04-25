@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 6e4549c1-7159-432a-ac4c-6b3cca4aad90
-SerializedVersion: {Xenko: 1.10.0-beta03}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
@@ -71,7 +71,7 @@ Hierarchy:
                         Id: 284c7dcf-0804-414f-bf66-d6cebb9f05da
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: 13aa7ab5-25e6-4d23-912b-299544a49a65
         -   Entity:
                 Id: a5de332d-3e13-4cc9-b2d8-60217e9d2b9c
                 Name: Directional light
