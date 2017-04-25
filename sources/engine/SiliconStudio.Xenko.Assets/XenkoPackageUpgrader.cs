@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -224,6 +224,13 @@ namespace SiliconStudio.Xenko.Assets
                             {
                                 asset.Game.Camera = $"ref!! {localSlotIds[index]}";
                             }
+                        }
+                        else
+                        {
+                            asset.Cameras = new YamlMappingNode();
+                            asset.Cameras.de2e75c3b2b23e54162686363f3f138e = new YamlMappingNode();
+                            asset.Cameras.de2e75c3b2b23e54162686363f3f138e.Id = defaultGraphicsCompositorCameraSlot;
+                            asset.Cameras.de2e75c3b2b23e54162686363f3f138e.Name = "Main";
                         }
                     }
                 }
