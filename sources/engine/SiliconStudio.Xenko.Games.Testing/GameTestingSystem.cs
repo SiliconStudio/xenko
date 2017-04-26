@@ -7,9 +7,9 @@ using SiliconStudio.Xenko.Engine.Network;
 using SiliconStudio.Xenko.Games.Testing.Requests;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Input.Extensions;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -33,6 +33,11 @@ namespace SiliconStudio.Xenko.Games.Testing
             DrawOrder = int.MaxValue;
             Enabled = true;
             Visible = true;
+            
+            // Switch to simulated input
+            InputManager input = (InputManager)registry.GetService(typeof(InputManager));
+            InputSourceSimulated.Enabled = true;
+            input.ReinitializeSources();
         }
 
         public override async void Initialize()
@@ -59,20 +64,7 @@ namespace SiliconStudio.Xenko.Games.Testing
 
             socketMessageLayer.AddPacketHandler<TapSimulationRequest>(request =>
             {
-                switch (request.State)
-                {
-                    case PointerState.Down:
-                        game.Input.SimulateTapDown(request.Coords);
-                        break;
-
-                    case PointerState.Up:
-                        game.Input.SimulateTapUp(request.Coords, request.CoordsDelta, request.Delta);
-                        break;
-
-                    case PointerState.Move:
-                        game.Input.SimulateTapMove(request.Coords, request.CoordsDelta, request.Delta);
-                        break;
-                }
+                InputSourceSimulated.Instance.Mouse.InjectPointerEvent(request.Coords, request.CoordsDelta, request.Delta, request.EventType);
             });
 
             socketMessageLayer.AddPacketHandler<ScreenshotRequest>(request =>

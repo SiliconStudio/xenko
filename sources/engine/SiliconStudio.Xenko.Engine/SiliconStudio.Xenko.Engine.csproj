@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
@@ -97,6 +97,7 @@
     <Compile Include="Engine\Events\EventReceiverOptions.cs" />
     <Compile Include="Engine\Events\EventTaskScheduler.cs" />
     <Compile Include="Engine\GameSystem.cs" />
+    <Compile Include="Engine\InputComponent.cs" />
     <Compile Include="Engine\IndexingDictionary.cs" />
     <Compile Include="Engine\ISceneRendererContext.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ICommsInterface.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketClient.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
+    <Compile Include="Engine\Processors\InputProcessor.cs" />
     <Compile Include="Engine\Processors\ModelTransformProcessor.cs" />
     <Compile Include="Engine\Prefab.cs" />
     <Compile Include="Engine\StartupScript.cs" />

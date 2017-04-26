@@ -8,6 +8,7 @@ using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Input;
 using System;
 using System.Threading.Tasks;
+using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Graphics.Regression
 {
@@ -24,6 +25,11 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         private float desiredPitch;
         private Vector3 position;
         private bool applyRotation;
+
+        private DragGesture dragGesture = new DragGesture();
+        private TapGesture tapGesture = new TapGesture(2, 1);
+        private bool doubleTapped;
+        private Vector2 rotationDelta;
 
         /// <summary>
         /// Gets the camera component used to visualized the scene.
@@ -78,16 +84,32 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
             if (!Platform.IsWindowsDesktop)
             {
-                Input.ActivatedGestures.Add(new GestureConfigDrag());
-                Input.ActivatedGestures.Add(new GestureConfigTap { RequiredNumberOfTaps = 2 });
+                Input.Gestures.Add(dragGesture);
+                Input.Gestures.Add(tapGesture);
+
+                dragGesture.Drag += DragGestureOnDrag;
+                tapGesture.Tap += TapGestureOnTap;
             }
 
             while (true)
             {
                 UpdateCamera();
 
+                doubleTapped = false;
+                rotationDelta = Vector2.Zero;
+
                 await Script.NextFrame();
             }
+        }
+
+        private void TapGestureOnTap(object sender, TapEventArgs tapEventArgs)
+        {
+            doubleTapped = tapEventArgs.EventType != PointerGestureEventType.Ended;
+        }
+
+        private void DragGestureOnDrag(object sender, DragEventArgs dragEventArgs)
+        {
+            rotationDelta += dragEventArgs.DeltaTranslation;
         }
 
         public void Reset()
@@ -118,42 +140,9 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             }
 
             // Update rotation according to mouse deltas
-            var rotationDelta = Vector2.Zero;
             if (Input.IsMouseButtonDown(MouseButton.Right))
             {
                 rotationDelta = Input.MouseDelta;
-            }
-
-            var doubleTapped = false;
-            foreach (var gestureEvent in Input.GestureEvents)
-            {
-                switch (gestureEvent.Type)
-                {
-                    case GestureType.Drag:
-                        {
-                            var drag = (GestureEventDrag)gestureEvent;
-                            rotationDelta = drag.DeltaTranslation;
-                        }
-                        break;
-
-                    case GestureType.Flick:
-                        break;
-
-                    case GestureType.LongPress:
-                        break;
-
-                    case GestureType.Composite:
-                        break;
-
-                    case GestureType.Tap:
-                        {
-                            doubleTapped = true;
-                        }
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
             }
 
             // Change rotation only if changed at least once (try to keep original one)

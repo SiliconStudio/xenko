@@ -11,6 +11,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Graphics.Regression
 {
@@ -23,6 +24,10 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         public static void RunGameTest(Game game)
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+
+            // Enable simulated input
+            // This prevents intervention in tests from external sources and allows the use of InjectPointerEvent, etc.
+            InputSourceSimulated.Enabled = true;
 
             using (game)
             {

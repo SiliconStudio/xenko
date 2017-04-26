@@ -11,6 +11,8 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Regression;
+using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input.Tests
 {
@@ -61,10 +63,18 @@ namespace SiliconStudio.Xenko.Input.Tests
         private string longPressEvent;
         private string compositeEvent;
         private string tapEvent;
+        
+        private Tuple<FlickEventArgs, TimeSpan> lastFlickEvent = new Tuple<FlickEventArgs, TimeSpan>(null, TimeSpan.Zero);
+        private Tuple<LongPressEventArgs, TimeSpan> lastLongPressEvent = new Tuple<LongPressEventArgs, TimeSpan>(null, TimeSpan.Zero);
+        private Tuple<TapEventArgs, TimeSpan> lastTapEvent = new Tuple<TapEventArgs, TimeSpan>(null, TimeSpan.Zero);
+        private Tuple<DragEventArgs, TimeSpan> lastDragEvent = new Tuple<DragEventArgs, TimeSpan>(null, TimeSpan.Zero);
+        private Tuple<CompositeEventArgs, TimeSpan> lastCompositeEvent = new Tuple<CompositeEventArgs, TimeSpan>(null, TimeSpan.Zero);
 
-        private Tuple<GestureEvent, TimeSpan> lastFlickEvent = new Tuple<GestureEvent, TimeSpan>(null, TimeSpan.Zero);
-        private Tuple<GestureEvent, TimeSpan> lastLongPressEvent = new Tuple<GestureEvent, TimeSpan>(null, TimeSpan.Zero);
-        private Tuple<GestureEvent, TimeSpan> lastTapEvent = new Tuple<GestureEvent, TimeSpan>(null, TimeSpan.Zero);
+        private DragGesture dragGesture = new DragGesture();
+        private FlickGesture flickGesture = new FlickGesture();
+        private LongPressGesture longPressGesture = new LongPressGesture();
+        private CompositeGesture compositeGesture = new CompositeGesture();
+        private TapGesture tapGesture = new TapGesture();
 
         private readonly TimeSpan displayGestureDuration;
 
@@ -106,11 +116,36 @@ namespace SiliconStudio.Xenko.Input.Tests
             roundTextureSize = new Vector2(roundTexture.Width, roundTexture.Height);
 
             // activate the gesture recognitions
-            Input.ActivatedGestures.Add(new GestureConfigDrag());
-            Input.ActivatedGestures.Add(new GestureConfigFlick());
-            Input.ActivatedGestures.Add(new GestureConfigLongPress());
-            Input.ActivatedGestures.Add(new GestureConfigComposite());
-            Input.ActivatedGestures.Add(new GestureConfigTap());
+            Input.Gestures.Add(dragGesture);
+            Input.Gestures.Add(flickGesture);
+            Input.Gestures.Add(longPressGesture);
+            Input.Gestures.Add(compositeGesture);
+            Input.Gestures.Add(tapGesture);
+
+            compositeGesture.Changed += (sender, args) =>
+            {
+                lastCompositeEvent = Tuple.Create(args, DrawTime.Total);
+            };
+
+            dragGesture.Drag += (sender, args) =>
+            {
+                lastDragEvent = Tuple.Create(args, DrawTime.Total);
+            };
+
+            flickGesture.Flick += (sender, args) =>
+            {
+                lastFlickEvent = Tuple.Create(args, DrawTime.Total);
+            };
+
+            longPressGesture.LongPress += (sender, args) =>
+            {
+                lastLongPressEvent = Tuple.Create(args, DrawTime.Total);
+            };
+
+            tapGesture.Tap += (sender, args) =>
+            {
+                lastTapEvent = Tuple.Create(args, DrawTime.Total);
+            };
 
             // add a task to the task scheduler that will be executed asynchronously 
             Script.AddTask(UpdateInputStates);
@@ -200,13 +235,13 @@ namespace SiliconStudio.Xenko.Input.Tests
                 // Keyboard
                 if (Input.HasKeyboard)
                 {
-                    foreach (var key in Input.KeyEvents.Where(keyEvent => keyEvent.Type == KeyEventType.Pressed))
+                    foreach (var key in Input.KeyEvents.Where(keyEvent => keyEvent.State == ButtonState.Down))
                         keyPressed += key + ", ";
 
-                    foreach (var key in Input.KeyDown)
+                    foreach (var key in Input.DownKeys)
                         keyDown += key + ", ";
 
-                    foreach (var key in Input.KeyEvents.Where(keyEvent => keyEvent.Type == KeyEventType.Released))
+                    foreach (var key in Input.KeyEvents.Where(keyEvent => keyEvent.State == ButtonState.Up))
                         keyReleased += key + ", ";
                 }
 
@@ -232,19 +267,18 @@ namespace SiliconStudio.Xenko.Input.Tests
                 {
                     foreach (var pointerEvent in Input.PointerEvents)
                     {
-                        switch (pointerEvent.State)
+                        switch (pointerEvent.EventType)
                         {
-                            case PointerState.Down:
+                            case PointerEventType.Pressed:
                                 pointerPressed.Enqueue(Tuple.Create(pointerEvent.Position, currentTime, pointerEvent.PointerId));
                                 break;
-                            case PointerState.Move:
+                            case PointerEventType.Moved:
                                 pointerMoved.Enqueue(Tuple.Create(pointerEvent.Position, currentTime, pointerEvent.PointerId));
                                 break;
-                            case PointerState.Up:
+                            case PointerEventType.Released:
                                 pointerReleased.Enqueue(Tuple.Create(pointerEvent.Position, currentTime, pointerEvent.PointerId));
                                 break;
-                            case PointerState.Out:
-                            case PointerState.Cancel:
+                            case PointerEventType.Canceled:
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();
@@ -258,47 +292,32 @@ namespace SiliconStudio.Xenko.Input.Tests
                 }
 
                 // Gestures
-                foreach (var gestureEvent in Input.GestureEvents)
-                {
-                    switch (gestureEvent.Type)
-                    {
-                        case GestureType.Drag:
-                            var dragGestureEvent = (GestureEventDrag)gestureEvent;
-                            dragEvent = "Position = " + dragGestureEvent.TotalTranslation;
-                            break;
-                        case GestureType.Flick:
-                            lastFlickEvent = Tuple.Create(gestureEvent, currentTime);
-                            break;
-                        case GestureType.LongPress:
-                            lastLongPressEvent = Tuple.Create(gestureEvent, currentTime);
-                            break;
-                        case GestureType.Composite:
-                            var compositeGestureEvent = (GestureEventComposite)gestureEvent;
-                            compositeEvent = "Rotation = " + compositeGestureEvent.TotalRotation + " - Scale = " + compositeGestureEvent.TotalScale + " - Position = " + compositeGestureEvent.TotalTranslation;
-                            break;
-                        case GestureType.Tap:
-                            lastTapEvent = Tuple.Create(gestureEvent, currentTime);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }
-
                 if (currentTime - lastFlickEvent.Item2 < displayGestureDuration && lastFlickEvent.Item1 != null)
                 {
-                    var flickGestureEvent = (GestureEventFlick)lastFlickEvent.Item1;
-                    flickEvent = " Start Position = " + flickGestureEvent.StartPosition + " - Speed = " + flickGestureEvent.AverageSpeed;
+                    var args = lastFlickEvent.Item1;
+                    flickEvent = $"Start Position = {args.StartPosition} - Speed = {args.AverageSpeed} - EventType = {args.EventType}";
                 }
                 if (currentTime - lastLongPressEvent.Item2 < displayGestureDuration && lastLongPressEvent.Item1 != null)
                 {
-                    var longPressGestureEvent = (GestureEventLongPress)lastLongPressEvent.Item1;
-                    longPressEvent = " Position = " + longPressGestureEvent.Position;
+                    var args = lastLongPressEvent.Item1;
+                    longPressEvent = $"Position = {args.Position} - EventType = {args.EventType}";
                 }
                 if (currentTime - lastTapEvent.Item2 < displayGestureDuration && lastTapEvent.Item1 != null)
                 {
-                    var tapGestureEvent = (GestureEventTap)lastTapEvent.Item1;
-                    tapEvent = " Position = " + tapGestureEvent.TapPosition + " - number of taps = " + tapGestureEvent.NumberOfTaps;
+                    var args = lastTapEvent.Item1;
+                    tapEvent = $"Position = {args.TapPosition} - number of taps = {args.TapCount} - EventType = {args.EventType}";
                 }
+                if (currentTime - lastDragEvent.Item2 < displayGestureDuration && lastDragEvent.Item1 != null)
+                {
+                    var args = lastDragEvent.Item1;
+                    dragEvent = $"Position = {args.TotalTranslation} - EventType = {args.EventType}";
+                }
+                if (currentTime - lastCompositeEvent.Item2 < displayGestureDuration && lastCompositeEvent.Item1 != null)
+                {
+                    var args = lastCompositeEvent.Item1;
+                    compositeEvent = $"Rotation = {args.TotalRotation} - Scale = {args.TotalScale} - Position = {args.TotalTranslation} - EventType = {args.EventType}";
+                }
+
             }
         }
 

@@ -96,84 +96,84 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public void Draw1()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.125f, 0.25f)));
+            PointerEvents.Clear();
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Pressed, new Vector2(0.125f, 0.25f)));
 
             UI.Update(new GameTime());
         }
         public void Draw2()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.925f, 0.25f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.925f, 0.25f)));
+            PointerEvents.Clear();
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Moved, new Vector2(0.925f, 0.25f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Released, new Vector2(0.925f, 0.25f)));
 
             UI.Update(new GameTime());
         }
         public void Draw3()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.125f, 0.25f)));
+            PointerEvents.Clear();
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Pressed, new Vector2(0.125f, 0.25f)));
 
             UI.Update(new GameTime());
         }
         public void Draw4()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.125f, 0.15f)));
+            PointerEvents.Clear();
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Moved, new Vector2(0.125f, 0.15f)));
 
             UI.Update(new GameTime());
         }
         public void Draw5()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.125f, 0.05f)));
+            PointerEvents.Clear();
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Moved, new Vector2(0.125f, 0.05f)));
 
             UI.Update(new GameTime());
         }
         public void Draw6()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.925f, 0.05f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.925f, 0.05f)));
+            PointerEvents.Clear();
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Moved, new Vector2(0.925f, 0.05f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Released, new Vector2(0.925f, 0.05f)));
 
             UI.Update(new GameTime());
         }
         public void Draw7()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.4f, 0.65f)));
+            PointerEvents.Clear();
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Pressed, new Vector2(0.4f, 0.65f)));
 
             UI.Update(new GameTime());
         }
 
         public void Draw8()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.6f, 0.65f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.6f, 0.65f)));
+            PointerEvents.Clear();
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Moved, new Vector2(0.6f, 0.65f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Released, new Vector2(0.6f, 0.65f)));
 
             UI.Update(new GameTime());
         }
         public void Draw9()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.6f, 0.65f)));
+            PointerEvents.Clear();
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Pressed, new Vector2(0.6f, 0.65f)));
 
             UI.Update(new GameTime());
         }
 
         public void Draw10()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.6f, 0.85f)));
+            PointerEvents.Clear();
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Moved, new Vector2(0.6f, 0.85f)));
 
             UI.Update(new GameTime());
         }
 
         public void Draw11()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.4f, 0.85f)));
+            PointerEvents.Clear();
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Moved, new Vector2(0.4f, 0.85f)));
 
             UI.Update(new GameTime());
         }

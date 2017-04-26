@@ -304,16 +304,18 @@ namespace SiliconStudio.Xenko.Engine
 
         protected override void Initialize()
         {
-            base.Initialize();
-
             // ---------------------------------------------------------
             // Add common GameSystems - Adding order is important
             // (Unless overriden by gameSystem.UpdateOrder)
             // ---------------------------------------------------------
 
             // Add the input manager
-            Input = InputManagerFactory.NewInputManager(Services, Context);
+            // Add it first so that it can obtained by the UI system
+            Input = new InputManager(Services);
             GameSystems.Add(Input);
+
+            // Initialize the systems
+            base.Initialize();
 
             // Add the scheduler system
             // - Must be after Input, so that scripts are able to get latest input

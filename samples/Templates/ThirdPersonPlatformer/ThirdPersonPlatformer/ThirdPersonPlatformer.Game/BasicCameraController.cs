@@ -5,6 +5,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Input.Gestures;
 
 namespace ThirdPersonPlatformer
 {
@@ -23,6 +24,9 @@ namespace ThirdPersonPlatformer
         private Vector3 translation;
         private float yaw;
         private float pitch;
+
+        private DragGesture dragGesture = new DragGesture();
+        private CompositeGesture compositeGesture = new CompositeGesture();
 
         public Vector3 KeyboardMovementSpeed { get; set; } = new Vector3(5.0f);
 
@@ -46,8 +50,8 @@ namespace ThirdPersonPlatformer
             // Configure touch input
             if (!Platform.IsWindowsDesktop)
             {
-                Input.ActivatedGestures.Add(new GestureConfigDrag());
-                Input.ActivatedGestures.Add(new GestureConfigComposite());
+                Input.Gestures.Add(dragGesture);
+                Input.Gestures.Add(compositeGesture);
             }
         }
 
@@ -130,26 +134,20 @@ namespace ThirdPersonPlatformer
             }
 
             // Handle gestures
-            foreach (var gestureEvent in Input.GestureEvents)
+            foreach (var gestureEvent in dragGesture.Events)
             {
-                switch (gestureEvent.Type)
-                {
-                    // Rotate by dragging
-                    case GestureType.Drag:
-                        var drag = (GestureEventDrag)gestureEvent;
-                        var dragDistance = drag.DeltaTranslation;
-                        yaw = -dragDistance.X * TouchRotationSpeed.X;
-                        pitch = -dragDistance.Y * TouchRotationSpeed.Y;
-                        break;
-
-                    // Move along z-axis by scaling and in xy-plane by multi-touch dragging
-                    case GestureType.Composite:
-                        var composite = (GestureEventComposite)gestureEvent;
-                        translation.X = -composite.DeltaTranslation.X * TouchMovementSpeed.X;
-                        translation.Y = -composite.DeltaTranslation.Y * TouchMovementSpeed.Y;
-                        translation.Z = -(float)Math.Log(composite.DeltaScale + 1) * TouchMovementSpeed.Z;
-                        break;
-                }
+                var drag = (DragEventArgs) gestureEvent;
+                var dragDistance = drag.DeltaTranslation;
+                yaw = -dragDistance.X * TouchRotationSpeed.X;
+                pitch = -dragDistance.Y * TouchRotationSpeed.Y;
+            }
+            foreach (var gestureEvent in compositeGesture.Events)
+            {
+                // Move along z-axis by scaling and in xy-plane by multi-touch dragging
+                var composite = (CompositeEventArgs)gestureEvent;
+                translation.X = -composite.DeltaTranslation.X * TouchMovementSpeed.X;
+                translation.Y = -composite.DeltaTranslation.Y * TouchMovementSpeed.Y;
+                translation.Z = -(float)Math.Log(composite.DeltaScale + 1) * TouchMovementSpeed.Z;
             }
         }
 

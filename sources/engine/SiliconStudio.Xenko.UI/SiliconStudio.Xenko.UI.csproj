@@ -122,6 +122,7 @@
     <Compile Include="StripDefinitionCollection.cs" />
     <Compile Include="StripType.cs" />
     <Compile Include="Style.cs" />
+    <Compile Include="TextEventArgs.cs" />
     <Compile Include="Thickness.cs" />
     <Compile Include="ToggleState.cs" />
     <Compile Include="TouchAction.cs" />

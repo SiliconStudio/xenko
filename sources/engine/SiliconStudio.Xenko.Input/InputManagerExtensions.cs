@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
-// See LICENSE.md for full license information.
-using SiliconStudio.Core.Mathematics;
-using System;
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
 
-namespace SiliconStudio.Xenko.Input.Extensions
+using SiliconStudio.Core.Mathematics;
+
+namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// InputManager extra utility methods
@@ -11,63 +11,83 @@ namespace SiliconStudio.Xenko.Input.Extensions
     public static class InputManagerExtensions
     {
         /// <summary>
-        /// Injects a Key down event into the events stack
+        /// Injects a Key down event into the events stack, requires <see cref="InputSourceSimulated"/> to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
         /// <param name="key">the key you want to simulate</param>
         public static void SimulateKeyDown(this InputManager inputManager, Keys key)
         {
-            lock (inputManager.KeyboardInputEvents)
-            {
-                inputManager.KeyboardInputEvents.Add(new InputManager.KeyboardInputEvent { Key = key, Type = InputManager.InputEventType.Down });
-            }
+            InputSourceSimulated.Instance.Keyboard.SimulateDown(key);
         }
 
         /// <summary>
-        /// Injects a Key up (release) event into the events stack
+        /// Injects a Key up (release) event into the events stack, requires <see cref="InputSourceSimulated"/> to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
         /// <param name="key">the key you want to simulate</param>
         public static void SimulateKeyUp(this InputManager inputManager, Keys key)
         {
-            lock (inputManager.KeyboardInputEvents)
-            {
-                inputManager.KeyboardInputEvents.Add(new InputManager.KeyboardInputEvent { Key = key, Type = InputManager.InputEventType.Up });
-            }
+            InputSourceSimulated.Instance.Keyboard.SimulateUp(key);
         }
 
         /// <summary>
-        /// Injects a tap down touch pointer event into the events stack
+        /// Simulate mouse button presses, requires <see cref="InputSourceSimulated"/> to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
-        /// <param name="coords">the coordinates (0.0 -> 1.0) on the screen</param>
-        public static void SimulateTapDown(this InputManager inputManager, Vector2 coords)
+        /// <param name="button">the mouse button</param>
+        public static void SimulateMouseDown(this InputManager inputManager, MouseButton button)
         {
-            inputManager.InjectPointerEvent(new PointerEvent(0, coords, Vector2.Zero, TimeSpan.Zero, PointerState.Down, PointerType.Touch, true));
+            InputSourceSimulated.Instance.Mouse.SimulateMouseDown(button);
         }
 
         /// <summary>
-        /// Injects a tap move touch pointer event into the events stack
+        /// Simulate mouse button releases, requires <see cref="InputSourceSimulated"/> to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
-        /// <param name="coords">the coordinates (0.0 -> 1.0) on the screen</param>
-        /// <param name="deltaCoords">the delta coordinates from the previous event</param>
-        /// <param name="delta">the delta time between events</param>
-        public static void SimulateTapMove(this InputManager inputManager, Vector2 coords, Vector2 deltaCoords, TimeSpan delta)
+        /// <param name="button">the mouse button</param>
+        public static void SimulateMouseUp(this InputManager inputManager, MouseButton button)
         {
-            inputManager.InjectPointerEvent(new PointerEvent(0, coords, deltaCoords, delta, PointerState.Move, PointerType.Touch, true));
+            InputSourceSimulated.Instance.Mouse.SimulateMouseUp(button);
         }
 
         /// <summary>
-        /// Injects a tap up (release) touch pointer event into the events stack
+        /// Simulate mouse wheel movement, requires <see cref="InputSourceSimulated"/> to be enabled
+        /// </summary>
+        /// <param name="inputManager">the InputManager</param>
+        /// <param name="wheelDelta">the amount to scroll</param>
+        public static void SimulateMouseWheel(this InputManager inputManager, float wheelDelta)
+        {
+            InputSourceSimulated.Instance.Mouse.SimulateMouseWheel(wheelDelta);
+        }
+
+        /// <summary>
+        /// Simulates pointer down events, requires <see cref="InputSourceSimulated"/> to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
         /// <param name="coords">the coordinates (0.0 -> 1.0) on the screen</param>
-        /// <param name="deltaCoords">the delta coordinates from the previous event</param>
-        /// <param name="delta">the delta time between events</param>
-        public static void SimulateTapUp(this InputManager inputManager, Vector2 coords, Vector2 deltaCoords, TimeSpan delta)
+        public static void SimulatePointerDown(this InputManager inputManager, Vector2 coords)
         {
-            inputManager.InjectPointerEvent(new PointerEvent(0, coords, deltaCoords, delta, PointerState.Up, PointerType.Touch, true));
+            InputSourceSimulated.Instance.Mouse.SimulatePointer(PointerEventType.Pressed, coords);
+        }
+
+        /// <summary>
+        /// Simulates pointer move events, requires <see cref="InputSourceSimulated"/> to be enabled
+        /// </summary>
+        /// <param name="inputManager">the InputManager</param>
+        /// <param name="coords">the coordinates (0.0 -> 1.0) on the screen</param>
+        public static void SimulatePointerMove(this InputManager inputManager, Vector2 coords)
+        {
+            InputSourceSimulated.Instance.Mouse.SimulatePointer(PointerEventType.Moved, coords);
+        }
+
+        /// <summary>
+        /// Simulates pointer up events, requires <see cref="InputSourceSimulated"/> to be enabled
+        /// </summary>
+        /// <param name="inputManager">the InputManager</param>
+        /// <param name="coords">the coordinates (0.0 -> 1.0) on the screen</param>
+        public static void SimulatePointerUp(this InputManager inputManager, Vector2 coords)
+        {
+            InputSourceSimulated.Instance.Mouse.SimulatePointer(PointerEventType.Released, coords);
         }
     }
 }

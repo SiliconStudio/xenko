@@ -30,7 +30,7 @@ namespace FirstPersonShooter.Player
         /// <summary>
         /// Multiplies move movement by this amount to apply aim rotations
         /// </summary>
-        public float MouseSensitivity { get; set; } = 100.0f;
+        public float MouseSensitivity { get; set; } = 0.1f;
 
         public List<Keys> KeysLeft { get; } = new List<Keys>();
 
@@ -94,7 +94,7 @@ namespace FirstPersonShooter.Player
                     Input.UnlockMousePosition();
                 if (Input.IsMousePositionLocked)
                 {
-                    cameraDirection += new Vector2(Input.MouseDelta.X, -Input.MouseDelta.Y) * MouseSensitivity;
+                    cameraDirection += new Vector2(Input.AbsoluteMouseDelta.X, -Input.AbsoluteMouseDelta.Y) * MouseSensitivity;
                 }
 
                 // Broadcast the camera direction directly, as a screen-space Vector2
@@ -106,7 +106,7 @@ namespace FirstPersonShooter.Player
                 // Mouse: Left button, Tap events
                 var didShoot = Input.GetRightTriggerAny(0.2f) > 0.2f;   // This will allow for continuous shooting
 
-                if (Input.PointerEvents.Any(x => x.State == PointerState.Down))
+                if (Input.PointerEvents.Any(x => x.EventType == PointerEventType.Pressed))
                     didShoot = true;
                     
                 if (Input.HasMouse && Input.IsMouseButtonDown(MouseButton.Left))                  // This will allow for continuous shooting

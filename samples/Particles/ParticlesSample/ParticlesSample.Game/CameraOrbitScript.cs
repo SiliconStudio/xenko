@@ -38,7 +38,7 @@ namespace ParticlesSample
 
                 // determine if the user is currently touching the screen.
                 if (Input.PointerEvents.Count > 0)
-                    userIsTouchingScreen = Input.PointerEvents.Last().State != PointerState.Up;
+                    userIsTouchingScreen = Input.Pointer.PointerPoints.Any(x=>x.IsDown);
 
                 // calculate the current speed of the camera
                 if (userIsTouchingScreen)

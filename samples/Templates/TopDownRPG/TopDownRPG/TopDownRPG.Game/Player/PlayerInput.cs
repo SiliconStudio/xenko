@@ -79,7 +79,7 @@ namespace TopDownRPG.Player
             }
 
             // Mouse-based camera rotation. Only enabled after you click the screen to lock your cursor, pressing escape cancels this
-            foreach (var pointerEvent in Input.PointerEvents.Where(x => x.State == PointerState.Down))
+            foreach (var pointerEvent in Input.PointerEvents.Where(x => x.EventType == PointerEventType.Pressed))
             {
                 ClickResult clickResult;
                 if (Utils.ScreenPositionToWorldPositionRaycast(pointerEvent.Position, Camera, this.GetSimulation(),

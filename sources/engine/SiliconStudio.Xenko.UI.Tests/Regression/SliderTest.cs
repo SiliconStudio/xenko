@@ -166,9 +166,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public void DrawTest3()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.75f, 0.5f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.75f, 0.5f)));
+            PointerEvents.Clear();
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Pressed, new Vector2(0.75f, 0.5f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Released, new Vector2(0.75f, 0.5f)));
         }
 
         public void DrawTest4()
@@ -185,9 +185,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public void DrawTest6()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.54f, 0.5f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.54f, 0.5f)));
+            PointerEvents.Clear();
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Pressed, new Vector2(0.54f, 0.5f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Released, new Vector2(0.54f, 0.5f)));
         }
 
         public void DrawTest7()

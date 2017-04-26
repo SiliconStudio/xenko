@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using SiliconStudio.Core.Diagnostics;
@@ -27,10 +28,13 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         
         private Vector2 lastTouchPosition;
 
+        // The list that the inputmanager uses for pointer events
+        protected List<PointerEvent> PointerEvents;
+
         protected Scene Scene;
         protected Entity Camera;
         protected Entity UIRoot;
-
+        
         protected UIComponent UIComponent => UIRoot.Get<UIComponent>();
 
         /// <summary>
@@ -147,6 +151,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Window.IsMouseVisible = true;
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
+
+            PointerEvents = Input.PointerEvents;
         }
 
         #region Temporary Fix (Style)
@@ -245,12 +251,22 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 Exit();
         }
 
-        protected PointerEvent CreatePointerEvent(PointerState state, Vector2 position)
+        protected PointerEvent CreatePointerEvent(PointerEventType eventType, Vector2 position)
         {
-            if (state == PointerState.Down)
+            if (eventType == PointerEventType.Pressed)
                 lastTouchPosition = position;
 
-            var pointerEvent = new PointerEvent(0, position, position - lastTouchPosition, new TimeSpan(), state, PointerType.Touch, true);
+            var pointerEvent = new PointerEvent
+            {
+                Device = InputSourceSimulated.Instance.Mouse,
+                PointerId = 0,
+                Position = position,
+                DeltaPosition = position - lastTouchPosition,
+                DeltaTime = new TimeSpan(),
+                EventType = eventType,
+                PointerType = PointerType.Touch,
+                IsDown = true
+            };
 
             lastTouchPosition = position;
 

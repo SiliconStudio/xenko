@@ -1,5 +1,6 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +14,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Compositing;
 
@@ -297,6 +299,9 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         protected static void RunGameTest(GameTestBase game)
         {
+            // Enabled simulated input
+            InputSourceSimulated.Enabled = true;
+
             game.CurrentTestContext = TestContext.CurrentContext;
 
             game.ScreenShotAutomationEnabled = !ForceInteractiveMode;
