@@ -18,26 +18,18 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class ShaderMixins
     {
-        internal partial class LightShaftsEffect  : IShaderMixinBuilder
+        internal partial class AdditiveLightEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-
-                {
-                    var __mixinToCompose__ = (context.GetParam(LightShaftsEffectKeys.LightGroup));
-                    var __subMixin = new ShaderMixinSource();
-                    context.PushComposition(mixin, "lightGroup", __subMixin);
-                    context.Mixin(__subMixin, __mixinToCompose__);
-                    context.PopComposition();
-                }
-                context.Mixin(mixin, "LightShaftsShader", context.GetParam(LightShaftsEffectKeys.SampleCount));
+                context.Mixin(mixin, "AdditiveLightShader", context.GetParam(AdditiveLightEffectKeys.Color));
             }
 
             [ModuleInitializer]
             internal static void __Initialize__()
 
             {
-                ShaderMixinManager.Register("LightShaftsEffect", new LightShaftsEffect());
+                ShaderMixinManager.Register("AdditiveLightEffect", new AdditiveLightEffect());
             }
         }
     }

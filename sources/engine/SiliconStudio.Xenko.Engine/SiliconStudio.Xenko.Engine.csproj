@@ -212,6 +212,13 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Images\ImageScaler\SamplingPattern.cs" />
+    <Compile Include="Rendering\Images\LightShafts\AdditiveLightEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>AdditiveLightEffect.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\LightShafts\AdditiveLightEffectKeys.cs" />
     <Compile Include="Rendering\Images\LightShafts\LightShaftsAttenuation.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -328,6 +335,10 @@
     <None Include="Rendering\Compositing\MSAAResolverShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MSAAResolverShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LightShafts\AdditiveLightEffect.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>AdditiveLightEffect.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\LightShafts\LightShaftsAttenuation.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -2665,12 +2676,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Utils\MinMaxBounding.cs">
-      <DependentUpon>MinMaxBounding.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Rendering\Utils\NormalPack.cs">
       <DependentUpon>NormalPack.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -3979,10 +3984,6 @@
     <None Include="Rendering\Utils\Math.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>Math.cs</LastGenOutput>
-    </None>
-    <None Include="Rendering\Utils\MinMaxBounding.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>MinMaxBounding.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Utils\NormalPack.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

@@ -8,7 +8,7 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Engine
 {
-    [Display("Light shaft bounding volume")]
+    [Display("Light shaft bounding volume", Expand = ExpandRule.Always)]
     [DataContract("LightShaftBoundingVolumeComponent")]
     [DefaultEntityComponentProcessor(typeof(LightShaftBoundingVolumeProcessor))]
     public class LightShaftBoundingVolumeComponent : ActivableEntityComponent

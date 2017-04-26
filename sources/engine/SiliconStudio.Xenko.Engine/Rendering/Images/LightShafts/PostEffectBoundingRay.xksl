@@ -5,19 +5,9 @@
 /// SampleCount: generic int - number of iterations.
 /// Animate: generic bool - animate jitter
 /// </remarks>
-shader PostEffectBoundingRay<int SampleCount, bool Animated> 
+shader PostEffectBoundingRay<int SampleCount> 
     : ImageEffectShader, DepthBase, Transformation, Camera, Utilities, Global, PositionStream4
 {
-    cbuffer PerFrame
-    {
-        // (0,0,0) in view space projected into world space
-        stage float3 ViewBase;
-        // Offset of '(1,0,0) in view space projected into world space' from ViewBase
-        stage float3 ViewRight;
-        // Offset of '(0,1,0) in view space projected into world space' from ViewBase
-        stage float3 ViewUp;
-    }
-
     float ComputeColorOut() 
     {
         return 0;
@@ -28,13 +18,13 @@ shader PostEffectBoundingRay<int SampleCount, bool Animated>
         return 0;
     }
 
-    float RayStepJitter(float2 input, float stepSize) 
+    int HashXYZ(float3 input)
     {
-        if(Animated)
-        {
-            return stepSize * Math.FastRandom(int(input.x * 10000 + input.y * 6007 * 10000 + Time * 1000000));
-        }
-        return stepSize * Math.FastRandom(int(input.x * 10000 + input.y * 6007 * 10000));
+        return int(input.z * 300 + input.x * 1002 + input.y * 6007 * 100);
+    }
+    float RayStepJitter(float3 input, float stepSize) 
+    {
+        return stepSize * Math.FastRandom(HashXYZ(input));
     }
 
     float ComputeFinalColor(float lightAcc) 
@@ -50,29 +40,30 @@ shader PostEffectBoundingRay<int SampleCount, bool Animated>
 
         // Need at least a maximum value for this pixel to be contained in the bounding box
         if(minmax.y < 1)
-        {   
-            float bbNearDistance = ComputeDepthFromZProj(minmax.x);
-            float bbFarDistance = ComputeDepthFromZProj(minmax.y);
+        {
+            float currentZ = GetZProjDepthFromUV(streams.TexCoord);
+            float minZ = minmax.x;
+            float maxZ = min(minmax.y, currentZ);
 
-            // Clamp actual starting distance to 0 in case we only have a max
-            if(minmax.x <= 0)
-                bbNearDistance = 0; 
+            float minDistance = ComputeDepthFromZProj(minZ);
+            float maxDistance = ComputeDepthFromZProj(maxZ);
 
-             // Compute world space ray
-            float2 ndc = streams.TexCoord * 2.0f - 1.0f;
-            ndc.y = -ndc.y;
-            float3 traceTarget = ViewBase;
-            traceTarget += ViewRight * ndc.x;
-            traceTarget += ViewUp * ndc.y;
-            float4 directionWS = float4(normalize(traceTarget - Eye),0);
+            // Compute world space direction and position of the ending position
+            float4 positionClipSpace = float4((1.0 - streams.TexCoord.xy * 2.0) * float2(-1.0f, 1.0f), maxZ, 1.0f);
+            float4 positionVS = mul(positionClipSpace, ProjectionInverse);
+            float4 endingPosition = mul(positionVS, ViewInverse);
+            endingPosition /= endingPosition.w;
+            float4 directionWS = float4(endingPosition.xyz - Eye.xyz, 0);
+            directionWS = normalize(directionWS);
+            
+            // Compute depth slope and apply it to the world space direction so it can be multiplied by depth distances
+            float depthSlope = length(endingPosition.xyz - Eye.xyz) / maxDistance;
+            directionWS *= depthSlope;
+
+            float stepRange = (maxDistance - minDistance); 
+            float stepSize = stepRange / (float)SampleCount;
 
             float3 lightResult = 0.0f;
-
-            float currentDistance = ComputeDepthFromUV(streams.TexCoord);
-
-            float minDistance = bbNearDistance;
-            float maxDistance = min(bbFarDistance, currentDistance);
-            float stepSize = (maxDistance - minDistance) / (float)SampleCount;
 
             // Expected by the directional shadow map to compute the cascades
             streams.DepthVS = minDistance;
@@ -82,7 +73,8 @@ shader PostEffectBoundingRay<int SampleCount, bool Animated>
                 stepSize = (maxDistance - minDistance) / (float)SampleCount;
 
                 // Starting position
-                float4 positionWS = Eye + (minDistance + RayStepJitter(streams.TexCoord, stepSize)) * directionWS;
+                float4 positionWS = endingPosition + (RayStepJitter(positionVS.xyz / positionVS.w, stepSize)-stepRange) * directionWS;
+                streams.DepthVS = minDistance;
 
                 for(int i = 0; i < SampleCount; i++) 
                 {
