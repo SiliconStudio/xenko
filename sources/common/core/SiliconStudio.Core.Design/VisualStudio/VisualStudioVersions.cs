@@ -20,6 +20,8 @@ namespace SiliconStudio.Core.VisualStudio
         public VSIXInstallerVersion VsixInstallerVersion { get; internal set; }
         public string VsixInstallerPath { get; internal set; }
 
+        public bool Complete { get; internal set; } = true;
+
         public Dictionary<string, string> PackageVersions { get; internal set; } = new Dictionary<string, string>();
     }
 
@@ -93,7 +95,7 @@ namespace SiliconStudio.Core.VisualStudio
                             if (!File.Exists(vsixInstallerPath))
                                 vsixInstallerPath = null;
 
-                            var ideInfo = new IDEInfo { DisplayName = inst2.GetDisplayName(), InstallationPath = inst2.GetInstallationPath(), DevenvPath = path, VsixInstallerVersion = VSIXInstallerVersion.VS2017AndFutureVersions, VsixInstallerPath = vsixInstallerPath };
+                            var ideInfo = new IDEInfo { DisplayName = inst2.GetDisplayName(), Complete = inst2.IsComplete(), InstallationPath = inst2.GetInstallationPath(), DevenvPath = path, VsixInstallerVersion = VSIXInstallerVersion.VS2017AndFutureVersions, VsixInstallerPath = vsixInstallerPath };
 
                             // Fill packages
                             foreach (var package in inst2.GetPackages())
