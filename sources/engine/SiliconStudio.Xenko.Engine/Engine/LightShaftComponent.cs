@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Rendering.Shadows;
 
 namespace SiliconStudio.Xenko.Engine
 {
-    [Display("Light Shaft", Expand = ExpandRule.Auto)]
+    [Display("Light Shaft", Expand = ExpandRule.Always)]
     [DataContract("LightShaftComponent")]
     [DefaultEntityComponentProcessor(typeof(LightShaftProcessor), ExecutionMode = ExecutionMode.All)]
     public class LightShaftComponent : ActivableEntityComponent
