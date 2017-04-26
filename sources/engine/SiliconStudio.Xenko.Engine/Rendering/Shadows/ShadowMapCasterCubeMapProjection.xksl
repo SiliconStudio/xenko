@@ -7,8 +7,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     {
         stage override void VSMain()
         {
-            // Project into light view space
-            float3 lightPosition = Transformation.ViewInverse[3].xyz;
             float4 lightSpace = mul(streams.Position, Transformation.WorldView);
             streams.ShadingPosition = mul(lightSpace, Transformation.Projection);
         }

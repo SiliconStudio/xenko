@@ -33,23 +33,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shadowPosition.z -= DepthBiases[lightIndex];
             shadowPosition.xyz /= shadowPosition.w;
 
-            float4 ShadowTextureFactor = float4(0,0,0.5,0.5);
-            if(cascadeIndex == 1)
-            {
-                ShadowTextureFactor = float4(0,0.5,0.5,1);
-            }
-            else if(cascadeIndex == 0)
-            {
-                ShadowTextureFactor = float4(0,0,0.5,0.5);
-            }
-            float2 screenPosition = shadowPosition.xy;
-            //if(!all(screenPosition > ShadowTextureFactor.xy) || !all(screenPosition < ShadowTextureFactor.zw))
-            //    return 0;
-            float3 s = FilterShadow(shadowPosition.xy, shadowPosition.z);
-            //if(length(s) < 0.2)
-            //    return s;
-            //return 0;
-            return s;
+            return FilterShadow(shadowPosition.xy, shadowPosition.z);
         }
     };
 }
