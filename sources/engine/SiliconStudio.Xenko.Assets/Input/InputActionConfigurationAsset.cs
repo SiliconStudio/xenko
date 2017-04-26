@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Input.Mapping;
 
@@ -13,7 +12,6 @@ namespace SiliconStudio.Xenko.Assets.Input
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true)]
     [AssetContentType(typeof(InputActionConfiguration))]
     [Display("Input Action Configuration")]
-    [AssetCompiler(typeof(InputActionConfigurationAssetCompiler))]
     public class InputActionConfigurationAsset : Asset
     {
         public const string FileExtension = ".xkinput";
