@@ -219,12 +219,6 @@
       <DependentUpon>AdditiveLightEffect.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Images\LightShafts\AdditiveLightEffectKeys.cs" />
-    <Compile Include="Rendering\Images\LightShafts\LightShaftsAttenuation.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>LightShaftsAttenuation.xksl</DependentUpon>
-    </Compile>
     <Compile Include="Rendering\Images\LightShafts\LightShaftsEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -339,10 +333,6 @@
     <None Include="Rendering\Images\LightShafts\AdditiveLightEffect.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>AdditiveLightEffect.cs</LastGenOutput>
-    </None>
-    <None Include="Rendering\Images\LightShafts\LightShaftsAttenuation.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>LightShaftsAttenuation.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\LightShafts\LightShaftsEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
