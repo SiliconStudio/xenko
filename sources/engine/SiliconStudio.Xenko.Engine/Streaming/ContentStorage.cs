@@ -7,7 +7,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Streaming;
 
 namespace SiliconStudio.Xenko.Streaming
 {
@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Streaming
     /// </summary>
     public class ContentStorage
     {
-        private readonly ContentChunk[] _chunks;
+        private readonly ContentChunk[] chunks;
 
         /// <summary>
         /// Gets the time when container has been created.
@@ -30,11 +30,11 @@ namespace SiliconStudio.Xenko.Streaming
         {
             get
             {
-                var result = _chunks[0].LastAccessTime;
-                for (int i = 1; i < _chunks.Length; i++)
+                var result = chunks[0].LastAccessTime;
+                for (int i = 1; i < chunks.Length; i++)
                 {
-                    if (result < _chunks[i].LastAccessTime)
-                        result = _chunks[i].LastAccessTime;
+                    if (result < chunks[i].LastAccessTime)
+                        result = chunks[i].LastAccessTime;
                 }
                 return result;
             }
@@ -43,12 +43,22 @@ namespace SiliconStudio.Xenko.Streaming
         /// <summary>
         /// Gets the amount of chunks located inside the storage container.
         /// </summary>
-        public int ChunksCount => _chunks.Length;
+        public int ChunksCount => chunks.Length;
 
-        internal ContentStorage([NotNull] ContentChunk[] chunks, DateTime packageTime)
+        internal ContentStorage(ContentStorageHeader header)
         {
-            _chunks = chunks;
-            PackageTime = packageTime;
+            // Init
+            chunks = new ContentChunk[header.ChunksCount];
+            for (int i = 0; i < chunks.Length; i++)
+            {
+                var e = header.Chunks[i];
+                chunks[i] = new ContentChunk(this, e.Location, e.Size);
+            }
+            PackageTime = header.PackageTime;
+
+            // Validate hash code
+            if(GetHashCode() != header.HashCode)
+                throw new DataMisalignedException();
         }
 
         /// <summary>
@@ -58,19 +68,20 @@ namespace SiliconStudio.Xenko.Streaming
         /// <returns>Chunk</returns>
         public ContentChunk GetChunk(int index)
         {
-            Debug.Assert(index >= 0 && _chunks.Length > index);
+            Debug.Assert(index >= 0 && chunks.Length > index);
 
-            var chunk = _chunks[index];
+            var chunk = chunks[index];
             chunk.RegisterUsage();
             return chunk;
         }
 
         /// <summary>
-        /// Creates the new package at the specified location.
+        /// Creates the new storage container at the specified location and generates header for that.
         /// </summary>
         /// <param name="path">The file path.</param>
         /// <param name="chunksData">The chunks data.</param>
-        public static void Create(string path, List<byte[]> chunksData)
+        /// <param name="header">The header data.</param>
+        public static void Create(string path, List<byte[]> chunksData, out ContentStorageHeader header)
         {
             if (chunksData == null || chunksData.Count == 0 || chunksData.Any(x => x == null || x.Length == 0))
                 throw new ArgumentException(nameof(chunksData));
@@ -94,28 +105,33 @@ namespace SiliconStudio.Xenko.Streaming
                 + (sizeof(int) + sizeof(int)) * chunksCount;
 
             // Calculate header hash code (used to provide simple data verification during loading)
+            // Note: this must match ContentStorage.GetHashCode()
             int hashCode = (int)packageTime.Ticks;
             hashCode = (hashCode * 397) ^ chunksCount;
             for (int i = 0; i < chunksCount; i++)
                 hashCode = (hashCode * 397) ^ chunksData[i].Length;
 
+            // Create header
+            header = new ContentStorageHeader
+            {
+                DataUrl = path,
+                PackageTime = packageTime,
+                HashCode = hashCode,
+                Chunks = new ContentStorageHeader.ChunkEntry[chunksCount]
+            };
+            for (int i = 0; i < chunksCount; i++)
+            {
+                int size = chunksData[i].Length;
+                header.Chunks[i].Location = offset;
+                header.Chunks[i].Size = size;
+                offset += size;
+            }
+
+            // Create file with a raw data
             using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read))
             using (var stream = new BinaryWriter(fileStream))
             {
-                // Header
-                stream.Write(1);
-                stream.Write(packageTime.Ticks);
-                stream.Write(chunksCount);
-                stream.Write(hashCode);
-                for (int i = 0; i < chunksCount; i++)
-                {
-                    int size = chunksData[i].Length;
-                    stream.Write(offset);
-                    stream.Write(size);
-                    offset += size;
-                }
-
-                // Chunks Data
+                // Write data (one after another)
                 for (int i = 0; i < chunksCount; i++)
                     stream.Write(chunksData[i]);
 
@@ -126,14 +142,14 @@ namespace SiliconStudio.Xenko.Streaming
         }
 
         /// <inheritdoc/>
-        public override int GetHashCode()
+        public sealed override int GetHashCode()
         {
             unchecked
             {
                 int hashCode = (int)PackageTime.Ticks;
-                hashCode = (hashCode * 397) ^ _chunks.Length;
-                for (int i = 0; i < _chunks.Length; i++)
-                    hashCode = (hashCode * 397) ^ _chunks[i].Size;
+                hashCode = (hashCode * 397) ^ chunks.Length;
+                for (int i = 0; i < chunks.Length; i++)
+                    hashCode = (hashCode * 397) ^ chunks[i].Size;
                 return hashCode;
             }
         }

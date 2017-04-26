@@ -16,6 +16,11 @@ namespace SiliconStudio.Xenko.Streaming
         public StreamingManager Manager { get; private set; }
 
         /// <summary>
+        /// Gets the resource storage.
+        /// </summary>
+        public ContentStorage Storage { get; private set; }
+
+        /// <summary>
         /// Gets a value indicating whether this instance is disposed.
         /// </summary>
         public bool IsDisposed => Manager == null;
@@ -40,8 +45,9 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         public bool IsAllocated => AllocatedResidency > 0;
         
-        protected StreamableResource(StreamingManager manager)
+        protected StreamableResource(StreamingManager manager, ContentStorage storage)
         {
+            Storage = storage;
             Manager = manager;
             Manager.RegisterResource(this);
         }

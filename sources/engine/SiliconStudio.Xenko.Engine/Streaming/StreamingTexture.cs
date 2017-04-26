@@ -14,13 +14,8 @@ namespace SiliconStudio.Xenko.Streaming
         protected Texture _texture;
         protected int _residentMips;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StreamingTexture"/> class.
-        /// </summary>
-        /// <param name="manager">The manager.</param>
-        /// <param name="texture">The texture to stream.</param>
-        public StreamingTexture(StreamingManager manager, [NotNull] Texture texture)
-            : base(manager)
+        internal StreamingTexture(StreamingManager manager, ContentStorage storage, [NotNull] Texture texture)
+            : base(manager, storage)
         {
             _texture = texture;
             _residentMips = 0;
