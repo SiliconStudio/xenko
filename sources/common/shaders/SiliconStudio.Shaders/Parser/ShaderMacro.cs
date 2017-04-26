@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 
@@ -19,7 +19,7 @@ namespace SiliconStudio.Shaders.Parser
             if (name == null) throw new ArgumentNullException("name");
 
             Name = name;
-            Definition = definition == null ? string.Empty : (definition is bool ? definition.ToString().ToLower() : definition.ToString());
+            Definition = definition == null ? string.Empty : (definition is bool ? definition.ToString().ToLowerInvariant() : definition.ToString());
         }
 
         /// <summary>

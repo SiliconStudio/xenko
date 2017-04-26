@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             if (string.IsNullOrEmpty(ext))
                 return false;
 
-            var extToLower = ext.ToLower();
+            var extToLower = ext.ToLowerInvariant();
 
             return supportedExtensions.Any(supExt => supExt.Equals(extToLower));
         }
