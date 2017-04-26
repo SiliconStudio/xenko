@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core.Mathematics;
 
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         ///   Gets or sets a value indicating the number of sample locations during multisampling.
         /// </summary>
-        public MSAALevel MultiSampleLevel;
+        public MultisampleCount MultisampleCount;
 
         /// <summary>
         ///   Gets or sets the maximum rate at which the swap chain's back buffers can be presented to the front buffer.
@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Graphics
             BackBufferFormat = PixelFormat.R8G8B8A8_UNorm;
             PresentationInterval = PresentInterval.Immediate;
             DepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
-            MultiSampleLevel = MSAALevel.None;
+            MultisampleCount = MultisampleCount.None;
             IsFullScreen = false;
             RefreshRate = new Rational(60, 1); // by default
             ColorSpace = ColorSpace.Linear;
@@ -134,7 +134,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return BackBufferFormat == other.BackBufferFormat && BackBufferHeight == other.BackBufferHeight && BackBufferWidth == other.BackBufferWidth && DepthStencilFormat == other.DepthStencilFormat && Equals(DeviceWindowHandle, other.DeviceWindowHandle) && IsFullScreen == other.IsFullScreen && MultiSampleLevel == other.MultiSampleLevel && PresentationInterval == other.PresentationInterval && RefreshRate.Equals(other.RefreshRate) && PreferredFullScreenOutputIndex == other.PreferredFullScreenOutputIndex && ColorSpace == other.ColorSpace;
+            return BackBufferFormat == other.BackBufferFormat && BackBufferHeight == other.BackBufferHeight && BackBufferWidth == other.BackBufferWidth && DepthStencilFormat == other.DepthStencilFormat && Equals(DeviceWindowHandle, other.DeviceWindowHandle) && IsFullScreen == other.IsFullScreen && MultisampleCount == other.MultisampleCount && PresentationInterval == other.PresentationInterval && RefreshRate.Equals(other.RefreshRate) && PreferredFullScreenOutputIndex == other.PreferredFullScreenOutputIndex && ColorSpace == other.ColorSpace;
         }
 
         public override bool Equals(object obj)
@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.Graphics
                 hashCode = (hashCode * 397) ^ (int)DepthStencilFormat;
                 hashCode = (hashCode * 397) ^ (DeviceWindowHandle != null ? DeviceWindowHandle.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ IsFullScreen.GetHashCode();
-                hashCode = (hashCode * 397) ^ (int)MultiSampleLevel;
+                hashCode = (hashCode * 397) ^ (int)MultisampleCount;
                 hashCode = (hashCode * 397) ^ (int)PresentationInterval;
                 hashCode = (hashCode * 397) ^ RefreshRate.GetHashCode();
                 hashCode = (hashCode * 397) ^ PreferredFullScreenOutputIndex;

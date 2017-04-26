@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.IO;
@@ -17,6 +17,11 @@ namespace SiliconStudio.Xenko.Graphics
 
         private bool isCaptureStarted;
         private unsafe IntPtr* apiPointers;
+
+        public unsafe bool IsInitialized
+        {
+            get { return apiPointers != null; }
+        }
 
         // Matching https://github.com/baldurk/renderdoc/blob/master/renderdoc/api/app/renderdoc_app.h
 
@@ -63,7 +68,10 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void Shutdown()
         {
-            GetMethod<RENDERDOC_Shutdown>(RenderDocAPIFunction.Shutdown)();
+            if (IsInitialized)
+            {
+                GetMethod<RENDERDOC_Shutdown>(RenderDocAPIFunction.Shutdown)();
+            }
         }
 
         public void StartCapture(GraphicsDevice graphicsDevice, IntPtr hwndPtr)

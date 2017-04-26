@@ -1,6 +1,7 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Assets
 {
@@ -15,47 +16,5 @@ namespace SiliconStudio.Assets
             return versionInfo.ToFilter<Package>(p => p.Meta.Version);
         }
 
-        public static Func<T, bool> ToFilter<T>(this PackageVersionRange versionInfo, Func<T, PackageVersion> extractor)
-        {
-            if (versionInfo == null)
-            {
-                throw new ArgumentNullException("versionInfo");
-            }
-            if (extractor == null)
-            {
-                throw new ArgumentNullException("extractor");
-            }
-
-            return p =>
-            {
-                PackageVersion version = extractor(p);
-                bool condition = true;
-                if (versionInfo.MinVersion != null)
-                {
-                    if (versionInfo.IsMinInclusive)
-                    {
-                        condition = version >= versionInfo.MinVersion;
-                    }
-                    else
-                    {
-                        condition = version > versionInfo.MinVersion;
-                    }
-                }
-
-                if (versionInfo.MaxVersion != null)
-                {
-                    if (versionInfo.IsMaxInclusive)
-                    {
-                        condition = condition && version <= versionInfo.MaxVersion;
-                    }
-                    else
-                    {
-                        condition = condition && version < versionInfo.MaxVersion;
-                    }
-                }
-
-                return condition;
-            };
-        }         
     }
 }

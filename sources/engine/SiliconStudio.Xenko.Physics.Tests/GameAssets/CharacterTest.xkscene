@@ -1,44 +1,10 @@
 !SceneAsset
 Id: c2b9bd24-3e83-4fff-b963-79f9ff5430ac
-SerializedVersion: {Xenko: 1.9.0-beta01}
+SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
-SceneSettings:
-    ~Id: c1bcddb5-4d63-40b7-965d-8e09857d9afb
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: 94176ade-297f-4eb6-a529-1e8791430d63
-        Cameras:
-            -   ~Id: 35c14779-1615-42ad-be49-8f20d27e1c1a
-                Name: null
-                Camera: 1dca85fc-8e93-4d68-9e82-4440251e3bf9/38cef2b7-8947-421c-8962-842432719def
-        Layers: []
-        Master:
-            ~Id: 67341801-6f85-4cec-b1c4-7e8e97bd38a0
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                - !ClearRenderFrameRenderer
-                    ~Id: 69ad2cad-a610-4c8e-a43a-7f67c31c82b4
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                - !SceneCameraRenderer
-                    ~Id: 83a2dd1d-b7d2-4a0e-a342-b9bba4c800b9
-                    Mode: !CameraRendererModeForward
-                        ~Id: 61d2cfc2-b674-49d4-911d-d13aac9cc51f
-                    Camera:
-                        ~Id: 8b78371d-54a9-40c2-b55f-5ddaef883daf
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        ~Id: 3cefcdfb-f621-43af-ad33-59de45edfed7
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: 41104255-87c9-4e9f-bdbe-3b20dac87144
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    ~Id: c860760b-592a-4fc9-8475-ccebea3d22e7
     RootPartIds:
         - 1dca85fc-8e93-4d68-9e82-4440251e3bf9
         - de1fcd6c-d440-474c-adda-b004e2f06c20
@@ -52,27 +18,29 @@ Hierarchy:
                 Id: 1dca85fc-8e93-4d68-9e82-4440251e3bf9
                 Name: Camera
                 Components:
-                    - !TransformComponent
-                        ~Id: 022426e7-c6b4-4bf2-8be1-7b1e598cf547
-                        Children: []
+                    e7262402b4c6f24b8be17b1e598cf547: !TransformComponent
+                        Id: 022426e7-c6b4-4bf2-8be1-7b1e598cf547
                         Position: {X: -1.0, Y: 1.2, Z: 2.7}
                         Rotation: {X: -0.08583164, Y: -0.1729874, Z: -0.0151344351, W: 0.981060266}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !CameraComponent
-                        ~Id: 38cef2b7-8947-421c-8962-842432719def
+                        Children: {}
+                    b7f2ce3847891c428962842432719def: !CameraComponent
+                        Id: 38cef2b7-8947-421c-8962-842432719def
+                        Name: null
                         Projection: Perspective
+                        Slot: {Index: 0}
         -   Entity:
                 Id: 323319d0-dcba-4464-a0c0-5858d65845c2
                 Name: Ground
                 Components:
-                    - !TransformComponent
-                        ~Id: 9d283c33-85e2-474b-beb4-b0417719b449
-                        Children: []
+                    333c289de2854b47beb4b0417719b449: !TransformComponent
+                        Id: 9d283c33-85e2-474b-beb4-b0417719b449
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !StaticColliderComponent
-                        ~Id: 174c8c5d-8b96-4bfe-860b-c3428448d774
+                        Children: {}
+                    5d8c4c17968bfe4b860bc3428448d774: !StaticColliderComponent
+                        Id: 174c8c5d-8b96-4bfe-860b-c3428448d774
                         CanSleep: false
                         Restitution: 0.0
                         Friction: 0.5
@@ -81,40 +49,37 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         ColliderShapes:
-                            - !StaticPlaneColliderShapeDesc
-                                ~Id: cf27f61a-3da3-4144-8886-ba73a93f27e4
+                            1af627cfa33d44418886ba73a93f27e4: !StaticPlaneColliderShapeDesc
                                 Normal: {X: 0.0, Y: 1.0, Z: 0.0}
                                 Offset: 0.0
         -   Entity:
                 Id: 3f0980df-17d0-4826-bb0d-91d31e918e5a
                 Name: Ambient light
                 Components:
-                    - !TransformComponent
-                        ~Id: 9f1f85d2-afbf-48fe-a7d7-42e2c692a2f8
-                        Children: []
+                    d2851f9fbfaffe48a7d742e2c692a2f8: !TransformComponent
+                        Id: 9f1f85d2-afbf-48fe-a7d7-42e2c692a2f8
                         Position: {X: -2.0, Y: 2.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !LightComponent
-                        ~Id: 389f2fc1-c372-438f-8dbc-c54bbe69f4c3
+                        Children: {}
+                    c12f9f3872c38f438dbcc54bbe69f4c3: !LightComponent
+                        Id: 389f2fc1-c372-438f-8dbc-c54bbe69f4c3
                         Type: !LightAmbient
-                            ~Id: 928d9e67-b690-4c0f-acb7-fc5c35892df0
                             Color: !ColorRgbProvider
-                                ~Id: b8128a28-f60e-48e1-a3d3-d3173c02cff5
                                 Value: {R: 0.768627465, G: 0.843137264, B: 1.0}
                         Intensity: 0.05
         -   Entity:
                 Id: 8d84eb37-962e-48ce-ba89-893683430a07
                 Name: Character
                 Components:
-                    - !TransformComponent
-                        ~Id: c02374b6-02cb-44c8-9d5b-2359793cbe34
-                        Children: []
+                    b67423c0cb02c8449d5b2359793cbe34: !TransformComponent
+                        Id: c02374b6-02cb-44c8-9d5b-2359793cbe34
                         Position: {X: 0.0, Y: 1.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !CharacterComponent
-                        ~Id: 7cd5471c-3bf4-47e5-9356-84f25405bc01
+                        Children: {}
+                    1c47d57cf43be547935684f25405bc01: !CharacterComponent
+                        Id: 7cd5471c-3bf4-47e5-9356-84f25405bc01
                         CollisionGroup: CharacterFilter
                         CanSleep: false
                         Restitution: 0.0
@@ -127,22 +92,21 @@ Hierarchy:
                         JumpSpeed: 5.0
                         Gravity: -10.0
                         ColliderShapes:
-                            - !CapsuleColliderShapeDesc
-                                ~Id: d6505e15-b19b-4ace-aa47-c6a99b1f5f4e
+                            155e50d69bb1ce4aaa47c6a99b1f5f4e: !CapsuleColliderShapeDesc
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
         -   Entity:
                 Id: a4088c0f-ef54-402a-ae01-6d972f3f425e
                 Name: Collider
                 Components:
-                    - !TransformComponent
-                        ~Id: f5c4c769-5b53-4bf0-8617-a96892c3feb1
-                        Children: []
+                    69c7c4f5535bf04b8617a96892c3feb1: !TransformComponent
+                        Id: f5c4c769-5b53-4bf0-8617-a96892c3feb1
                         Position: {X: 6.0, Y: 0.5, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !StaticColliderComponent
-                        ~Id: 27973a2a-4dc1-4f21-8a0e-205e4fbcd7a3
+                        Children: {}
+                    2a3a9727c14d214f8a0e205e4fbcd7a3: !StaticColliderComponent
+                        Id: 27973a2a-4dc1-4f21-8a0e-205e4fbcd7a3
                         CanCollideWith: CharacterFilter
                         CanSleep: false
                         Restitution: 0.0
@@ -152,8 +116,7 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         ColliderShapes:
-                            - !BoxColliderShapeDesc
-                                ~Id: 881ea8e5-854d-43a6-907d-3ee2fbff946d
+                            e5a81e884d85a643907d3ee2fbff946d: !BoxColliderShapeDesc
                                 Is2D: false
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
@@ -162,42 +125,33 @@ Hierarchy:
                 Id: b44b9503-5fec-4dff-8928-51b5d00451e3
                 Name: Skybox
                 Components:
-                    - !TransformComponent
-                        ~Id: a77331e0-797a-421f-b956-b03ea884c274
-                        Children: []
+                    e03173a77a791f42b956b03ea884c274: !TransformComponent
+                        Id: a77331e0-797a-421f-b956-b03ea884c274
                         Position: {X: 0.0, Y: 2.0, Z: -2.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !SkyboxComponent
-                        ~Id: af5e69f0-a762-4ffc-a968-0d2b7b72ccab
+                        Children: {}
         -   Entity:
                 Id: de1fcd6c-d440-474c-adda-b004e2f06c20
                 Name: Directional light
                 Components:
-                    - !TransformComponent
-                        ~Id: 7bfc7351-c65e-40a0-a86c-f8774a79bef9
-                        Children: []
+                    5173fc7b5ec6a040a86cf8774a79bef9: !TransformComponent
+                        Id: 7bfc7351-c65e-40a0-a86c-f8774a79bef9
                         Position: {X: 0.0, Y: 2.0, Z: 0.0}
                         Rotation: {X: -0.5540323, Y: 0.212012157, Z: 0.1484525, W: 0.7912401}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !LightComponent
-                        ~Id: 685cdd56-3a21-4360-9578-691f42894598
+                        Children: {}
+                    56dd5c68213a60439578691f42894598: !LightComponent
+                        Id: 685cdd56-3a21-4360-9578-691f42894598
                         Type: !LightDirectional
-                            ~Id: c12978db-e8d6-4ef9-98de-60fa87dca1fe
                             Color: !ColorRgbProvider
-                                ~Id: 75f6f9fa-ea82-4e8a-8d91-ed9c2abac87a
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
                             Shadow:
-                                ~Id: 2b297f46-5ac5-4ee7-8caa-4c8f9177c133
                                 Enabled: true
                                 Filter: !LightShadowMapFilterTypePcf
-                                    ~Id: b733b05b-aa7c-4784-aa95-2c773fe06864
                                     FilterSize: Filter5x5
                                 Size: XLarge
-                                DepthRange:
-                                    ~Id: 29ae8012-27d5-4b7a-adfa-36dbf593b658
-                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic
-                                    ~Id: d08c71ea-cda9-4c5b-bba0-289dcb76b33d
-                                BiasParameters:
-                                    ~Id: 902a4193-e12c-4e41-b3df-91241c8f096e
+                                DepthRange: {}
+                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic {}
+                                BiasParameters: {}
                         Intensity: 0.8

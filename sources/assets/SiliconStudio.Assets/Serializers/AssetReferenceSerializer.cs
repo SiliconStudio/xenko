@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
@@ -23,14 +23,9 @@ namespace SiliconStudio.Assets.Serializers
         public override object ConvertFrom(ref ObjectContext context, Scalar fromScalar)
         {
             AssetReference assetReference;
-            Guid referenceId;
-            if (!AssetReference.TryParse(fromScalar.Value, out assetReference, out referenceId))
+            if (!AssetReference.TryParse(fromScalar.Value, out assetReference))
             {
                 throw new YamlException(fromScalar.Start, fromScalar.End, "Unable to decode asset reference [{0}]. Expecting format GUID:LOCATION".ToFormat(fromScalar.Value));
-            }
-            if (referenceId != Guid.Empty)
-            {
-                IdentifiableHelper.SetId(assetReference, referenceId);
             }
             return assetReference;
         }

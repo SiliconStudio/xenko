@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11 || SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using System;
 using System.Collections.Generic;
@@ -68,7 +68,6 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         case EffectParameterClass.ConstantBuffer:
                             {
-                                //commandList.SetConstantBuffer(bindingOperation.Stage, bindingOperation.SlotStart, (Buffer)value.Value);
                                 commandList.SetConstantBuffer(bindingOperation.Stage, bindingOperation.SlotStart, (Buffer)value.Value);
                                 break;
                             }
@@ -79,6 +78,7 @@ namespace SiliconStudio.Xenko.Graphics
                             }
                         case EffectParameterClass.ShaderResourceView:
                             {
+                                commandList.UnsetUnorderedAccessView(value.Value as GraphicsResource);
                                 commandList.SetShaderResourceView(bindingOperation.Stage, bindingOperation.SlotStart, (GraphicsResource)value.Value);
                                 break;
                             }

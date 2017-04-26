@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 
 using SiliconStudio.Core;
@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<Sprite>))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Sprite>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<Sprite>), Profile = "Content")]
     public class Sprite
     {
         public const int DefaultPixelsPerUnit = 100;

@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -93,8 +93,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     // Make sure the view is collected (if not done previously)
                     context.VisibilityGroup.TryCollect(renderViewData.Key);
 
+                    if (MathUtil.NearEqual(renderViewData.Key.MinimumDistance, renderViewData.Key.MaximumDistance))
+                    {
+                        renderViewData.Key.MaximumDistance = renderViewData.Key.MinimumDistance + MathUtil.ZeroTolerance;
+                    }
+
                     // Check if there is any shadow receivers at all
-                    if (renderViewData.Key.MinimumDistance >= renderViewData.Key.MaximumDistance)
+                    if (float.IsInfinity(renderViewData.Key.MinimumDistance) || float.IsInfinity(renderViewData.Key.MaximumDistance))
                     {
                         continue;
                     }

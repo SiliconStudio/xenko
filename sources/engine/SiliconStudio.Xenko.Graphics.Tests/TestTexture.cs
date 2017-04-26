@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -18,10 +18,26 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     [Description("Check Texture")]
     public class TestTexture : GameTestBase
     {
+        private static ImageFileType[] ImageFileTypes => (ImageFileType[])Enum.GetValues(typeof(ImageFileType));
+
         public TestTexture()
         {
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
             CurrentVersion = 1;
+        }
+
+        [Test]
+        public void TestCalculateMipMapCount()
+        {
+            Assert.AreEqual(1, Texture.CalculateMipMapCount(MipMapCount.Auto, 0));
+            Assert.AreEqual(1, Texture.CalculateMipMapCount(MipMapCount.Auto, 1));
+            Assert.AreEqual(2, Texture.CalculateMipMapCount(MipMapCount.Auto, 2));
+            Assert.AreEqual(3, Texture.CalculateMipMapCount(MipMapCount.Auto, 4));
+            Assert.AreEqual(4, Texture.CalculateMipMapCount(MipMapCount.Auto, 8));
+            Assert.AreEqual(9, Texture.CalculateMipMapCount(MipMapCount.Auto, 256, 256));
+            Assert.AreEqual(10, Texture.CalculateMipMapCount(MipMapCount.Auto, 1023));
+            Assert.AreEqual(11, Texture.CalculateMipMapCount(MipMapCount.Auto, 1024));
+            Assert.AreEqual(10, Texture.CalculateMipMapCount(MipMapCount.Auto, 615, 342));
         }
 
         [Test]
@@ -348,98 +364,91 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         /// The saved image is then compared with the original image to check that the whole chain (CPU -> GPU, GPU -> CPU) is passing correctly
         /// the textures.
         /// </remarks>
-        [Test]
-        public void TestLoadSave()
+        [Test, TestCaseSource(nameof(ImageFileTypes))]
+        public void TestLoadSave(ImageFileType sourceFormat)
         {
-            foreach (ImageFileType sourceFormat in Enum.GetValues(typeof(ImageFileType)))
-            {
-                if(Platform.Type == PlatformType.Android && (
-                    sourceFormat == ImageFileType.Xenko || sourceFormat == ImageFileType.Dds || // TODO remove this when mipmap copy is supported on OpenGL by the engine.
-                    sourceFormat == ImageFileType.Tiff)) // TODO remove when the tiff format is supported on android.
-                    continue; 
+            if(Platform.Type == PlatformType.Android && (
+                sourceFormat == ImageFileType.Xenko || sourceFormat == ImageFileType.Dds || // TODO remove this when mipmap copy is supported on OpenGL by the engine.
+                sourceFormat == ImageFileType.Tiff)) // TODO remove when the tiff format is supported on android.
+                Assert.Ignore();
 
-                PerformTest(
-                    game =>
-                    {
-                        var intermediateFormat = ImageFileType.Xenko;
+            PerformTest(
+                game =>
+                {
+                    var intermediateFormat = ImageFileType.Xenko;
 
-                        if (sourceFormat == ImageFileType.Wmp) // no input image of this format.
-                            return;
+                    if (sourceFormat == ImageFileType.Wmp) // no input image of this format.
+                        return;
 
-                        if (sourceFormat == ImageFileType.Wmp || sourceFormat == ImageFileType.Tga) // TODO remove this when Load/Save methods are implemented for those types.
-                            return;
+                    if (sourceFormat == ImageFileType.Wmp || sourceFormat == ImageFileType.Tga) // TODO remove this when Load/Save methods are implemented for those types.
+                        return;
 
-                        var device = game.GraphicsDevice;
-                        var fileName = sourceFormat.ToFileExtension().Substring(1) + "Image";
-                        var filePath = "ImageTypes/" + fileName;
+                    var device = game.GraphicsDevice;
+                    var fileName = sourceFormat.ToFileExtension().Substring(1) + "Image";
+                    var filePath = "ImageTypes/" + fileName;
 
-                        var testMemoryBefore = GC.GetTotalMemory(true);
-                        var clock = Stopwatch.StartNew();
+                    var testMemoryBefore = GC.GetTotalMemory(true);
+                    var clock = Stopwatch.StartNew();
 
-                        // Load an image from a file and dispose it.
-                        Texture texture;
-                        using (var inStream = game.Content.OpenAsStream(filePath, StreamFlags.None))
-                            texture = Texture.Load(device, inStream);
+                    // Load an image from a file and dispose it.
+                    Texture texture;
+                    using (var inStream = game.Content.OpenAsStream(filePath, StreamFlags.None))
+                        texture = Texture.Load(device, inStream);
                             
-                        var tempStream = new MemoryStream();
-                        texture.Save(game.GraphicsContext.CommandList, tempStream, intermediateFormat);
-                        tempStream.Position = 0;
-                        texture.Dispose();
+                    var tempStream = new MemoryStream();
+                    texture.Save(game.GraphicsContext.CommandList, tempStream, intermediateFormat);
+                    tempStream.Position = 0;
+                    texture.Dispose();
 
-                        using (var inStream = game.Content.OpenAsStream(filePath, StreamFlags.None))
-                        using (var originalImage = Image.Load(inStream))
+                    using (var inStream = game.Content.OpenAsStream(filePath, StreamFlags.None))
+                    using (var originalImage = Image.Load(inStream))
+                    {
+                        using (var textureImage = Image.Load(tempStream))
                         {
-                            using (var textureImage = Image.Load(tempStream))
-                            {
-                                TestImage.CompareImage(originalImage, textureImage, false, 0, fileName);
-                            }
+                            TestImage.CompareImage(originalImage, textureImage, false, 0, fileName);
                         }
-                        tempStream.Dispose();
-                        var time = clock.ElapsedMilliseconds;
-                        clock.Stop();
-                        GC.Collect();
-                        GC.WaitForPendingFinalizers();
-                        var testMemoryAfter = GC.GetTotalMemory(true);
-                        Log.Info($"Test loading {fileName} GPU texture / saving to {intermediateFormat} and compare with original Memory {testMemoryAfter - testMemoryBefore} delta bytes, in {time}ms");
-                    }, 
-                    GraphicsProfile.Level_9_1);
-            }
+                    }
+                    tempStream.Dispose();
+                    var time = clock.ElapsedMilliseconds;
+                    clock.Stop();
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    var testMemoryAfter = GC.GetTotalMemory(true);
+                    Log.Info($"Test loading {fileName} GPU texture / saving to {intermediateFormat} and compare with original Memory {testMemoryAfter - testMemoryBefore} delta bytes, in {time}ms");
+                }, 
+                GraphicsProfile.Level_9_1);
         }
 
-        [Test]
-        public void TestLoadDraw()
+        [Test, TestCaseSource(nameof(ImageFileTypes))]
+        public void TestLoadDraw(ImageFileType sourceFormat)
         {
-            foreach (ImageFileType sourceFormat in Enum.GetValues(typeof(ImageFileType)))
-            {
-                if (sourceFormat == ImageFileType.Wmp) // no input image of this format.
-                    return;
+            if (sourceFormat == ImageFileType.Wmp) // no input image of this format.
+                Assert.Ignore();
 
-                if (sourceFormat == ImageFileType.Wmp || sourceFormat == ImageFileType.Tga) // TODO remove this when Load/Save methods are implemented for those types.
-                    return;
+            if (sourceFormat == ImageFileType.Wmp || sourceFormat == ImageFileType.Tga) // TODO remove this when Load/Save methods are implemented for those types.
+                Assert.Ignore();
 
-                if (Platform.Type == PlatformType.Android && sourceFormat == ImageFileType.Tiff)// TODO remove this when Load/Save methods are implemented for this type.
-                    return;
+            if (Platform.Type == PlatformType.Android && sourceFormat == ImageFileType.Tiff)// TODO remove this when Load/Save methods are implemented for this type.
+                Assert.Ignore();
 
-                PerformDrawTest(
-                    (game, context) =>
-                    {
-                        context.CommandList.Clear(context.CommandList.RenderTarget, Color.Green);
-                        context.CommandList.Clear(context.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            PerformDrawTest(
+                (game, context) =>
+                {
+                    context.CommandList.Clear(context.CommandList.RenderTarget, new Color4(Color.Green).ToColorSpace(ColorSpace.Linear));
+                    context.CommandList.Clear(context.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
 
-                        var device = game.GraphicsDevice;
-                        var fileName = sourceFormat.ToFileExtension().Substring(1) + "Image";
-                        var filePath = "ImageTypes/" + fileName;
+                    var device = game.GraphicsDevice;
+                    var fileName = sourceFormat.ToFileExtension().Substring(1) + "Image";
+                    var filePath = "ImageTypes/" + fileName;
                         
-                        // Load an image from a file and dispose it.
-                        Texture texture;
-                        using (var inStream = game.Content.OpenAsStream(filePath, StreamFlags.None))
-                            texture = Texture.Load(device, inStream, loadAsSRGB: true);
+                    // Load an image from a file and dispose it.
+                    Texture texture;
+                    using (var inStream = game.Content.OpenAsStream(filePath, StreamFlags.None))
+                        texture = Texture.Load(device, inStream, loadAsSRGB: true);
                         
-                        game.GraphicsContext.DrawTexture(texture, BlendStates.AlphaBlend);
-                    },
-                    GraphicsProfile.Level_9_1,
-                    sourceFormat.ToString());
-            }
+                    game.GraphicsContext.DrawTexture(texture, BlendStates.AlphaBlend);
+                },
+                GraphicsProfile.Level_9_1);
         }
 
         private void CheckTexture(GraphicsContext graphicsContext, Texture texture, byte[] data)

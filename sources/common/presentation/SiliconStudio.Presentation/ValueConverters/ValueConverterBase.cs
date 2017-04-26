@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Markup;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -31,9 +32,9 @@ namespace SiliconStudio.Presentation.ValueConverters
         }
 
         /// <inheritdoc/>
-        public abstract object Convert(object value, Type targetType, object parameter, CultureInfo culture);
+        public abstract object Convert(object value, [NotNull] Type targetType, object parameter, CultureInfo culture);
 
         /// <inheritdoc/>
-        public abstract object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture);
+        public abstract object ConvertBack(object value, [NotNull] Type targetType, object parameter, CultureInfo culture);
     }
 }

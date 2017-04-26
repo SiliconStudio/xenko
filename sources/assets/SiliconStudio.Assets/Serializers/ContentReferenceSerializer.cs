@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
@@ -19,7 +19,7 @@ namespace SiliconStudio.Assets.Serializers
 
         public override bool CanVisit(Type type)
         {
-            return ReferenceSerializer.IsReferenceType(type);
+            return AssetRegistry.IsContentType(type);
         }
 
         public override object ConvertFrom(ref ObjectContext context, Scalar fromScalar)
@@ -27,18 +27,15 @@ namespace SiliconStudio.Assets.Serializers
             AssetId guid;
             UFile location;
             Guid referenceId;
-            if (!AssetReference.TryParse(fromScalar.Value, out guid, out location, out referenceId))
+            if (!AssetReference.TryParse(fromScalar.Value, out guid, out location))
             {
                 throw new YamlException(fromScalar.Start, fromScalar.End, "Unable to decode asset reference [{0}]. Expecting format GUID:LOCATION".ToFormat(fromScalar.Value));
             }
 
             var instance = AttachedReferenceManager.CreateProxyObject(context.Descriptor.Type, guid, location);
-            if (referenceId != Guid.Empty)
-            {
-                IdentifiableHelper.SetId(instance, referenceId);
-            }
             return instance;
         }
+
         public override string ConvertTo(ref ObjectContext objectContext)
         {
             var attachedReference = AttachedReferenceManager.GetAttachedReference(objectContext.Instance);

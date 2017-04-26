@@ -12,7 +12,7 @@
     <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -105,6 +105,7 @@
     <Compile Include="Serialization\Serializers\CollectionSerializer.cs" />
     <Compile Include="Serialization\Serializers\DictionarySerializer.cs" />
     <Compile Include="Schemas\SchemaBase.cs" />
+    <Compile Include="Serialization\Serializers\ExceptionUtils.cs" />
     <Compile Include="Serialization\Serializers\ObjectSerializer.cs" />
     <Compile Include="Serialization\Serializers\ScalarSerializerBase.cs" />
     <Compile Include="Serialization\Serializers\TagTypeSerializer.cs" />
@@ -155,7 +156,6 @@
     <Compile Include="Tokens\Token.cs" />
     <Compile Include="Tokens\Value.cs" />
     <Compile Include="Tokens\VersionDirective.cs" />
-    <Compile Include="TypeExtensions.cs" />
     <Compile Include="Version.cs" />
     <Compile Include="YamlException.cs" />
   </ItemGroup>

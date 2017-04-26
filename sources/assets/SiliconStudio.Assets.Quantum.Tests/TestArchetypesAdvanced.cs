@@ -1,5 +1,8 @@
-﻿using System.Linq;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Linq;
 using NUnit.Framework;
+using SiliconStudio.Assets.Quantum.Tests.Helpers;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 
@@ -12,7 +15,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public void TestSimpleDictionaryAddWithCollision()
         {
             var asset = new Types.MyAsset3 { MyDictionary = { { "Key1", "String1" }, { "Key2", "String2" } } };
-            var context = DeriveAssetTest<Types.MyAsset3>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
@@ -55,7 +58,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public void TestSimpleCollectionRemoveDeleted()
         {
             var asset = new Types.MyAsset2 { MyStrings = { "String1", "String2", "String3", "String4" } };
-            var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
@@ -97,7 +100,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public void TestSimpleDictionaryRemoveDeleted()
         {
             var asset = new Types.MyAsset3 { MyDictionary = { { "Key1", "String1" }, { "Key2", "String2" }, { "Key3", "String3" }, { "Key4", "String4" } } };
-            var context = DeriveAssetTest<Types.MyAsset3>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
@@ -139,7 +142,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public void TestSimpleCollectionUpdateDeleted()
         {
             var asset = new Types.MyAsset2 { MyStrings = { "String1", "String2", "String3", "String4" } };
-            var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
@@ -181,7 +184,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public void TestSimpleDictionaryUpdateDeleted()
         {
             var asset = new Types.MyAsset3 { MyDictionary = { { "Key1", "String1" }, { "Key2", "String2" }, { "Key3", "String3" }, { "Key4", "String4" } } };
-            var context = DeriveAssetTest<Types.MyAsset3>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
@@ -223,7 +226,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public void TestSimpleCollectionAddMultipleAndCheckOrder()
         {
             var asset = new Types.MyAsset2 { MyStrings = { "String1", "String2", "String3", "String4" } };
-            var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
@@ -277,6 +280,113 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(baseIds[6], derivedIds[7]);
             Assert.AreEqual(baseIds[7], derivedIds[9]);
             Assert.AreEqual(baseIds[8], derivedIds[10]);
+        }
+
+        [Test]
+        public void TestRemoveBaseAddDerivedWithSubDerived()
+        {
+            var asset = new Types.MyAsset2 { MyStrings = { "String1", "String2" } };
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
+            var subDerivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.SubDerivedAsset.MyStrings);
+            var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
+            var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
+            var subDerivedPropertyNode = context.SubDerivedGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
+
+            // Delete an item from the derived and then update the same from the base
+            var derivedDeletedId = derivedIds[1];
+            derivedPropertyNode.Target.Remove("String2", new Index(1));
+            basePropertyNode.Target.Add("String3");
+            Assert.AreEqual(3, context.BaseAsset.MyStrings.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyStrings.Count);
+            Assert.AreEqual(2, context.SubDerivedAsset.MyStrings.Count);
+            Assert.AreEqual("String1", basePropertyNode.Retrieve(new Index(0)));
+            Assert.AreEqual("String2", basePropertyNode.Retrieve(new Index(1)));
+            Assert.AreEqual("String3", basePropertyNode.Retrieve(new Index(2)));
+            Assert.AreEqual("String1", derivedPropertyNode.Retrieve(new Index(0)));
+            Assert.AreEqual("String3", derivedPropertyNode.Retrieve(new Index(1)));
+            Assert.AreEqual("String1", subDerivedPropertyNode.Retrieve(new Index(0)));
+            Assert.AreEqual("String3", subDerivedPropertyNode.Retrieve(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.Target.GetItemOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.Target.GetItemOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.Target.GetItemOverride(new Index(2)));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.Target.GetItemOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.Target.GetItemOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, subDerivedPropertyNode.GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, subDerivedPropertyNode.Target.GetItemOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, subDerivedPropertyNode.Target.GetItemOverride(new Index(1)));
+            Assert.AreEqual(3, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(1, derivedIds.DeletedCount);
+            Assert.AreEqual(2, subDerivedIds.KeyCount);
+            Assert.AreEqual(0, subDerivedIds.DeletedCount);
+            Assert.AreEqual(baseIds[0], derivedIds[0]);
+            Assert.AreEqual(baseIds[2], derivedIds[1]);
+            Assert.AreEqual(derivedIds[0], subDerivedIds[0]);
+            Assert.AreEqual(derivedIds[1], subDerivedIds[1]);
+            Assert.True(derivedIds.IsDeleted(derivedDeletedId));
+        }
+
+        [Test]
+        public void TestAddBaseRemoveDerivedAndAddInBaseWithSubDerived()
+        {
+            var asset = new Types.MyAsset2 { MyStrings = { "String1", "String2" } };
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
+            var subDerivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.SubDerivedAsset.MyStrings);
+            var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
+            var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
+            var subDerivedPropertyNode = context.SubDerivedGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
+
+            // Delete an item from the derived and then update the same from the base
+            basePropertyNode.Target.Add("String3");
+            var derivedDeletedId = derivedIds[2];
+            derivedPropertyNode.Target.Remove("String3", new Index(2));
+            basePropertyNode.Target.Add("String4");
+            Assert.AreEqual(4, context.BaseAsset.MyStrings.Count);
+            Assert.AreEqual(3, context.DerivedAsset.MyStrings.Count);
+            Assert.AreEqual(3, context.SubDerivedAsset.MyStrings.Count);
+            Assert.AreEqual("String1", basePropertyNode.Retrieve(new Index(0)));
+            Assert.AreEqual("String2", basePropertyNode.Retrieve(new Index(1)));
+            Assert.AreEqual("String3", basePropertyNode.Retrieve(new Index(2)));
+            Assert.AreEqual("String4", basePropertyNode.Retrieve(new Index(3)));
+            Assert.AreEqual("String1", derivedPropertyNode.Retrieve(new Index(0)));
+            Assert.AreEqual("String2", derivedPropertyNode.Retrieve(new Index(1)));
+            Assert.AreEqual("String4", derivedPropertyNode.Retrieve(new Index(2)));
+            Assert.AreEqual("String1", subDerivedPropertyNode.Retrieve(new Index(0)));
+            Assert.AreEqual("String2", subDerivedPropertyNode.Retrieve(new Index(1)));
+            Assert.AreEqual("String4", subDerivedPropertyNode.Retrieve(new Index(2)));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.Target.GetItemOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.Target.GetItemOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.Target.GetItemOverride(new Index(2)));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.Target.GetItemOverride(new Index(3)));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.Target.GetItemOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.Target.GetItemOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.Target.GetItemOverride(new Index(2)));
+            Assert.AreEqual(OverrideType.Base, subDerivedPropertyNode.GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, subDerivedPropertyNode.Target.GetItemOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, subDerivedPropertyNode.Target.GetItemOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, subDerivedPropertyNode.Target.GetItemOverride(new Index(2)));
+            Assert.AreEqual(4, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(3, derivedIds.KeyCount);
+            Assert.AreEqual(1, derivedIds.DeletedCount);
+            Assert.AreEqual(3, subDerivedIds.KeyCount);
+            Assert.AreEqual(0, subDerivedIds.DeletedCount);
+            Assert.AreEqual(baseIds[0], derivedIds[0]);
+            Assert.AreEqual(baseIds[1], derivedIds[1]);
+            Assert.AreEqual(baseIds[3], derivedIds[2]);
+            Assert.AreEqual(derivedIds[0], subDerivedIds[0]);
+            Assert.AreEqual(derivedIds[1], subDerivedIds[1]);
+            Assert.AreEqual(derivedIds[2], subDerivedIds[2]);
+            Assert.True(derivedIds.IsDeleted(derivedDeletedId));
         }
 
         private static void AssertCollection(IGraphNode node, params string[] items)

@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Reflection;
 
 namespace SiliconStudio.Shaders.Properties
 {
@@ -53,217 +55,228 @@ namespace SiliconStudio.Shaders.Properties
     ");\r\n\tfloat4 Sample(sampler_state S, float Location, int Offset);\r\n\tfloat4 Sample" +
     "Bias(sampler_state S, float Location, float Bias);\r\n\tfloat4 SampleBias(sampler_s" +
     "tate S, float Location, float Bias, int Offset);\r\n\tfloat SampleCmp(sampler_state" +
-    " S, float Location, float Bias);\r\n\tfloat SampleCmp(sampler_state S, float Locati" +
-    "on, float Bias, int Offset);\r\n\tfloat4 SampleGrad(sampler_state S, float Location" +
-    ", float DDX, float DDY);\r\n\tfloat4 SampleGrad(sampler_state S, float Location, fl" +
-    "oat DDX, float DDY, int Offset);\r\n\tfloat4 SampleLevel( sampler_state S, float Lo" +
-    "cation, float LOD);\r\n\tfloat4 SampleLevel( sampler_state S, float Location, float" +
-    " LOD, int Offset);\r\n\r\n\t// SM 5.0\r\n\tT mips.operator[][](in uint mipSlice,in  uint" +
-    " pos);\t\r\n\t\r\n\tT operator[](in  uint pos);\r\n};\r\n\r\nclass __Texture1DArray<T> {\r\n\t//" +
-    " SM 4.0\r\n\tfloat CalculateLevelOfDetail( sampler_state s, float1 x);\r\n\tvoid GetDi" +
-    "mensions( uint MipLevel, out uint Width, out uint Elements, out uint NumberOfLev" +
-    "els);\r\n\tvoid GetDimensions( out uint Width, out uint Elements);\r\n\tvoid GetDimens" +
-    "ions( uint MipLevel, out float Width, out float Elements, out float NumberOfLeve" +
-    "ls);\r\n\tvoid GetDimensions( out float Width, out float Elements);\r\n\tT Load(int3 L" +
-    "ocation);\r\n\tT Load(int3 Location, int Offset);\r\n\tfloat4 Sample(sampler_state S, " +
-    "float2 Location);\r\n\tfloat4 Sample(sampler_state S, float2 Location, int Offset);" +
-    "\r\n\tfloat4 SampleBias(sampler_state S, float2 Location, float Bias);\r\n\tfloat4 Sam" +
-    "pleBias(sampler_state S, float2 Location, float Bias, int Offset);\r\n\tfloat Sampl" +
-    "eCmp(sampler_state S, float2 Location, float Bias);\r\n\tfloat SampleCmp(sampler_st" +
-    "ate S, float2 Location, float Bias, int Offset);\r\n\tfloat4 SampleGrad(sampler_sta" +
-    "te S, float2 Location, float DDX, float DDY);\r\n\tfloat4 SampleGrad(sampler_state " +
-    "S, float2 Location, float DDX, float DDY, int Offset);\r\n\tfloat4 SampleLevel( sam" +
-    "pler_state S, float2 Location, float LOD);\r\n\tfloat4 SampleLevel( sampler_state S" +
-    ", float2 Location, float LOD, int Offset);\r\n\r\n\t// SM 5.0\r\n\tT mips.operator[][](i" +
-    "n  uint mipSlice,in  uint2 pos);\t\r\n\r\n    T operator[](in  uint2 pos);\r\n};\r\n\r\ncla" +
-    "ss __Texture2D<T> {\r\n\t// SM 4.0\r\n\tfloat CalculateLevelOfDetail( sampler_state s," +
-    " float2 x);\r\n\tvector<__T_base,4> Gather( sampler_state S, float2 Location);\r\n\tve" +
-    "ctor<__T_base,4> Gather( sampler_state S, float2 Location, int2 Offset );\r\n\tvoid" +
-    " GetDimensions( uint MipLevel, out uint Width, out uint Height, out uint NumberO" +
-    "fLevels);\r\n\tvoid GetDimensions( out uint Width, out uint Height);\r\n\tvoid GetDime" +
-    "nsions( uint MipLevel, out float Width, out float Height, out float NumberOfLeve" +
-    "ls);\r\n\tvoid GetDimensions( out float Width, out float Height);\r\n\tT Load(int3 Loc" +
-    "ation);\r\n\tT Load(int3 Location, int2 Offset);\r\n\tfloat4 Sample(sampler_state S, f" +
-    "loat2 Location);\r\n\tfloat4 Sample(sampler_state S, float2 Location, int2 Offset);" +
-    "\r\n\tfloat4 SampleBias(sampler_state S, float2 Location, float Bias);\r\n\tfloat4 Sam" +
-    "pleBias(sampler_state S, float2 Location, float Bias, int2 Offset);\r\n\tfloat Samp" +
-    "leCmp(sampler_state S, float2 Location, float Bias);\r\n\tfloat SampleCmp(sampler_s" +
-    "tate S, float2 Location, float Bias, int2 Offset);\r\n\tfloat4 SampleGrad(sampler_s" +
-    "tate S, float2 Location, float2 DDX, float2 DDY);\r\n\tfloat4 SampleGrad(sampler_st" +
-    "ate S, float2 Location, float2 DDX, float2 DDY, int2 Offset);\r\n\tfloat4 SampleLev" +
-    "el( sampler_state S, float2 Location, float LOD);\r\n\tfloat4 SampleLevel( sampler_" +
-    "state S, float2 Location, float LOD, int2 Offset);\r\n\t\r\n\t// SM 5.0\r\n\tT Gather(\r\n\t" +
-    "  in  sampler s,\r\n\t  in  float2 location,\r\n\t  in  int2 offset\r\n\t);\t\r\n\t\r\n\tT Gathe" +
-    "rRed(\r\n\t\tin  sampler s,\r\n\t\tin  float2 location\r\n\t\t);\r\n\r\n\tT GatherGreen(\r\n\t\tin  s" +
-    "ampler s,\r\n\t\tin  float2 location\r\n\t\t);\r\n\r\n\tT GatherBlue(\r\n\t\tin  sampler s,\r\n\t\tin" +
-    "  float2 location\r\n\t\t);\r\n\r\n\tT GatherRed(\r\n\t  in  sampler s,\r\n\t  in  float2 locat" +
-    "ion,\r\n\t  in  int2 offset\r\n\t);\r\n\r\n\tT GatherGreen(\r\n\t  in  sampler s,\r\n\t  in  floa" +
-    "t2 location,\r\n\t  in  int2 offset\r\n\t);\r\n\t\r\n\tT GatherBlue(\r\n\t  in  sampler s,\r\n\t  " +
-    "in  float2 location,\r\n\t  in  int2 offset\r\n\t);\t\r\n\r\n\tT GatherAlpha(\r\n\t  in  sample" +
-    "r s,\r\n\t  in  float2 location,\r\n\t  in  int2 offset\r\n\t);\r\n\r\n\tfloat4 GatherCmp(\r\n\t " +
-    " in  SamplerComparisonState s,\r\n\t  in  float2 location,\r\n\t  in  float compare_va" +
-    "lue,\r\n\t  in  int2 offset\r\n\t);\t\r\n\t\r\n\tfloat4 GatherCmpRed(\r\n\t  in  SamplerComparis" +
-    "onState s,\r\n\t  in  float2 location,\r\n\t  in  float compare_value,\r\n\t  in  int2 of" +
-    "fset\r\n\t);\t\r\n\t\r\n\tfloat4 GatherCmpGreen(\r\n\t  in  SamplerComparisonState s,\r\n\t  in " +
-    " float2 location,\r\n\t  in  float compare_value,\r\n\t  in  int2 offset\r\n\t);\t\r\n\t\r\n\tfl" +
-    "oat4 GatherCmpBlue(\r\n\t  in  SamplerComparisonState s,\r\n\t  in  float2 location,\r\n" +
-    "\t  in  float compare_value,\r\n\t  in  int2 offset\r\n\t);\r\n\t\r\n\tfloat4 GatherCmpAlpha(" +
-    "\r\n\t  in  SamplerComparisonState s,\r\n\t  in  float2 location,\r\n\t  in  float compar" +
-    "e_value,\r\n\t  in  int2 offset\r\n\t);\r\n\t\r\n\tT mips.operator[][](in uint mipSlice, in " +
-    " uint2 pos);\r\n\t\t\r\n\tT operator[](in  uint2 pos);\r\n};\r\n\r\nclass __Texture2DArray<T>" +
-    " {\r\n\t// SM 4.0\r\n\tfloat CalculateLevelOfDetail( sampler_state s, float2 x);\r\n\tvec" +
-    "tor<__T_base,4> Gather( sampler_state S, float3 Location, int2 Offset );\r\n\tvoid " +
-    "GetDimensions( uint MipLevel, out uint Width, out uint Height, out uint Elements" +
-    ", out uint NumberOfLevels);\r\n\tvoid GetDimensions( out uint Width, out uint Heigh" +
-    "t, out uint Elements);\r\n\tvoid GetDimensions( uint MipLevel, out float Width, out" +
-    " float Height, out float Elements, out float NumberOfLevels);\r\n\tvoid GetDimensio" +
-    "ns( out float Width, out float Height, out float Elements);\r\n\tT Load(int4 Locati" +
-    "on);\r\n\tT Load(int4 Location, int2 Offset);\r\n\tT Load(int4 Location, int3 Offset);" +
-    "\r\n\tfloat4 Sample(sampler_state S, float3 Location);\r\n\tfloat4 Sample(sampler_stat" +
-    "e S, float3 Location, int2 Offset);\r\n\tfloat4 SampleBias(sampler_state S, float3 " +
-    "Location, float Bias);\r\n\tfloat4 SampleBias(sampler_state S, float3 Location, flo" +
-    "at Bias, int2 Offset);\r\n\tfloat SampleCmp(sampler_state S, float3 Location, float" +
-    " Bias);\r\n\tfloat SampleCmp(sampler_state S, float3 Location, float Bias, int2 Off" +
-    "set);\r\n\tfloat4 SampleGrad(sampler_state S, float3 Location, float2 DDX, float2 D" +
-    "DY);\r\n\tfloat4 SampleGrad(sampler_state S, float3 Location, float2 DDX, float2 DD" +
-    "Y, int2 Offset);\r\n\tfloat4 SampleLevel( sampler_state S, float3 Location, float L" +
-    "OD);\r\n\tfloat4 SampleLevel( sampler_state S, float3 Location, float LOD, int2 Off" +
-    "set);\r\n\r\n\t\t// SM 5.0\r\n\tT Gather(\r\n\t  in  sampler s,\r\n\t  in  float3 location,\r\n\t " +
-    " in  int2 offset\r\n\t);\t\r\n\t\r\n\tT GatherRed(\r\n\t  in  sampler s,\r\n\t  in  float3 locat" +
-    "ion,\r\n\t  in  int2 offset\r\n\t);\r\n\r\n\tT GatherGreen(\r\n\t  in  sampler s,\r\n\t  in  floa" +
-    "t3 location,\r\n\t  in  int2 offset\r\n\t);\r\n\t\r\n\tT GatherBlue(\r\n\t  in  sampler s,\r\n\t  " +
-    "in  float3 location,\r\n\t  in  int2 offset\r\n\t);\t\r\n\r\n\tT GatherAlpha(\r\n\t  in  sample" +
-    "r s,\r\n\t  in  float3 location,\r\n\t  in  int2 offset\r\n\t);\r\n\r\n\tfloat4 GatherCmp(\r\n\t " +
-    " in  SamplerComparisonState s,\r\n\t  in  float3 location,\r\n\t  in  float compare_va" +
-    "lue,\r\n\t  in  int2 offset\r\n\t);\t\r\n\t\r\n\tfloat4 GatherCmpRed(\r\n\t  in  SamplerComparis" +
-    "onState s,\r\n\t  in  float3 location,\r\n\t  in  float compare_value,\r\n\t  in  int2 of" +
-    "fset\r\n\t);\t\r\n\t\r\n\tfloat4 GatherCmpGreen(\r\n\t  in  SamplerComparisonState s,\r\n\t  in " +
-    " float3 location,\r\n\t  in  float compare_value,\r\n\t  in  int2 offset\r\n\t);\t\r\n\t\r\n\tfl" +
-    "oat4 GatherCmpBlue(\r\n\t  in  SamplerComparisonState s,\r\n\t  in  float3 location,\r\n" +
-    "\t  in  float compare_value,\r\n\t  in  int2 offset\r\n\t);\r\n\t\r\n\tfloat4 GatherCmpAlpha(" +
-    "\r\n\t  in  SamplerComparisonState s,\r\n\t  in  float3 location,\r\n\t  in  float compar" +
-    "e_value,\r\n\t  in  int2 offset\r\n\t);\r\n\t\r\n\tT mips.operator[][](in  uint mipSlice, in" +
-    "  uint3 pos);\r\n\t\t\r\n\tT operator[](in  uint3 pos);\r\n};\r\n\r\n\r\nclass __Texture3D<T> {" +
-    "\r\n\t// SM 4.0\r\n\tfloat CalculateLevelOfDetail( sampler_state s, float3 x);\r\n\tvoid " +
-    "GetDimensions( uint MipLevel, out uint Width, out uint Height, out uint Depth, o" +
-    "ut uint NumberOfLevels);\r\n\tvoid GetDimensions( out uint Width, out uint Height, " +
-    "out uint Depth);\r\n\tvoid GetDimensions( uint MipLevel, out float Width, out float" +
-    " Height, out float Depth, out float NumberOfLevels);\r\n\tvoid GetDimensions( out f" +
-    "loat Width, out float Height, out float Depth);\r\n\tT Load(int4 Location);\r\n\tT Loa" +
-    "d(int4 Location, int3 Offset);\r\n\tfloat4 Sample(sampler_state S, float3 Location)" +
-    ";\r\n\tfloat4 Sample(sampler_state S, float3 Location, int3 Offset);\r\n\tfloat4 Sampl" +
-    "eBias(sampler_state S, float3 Location, float Bias);\r\n\tfloat4 SampleBias(sampler" +
-    "_state S, float3 Location, float Bias, int3 Offset);\r\n\tfloat SampleCmp(sampler_s" +
-    "tate S, float3 Location, float Bias);\r\n\tfloat SampleCmp(sampler_state S, float3 " +
-    "Location, float Bias, int3 Offset);\r\n\tfloat4 SampleGrad(sampler_state S, float3 " +
-    "Location, float3 DDX, float3 DDY);\r\n\tfloat4 SampleGrad(sampler_state S, float3 L" +
-    "ocation, float3 DDX, float3 DDY, int3 Offset);\r\n\tfloat4 SampleLevel( sampler_sta" +
-    "te S, float3 Location, float LOD);\r\n\tfloat4 SampleLevel( sampler_state S, float3" +
-    " Location, float LOD, int3 Offset);\r\n\t\r\n\t// SM 5.0\r\n\tT mips.operator[][](in uint" +
-    " mipSlice,in  uint3 pos);\r\n\t\t\r\n\tT operator[](in  uint3 pos);\r\n};\r\n\r\nclass __Text" +
-    "ureCube<T> {\r\n\t// SM 4.0\r\n\tfloat CalculateLevelOfDetail( sampler_state s, float3" +
-    " x);\r\n\tvector<__T_base,4> Gather( sampler_state S, float3 Location);\r\n\tvoid GetD" +
-    "imensions( uint MipLevel, out uint Width, out uint Height, out uint NumberOfLeve" +
-    "ls);\r\n\tvoid GetDimensions( out uint Width, out uint Height);\r\n\tvoid GetDimension" +
-    "s( uint MipLevel, out float Width, out float Height, out uint NumberOfLevels);\r\n" +
-    "\tvoid GetDimensions( out float Width, out float Height);\r\n\tfloat4 Sample(sampler" +
-    "_state S, float3 Location);\r\n\tfloat4 SampleBias(sampler_state S, float3 Location" +
-    ", float Bias);\r\n\tfloat SampleCmp(sampler_state S, float3 Location, float Bias);\r" +
-    "\n\tfloat4 SampleGrad(sampler_state S, float3 Location, float3 DDX, float3 DDY);\r\n" +
-    "\tfloat4 SampleLevel( sampler_state S, float3 Location, float LOD);\r\n};\r\n\r\nclass " +
-    "__TextureCubeArray<T> {\r\n\t// SM 4.0\r\n\tfloat CalculateLevelOfDetail( sampler_stat" +
-    "e s, float3 x);\r\n\tvector<__T_base,4> Gather( sampler_state S, float4 Location);\r" +
-    "\n\tvoid GetDimensions( uint MipLevel, out uint Width, out uint Height, out uint E" +
-    "lements, out uint NumberOfLevels);\r\n\tvoid GetDimensions( out uint Width, out uin" +
-    "t Height, out uint Elements);\r\n\tvoid GetDimensions( uint MipLevel, out float Wid" +
-    "th, out float Height, out float Elements, out float NumberOfLevels);\r\n\tvoid GetD" +
-    "imensions( out float Width, out float Height, out float Elements);\r\n\tfloat4 Samp" +
-    "le(sampler_state S, float4 Location);\r\n\tfloat4 SampleBias(sampler_state S, float" +
-    "4 Location, float Bias);\r\n\tfloat SampleCmp(sampler_state S, float4 Location, flo" +
-    "at Bias);\r\n\tfloat SampleCmp(sampler_state S, float4 Location, float Bias, int3 O" +
-    "ffset);\r\n\tfloat4 SampleGrad(sampler_state S, float4 Location, float3 DDX, float3" +
-    " DDY);\r\n\tfloat4 SampleLevel( sampler_state S, float4 Location, float LOD);\r\n};\r\n" +
-    "\r\nclass __Texture2DMS<T> {\r\n\t// SM 4.0\r\n\tvoid GetDimensions( out uint Width, out" +
-    " uint Height, out uint Samples);\r\n\tvoid GetDimensions( out float Width, out floa" +
-    "t Height, out float Samples);\r\n\tfloat2 GetSamplePosition(int s);\r\n\tT Load(int2 L" +
-    "ocation);\r\n\tT Load(int2 Location, int2 Offset);\r\n\tT Load(int2 Location, int2 Off" +
-    "set, int SampleIndex);\r\n\t\r\n\t\r\n\t// SM 5.0\r\n\tfloat2 GetSamplePosition(\r\n\t  in  int" +
-    " sampleindex\r\n\t);\t\r\n\t\r\n\tT Load(\r\n\t  in  int2 coord,\r\n\t  in  int sampleindex\r\n\t);" +
-    "\t\r\n\t\r\n\tT sample.operator[][]( in  uint sampleSlice, in  uint3 pos);\t\r\n};\r\n\r\nclas" +
-    "s __Texture2DMSArray<T> {\r\n\t// SM 4.0\r\n\tvoid GetDimensions( out uint Width, out " +
-    "uint Height, out uint Elements, out uint Samples);\r\n\tvoid GetDimensions( out flo" +
-    "at Width, out float Height, out float Elements, out float Samples);\r\n\tfloat2 Get" +
-    "SamplePosition(int s);\r\n\tT Load(int3 Location); \r\n\tT Load(int3 Location, int2 Of" +
-    "fset); \r\n\tT Load(int3 Location, int2 Offset, int SampleIndex); \r\n\r\n\t// SM 5.0\r\n\t" +
-    "float2 GetSamplePosition(\r\n\t  in  int sampleindex\r\n\t);\t\r\n\r\n\tT Load(\r\n\t  in  int3" +
-    " coord,\r\n\t  in  int sampleindex\r\n\t);\t\r\n\r\n\tT sample.operator[][]( in  uint sample" +
-    "Slice, in  uint3 pos);\r\n};\r\n\r\nclass __Buffer<T> {\r\n\t// SM 4.0\r\n\tT Load(int Locat" +
-    "ion);\r\n\r\n\tvoid GetDimensions(out  uint dim);\t\r\n\t\r\n\tT operator[](in  uint pos);\r\n" +
-    "};\r\n\r\n// Stream-Output Object (DirectX HLSL)\r\n// http://msdn.microsoft.com/en-us" +
-    "/library/bb509661%28v=VS.85%29.aspx\r\n// StreamOutputObject <T>   Name\r\n// Stream" +
-    "OutputObject: PointStream, LineStream, TriangleStream\r\nclass __PointStream<T> {\r" +
-    "\n\tvoid Append(T StreamDataType);\r\n\tvoid RestartStrip();\r\n};\r\n\r\nclass __LineStrea" +
-    "m<T> {\r\n\tvoid Append(T StreamDataType);\r\n\tvoid RestartStrip();\r\n};\r\n\r\nclass __Tr" +
-    "iangleStream<T> {\r\n\tvoid Append(T StreamDataType);\r\n\tvoid RestartStrip();\r\n};\r\n\r" +
-    "\n// ----------------------------------------------------------------------------" +
-    "-----------\r\n// Shader Model 5.0 \r\n// ------------------------------------------" +
-    "---------------------------------------------\r\n\r\n// AppendStructuredBuffer<T>\r\n/" +
-    "/ http://msdn.microsoft.com/en-us/library/ff471448%28v=VS.85%29.aspx\r\nclass __Ap" +
-    "pendStructuredBuffer<T> {\r\n\tvoid Append(T value);\r\n\tvoid GetDimensions(out uint " +
-    "numStructs, out uint stride);\r\n};\r\n\r\n// ByteAddressBuffer\r\n// http://msdn.micros" +
-    "oft.com/en-us/library/ff471453%28v=VS.85%29.aspx\r\nclass __ByteAddressBuffer {\r\n\t" +
-    "void GetDimensions(out  uint dim);\r\n\tuint Load(in  uint address);\r\n\tuint2 Load2(" +
-    "in  uint address);\r\n\tuint3 Load3(in  uint address);\r\n\tuint4 Load4(in  uint addre" +
-    "ss);\r\n};\r\n\r\n// ConsumeStructuredBuffer<T>\r\n// http://msdn.microsoft.com/en-us/li" +
-    "brary/ff471459%28v=VS.85%29.aspx\r\nclass __ConsumeStructuredBuffer<T> {\r\n\tT Consu" +
-    "me(void);\r\n\tvoid GetDimensions(out  uint numStructs, out  uint stride);\r\n};\r\n\r\n/" +
-    "/ InputPatch<T,N>\r\n// http://msdn.microsoft.com/en-us/library/ff471462%28v=VS.85" +
-    "%29.aspx\r\nclass __InputPatch<T,N> {\r\n\tuint Length;\r\n\tT operator[](in uint n);\r\n}" +
-    ";\r\n\r\n// OutputPatch<T,N>\r\n// http://msdn.microsoft.com/en-us/library/ff471464%28" +
-    "v=VS.85%29.aspx\r\nclass __OutputPatch<T,N> {\r\n\tuint Length;\r\n\tT operator[](in uin" +
-    "t n);\r\n};\r\n\r\n// RWBuffer<T>\r\n// http://msdn.microsoft.com/en-us/library/ff471472" +
-    "%28v=VS.85%29.aspx\r\nclass __RWBuffer<T> {\r\n\tvoid GetDimensions(out  uint dim);\r\n" +
-    "\tT operator[](in uint pos);\r\n};\r\n\r\n// RWByteAddressBuffer\r\n// http://msdn.micros" +
-    "oft.com/en-us/library/ff471475%28v=VS.85%29.aspx\r\nclass __RWByteAddressBuffer {\r" +
-    "\n\tvoid GetDimensions(out  uint dim);\r\n\tvoid InterlockedAdd(in   uint dest, in   " +
-    "uint value, out  uint original_value);\r\n\tvoid InterlockedAnd(\r\n\t\tin   uint dest," +
-    "\r\n\t\tin   uint value,\r\n\t\tout  uint original_value\r\n\t);\r\n\tvoid InterlockedCompareE" +
-    "xchange(\r\n\t\tin   uint dest,\r\n\t\tin   uint compare_value,\r\n\t\tin   uint value,\r\n\t\to" +
-    "ut  uint original_value\r\n\t);\r\n\tvoid InterlockedCompareStore(\r\n\t  in  uint dest,\r" +
-    "\n\t  in  uint compare_value,\r\n\t  in  uint value\r\n\t);\r\n\tvoid InterlockedExchange(\r" +
-    "\n\t  in   uint dest,\r\n\t  in   uint value,\r\n\t  out  uint original_value\r\n\t);\r\n\tvoi" +
-    "d InterlockedMax(\r\n\t  in   uint dest,\r\n\t  in   uint value,\r\n\t  out  uint origina" +
-    "l_value\r\n\t);\t\r\n\tvoid InterlockedMin(\r\n\t  in   uint dest,\r\n\t  in   uint value,\r\n\t" +
-    "  out  uint original_value\r\n\t);\t\r\n\tvoid InterlockedOr(\r\n\t  in   uint dest,\r\n\t  i" +
-    "n   uint value,\r\n\t  out  uint original_value\r\n\t);\t\r\n\tvoid InterlockedXor(\r\n\t  in" +
-    "   uint dest,\r\n\t  in   uint value,\r\n\t  out  uint original_value\r\n\t);\t\r\n\tuint Loa" +
-    "d(\r\n\t  in  uint address\r\n\t);\t\r\n\tuint2 Load2(\r\n\t  in  uint address\r\n\t);\t\r\n\tuint3 " +
-    "Load3(\r\n\t  in  uint address\r\n\t);\t\r\n\tuint4 Load4(\r\n\t  in  uint address\r\n\t);\t\r\n\tvo" +
-    "id Store(\r\n\t  in  uint address,\r\n\t  in  uint value\r\n\t);\t\r\n\tvoid Store2(\r\n\t  in  " +
-    "uint address,\r\n\t  in  uint2 values\r\n\t);\t\r\n\tvoid Store3(\r\n\t  in  uint address,\r\n\t" +
-    "  in  uint3 values\r\n\t);\t\r\n\tvoid Store4(\r\n\t  in  uint address,\r\n\t  in  uint4 valu" +
-    "es\r\n\t);\t\r\n};\r\n\r\n// RWStructuredBuffer<T>\r\n// http://msdn.microsoft.com/en-us/lib" +
-    "rary/ff471494%28v=VS.85%29.aspx\r\nclass __RWStructuredBuffer<T> {\r\n\r\n\tuint Decrem" +
-    "entCounter(void);\r\n\r\n\tvoid GetDimensions(\r\n\t  out  uint numStructs,\r\n\t  out  uin" +
-    "t stride\r\n\t);\r\n\r\n\tuint IncrementCounter(void);\r\n\r\n\tT operator[](in uint pos);\r\n}" +
-    ";\r\n\r\n// RWTexture1D<T>\r\n// http://msdn.microsoft.com/en-us/library/ff471499%28v=" +
-    "VS.85%29.aspx\r\nclass __RWTexture1D<T> {\r\n\tvoid GetDimensions(\r\n\t  out  uint Widt" +
-    "h\r\n\t);\r\n\tT operator[](in  uint pos);\r\n};\r\n\r\n// RWTexture1DArray<T>\r\n// http://ms" +
-    "dn.microsoft.com/en-us/library/ff471500%28v=VS.85%29.aspx\r\nclass __RWTexture1DAr" +
-    "ray<T> {\r\n\tvoid GetDimensions(\r\n\t  out  uint Width,\r\n\t  out  uint Elements\r\n\t);\r" +
-    "\n\r\n\tT operator[](in  uint2 pos);\r\n};\r\n\r\n// RWTexture2D<T>\r\n// http://msdn.micros" +
-    "oft.com/en-us/library/ff471505%28v=VS.85%29.aspx\r\nclass __RWTexture2D<T> {\r\n\tvoi" +
-    "d GetDimensions(\r\n\t  out  uint Width,\r\n\t  out  uint Height\r\n\t);\r\n\r\n      T opera" +
-    "tor[](in  uint2 pos);\r\n};\r\n\r\n// RWTexture2DArray<T>\r\n// http://msdn.microsoft.co" +
-    "m/en-us/library/ff471506%28v=VS.85%29.aspx\r\nclass __RWTexture2DArray<T> {\r\n\tvoid" +
-    " GetDimensions(\r\n\t  out  uint Width,\r\n\t  out  uint Height,\r\n\t  out  uint Element" +
-    "s\r\n\t);\r\n\tT operator[](in  uint3 pos);\r\n};\r\n\r\n// RWTexture3D<T>\r\n// http://msdn.m" +
-    "icrosoft.com/en-us/library/ff471511%28v=VS.85%29.aspx\r\nclass __RWTexture3D<T> {\r" +
-    "\n\tvoid GetDimensions(\r\n\t  out  uint Width,\r\n\t  out  uint Height,\r\n\t  out  uint D" +
-    "epth\r\n\t);\r\n\r\n\tT operator[](in  uint3 pos);\r\n};\r\n\r\n// StructuredBuffer<T>\r\n// htt" +
-    "p://msdn.microsoft.com/en-us/library/ff471514%28v=VS.85%29.aspx\r\nclass __Structu" +
-    "redBuffer<T> {\r\n\tvoid GetDimensions(\r\n\t  out  uint numStructs,\r\n\t  out  uint str" +
-    "ide\r\n\t);\r\n\r\n\tT operator[](in  uint pos);\t\r\n};";
+    " S, float Location, float CompareValue);\r\n\tfloat SampleCmp(sampler_state S, floa" +
+    "t Location, float CompareValue, int Offset);\r\n\tfloat SampleCmpLevelZero(sampler_" +
+    "state S, float Location, float CompareValue);\r\n\tfloat SampleCmpLevelZero(sampler" +
+    "_state S, float Location, float CompareValue, int Offset);\r\n\tfloat4 SampleGrad(s" +
+    "ampler_state S, float Location, float DDX, float DDY);\r\n\tfloat4 SampleGrad(sampl" +
+    "er_state S, float Location, float DDX, float DDY, int Offset);\r\n\tfloat4 SampleLe" +
+    "vel( sampler_state S, float Location, float LOD);\r\n\tfloat4 SampleLevel( sampler_" +
+    "state S, float Location, float LOD, int Offset);\r\n\r\n\t// SM 5.0\r\n\tT mips.operator" +
+    "[][](in uint mipSlice,in  uint pos);\t\r\n\t\r\n\tT operator[](in  uint pos);\r\n};\r\n\r\ncl" +
+    "ass __Texture1DArray<T> {\r\n\t// SM 4.0\r\n\tfloat CalculateLevelOfDetail( sampler_st" +
+    "ate s, float1 x);\r\n\tvoid GetDimensions( uint MipLevel, out uint Width, out uint " +
+    "Elements, out uint NumberOfLevels);\r\n\tvoid GetDimensions( out uint Width, out ui" +
+    "nt Elements);\r\n\tvoid GetDimensions( uint MipLevel, out float Width, out float El" +
+    "ements, out float NumberOfLevels);\r\n\tvoid GetDimensions( out float Width, out fl" +
+    "oat Elements);\r\n\tT Load(int3 Location);\r\n\tT Load(int3 Location, int Offset);\r\n\tf" +
+    "loat4 Sample(sampler_state S, float2 Location);\r\n\tfloat4 Sample(sampler_state S," +
+    " float2 Location, int Offset);\r\n\tfloat4 SampleBias(sampler_state S, float2 Locat" +
+    "ion, float Bias);\r\n\tfloat4 SampleBias(sampler_state S, float2 Location, float Bi" +
+    "as, int Offset);\r\n\tfloat SampleCmp(sampler_state S, float2 Location, float Compa" +
+    "reValue);\r\n\tfloat SampleCmp(sampler_state S, float2 Location, float CompareValue" +
+    ", int Offset);\r\n\tfloat SampleCmpLevelZero(sampler_state S, float2 Location, floa" +
+    "t CompareValue);\r\n\tfloat SampleCmpLevelZero(sampler_state S, float2 Location, fl" +
+    "oat CompareValue, int Offset);\r\n\tfloat4 SampleGrad(sampler_state S, float2 Locat" +
+    "ion, float DDX, float DDY);\r\n\tfloat4 SampleGrad(sampler_state S, float2 Location" +
+    ", float DDX, float DDY, int Offset);\r\n\tfloat4 SampleLevel( sampler_state S, floa" +
+    "t2 Location, float LOD);\r\n\tfloat4 SampleLevel( sampler_state S, float2 Location," +
+    " float LOD, int Offset);\r\n\r\n\t// SM 5.0\r\n\tT mips.operator[][](in  uint mipSlice,i" +
+    "n  uint2 pos);\t\r\n\r\n    T operator[](in  uint2 pos);\r\n};\r\n\r\nclass __Texture2D<T> " +
+    "{\r\n\t// SM 4.0\r\n\tfloat CalculateLevelOfDetail( sampler_state s, float2 x);\r\n\tvect" +
+    "or<__T_base,4> Gather( sampler_state S, float2 Location);\r\n\tvector<__T_base,4> G" +
+    "ather( sampler_state S, float2 Location, int2 Offset );\r\n\tvoid GetDimensions( ui" +
+    "nt MipLevel, out uint Width, out uint Height, out uint NumberOfLevels);\r\n\tvoid G" +
+    "etDimensions( out uint Width, out uint Height);\r\n\tvoid GetDimensions( uint MipLe" +
+    "vel, out float Width, out float Height, out float NumberOfLevels);\r\n\tvoid GetDim" +
+    "ensions( out float Width, out float Height);\r\n\tT Load(int3 Location);\r\n\tT Load(i" +
+    "nt3 Location, int2 Offset);\r\n\tfloat4 Sample(sampler_state S, float2 Location);\r\n" +
+    "\tfloat4 Sample(sampler_state S, float2 Location, int2 Offset);\r\n\tfloat4 SampleBi" +
+    "as(sampler_state S, float2 Location, float Bias);\r\n\tfloat4 SampleBias(sampler_st" +
+    "ate S, float2 Location, float Bias, int2 Offset);\r\n\tfloat SampleCmp(sampler_stat" +
+    "e S, float2 Location, float CompareValue);\r\n\tfloat SampleCmp(sampler_state S, fl" +
+    "oat2 Location, float CompareValue, int2 Offset);\r\n\tfloat SampleCmpLevelZero(samp" +
+    "ler_state S, float2 Location, float CompareValue);\r\n\tfloat SampleCmpLevelZero(sa" +
+    "mpler_state S, float2 Location, float CompareValue, int2 Offset);\r\n\tfloat4 Sampl" +
+    "eGrad(sampler_state S, float2 Location, float2 DDX, float2 DDY);\r\n\tfloat4 Sample" +
+    "Grad(sampler_state S, float2 Location, float2 DDX, float2 DDY, int2 Offset);\r\n\tf" +
+    "loat4 SampleLevel( sampler_state S, float2 Location, float LOD);\r\n\tfloat4 Sample" +
+    "Level( sampler_state S, float2 Location, float LOD, int2 Offset);\r\n\t\r\n\t// SM 5.0" +
+    "\r\n\tT Gather(\r\n\t  in  sampler s,\r\n\t  in  float2 location,\r\n\t  in  int2 offset\r\n\t)" +
+    ";\t\r\n\t\r\n\tT GatherRed(\r\n\t\tin  sampler s,\r\n\t\tin  float2 location\r\n\t\t);\r\n\r\n\tT Gather" +
+    "Green(\r\n\t\tin  sampler s,\r\n\t\tin  float2 location\r\n\t\t);\r\n\r\n\tT GatherBlue(\r\n\t\tin  s" +
+    "ampler s,\r\n\t\tin  float2 location\r\n\t\t);\r\n\r\n\tT GatherRed(\r\n\t  in  sampler s,\r\n\t  i" +
+    "n  float2 location,\r\n\t  in  int2 offset\r\n\t);\r\n\r\n\tT GatherGreen(\r\n\t  in  sampler " +
+    "s,\r\n\t  in  float2 location,\r\n\t  in  int2 offset\r\n\t);\r\n\t\r\n\tT GatherBlue(\r\n\t  in  " +
+    "sampler s,\r\n\t  in  float2 location,\r\n\t  in  int2 offset\r\n\t);\t\r\n\r\n\tT GatherAlpha(" +
+    "\r\n\t  in  sampler s,\r\n\t  in  float2 location,\r\n\t  in  int2 offset\r\n\t);\r\n\r\n\tfloat4" +
+    " GatherCmp(\r\n\t  in  SamplerComparisonState s,\r\n\t  in  float2 location,\r\n\t  in  f" +
+    "loat compare_value,\r\n\t  in  int2 offset\r\n\t);\t\r\n\t\r\n\tfloat4 GatherCmpRed(\r\n\t  in  " +
+    "SamplerComparisonState s,\r\n\t  in  float2 location,\r\n\t  in  float compare_value,\r" +
+    "\n\t  in  int2 offset\r\n\t);\t\r\n\t\r\n\tfloat4 GatherCmpGreen(\r\n\t  in  SamplerComparisonS" +
+    "tate s,\r\n\t  in  float2 location,\r\n\t  in  float compare_value,\r\n\t  in  int2 offse" +
+    "t\r\n\t);\t\r\n\t\r\n\tfloat4 GatherCmpBlue(\r\n\t  in  SamplerComparisonState s,\r\n\t  in  flo" +
+    "at2 location,\r\n\t  in  float compare_value,\r\n\t  in  int2 offset\r\n\t);\r\n\t\r\n\tfloat4 " +
+    "GatherCmpAlpha(\r\n\t  in  SamplerComparisonState s,\r\n\t  in  float2 location,\r\n\t  i" +
+    "n  float compare_value,\r\n\t  in  int2 offset\r\n\t);\r\n\t\r\n\tT mips.operator[][](in uin" +
+    "t mipSlice, in  uint2 pos);\r\n\t\t\r\n\tT operator[](in  uint2 pos);\r\n};\r\n\r\nclass __Te" +
+    "xture2DArray<T> {\r\n\t// SM 4.0\r\n\tfloat CalculateLevelOfDetail( sampler_state s, f" +
+    "loat2 x);\r\n\tvector<__T_base,4> Gather( sampler_state S, float3 Location, int2 Of" +
+    "fset );\r\n\tvoid GetDimensions( uint MipLevel, out uint Width, out uint Height, ou" +
+    "t uint Elements, out uint NumberOfLevels);\r\n\tvoid GetDimensions( out uint Width," +
+    " out uint Height, out uint Elements);\r\n\tvoid GetDimensions( uint MipLevel, out f" +
+    "loat Width, out float Height, out float Elements, out float NumberOfLevels);\r\n\tv" +
+    "oid GetDimensions( out float Width, out float Height, out float Elements);\r\n\tT L" +
+    "oad(int4 Location);\r\n\tT Load(int4 Location, int2 Offset);\r\n\tT Load(int4 Location" +
+    ", int3 Offset);\r\n\tfloat4 Sample(sampler_state S, float3 Location);\r\n\tfloat4 Samp" +
+    "le(sampler_state S, float3 Location, int2 Offset);\r\n\tfloat4 SampleBias(sampler_s" +
+    "tate S, float3 Location, float Bias);\r\n\tfloat4 SampleBias(sampler_state S, float" +
+    "3 Location, float Bias, int2 Offset);\r\n\tfloat SampleCmp(sampler_state S, float3 " +
+    "Location, float CompareValue);\r\n\tfloat SampleCmp(sampler_state S, float3 Locatio" +
+    "n, float CompareValue, int2 Offset);\r\n\tfloat SampleCmpLevelZero(sampler_state S," +
+    " float3 Location, float CompareValue);\r\n\tfloat SampleCmpLevelZero(sampler_state " +
+    "S, float3 Location, float CompareValue, int2 Offset);\r\n\tfloat4 SampleGrad(sample" +
+    "r_state S, float3 Location, float2 DDX, float2 DDY);\r\n\tfloat4 SampleGrad(sampler" +
+    "_state S, float3 Location, float2 DDX, float2 DDY, int2 Offset);\r\n\tfloat4 Sample" +
+    "Level( sampler_state S, float3 Location, float LOD);\r\n\tfloat4 SampleLevel( sampl" +
+    "er_state S, float3 Location, float LOD, int2 Offset);\r\n\r\n\t\t// SM 5.0\r\n\tT Gather(" +
+    "\r\n\t  in  sampler s,\r\n\t  in  float3 location,\r\n\t  in  int2 offset\r\n\t);\t\r\n\t\r\n\tT Ga" +
+    "therRed(\r\n\t  in  sampler s,\r\n\t  in  float3 location,\r\n\t  in  int2 offset\r\n\t);\r\n\r" +
+    "\n\tT GatherGreen(\r\n\t  in  sampler s,\r\n\t  in  float3 location,\r\n\t  in  int2 offset" +
+    "\r\n\t);\r\n\t\r\n\tT GatherBlue(\r\n\t  in  sampler s,\r\n\t  in  float3 location,\r\n\t  in  int" +
+    "2 offset\r\n\t);\t\r\n\r\n\tT GatherAlpha(\r\n\t  in  sampler s,\r\n\t  in  float3 location,\r\n\t" +
+    "  in  int2 offset\r\n\t);\r\n\r\n\tfloat4 GatherCmp(\r\n\t  in  SamplerComparisonState s,\r\n" +
+    "\t  in  float3 location,\r\n\t  in  float compare_value,\r\n\t  in  int2 offset\r\n\t);\t\r\n" +
+    "\t\r\n\tfloat4 GatherCmpRed(\r\n\t  in  SamplerComparisonState s,\r\n\t  in  float3 locati" +
+    "on,\r\n\t  in  float compare_value,\r\n\t  in  int2 offset\r\n\t);\t\r\n\t\r\n\tfloat4 GatherCmp" +
+    "Green(\r\n\t  in  SamplerComparisonState s,\r\n\t  in  float3 location,\r\n\t  in  float " +
+    "compare_value,\r\n\t  in  int2 offset\r\n\t);\t\r\n\t\r\n\tfloat4 GatherCmpBlue(\r\n\t  in  Samp" +
+    "lerComparisonState s,\r\n\t  in  float3 location,\r\n\t  in  float compare_value,\r\n\t  " +
+    "in  int2 offset\r\n\t);\r\n\t\r\n\tfloat4 GatherCmpAlpha(\r\n\t  in  SamplerComparisonState " +
+    "s,\r\n\t  in  float3 location,\r\n\t  in  float compare_value,\r\n\t  in  int2 offset\r\n\t)" +
+    ";\r\n\t\r\n\tT mips.operator[][](in  uint mipSlice, in  uint3 pos);\r\n\t\t\r\n\tT operator[]" +
+    "(in  uint3 pos);\r\n};\r\n\r\n\r\nclass __Texture3D<T> {\r\n\t// SM 4.0\r\n\tfloat CalculateLe" +
+    "velOfDetail( sampler_state s, float3 x);\r\n\tvoid GetDimensions( uint MipLevel, ou" +
+    "t uint Width, out uint Height, out uint Depth, out uint NumberOfLevels);\r\n\tvoid " +
+    "GetDimensions( out uint Width, out uint Height, out uint Depth);\r\n\tvoid GetDimen" +
+    "sions( uint MipLevel, out float Width, out float Height, out float Depth, out fl" +
+    "oat NumberOfLevels);\r\n\tvoid GetDimensions( out float Width, out float Height, ou" +
+    "t float Depth);\r\n\tT Load(int4 Location);\r\n\tT Load(int4 Location, int3 Offset);\r\n" +
+    "\tfloat4 Sample(sampler_state S, float3 Location);\r\n\tfloat4 Sample(sampler_state " +
+    "S, float3 Location, int3 Offset);\r\n\tfloat4 SampleBias(sampler_state S, float3 Lo" +
+    "cation, float Bias);\r\n\tfloat4 SampleBias(sampler_state S, float3 Location, float" +
+    " Bias, int3 Offset);\r\n\tfloat SampleCmp(sampler_state S, float3 Location, float C" +
+    "ompareValue);\r\n\tfloat SampleCmp(sampler_state S, float3 Location, float CompareV" +
+    "alue, int3 Offset);\r\n\tfloat4 SampleGrad(sampler_state S, float3 Location, float3" +
+    " DDX, float3 DDY);\r\n\tfloat4 SampleGrad(sampler_state S, float3 Location, float3 " +
+    "DDX, float3 DDY, int3 Offset);\r\n\tfloat4 SampleLevel( sampler_state S, float3 Loc" +
+    "ation, float LOD);\r\n\tfloat4 SampleLevel( sampler_state S, float3 Location, float" +
+    " LOD, int3 Offset);\r\n\t\r\n\t// SM 5.0\r\n\tT mips.operator[][](in uint mipSlice,in  ui" +
+    "nt3 pos);\r\n\t\t\r\n\tT operator[](in  uint3 pos);\r\n};\r\n\r\nclass __TextureCube<T> {\r\n\t/" +
+    "/ SM 4.0\r\n\tfloat CalculateLevelOfDetail( sampler_state s, float3 x);\r\n\tvector<__" +
+    "T_base,4> Gather( sampler_state S, float3 Location);\r\n\tvoid GetDimensions( uint " +
+    "MipLevel, out uint Width, out uint Height, out uint NumberOfLevels);\r\n\tvoid GetD" +
+    "imensions( out uint Width, out uint Height);\r\n\tvoid GetDimensions( uint MipLevel" +
+    ", out float Width, out float Height, out uint NumberOfLevels);\r\n\tvoid GetDimensi" +
+    "ons( out float Width, out float Height);\r\n\tfloat4 Sample(sampler_state S, float3" +
+    " Location);\r\n\tfloat4 SampleBias(sampler_state S, float3 Location, float Bias);\r\n" +
+    "\tfloat SampleCmp(sampler_state S, float3 Location, float CompareValue);\r\n\tfloat " +
+    "SampleCmpLevelZero(sampler_state S, float3 Location, float CompareValue);\r\n\tfloa" +
+    "t4 SampleGrad(sampler_state S, float3 Location, float3 DDX, float3 DDY);\r\n\tfloat" +
+    "4 SampleLevel( sampler_state S, float3 Location, float LOD);\r\n};\r\n\r\nclass __Text" +
+    "ureCubeArray<T> {\r\n\t// SM 4.0\r\n\tfloat CalculateLevelOfDetail( sampler_state s, f" +
+    "loat3 x);\r\n\tvector<__T_base,4> Gather( sampler_state S, float4 Location);\r\n\tvoid" +
+    " GetDimensions( uint MipLevel, out uint Width, out uint Height, out uint Element" +
+    "s, out uint NumberOfLevels);\r\n\tvoid GetDimensions( out uint Width, out uint Heig" +
+    "ht, out uint Elements);\r\n\tvoid GetDimensions( uint MipLevel, out float Width, ou" +
+    "t float Height, out float Elements, out float NumberOfLevels);\r\n\tvoid GetDimensi" +
+    "ons( out float Width, out float Height, out float Elements);\r\n\tfloat4 Sample(sam" +
+    "pler_state S, float4 Location);\r\n\tfloat4 SampleBias(sampler_state S, float4 Loca" +
+    "tion, float Bias);\r\n\tfloat SampleCmp(sampler_state S, float4 Location, float Com" +
+    "pareValue);\r\n\tfloat SampleCmpLevelZero(sampler_state S, float4 Location, float C" +
+    "ompareValue);\r\n\tfloat4 SampleGrad(sampler_state S, float4 Location, float3 DDX, " +
+    "float3 DDY);\r\n\tfloat4 SampleLevel( sampler_state S, float4 Location, float LOD);" +
+    "\r\n};\r\n\r\nclass __Texture2DMS<T> {\r\n\t// SM 4.0\r\n\tvoid GetDimensions( out uint Widt" +
+    "h, out uint Height, out uint Samples);\r\n\tvoid GetDimensions( out float Width, ou" +
+    "t float Height, out float Samples);\r\n\tfloat2 GetSamplePosition(int s);\r\n\tT Load(" +
+    "int2 Location);\r\n\tT Load(int2 Location, int2 Offset);\r\n\tT Load(int2 Location, in" +
+    "t2 Offset, int SampleIndex);\r\n\t\r\n\t\r\n\t// SM 5.0\r\n\tfloat2 GetSamplePosition(\r\n\t  i" +
+    "n  int sampleindex\r\n\t);\t\r\n\t\r\n\tT Load(\r\n\t  in  int2 coord,\r\n\t  in  int sampleinde" +
+    "x\r\n\t);\t\r\n\t\r\n\tT sample.operator[][]( in  uint sampleSlice, in  uint3 pos);\t\r\n};\r\n" +
+    "\r\nclass __Texture2DMSArray<T> {\r\n\t// SM 4.0\r\n\tvoid GetDimensions( out uint Width" +
+    ", out uint Height, out uint Elements, out uint Samples);\r\n\tvoid GetDimensions( o" +
+    "ut float Width, out float Height, out float Elements, out float Samples);\r\n\tfloa" +
+    "t2 GetSamplePosition(int s);\r\n\tT Load(int3 Location); \r\n\tT Load(int3 Location, i" +
+    "nt2 Offset); \r\n\tT Load(int3 Location, int2 Offset, int SampleIndex); \r\n\r\n\t// SM " +
+    "5.0\r\n\tfloat2 GetSamplePosition(\r\n\t  in  int sampleindex\r\n\t);\t\r\n\r\n\tT Load(\r\n\t  in" +
+    "  int3 coord,\r\n\t  in  int sampleindex\r\n\t);\t\r\n\r\n\tT sample.operator[][]( in  uint " +
+    "sampleSlice, in  uint3 pos);\r\n};\r\n\r\nclass __Buffer<T> {\r\n\t// SM 4.0\r\n\tT Load(int" +
+    " Location);\r\n\r\n\tvoid GetDimensions(out  uint dim);\t\r\n\t\r\n\tT operator[](in  uint p" +
+    "os);\r\n};\r\n\r\n// Stream-Output Object (DirectX HLSL)\r\n// http://msdn.microsoft.com" +
+    "/en-us/library/bb509661%28v=VS.85%29.aspx\r\n// StreamOutputObject <T>   Name\r\n// " +
+    "StreamOutputObject: PointStream, LineStream, TriangleStream\r\nclass __PointStream" +
+    "<T> {\r\n\tvoid Append(T StreamDataType);\r\n\tvoid RestartStrip();\r\n};\r\n\r\nclass __Lin" +
+    "eStream<T> {\r\n\tvoid Append(T StreamDataType);\r\n\tvoid RestartStrip();\r\n};\r\n\r\nclas" +
+    "s __TriangleStream<T> {\r\n\tvoid Append(T StreamDataType);\r\n\tvoid RestartStrip();\r" +
+    "\n};\r\n\r\n// ----------------------------------------------------------------------" +
+    "-----------------\r\n// Shader Model 5.0 \r\n// ------------------------------------" +
+    "---------------------------------------------------\r\n\r\n// AppendStructuredBuffer" +
+    "<T>\r\n// http://msdn.microsoft.com/en-us/library/ff471448%28v=VS.85%29.aspx\r\nclas" +
+    "s __AppendStructuredBuffer<T> {\r\n\tvoid Append(T value);\r\n\tvoid GetDimensions(out" +
+    " uint numStructs, out uint stride);\r\n};\r\n\r\n// ByteAddressBuffer\r\n// http://msdn." +
+    "microsoft.com/en-us/library/ff471453%28v=VS.85%29.aspx\r\nclass __ByteAddressBuffe" +
+    "r {\r\n\tvoid GetDimensions(out  uint dim);\r\n\tuint Load(in  uint address);\r\n\tuint2 " +
+    "Load2(in  uint address);\r\n\tuint3 Load3(in  uint address);\r\n\tuint4 Load4(in  uint" +
+    " address);\r\n};\r\n\r\n// ConsumeStructuredBuffer<T>\r\n// http://msdn.microsoft.com/en" +
+    "-us/library/ff471459%28v=VS.85%29.aspx\r\nclass __ConsumeStructuredBuffer<T> {\r\n\tT" +
+    " Consume(void);\r\n\tvoid GetDimensions(out  uint numStructs, out  uint stride);\r\n}" +
+    ";\r\n\r\n// InputPatch<T,N>\r\n// http://msdn.microsoft.com/en-us/library/ff471462%28v" +
+    "=VS.85%29.aspx\r\nclass __InputPatch<T,N> {\r\n\tuint Length;\r\n\tT operator[](in uint " +
+    "n);\r\n};\r\n\r\n// OutputPatch<T,N>\r\n// http://msdn.microsoft.com/en-us/library/ff471" +
+    "464%28v=VS.85%29.aspx\r\nclass __OutputPatch<T,N> {\r\n\tuint Length;\r\n\tT operator[](" +
+    "in uint n);\r\n};\r\n\r\n// RWBuffer<T>\r\n// http://msdn.microsoft.com/en-us/library/ff" +
+    "471472%28v=VS.85%29.aspx\r\nclass __RWBuffer<T> {\r\n\tvoid GetDimensions(out  uint d" +
+    "im);\r\n\tT operator[](in uint pos);\r\n};\r\n\r\n// RWByteAddressBuffer\r\n// http://msdn." +
+    "microsoft.com/en-us/library/ff471475%28v=VS.85%29.aspx\r\nclass __RWByteAddressBuf" +
+    "fer {\r\n\tvoid GetDimensions(out  uint dim);\r\n\tvoid InterlockedAdd(in   uint dest," +
+    " in   uint value, out  uint original_value);\r\n\tvoid InterlockedAnd(\r\n\t\tin   uint" +
+    " dest,\r\n\t\tin   uint value,\r\n\t\tout  uint original_value\r\n\t);\r\n\tvoid InterlockedCo" +
+    "mpareExchange(\r\n\t\tin   uint dest,\r\n\t\tin   uint compare_value,\r\n\t\tin   uint value" +
+    ",\r\n\t\tout  uint original_value\r\n\t);\r\n\tvoid InterlockedCompareStore(\r\n\t  in  uint " +
+    "dest,\r\n\t  in  uint compare_value,\r\n\t  in  uint value\r\n\t);\r\n\tvoid InterlockedExch" +
+    "ange(\r\n\t  in   uint dest,\r\n\t  in   uint value,\r\n\t  out  uint original_value\r\n\t);" +
+    "\r\n\tvoid InterlockedMax(\r\n\t  in   uint dest,\r\n\t  in   uint value,\r\n\t  out  uint o" +
+    "riginal_value\r\n\t);\t\r\n\tvoid InterlockedMin(\r\n\t  in   uint dest,\r\n\t  in   uint val" +
+    "ue,\r\n\t  out  uint original_value\r\n\t);\t\r\n\tvoid InterlockedOr(\r\n\t  in   uint dest," +
+    "\r\n\t  in   uint value,\r\n\t  out  uint original_value\r\n\t);\t\r\n\tvoid InterlockedXor(\r" +
+    "\n\t  in   uint dest,\r\n\t  in   uint value,\r\n\t  out  uint original_value\r\n\t);\t\r\n\tui" +
+    "nt Load(\r\n\t  in  uint address\r\n\t);\t\r\n\tuint2 Load2(\r\n\t  in  uint address\r\n\t);\t\r\n\t" +
+    "uint3 Load3(\r\n\t  in  uint address\r\n\t);\t\r\n\tuint4 Load4(\r\n\t  in  uint address\r\n\t);" +
+    "\t\r\n\tvoid Store(\r\n\t  in  uint address,\r\n\t  in  uint value\r\n\t);\t\r\n\tvoid Store2(\r\n\t" +
+    "  in  uint address,\r\n\t  in  uint2 values\r\n\t);\t\r\n\tvoid Store3(\r\n\t  in  uint addre" +
+    "ss,\r\n\t  in  uint3 values\r\n\t);\t\r\n\tvoid Store4(\r\n\t  in  uint address,\r\n\t  in  uint" +
+    "4 values\r\n\t);\t\r\n};\r\n\r\n// RWStructuredBuffer<T>\r\n// http://msdn.microsoft.com/en-" +
+    "us/library/ff471494%28v=VS.85%29.aspx\r\nclass __RWStructuredBuffer<T> {\r\n\r\n\tuint " +
+    "DecrementCounter(void);\r\n\r\n\tvoid GetDimensions(\r\n\t  out  uint numStructs,\r\n\t  ou" +
+    "t  uint stride\r\n\t);\r\n\r\n\tuint IncrementCounter(void);\r\n\r\n\tT operator[](in uint po" +
+    "s);\r\n};\r\n\r\n// RWTexture1D<T>\r\n// http://msdn.microsoft.com/en-us/library/ff47149" +
+    "9%28v=VS.85%29.aspx\r\nclass __RWTexture1D<T> {\r\n\tvoid GetDimensions(\r\n\t  out  uin" +
+    "t Width\r\n\t);\r\n\tT operator[](in  uint pos);\r\n};\r\n\r\n// RWTexture1DArray<T>\r\n// htt" +
+    "p://msdn.microsoft.com/en-us/library/ff471500%28v=VS.85%29.aspx\r\nclass __RWTextu" +
+    "re1DArray<T> {\r\n\tvoid GetDimensions(\r\n\t  out  uint Width,\r\n\t  out  uint Elements" +
+    "\r\n\t);\r\n\r\n\tT operator[](in  uint2 pos);\r\n};\r\n\r\n// RWTexture2D<T>\r\n// http://msdn." +
+    "microsoft.com/en-us/library/ff471505%28v=VS.85%29.aspx\r\nclass __RWTexture2D<T> {" +
+    "\r\n\tvoid GetDimensions(\r\n\t  out  uint Width,\r\n\t  out  uint Height\r\n\t);\r\n\r\n      T" +
+    " operator[](in  uint2 pos);\r\n};\r\n\r\n// RWTexture2DArray<T>\r\n// http://msdn.micros" +
+    "oft.com/en-us/library/ff471506%28v=VS.85%29.aspx\r\nclass __RWTexture2DArray<T> {\r" +
+    "\n\tvoid GetDimensions(\r\n\t  out  uint Width,\r\n\t  out  uint Height,\r\n\t  out  uint E" +
+    "lements\r\n\t);\r\n\tT operator[](in  uint3 pos);\r\n};\r\n\r\n// RWTexture3D<T>\r\n// http://" +
+    "msdn.microsoft.com/en-us/library/ff471511%28v=VS.85%29.aspx\r\nclass __RWTexture3D" +
+    "<T> {\r\n\tvoid GetDimensions(\r\n\t  out  uint Width,\r\n\t  out  uint Height,\r\n\t  out  " +
+    "uint Depth\r\n\t);\r\n\r\n\tT operator[](in  uint3 pos);\r\n};\r\n\r\n// StructuredBuffer<T>\r\n" +
+    "// http://msdn.microsoft.com/en-us/library/ff471514%28v=VS.85%29.aspx\r\nclass __S" +
+    "tructuredBuffer<T> {\r\n\tvoid GetDimensions(\r\n\t  out  uint numStructs,\r\n\t  out  ui" +
+    "nt stride\r\n\t);\r\n\r\n\tT operator[](in  uint pos);\t\r\n};";
 			}
 		}
 

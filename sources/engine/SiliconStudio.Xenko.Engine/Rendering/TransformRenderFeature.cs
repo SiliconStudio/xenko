@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -147,6 +149,7 @@ namespace SiliconStudio.Xenko.Rendering
                     perViewCamera->NearClipPlane = view.NearClipPlane;
                     perViewCamera->FarClipPlane = view.FarClipPlane;
                     perViewCamera->ZProjection = CameraKeys.ZProjectionACalculate(view.NearClipPlane, view.FarClipPlane);
+                    // TODO: Report a warning if ViewSize is 0
                     perViewCamera->ViewSize = view.ViewSize;
                     perViewCamera->AspectRatio = view.ViewSize.X / Math.Max(view.ViewSize.Y, 1.0f);
                 }

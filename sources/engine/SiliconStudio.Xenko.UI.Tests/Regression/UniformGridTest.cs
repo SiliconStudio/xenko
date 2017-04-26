@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Threading.Tasks;
 
 using NUnit.Framework;
@@ -17,7 +17,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
     {
         public UniformGridTest()
         {
-            CurrentVersion = 8;
+            //CurrentVersion = 8;
+            CurrentVersion = 9; // One texture was using Format: TrueColor which is no longer available!
         }
 
         protected override void RegisterTests()

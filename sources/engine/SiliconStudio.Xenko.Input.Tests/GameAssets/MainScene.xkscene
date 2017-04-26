@@ -2,6 +2,7 @@
 Id: ae4ecc1b-0b47-4c9d-ac8e-7f9720913084
 SerializedVersion: {Xenko: 1.10.0-beta03}
 Tags: []
+ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:

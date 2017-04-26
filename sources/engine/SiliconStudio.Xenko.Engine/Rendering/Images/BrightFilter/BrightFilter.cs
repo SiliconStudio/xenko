@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.ComponentModel;
@@ -24,7 +24,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public BrightFilter()
             : this("BrightFilterShader")
         {
-            Threshold = 1.0f;
+            Threshold = 0.2f;
+            Steepness = 1.0f;
             Color = new Color3(1.0f);
         }
 
@@ -44,8 +45,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>The threshold.</value>
         /// <userdoc>The value of the intensity threshold used to identify bright areas</userdoc>
         [DataMember(10)]
-        [DefaultValue(1.0f)]
+        [DefaultValue(0.2f)]
         public float Threshold { get; set; }
+
+        /// <summary>
+        /// Gets or sets the smoothstep steepness for bright pass filtering
+        /// </summary>
+        [DataMember(15)]
+        [DefaultValue(1.0f)]
+        public float Steepness { get; set; }
 
         /// <summary>
         /// Modulate the bloom by a certain color.
@@ -77,7 +85,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 return;
             }
         
-            brightPassFilter.Parameters.Set(BrightFilterShaderKeys.BrightPassThreshold, Threshold);
+            brightPassFilter.Parameters.Set(BrightFilterShaderKeys.ThresholdOffset, Threshold);
+            brightPassFilter.Parameters.Set(BrightFilterShaderKeys.BrightPassSteepness, Steepness);
             brightPassFilter.Parameters.Set(BrightFilterShaderKeys.ColorModulator, Color.ToColorSpace(GraphicsDevice.ColorSpace));
             
             brightPassFilter.SetInput(input);

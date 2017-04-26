@@ -24,13 +24,14 @@ Settings:
     Package/SceneSettings:
         ae4ecc1b-0b47-4c9d-ac8e-7f9720913084:
             CamPosition: {X: 4.0, Y: 4.0, Z: 4.0}
-            CamPitchYaw: {X: -0.551043332, Y: 0.7008764}
+            CamPitchYaw: {X: -0.5235988, Y: 0.7853982}
             CamProjection: Perspective
             CamVerticalFieldOfView: 45.0
             CamOrthographicSize: 10.0
             CamNearClipPlane: 0.1
             CamFarClipPlane: 1000.0
             CamAspectRatio: 1.77777779
+            CamMoveSpeed: 3.0
             TranslationSnapActive: false
             TranslationSnapValue: 1.0
             RotationSnapActive: false
@@ -48,8 +49,8 @@ Settings:
             ComponentGizmoSize: 1.0
             FixedSizeGizmos: false
             HiddenGizmos:
+                - Physics
                 - Transform
-            NavigationVisible: false
-            NavigationWireframes: false
+            VisibleNavigationGroups: []
             LightProbeWireframe: false
             SceneLoaded: false

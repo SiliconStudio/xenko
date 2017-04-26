@@ -1,6 +1,7 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -15,14 +16,14 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// <summary>
     /// Entry point to compile an <see cref="EffectShaderAsset"/>
     /// </summary>
+    [AssetCompiler(typeof(EffectShaderAsset), typeof(AssetCompilationContext))]
     public class EffectShaderAssetCompiler : AssetCompilerBase
     {
         public static readonly PropertyKey<ConcurrentDictionary<string, string>> ShaderLocationsKey = new PropertyKey<ConcurrentDictionary<string, string>>("ShaderPathsKey", typeof(EffectShaderAssetCompiler));
 
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var url = EffectCompilerBase.DefaultSourceShaderFolder + "/" + Path.GetFileName(assetItem.FullPath);
-            var asset = (EffectShaderAsset)assetItem.Asset;
 
             var originalSourcePath = assetItem.FullPath;
             result.BuildSteps = new AssetBuildStep(assetItem) { new ImportStreamCommand { SourcePath = originalSourcePath, Location = url, SaveSourcePath = true } };

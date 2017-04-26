@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -36,12 +36,10 @@ namespace SiliconStudio.Xenko.Physics
         [DataMember(30)]
         public Quaternion LocalRotation = Quaternion.Identity;
 
-        public int CompareTo(object obj)
+        public bool Match(object obj)
         {
             var other = obj as BoxColliderShapeDesc;
-            if (other == null) return -1;
-            if (other.Is2D == Is2D && other.Size == Size && other.LocalOffset == LocalOffset && other.LocalRotation == LocalRotation) return 0;
-            return 1;
+            return other?.Is2D == Is2D && other.Size == Size && other.LocalOffset == LocalOffset && other.LocalRotation == LocalRotation;
         }
         
         public override int GetHashCode()

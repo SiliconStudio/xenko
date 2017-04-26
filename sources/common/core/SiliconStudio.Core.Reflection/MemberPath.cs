@@ -1,10 +1,11 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -205,7 +206,7 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
-        public bool Apply(object rootObject, MemberPathAction actionType, object value)
+        public bool Apply([NotNull] object rootObject, MemberPathAction actionType, object value)
         {
             if (rootObject == null) throw new ArgumentNullException(nameof(rootObject));
             if (rootObject.GetType().IsValueType) throw new ArgumentException("Value type for root objects are not supported", nameof(rootObject));

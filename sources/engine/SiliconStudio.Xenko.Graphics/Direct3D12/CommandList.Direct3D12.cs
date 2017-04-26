@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
 using System;
 using System.Collections.Generic;
@@ -26,7 +26,9 @@ namespace SiliconStudio.Xenko.Graphics
         internal readonly Queue<GraphicsCommandList> NativeCommandLists = new Queue<GraphicsCommandList>();
 
         private CompiledCommandList currentCommandList;
-        
+
+        private RawRectangle[] nativeScissorRectangles = new RawRectangle[MaxViewportAndScissorRectangleCount];
+
         public static CommandList New(GraphicsDevice device)
         {
             return new CommandList(device);
@@ -180,25 +182,6 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Binds a single scissor rectangle to the rasterizer stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="top">The top.</param>
-        /// <param name="right">The right.</param>
-        /// <param name="bottom">The bottom.</param>
-        public void SetScissorRectangles(int left, int top, int right, int bottom)
-        {
-        }
-
-        /// <summary>
-        /// Binds a set of scissor rectangles to the rasterizer stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="scissorRectangles">The set of scissor rectangles to bind.</param>
-        public void SetScissorRectangles(params Rectangle[] scissorRectangles)
-        {
-        }
-
-        /// <summary>
         /// Sets the stream targets.
         /// </summary>
         /// <param name="buffers">The buffers.</param>
@@ -210,15 +193,36 @@ namespace SiliconStudio.Xenko.Graphics
         ///     Gets or sets the 1st viewport. See <see cref="Render+states"/> to learn how to use it.
         /// </summary>
         /// <value>The viewport.</value>
-        private unsafe void SetViewportImpl()
+        private void SetViewportImpl()
         {
-            if (!viewportDirty)
+            if (!viewportDirty && !scissorsDirty)
                 return;
 
             var viewport = viewports[0];
-            currentCommandList.NativeCommandList.SetViewport(new RawViewportF { Width = viewport.Width, Height = viewport.Height, X = viewport.X, Y = viewport.Y, MinDepth = viewport.MinDepth, MaxDepth = viewport.MaxDepth });
-            currentCommandList.NativeCommandList.SetScissorRectangles(new RawRectangle { Left = (int)viewport.X, Right = (int)viewport.X + (int)viewport.Width, Top = (int)viewport.Y, Bottom = (int)viewport.Y + (int)viewport.Height });
-            viewportDirty = false;
+            if (viewportDirty)
+            {
+                currentCommandList.NativeCommandList.SetViewport(new RawViewportF { Width = viewport.Width, Height = viewport.Height, X = viewport.X, Y = viewport.Y, MinDepth = viewport.MinDepth, MaxDepth = viewport.MaxDepth });
+                currentCommandList.NativeCommandList.SetScissorRectangles(new RawRectangle { Left = (int)viewport.X, Right = (int)viewport.X + (int)viewport.Width, Top = (int)viewport.Y, Bottom = (int)viewport.Y + (int)viewport.Height });
+                viewportDirty = false;
+            }
+
+            if (boundPipelineState?.HasScissorEnabled ?? false)
+            {
+                if (scissorsDirty)
+                {
+                    // Use manual scissor
+                    var scissor = scissors[0];
+                    currentCommandList.NativeCommandList.SetScissorRectangles(new RawRectangle { Left = scissor.Left, Right = scissor.Right, Top = scissor.Top, Bottom = scissor.Bottom });
+                }
+            }
+            else
+            {
+                // Use viewport
+                // Always update, because either scissor or viewport was dirty and we use viewport size
+                currentCommandList.NativeCommandList.SetScissorRectangles(new RawRectangle { Left = (int)viewport.X, Right = (int)viewport.X + (int)viewport.Width, Top = (int)viewport.Y, Bottom = (int)viewport.Y + (int)viewport.Height });
+            }
+
+            scissorsDirty = false;
         }
 
         /// <summary>
@@ -256,8 +260,11 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void SetPipelineState(PipelineState pipelineState)
         {
-            if (boundPipelineState != pipelineState && pipelineState.CompiledState != null)
+            if (boundPipelineState != pipelineState && pipelineState?.CompiledState != null)
             {
+                // If scissor state changed, force a refresh
+                scissorsDirty |= (boundPipelineState?.HasScissorEnabled ?? false) != (pipelineState?.HasScissorEnabled ?? false);
+
                 currentCommandList.NativeCommandList.PipelineState = pipelineState.CompiledState;
                 currentCommandList.NativeCommandList.SetGraphicsRootSignature(pipelineState.RootSignature);
                 boundPipelineState = pipelineState;
@@ -715,7 +722,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        public void CopyMultiSample(Texture sourceMsaaTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
+        public void CopyMultisample(Texture sourceMultisampleTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
         {
             throw new NotImplementedException();
         }

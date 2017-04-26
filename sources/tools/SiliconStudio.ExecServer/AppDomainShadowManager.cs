@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ namespace SiliconStudio.ExecServer
     {
         private readonly List<AppDomainShadow> appDomainShadows = new List<AppDomainShadow>();
 
+        private readonly string entryAssemblyPath;
         private readonly string mainAssemblyPath;
 
         private readonly List<string> nativeDllsPathOrFolderList;
@@ -26,15 +27,17 @@ namespace SiliconStudio.ExecServer
         /// <summary>
         /// Initializes a new instance of the <see cref="AppDomainShadowManager" /> class.
         /// </summary>
+        /// <param name="entryAssemblyPath">Path to the client assembly in case we need to start another instance of same process.</param>
         /// <param name="mainAssemblyPath">The main assembly path.</param>
         /// <param name="maximumConcurrentAppDomain">The maximum concurrent application domain.</param>
         /// <param name="nativeDllsPathOrFolderList">An array of folders path (containing only native dlls) or directly a specific path to a dll.</param>
         /// <exception cref="System.ArgumentNullException">mainAssemblyPath</exception>
         /// <exception cref="System.InvalidOperationException">If the assembly does not exist</exception>
-        public AppDomainShadowManager(string mainAssemblyPath, IEnumerable<string> nativeDllsPathOrFolderList)
+        public AppDomainShadowManager(string entryAssemblyPath, string mainAssemblyPath, IEnumerable<string> nativeDllsPathOrFolderList)
         {
             if (mainAssemblyPath == null) throw new ArgumentNullException("mainAssemblyPath");
             if (!File.Exists(mainAssemblyPath)) throw new InvalidOperationException(string.Format("Assembly [{0}] does not exist", mainAssemblyPath));
+            this.entryAssemblyPath = entryAssemblyPath;
             this.mainAssemblyPath = mainAssemblyPath;
             this.nativeDllsPathOrFolderList = new List<string>(nativeDllsPathOrFolderList);
         }
@@ -146,7 +149,7 @@ namespace SiliconStudio.ExecServer
 
                 var newAppDomainName = Path.GetFileNameWithoutExtension(mainAssemblyPath) + "#" + appDomainShadows.Count;
                 Console.WriteLine("Create new AppDomain {0}", newAppDomainName);
-                var newAppDomain = new AppDomainShadow(newAppDomainName, mainAssemblyPath, shadowCache, nativeDllsPathOrFolderList.ToArray());
+                var newAppDomain = new AppDomainShadow(newAppDomainName, entryAssemblyPath, mainAssemblyPath, shadowCache, nativeDllsPathOrFolderList.ToArray());
                 newAppDomain.TryLock();
 
                 if (appdomainCache)

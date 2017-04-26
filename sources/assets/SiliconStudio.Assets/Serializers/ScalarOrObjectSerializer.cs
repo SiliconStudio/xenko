@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
@@ -74,7 +76,7 @@ namespace SiliconStudio.Assets.Serializers
             return true;
         }
 
-        private class YamlRedirectSerializer : AssetScalarSerializerBase
+        internal class YamlRedirectSerializer : AssetScalarSerializerBase
         {
             private readonly ScalarOrObjectSerializer realScalarSerializer;
 

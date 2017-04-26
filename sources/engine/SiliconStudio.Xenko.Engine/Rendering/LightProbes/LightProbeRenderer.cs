@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -39,15 +39,6 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
             lightprobeGroup = new LightProbeShaderGroupData(context, this);
         }
 
-        public override void Unload()
-        {
-            // Dispose GPU resources
-            lightprobeCoefficients?.Dispose();
-            lightprobeCoefficients = null;
-
-            base.Unload();
-        }
-
         public override void Reset()
         {
             base.Reset();
@@ -64,12 +55,15 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
 
         public override void ProcessLights(ProcessLightsParameters parameters)
         {
-            lightprobeGroup.AddView(parameters.ViewIndex, parameters.View, parameters.LightEnd - parameters.LightStart);
+            lightprobeGroup.AddView(parameters.ViewIndex, parameters.View, parameters.LightIndices.Count);
 
-            for (int index = parameters.LightStart; index < parameters.LightEnd; index++)
+            foreach(var index in parameters.LightIndices)
             {
                 lightprobeGroup.AddLight(parameters.LightCollection[index], null);
             }
+
+            // Consume all the lights
+            parameters.LightIndices.Clear();
         }
 
         public override void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry)
@@ -80,35 +74,28 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
         class LightProbeShaderGroupData : LightShaderGroupDynamic
         {
             private readonly LightProbeRenderer lightProbeRenderer;
+            private readonly RenderContext renderContext;
+            private readonly ShaderSource shaderSourceEnabled;
+            private readonly ShaderSource shaderSourceDisabled;
 
             public LightProbeShaderGroupData(RenderContext renderContext, LightProbeRenderer lightProbeRenderer)
                 : base(renderContext, null)
             {
+                this.renderContext = renderContext;
                 this.lightProbeRenderer = lightProbeRenderer;
-                ShaderSource = new ShaderClassSource("LightProbeShader", 3);
+                shaderSourceEnabled = new ShaderClassSource("LightProbeShader", 3);
+                shaderSourceDisabled = new ShaderClassSource("EnvironmentLight");
             }
 
-            public override unsafe void ApplyViewParameters(RenderDrawContext context, int viewIndex, ParameterCollection parameters)
+            public override void UpdateLayout(string compositionName)
             {
-                // Note: no need to fill CurrentLights since we have no shadow maps
-                base.ApplyViewParameters(context, viewIndex, parameters);
+                base.UpdateLayout(compositionName);
 
-                using (context.LockCommandList())
-                {
-                    if (lightProbeRenderer.lightprobeCoefficients == null)
-                        lightProbeRenderer.lightprobeCoefficients = Buffer.New(context.GraphicsDevice, 9 * 4 * sizeof(Vector4), 0, BufferFlags.ShaderResource, PixelFormat.R32G32B32A32_Float);
-
-                    var data = new Color4[9*4];
-                    for (int i = 0; i < 4; ++i)
-                    {
-                        data[i * 9] = Color4.White;
-                    }
-                    fixed (Color4* dataPtr = data)
-                        context.CommandList.UpdateSubresource(lightProbeRenderer.lightprobeCoefficients, 0, new DataBox((IntPtr)dataPtr, 0, 0), new ResourceRegion(0, 0, 0, data.Length * sizeof(Color4), 1, 1));
-                }
-
-                // Set resources
-                //parameters.Set(LightProbeShaderKeys.LightProbeCoefficients, lightprobeRenderer.lightprobeCoefficients);
+                // Setup light probe shader only if there is some light probe data
+                // TODO: Just like the ForwardLightingRenderFeature access the LightProcessor, accessing the SceneInstance.LightProbeProcessor is not what we want.
+                // Ideally, we should send the data the other way around. Let's fix that together when we refactor the lighting at some point.
+                var lightProbeRuntimeData = renderContext.SceneInstance?.GetProcessor<LightProbeProcessor>()?.RuntimeData;
+                ShaderSource = lightProbeRuntimeData != null ? shaderSourceEnabled : shaderSourceDisabled;
             }
         }
     }

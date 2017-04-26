@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Theme Coloring Source: https://github.com/fsprojects/VisualFSharpPowerTools
 //
@@ -21,6 +21,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Windows.Media;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Formatting;
 
@@ -35,6 +38,8 @@ namespace SiliconStudio.Xenko.VisualStudio.Classifiers
             new Dictionary<VisualStudioTheme, IDictionary<string, ClassificationColor>>();
 
         private VisualStudioThemeEngine themeEngine;
+        private IVsFontAndColorStorage fontAndColorStorage;
+        private IVsFontAndColorUtilities fontAndColorUtilities;
 
         [Import]
         private IClassificationFormatMapService classificationFormatMapService = null;
@@ -44,6 +49,9 @@ namespace SiliconStudio.Xenko.VisualStudio.Classifiers
 
         protected ClassificationColorManager(IServiceProvider serviceProvider)
         {
+            fontAndColorStorage = serviceProvider.GetService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorStorage;
+            fontAndColorUtilities = serviceProvider.GetService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorUtilities;
+
             // Initialize theme engine
             themeEngine = new VisualStudioThemeEngine(serviceProvider);
             themeEngine.OnThemeChanged += themeEngine_OnThemeChanged;
@@ -73,42 +81,34 @@ namespace SiliconStudio.Xenko.VisualStudio.Classifiers
             if (theme != currentTheme)
             {
                 currentTheme = theme;
-
                 var colors = themeColors[theme];
-                var formatMap = classificationFormatMapService.GetClassificationFormatMap(ClassificationCategory);
 
-                // TODO: It seems this approach doesn't update Fonts & Colors settings
-                try
+                if (fontAndColorStorage != null && fontAndColorUtilities != null)
                 {
-                    formatMap.BeginBatchUpdate();
-                    foreach (var pair in colors)
+                    if (fontAndColorStorage.OpenCategory(Microsoft.VisualStudio.Editor.DefGuidList.guidTextEditorFontCategory, (uint)(__FCSTORAGEFLAGS.FCSF_LOADDEFAULTS | __FCSTORAGEFLAGS.FCSF_PROPAGATECHANGES)) == VSConstants.S_OK)
                     {
-                        string type = pair.Key;
-                        var color = pair.Value;
+                        try
+                        {
+                            foreach (var pair in colors)
+                            {
+                                var colorInfos = new ColorableItemInfo[1];
+                                if (fontAndColorStorage.GetItem(pair.Key, colorInfos) == VSConstants.S_OK)
+                                {
+                                    if (pair.Value.ForegroundColor != null)
+                                        colorInfos[0].crForeground = (uint)(pair.Value.ForegroundColor.Value.R | (pair.Value.ForegroundColor.Value.G << 8) | (pair.Value.ForegroundColor.Value.B << 16));
 
-                        var classificationType = classificationTypeRegistry.GetClassificationType(type);
-                        var oldProp = formatMap.GetTextProperties(classificationType);
+                                    if (pair.Value.BackgroundColor != null)
+                                        colorInfos[0].crBackground = (uint)(pair.Value.BackgroundColor.Value.R | (pair.Value.BackgroundColor.Value.G << 8) | (pair.Value.BackgroundColor.Value.B << 16));
 
-                        var foregroundBrush =
-                            color.ForegroundColor == null
-                                ? null
-                                : new SolidColorBrush(color.ForegroundColor.Value);
-
-                        var backgroundBrush =
-                            color.BackgroundColor == null
-                                ? null
-                                : new SolidColorBrush(color.BackgroundColor.Value);
-
-                        var newProp = TextFormattingRunProperties.CreateTextFormattingRunProperties(
-                            foregroundBrush, backgroundBrush, oldProp.Typeface, null, null, oldProp.TextDecorations,
-                            oldProp.TextEffects, oldProp.CultureInfo);
-
-                        formatMap.SetTextProperties(classificationType, newProp);
+                                    fontAndColorStorage.SetItem(pair.Key, colorInfos);
+                                }
+                            }
+                        }
+                        finally
+                        {
+                            fontAndColorStorage.CloseCategory();
+                        }
                     }
-                }
-                finally
-                {
-                    formatMap.EndBatchUpdate();
                 }
             }
         }

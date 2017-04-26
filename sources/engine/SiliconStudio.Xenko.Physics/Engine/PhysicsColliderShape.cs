@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Physics
     [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<PhysicsColliderShape>))]
     [DataSerializerGlobal(typeof(CloneSerializer<PhysicsColliderShape>), Profile = "Clone")]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<PhysicsColliderShape>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<PhysicsColliderShape>), Profile = "Content")]
     public class PhysicsColliderShape : IDisposable
     {
         /// <summary>
@@ -67,6 +67,9 @@ namespace SiliconStudio.Xenko.Physics
 
         internal static ColliderShape CreateShape(IColliderShapeDesc desc)
         {
+            if (desc == null)
+                return null;
+
             ColliderShape shape = null;
 
             var type = desc.GetType();

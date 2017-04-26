@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
     /// <summary>
     /// The Skybox at runtime.
     /// </summary>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Skybox>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<Skybox>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<Skybox>))]
     [DataContract]
     public class Skybox

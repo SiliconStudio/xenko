@@ -1,9 +1,8 @@
 !PrefabAsset
 Id: 68437429-8ed3-4b1f-a873-9856b53729f3
-SerializedVersion: {Xenko: 1.8.3-beta01}
+SerializedVersion: {Xenko: 1.10.0-beta02}
 Tags: []
 Hierarchy:
-    ~Id: 4ae55a80-ee39-4574-b98d-0f502afcc23b
     RootPartIds:
         - 0e212165-0074-4a23-a37d-8e5d59cd8f90
     Parts:
@@ -11,19 +10,18 @@ Hierarchy:
                 Id: 0e212165-0074-4a23-a37d-8e5d59cd8f90
                 Name: Cone
                 Components:
-                    - !TransformComponent
-                        ~Id: 1df0710b-262a-4f30-9b6b-d187ebf43575
-                        Children: []
+                    0b71f01d2a26304f9b6bd187ebf43575: !TransformComponent
+                        Id: 1df0710b-262a-4f30-9b6b-d187ebf43575
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: d0579e27-591c-4081-8cf0-076dab146f30
-                        Model: 090913cc-a9de-492b-8840-40d9e0a54858/f8511fb7-e26f-41ef-b95d-e5a320119f7c:Cone
-                        Materials:
-                            - null
-                    - !StaticColliderComponent
-                        ~Id: b9955ab4-926f-4581-b374-f7ca2ac6d61c
+                        Children: {}
+                    279e57d01c5981408cf0076dab146f30: !ModelComponent
+                        Id: d0579e27-591c-4081-8cf0-076dab146f30
+                        Model: f8511fb7-e26f-41ef-b95d-e5a320119f7c:Cone
+                        Materials: {}
+                    b45a95b96f928145b374f7ca2ac6d61c: !StaticColliderComponent
+                        Id: b9955ab4-926f-4581-b374-f7ca2ac6d61c
                         CanSleep: false
                         Restitution: 0.0
                         Friction: 0.5
@@ -32,7 +30,6 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         ColliderShapes:
-                            - !ConeColliderShapeDesc
-                                ~Id: fac98539-bd47-4add-bfe6-49a3f23a2d35
+                            3985c9fa47bddd4abfe649a3f23a2d35: !ConeColliderShapeDesc
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}

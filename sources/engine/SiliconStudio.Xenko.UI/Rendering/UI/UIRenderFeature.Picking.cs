@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -24,8 +24,11 @@ namespace SiliconStudio.Xenko.Rendering.UI
             if (renderUIElement.UIComponent.Page?.RootElement == null)
                 return;
 
-             UpdateMouseOver(ref viewport, ref worldViewProj, renderUIElement);
-             UpdateTouchEvents(ref viewport, ref worldViewProj, renderUIElement, drawTime);
+            var inverseZViewProj = worldViewProj;
+            inverseZViewProj.Row3 = -inverseZViewProj.Row3;
+
+            UpdateMouseOver(ref viewport, ref inverseZViewProj, renderUIElement);
+            UpdateTouchEvents(ref viewport, ref inverseZViewProj, renderUIElement, drawTime);
         }
 
         partial void PickingClear()

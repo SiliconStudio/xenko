@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,7 +20,6 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Assets
 {
@@ -54,13 +53,9 @@ namespace SiliconStudio.Assets
     /// </summary>
     [DataContract("Package")]
     [NonIdentifiableCollectionItems]
-    [AssetDescription(PackageFileExtensions)]
+    [AssetDescription(PackageFileExtension)]
     [DebuggerDisplay("Id: {Id}, Name: {Meta.Name}, Version: {Meta.Version}, Assets [{Assets.Count}]")]
     [AssetFormatVersion("Assets", PackageFileVersion)]
-    [AssetUpgrader("Assets", 0, 1, typeof(RemoveRawImports))]
-    [AssetUpgrader("Assets", 1, 2, typeof(RenameSystemPackage))]
-    [AssetUpgrader("Assets", 2, 3, typeof(RemoveWindowsStoreAndPhone))]
-    [AssetUpgrader("Assets", 3, 4, typeof(RemoveProperties))]
     public sealed partial class Package : IIdentifiable, IFileSynchronizable, IAssetFinder
     {
         private const int PackageFileVersion = 4;
@@ -90,7 +85,7 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Occurs when an asset dirty changed occurred.
         /// </summary>
-        public event DirtyFlagChangedDelegate<Asset> AssetDirtyChanged;
+        public event DirtyFlagChangedDelegate<AssetItem> AssetDirtyChanged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Package"/> class.
@@ -312,23 +307,23 @@ namespace SiliconStudio.Assets
         public List<PackageLoadedAssembly> LoadedAssemblies { get; } = new List<PackageLoadedAssembly>();
 
         /// <summary>
-        /// Adds an exiting project to this package.
+        /// Adds an existing project to this package.
         /// </summary>
         /// <param name="pathToMsproj">The path to msproj.</param>
         /// <returns>LoggerResult.</returns>
-        public LoggerResult AddExitingProject(UFile pathToMsproj)
+        public LoggerResult AddExistingProject(UFile pathToMsproj)
         {
             var logger = new LoggerResult();
-            AddExitingProject(pathToMsproj, logger);
+            AddExistingProject(pathToMsproj, logger);
             return logger;
         }
 
         /// <summary>
-        /// Adds an exiting project to this package.
+        /// Adds an existing project to this package.
         /// </summary>
         /// <param name="pathToMsproj">The path to msproj.</param>
         /// <param name="logger">The logger.</param>
-        public void AddExitingProject(UFile pathToMsproj, LoggerResult logger)
+        public void AddExistingProject(UFile pathToMsproj, LoggerResult logger)
         {
             if (pathToMsproj == null) throw new ArgumentNullException(nameof(pathToMsproj));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
@@ -398,7 +393,7 @@ namespace SiliconStudio.Assets
             return attachedReference != null ? this.FindAsset(attachedReference) : null;
         }
 
-        internal UDirectory GetDefaultAssetFolder()
+        public UDirectory GetDefaultAssetFolder()
         {
             var sharedProfile = Profiles.FindSharedProfile();
             var folder = sharedProfile?.AssetFolders.FirstOrDefault();
@@ -477,25 +472,10 @@ namespace SiliconStudio.Assets
             PackageDirtyChanged?.Invoke(package, oldValue, newValue);
         }
 
-        internal void OnAssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
+        internal void OnAssetDirtyChanged(AssetItem asset, bool oldValue, bool newValue)
         {
             if (asset == null) throw new ArgumentNullException(nameof(asset));
             AssetDirtyChanged?.Invoke(asset, oldValue, newValue);
-        }
-
-        /// <summary>
-        /// Saves this package and all dirty assets. See remarks.
-        /// </summary>
-        /// <param name="saveAllAssets">if set to <c>true</c> [save all assets].</param>
-        /// <returns>LoggerResult.</returns>
-        /// <remarks>When calling this method directly, it does not handle moving assets between packages. 
-        /// Call <see cref="PackageSession.Save"/> instead.
-        /// </remarks>
-        public LoggerResult Save(PackageSaveParameters saveParameters = null)
-        {
-            var result = new LoggerResult();
-            Save(result, saveParameters);
-            return result;
         }
         
         /// <summary>
@@ -1128,6 +1108,19 @@ namespace SiliconStudio.Assets
             LoadAssemblyReferencesForPackage(log, loadParameters);
         }
 
+        /// <summary>
+        /// Restore NuGet packages of all projects in this package.
+        /// </summary>
+        /// <param name="log">The log.</param>
+        /// <param name="force">True to ignore timestamp check of project.lock.json against project.json, false to check it.</param>
+        public void RestoreNugetPackages(ILogger log, bool force)
+        {
+            foreach (var profile in Profiles)
+            {
+                VSProjectHelper.RestoreNugetPackagesNonRecursive(log, Session?.SolutionPath, force, profile.ProjectReferences.Select(projectReference => UPath.Combine(RootDirectory, projectReference.Location.GetFullDirectory()).ToWindowsPath())).Wait();
+            }
+        }
+
         private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty, out AttachedYamlAssetMetadata yamlMetadata)
         {
             var loadResult = assetContent != null
@@ -1419,85 +1412,6 @@ namespace SiliconStudio.Assets
                 foreach (var codePath in codePaths)
                 {
                     list.Add(new PackageLoadingAssetFile(codePath, parentDir, realFullPath));
-                }
-            }
-        }
-
-        private class RemoveRawImports : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                if (asset.Profiles != null)
-                {
-                    var profiles = asset.Profiles;
-
-                    foreach (var profile in profiles)
-                    {
-                        var folders = profile.AssetFolders;
-                        if (folders != null)
-                        {
-                            foreach (var folder in folders)
-                            {
-                                if (folder.RawImports != null)
-                                {
-                                    folder.RemoveChild("RawImports");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private class RenameSystemPackage : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                var dependencies = asset.Meta?.Dependencies;
-
-                if (dependencies != null)
-                {
-                    foreach (var dependency in dependencies)
-                    {
-                        if (dependency.Name == "Paradox")
-                            dependency.Name = "Xenko";
-                    }
-                }
-            }
-        }
-
-        private class RemoveWindowsStoreAndPhone : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                if (asset.Profiles != null)
-                {
-                    var profiles = asset.Profiles;
-
-                    for (int i = 0; i < profiles.Count; ++i)
-                    {
-                        var profile = profiles[i];
-                        if (profile.Platform == "WindowsStore" || profile.Platform == "WindowsPhone")
-                        {
-                            profiles.RemoveAt(i--);
-                            context.Log.Warning($"Platform [{profile.Platform}] is not supported anymore, it will be removed from your package (but kept in solution as a backup). Please use Windows 10 (UWP) instead.");
-                        }
-                        else if (profile.Platform == nameof(PlatformType.Windows10))
-                        {
-                            profile.Platform = nameof(PlatformType.UWP);
-                        }
-                    }
-                }
-            }
-        }
-
-        private class RemoveProperties : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                foreach (var profile in asset["Profiles"])
-                {
-                    profile["Properties"] = DynamicYamlEmpty.Default;
                 }
             }
         }

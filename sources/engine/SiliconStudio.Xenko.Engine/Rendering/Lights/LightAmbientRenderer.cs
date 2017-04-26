@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using SiliconStudio.Core.Collections;
@@ -43,11 +43,14 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
             // Sum contribution from all lights
             var ambientColor = new Color3();
-            for (int index = parameters.LightStart; index < parameters.LightEnd; index++)
+            foreach (var index in parameters.LightIndices)
             {
                 var light = parameters.LightCollection[index];
                 ambientColor += light.Color;
             }
+
+            // Consume all the lights
+            parameters.LightIndices.Clear();
 
             // Store ambient sum for this view
             lightShaderGroup.AmbientColor[parameters.ViewIndex] = ambientColor;

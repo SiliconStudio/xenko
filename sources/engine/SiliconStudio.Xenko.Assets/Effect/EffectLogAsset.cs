@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -12,7 +12,6 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// </summary>
     [DataContract("EffectLibrary")]
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true, AllowArchetype = false)]
-    [AssetCompiler(typeof(EffectLogAssetCompiler))]
     [Display(900, "Effect Library")]
     public sealed class EffectLogAsset : SourceCodeAsset
     {
@@ -24,8 +23,6 @@ namespace SiliconStudio.Xenko.Assets.Effect
         /// <summary>
         /// The default file extension used by the <see cref="EffectLogAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkeffectlog;.pdxeffectlog";
-
-        protected override int InternalBuildOrder => 100;
+        public const string FileExtension = ".xkeffectlog";
     }
 }

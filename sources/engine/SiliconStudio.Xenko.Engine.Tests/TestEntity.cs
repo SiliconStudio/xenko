@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -27,6 +27,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             // Plug an event handler to track events
             var events = new List<EntityComponentEvent>();
+            entity.EntityManager = new DelegateEntityComponentNotify(evt => events.Add(evt));
 
             // Make sure that an entity has a transform component
             Assert.NotNull(entity.Transform);
@@ -106,6 +107,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
             // Check that CustomEntityComponent can be added multiple times
             Assert.True(EntityComponentAttributes.Get<CustomEntityComponent>().AllowMultipleComponents);
 
+            // Check that DerivedEntityComponentBase can be added multiple times
+            Assert.True(EntityComponentAttributes.Get<DerivedEntityComponent>().AllowMultipleComponents);
+
             var entity = new Entity();
 
             var transform = entity.Get<TransformComponent>();
@@ -174,6 +178,22 @@ namespace SiliconStudio.Xenko.Engine.Tests
             }
         }
 
+        private class DelegateEntityComponentNotify : EntityManager
+        {
+            private readonly Action<EntityComponentEvent> action;
+
+            public DelegateEntityComponentNotify(Action<EntityComponentEvent> action) : base(new ServiceRegistry())
+            {
+                if (action == null) throw new ArgumentNullException(nameof(action));
+                this.action = action;
+            }
+
+            protected override void OnComponentChanged(Entity entity, int index, EntityComponent oldComponent, EntityComponent newComponent)
+            {
+                action(new EntityComponentEvent(entity, index, oldComponent, newComponent));
+            }
+        }
+
         struct EntityComponentEvent : IEquatable<EntityComponentEvent>
         {
             public EntityComponentEvent(Entity entity, int index, EntityComponent oldComponent, EntityComponent newComponent)
@@ -235,6 +255,15 @@ namespace SiliconStudio.Xenko.Engine.Tests
         public Entity Link { get; set; }
 
         public object CustomObject { get; set; }
+    }
+
+    [AllowMultipleComponents]
+    public class MultipleEntityComponentBase : CustomEntityComponentBase
+    {
+    }
+
+    public sealed class DerivedEntityComponent : MultipleEntityComponentBase
+    {
     }
 
     [DataContract()]

@@ -1,7 +1,8 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Tests
@@ -93,7 +94,7 @@ namespace SiliconStudio.Quantum.Tests
 
             protected override IGraphNode FindTarget(IGraphNode sourceNode)
             {
-                if (sourceNode is ObjectNode && sourceNode.Type == typeof(SimpleClass) && sourceNode != root)
+                if (sourceNode is IObjectNode && sourceNode.Type == typeof(SimpleClass) && sourceNode != root)
                 {
                     return CustomTarget;
                 }

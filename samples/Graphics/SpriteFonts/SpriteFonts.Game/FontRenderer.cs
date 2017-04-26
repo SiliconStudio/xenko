@@ -1,4 +1,6 @@
-?�using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
@@ -287,7 +289,7 @@ at full size and full measure";
             var sizeIncreament = 15;
             var scale = 0.8f;
             var position = GetVirtualPosition(contentPosition);
-            var text = "Japanese dynamic sprite font\nあい�?��おかきくけこ   天竜�?\nアイウエオカキクケコ   �??町の\n�?二三四五�?�??九十   �?��濁り";
+            var text = "Japanese dynamic sprite font\nあい��?��おかきくけこ   天竜�?\nアイウエオカキクケコ   ��??町の\n��?二三四五�?��??九十   ��?��濁り";
 
             position.X -= spriteBatch.MeasureString(JapaneseFont, text, scale * (DynamicFontContentSize + sizeIncreament), screenSize).X / 2;
             spriteBatch.DrawString(JapaneseFont, text, scale * (DynamicFontContentSize + sizeIncreament), position, Color.White * GetInterpolatedAlpha());

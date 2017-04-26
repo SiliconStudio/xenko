@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -21,9 +23,6 @@ namespace SiliconStudio.Xenko.Rendering
     {
         private readonly List<RenderObject> renderObjectsWithoutFeatures = new List<RenderObject>();
         private readonly ThreadLocal<ConcurrentCollectorCache<RenderObject>> collectorCache = new ThreadLocal<ConcurrentCollectorCache<RenderObject>>(() => new ConcurrentCollectorCache<RenderObject>(32));
-
-        [Obsolete("This field is provisional and will be replaced by a proper mechanisms in the future")]
-        public static readonly List<Func<RenderView, RenderObject, bool>> ViewObjectFilters = new List<Func<RenderView, RenderObject, bool>>();
 
         private int stageMaskMultiplier;
 
@@ -127,95 +126,63 @@ namespace SiliconStudio.Xenko.Rendering
             // This is still supported so that existing gizmo code kept working with new graphics refactor. Might be reconsidered at some point.
             var cullingMask = view.CullingMask;
 
-            lock (ViewObjectFilters)
+            // Process objects
+            //foreach (var renderObject in RenderObjects)
+            //Dispatcher.ForEach(RenderObjects, renderObject =>
+            Dispatcher.For(0, RenderObjects.Count, () => collectorCache.Value, (index, cache) =>
             {
-                // Process objects
-                //foreach (var renderObject in RenderObjects)
-                //Dispatcher.ForEach(RenderObjects, renderObject =>
-                Dispatcher.For(0, RenderObjects.Count, () => collectorCache.Value, (index, cache) =>
+                var renderObject = RenderObjects[index];
+
+                // Skip not enabled objects
+                if (!renderObject.Enabled || ((RenderGroupMask)(1U << (int)renderObject.RenderGroup) & cullingMask) == 0)
+                    return;
+
+                var renderStageMask = RenderData.GetData(RenderStageMaskKey);
+                var renderStageMaskNode = renderObject.VisibilityObjectNode * stageMaskMultiplier;
+
+                // Determine if this render object belongs to this view
+                bool renderStageMatch = false;
+                unsafe
                 {
-                    var renderObject = RenderObjects[index];
-
-                    // Skip not enabled objects
-                    if (!renderObject.Enabled || ((RenderGroupMask)(1U << (int)renderObject.RenderGroup) & cullingMask) == 0)
-                        return;
-
-                    // Custom per-view filtering
-                    bool skip = false;
-
-                    // TODO HACK First filter with global static filters
-                    foreach (var filter in ViewObjectFilters)
+                    fixed (uint* viewRenderStageMaskStart = viewRenderStageMask)
+                    fixed (uint* objectRenderStageMaskStart = renderStageMask.Data)
                     {
-                        if (!filter(view, renderObject))
+                        var viewRenderStageMaskPtr = viewRenderStageMaskStart;
+                        var objectRenderStageMaskPtr = objectRenderStageMaskStart + renderStageMaskNode.Index;
+                        for (int i = 0; i < viewRenderStageMask.Length; ++i)
                         {
-                            skip = true;
-                            break;
-                        }
-                    }
-
-                    if (skip)
-                        return;
-
-                    // TODO HACK Then filter with RenderSystem filters
-                    foreach (var filter in RenderSystem.ViewObjectFilters)
-                    {
-                        if (!filter(view, renderObject))
-                        {
-                            skip = true;
-                            break;
-                        }
-                    }
-
-                    if (skip)
-                        return;
-
-                    var renderStageMask = RenderData.GetData(RenderStageMaskKey);
-                    var renderStageMaskNode = renderObject.VisibilityObjectNode * stageMaskMultiplier;
-
-                    // Determine if this render object belongs to this view
-                    bool renderStageMatch = false;
-                    unsafe
-                    {
-                        fixed (uint* viewRenderStageMaskStart = viewRenderStageMask)
-                        fixed (uint* objectRenderStageMaskStart = renderStageMask.Data)
-                        {
-                            var viewRenderStageMaskPtr = viewRenderStageMaskStart;
-                            var objectRenderStageMaskPtr = objectRenderStageMaskStart + renderStageMaskNode.Index;
-                            for (int i = 0; i < viewRenderStageMask.Length; ++i)
+                            if ((*viewRenderStageMaskPtr++ & *objectRenderStageMaskPtr++) != 0)
                             {
-                                if ((*viewRenderStageMaskPtr++ & *objectRenderStageMaskPtr++) != 0)
-                                {
-                                    renderStageMatch = true;
-                                    break;
-                                }
+                                renderStageMatch = true;
+                                break;
                             }
                         }
                     }
+                }
 
-                    // Object not part of this view because no render stages in this objects are visible in this view
-                    if (!renderStageMatch)
-                        return;
+                // Object not part of this view because no render stages in this objects are visible in this view
+                if (!renderStageMatch)
+                    return;
 
-                    // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
-                    // Compute transformed AABB (by world)
-                    if (cullingMode == CameraCullingMode.Frustum
-                        && renderObject.BoundingBox.Extent != Vector3.Zero
-                        && !FrustumContainsBox(ref frustum, ref renderObject.BoundingBox, ignoreDepthPlanes))
-                    {
-                        return;
-                    }
+                // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
+                // Compute transformed AABB (by world)
+                if (cullingMode == CameraCullingMode.Frustum
+                    && renderObject.BoundingBox.Extent != Vector3.Zero
+                    && !FrustumContainsBox(ref frustum, ref renderObject.BoundingBox, ignoreDepthPlanes))
+                {
+                    return;
+                }
 
-                    // Add object to list of visible objects
-                    // TODO GRAPHICS REFACTOR we should be able to push multiple elements with future VisibilityObject
-                    view.RenderObjects.Add(renderObject, cache);
+                // Add object to list of visible objects
+                // TODO GRAPHICS REFACTOR we should be able to push multiple elements with future VisibilityObject
+                view.RenderObjects.Add(renderObject, cache);
 
-                    // Calculate bounding box of all render objects in the view
-                    if (renderObject.BoundingBox.Extent != Vector3.Zero)
-                    {
-                        CalculateMinMaxDistance(ref plane, ref renderObject.BoundingBox, ref view.MinimumDistance, ref view.MaximumDistance);
-                    }
-                }, cache => cache.Flush());
-            }
+                // Calculate bounding box of all render objects in the view
+                if (renderObject.BoundingBox.Extent != Vector3.Zero)
+                {
+                    CalculateMinMaxDistance(ref plane, ref renderObject.BoundingBox, ref view.MinimumDistance, ref view.MaximumDistance);
+                }
+            }, cache => cache.Flush());
 
             view.RenderObjects.Close();
         }

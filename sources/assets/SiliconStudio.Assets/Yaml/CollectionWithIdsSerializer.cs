@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -61,23 +63,6 @@ namespace SiliconStudio.Core.Yaml
             if (!objectContext.Properties.TryGetValue(InstanceInfoKey, out info))
             {
                 base.TransformObjectAfterRead(ref objectContext);
-
-                if (AreCollectionItemsIdentifiable(ref objectContext))
-                {
-                    // This is to be backward compatible with previous serialization. We fetch ids from the ~Id member of each item
-                    var enumerable = objectContext.Instance as IEnumerable;
-                    if (enumerable != null)
-                    {
-                        var ids = CollectionItemIdHelper.GetCollectionItemIds(objectContext.Instance);
-                        var i = 0;
-                        foreach (var item in enumerable)
-                        {
-                            var id = item != null ? IdentifiableHelper.GetId(item) : Guid.NewGuid();
-                            ids[i] = id != Guid.Empty ? new ItemId(id.ToByteArray()) : ItemId.New();
-                            ++i;
-                        }
-                    }
-                }
                 return;
             }
 

@@ -1,5 +1,5 @@
-// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 
@@ -37,8 +37,7 @@ namespace SiliconStudio.Xenko.Physics
         {
             if (NativeCollisionObject == null) return;
 
-            if(Simulating)
-                Simulation.RemoveCollider(this);
+            Simulation.RemoveCollider(this);
 
             base.OnDetach();
         }

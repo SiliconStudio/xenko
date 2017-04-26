@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Presentation.Dialogs</RootNamespace>
     <AssemblyName>SiliconStudio.Presentation.Dialogs</AssemblyName>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
@@ -28,6 +28,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>  
     <Compile Include="DialogService.cs" />
     <Compile Include="FileOpenModalDialog.cs" />
     <Compile Include="FileSaveModalDialog.cs" />

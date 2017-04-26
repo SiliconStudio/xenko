@@ -1,13 +1,23 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.VirtualReality;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
+    [DataContract]
+    public class VRDeviceDescription
+    {
+        [DataMember(10)]
+        public VRApi Api { get; set; }
+
+        [DataMember(20)]
+        public float ResolutionScale { get; set; } = 1.0f;
+    }
+
     [DataContract]
     public class VRRendererSettings
     {
@@ -19,10 +29,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         public bool IgnoreCameraRotation { get; set; } = true;
 
         [DataMember(30)]
-        public List<VRApi> RequiredApis { get; } = new List<VRApi>();
+        public List<VRDeviceDescription> RequiredApis { get; } = new List<VRDeviceDescription>();
 
         [DataMember(40)]
-        public float ResolutionScale { get; set; } = 1.0f;
+        public List<VROverlayRenderer> Overlays { get; } = new List<VROverlayRenderer>();
 
         [DataMemberIgnore]
         public RenderView[] RenderViews = { new RenderView(), new RenderView() };
@@ -32,11 +42,5 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         [DataMemberIgnore]
         public ImageScaler MirrorScaler = new ImageScaler();
-
-        [DataMemberIgnore]
-        public Texture LeftEye;
-
-        [DataMemberIgnore]
-        public Texture RightEye;
     }
 }

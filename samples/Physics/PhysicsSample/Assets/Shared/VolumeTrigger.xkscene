@@ -1,8 +1,9 @@
 !SceneAsset
 Id: a5a4f13e-6366-43de-b071-a87c1dfff115
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
-Parent: null
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - f230b77a-bd6f-40d2-9e98-dbba399c378e
@@ -40,7 +41,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: dbc36769-8ddf-4bbe-9fdb-1ee586963d23/2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! 2e3ef041-2f80-4db2-95a7-74c7f12119bd
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: bf3d076e-5eb6-4072-aeab-fab508f82166
@@ -55,7 +56,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: cda9f3e4-5ea7-42c3-b749-c71420973c85/bcf8d384-4569-441b-ab80-9a0b9c92cd5d
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! bcf8d384-4569-441b-ab80-9a0b9c92cd5d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: 4ef8e448-3dd6-4213-b207-f35a39e330fb
@@ -95,7 +96,7 @@ Hierarchy:
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
-                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
+                        TriggerEntity*: ref!! cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: 769a01e5-b682-4acf-a8db-57dc660118a1
@@ -139,7 +140,7 @@ Hierarchy:
                         Name: null
                         Projection: Orthographic
                         OrthographicSize: 21.0
-                        Slot: {Index: 0}
+                        Slot: 95fe37f1-35a8-41ff-9358-192ff159e956
         -   Entity:
                 Id: 40160bfc-cad8-4c09-806e-fc63188ab688
                 Name: NextScene
@@ -195,7 +196,7 @@ Hierarchy:
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: d4b3e59f-154f-4762-8964-c27a35deae02
-                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
+                        TriggerEntity*: ref!! cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: 50ff9733-2722-4321-844f-de2f0edae01b
@@ -244,7 +245,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 9e7d905e-a425-441e-93af-82f619fb12c5/5624d54a-a9a0-4f5d-a241-d79152218392
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! 5624d54a-a9a0-4f5d-a241-d79152218392
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: 31484307-1472-485b-aec3-396a7826efcc
@@ -284,7 +285,7 @@ Hierarchy:
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: e96dbd0e-3cb0-4ff0-a7b3-1f8682b83f00
-                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
+                        TriggerEntity*: ref!! cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: 20f0b8d6-078b-4730-888a-952995ea18bd
@@ -323,7 +324,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: e4f55f46-c077-42c5-911e-bde90510fc88/d6aee1ec-d195-42c0-95ef-9988c0495b2e
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! d6aee1ec-d195-42c0-95ef-9988c0495b2e
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: 18051666-bb22-4986-b371-72d21899b411
@@ -338,7 +339,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            2eb50109e03102489fb2a602898cc11d: c6485208-a49a-4142-918c-e49b1da1c1a6/0901b52e-31e0-4802-9fb2-a602898cc11d
+                            2eb50109e03102489fb2a602898cc11d: ref!! 0901b52e-31e0-4802-9fb2-a602898cc11d
         -   Entity:
                 Id: 9e7d905e-a425-441e-93af-82f619fb12c5
                 Name: crate
@@ -374,7 +375,7 @@ Hierarchy:
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 75e33397-8bf0-4214-8f3b-8f7c462fdde9
-                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
+                        TriggerEntity*: ref!! cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: 7a37fbd2-3272-4fc1-bf78-c5225a874603
@@ -414,7 +415,7 @@ Hierarchy:
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 78a884b0-37d2-420d-b530-0063d6ae73f5
-                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
+                        TriggerEntity*: ref!! cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: 809e9207-27e0-431b-9dbc-071e76f17c73
@@ -429,7 +430,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 416a74a2-d5f7-4476-a822-50c85dc7321e/894d5183-d171-4d03-982e-01f633a885c2
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! 894d5183-d171-4d03-982e-01f633a885c2
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: 56669c47-e2b6-45e3-91f4-a8b6acd5d039
@@ -444,7 +445,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: a895e017-7954-4d48-8600-5c413bed9053/8a12c1a0-baac-407b-a43c-5bba1cfc5596
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! 8a12c1a0-baac-407b-a43c-5bba1cfc5596
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: bc5f26af-6469-4cf0-a790-bd6a14871134
@@ -459,15 +460,15 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            88a78d8c7af5b64694e92317cbb9b947: aa579303-96f3-491e-ae55-a40206120635/8c8da788-f57a-46b6-94e9-2317cbb9b947
-                            3671b85a1eb9e54cab2b653313168ed6: f0e830e9-c81a-4505-ae00-0a00a7d84518/5ab87136-b91e-4ce5-ab2b-653313168ed6
-                            d605355dbf52ad4c8e2fc8fab224ecb2: c434f6c8-85c7-4891-b95f-c32a2f03fc4a/5d3505d6-52bf-4cad-8e2f-c8fab224ecb2
-                            570f7061ab7eb84883cf892aded3f8fb: cbf8caec-e8f8-4f59-8ac7-70fe242e7e4e/61700f57-7eab-48b8-83cf-892aded3f8fb
-                            4a42acbae0ee7b4eae72d1e330525ef2: 506132c5-335d-4bdf-87ea-6048269cdfbe/baac424a-eee0-4e7b-ae72-d1e330525ef2
-                            9dfdd39fb06f1f4a9824b9038edcc631: 237c3a12-fb0a-4386-b6c1-c0dad25b378a/9fd3fd9d-6fb0-4a1f-9824-b9038edcc631
-                            0e50d61d5ff7df49804d089195106266: 23416913-f5f1-4f4f-a2e5-d011424ce905/1dd6500e-f75f-49df-804d-089195106266
-                            f9acb6a8f1055f4392345c90277f3cd5: adfb78fb-a8bd-4c71-b22b-31600e38603d/a8b6acf9-05f1-435f-9234-5c90277f3cd5
-                            2df1c596ae98e442809fd007957f9ab5: 893635df-e997-407b-8404-64937b058ea8/96c5f12d-98ae-42e4-809f-d007957f9ab5
+                            88a78d8c7af5b64694e92317cbb9b947: ref!! 8c8da788-f57a-46b6-94e9-2317cbb9b947
+                            3671b85a1eb9e54cab2b653313168ed6: ref!! 5ab87136-b91e-4ce5-ab2b-653313168ed6
+                            d605355dbf52ad4c8e2fc8fab224ecb2: ref!! 5d3505d6-52bf-4cad-8e2f-c8fab224ecb2
+                            570f7061ab7eb84883cf892aded3f8fb: ref!! 61700f57-7eab-48b8-83cf-892aded3f8fb
+                            4a42acbae0ee7b4eae72d1e330525ef2: ref!! baac424a-eee0-4e7b-ae72-d1e330525ef2
+                            9dfdd39fb06f1f4a9824b9038edcc631: ref!! 9fd3fd9d-6fb0-4a1f-9824-b9038edcc631
+                            0e50d61d5ff7df49804d089195106266: ref!! 1dd6500e-f75f-49df-804d-089195106266
+                            f9acb6a8f1055f4392345c90277f3cd5: ref!! a8b6acf9-05f1-435f-9234-5c90277f3cd5
+                            2df1c596ae98e442809fd007957f9ab5: ref!! 96c5f12d-98ae-42e4-809f-d007957f9ab5
         -   Entity:
                 Id: c434f6c8-85c7-4891-b95f-c32a2f03fc4a
                 Name: KinematicCrate (3)
@@ -478,7 +479,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 5902c9d2-d95c-40e4-bee8-8b2964a3a986/cf7b78d8-ec27-4e4a-82aa-5554014d12c7
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! cf7b78d8-ec27-4e4a-82aa-5554014d12c7
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: c3724f85-5c97-40f5-9705-4df71886b546
@@ -495,7 +496,7 @@ Hierarchy:
                         Children: {}
                     a4c85bb65e797946ac125062f07f8507: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: b65bc8a4-795e-4679-ac12-5062f07f8507
-                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
+                        TriggerEntity*: ref!! cfe82ef3-b615-435c-a9b6-15793dca565d
                     00e095c410fef143bbac85640eafd46e: !RigidbodyComponent
                         Id: c495e000-fe10-43f1-bbac-85640eafd46e
                         CanCollideWith: DefaultFilter, CharacterFilter
@@ -551,7 +552,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: e314077a-b44f-43c3-8abd-8989459e2d96/2a077ad1-82f8-4be7-802b-0cee117557c9
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! 2a077ad1-82f8-4be7-802b-0cee117557c9
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: a3b24894-59b3-47d9-88eb-783d547ae444
@@ -591,7 +592,7 @@ Hierarchy:
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: c4b8a366-d8b5-4541-aa01-c5102e86c8da
-                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
+                        TriggerEntity*: ref!! cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: b16f0192-ec59-457c-990e-daabd7ee1ee5
@@ -664,7 +665,7 @@ Hierarchy:
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 142c27b5-02dd-418b-a50c-0f166f853663
-                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
+                        TriggerEntity*: ref!! cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: c559ed70-639a-4df5-b6c8-182f13c95a57
@@ -704,7 +705,7 @@ Hierarchy:
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 6f1102bb-b6d2-4a4e-aead-8477c3ff247c
-                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
+                        TriggerEntity*: ref!! cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: 2c240e0b-bfb6-4bc0-8100-d1bbf919ed93
@@ -744,7 +745,7 @@ Hierarchy:
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 22508d91-adba-4948-8392-1b0b4540fe93
-                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
+                        TriggerEntity*: ref!! cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: e0469824-7ddd-422e-b3d4-ae12e49a206e
@@ -759,7 +760,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 23e1d796-b1f5-4cb4-8de5-d1a703205f92/27ec0c28-732e-431e-8cd9-7314dc7ff3ea
+                            41f03e2e802fb24d95a774c7f12119bd: ref!! 27ec0c28-732e-431e-8cd9-7314dc7ff3ea
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: 9bee9b07-1441-4f50-b6df-99932f3b0395

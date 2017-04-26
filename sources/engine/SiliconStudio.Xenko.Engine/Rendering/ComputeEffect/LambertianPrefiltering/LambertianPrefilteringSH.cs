@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 
@@ -113,10 +113,6 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
                 // create the output buffer if not existing yet
                 if (secondPassOutputBuffer == null)
                     secondPassOutputBuffer = NewScopedTypedBuffer(coefficientsCount * sumsToPerfomRemaining, PixelFormat.R32G32B32A32_Float, true);
-
-                // Unset outputs on D3D11
-                // TODO: This should be done automatically on SetPipelineState
-                context.CommandList.UnsetReadWriteBuffers();
 
                 // draw pass 2
                 secondPassEffect.ThreadNumbers = new Int3(sumsCount, 1, 1);

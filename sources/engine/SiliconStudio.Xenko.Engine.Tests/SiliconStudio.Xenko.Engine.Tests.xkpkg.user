@@ -26,7 +26,7 @@ Settings:
     Package/Scene/TranslationSnapActive: false
     Package/Scene/TranslationSnapValue: 1.0
     Package/SceneSettings:
-        629b95b0-5c22-4f4f-805e-3ad9543be1ff:
+        ca673f3d-7267-45a8-bdc9-47fab2ae5e4f:
             CamPosition: {X: 4.0, Y: 4.0, Z: 4.0}
             CamPitchYaw: {X: -0.5235988, Y: 0.7853982}
             CamProjection: Perspective
@@ -35,6 +35,7 @@ Settings:
             CamNearClipPlane: 0.1
             CamFarClipPlane: 1000.0
             CamAspectRatio: 1.77777779
+            CamMoveSpeed: 3.0
             TranslationSnapActive: false
             TranslationSnapValue: 1.0
             RotationSnapActive: false
@@ -52,6 +53,12 @@ Settings:
             ComponentGizmoSize: 1.0
             FixedSizeGizmos: false
             HiddenGizmos:
+                - Physics
                 - Transform
-            NavigationVisible: false
-            NavigationWireframes: false
+            VisibleNavigationGroups: []
+            LightProbeWireframe: false
+            SceneLoaded: false
+    Templates/ModelFromFile/DefaultSkeleton: 00000000-0000-0000-0000-000000000000
+    Templates/ModelFromFile/ImportMaterials: true
+    Templates/ModelFromFile/ImportSkeleton: true
+    Templates/ModelFromFile/ImportTextures: false

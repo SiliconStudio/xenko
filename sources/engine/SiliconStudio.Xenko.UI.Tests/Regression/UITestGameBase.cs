@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -32,10 +32,16 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         protected List<PointerEvent> PointerEvents;
 
         protected Scene Scene;
-        protected Entity Camera = new Entity("Scene camera") { new CameraComponent() };
-        protected Entity UIRoot = new Entity("Root entity of camera UI") { new UIComponent()  };
+        protected Entity Camera;
+        protected Entity UIRoot;
         
         protected UIComponent UIComponent => UIRoot.Get<UIComponent>();
+
+        /// <summary>
+        /// Gets the UI system.
+        /// </summary>
+        /// <value>The UI.</value>
+        protected UISystem UI { get; private set; }
 
         protected CameraComponent CameraComponent
         {
@@ -69,39 +75,10 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                     Camera.Add(value);
                 }
 
-                SceneSystem.GraphicsCompositor.Cameras[0] = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the UI system.
-        /// </summary>
-        /// <value>The UI.</value>
-        protected UISystem UI { get; }
-
-        /// <summary>
-        /// Create an instance of the game test
-        /// </summary>
-        public UITestGameBase()
-        {
-            StopOnFrameCount = -1;
-
-            Scene = new Scene();
-
-            Scene.Entities.Add(UIRoot);
-            Scene.Entities.Add(Camera);
-
-            Camera.Transform.Position = new Vector3(0, 0, 1000);
-
-            UIComponent.IsFullScreen = true;
-            UIComponent.Resolution = new Vector3(1000, 500, 500);
-            UIComponent.ResolutionStretch = ResolutionStretch.FixedWidthFixedHeight;
-
-            UI = (UISystem)Services.GetService(typeof(UISystem));
-            if (UI == null)
-            {
-                UI = new UISystem(Services);
-                GameSystems.Add(UI);
+                if (value != null)
+                {
+                    value.Slot = SceneSystem.GraphicsCompositor.Cameras[0].ToSlotId();
+                }
             }
         }
 
@@ -110,6 +87,27 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             await base.LoadContent();
 
             SceneSystem.GraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
+
+            StopOnFrameCount = -1;
+
+            Scene = new Scene();
+
+            UIRoot = new Entity("Root entity of camera UI") { new UIComponent() };
+            UIComponent.IsFullScreen = true;
+            UIComponent.Resolution = new Vector3(1000, 500, 500);
+            UIComponent.ResolutionStretch = ResolutionStretch.FixedWidthFixedHeight;
+            Scene.Entities.Add(UIRoot);
+
+            UI = (UISystem)Services.GetService(typeof(UISystem));
+            if (UI == null)
+            {
+                UI = new UISystem(Services);
+                GameSystems.Add(UI);
+            }
+
+            Camera = new Entity("Scene camera") { new CameraComponent { Slot = SceneSystem.GraphicsCompositor.Cameras[0].ToSlotId() } };
+            Camera.Transform.Position = new Vector3(0, 0, 1000);
+            Scene.Entities.Add(Camera);
 
             // Default styles
             // Note: this is temporary and should be replaced with default template of UI elements

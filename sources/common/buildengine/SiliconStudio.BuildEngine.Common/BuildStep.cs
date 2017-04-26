@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core.Diagnostics;
 using System;
@@ -76,20 +76,22 @@ namespace SiliconStudio.BuildEngine
         /// <summary>
         /// List of commands that must be executed prior this one (direct dependence only).
         /// </summary>
-        // TODO: this is probably obsolete now
-        public IList<BuildStep> PrerequisiteSteps { get { return prerequisiteSteps; } }
-        private readonly List<BuildStep> prerequisiteSteps = new List<BuildStep>();
+        public HashSet<BuildStep> PrerequisiteSteps => prerequisiteSteps;
+
+        private readonly HashSet<BuildStep> prerequisiteSteps = new HashSet<BuildStep>();
 
         /// <summary>
         /// List of commands that needs this command to be successfully executed before being processed
         /// </summary>
-        public IEnumerable<CommandBuildStep> SpawnedSteps { get { return SpawnedStepsList; } }
+        public IEnumerable<CommandBuildStep> SpawnedSteps => SpawnedStepsList;
+
         protected readonly List<CommandBuildStep> SpawnedStepsList = new List<CommandBuildStep>();
 
         /// <summary>
         /// The parent build step, which will be the instigator of the step
         /// </summary>
         public BuildStep Parent { get { return parent; } protected internal set { if (parent != null && value != null) throw new InvalidOperationException("BuildStep already has a parent"); parent = value; } }
+
         private BuildStep parent;
 
         /// <summary>
@@ -213,6 +215,15 @@ namespace SiliconStudio.BuildEngine
                 var enumBuildStep = currentBuildStep as EnumerableBuildStep;
                 if (enumBuildStep != null)
                     yield return enumBuildStep.OutputObjects;
+
+                foreach (var prerequisiteStep in currentBuildStep.PrerequisiteSteps)
+                {
+                    foreach (var outputObjectsGroup in prerequisiteStep.GetOutputObjectsGroups())
+                    {
+                        yield return outputObjectsGroup;
+                    }
+                }
+
                 currentBuildStep = currentBuildStep.Parent;
             }
         }

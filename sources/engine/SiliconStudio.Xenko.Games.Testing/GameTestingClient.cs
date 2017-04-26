@@ -1,5 +1,5 @@
-// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Games.Testing
             if (gamePath == null) throw new ArgumentNullException(nameof(gamePath));
 
             xenkoDir = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
-            if(xenkoDir.IsNullOrEmpty()) throw new NullReferenceException("Could not find SiliconStudioXenkoDir, make sure the environment variable is set.");
+            if(string.IsNullOrEmpty(xenkoDir)) throw new NullReferenceException("Could not find SiliconStudioXenkoDir, make sure the environment variable is set.");
 
             gameName = Path.GetFileNameWithoutExtension(gamePath);
             switch (platform)
@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Games.Testing
                     break;
             }
 
-            var url = $"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe";
+            var url = $"/service/{XenkoVersion.NuGetVersion}/SiliconStudio.Xenko.SamplesTestServer.exe";
 
             var socketContext = RouterClient.RequestServer(url).Result;
 
@@ -92,14 +92,14 @@ namespace SiliconStudio.Xenko.Games.Testing
                 Platform = (int)platform, Tester = true, Cmd = cmd, GameAssembly = gameName
             }).Wait();
 
-            var waitMs = 10000;
+            var waitMs = 30000;
             switch (platform)
             {
                 case PlatformType.Android:
-                    waitMs = 20000;
+                    waitMs *= 2;
                     break;
                 case PlatformType.iOS:
-                    waitMs = 40000;
+                    waitMs *= 2;
                     break;
             }
 

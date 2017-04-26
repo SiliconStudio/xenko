@@ -1,9 +1,8 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Diagnostics;
@@ -18,7 +17,8 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public abstract class ItemListCompiler
     {
-        private readonly ICompilerRegistry<IAssetCompiler> compilerRegistry;
+        private readonly AssetCompilerRegistry compilerRegistry;
+        private readonly Type compilationContext;
         private int latestPriority;
 
         /// <summary>
@@ -30,10 +30,13 @@ namespace SiliconStudio.Assets.Compiler
         /// Create an instance of <see cref="ItemListCompiler"/> using the provided compiler registry.
         /// </summary>
         /// <param name="compilerRegistry">The registry that contains the compiler to use for each asset type</param>
-        protected ItemListCompiler(ICompilerRegistry<IAssetCompiler> compilerRegistry)
+        /// <param name="compilationContext">The context in which this list will compile the assets (Asset, Preview, thumbnail etc)</param>
+        protected ItemListCompiler(AssetCompilerRegistry compilerRegistry, Type compilationContext)
         {
             if (compilerRegistry == null) throw new ArgumentNullException(nameof(compilerRegistry));
+            if (compilationContext == null) throw new ArgumentNullException(nameof(compilationContext));
             this.compilerRegistry = compilerRegistry;
+            this.compilationContext = compilationContext;
         }
 
         /// <summary>
@@ -42,8 +45,7 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="context">The context source.</param>
         /// <param name="assetItems">The list of items to compile</param>
         /// <param name="compilationResult">The current compilation result, containing the build steps and the logging</param>
-        protected void Compile(CompilerContext context, IEnumerable<AssetItem> assetItems,
-            AssetCompilerResult compilationResult)
+        protected void Prepare(AssetCompilerContext context, IEnumerable<AssetItem> assetItems, AssetCompilerResult compilationResult)
         {
             foreach (var assetItem in assetItems)
             {
@@ -59,13 +61,13 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="context">The context.</param>
         /// <param name="compilationResult">The compilation result.</param>
         /// <param name="assetItem">The asset item.</param>
-        protected ListBuildStep CompileItem(CompilerContext context, AssetCompilerResult compilationResult, AssetItem assetItem)
+        public ListBuildStep CompileItem(AssetCompilerContext context, AssetCompilerResult compilationResult, AssetItem assetItem)
         {
             // First try to find an asset compiler for this particular asset.
             IAssetCompiler compiler;
             try
             {
-                compiler = compilerRegistry.GetCompiler(assetItem.Asset.GetType());
+                compiler = compilerRegistry.GetCompiler(assetItem.Asset.GetType(), compilationContext);
             }
             catch (Exception ex)
             {
@@ -81,7 +83,7 @@ namespace SiliconStudio.Assets.Compiler
             // Second we are compiling the asset (generating a build step)
             try
             {
-                var resultPerAssetType = compiler.Compile(context, assetItem);
+                var resultPerAssetType = compiler.Prepare(context, assetItem);
 
                 // Raise the AssetCompiled event.
                 AssetCompiled?.Invoke(this, new AssetCompiledArgs(assetItem, resultPerAssetType));
@@ -106,10 +108,6 @@ namespace SiliconStudio.Assets.Compiler
                 // Assign module string to all command build steps
                 SetAssetLogger(resultPerAssetType.BuildSteps, assetItem.Package, assetItem.ToReference(), assetItem.FullPath.ToWindowsPath());
 
-                // Add a wait command to the build steps if required by the item build
-                if (resultPerAssetType.ShouldWaitForPreviousBuilds)
-                    compilationResult.BuildSteps.Add(new WaitBuildStep());
-
                 foreach (var buildStep in resultPerAssetType.BuildSteps)
                 {
                     buildStep.Priority = latestPriority++;
@@ -126,10 +124,11 @@ namespace SiliconStudio.Assets.Compiler
         }
 
         /// <summary>
-        /// Sets recursively the <see cref="BuildStep.Module"/>.
+        /// Sets recursively the <see cref="Module"/>.
         /// </summary>
         /// <param name="buildStep">The build step.</param>
-        /// <param name="module">The module.</param>
+        /// <param name="assetReference"></param>
+        /// <param name="assetFullPath"></param>
         private void SetAssetLogger(BuildStep buildStep, Package package, IReference assetReference, string assetFullPath)
         {
             if (buildStep.TransformExecuteContextLogger == null)

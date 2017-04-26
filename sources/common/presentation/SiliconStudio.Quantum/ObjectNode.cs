@@ -1,15 +1,15 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.References;
-using System.Reflection;
-using SiliconStudio.Core.Extensions;
 
-namespace SiliconStudio.Quantum.Contents
+namespace SiliconStudio.Quantum
 {
     /// <summary>
     /// An implementation of <see cref="IGraphNode"/> that gives access to an object or a boxed struct.
@@ -18,7 +18,6 @@ namespace SiliconStudio.Quantum.Contents
     public class ObjectNode : GraphNodeBase, IInitializingObjectNode, IGraphNodeInternal
     {
         private readonly HybridDictionary<string, IMemberNode> childrenMap = new HybridDictionary<string, IMemberNode>();
-        private readonly List<IMemberNode> children = new List<IMemberNode>();
         private object value;
 
         public ObjectNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
@@ -35,7 +34,7 @@ namespace SiliconStudio.Quantum.Contents
         public IMemberNode this[string name] => childrenMap[name];
 
         /// <inheritdoc/>
-        public IReadOnlyCollection<IMemberNode> Members => children;
+        public IReadOnlyCollection<IMemberNode> Members => (IReadOnlyCollection<IMemberNode>)childrenMap.Values;
 
         /// <inheritdoc/>
         public IEnumerable<Index> Indices => GetIndices();
@@ -95,17 +94,10 @@ namespace SiliconStudio.Quantum.Contents
             {
                 // Some collection (such as sets) won't add item at the end but at an arbitrary location.
                 // Better send a null index in this case than sending a wrong value.
-                var value = Value;
                 var index = collectionDescriptor.IsList ? new Index(collectionDescriptor.GetCollectionCount(value)) : Index.Empty;
                 var args = new ItemChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
                 NotifyItemChanging(args);
                 collectionDescriptor.Add(value, newItem);
-                // TODO: fixme
-                //if (value.GetType().GetTypeInfo().IsValueType)
-                //{
-                //    var containerValue = Parent.Retrieve();
-                //    MemberDescriptor.Set(containerValue, value);
-                //}
                 UpdateReferences();
                 NotifyItemChanged(args);
             }
@@ -121,7 +113,6 @@ namespace SiliconStudio.Quantum.Contents
             if (collectionDescriptor != null)
             {
                 var index = collectionDescriptor.IsList ? itemIndex : Index.Empty;
-                var value = Value;
                 var args = new ItemChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
                 NotifyItemChanging(args);
                 if (collectionDescriptor.GetCollectionCount(value) == itemIndex.Int || !collectionDescriptor.HasInsert)
@@ -132,12 +123,6 @@ namespace SiliconStudio.Quantum.Contents
                 {
                     collectionDescriptor.Insert(value, itemIndex.Int, newItem);
                 }
-                // TODO: fixme
-                //if (value.GetType().GetTypeInfo().IsValueType)
-                //{
-                //    var containerValue = Parent.Retrieve();
-                //    MemberDescriptor.Set(containerValue, value);
-                //}
                 UpdateReferences();
                 NotifyItemChanged(args);
             }
@@ -145,14 +130,7 @@ namespace SiliconStudio.Quantum.Contents
             {
                 var args = new ItemChangeEventArgs(this, itemIndex, ContentChangeType.CollectionAdd, null, newItem);
                 NotifyItemChanging(args);
-                var value = Value;
                 dictionaryDescriptor.AddToDictionary(value, itemIndex.Value, newItem);
-                // TODO: fixme
-                //if (value.GetType().GetTypeInfo().IsValueType)
-                //{
-                //    var containerValue = Parent.Retrieve();
-                //    MemberDescriptor.Set(containerValue, value);
-                //}
                 UpdateReferences();
                 NotifyItemChanged(args);
             }
@@ -169,7 +147,6 @@ namespace SiliconStudio.Quantum.Contents
             NotifyItemChanging(args);
             var collectionDescriptor = Descriptor as CollectionDescriptor;
             var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
-            var value = Value;
             if (collectionDescriptor != null)
             {
                 if (collectionDescriptor.HasRemoveAt)
@@ -188,12 +165,6 @@ namespace SiliconStudio.Quantum.Contents
             else
                 throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
 
-            // TODO: fixme
-            //if (value.GetType().GetTypeInfo().IsValueType)
-            //{
-            //    var containerValue = Parent.Retrieve();
-            //    MemberDescriptor.Set(containerValue, value);
-            //}
             UpdateReferences();
             NotifyItemChanged(args);
         }
@@ -279,14 +250,13 @@ namespace SiliconStudio.Quantum.Contents
         /// <inheritdoc/>
         void IInitializingObjectNode.AddMember(IMemberNode member, bool allowIfReference)
         {
-            if (isSealed)
+            if (IsSealed)
                 throw new InvalidOperationException("Unable to add a child to a GraphNode that has been sealed");
 
             // ReSharper disable once HeuristicUnreachableCode - this code is reachable only at the specific moment we call this method!
             if (ItemReferences != null && !allowIfReference)
                 throw new InvalidOperationException("A GraphNode cannot have children when its content hold a reference.");
 
-            children.Add(member);
             childrenMap.Add(member.Name, (MemberNode)member);
         }
     }

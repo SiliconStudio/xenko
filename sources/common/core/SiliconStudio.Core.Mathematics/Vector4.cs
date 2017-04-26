@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under MIT License. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // -----------------------------------------------------------------------------
 // Original code from SlimMath project. http://code.google.com/p/slimmath/
@@ -402,7 +402,7 @@ namespace SiliconStudio.Core.Mathematics
         {
             return new Vector4(value.X / scale, value.Y / scale, value.Z / scale, value.W / scale);
         }
-
+        
         /// <summary>
         /// Demodulates a vector with another by performing component-wise division.
         /// </summary>

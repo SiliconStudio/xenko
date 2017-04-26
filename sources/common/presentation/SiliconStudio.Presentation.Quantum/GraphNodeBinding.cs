@@ -1,7 +1,8 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -43,17 +44,15 @@ namespace SiliconStudio.Presentation.Quantum
             this.converter = converter;
             this.actionService = actionService;
             this.notifyChangesOnly = notifyChangesOnly;
-            node.Changing += ContentChanging;
-            node.Changed += ContentChanged;
+            node.ValueChanging += ValueChanging;
+            node.ValueChanged += ValueChanged;
         }
 
         /// <inheritdoc/>
         public virtual void Dispose()
         {
-            node.UnregisterChanging(ContentChanging);
-            node.UnregisterChanged(ContentChanged);
-            node.Changing -= ContentChanging;
-            node.Changed -= ContentChanged;
+            node.ValueChanging -= ValueChanging;
+            node.ValueChanged -= ValueChanged;
         }
 
         /// <summary>
@@ -82,7 +81,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        private void ContentChanging(object sender, INodeChangeEventArgs e)
+        private void ValueChanging(object sender, INodeChangeEventArgs e)
         {
             if (!notifyChangesOnly || !Equals(e.OldValue, e.NewValue))
             {
@@ -90,7 +89,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        private void ContentChanged(object sender, INodeChangeEventArgs e)
+        private void ValueChanged(object sender, INodeChangeEventArgs e)
         {
             if (!notifyChangesOnly || !Equals(e.OldValue,e.NewValue))
             {

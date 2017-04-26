@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -172,7 +172,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                                         if (fileData != null)
                                         {
                                             // Replace path with a local path
-                                            shaderSource.Path = Path.Combine(Directory.GetCurrentDirectory(), shaderSourcePath);
+                                            shaderSource.Path = Path.Combine(PlatformFolders.ApplicationBinaryDirectory, shaderSourcePath);
                                             shaderSource.Hash = ObjectId.FromBytes(fileData);
 
                                             // Note: we can't use Encoding.UTF8.GetString directly because there might be the UTF8 BOM at the beginning of the file

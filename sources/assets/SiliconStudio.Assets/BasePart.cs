@@ -1,22 +1,63 @@
-﻿using System;
-using System.ComponentModel;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
-using SerializerContext = SiliconStudio.Core.Serialization.SerializerContext;
 
 namespace SiliconStudio.Assets
 {
     [DataContract]
     [DataSerializer(typeof(BasePartDataSerializer))]
-    public class BasePart
+    public class BasePart : IEquatable<BasePart>
     {
+        /// <inheritdoc />
+        public bool Equals(BasePart other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(BasePartAsset, other.BasePartAsset) && BasePartId.Equals(other.BasePartId) && InstanceId.Equals(other.InstanceId);
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((BasePart)obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                // ReSharper disable NonReadonlyMemberInGetHashCode - this property is not supposed to be changed except by asset analysis
+                var hashCode = BasePartAsset != null ? BasePartAsset.GetHashCode() : 0;
+                // ReSharper restore NonReadonlyMemberInGetHashCode
+                hashCode = (hashCode * 397) ^ BasePartId.GetHashCode();
+                hashCode = (hashCode * 397) ^ InstanceId.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        /// <inheritdoc />
+        public static bool operator ==(BasePart left, BasePart right)
+        {
+            return Equals(left, right);
+        }
+
+        /// <inheritdoc />
+        public static bool operator !=(BasePart left, BasePart right)
+        {
+            return !Equals(left, right);
+        }
+
         public BasePart([NotNull] AssetReference basePartAsset, Guid basePartId, Guid instanceId)
         {
             if (basePartAsset == null) throw new ArgumentNullException(nameof(basePartAsset));
@@ -28,7 +69,8 @@ namespace SiliconStudio.Assets
         }
 
         [DataMember(10)]
-        public AssetReference BasePartAsset { get; }
+        // This property might be updated by asset analysis, we want to keep a public setter for that reason. But it shouldn't be used in normal cases! (until we get a better solution)
+        public AssetReference BasePartAsset { get; set; }
 
         [DataMember(20)]
         public Guid BasePartId { get; }

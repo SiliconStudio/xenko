@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +12,7 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Graphics.Tests;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Colors;
@@ -35,7 +38,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             set
             {
                 Camera.Add(value);
-                SceneSystem.GraphicsCompositor.Cameras[0] = value;
+                value.Slot = SceneSystem.GraphicsCompositor.Cameras[0].ToSlotId();
             }
         }
 
@@ -75,11 +78,11 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                     {
                         var position = new Vector3((i - cubeWidth / 2) * 2.4f, (j - cubeWidth / 2) * 2.4f, (k - cubeWidth / 2) * 2.4f);
                         //var material = (k/4)%2 == 0 ? material1 : material2;
-                        var isShadowReceiver = (k / 2) % 2 == 0;
+                        //var isShadowReceiver = (k / 2) % 2 == 0;
 
                         var entity = new Entity
                         {
-                            new ModelComponent { Model = model, Materials = { { 0, material1 } }, IsShadowReceiver = isShadowReceiver },
+                            new ModelComponent { Model = model, Materials = { { 0, material1 } } },
                         };
                         entity.Transform.Position = position;
                         Scene.Entities.Add(entity);
@@ -165,7 +168,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             // Load default graphics compositor
             SceneSystem.GraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
-            camera = new TestCamera();
+            camera = new TestCamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor);
             CameraComponent = camera.Camera;
             Script.Add(camera);
         }

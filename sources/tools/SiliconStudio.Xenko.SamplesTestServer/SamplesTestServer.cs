@@ -1,5 +1,5 @@
-// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.ConnectionRouter;
@@ -37,14 +37,14 @@ namespace SiliconStudio.Xenko.SamplesTestServer
         private SocketMessageLayer currentTester;
         private readonly object loggerLock = new object();
 
-        public SamplesTestServer() : base($"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe")
+        public SamplesTestServer() : base($"/service/{XenkoVersion.NuGetVersion}/SiliconStudio.Xenko.SamplesTestServer.exe")
         {
             GameTestingSystem.Initialized = true;
 
             //start logging the iOS device if we have the proper tools avail
             if (IosTracker.CanProxy())
             {
-                var loggerProcess = Process.Start(new ProcessStartInfo($"{ Environment.GetEnvironmentVariable("SiliconStudioXenkoDir") }\\Bin\\Windows-Direct3D11\\idevicesyslog.exe", "-d")
+                var loggerProcess = Process.Start(new ProcessStartInfo($"{ Environment.GetEnvironmentVariable("SiliconStudioXenkoDir") }\\Bin\\Windows\\idevicesyslog.exe", "-d")
                 {
                     UseShellExecute = false,
                     CreateNoWindow = true,
@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
 
             //Start also adb in case of android device
             var adbPath = AndroidDeviceEnumerator.GetAdbPath();
-            if (!adbPath.IsNullOrEmpty() && AndroidDeviceEnumerator.ListAndroidDevices().Length > 0)
+            if (!string.IsNullOrEmpty(adbPath) && AndroidDeviceEnumerator.ListAndroidDevices().Length > 0)
             {
                 //clear the log first
                 ShellHelper.RunProcessAndGetOutput("cmd.exe", $"/C {adbPath} logcat -c");
@@ -265,8 +265,8 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                     Thread.Sleep(5000); //ios processes might be slow to close, we must make sure that we start clean
                                     var start = new ProcessStartInfo
                                     {
-                                        WorkingDirectory = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows-Direct3D11\\",
-                                        FileName = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows-Direct3D11\\idevicedebug.exe",
+                                        WorkingDirectory = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows\\",
+                                        FileName = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows\\idevicedebug.exe",
                                         Arguments = $"run com.your-company.{request.GameAssembly}",
                                         UseShellExecute = false
                                     };

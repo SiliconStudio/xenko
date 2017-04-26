@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -56,20 +56,38 @@ namespace SiliconStudio.Core.Serialization
             Assembly = assembly;
             Modules = new List<Module>();
             Profiles = new Dictionary<string, AssemblySerializersPerProfile>();
-            DataContractAliases = new List<KeyValuePair<string, Type>>();
+            DataContractAliases = new List<DataContractAlias>();
         }
 
         public Assembly Assembly { get; }
 
         public List<Module> Modules { get; }
 
-        public List<KeyValuePair<string, Type>> DataContractAliases { get; }
+        public List<DataContractAlias> DataContractAliases { get; }
 
         public Dictionary<string, AssemblySerializersPerProfile> Profiles { get; }
 
         public override string ToString()
         {
             return Assembly.ToString();
+        }
+
+        public struct DataContractAlias
+        {
+            public string Name;
+            public Type Type;
+
+            /// <summary>
+            /// True if generated from a <see cref="DataAliasAttribute"/>, false if generated from a <see cref="DataContractAttribute"/>.
+            /// </summary>
+            public bool IsAlias;
+
+            public DataContractAlias(string name, Type type, bool isAlias)
+            {
+                Name = name;
+                Type = type;
+                IsAlias = isAlias;
+            }
         }
     }
 
@@ -184,7 +202,7 @@ namespace SiliconStudio.Core.Serialization
                 foreach (var dataContractAliasEntry in removedAssemblySerializer.DataContractAliases)
                 {
                     // TODO: Warning, exception or override if collision? (currently exception, easiest since we can remove them without worry when unloading assembly)
-                    DataContractAliasMapping.Remove(dataContractAliasEntry.Key);
+                    DataContractAliasMapping.Remove(dataContractAliasEntry.Name);
                 }
 
                 // Rebuild serializer list
@@ -210,6 +228,16 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
+        public static AssemblySerializers GetAssemblySerializers([NotNull] Assembly assembly)
+        {
+            lock (Lock)
+            {
+                AssemblySerializers assemblySerializers;
+                AvailableAssemblySerializers.TryGetValue(assembly, out assemblySerializers);
+                return assemblySerializers;
+            }
+        }
+
         private static void RegisterSerializers([NotNull] AssemblySerializers assemblySerializers)
         {
             // Register data contract aliases
@@ -218,11 +246,11 @@ namespace SiliconStudio.Core.Serialization
                 try
                 {
                     // TODO: Warning, exception or override if collision? (currently exception)
-                    DataContractAliasMapping.Add(dataContractAliasEntry.Key, dataContractAliasEntry.Value);
+                    DataContractAliasMapping.Add(dataContractAliasEntry.Name, dataContractAliasEntry.Type);
                 }
                 catch (Exception)
                 {
-                    throw new InvalidOperationException($"Two different classes have the same DataContract Alias [{dataContractAliasEntry.Key}]: {dataContractAliasEntry.Value} and {DataContractAliasMapping[dataContractAliasEntry.Key]}");
+                    throw new InvalidOperationException($"Two different classes have the same DataContract Alias [{dataContractAliasEntry.Name}]: {dataContractAliasEntry.Type} and {DataContractAliasMapping[dataContractAliasEntry.Name]}");
                 }
             }
 

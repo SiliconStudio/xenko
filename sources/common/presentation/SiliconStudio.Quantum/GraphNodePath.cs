@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +7,6 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum
 {
@@ -326,11 +325,25 @@ namespace SiliconStudio.Quantum
         }
 
         /// <summary>
-        /// Retrieve the node targeted by this path.
+        /// Retrieves the node targeted by this path.
         /// </summary>
         /// <returns></returns>
         [Pure, NotNull]
         public IGraphNode GetNode() => this.Last();
+
+        /// <summary>
+        /// Retrieves an accessor to the target of the path.
+        /// </summary>
+        /// <returns></returns>
+        [Pure]
+        public NodeAccessor GetAccessor()
+        {
+            if (path.Count == 0)
+                return new NodeAccessor(RootNode, Index.Empty);
+
+            var lastItem = path[path.Count - 1];
+            return lastItem.Type == ElementType.Index ? new NodeAccessor(GetParent().GetNode(), lastItem.Index) : new NodeAccessor(GetNode(), Index.Empty);
+        }
 
         /// <summary>
         /// Retrieve the parent path.

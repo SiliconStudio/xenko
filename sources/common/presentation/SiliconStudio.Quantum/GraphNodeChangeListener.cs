@@ -1,10 +1,9 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum
 {
@@ -13,7 +12,7 @@ namespace SiliconStudio.Quantum
     /// A <see cref="GraphNodeChangeListener"/> will raise events on changes on any node that is either a child, or the
     /// target of a reference from the root node, recursively.
     /// </summary>
-    public class GraphNodeChangeListener : INotifyContentValueChange, INotifyItemChange, IDisposable
+    public class GraphNodeChangeListener : INotifyNodeValueChange, INotifyNodeItemChange, IDisposable
     {
         private readonly IGraphNode rootNode;
         private readonly Func<IMemberNode, bool> shouldRegisterMemberTarget;
@@ -31,12 +30,12 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Raised before one of the node referenced by the related root node changes.
         /// </summary>
-        public event EventHandler<MemberNodeChangeEventArgs> Changing;
+        public event EventHandler<MemberNodeChangeEventArgs> ValueChanging;
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
         /// </summary>
-        public event EventHandler<MemberNodeChangeEventArgs> Changed;
+        public event EventHandler<MemberNodeChangeEventArgs> ValueChanged;
 
         public event EventHandler<ItemChangeEventArgs> ItemChanging;
 
@@ -60,8 +59,8 @@ namespace SiliconStudio.Quantum
                 var memberNode = node as IMemberNode;
                 if (memberNode != null)
                 {
-                    memberNode.Changing += ContentChanging;
-                    memberNode.Changed += ContentChanged;
+                    memberNode.ValueChanging += OnValueChanging;
+                    memberNode.ValueChanged += OnValueChanged;
                 }
                 var objectNode = node as IObjectNode;
                 if (objectNode != null)
@@ -84,8 +83,8 @@ namespace SiliconStudio.Quantum
                 var memberNode = node as IMemberNode;
                 if (memberNode != null)
                 {
-                    memberNode.Changing -= ContentChanging;
-                    memberNode.Changed -= ContentChanged;
+                    memberNode.ValueChanging -= OnValueChanging;
+                    memberNode.ValueChanged -= OnValueChanged;
                 }
                 var objectNode = node as IObjectNode;
                 if (objectNode != null)
@@ -126,7 +125,7 @@ namespace SiliconStudio.Quantum
                 case ContentChangeType.CollectionRemove:
                     if (node.IsReference && e.OldValue != null)
                     {
-                        var removedNode = (node as IObjectNode)?.ItemReferences[e.Index].TargetNode;
+                        var removedNode = (node as IObjectNode)?.ItemReferences[((ItemChangeEventArgs)e).Index].TargetNode;
                         if (removedNode != null)
                         {
                             // TODO: review this
@@ -157,10 +156,11 @@ namespace SiliconStudio.Quantum
                     {
                         IGraphNode addedNode;
                         Index index;
-                        if (!e.Index.IsEmpty)
+                        var arg = (ItemChangeEventArgs)e;
+                        if (!arg.Index.IsEmpty)
                         {
-                            index = e.Index;
-                            addedNode = (e.Node as IObjectNode)?.ItemReferences[e.Index].TargetNode;
+                            index = arg.Index;
+                            addedNode = (e.Node as IObjectNode)?.ItemReferences[arg.Index].TargetNode;
                         }
                         else
                         {
@@ -170,7 +170,7 @@ namespace SiliconStudio.Quantum
                             addedNode = reference.TargetNode;
                         }
 
-                        if (addedNode != null)
+                        if (addedNode != null && (shouldRegisterItemTarget?.Invoke(e.Node, index) ?? true))
                         {
                             var path = new GraphNodePath(e.Node);
                             path.PushIndex(index);
@@ -181,14 +181,14 @@ namespace SiliconStudio.Quantum
             }
         }
 
-        private void ContentChanging(object sender, MemberNodeChangeEventArgs e)
+        private void OnValueChanging(object sender, MemberNodeChangeEventArgs e)
         {
-            Changing?.Invoke(sender, e);
+            ValueChanging?.Invoke(sender, e);
         }
 
-        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
+        private void OnValueChanged(object sender, MemberNodeChangeEventArgs e)
         {
-            Changed?.Invoke(sender, e);
+            ValueChanged?.Invoke(sender, e);
         }
 
         private void OnItemChanging(object sender, ItemChangeEventArgs e)

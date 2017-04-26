@@ -1,10 +1,9 @@
 !SpriteSheet
-Id: ca9993b7-1213-4037-8a77-333f3fa2e163
-SerializedVersion: {Xenko: 1.5.0-alpha01}
+Id: c3781c30-af81-4faf-a8ab-64aded2f4403
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: Color32Bits
 Packing:
     Enabled: false
 Sprites:

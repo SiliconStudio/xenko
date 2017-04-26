@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -72,13 +72,6 @@ namespace SiliconStudio.Xenko.Rendering
         /// <value>The asset manager.</value>
         [DataMemberIgnore]
         protected ContentManager Content { get; private set; }
-
-        /// <summary>
-        /// Gets the <see cref="ContentManager"/>.
-        /// </summary>
-        [DataMemberIgnore]
-        [Obsolete("Use Content property instead when accessing the ContentManager")]
-        protected ContentManager Asset => Content;
 
         /// <summary>
         /// Gets the graphics device.

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Globalization;
 
@@ -171,10 +171,6 @@ namespace SiliconStudio.BuildEngine
             startTime = DateTime.Now;
             this.buildProfile = buildProfile;
             this.indexName = indexName;
-            var entryAssembly = Assembly.GetEntryAssembly();
-            SlaveBuilderPath = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                entryAssembly != null ? Path.GetFileName(entryAssembly.Location) : "SiliconStudio.Assets.CompilerApp.exe"); // TODO: Hardcoded value of CompilerApp
             Logger = logger;
             this.buildPath = buildPath;
             Root = new ListBuildStep();
@@ -251,24 +247,10 @@ namespace SiliconStudio.BuildEngine
                     case UrlType.File:
                         hash = builderContext.InputHashes.ComputeFileHash(filePath);
                         break;
-                    case UrlType.ContentLink:
+                    case UrlType.ContentLink:              
                     case UrlType.Content:
                         if (!buildTransaction.TryGetValue(filePath, out hash))
                             Logger.Warning("Location " + filePath + " does not exist currently and is required to compute the current command hash. The build cache will not work for this command!");
-                        break;
-                    case UrlType.Virtual:
-                        var providerResult = VirtualFileSystem.ResolveProvider(filePath, true);
-                        var dbProvider = providerResult.Provider as DatabaseFileProvider;
-                        var microProvider = providerResult.Provider as MicroThreadFileProvider;
-                        if (microProvider != null)
-                        {
-                            dbProvider = microProvider.ThreadLocal.Value as DatabaseFileProvider;
-                        }
-
-                        if (dbProvider != null)
-                        {
-                            dbProvider.ContentIndexMap.TryGetValue(providerResult.Path, out hash);
-                        }
                         break;
                 }
 
@@ -673,7 +655,7 @@ namespace SiliconStudio.BuildEngine
             var objectDatabase = Builder.ObjectDatabase;
 
             // Check current database version, and erase it if too old
-            int currentVersion = 0;
+            int currentVersion = ExpectedVersion;
             var versionFile = Path.Combine(VirtualFileSystem.GetAbsolutePath(VirtualFileSystem.ApplicationDatabasePath), "version");
             if (File.Exists(versionFile))
             {
@@ -685,7 +667,18 @@ namespace SiliconStudio.BuildEngine
                 catch (Exception e)
                 {
                     e.Ignore();
+                    currentVersion = 0;
                 }
+            }
+
+            // Prepare data base directories
+            ContentManager.GetFileProvider = () => MicrothreadLocalDatabases.DatabaseFileProvider;
+            var databasePathSplits = VirtualFileSystem.ApplicationDatabasePath.Split('/');
+            var accumulatorPath = "/";
+            foreach (var pathPart in databasePathSplits.Where(x => x != ""))
+            {
+                accumulatorPath += pathPart + "/";
+                VirtualFileSystem.CreateDirectory(accumulatorPath);
             }
 
             if (currentVersion != ExpectedVersion)
@@ -711,18 +704,6 @@ namespace SiliconStudio.BuildEngine
 
                 // Create directory
                 File.WriteAllText(versionFile, ExpectedVersion.ToString(CultureInfo.InvariantCulture));
-            }
-
-            // Prepare data base directories
-            ContentManager.GetFileProvider = () => MicrothreadLocalDatabases.DatabaseFileProvider;
-            var databasePathSplits = VirtualFileSystem.ApplicationDatabasePath.Split('/');
-            var accumulatorPath = "/";
-            foreach (var pathPart in databasePathSplits.Where(x => x != ""))
-            {
-                accumulatorPath += pathPart + "/";
-                VirtualFileSystem.CreateDirectory(accumulatorPath);
-
-                accumulatorPath += "";
             }
         }
 
@@ -764,6 +745,10 @@ namespace SiliconStudio.BuildEngine
                 {
                     contentBuildSteps.Add(outputLocation, new KeyValuePair<BuildStep, HashSet<string>>(step, dependencies));
                     CollectContentReferenceDependencies(step, dependencies);
+                    foreach (var prerequisiteStep in step.PrerequisiteSteps)
+                    {
+                        PrepareDependencyGraph(prerequisiteStep, contentBuildSteps);
+                    }
                 }
 
                 // If we have a reference, we don't need to iterate further

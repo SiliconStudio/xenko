@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Animations
     /// </summary>
     [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<AnimationClip>))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<AnimationClip>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<AnimationClip>), Profile = "Content")]
     public sealed class AnimationClip
     {
         // If there is an evaluator, animation clip can't be changed anymore.

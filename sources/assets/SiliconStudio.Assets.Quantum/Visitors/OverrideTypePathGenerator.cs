@@ -1,6 +1,9 @@
-﻿using SiliconStudio.Assets.Yaml;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using SiliconStudio.Assets.Quantum.Internal;
+using SiliconStudio.Assets.Yaml;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Quantum.Visitors
 {
@@ -12,6 +15,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// <summary>
         /// Gets the resulting metadata that can be passed to YAML serialization.
         /// </summary>
+        [NotNull]
         public YamlAssetMetadata<OverrideType> Result { get; } = new YamlAssetMetadata<OverrideType>();
 
         /// <inheritdoc/>
@@ -31,14 +35,14 @@ namespace SiliconStudio.Assets.Quantum.Visitors
                 var id = objectNode.IndexToId(index);
                 var itemPath = ConvertPath(CurrentPath, inNonIdentifiableType);
                 itemPath.PushItemId(id);
-                Result.Set(itemPath, objectNode.GetItemOverride(index));
+                Result.Set(itemPath, ((IAssetObjectNodeInternal)objectNode).GetItemOverride(index));
             }
             foreach (var index in objectNode.GetOverriddenKeyIndices())
             {
                 var id = objectNode.IndexToId(index);
                 var itemPath = ConvertPath(CurrentPath, inNonIdentifiableType);
                 itemPath.PushIndex(id);
-                Result.Set(itemPath, objectNode.GetKeyOverride(index));
+                Result.Set(itemPath, ((IAssetObjectNodeInternal)objectNode).GetKeyOverride(index));
             }
         }
     }

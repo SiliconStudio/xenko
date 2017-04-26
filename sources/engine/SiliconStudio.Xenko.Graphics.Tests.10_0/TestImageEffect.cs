@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Threading.Tasks;
 
@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestImageEffect()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 3;
             GraphicsDeviceManager.PreferredBackBufferWidth = 760;
             GraphicsDeviceManager.PreferredBackBufferHeight = 1016;
         }
@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             hdrRenderTexture = Texture.New2D(GraphicsDevice, hdrTexture.Width, hdrTexture.Height, 1, hdrTexture.Description.Format, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
             drawEffectContext = RenderContext.GetShared(Services);
             postProcessingEffects = new PostProcessingEffects(drawEffectContext);
-            postProcessingEffects.BrightFilter.Threshold = 100.0f;
+            postProcessingEffects.BrightFilter.Threshold = 20.0f;
             postProcessingEffects.Bloom.DownScale = 2;
             postProcessingEffects.Bloom.Enabled = true;
             postProcessingEffects.Bloom.ShowOnlyBloom = true;
@@ -65,12 +65,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             if (Input.IsKeyDown(Keys.Left))
             {
-                postProcessingEffects.BrightFilter.Threshold -= 10.0f;
+                postProcessingEffects.BrightFilter.Threshold -= 2.0f;
                 Log.Info($"BrightFilter Threshold: {postProcessingEffects.BrightFilter.Threshold}");
             }
             else if (Input.IsKeyDown(Keys.Right))
             {
-                postProcessingEffects.BrightFilter.Threshold += 10.0f;
+                postProcessingEffects.BrightFilter.Threshold += 2.0f;
                 Log.Info($"BrightFilter Threshold: {postProcessingEffects.BrightFilter.Threshold}");
             }
 
@@ -92,6 +92,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             GraphicsContext.CommandList.CopyRegion(hdrTexture, 0, null, hdrRenderTexture, 0);
 
             postProcessingEffects.SetInput(hdrRenderTexture);
+            postProcessingEffects.SetInput(1, null); // No depth
             postProcessingEffects.SetOutput(GraphicsContext.CommandList.RenderTarget);
             postProcessingEffects.Draw(context);
         }

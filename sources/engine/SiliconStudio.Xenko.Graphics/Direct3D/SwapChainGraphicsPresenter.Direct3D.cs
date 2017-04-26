@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
 // 
@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Graphics
             // Initialize the swap chain
             swapChain = CreateSwapChain();
 
-            backBuffer = new Texture(device).InitializeFrom(swapChain.GetBackBuffer<BackBufferResourceType>(0), Description.BackBufferFormat.IsSRgb());
+            backBuffer = new Texture(device).InitializeFromImpl(swapChain.GetBackBuffer<BackBufferResourceType>(0), Description.BackBufferFormat.IsSRgb());
 
             // Reload should get backbuffer from swapchain as well
             //backBufferTexture.Reload = graphicsResource => ((Texture)graphicsResource).Recreate(swapChain.GetBackBuffer<SharpDX.Direct3D11.Texture>(0));
@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
                 // Manually swap back buffer
                 backBuffer.NativeResource.Dispose();
-                backBuffer.InitializeFrom(swapChain.GetBackBuffer<BackBufferResourceType>((++bufferSwapIndex) % bufferCount), Description.BackBufferFormat.IsSRgb());
+                backBuffer.InitializeFromImpl(swapChain.GetBackBuffer<BackBufferResourceType>((++bufferSwapIndex) % bufferCount), Description.BackBufferFormat.IsSRgb());
 #endif
             }
             catch (SharpDXException sharpDxException)
@@ -198,7 +198,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Put it in our back buffer texture
             // TODO: Update new size
-            backBuffer.InitializeFrom(backBufferTexture, Description.BackBufferFormat.IsSRgb());
+            backBuffer.InitializeFromImpl(backBufferTexture, Description.BackBufferFormat.IsSRgb());
             backBuffer.LifetimeState = GraphicsResourceLifetimeState.Active;
         }
 
@@ -234,7 +234,7 @@ namespace SiliconStudio.Xenko.Graphics
             var backBufferTexture = swapChain.GetBackBuffer<BackBufferResourceType>(0);
 
             // Put it in our back buffer texture
-            backBuffer.InitializeFrom(backBufferTexture, Description.BackBufferFormat.IsSRgb());
+            backBuffer.InitializeFromImpl(backBufferTexture, Description.BackBufferFormat.IsSRgb());
 
             foreach (var texture in fastList)
             {
@@ -310,7 +310,7 @@ namespace SiliconStudio.Xenko.Graphics
                 Height = Description.BackBufferHeight,
                 Format = (SharpDX.DXGI.Format)Description.BackBufferFormat.ToNonSRgb(),
                 Stereo = false,
-                SampleDescription = new SharpDX.DXGI.SampleDescription((int)Description.MultiSampleLevel, 0),
+                SampleDescription = new SharpDX.DXGI.SampleDescription((int)Description.MultisampleCount, 0),
                 Usage = Usage.BackBuffer | Usage.RenderTargetOutput,
                 // Use two buffers to enable flip effect.
                 BufferCount = bufferCount,
@@ -374,7 +374,7 @@ namespace SiliconStudio.Xenko.Graphics
                     ModeDescription = new ModeDescription(Description.BackBufferWidth, Description.BackBufferHeight, Description.RefreshRate.ToSharpDX(), (SharpDX.DXGI.Format)backbufferFormat), 
                     BufferCount = bufferCount, // TODO: Do we really need this to be configurable by the user?
                     OutputHandle = handle,
-                    SampleDescription = new SampleDescription((int)Description.MultiSampleLevel, 0),
+                    SampleDescription = new SampleDescription((int)Description.MultisampleCount, 0),
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
                     SwapEffect = SwapEffect.Discard,
 #elif SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12

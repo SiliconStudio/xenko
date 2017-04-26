@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
@@ -27,7 +27,7 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets or sets the factory that will create instances of <see cref="IGraphNode"/> for nodes.
         /// </summary>
-        IContentFactory ContentFactory { get; set; }
+        INodeFactory NodeFactory { get; set; }
 
         /// <summary>
         /// Gets the collection of available commands to attach to nodes.

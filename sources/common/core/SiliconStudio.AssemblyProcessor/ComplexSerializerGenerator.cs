@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
@@ -36,7 +36,7 @@ namespace SiliconStudio.AssemblyProcessor
                 throw new InvalidOperationException("Missing mscorlib.dll from assembly");
             }
 
-            var coreSerializationAssembly = assemblyResolver.Resolve("SiliconStudio.Core");
+            var coreSerializationAssembly = assemblyResolver.Resolve(new AssemblyNameReference("SiliconStudio.Core", null));
 
             // Register serializer factories (determine which type requires which serializer)
             generator.SerializerFactories.Add(new CecilGenericSerializerFactory(typeof(IList<>), coreSerializationAssembly.MainModule.GetTypeResolved("SiliconStudio.Core.Serialization.Serializers.ListInterfaceSerializer`1")));

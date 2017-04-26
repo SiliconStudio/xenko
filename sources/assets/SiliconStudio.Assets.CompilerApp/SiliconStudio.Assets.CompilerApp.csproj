@@ -34,7 +34,9 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssetSerializableLogMessage.cs" />
+    <Compile Include="..\..\shared\ToolAssemblyResolveModuleInitializer.cs">
+      <Link>ToolAssemblyResolveModuleInitializer.cs</Link>
+    </Compile>
     <Compile Include="BundlePacker.cs" />
     <Compile Include="IPackageBuilderApp.cs" />
     <Compile Include="LogListenerRedirectToAction.cs" />
@@ -143,7 +145,7 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
-  <Import Project="..\..\tools\SiliconStudio.Xenko.VisualStudio.Debugging\SiliconStudio.Xenko.VisualStudio.Debugging.projitems" Label="Shared" />
+  <Import Project="..\..\tools\SiliconStudio.VisualStudio\SiliconStudio.VisualStudio.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

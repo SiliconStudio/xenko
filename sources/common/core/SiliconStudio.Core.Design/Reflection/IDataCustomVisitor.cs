@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 
 namespace SiliconStudio.Core.Reflection
@@ -7,6 +7,7 @@ namespace SiliconStudio.Core.Reflection
     /// <summary>
     /// A custom visitor used by <see cref="DataVisitorBase"/>.
     /// </summary>
+    [AssemblyScan]
     public interface IDataCustomVisitor
     {
         /// <summary>

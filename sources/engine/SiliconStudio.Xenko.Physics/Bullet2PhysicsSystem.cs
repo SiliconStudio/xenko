@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Games;
@@ -86,20 +86,23 @@ namespace SiliconStudio.Xenko.Physics
                 {
                     //read skinned meshes bone positions and write them to the physics engine
                     physicsScene.Processor.UpdateBones();
+                    
                     //simulate physics
                     physicsScene.Simulation.Simulate((float)gameTime.Elapsed.TotalSeconds);
+
                     //update character bound entity's transforms from physics engine simulation
                     physicsScene.Processor.UpdateCharacters();
 
+                    //Perform clean ups before test contacts in this frame
                     physicsScene.Simulation.BeginContactTesting();
 
                     //finally process any needed cleanup
                     physicsScene.Processor.UpdateRemovals();
-
-                    
+                   
                     //handle frame contacts
                     physicsScene.Processor.UpdateContacts();
 
+                    //This is the heavy contact logic
                     physicsScene.Simulation.EndContactTesting();
 
                     //send contact events

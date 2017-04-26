@@ -1,8 +1,9 @@
 !SceneAsset
 Id: 3b831f6c-eb4c-4276-9f4c-fd6c9fe13f77
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
-Parent: null
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - 339ed07f-b58b-4d72-9d97-b7679f710573
@@ -63,7 +64,7 @@ Hierarchy:
                         Name: null
                         Projection: Orthographic
                         FarClipPlane: 10.0
-                        Slot: {Index: 0}
+                        Slot: ed330d34-6073-4e57-97f8-6a6a29610451
         -   Entity:
                 Id: 3d8e427f-90f5-4579-b8dd-1f0264f1b47c
                 Name: GroundTop

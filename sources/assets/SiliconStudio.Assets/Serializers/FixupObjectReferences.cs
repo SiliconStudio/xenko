@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +43,12 @@ namespace SiliconStudio.Assets.Serializers
             return visitor.ReferenceableObjects;
         }
 
-        public static void FixupReferences(object root, YamlAssetMetadata<Guid> objectReferences, Dictionary<Guid, IIdentifiable> referenceTargets, bool clearMissingReferences, [CanBeNull] ILogger logger = null)
+        public static void FixupReferences([NotNull] object root, [NotNull] YamlAssetMetadata<Guid> objectReferences, [NotNull] Dictionary<Guid, IIdentifiable> referenceTargets, bool clearMissingReferences, ILogger logger = null)
+        {
+            FixupReferences(root, objectReferences, referenceTargets, clearMissingReferences, (p, r, v) => p.Apply(r, MemberPathAction.ValueSet, v));
+        }
+
+        public static void FixupReferences([NotNull] object root, [NotNull] YamlAssetMetadata<Guid> objectReferences, [NotNull] Dictionary<Guid, IIdentifiable> referenceTargets, bool clearMissingReferences, [NotNull] Action<MemberPath, object, object> applyAction, ILogger logger = null)
         {
             foreach (var objectReference in objectReferences)
             {
@@ -51,18 +58,19 @@ namespace SiliconStudio.Assets.Serializers
                 {
                     logger?.Warning($"Unable to resolve target object [{objectReference.Value}] of reference [{objectReference.Key}]");
                     if (clearMissingReferences)
-                        path.Apply(root, MemberPathAction.ValueSet, null);
+                        applyAction(path, root, null);
                 }
                 else
                 {
                     var current = path.GetValue(root);
                     if (!Equals(current, target))
                     {
-                        path.Apply(root, MemberPathAction.ValueSet, target);
+                        applyAction(path, root, target);
                     }
                 }
             }
         }
+
         private class FixupObjectReferenceVisitor : DataVisitorBase
         {
             public readonly Dictionary<Guid, IIdentifiable> ReferenceableObjects = new Dictionary<Guid, IIdentifiable>();

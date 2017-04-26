@@ -1,10 +1,11 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core.Windows
@@ -32,7 +33,7 @@ namespace SiliconStudio.Core.Windows
         {
             if (lockFile != null)
             {
-                var overlapped = new NativeLockFile.OVERLAPPED();
+                var overlapped = new NativeOverlapped();
                 NativeLockFile.UnlockFileEx(lockFile.SafeFileHandle, 0, uint.MaxValue, uint.MaxValue, ref overlapped);
                 lockFile.Dispose();
 
@@ -91,7 +92,7 @@ namespace SiliconStudio.Core.Windows
                 if (millisecondsTimeout != 0 && millisecondsTimeout != -1)
                     throw new NotImplementedException("GlobalMutex.Wait() is implemented only for millisecondsTimeout 0 or -1");
 
-                var overlapped = new NativeLockFile.OVERLAPPED();
+                var overlapped = new NativeOverlapped();
                 bool hasHandle = NativeLockFile.LockFileEx(fileLock.SafeFileHandle, NativeLockFile.LOCKFILE_EXCLUSIVE_LOCK | (millisecondsTimeout == 0 ? NativeLockFile.LOCKFILE_FAIL_IMMEDIATELY : 0), 0, uint.MaxValue, uint.MaxValue, ref overlapped);
                 return hasHandle == false ? null : new FileLock(fileLock);
             }
@@ -101,8 +102,10 @@ namespace SiliconStudio.Core.Windows
             }
         }
 
+        [NotNull]
         private static FileStream BuildFileLock(string name)
         {
+            // We open with FileShare.ReadWrite mode so that we can implement `Wait`.
             return new FileStream(name, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
         }
     }

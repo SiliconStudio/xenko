@@ -1,6 +1,9 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
@@ -27,6 +30,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public Block Owner { get; internal set; }
 
         [DataMember(-100), Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; }
 
         // TODO: Internal setter when serialization supports it

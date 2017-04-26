@@ -1,6 +1,7 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,10 +22,11 @@ namespace SiliconStudio.Xenko.Assets.Tests
     [TestFixture]
     public class TexturePackerTests
     {
-        private const string TexturePackerFolder = "SiliconStudio.Xenko.Assets.Tests/" + "TexturePacking/";
-        private const string ImageOutputPath = TexturePackerFolder+"OutputImages/";
-        private const string ImageInputPath = TexturePackerFolder + "IntputImages/";
-        private const string GoldImagePath = TexturePackerFolder + "GoldImages/";
+        private static readonly string ApplicationPath = AppDomain.CurrentDomain.BaseDirectory;
+        private static readonly string TexturePackerFolder = Path.Combine(ApplicationPath, "TexturePacking") + Path.DirectorySeparatorChar;
+        private static readonly string ImageOutputPath = Path.Combine(TexturePackerFolder, "OutputImages") + Path.DirectorySeparatorChar;
+        private static readonly string ImageInputPath = Path.Combine(TexturePackerFolder, "InputImages") + Path.DirectorySeparatorChar;
+        private static readonly string GoldImagePath = Path.Combine(TexturePackerFolder, "GoldImages") + Path.DirectorySeparatorChar;
 
         public static void LoadXenkoAssemblies()
         {

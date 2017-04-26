@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under MIT License. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // -----------------------------------------------------------------------------
 // Original code from SlimMath project. http://code.google.com/p/slimmath/
@@ -889,6 +889,15 @@ namespace SiliconStudio.Core.Mathematics
         public static explicit operator Color4(int value)
         {
             return new Color4(value);
+        }
+
+        /// <summary>
+        /// Converts this color to an equivalent <see cref="Color3"/>, discarding the alpha channel.
+        /// </summary>
+        /// <returns>An equivalent <see cref="Color3"/>, discarding the alpha channel.</returns>
+        public Color3 ToColor3()
+        {
+            return new Color3(R, G, B);
         }
 
         /// <summary>

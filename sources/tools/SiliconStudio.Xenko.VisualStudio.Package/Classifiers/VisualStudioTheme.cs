@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Theme Coloring Source: https://github.com/fsprojects/VisualFSharpPowerTools
 //
@@ -22,8 +22,10 @@ namespace SiliconStudio.Xenko.VisualStudio.Classifiers
     public enum VisualStudioTheme
     {
         Unknown = 0,
-        Light = 1,
-        Blue = 2,
-        Dark = 3,
+        UnknownDark = 1,
+        UnknownLight = 2,
+        Light = 3,
+        Blue = 4,
+        Dark = 5,
     }
 }

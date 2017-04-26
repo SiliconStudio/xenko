@@ -1,14 +1,15 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-using NuGet;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
+using System.Threading.Tasks;
+using SiliconStudio.Packages;
 
 namespace SiliconStudio.Assets
 {
@@ -27,19 +28,18 @@ namespace SiliconStudio.Assets
 
         private readonly UDirectory globalInstallationPath;
 
-        private readonly UDirectory packagesDirectory;
-
-        private readonly bool isDev;
-
         private readonly UDirectory defaultPackageDirectory;
 
+        /// <summary>
+        /// Associated NugetStore for our packages. Cannot be null.
+        /// </summary>
         private readonly NugetStore store;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageStore"/> class.
         /// </summary>
         /// <exception cref="System.InvalidOperationException">Unable to find a valid Xenko installation path</exception>
-        private PackageStore(string installationPath = null, string defaultPackageName = "Xenko", string defaultPackageVersion = XenkoVersion.CurrentAsText)
+        private PackageStore(string installationPath = null, string defaultPackageName = "Xenko", string defaultPackageVersion = XenkoVersion.NuGetVersionSimple)
         {
             // TODO: these are currently hardcoded to Xenko
             DefaultPackageName = defaultPackageName;
@@ -80,13 +80,9 @@ namespace SiliconStudio.Assets
             }
             defaultPackage.IsSystem = true;
 
-            // A flag variable just to know if it is a bare bone development directory
-            isDev = defaultPackageDirectory != null && DirectoryHelper.IsRootDevDirectory(defaultPackageDirectory);
-
             // Check if we are in a root directory with store/packages facilities
             if (NugetStore.IsStoreDirectory(globalInstallationPath))
             {
-                packagesDirectory = UPath.Combine(globalInstallationPath, (UDirectory)NugetStore.DefaultGamePackagesDirectory);
                 store = new NugetStore(globalInstallationPath);
             }
             else
@@ -119,7 +115,7 @@ namespace SiliconStudio.Assets
         /// Gets the default package version.
         /// </summary>
         /// <value>The default package version.</value>
-        public PackageVersion DefaultPackageVersion { get; private set; }
+        public PackageVersion DefaultPackageVersion { get; }
 
         /// <summary>
         /// Gets the default package.
@@ -148,14 +144,9 @@ namespace SiliconStudio.Assets
         /// Gets the packages available online.
         /// </summary>
         /// <returns>IEnumerable&lt;PackageMeta&gt;.</returns>
-        public IEnumerable<PackageMeta> GetPackages()
+        public async Task<IEnumerable<PackageMeta>> GetPackages()
         {
-            if (store == null)
-            {
-                return Enumerable.Empty<PackageMeta>().AsQueryable();
-            }
-
-            var packages = store.Manager.SourceRepository.Search(null, false);
+            var packages = await store.SourceSearch(null, allowPrereleaseVersions: false);
 
             // Order by download count and Id to allow collapsing 
             var orderedPackages = packages.OrderByDescending(p => p.DownloadCount).ThenBy(p => p.Id);
@@ -163,7 +154,7 @@ namespace SiliconStudio.Assets
             // For some unknown reasons, we can't select directly from IQueryable<IPackage> to IQueryable<PackageMeta>, 
             // so we need to pass through a IEnumerable<PackageMeta> and translate it to IQueyable. Not sure it has
             // an implication on the original query behinds the scene 
-            return orderedPackages.Select(PackageMeta.FromNuGet);
+            return orderedPackages.Select(PackageMetaFromNugetPackage);
         }
 
         /// <summary>
@@ -174,21 +165,18 @@ namespace SiliconStudio.Assets
         {
             var packages = new List<Package> { defaultPackage };
 
-            if (store != null)
+            var log = new LoggerResult();
+
+            var metas = store.GetLocalPackages();
+            foreach (var meta in metas)
             {
-                var log = new LoggerResult();
+                var path = store.GetPackageDirectory(meta);
 
-                var metas = store.Manager.LocalRepository.GetPackages();
-                foreach (var meta in metas)
+                var package = Package.Load(log, path, GetDefaultPackageLoadParameters());
+                if (package != null && packages.All(packageRegistered => packageRegistered.Meta.Name != defaultPackage.Meta.Name))
                 {
-                    var path = store.PathResolver.GetPackageDirectory(meta.Id, meta.Version);
-
-                    var package = Package.Load(log, path, GetDefaultPackageLoadParameters());
-                    if (package != null && packages.All(packageRegistered => packageRegistered.Meta.Name != defaultPackage.Meta.Name))
-                    {
-                        package.IsSystem = true;
-                        packages.Add(package);
-                    }
+                    package.IsSystem = true;
+                    packages.Add(package);
                 }
             }
 
@@ -196,7 +184,19 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Gets the filename to the specific package.
+        /// Gets the filename to the specific package using just a package name.
+        /// </summary>
+        /// <param name="packageName">Name of the package.</param>
+        /// <returns>A location on the disk to the specified package or null if not found.</returns>
+        /// <exception cref="System.ArgumentNullException">packageName</exception>
+        public UFile GetPackageWithFileName(string packageName)
+        {
+            return GetPackageFileName(packageName);
+        }
+
+        /// <summary>
+        /// Gets the filename to the specific package <paramref name="packageName"/> using the version <paramref name="versionRange"/> if not null, otherwise the <paramref name="constraintProvider"/> if specified.
+        /// If no constraints are specified, the first entry if any are founds is used to get the filename.
         /// </summary>
         /// <param name="packageName">Name of the package.</param>
         /// <param name="versionRange">The version range.</param>
@@ -205,11 +205,28 @@ namespace SiliconStudio.Assets
         /// <param name="allowUnlisted">if set to <c>true</c> [allow unlisted].</param>
         /// <returns>A location on the disk to the specified package or null if not found.</returns>
         /// <exception cref="System.ArgumentNullException">packageName</exception>
-        public UFile GetPackageFileName(string packageName, PackageVersionRange versionRange = null, IPackageConstraintProvider constraintProvider = null, bool allowPreleaseVersion = true, bool allowUnlisted = false)
+        public UFile GetPackageFileName(string packageName, PackageVersionRange versionRange = null, ConstraintProvider constraintProvider = null, bool allowPreleaseVersion = true, bool allowUnlisted = false)
         {
-            if (packageName == null) throw new ArgumentNullException("packageName");
-            var directory = GetPackageDirectory(packageName, versionRange, constraintProvider, allowPreleaseVersion, allowUnlisted);
-            return directory != null ? UPath.Combine(UPath.Combine(UPath.Combine(InstallationPath, (UDirectory)store.RepositoryPath), directory), new UFile(packageName + Package.PackageFileExtension)) : null;
+            if (packageName == null) throw new ArgumentNullException(nameof(packageName));
+
+            var package = store.FindLocalPackage(packageName, versionRange, constraintProvider, allowPreleaseVersion, allowUnlisted);
+
+            // If package was not found, 
+            if (package != null)
+            {
+                return UPath.Combine(store.GetInstallPath(package), new UFile(packageName + Package.PackageFileExtension));
+            }
+
+            // TODO: Check version for default package
+            if (packageName == DefaultPackageName)
+            {
+                if (versionRange == null || versionRange.Contains(DefaultPackageVersion))
+                {
+                    return UPath.Combine(UPath.Combine(UPath.Combine(InstallationPath, (UDirectory)store.RepositoryPath), defaultPackageDirectory), new UFile(packageName + Package.PackageFileExtension));
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -230,32 +247,89 @@ namespace SiliconStudio.Assets
             return new PackageLoadParameters { AutoLoadTemporaryAssets = false, LoadAssemblyReferences = false, AutoCompileProjects = false };
         }
 
-        private UDirectory GetPackageDirectory(string packageName, PackageVersionRange versionRange, IPackageConstraintProvider constraintProvider = null, bool allowPreleaseVersion = false, bool allowUnlisted = false)
+        /// <summary>
+        /// Is current store a bare bone development one?
+        /// </summary>
+        private bool IsDevelopmentStore => defaultPackageDirectory != null && DirectoryHelper.IsRootDevDirectory(defaultPackageDirectory);
+
+        /// <summary>
+        /// New instance of <see cref="PackageMeta"/> from a nuget package <paramref name="metadata"/>.
+        /// </summary>
+        /// <param name="metadata">The nuget metadata used to initialized an instance of <see cref="PackageMeta"/>.</param>
+        public static PackageMeta PackageMetaFromNugetPackage(NugetPackage metadata)
         {
-            if (packageName == null) throw new ArgumentNullException("packageName");
-
-            if (store != null)
+            var meta = new PackageMeta
             {
-                var versionSpec = versionRange.ToVersionSpec();
-                var package = store.Manager.LocalRepository.FindPackage(packageName, versionSpec, constraintProvider ?? NullConstraintProvider.Instance, allowPreleaseVersion, allowUnlisted);
+                Name = metadata.Id,
+                Version = new PackageVersion(metadata.Version.ToString()),
+                Title = metadata.Title,
+                IconUrl = metadata.IconUrl,
+                LicenseUrl = metadata.LicenseUrl,
+                ProjectUrl = metadata.ProjectUrl,
+                RequireLicenseAcceptance = metadata.RequireLicenseAcceptance,
+                Description = metadata.Description,
+                Summary = metadata.Summary,
+                ReleaseNotes = metadata.ReleaseNotes,
+                Language = metadata.Language,
+                Tags = metadata.Tags,
+                Copyright = metadata.Copyright,
+                Listed = metadata.Listed,
+                Published = metadata.Published,
+                ReportAbuseUrl = metadata.ReportAbuseUrl,
+                DownloadCount = metadata.DownloadCount
+            };
 
-                // If package was not found, 
-                if (package != null)
-                {
-                    var directory = store.PathResolver.GetPackageDirectory(package);
-                    if (directory != null)
-                    {
-                        return directory;
-                    }
-                }
+            meta.Authors.AddRange(metadata.Authors);
+            meta.Owners.AddRange(metadata.Owners);
+
+            if (metadata.DependencySetsCount > 1)
+            {
+                throw new InvalidOperationException("Metadata loaded from nuspec cannot have more than one group of dependency");
             }
 
-            // TODO: Check version for default package
-            if (packageName == DefaultPackageName)
+            // Load dependencies
+            meta.Dependencies.Clear();
+            foreach (var dependency in metadata.Dependencies)
             {
-                if (versionRange == null || versionRange.Contains(DefaultPackageVersion))
+                meta.Dependencies.Add(new PackageDependency(dependency.Item1, dependency.Item2));
+            }
+
+            return meta;
+        }
+
+        public static void ToNugetManifest(PackageMeta meta, ManifestMetadata manifestMeta)
+        {
+            manifestMeta.Id = meta.Name;
+            manifestMeta.Version = meta.Version.ToString();
+            manifestMeta.Title = meta.Title.SafeTrim();
+            manifestMeta.Authors = string.Join(",", meta.Authors);
+            manifestMeta.Owners = string.Join(",", meta.Owners.Count == 0 ? meta.Authors : meta.Owners);
+            manifestMeta.Tags = String.IsNullOrEmpty(meta.Tags) ? null : meta.Tags.SafeTrim();
+            manifestMeta.LicenseUrl = ConvertUrlToStringSafe(meta.LicenseUrl);
+            manifestMeta.ProjectUrl = ConvertUrlToStringSafe(meta.ProjectUrl);
+            manifestMeta.IconUrl = ConvertUrlToStringSafe(meta.IconUrl);
+            manifestMeta.RequireLicenseAcceptance = meta.RequireLicenseAcceptance;
+            manifestMeta.DevelopmentDependency = false;
+            manifestMeta.Description = meta.Description.SafeTrim();
+            manifestMeta.Copyright = meta.Copyright.SafeTrim();
+            manifestMeta.Summary = meta.Summary.SafeTrim();
+            manifestMeta.ReleaseNotes = meta.ReleaseNotes.SafeTrim();
+            manifestMeta.Language = meta.Language.SafeTrim();
+
+            foreach (var dependency in meta.Dependencies)
+            {
+                manifestMeta.AddDependency(dependency.Name, dependency.Version);
+            }
+        }
+
+        private static string ConvertUrlToStringSafe(Uri url)
+        {
+            if (url != null)
+            {
+                string originalString = url.OriginalString.SafeTrim();
+                if (!string.IsNullOrEmpty(originalString))
                 {
-                    return defaultPackageDirectory;
+                    return originalString;
                 }
             }
 

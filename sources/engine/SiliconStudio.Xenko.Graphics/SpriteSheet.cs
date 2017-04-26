@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// A sheet (group) of sprites.
     /// </summary>
     [DataContract]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<SpriteSheet>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<SpriteSheet>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<SpriteSheet>))]
     public class SpriteSheet
     {

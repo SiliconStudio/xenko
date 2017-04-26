@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using System;
 using System.Linq;
@@ -34,6 +34,10 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly bool tegraWorkaround;
 #endif
 
+#if SILICONSTUDIO_PLATFORM_IOS
+        private OpenGLES.EAGLContext previousContext;
+#endif
+
         public bool UseDeviceCreationContext => useDeviceCreationContext;
 
         public UseOpenGLCreationContext(GraphicsDevice graphicsDevice)
@@ -65,9 +69,16 @@ namespace SiliconStudio.Xenko.Graphics
                     graphicsDevice.AsyncPendingTaskWaiting = false;
 #endif
 
+
+#if SILICONSTUDIO_PLATFORM_IOS
+                previousContext = OpenGLES.EAGLContext.CurrentContext;
+                var localContext = graphicsDevice.ThreadLocalContext.Value;
+                OpenGLES.EAGLContext.SetCurrentContext(localContext);
+#else
                 // Bind the context
                 deviceCreationContext = graphicsDevice.deviceCreationContext;
                 deviceCreationContext.MakeCurrent(graphicsDevice.deviceCreationWindowInfo);
+#endif
             }
             else
             {
@@ -84,8 +95,13 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     GL.Flush();
 
+#if SILICONSTUDIO_PLATFORM_IOS
+                    if(previousContext != null)
+                        OpenGLES.EAGLContext.SetCurrentContext(previousContext);
+#else
                     // Restore graphics context
                     GraphicsDevice.UnbindGraphicsContext(deviceCreationContext);
+#endif
                 }
             }
             finally

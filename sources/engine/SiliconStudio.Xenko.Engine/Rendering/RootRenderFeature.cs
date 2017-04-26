@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -48,13 +48,6 @@ namespace SiliconStudio.Xenko.Rendering
         /// List of render nodes for this specific root render feature.
         /// </summary>
         public ConcurrentCollector<RenderNode> RenderNodes { get; } = new ConcurrentCollector<RenderNode>();
-
-        /// <summary>
-        /// Defines which <see cref="RenderObject"/> gets accepted in that render feature.
-        /// </summary>
-        [DataMember]
-        [DefaultValue(null)]
-        public RootRenderFeatureFilter Filter { get; set; }
 
         /// <summary>
         /// Overrides that allow defining which render stages are enabled for a specific <see cref="RenderObject"/>.
@@ -191,9 +184,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         internal bool TryAddRenderObject(RenderObject renderObject)
         {
-            if (Filter != null && !Filter.Accept(renderObject))
-                return false;
-
             renderObject.RenderFeature = this;
 
             // Generate static data ID

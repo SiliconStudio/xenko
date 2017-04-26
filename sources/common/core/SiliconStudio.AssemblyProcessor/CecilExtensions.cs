@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under MIT License. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 // Source: http://stackoverflow.com/questions/4968755/mono-cecil-call-generic-base-class-method-from-other-assembly
 using System;
 using System.Collections.Generic;
@@ -412,7 +412,7 @@ namespace SiliconStudio.AssemblyProcessor
         /// <returns></returns>
         public static TypeReference GenerateTypeCecil(this Type type, BaseAssemblyResolver assemblyResolver)
         {
-            var assemblyDefinition = assemblyResolver.Resolve(type.Assembly.FullName);
+            var assemblyDefinition = assemblyResolver.Resolve(AssemblyNameReference.Parse(type.Assembly.FullName));
             TypeReference typeReference;
 
             if (type.IsNested)
@@ -619,7 +619,8 @@ namespace SiliconStudio.AssemblyProcessor
             if (method.Body != null)
             {
                 clonedMethod.Body.Variables.AddRange(
-                    method.Body.Variables.Select(x => new VariableDefinition(x.Name, inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(x.VariableType)))));
+                    method.Body.Variables.Select(x => new VariableDefinition(inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(x.VariableType)))));
+
 
                 clonedMethod.Body.InitLocals = method.Body.InitLocals;
 

@@ -1,8 +1,9 @@
 !SceneAsset
 Id: 45f5d521-b83c-4608-937d-64f93812fba7
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
-Parent: null
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - b7690cff-f2ad-4f33-ae7e-26573f84dd7f
@@ -149,7 +150,7 @@ Hierarchy:
                         Name: null
                         Projection: Perspective
                         FarClipPlane: 100.0
-                        Slot: {Index: 0}
+                        Slot: 95fe37f1-35a8-41ff-9358-192ff159e956
         -   Entity:
                 Id: e6289325-fb51-4913-84a6-96f4faa42f40
                 Name: Ambient light
@@ -176,13 +177,13 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
-                    100e65461397a44da9e9b9e50263ec16: !PhysicsSample.DemoScript,PhysicsSample.Game
-                        Id: 46650e10-9713-4da4-a9e9-b9e50263ec16
-                        cube: 909c7c74-e1e9-4d9e-aa61-207f1d6367d0
-                        sphere: 70f2e3d6-2d8d-4cc5-aa99-1b9cae14aed2
-                        Font: 62eec53a-f82a-460a-91c3-bf3c6ece95c2:Font
                     2175f4fbd8cdc64c89027bd3cf961d70: !UIComponent
                         Id: fbf47521-cdd8-4cc6-8902-7bd3cf961d70
                         Page: null
                         Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
+                    12f6035387f7a875158b0aee541e70d5: !PhysicsSample12.DemoScript,PhysicsSample.Game
+                        Id: e365fd10-5ea7-47fb-8236-d160b2a1cba5
+                        cube: ref!! 909c7c74-e1e9-4d9e-aa61-207f1d6367d0
+                        sphere: ref!! 70f2e3d6-2d8d-4cc5-aa99-1b9cae14aed2
+                        Font: 62eec53a-f82a-460a-91c3-bf3c6ece95c2:Font

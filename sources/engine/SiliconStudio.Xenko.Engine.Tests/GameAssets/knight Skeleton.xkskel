@@ -78,4 +78,4 @@ Nodes:
     08e6c2d8f90b444db2490756426e33cc: {Name: ch00_Knight_directionalLight2, Depth: 2}
     4b6c467afc61a146bb443a1ed3ebc545: {Name: ch00_Knight_ambientLight1, Depth: 2}
 ~SourceHashes:
-    cf86ab9f9d73bea9755ed13e1627fa32~../../../data/tests/knight/scenes/knight.fbx: b0dc28bd79ba6cd2fed575b8855b52fc
+    cf86ab9f9d73bea9755ed13e1627fa32~../../../data/tests/knight/scenes/knight.fbx: af4ac6da9a62b02bd84f4a8147dd38a7

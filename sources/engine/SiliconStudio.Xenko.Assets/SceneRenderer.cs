@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
@@ -59,7 +61,7 @@ namespace SiliconStudio.Xenko.Assets
             Services = new ServiceRegistry();
             ContentManager = new ContentManager(Services);
 
-            var renderingSettings = gameSettings.Get<RenderingSettings>();
+            var renderingSettings = gameSettings.GetOrCreate<RenderingSettings>();
             GraphicsDevice = GraphicsDevice.New(DeviceCreationFlags.Debug, new[] { renderingSettings.DefaultGraphicsProfile });
 
             var graphicsDeviceService = new GraphicsDeviceServiceLocal(Services, GraphicsDevice);

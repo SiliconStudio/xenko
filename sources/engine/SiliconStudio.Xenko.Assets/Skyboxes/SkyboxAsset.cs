@@ -1,12 +1,16 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Reflection;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Yaml;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Skyboxes;
 
 namespace SiliconStudio.Xenko.Assets.Skyboxes
@@ -17,29 +21,31 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
     [DataContract("SkyboxAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Skybox))]
-    [AssetCompiler(typeof(SkyboxAssetCompiler))]
     [Display(1000, "Skybox")]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
+    [AssetUpgrader(XenkoConfig.PackageName, "0", "1.11.1.1", typeof(RemoveSkyboxUsage))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.11.1.1", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
     public sealed class SkyboxAsset : Asset
     {
+        private const string CurrentVersion = "2.0.0.0";
+
         /// <summary>
         /// The default file extension used by the <see cref="SkyboxAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xksky;.pdxsky";
+        public const string FileExtension = ".xksky";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SkyboxAsset"/> class.
         /// </summary>
         public SkyboxAsset()
         {
-            Model = new SkyboxCubeMapModel();
-            Usage = SkyboxUsage.LightingAndBackground;
+            IsSpecularOnly = false;
             DiffuseSHOrder = SkyboxPreFilteringDiffuseOrder.Order3;
             SpecularCubeMapSize = 256;
-        }
-
-        protected override int InternalBuildOrder
-        {
-            get { return 500; }
         }
 
         /// <summary>
@@ -48,17 +54,19 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         /// <value>The type of skybox.</value>
         /// <userdoc>The source to use as skybox</userdoc>
         [DataMember(10)]
-        [NotNull]
-        [Display("Type", Expand = ExpandRule.Always)]
-        public ISkyboxModel Model { get; set; }
+        [Display("CubeMap", Expand = ExpandRule.Always)]
+        public Texture CubeMap { get; set; }
 
         /// <summary>
-        /// Gets or sets the usge of this skybox
+        /// Gets or set if this skybox affects specular only, if <c>false</c> this skybox will affect ambient lighting
         /// </summary>
-        /// <userdoc>The usage of this skybox</userdoc>
+        /// <userdoc>
+        /// Use the skybox only for specular lighting
+        /// </userdoc>
         [DataMember(15)]
-        [DefaultValue(SkyboxUsage.LightingAndBackground)]
-        public SkyboxUsage Usage { get; set; }
+        [DefaultValue(false)]
+        [Display("Specular Only")]
+        public bool IsSpecularOnly { get; set; }
 
         /// <summary>
         /// Gets or sets the diffuse sh order.
@@ -80,5 +88,30 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         [DataMember(30)]
         [DataMemberRange(64, int.MaxValue)]
         public int SpecularCubeMapSize { get; set; }
+
+        public IEnumerable<IReference> GetDependencies()
+        {
+            if (CubeMap != null)
+            {
+                var reference = AttachedReferenceManager.GetAttachedReference(CubeMap);
+                yield return new AssetReference(reference.Id, reference.Url);
+            }
+        }
+
+        class RemoveSkyboxUsage : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                if (asset.Usage != null)
+                {
+                    if (asset.Usage == "SpecularLighting")
+                    {
+                        asset.IsSpecularOnly = true;
+                    }
+                }
+                
+                asset.Usage = DynamicYamlEmpty.Default;
+            }
+        }
     }
 }

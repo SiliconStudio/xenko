@@ -1,26 +1,6 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
-// Copyright (c) 2010-2012 SharpDX - Alexandre Mutel
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
 using System;
 using System.Linq;
 using SharpVulkan;
@@ -273,8 +253,22 @@ namespace SiliconStudio.Xenko.Graphics
 
         private unsafe void InitializeImage(DataBox[] dataBoxes)
         {
-            var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
-            var beginInfo = new CommandBufferBeginInfo { StructureType = StructureType.CommandBufferBeginInfo };
+            // Begin copy command buffer
+            var commandBufferAllocateInfo = new CommandBufferAllocateInfo
+            {
+                StructureType = StructureType.CommandBufferAllocateInfo,
+                CommandPool = GraphicsDevice.NativeCopyCommandPool,
+                CommandBufferCount = 1,
+                Level = CommandBufferLevel.Primary
+            };
+            CommandBuffer commandBuffer;
+
+            lock (GraphicsDevice.QueueLock)
+            {
+                GraphicsDevice.NativeDevice.AllocateCommandBuffers(ref commandBufferAllocateInfo, &commandBuffer);
+            }
+
+            var beginInfo = new CommandBufferBeginInfo { StructureType = StructureType.CommandBufferBeginInfo, Flags = CommandBufferUsageFlags.OneTimeSubmit };
             commandBuffer.Begin(ref beginInfo);
 
             if (dataBoxes != null && dataBoxes.Length > 0)
@@ -310,9 +304,6 @@ namespace SiliconStudio.Xenko.Graphics
                     int mipSlice = i % MipLevels;
                     var mipMapDescription = GetMipMapDescription(mipSlice);
 
-                    SubresourceLayout layout;
-                    GraphicsDevice.NativeDevice.GetImageSubresourceLayout(NativeImage, new ImageSubresource(NativeImageAspect, (uint)arraySlice, (uint)mipSlice), out layout);
-
                     var alignment = ((uploadOffset + alignmentMask) & ~alignmentMask) - uploadOffset;
                     uploadMemory += alignment;
                     uploadOffset += alignment;
@@ -326,8 +317,8 @@ namespace SiliconStudio.Xenko.Graphics
                         ImageSubresource = new ImageSubresourceLayers(ImageAspectFlags.Color, (uint)arraySlice, 1, (uint)mipSlice),
                         BufferRowLength = 0, //(uint)(dataBoxes[i].RowPitch / pixelSize),
                         BufferImageHeight = 0, //(uint)(dataBoxes[i].SlicePitch / dataBoxes[i].RowPitch),
-                        ImageOffset = new Offset3D(0, 0, arraySlice),
-                        ImageExtent = new Extent3D((uint)mipMapDescription.Width, (uint)mipMapDescription.Height, 1)
+                        ImageOffset = new Offset3D(0, 0, 0),
+                        ImageExtent = new Extent3D((uint)mipMapDescription.Width, (uint)mipMapDescription.Height, (uint)mipMapDescription.Depth)
                     };
 
                     uploadMemory += slicePitch;
@@ -363,7 +354,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
                 GraphicsDevice.NativeCommandQueue.WaitIdle();
-                commandBuffer.Reset(CommandBufferResetFlags.None);
+                GraphicsDevice.NativeDevice.FreeCommandBuffers(GraphicsDevice.NativeCopyCommandPool, 1, &commandBuffer);
             }
         }
 
@@ -461,12 +452,12 @@ namespace SiliconStudio.Xenko.Graphics
                 SubresourceRange = new ImageSubresourceRange(IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color, (uint)arrayOrDepthSlice, (uint)layerCount, (uint)mipIndex, (uint)mipCount) // TODO VULKAN: Select between depth and stencil?
             };
 
-            if (IsMultiSample)
+            if (IsMultisample)
                 throw new NotImplementedException();
 
             if (this.ArraySize > 1)
             {
-                if (IsMultiSample && Dimension != TextureDimension.Texture2D)
+                if (IsMultisample && Dimension != TextureDimension.Texture2D)
                     throw new NotSupportedException("Multisample is only supported for 2D Textures");
 
                 if (Dimension == TextureDimension.Texture3D)
@@ -489,7 +480,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else
             {
-                if (IsMultiSample && Dimension != TextureDimension.Texture2D)
+                if (IsMultisample && Dimension != TextureDimension.Texture2D)
                     throw new NotSupportedException("Multisample is only supported for 2D RenderTarget Textures");
 
                 if (Dimension == TextureDimension.TextureCube)
@@ -534,12 +525,12 @@ namespace SiliconStudio.Xenko.Graphics
                 SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, (uint)arrayOrDepthSlice, 1, (uint)mipIndex, (uint)mipCount)
             };
 
-            if (IsMultiSample)
+            if (IsMultisample)
                 throw new NotImplementedException();
 
             if (this.ArraySize > 1)
             {
-                if (IsMultiSample && Dimension != TextureDimension.Texture2D)
+                if (IsMultisample && Dimension != TextureDimension.Texture2D)
                     throw new NotSupportedException("Multisample is only supported for 2D Textures");
 
                 if (Dimension == TextureDimension.Texture3D)
@@ -547,7 +538,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else
             {
-                if (IsMultiSample && Dimension != TextureDimension.Texture2D)
+                if (IsMultisample && Dimension != TextureDimension.Texture2D)
                     throw new NotSupportedException("Multisample is only supported for 2D RenderTarget Textures");
 
                 if (Dimension == TextureDimension.TextureCube)

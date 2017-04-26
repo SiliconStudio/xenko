@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using SiliconStudio.Core;
+using SiliconStudio.Presentation.Quantum.Tests.Helpers;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Tests
@@ -11,30 +12,17 @@ namespace SiliconStudio.Presentation.Quantum.Tests
     [TestFixture]
     public class TestNodePresenterConstruction
     {
-        public class SimpleType
-        {
-            public string String { get; set; }
-        }
-
-        public class ClassWithRef
-        {
-            [Display(1)]
-            public string String { get; set; }
-            [Display(2)]
-            public ClassWithRef Ref { get; set; }
-        }
-
         [Test]
         public void TestSimpleType()
         {
-            var instance = new SimpleType { String = "aaa" };
+            var instance = new Types.SimpleType { String = "aaa" };
             var rootNode = BuildQuantumGraph(instance);
             var factory = new NodePresenterFactory();
-            var presenter = factory.CreateNodeTree(rootNode, new GraphNodePath(rootNode));
+            var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
             Assert.AreEqual(false, presenter.IsPrimitive);
             Assert.Null(presenter.Parent);
             Assert.AreEqual(1, presenter.Children.Count);
-            Assert.AreEqual(typeof(SimpleType), presenter.Type);
+            Assert.AreEqual(typeof(Types.SimpleType), presenter.Type);
             Assert.AreEqual(instance, presenter.Value);
             var child = presenter.Children.Single();
             Assert.AreEqual("String", child.Name);
@@ -48,34 +36,62 @@ namespace SiliconStudio.Presentation.Quantum.Tests
         [Test]
         public void TestClassWithRef()
         {
-            var instance = new ClassWithRef { String = "aaa", Ref = new ClassWithRef { String = "bbb", Ref = new ClassWithRef { String = "ccc" } } };
+            var instance = new Types.ClassWithRef { String = "aaa", Ref = new Types.ClassWithRef { String = "bbb", Ref = new Types.ClassWithRef { String = "ccc" } } };
             var rootNode = BuildQuantumGraph(instance);
             var factory = new NodePresenterFactory();
-            var presenter = factory.CreateNodeTree(rootNode, new GraphNodePath(rootNode));
+            var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
             Assert.AreEqual(false, presenter.IsPrimitive);
             Assert.Null(presenter.Parent);
             Assert.AreEqual(2, presenter.Children.Count);
-            Assert.AreEqual(typeof(ClassWithRef), presenter.Type);
+            Assert.AreEqual(typeof(Types.ClassWithRef), presenter.Type);
             Assert.AreEqual(instance, presenter.Value);
             Assert.AreEqual("String", presenter.Children[0].Name);
             Assert.AreEqual("aaa", presenter.Children[0].Value);
-            Assert.AreEqual(typeof(ClassWithRef), presenter.Children[1].Type);
+            Assert.AreEqual(typeof(Types.ClassWithRef), presenter.Children[1].Type);
             Assert.AreEqual(instance.Ref, presenter.Children[1].Value);
 
             Assert.AreEqual(2, presenter.Children[1].Children.Count);
-            Assert.AreEqual(typeof(ClassWithRef), presenter.Children[1].Type);
             Assert.AreEqual(instance.Ref, presenter.Children[1].Value);
             Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
             Assert.AreEqual("bbb", presenter.Children[1].Children[0].Value);
-            Assert.AreEqual(typeof(ClassWithRef), presenter.Children[1].Children[1].Type);
+            Assert.AreEqual(typeof(Types.ClassWithRef), presenter.Children[1].Children[1].Type);
             Assert.AreEqual(instance.Ref.Ref, presenter.Children[1].Children[1].Value);
 
             Assert.AreEqual(2, presenter.Children[1].Children[1].Children.Count);
-            Assert.AreEqual(typeof(ClassWithRef), presenter.Children[1].Children[1].Type);
             Assert.AreEqual(instance.Ref.Ref, presenter.Children[1].Children[1].Value);
             Assert.AreEqual("String", presenter.Children[1].Children[1].Children[0].Name);
             Assert.AreEqual("ccc", presenter.Children[1].Children[1].Children[0].Value);
-            Assert.AreEqual(typeof(ClassWithRef), presenter.Children[1].Children[1].Children[1].Type);
+            Assert.AreEqual(typeof(Types.ClassWithRef), presenter.Children[1].Children[1].Children[1].Type);
+        }
+
+        [Test]
+        public void TestClassWithPrimitiveCollection()
+        {
+            var instance = new Types.ClassWithCollection { String = "aaa", List = { "bbb", "ccc" } };
+            var rootNode = BuildQuantumGraph(instance);
+            var factory = new NodePresenterFactory();
+            var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
+            Assert.AreEqual(false, presenter.IsPrimitive);
+            Assert.Null(presenter.Parent);
+            Assert.AreEqual(2, presenter.Children.Count);
+            Assert.AreEqual(typeof(Types.ClassWithCollection), presenter.Type);
+            Assert.AreEqual(instance, presenter.Value);
+            Assert.AreEqual("String", presenter.Children[0].Name);
+            Assert.AreEqual("aaa", presenter.Children[0].Value);
+            Assert.AreEqual(typeof(List<string>), presenter.Children[1].Type);
+            Assert.AreEqual(instance.List, presenter.Children[1].Value);
+
+            Assert.AreEqual(2, presenter.Children[1].Children.Count);
+            Assert.AreEqual(instance.List, presenter.Children[1].Value);
+            // TODO: Name is undefined yet
+            //Assert.AreEqual("String", presenter.Children[1].Children[0].Name);
+            //Assert.AreEqual("String", presenter.Children[1].Children[1].Name);
+            Assert.AreEqual("bbb", presenter.Children[1].Children[0].Value);
+            Assert.AreEqual("ccc", presenter.Children[1].Children[1].Value);
+            Assert.AreEqual(typeof(string), presenter.Children[1].Children[0].Type);
+            Assert.AreEqual(typeof(string), presenter.Children[1].Children[1].Type);
+            Assert.AreEqual(instance.List[0], presenter.Children[1].Children[0].Value);
+            Assert.AreEqual(instance.List[1], presenter.Children[1].Children[1].Value);
         }
 
         private static IObjectNode BuildQuantumGraph(object instance)

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections;
@@ -29,18 +29,6 @@ namespace SiliconStudio.Core.Extensions
                 throw new ArgumentException("Invalid 'source' IEnumerable.");
 
             return enumerator.MoveNext() == false;
-        }
-
-        /// <summary>
-        /// Indicates whether the specified string is null or an empty string.
-        /// </summary>
-        /// <param name="value">The string to test.</param>
-        /// <returns><c>true</c> if the value parameter is null or an empty string (""); otherwise, <c>false</c>.</returns>
-        [Obsolete("Use string.IsNullOrEmpty() instead")]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNullOrEmpty(this string value)
-        {
-            return string.IsNullOrEmpty(value);
         }
 
         /// <summary>
@@ -132,6 +120,18 @@ namespace SiliconStudio.Core.Extensions
         public static IEnumerable<T> NotNull<T>([NotNull] this IEnumerable<T> source) where T : class
         {
             return source.Where(x => x != null);
+        }
+
+        /// <summary>
+        /// Filters out null items from the enumerable.
+        /// </summary>
+        /// <typeparam name="T">Generic type parameter.</typeparam>
+        /// <param name="source">Input enumerable to work on.</param>
+        /// <returns>An enumeration of all items in <paramref name="source"/> that are not <c>null</c>.</returns>
+        [NotNull, Pure]
+        public static IEnumerable<T> NotNull<T>([NotNull] this IEnumerable<T?> source) where T : struct
+        {
+            return source.Where(item => item.HasValue).Select(item => item.Value);
         }
 
         /// <summary>

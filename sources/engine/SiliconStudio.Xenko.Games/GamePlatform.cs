@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
 // 
@@ -240,7 +240,7 @@ namespace SiliconStudio.Xenko.Games
             }
 
             deviceInfo.PresentationParameters.DepthStencilFormat = preferredParameters.PreferredDepthStencilFormat;
-            deviceInfo.PresentationParameters.MultiSampleLevel = preferredParameters.PreferredMultiSampleLevel;
+            deviceInfo.PresentationParameters.MultisampleCount = preferredParameters.PreferredMultisampleCount;
 
             if (!graphicsDeviceInfos.Contains(deviceInfo))
             {
@@ -255,11 +255,11 @@ namespace SiliconStudio.Xenko.Games
             // Iterate on each adapter
             foreach (var graphicsAdapter in GraphicsAdapterFactory.Adapters)
             {
-                if (!preferredParameters.RequiredAdapterUid.IsNullOrEmpty() && graphicsAdapter.AdapterUid != preferredParameters.RequiredAdapterUid) continue;
+                if (!string.IsNullOrEmpty(preferredParameters.RequiredAdapterUid) && graphicsAdapter.AdapterUid != preferredParameters.RequiredAdapterUid) continue;
 
                 // Skip adapeters that don't have graphics output 
                 // but only if no RequiredAdapterUid is provided (OculusVR at init time might be in a device with no outputs)
-                if (graphicsAdapter.Outputs.Length == 0 && preferredParameters.RequiredAdapterUid.IsNullOrEmpty())
+                if (graphicsAdapter.Outputs.Length == 0 && string.IsNullOrEmpty(preferredParameters.RequiredAdapterUid))
                 {
                     continue;
                 }
@@ -278,7 +278,7 @@ namespace SiliconStudio.Xenko.Games
                             GraphicsProfile = featureLevel,
                             PresentationParameters =
                             {
-                                MultiSampleLevel = preferredParameters.PreferredMultiSampleLevel,
+                                MultisampleCount = preferredParameters.PreferredMultisampleCount,
                                 IsFullScreen = preferredParameters.IsFullScreen,
                                 PreferredFullScreenOutputIndex = preferredParameters.PreferredFullScreenOutputIndex,
                                 PresentationInterval = preferredParameters.SynchronizeWithVerticalRetrace ? PresentInterval.One : PresentInterval.Immediate,

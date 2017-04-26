@@ -1,26 +1,21 @@
-﻿using System;
+// Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering.Background;
-using SiliconStudio.Xenko.Rendering.Images;
-using SiliconStudio.Xenko.Rendering.Lights;
-using SiliconStudio.Xenko.Rendering.Materials;
-using SiliconStudio.Xenko.Rendering.Shadows;
-using SiliconStudio.Xenko.Rendering.Skyboxes;
-using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     [DataSerializerGlobal(typeof(ReferenceSerializer<GraphicsCompositor>), Profile = "Content")]
-    [ContentSerializer(typeof(DataContentSerializerWithReuse<GraphicsCompositor>))]
+    [ReferenceSerializer, ContentSerializer(typeof(DataContentSerializerWithReuse<GraphicsCompositor>))]
     [DataContract]
     // Needed for indirect serialization of RenderSystem.RenderStages and RenderSystem.RenderFeatures
     // TODO: we would like an attribute to specify that serializing through the interface type is fine in this case (bypass type detection)
@@ -193,172 +188,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     }
                 }
             }
-        }
-
-        // TODO GFXCOMP: Move that somewhere else; or even better: starts from user gfx compositor
-        [Obsolete]
-        public static GraphicsCompositor CreateDefault(bool enablePostEffects, string modelEffectName = "XenkoForwardShadingEffect", CameraComponent camera = null, Color4? clearColor = null,
-            GraphicsProfile graphicsProfile = GraphicsProfile.Level_10_0)
-        {
-            var opaqueRenderStage = new RenderStage("Opaque", "Main") { SortMode = new StateChangeSortMode() };
-            var transparentRenderStage = new RenderStage("Transparent", "Main") { SortMode = new BackToFrontSortMode() };
-            var shadowCasterRenderStage = new RenderStage("ShadowMapCaster", "ShadowMapCaster") { SortMode = new FrontToBackSortMode() };
-
-            var postProcessingEffects = enablePostEffects
-                ? new PostProcessingEffects
-                {
-                    ColorTransforms =
-                    {
-                        Transforms =
-                        {
-                            new ToneMap()
-                        },
-                    },
-                }
-                : null;
-
-            if (postProcessingEffects != null)
-            {
-                postProcessingEffects.DisableAll();
-                postProcessingEffects.ColorTransforms.Enabled = true;
-            }
-
-            var singleView = new ForwardRenderer
-            {
-                Clear = { Color = clearColor ?? Color.CornflowerBlue },
-                OpaqueRenderStage = opaqueRenderStage,
-                TransparentRenderStage = transparentRenderStage,
-                ShadowMapRenderStages = { shadowCasterRenderStage },
-                PostEffects = postProcessingEffects,
-            };
-
-            // TODO
-            var clusteredPointSpotGroupRenderer = new LightClusteredPointSpotGroupRenderer();
-
-
-            var forwardLighting = graphicsProfile >= GraphicsProfile.Level_10_0
-                ? new ForwardLightingRenderFeature
-                {
-                    LightRenderers =
-                    {
-                        new LightAmbientRenderer(),
-                        new LightSkyboxRenderer(),
-                        new LightDirectionalGroupRenderer(),
-                        new LightPointGroupRenderer { NonShadowRenderer = clusteredPointSpotGroupRenderer },
-                        new LightSpotGroupRenderer { NonShadowRenderer = clusteredPointSpotGroupRenderer },
-                    },
-                    ShadowMapRenderer = new ShadowMapRenderer
-                    {
-                        Renderers =
-                        {
-                            new LightDirectionalShadowMapRenderer
-                            {
-                                ShadowCasterRenderStage = shadowCasterRenderStage
-                            },
-                            new LightSpotShadowMapRenderer
-                            {
-                                ShadowCasterRenderStage = shadowCasterRenderStage
-                            }
-                        },
-                    },
-                }
-                : new ForwardLightingRenderFeature
-                {
-                    LightRenderers =
-                    {
-                        new LightAmbientRenderer(),
-                        new LightDirectionalGroupRenderer(),
-                        new LightSkyboxRenderer(),
-                        new LightPointGroupRenderer(),
-                        new LightSpotGroupRenderer(),
-                    },
-                };
-            return new GraphicsCompositor
-            {
-                Cameras =
-                {
-                    camera
-                },
-                RenderStages =
-                {
-                    opaqueRenderStage,
-                    transparentRenderStage,
-                    shadowCasterRenderStage,
-                },
-                RenderFeatures =
-                {
-                    new MeshRenderFeature
-                    {
-                        RenderFeatures =
-                        {
-                            new TransformRenderFeature(),
-                            new SkinningRenderFeature(),
-                            new MaterialRenderFeature(),
-                            new ShadowCasterRenderFeature(),
-                            forwardLighting,
-                        },
-                        RenderStageSelectors =
-                        {
-                            new MeshTransparentRenderStageSelector
-                            {
-                                EffectName = modelEffectName,
-                                OpaqueRenderStage = opaqueRenderStage,
-                                TransparentRenderStage = transparentRenderStage,
-                            },
-                            new ShadowMapRenderStageSelector
-                            {
-                                EffectName = modelEffectName + ".ShadowMapCaster",
-                                ShadowMapRenderStage = shadowCasterRenderStage,
-                            },
-                        },
-                        PipelineProcessors =
-                        {
-                            new MeshPipelineProcessor { TransparentRenderStage = transparentRenderStage },
-                            new ShadowMeshPipelineProcessor { ShadowMapRenderStage = shadowCasterRenderStage },
-                        }
-                    },
-                    new SpriteRenderFeature
-                    {
-                        RenderStageSelectors =
-                        {
-                            new SpriteTransparentRenderStageSelector
-                            {
-                                EffectName = "Test",
-                                OpaqueRenderStage = opaqueRenderStage,
-                                TransparentRenderStage = transparentRenderStage,
-                            }
-                        },
-                    },
-                    new SkyboxRenderFeature
-                    {
-                        RenderStageSelectors =
-                        {
-                            new SimpleGroupToRenderStageSelector
-                            {
-                                RenderStage = opaqueRenderStage,
-                                EffectName = "SkyboxEffect",
-                            }
-                        },
-                    },
-                    new BackgroundRenderFeature
-                    {
-                        RenderStageSelectors =
-                        {
-                            new SimpleGroupToRenderStageSelector
-                            {
-                                RenderStage = opaqueRenderStage,
-                                EffectName = "Test",
-                            }
-                        },
-                    },
-                },
-                Game = new SceneCameraRenderer()
-                {
-                    Child = singleView,
-                },
-                Editor = singleView,
-                SingleView = singleView,
-            };
         }
     }
 }

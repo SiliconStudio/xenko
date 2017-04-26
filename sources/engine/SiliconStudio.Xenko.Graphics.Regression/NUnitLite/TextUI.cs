@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
 // ***********************************************************************
 // Copyright (c) 2007 Charlie Poole
@@ -79,7 +79,11 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         {
             // Set the default writer - may be overridden by the args specified
             this.writer = writer;
+#if SILICONSTUDIO_PLATFORM_IOS
+            this.runner = new NUnitLiteTestAssemblyRunner(new NamespaceAssemblyBuilder(new NUnitLiteTestAssemblyBuilder()), new FinallyDelegate());
+#else
             this.runner = new NUnitLiteTestAssemblyRunner(new NamespaceAssemblyBuilder(new NUnitLiteTestAssemblyBuilder()));
+#endif
         }
         #endregion
 

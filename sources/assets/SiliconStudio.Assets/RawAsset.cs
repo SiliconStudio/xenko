@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.ComponentModel;
 
@@ -14,11 +14,10 @@ namespace SiliconStudio.Assets
     /// <userdoc>A raw asset, an asset that is imported as-is.</userdoc>
     [DataContract("RawAsset")]
     [AssetDescription(FileExtension)]
-    [AssetCompiler(typeof(RawAssetCompiler))]
     [Display(1050, "Raw Asset")]
     public sealed class RawAsset : AssetWithSource
     {
-        public const string FileExtension = ".xkraw;.pdxraw";
+        public const string FileExtension = ".xkraw";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RawAsset"/> class.

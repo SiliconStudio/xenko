@@ -1,23 +1,25 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
+    [AssetCompiler(typeof(PrefabAsset), typeof(AssetCompilationContext))]
     public class PrefabAssetCompiler : EntityHierarchyCompilerBase<PrefabAsset>
     {
-        protected override AssetCommand<PrefabAsset> Create(string url, PrefabAsset assetParameters)
+        protected override AssetCommand<PrefabAsset> Create(string url, PrefabAsset assetParameters, Package package)
         {
-            return new PrefabCommand(url, assetParameters);
+            return new PrefabCommand(url, assetParameters, package);
         }
 
         private class PrefabCommand : AssetCommand<PrefabAsset>
         {
-            public PrefabCommand(string url, PrefabAsset parameters) : base(url, parameters)
+            public PrefabCommand(string url, PrefabAsset parameters, Package package) : base(url, parameters, package)
             {
             }
 

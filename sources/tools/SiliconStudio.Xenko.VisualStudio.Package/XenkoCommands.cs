@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -13,7 +13,10 @@ using Microsoft.Build.Framework;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using SiliconStudio.Packages;
 using SiliconStudio.Xenko.VisualStudio.BuildEngine;
+using SiliconStudio.Xenko.VisualStudio.Commands;
+using Process = System.Diagnostics.Process;
 using Project = EnvDTE.Project;
 using ProjectItem = EnvDTE.ProjectItem;
 using Task = System.Threading.Tasks.Task;
@@ -32,7 +35,31 @@ namespace SiliconStudio.Xenko.VisualStudio
 
         public static IServiceProvider ServiceProvider { get; set; }
 
-        public static void CleanIntermediateAssetsProjectMenuCommand_BeforeQueryStatus(object sender, EventArgs e)
+        private static void OpenWithGameStudioMenuCommand_Callback(object sender, EventArgs e)
+        {
+            var dte = (DTE2)ServiceProvider.GetService(typeof(SDTE));
+
+            var solutionFile = dte.Solution?.FileName;
+
+            // Is there any active solution?
+            if (solutionFile == null)
+                return;
+
+            // Locate GameStudio
+            var packageInfo = XenkoCommandsProxy.CurrentPackageInfo;
+            if (packageInfo.LoadedVersion == null || packageInfo.SdkPath == null)
+                return;
+
+            var store = new NugetStore(packageInfo.StorePath);
+            var mainExecutable = store.LocateMainExecutable(packageInfo.SdkPath);
+
+            if (Process.Start(mainExecutable, $"\"{solutionFile}\"") == null)
+            {
+                throw new InvalidOperationException("Could not start GameStudio process");
+            }
+        }
+
+        private static void CleanIntermediateAssetsProjectMenuCommand_BeforeQueryStatus(object sender, EventArgs e)
         {
             var menuCommand = sender as OleMenuCommand;
 
@@ -53,7 +80,7 @@ namespace SiliconStudio.Xenko.VisualStudio
         }
 
 
-        public static async void CleanIntermediateAssetsSolutionMenuCommand_Callback(object sender, EventArgs e)
+        private static async void CleanIntermediateAssetsSolutionMenuCommand_Callback(object sender, EventArgs e)
         {
             var dte = (DTE2)ServiceProvider.GetService(typeof(SDTE));
 
@@ -71,7 +98,7 @@ namespace SiliconStudio.Xenko.VisualStudio
         /// Enumerates all projects in current solution.
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<Project> Projects()
+        private static IEnumerable<Project> Projects()
         {
             var dte = (DTE2)ServiceProvider.GetService(typeof(SDTE));
 
@@ -124,7 +151,7 @@ namespace SiliconStudio.Xenko.VisualStudio
             return projects;
         }
 
-        public static async void CleanIntermediateAssetsProjectMenuCommand_Callback(object sender, EventArgs e)
+        private static async void CleanIntermediateAssetsProjectMenuCommand_Callback(object sender, EventArgs e)
         {
             // Find selected project
             var project = GetSelectedProject();
@@ -187,17 +214,8 @@ namespace SiliconStudio.Xenko.VisualStudio
             outputWindow.GetPane(ref generalPaneGuid, out pane);
             return pane;
         }
-        
-        public static string GetProjectItemPath(ProjectItem projectItem)
-        {
-            // Get path (1 expected)
-            if (projectItem.FileCount != 1)
-                return null;
 
-            return projectItem.FileNames[0];
-        }
-
-        public static Project GetSelectedProject()
+        private static Project GetSelectedProject()
         {
             var item = GetSelectedItem();
 
@@ -212,7 +230,7 @@ namespace SiliconStudio.Xenko.VisualStudio
             return null;
         }
 
-        public static object GetSelectedItem()
+        private static object GetSelectedItem()
         {
             var dte = (DTE2)ServiceProvider.GetService(typeof(SDTE));
             var selectedItems = (UIHierarchyItem[])dte.ToolWindows.SolutionExplorer.SelectedItems;
@@ -226,6 +244,11 @@ namespace SiliconStudio.Xenko.VisualStudio
         
         internal static void RegisterCommands(OleMenuCommandService mcs)
         {
+            // Create command for Xenko -> Clean intermediate assets for Solution
+            var openWithGameStudioCommandID = new CommandID(GuidList.guidXenko_VisualStudio_PackageCmdSet, (int)XenkoPackageCmdIdList.cmdXenkoOpenWithGameStudio);
+            var openWithGameStudioMenuCommand = new OleMenuCommand(OpenWithGameStudioMenuCommand_Callback, openWithGameStudioCommandID);
+            mcs.AddCommand(openWithGameStudioMenuCommand);
+
             // Create command for Xenko -> Clean intermediate assets for Solution
             var cleanIntermediateAssetsSolutionCommandID = new CommandID(GuidList.guidXenko_VisualStudio_PackageCmdSet, (int)XenkoPackageCmdIdList.cmdXenkoCleanIntermediateAssetsSolutionCommand);
             var cleanIntermediateAssetsSolutionMenuCommand = new OleMenuCommand(CleanIntermediateAssetsSolutionMenuCommand_Callback, cleanIntermediateAssetsSolutionCommandID);

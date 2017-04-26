@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using System.IO;
@@ -166,7 +166,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
         {
             var compilerParameters = new CompilerParameters(effectCompileRequest.UsedParameters);
             compilerParameters.EffectParameters.Platform = context.GetGraphicsPlatform(package);
-            compilerParameters.EffectParameters.Profile = context.GetGameSettingsAsset().Get<RenderingSettings>(context.Platform).DefaultGraphicsProfile;
+            compilerParameters.EffectParameters.Profile = context.GetGameSettingsAsset().GetOrCreate<RenderingSettings>(context.Platform).DefaultGraphicsProfile;
             compilerParameters.EffectParameters.ApplyCompilationMode(context.GetCompilationMode());
             return new CommandBuildStep(new EffectCompileCommand(context, urlRoot, effectCompileRequest.EffectName, compilerParameters, package));
         }

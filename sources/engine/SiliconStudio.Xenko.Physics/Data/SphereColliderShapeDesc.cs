@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using SiliconStudio.Core;
@@ -33,12 +33,10 @@ namespace SiliconStudio.Xenko.Physics
         [DataMember(30)]
         public Vector3 LocalOffset;
 
-        public int CompareTo(object obj)
+        public bool Match(object obj)
         {
             var other = obj as SphereColliderShapeDesc;
-            if (other == null) return -1;
-            if (other.Is2D == Is2D && Math.Abs(other.Radius - Radius) < float.Epsilon && other.LocalOffset == LocalOffset) return 0;
-            return 1;
+            return other?.Is2D == Is2D && Math.Abs(other.Radius - Radius) < float.Epsilon && other.LocalOffset == LocalOffset;
         }
 
         public override int GetHashCode()

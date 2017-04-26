@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Runtime.CompilerServices;
 using NUnit.Core.Extensibility;
@@ -20,8 +20,6 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [ModuleInitializer]
         internal static void Initialize()
         {
-            if (!PlatformFolders.IsVirtualFileSystemInitialized)
-                PlatformFolders.ApplicationDataSubDirectory = typeof(Module).Assembly.GetName().Name;
             AssemblyRegistry.Register(typeof(Module).Assembly, AssemblyCommonCategories.Assets);
             AssetQuantumRegistry.RegisterAssembly(typeof(Module).Assembly);
             RuntimeHelpers.RunModuleConstructor(typeof(Asset).Module.ModuleHandle);

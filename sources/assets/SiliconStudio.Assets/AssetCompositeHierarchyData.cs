@@ -1,10 +1,9 @@
-// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NuGet;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 
@@ -59,7 +58,10 @@ namespace SiliconStudio.Assets
                     var baseAsset = assetFinder.FindAsset(part.Base.BasePartAsset.Id)?.Asset as AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>;
                     if (baseAsset != null)
                     {
-                        baseAssets.AddRange(baseAsset.Hierarchy.GatherAllBasePartAssets(assetFinder));
+                        foreach (var asset in baseAsset.Hierarchy.GatherAllBasePartAssets(assetFinder))
+                        {
+                            baseAssets.Add(asset);
+                        }
                     }
                 }
             }

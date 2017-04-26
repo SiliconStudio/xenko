@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -231,7 +231,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
 
             session.CurrentPackage = previousCurrent;
 
-            result = session.Save();
+            session.Save(result);
             if (result.HasErrors)
             {
                 Console.WriteLine("Error saving package: {0}", result.ToText());
@@ -421,12 +421,12 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 bool shouldKeep = false;
 
                 // Check XenkoSupportedPlatforms
-                var xenkoBuildTagsNode = doc.XPathSelectElement("/x:Project/x:PropertyGroup/x:XenkoBuildTags", mgr);
-                if (xenkoBuildTagsNode != null)
+                var buildTagsNode = doc.XPathSelectElement("/x:Project/x:PropertyGroup/x:SiliconStudioBuildTags", mgr);
+                if (buildTagsNode != null)
                 {
-                    var xenkoBuildTags = xenkoBuildTagsNode.Value;
-                    if (xenkoBuildTags == "*" ||
-                        xenkoBuildTags.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Contains(platform))
+                    var buildTags = buildTagsNode.Value;
+                    if (buildTags == "*" ||
+                        buildTags.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Contains(platform))
                         shouldKeep = true;
                 }
 

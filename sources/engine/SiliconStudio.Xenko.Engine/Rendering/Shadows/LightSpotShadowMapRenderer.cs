@@ -1,5 +1,5 @@
-// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using SiliconStudio.Core.Collections;
@@ -87,7 +87,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             // Update the shadow camera
             var viewMatrix = Matrix.LookAtRH(position, target, upDirection); // View;;
             // TODO: Calculation of near and far is hardcoded/approximated. We should find a better way to calculate it.
-            var projectionMatrix = Matrix.PerspectiveFovRH(spotLight.AngleOuterInRadians, 1.0f, 0.01f, spotLight.Range * 2.0f); // Perspective Projection for spotlights
+            var nearClip = 0.01f;
+            var farClip = spotLight.Range * 2.0f;
+            var projectionMatrix = Matrix.PerspectiveFovRH(spotLight.AngleOuterInRadians, 1.0f, nearClip, farClip); // Perspective Projection for spotlights
             Matrix viewProjectionMatrix;
             Matrix.Multiply(ref viewMatrix, ref projectionMatrix, out viewProjectionMatrix);
 
@@ -124,12 +126,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shadowRenderView.RenderView = sourceView;
             shadowRenderView.ShadowMapTexture = lightShadowMap;
             shadowRenderView.Rectangle = lightShadowMap.GetRectangle(0);
-
             // Compute view parameters
             shadowRenderView.View = shaderData.ViewMatrix;
             shadowRenderView.Projection = shaderData.ProjectionMatrix;
-
             Matrix.Multiply(ref shadowRenderView.View, ref shadowRenderView.Projection, out shadowRenderView.ViewProjection);
+            shadowRenderView.ViewSize = new Vector2(shadowMapRectangle.Width, shadowMapRectangle.Height);
+            shadowRenderView.NearClipPlane = nearClip;
+            shadowRenderView.FarClipPlane = farClip;
 
             // Add the render view for the current frame
             context.RenderSystem.Views.Add(shadowRenderView);

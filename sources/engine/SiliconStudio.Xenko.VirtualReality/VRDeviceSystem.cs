@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
@@ -18,6 +21,8 @@ namespace SiliconStudio.Xenko.VirtualReality
         }
 
         public VRApi[] PreferredApis;
+
+        public Dictionary<VRApi, float> PreferredScalings;
 
         public VRDevice Device { get; private set; }
 
@@ -105,7 +110,17 @@ namespace SiliconStudio.Xenko.VirtualReality
                 var deviceManager = (GraphicsDeviceManager)Services.GetService(typeof(IGraphicsDeviceManager));
                 if (Device != null)
                 {
-                    Device.RenderFrameScaling = ResolutionScale;
+                    Device.RenderFrameScaling = PreferredScalings[Device.VRApi];
+                    Device.Enable(GraphicsDevice, deviceManager, RequireMirror, MirrorWidth, MirrorHeight);
+                }
+                else
+                {
+                    //fallback to dummy device
+                    Device = new DummyDevice
+                    {
+                        Game = Game,
+                        RenderFrameScaling = 1.0f
+                    };
                     Device.Enable(GraphicsDevice, deviceManager, RequireMirror, MirrorWidth, MirrorHeight);
                 }
             }

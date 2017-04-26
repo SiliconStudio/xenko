@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Windows;
 using SiliconStudio.Core.Annotations;
@@ -7,27 +7,27 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.Controls
 {
-    public class Vector3Editor : VectorEditor<Vector3>
+    public class Vector3Editor : VectorEditor<Vector3?>
     {
         /// <summary>
         /// Identifies the <see cref="X"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty XProperty = DependencyProperty.Register("X", typeof(float), typeof(Vector3Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
+        public static readonly DependencyProperty XProperty = DependencyProperty.Register("X", typeof(float?), typeof(Vector3Editor), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="Y"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty YProperty = DependencyProperty.Register("Y", typeof(float), typeof(Vector3Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
+        public static readonly DependencyProperty YProperty = DependencyProperty.Register("Y", typeof(float?), typeof(Vector3Editor), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="Z"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ZProperty = DependencyProperty.Register("Z", typeof(float), typeof(Vector3Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
+        public static readonly DependencyProperty ZProperty = DependencyProperty.Register("Z", typeof(float?), typeof(Vector3Editor), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="Length"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty LengthProperty = DependencyProperty.Register("Length", typeof(float), typeof(Vector3Editor), new FrameworkPropertyMetadata(0.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceLengthValue));
+        public static readonly DependencyProperty LengthProperty = DependencyProperty.Register("Length", typeof(float?), typeof(Vector3Editor), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceLengthValue));
 
         static Vector3Editor()
         {
@@ -37,58 +37,61 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Gets or sets the X component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
         /// </summary>
-        public float X { get { return (float)GetValue(XProperty); } set { SetValue(XProperty, value); } }
+        public float? X { get { return (float?)GetValue(XProperty); } set { SetValue(XProperty, value); } }
 
         /// <summary>
         /// Gets or sets the Y component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
         /// </summary>
-        public float Y { get { return (float)GetValue(YProperty); } set { SetValue(YProperty, value); } }
+        public float? Y { get { return (float?)GetValue(YProperty); } set { SetValue(YProperty, value); } }
 
         /// <summary>
         /// Gets or sets the Z component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
         /// </summary>
-        public float Z { get { return (float)GetValue(ZProperty); } set { SetValue(ZProperty, value); } }
+        public float? Z { get { return (float?)GetValue(ZProperty); } set { SetValue(ZProperty, value); } }
 
         /// <summary>
         /// Gets or sets the length (in polar coordinate system) of the <see cref="Vector3"/> associated to this control.
         /// </summary>
-        public float Length { get { return (float)GetValue(LengthProperty); } set { SetValue(LengthProperty, value); } }
-        
+        public float? Length { get { return (float?)GetValue(LengthProperty); } set { SetValue(LengthProperty, value); } }
+
         /// <inheritdoc/>
-        protected override void UpdateComponentsFromValue(Vector3 value)
+        protected override void UpdateComponentsFromValue(Vector3? value)
         {
-            SetCurrentValue(XProperty, value.X);
-            SetCurrentValue(YProperty, value.Y);
-            SetCurrentValue(ZProperty, value.Z);
-            SetCurrentValue(LengthProperty, value.Length());
+            if (value != null)
+            {
+                SetCurrentValue(XProperty, value.Value.X);
+                SetCurrentValue(YProperty, value.Value.Y);
+                SetCurrentValue(ZProperty, value.Value.Z);
+                SetCurrentValue(LengthProperty, value.Value.Length());
+            }
         }
 
         /// <inheritdoc/>
-        protected override Vector3 UpdateValueFromComponent(DependencyProperty property)
+        protected override Vector3? UpdateValueFromComponent(DependencyProperty property)
         {
             switch (EditingMode)
             {
                 case VectorEditingMode.Normal:
                     if (property == XProperty)
-                        return new Vector3(X, Value.Y, Value.Z);
+                        return X.HasValue && Value.HasValue ? (Vector3?)new Vector3(X.Value, Value.Value.Y, Value.Value.Z) : null;
                     if (property == YProperty)
-                        return new Vector3(Value.X, Y, Value.Z);
+                        return Y.HasValue && Value.HasValue ? (Vector3?)new Vector3(Value.Value.X, Y.Value, Value.Value.Z) : null;
                     if (property == ZProperty)
-                        return new Vector3(Value.X, Value.Y, Z);
+                        return Z.HasValue && Value.HasValue ? (Vector3?)new Vector3(Value.Value.X, Value.Value.Y, Z.Value) : null;
                     break;
 
                 case VectorEditingMode.AllComponents:
                     if (property == XProperty)
-                        return new Vector3(X);
+                        return X.HasValue ? (Vector3?)new Vector3(X.Value) : null;
                     if (property == YProperty)
-                        return new Vector3(Y);
+                        return Y.HasValue ? (Vector3?)new Vector3(Y.Value) : null;
                     if (property == ZProperty)
-                        return new Vector3(Z);
+                        return Z.HasValue ? (Vector3?)new Vector3(Z.Value) : null;
                     break;
 
                 case VectorEditingMode.Length:
                     if (property == LengthProperty)
-                        return FromLength(Value, Length);
+                        return Length.HasValue ? (Vector3?)FromLength(Value ?? Vector3.One, Length.Value) : null;
                     break;
 
                 default:
@@ -99,7 +102,7 @@ namespace SiliconStudio.Presentation.Controls
         }
 
         /// <inheritdoc/>
-        protected override Vector3 UpateValueFromFloat(float value)
+        protected override Vector3? UpateValueFromFloat(float value)
         {
             return new Vector3(value);
         }

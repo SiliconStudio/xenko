@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Reflection;
 
 namespace SiliconStudio.Assets
@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets
         /// <value>
         /// The path.
         /// </value>
-        public string Path { get; private set; }
+        public string Path { get; set; }
 
         /// <summary>
         /// Gets or sets the loaded assembly. Could be null if not properly loaded.

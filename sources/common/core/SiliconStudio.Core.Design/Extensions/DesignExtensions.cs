@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections;
@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Extensions
@@ -156,7 +157,7 @@ namespace SiliconStudio.Core.Extensions
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
-            
+
             var nodes = new Stack<T>();
             foreach (var item in source)
             {
@@ -264,18 +265,35 @@ namespace SiliconStudio.Core.Extensions
         }
 
         /// <summary>
-        /// Returns the value corresponding to the given key. If the key is absent from the dictionary, it is added with the default value of the TValue type.
+        /// Returns the value corresponding to the given key.
+        /// If the key is absent from the dictionary, it is added with a new instance of the <typeparamref name="TValue"/> type.
         /// </summary>
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="key">The key of the value we are looking for.</param>
-        /// <returns></returns>
+        /// <returns>The value attached to key, if key already exists in the dictionary; otherwise, a new instance of the <typeparamref name="TValue"/> type.</returns>
+        /// <seealso cref="GetOrCreateValue{TKey,TValue}(IDictionary{TKey,TValue},TKey,Func{TKey, TValue})"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TValue GetOrCreateValue<TKey, TValue>([NotNull] this IDictionary<TKey, TValue> dictionary, [NotNull] TKey key)
             where TValue : new()
         {
+            return GetOrCreateValue(dictionary, key, _ => new TValue());
+        }
+
+        /// <summary>
+        /// Returns the value corresponding to the given key.
+        /// If the key is absent from the dictionary, the method invokes a callback function to create a value that is bound to the specified key.
+        /// </summary>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <param name="key">The key of the value we are looking for.</param>
+        /// <param name="createValueFunc">A function that can create a value for the given key. It has a single parameter of type <typeparamref name="TKey"/>, and returns a value of type <typeparamref name="TValue"/>.</param>
+        /// <returns>The value attached to key, if key already exists in the dictionary; otherwise, the new value returned by the <paramref name="createValueFunc"/>.</returns>
+        public static TValue GetOrCreateValue<TKey, TValue>([NotNull] this IDictionary<TKey, TValue> dictionary, [NotNull] TKey key, [NotNull] Func<TKey, TValue> createValueFunc)
+        {
+            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
             TValue value;
             if (!dictionary.TryGetValue(key, out value))
             {
-                value = new TValue();
+                value = createValueFunc.Invoke(key);
                 dictionary.Add(key, value);
             }
             return value;
@@ -314,7 +332,7 @@ namespace SiliconStudio.Core.Extensions
             {
                 this.selector = selector;
             }
-            
+
             public bool Equals(T x, T y)
             {
                 var keyX = selector(x);
@@ -327,7 +345,7 @@ namespace SiliconStudio.Core.Extensions
 
                 return selector(x).Equals(selector(y));
             }
-            
+
             public int GetHashCode(T obj)
             {
                 var key = selector(obj);

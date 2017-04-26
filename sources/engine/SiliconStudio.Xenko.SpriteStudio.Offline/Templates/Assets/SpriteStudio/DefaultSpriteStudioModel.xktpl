@@ -1,11 +1,11 @@
-!TemplateAssetFactory
+﻿!TemplateAssetFactory
 Id: 108A03F3-8C98-4933-82BD-B592B2E7B71F
 AssetTypeName: SpriteStudioModelAsset
-Name: Sprite Studio model
+Name: Sprite Studio® sheet
 Scope: Asset
-Description: An empty Sprite Studio model.
-Group: Sprite Studio
-Order: -100
+Description: A sprite created with Sprite Studio® and imported from a source file.
+Group: Sprites
+Order: -10
 Icon: ..\.xktpl\SpriteStudioModel.png
 DefaultOutputName: SpriteStudioModel
 ImportSource: True

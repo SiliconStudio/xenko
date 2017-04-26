@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 
@@ -11,9 +12,20 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     /// <summary>
     /// Used by editor as top level compositor.
     /// </summary>
+    [NonInstantiable]
     public partial class EditorTopLevelCompositor : SceneCameraRenderer, ISharedRenderer
     {
         public CameraComponent EditorCamera { get; set; }
+
+        /// <summary>
+        /// When true, <see cref="PreviewGame"/> will be used as compositor.
+        /// </summary>
+        public bool EnablePreviewGame { get; set; }
+
+        /// <summary>
+        /// Compositor for previewing game, used when <see cref="EnablePreviewGame"/> is true.
+        /// </summary>
+        public ISceneRenderer PreviewGame { get; set; }
 
         public List<ISceneRenderer> PreGizmoCompositors { get; } = new List<ISceneRenderer>();
 
@@ -21,24 +33,39 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         protected override void CollectInner(RenderContext context)
         {
-            foreach (var gizmoCompositor in PreGizmoCompositors)
-                gizmoCompositor.Collect(context);
+            if (EnablePreviewGame)
+            {
+                // Defer to PreviewGame
+                PreviewGame?.Collect(context);
+            }
+            else
+            {
+                foreach (var gizmoCompositor in PreGizmoCompositors)
+                    gizmoCompositor.Collect(context);
 
-            base.CollectInner(context);
+                base.CollectInner(context);
 
-            foreach (var gizmoCompositor in PostGizmoCompositors)
-                gizmoCompositor.Collect(context);
+                foreach (var gizmoCompositor in PostGizmoCompositors)
+                    gizmoCompositor.Collect(context);
+            }
         }
 
         protected override void DrawInner(RenderDrawContext context)
         {
-            foreach (var gizmoCompositor in PreGizmoCompositors)
-                gizmoCompositor.Draw(context);
+            if (EnablePreviewGame)
+            {
+                PreviewGame?.Draw(context);
+            }
+            else
+            {
+                foreach (var gizmoCompositor in PreGizmoCompositors)
+                    gizmoCompositor.Draw(context);
 
-            base.DrawInner(context);
+                base.DrawInner(context);
 
-            foreach (var gizmoCompositor in PostGizmoCompositors)
-                gizmoCompositor.Draw(context);
+                foreach (var gizmoCompositor in PostGizmoCompositors)
+                    gizmoCompositor.Draw(context);
+            }
         }
 
         protected override CameraComponent ResolveCamera(RenderContext renderContext)

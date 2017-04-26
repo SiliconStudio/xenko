@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -106,10 +108,10 @@ namespace SiliconStudio.Core.Yaml
                     }
                     ctorIL.Emit(OpCodes.Ret);
 
-                    // Build list of abstract class hierarchy (from deeper to closer)
+                    // Build list of class hierarchy (from deeper to closer)
                     var currentType = baseType;
                     var abstractBaseTypes = new List<Type>();
-                    while (currentType != null && (currentType.Attributes & TypeAttributes.Abstract) != 0)
+                    while (currentType != null)
                     {
                         abstractBaseTypes.Add(currentType);
                         currentType = currentType.BaseType;

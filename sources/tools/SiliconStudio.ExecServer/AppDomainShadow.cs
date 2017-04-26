@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -32,6 +32,7 @@ namespace SiliconStudio.ExecServer
 
         private readonly string appDomainName;
 
+        private readonly string entryAssemblyPath;
         private readonly string mainAssemblyPath;
 
         private readonly bool shadowCache;
@@ -54,18 +55,20 @@ namespace SiliconStudio.ExecServer
         /// Initializes a new instance of the <see cref="AppDomainShadow" /> class.
         /// </summary>
         /// <param name="appDomainName">Name of the application domain.</param>
+        /// <param name="entryAssemblyPath">Path to the client assembly in case we need to start another instance of same process.</param>
         /// <param name="mainAssemblyPath">The main assembly path.</param>
         /// <param name="shadowCache">If [true], use shadow cache.</param>
         /// <param name="nativeDllsPathOrFolderList">An array of folders path (containing only native dlls) or directly a specific path to a dll.</param>
         /// <exception cref="System.ArgumentNullException">mainAssemblyPath</exception>
         /// <exception cref="System.InvalidOperationException">If the assembly does not exist</exception>
-        public AppDomainShadow(string appDomainName, string mainAssemblyPath, bool shadowCache, params string[] nativeDllsPathOrFolderList)
+        public AppDomainShadow(string appDomainName, string entryAssemblyPath, string mainAssemblyPath, bool shadowCache, params string[] nativeDllsPathOrFolderList)
         {
             if (mainAssemblyPath == null) throw new ArgumentNullException("mainAssemblyPath");
             if (nativeDllsPathOrFolderList == null) throw new ArgumentNullException("nativeDllsPathOrFolderList");
             if (!File.Exists(mainAssemblyPath)) throw new InvalidOperationException(string.Format("Assembly [{0}] does not exist", mainAssemblyPath));
 
             this.appDomainName = appDomainName;
+            this.entryAssemblyPath = entryAssemblyPath;
             this.mainAssemblyPath = mainAssemblyPath;
             this.nativeDllsPathOrFolderList = nativeDllsPathOrFolderList;
             this.shadowCache = shadowCache;
@@ -382,14 +385,23 @@ namespace SiliconStudio.ExecServer
                 ApplicationBase = applicationPath,
             };
 
+            // Note: some restrictions/issues with LoaderOptimization.MultiDomain and PrivateBinPath:
+            // - Combined with shadow copying, it is quite slow (from almsot 0 to 0.8sec startup time!)
+            // - ApplicationBase must contain all assemblies that are optimized/cached (this forces us to have a different ApplicationBase, so we should never rely on it in tools)
+            // - Sometimes AssemblyResolve seems to not be fired (filed http://stackoverflow.com/questions/42581860/loaderoptimization-multidomain-causes-assemblyresolve-to-not-fire)
+            // - Since we copy to top-level folder, AssemblySearchPaths will be preceded by referencers path, which makes it take the wrong assembly
+            // As a result, we don't use BinProbePath and rely on ToolAssemblyResolveModuleInitializer to copy our assemblies at the top level.
+
             if (shadowCache)
             {
+                appDomainSetup.LoaderOptimization = LoaderOptimization.MultiDomain;
                 appDomainSetup.ShadowCopyFiles = "true";
                 appDomainSetup.CachePath = Path.Combine(applicationPath, CacheFolder);
             }
 
             // Create AppDomain
             appDomain = AppDomain.CreateDomain(appDomainName, AppDomain.CurrentDomain.Evidence, appDomainSetup);
+            appDomain.SetData("RealEntryAssemblyFile", entryAssemblyPath);
 
             // Create appDomain Callback
             appDomainCallback = new AssemblyLoaderCallback(AssemblyLoaded, mainAssemblyPath);
@@ -484,7 +496,8 @@ namespace SiliconStudio.ExecServer
 
                 currentDomain.SetData(AppDomainLogToActionKey, new Action<string, ConsoleColor>((text, color) => Logger.OnLog(text, color)));
                 var assembly = (Assembly)currentDomain.GetData(AppDomainExecServerEntryAssemblyKey);
-                AppDomain.CurrentDomain.SetData("Result", Convert.ToInt32(assembly.EntryPoint.Invoke(null, new object[] { Arguments })));
+                AppDomain.CurrentDomain.SetData("Result", currentDomain.ExecuteAssemblyByName(assembly.FullName, Arguments));
+                //AppDomain.CurrentDomain.SetData("Result", Convert.ToInt32(assembly.EntryPoint.Invoke(null, new object[] { Arguments })));
 
                 // Force a GC after the process is finished
                 GC.Collect(2, GCCollectionMode.Forced);

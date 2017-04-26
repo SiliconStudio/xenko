@@ -1,5 +1,5 @@
-// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -69,72 +69,6 @@ namespace SiliconStudio.Xenko.Assets.UI
             var elementChildren = (IUIElementChildren)part;
             var enumerator = isRecursive ? elementChildren.Children.DepthFirst(t => t.Children) : elementChildren.Children;
             return enumerator.NotNull().Cast<UIElement>();
-        }
-
-        protected class BasePartsRemovalComponentUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
-                OverrideUpgraderHint overrideHint)
-            {
-                var basePartMapping = new Dictionary<string, string>();
-                if (asset["~BaseParts"] != null)
-                {
-                    foreach (dynamic basePart in asset["~BaseParts"])
-                    {
-                        try
-                        {
-                            var location = ((YamlScalarNode)basePart.Location.Node).Value;
-                            var id = ((YamlScalarNode)basePart.Asset.Id.Node).Value;
-                            var assetUrl = $"{id}:{location}";
-
-                            foreach (dynamic part in basePart.Asset.Hierarchy.Parts)
-                            {
-                                try
-                                {
-                                    var partId = ((YamlScalarNode)part.UIElement.Id.Node).Value;
-                                    basePartMapping[partId] = assetUrl;
-                                }
-                                catch (Exception e)
-                                {
-                                    e.Ignore();
-                                }
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            e.Ignore();
-                        }
-                    }
-                    asset["~BaseParts"] = DynamicYamlEmpty.Default;
-                }
-                var uiElements = (DynamicYamlArray)asset.Hierarchy.Parts;
-                foreach (dynamic uiDesign in uiElements)
-                {
-                    if (uiDesign.BaseId != null)
-                    {
-                        try
-                        {
-                            var baseId = ((YamlScalarNode)uiDesign.BaseId.Node).Value;
-                            var baseInstanceId = ((YamlScalarNode)uiDesign.BasePartInstanceId.Node).Value;
-                            string assetUrl;
-                            if (basePartMapping.TryGetValue(baseId, out assetUrl))
-                            {
-                                var baseNode = (dynamic)(new DynamicYamlMapping(new YamlMappingNode()));
-                                baseNode.BasePartAsset = assetUrl;
-                                baseNode.BasePartId = baseId;
-                                baseNode.InstanceId = baseInstanceId;
-                                uiDesign.Base = baseNode;
-                            }
-                            uiDesign.BaseId = DynamicYamlEmpty.Default;
-                            uiDesign.BasePartInstanceId = DynamicYamlEmpty.Default;
-                        }
-                        catch (Exception e)
-                        {
-                            e.Ignore();
-                        }
-                    }
-                }
-            }
         }
     }
 }

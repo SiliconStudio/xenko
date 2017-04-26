@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -18,9 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class RenderSystem : ComponentBase
     {
-        [Obsolete("This field is provisional and will be replaced by a proper mechanisms in the future")]
-        public readonly List<Func<RenderView, RenderObject, bool>> ViewObjectFilters = new List<Func<RenderView, RenderObject, bool>>();
-
         private readonly ThreadLocal<ExtractThreadLocals> extractThreadLocals = new ThreadLocal<ExtractThreadLocals>(() => new ExtractThreadLocals());
         private readonly ConcurrentPool<PrepareThreadLocals> prepareThreadLocals = new ConcurrentPool<PrepareThreadLocals>(() => new PrepareThreadLocals());
 
@@ -361,6 +358,7 @@ namespace SiliconStudio.Xenko.Rendering
                 for (int i = 0; i < renderTargetCount; ++i)
                     renderTargets[i] = renderDrawContext.CommandList.RenderTargets[i];
                 var viewport = renderDrawContext.CommandList.Viewport;
+                var scissor = renderDrawContext.CommandList.Scissor;
 
                 // Collect one command list per batch and the main one up to this point
                 if (commandLists == null || commandLists.Length < batchCount + 1)
@@ -377,6 +375,7 @@ namespace SiliconStudio.Xenko.Rendering
                     // Transfer state to all command lists
                     threadContext.CommandList.SetRenderTargets(depthStencilBuffer, renderTargetCount, renderTargets);
                     threadContext.CommandList.SetViewport(viewport);
+                    threadContext.CommandList.SetScissorRectangle(scissor);
 
                     var currentStart = batchSize * batchIndex;
                     int currentEnd;
@@ -410,6 +409,7 @@ namespace SiliconStudio.Xenko.Rendering
                 // Reapply previous state
                 renderDrawContext.CommandList.SetRenderTargets(depthStencilBuffer, renderTargetCount, renderTargets);
                 renderDrawContext.CommandList.SetViewport(viewport);
+                renderDrawContext.CommandList.SetScissorRectangle(scissor);
             }
         }
 
@@ -460,42 +460,47 @@ namespace SiliconStudio.Xenko.Rendering
         public void Reset()
         {
             FrameCounter++;
-            
-            // Clear render features node lists
-            foreach (var renderFeature in RenderFeatures)
-            {
-                renderFeature.Reset();
-            }
 
-            // Clear views
-            foreach (var view in Views)
+            try
             {
-                // Clear nodes
-                view.RenderObjects.Clear(false);
-
-                foreach (var renderViewFeature in view.Features)
+                // Clear render features node lists
+                foreach (var renderFeature in RenderFeatures)
                 {
-                    renderViewFeature.RenderNodes.Clear(true);
-                    renderViewFeature.ViewObjectNodes.Clear(true);
-                    renderViewFeature.Layouts.Clear(false);
+                    renderFeature.Reset();
+                }
+            }
+            finally
+            {
+                // Clear views
+                foreach (var view in Views)
+                {
+                    // Clear nodes
+                    view.RenderObjects?.Clear(false);
+
+                    foreach (var renderViewFeature in view.Features)
+                    {
+                        renderViewFeature.RenderNodes?.Clear(true);
+                        renderViewFeature.ViewObjectNodes?.Clear(true);
+                        renderViewFeature.Layouts?.Clear(false);
+                    }
+
+                    foreach (var renderViewStage in view.RenderStages)
+                    {
+                        // Slow clear, since type contains references
+                        renderViewStage.RenderNodes?.Clear(false);
+                        renderViewStage.SortedRenderNodes?.Clear(false);
+
+                        if (renderViewStage.RenderNodes != null) renderNodePool.Release(renderViewStage.RenderNodes);
+                        if (renderViewStage.SortedRenderNodes != null) sortedRenderNodePool.Release(renderViewStage.SortedRenderNodes);
+                    }
+
+                    // Clear view stages
+                    view.RenderStages?.Clear();
                 }
 
-                foreach (var renderViewStage in view.RenderStages)
-                {
-                    // Slow clear, since type contains references
-                    renderViewStage.RenderNodes.Clear(false);
-                    renderViewStage.SortedRenderNodes.Clear(false);
-
-                    renderNodePool.Release(renderViewStage.RenderNodes);
-                    sortedRenderNodePool.Release(renderViewStage.SortedRenderNodes);
-                }
-
-                // Clear view stages
-                view.RenderStages.Clear();
+                // Clear views
+                Views?.Clear();
             }
-
-            // Clear views
-            Views.Clear();
         }
 
         /// <summary>

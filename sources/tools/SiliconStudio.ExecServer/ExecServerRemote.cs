@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.ServiceModel;
 using System.Threading;
+using SiliconStudio.VisualStudio;
 
 namespace SiliconStudio.ExecServer
 {
@@ -37,10 +38,10 @@ namespace SiliconStudio.ExecServer
 
         public event EventHandler<EventArgs> ShuttingDown;
 
-        public ExecServerRemote(string executablePath, bool trackingServer, bool cachingAppDomain, bool isMainDomain)
+        public ExecServerRemote(string entryAssemblyPath, string executablePath, bool trackingServer, bool cachingAppDomain, bool isMainDomain)
         {
             // TODO: List of native dll directory is hardcoded here. Instead, it should be extracted from .exe.config file for example
-            shadowManager = new AppDomainShadowManager(executablePath, new[] { IntPtr.Size == 8 ? "x64" : "x86" })
+            shadowManager = new AppDomainShadowManager(entryAssemblyPath, executablePath, new[] { IntPtr.Size == 8 ? "x64" : "x86" })
             {
                 IsCachingAppDomain = cachingAppDomain
             };
@@ -64,7 +65,7 @@ namespace SiliconStudio.ExecServer
         {
         }
 
-        public int Run(string currentDirectory, Dictionary<string, string> environmentVariables, string[] args, bool shadowCache)
+        public int Run(string currentDirectory, Dictionary<string, string> environmentVariables, string[] args, bool shadowCache, int? debuggerProcessId)
         {
             bool lockTaken = false;
             try
@@ -80,6 +81,14 @@ namespace SiliconStudio.ExecServer
                 Console.WriteLine("Run Received {0}", string.Join(" ", args));
 
                 upTime.Restart();
+
+                if (debuggerProcessId.HasValue && !Debugger.IsAttached)
+                {
+                    using (var debugger = VisualStudioDebugger.GetByProcess(debuggerProcessId.Value))
+                    {
+                        debugger?.Attach();
+                    }
+                }
 
                 var logger = OperationContext.Current.GetCallbackChannel<IServerLogger>();
                 var result = shadowManager.Run(currentDirectory, environmentVariables, args, shadowCache, logger);

@@ -1,5 +1,5 @@
-// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.ComponentModel;
 using SiliconStudio.Core;
@@ -40,6 +40,36 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
+        /// <summary>
+        /// Gets or sets if this element is enabled in the physics engine
+        /// </summary>
+        /// <value>
+        /// true, false
+        /// </value>
+        /// <userdoc>
+        /// If this element is enabled in the physics engine
+        /// </userdoc>
+        [DataMember(-10)]
+        [DefaultValue(true)]
+        public override bool Enabled
+        {
+            get
+            {
+                return base.Enabled;
+            }
+            set
+            {
+                base.Enabled = value;
+
+                if (NativeCollisionObject == null) return;
+
+                if (value && isTrigger)
+                {
+                    //We still have to add this flag if we are actively a trigger
+                    NativeCollisionObject.CollisionFlags |= BulletSharp.CollisionFlags.NoContactResponse;
+                }
+            }
+        }
 
         protected override void OnAttach()
         {

@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
 // 
@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Graphics
                     DepthStencilFormat = depthFormat,
                     DeviceWindowHandle = null,
                     IsFullScreen = true,
-                    MultiSampleLevel = renderTarget2D.MultiSampleLevel,
+                    MultisampleCount = renderTarget2D.MultisampleCount,
                     PresentationInterval = PresentInterval.One,
                     RefreshRate = new Rational(60, 1),
                 };

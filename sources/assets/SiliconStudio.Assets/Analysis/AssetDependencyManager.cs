@@ -1,5 +1,6 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -611,7 +612,7 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        private void Session_AssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
+        private void Session_AssetDirtyChanged(AssetItem asset, bool oldValue, bool newValue)
         {
             // Don't update the dependency manager while saving (setting dirty flag to false)
             if (!isSessionSaving)
@@ -621,7 +622,8 @@ namespace SiliconStudio.Assets.Analysis
                     AssetDependencies dependencies;
                     if (Dependencies.TryGetValue(asset.Id, out dependencies))
                     {
-                        dependencies.Item.Asset = AssetCloner.Clone(asset);
+                        dependencies.Item.Asset = AssetCloner.Clone(asset.Asset);
+                        dependencies.Item.Version = asset.Version;
                         UpdateAssetDependencies(dependencies);
 
                         // Notify an asset changed

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,6 +14,7 @@ using SiliconStudio.Xenko.Rendering.ProceduralModels;
 using SiliconStudio.Xenko.Rendering.Tessellation;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering.Compositing;
 
@@ -47,7 +48,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         public TesselationTest(bool isDebug)
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4;
             debug = isDebug;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
@@ -89,7 +90,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             entities.Add(megalodon);
             entities.Add(knight);
 
-            camera = new TestCamera();
+            camera = new TestCamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor);
             CameraComponent = camera.Camera;
             Script.Add(camera);
 
@@ -103,14 +104,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         void RendererInitialized(IGraphicsRendererCore obj)
         {
             // TODO: callback will be called also for editor renderers. We might want to filter down this
-            if (obj is MeshRenderFeature)
-            {
-                ((MeshRenderFeature)obj).PostProcessPipelineState +=
-                    (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
-                    {
-                        pipelineState.RasterizerState = RasterizerStates.WireframeCullBack;
-                    };
-            }
+            (obj as MeshRenderFeature)?.PipelineProcessors.Add(new WireframeCullbackPipelineProcessor());
         }
 
         protected override void RegisterTests()
@@ -208,7 +202,10 @@ namespace SiliconStudio.Xenko.Engine.Tests
         [Test]
         public void RunTestGame()
         {
+            IgnoreGraphicPlatform(GraphicsPlatform.OpenGL);
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
+            IgnoreGraphicPlatform(GraphicsPlatform.Vulkan);
+            IgnoreGraphicPlatform(GraphicsPlatform.Direct3D12);
 
             RunGameTest(new TesselationTest());
         }
@@ -218,6 +215,14 @@ namespace SiliconStudio.Xenko.Engine.Tests
             using (var game = new TesselationTest(true))
             {
                 game.Run();
+            }
+        }
+
+        private class WireframeCullbackPipelineProcessor : PipelineProcessor
+        {
+            public override void Process(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
+            {
+                pipelineState.RasterizerState = RasterizerStates.WireframeCullBack;
             }
         }
     }

@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Specialized;
@@ -12,12 +12,14 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Engine
 {
+    public class ChildSceneComponent { }
+
     /// <summary>
     /// A scene.
     /// </summary>
     [DataContract("Scene")]
     [ContentSerializer(typeof(DataContentSerializerWithReuse<Scene>))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Scene>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<Scene>), Profile = "Content")]
     public sealed class Scene : ComponentBase, IIdentifiable
     {
         private Scene parent;
@@ -68,6 +70,44 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         [DataMemberIgnore]
         public TrackingCollection<Scene> Children { get; }
+
+        /// <summary>
+        /// An offset applied to all entities of the scene relative to it's parent scene.
+        /// </summary>
+        public Vector3 Offset;
+
+        /// <summary>
+        /// The absolute transform applied to all entities of the scene.
+        /// </summary>
+        /// <remarks>This field is overwritten by the transform processor each frame.</remarks>
+        public Matrix WorldMatrix;
+
+        /// <summary>
+        /// Updates the world transform of the scene.
+        /// </summary>
+        public void UpdateWorldMatrix()
+        {
+            UpdateWorldMatrixInternal(true);
+        }
+
+        internal void UpdateWorldMatrixInternal(bool isRecursive)
+        {
+            if (parent != null)
+            {
+                if (isRecursive)
+                {
+                    parent.UpdateWorldMatrixInternal(true);
+                }
+
+                WorldMatrix = parent.WorldMatrix;
+            }
+            else
+            {
+                WorldMatrix = Matrix.Identity;
+            }
+
+            WorldMatrix.TranslationVector += Offset;
+        }
 
         public override string ToString()
         {
@@ -122,6 +162,7 @@ namespace SiliconStudio.Xenko.Engine
 
         private void AddItem(Entity item)
         {
+            // Root entity in another scene, or child of another entity
             if (item.Scene != null)
                 throw new InvalidOperationException("This entity already has a scene. Detach it first.");
 
@@ -130,7 +171,7 @@ namespace SiliconStudio.Xenko.Engine
 
         private void RemoveItem(Entity item)
         {
-            if (item.Scene != this)
+            if (item.scene != this)
                 throw new InvalidOperationException("This entity's scene is not the expected value.");
 
             item.scene = null;

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Globalization;
 using System.Windows.Data;
@@ -264,7 +264,8 @@ namespace SiliconStudio.Presentation.ValueConverters
                 if (conversionEnded)
                     throw new InvalidOperationException($"Converter{i} is not null but previous Converter{i - 1} was null");
 
-                output = converters[i].Convert(input, converterTargetType[i] ?? typeof(object), converterParameters[i], culture);
+                var type = converterTargetType[i] ?? ((i == MaxConverterCount - 1) || converters[i + 1] == null ? targetType : typeof(object));
+                output = converters[i].Convert(input, type, converterParameters[i], culture);
             }
             return output;
         }
@@ -288,7 +289,8 @@ namespace SiliconStudio.Presentation.ValueConverters
 
                 conversionStarted = true;
 
-                output = converters[i].Convert(input, converterTargetType[i] ?? typeof(object), converterParameters[i], culture);
+                var type = converterTargetType[i] ?? (i == 0 ? targetType : typeof(object));
+                output = converters[i].ConvertBack(input, type, converterParameters[i], culture);
             }
             return output;
         }

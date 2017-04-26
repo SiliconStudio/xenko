@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Storage;
@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Serialization.Contents;
@@ -67,6 +68,11 @@ namespace SiliconStudio.BuildEngine
         /// <param name="commandContext"></param>
         protected abstract Task<ResultStatus> DoCommandOverride(ICommandContext commandContext);
 
+        protected Command()
+        {
+            InputFilesGetter = GetNullInputFiles;
+        }
+
         /// <summary>
         /// The method that indirectly call <see cref="DoCommandOverride"/> to execute the actual command code. 
         /// It is called by the current <see cref="Builder"/> when the command is triggered
@@ -117,10 +123,12 @@ namespace SiliconStudio.BuildEngine
         /// <returns></returns>
         public IEnumerable<ObjectUrl> GetInputFiles()
         {
-            return cachedInputFiles ?? (cachedInputFiles = GetInputFilesImpl().ToList());
+            return cachedInputFiles ?? (cachedInputFiles = InputFilesGetter().ToList());
         }
 
-        protected virtual IEnumerable<ObjectUrl> GetInputFilesImpl()
+        public Func<IEnumerable<ObjectUrl>> InputFilesGetter;
+
+        private IEnumerable<ObjectUrl> GetNullInputFiles()
         {
             yield break;
         }

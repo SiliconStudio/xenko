@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using SiliconStudio.Assets;
@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Assets
 
         public static ColorSpace GetColorSpace(this AssetCompilerContext context)
         {
-            var settings = context.GetGameSettingsAsset().Get<RenderingSettings>(context.Platform);
+            var settings = context.GetGameSettingsAsset().GetOrCreate<RenderingSettings>(context.Platform);
             return settings.ColorSpace;
         }
 
@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets
 
             // Ohterwise, use game settings, or default as fallback
             var settings = package.GetGameSettingsAsset();
-            return settings == null ? context.Platform.GetDefaultGraphicsPlatform() : RenderingSettings.GetGraphicsPlatform(context.Platform, settings.Get<RenderingSettings>(context.Profile).PreferredGraphicsPlatform);
+            return settings == null ? context.Platform.GetDefaultGraphicsPlatform() : RenderingSettings.GetGraphicsPlatform(context.Platform, settings.GetOrCreate<RenderingSettings>(context.Profile).PreferredGraphicsPlatform);
         }
 
         public static GraphicsPlatform GetDefaultGraphicsPlatform(this PlatformType platformType)

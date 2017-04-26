@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,26 +13,34 @@ using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
+    [AssetCompiler(typeof(PrecompiledSpriteFontAsset), typeof(AssetCompilationContext))]
     public class PrecompiledSpriteFontAssetCompiler : AssetCompilerBase
     {
         private static readonly FontDataFactory FontDataFactory = new FontDataFactory();
 
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
         {
             var asset = (PrecompiledSpriteFontAsset)assetItem.Asset;
-            result.BuildSteps = new AssetBuildStep(assetItem) { new PrecompiledSpriteFontCommand(targetUrlInStorage, asset) };
+            yield return new ObjectUrl(UrlType.File, asset.FontDataFile);
+        }
+
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        {
+            var asset = (PrecompiledSpriteFontAsset)assetItem.Asset;
+            result.BuildSteps = new AssetBuildStep(assetItem)
+            {
+                new PrecompiledSpriteFontCommand(targetUrlInStorage, asset, assetItem.Package)
+                {
+                    InputFilesGetter = () => GetInputFiles(context, assetItem)
+        }
+            };
         }
 
         internal class PrecompiledSpriteFontCommand : AssetCommand<PrecompiledSpriteFontAsset>
         {
-            public PrecompiledSpriteFontCommand(string url, PrecompiledSpriteFontAsset description)
-                : base(url, description)
+            public PrecompiledSpriteFontCommand(string url, PrecompiledSpriteFontAsset description, Package package)
+                : base(url, description, package)
             {
-            }
-
-            protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
-            {
-                yield return new ObjectUrl(UrlType.File, Parameters.FontDataFile);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)

@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
@@ -111,6 +113,7 @@ namespace SiliconStudio.Xenko.Physics.Tests
                 Assert.AreEqual(currentPos, character.Transform.Position);
 
                 var collider = game.SceneSystem.SceneInstance.RootScene.Entities.First(ent => ent.Name == "Collider").Get<StaticColliderComponent>();
+                collider.ProcessCollisions = true;
 
                 game.Script.AddTask(async () =>
                 {

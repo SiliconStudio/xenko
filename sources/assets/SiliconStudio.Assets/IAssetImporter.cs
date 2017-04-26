@@ -1,15 +1,17 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets
 {
     /// <summary>
     /// Imports a raw asset into the asset system.
     /// </summary>
+    [AssemblyScan]
     public interface IAssetImporter
     {
         /// <summary>

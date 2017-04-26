@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Specialized;
@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("ScriptComponent", Inherited = true)]
     [DefaultEntityComponentProcessor(typeof(ScriptProcessor), ExecutionMode = ExecutionMode.Runtime)]
-    [Display("Script", Expand = ExpandRule.Once)]
+    [Display(Expand = ExpandRule.Once)]
     [AllowMultipleComponents]
     [ComponentOrder(1000)]
     public abstract class ScriptComponent : EntityComponent, IScriptContext
@@ -69,10 +69,6 @@ namespace SiliconStudio.Xenko.Engine
 
         [DataMemberIgnore]
         public ContentManager Content { get; private set; }
-
-        [DataMemberIgnore]
-        [Obsolete("Use Content property instead when accessing the ContentManager")]
-        public ContentManager Asset => Content;
 
         [DataMemberIgnore]
         public GraphicsDevice GraphicsDevice => graphicsDeviceService?.GraphicsDevice;

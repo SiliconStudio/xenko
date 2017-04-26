@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Globalization;
 using System.Windows;
@@ -93,35 +93,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             var stringColor = value as string;
             if (stringColor != null)
             {
-                var intValue = 0xFF000000;
-                if (stringColor.StartsWith("#"))
-                {
-                    if (stringColor.Length == "#000".Length && uint.TryParse(stringColor.Substring(1, 3), NumberStyles.HexNumber, null, out intValue))
-                    {
-                        intValue = ((intValue & 0x00F) << 16)
-                                 | ((intValue & 0x00F) << 20)
-                                 | ((intValue & 0x0F0) << 4)
-                                 | ((intValue & 0x0F0) << 8)
-                                 | ((intValue & 0xF00) >> 4)
-                                 | ((intValue & 0xF00) >> 8)
-                                 | (0xFF000000);
-                    }
-                    if (stringColor.Length == "#000000".Length && uint.TryParse(stringColor.Substring(1, 6), NumberStyles.HexNumber, null, out intValue))
-                    {
-                        intValue = ((intValue & 0x000000FF) << 16)
-                                 | (intValue & 0x0000FF00)
-                                 | ((intValue & 0x00FF0000) >> 16)
-                                 | (0xFF000000);
-                    }
-                    if (stringColor.Length == "#00000000".Length && uint.TryParse(stringColor.Substring(1, 8), NumberStyles.HexNumber, null, out intValue))
-                    {
-                        intValue = ((intValue & 0x000000FF) << 16)
-                                 | (intValue & 0x0000FF00)
-                                 | ((intValue & 0x00FF0000) >> 16)
-                                 | (intValue & 0xFF000000);
-                    }
-                }
-
+                var intValue = ColorExtensions.StringToRgba(stringColor);
                 if (targetType == typeof(Color))
                     return Color.FromRgba(intValue);
                 if (targetType == typeof(Color3))

@@ -1,6 +1,6 @@
 !UIPageAsset
 Id: 0c8d34ec-5a72-42f6-9203-6096216ec54a
-SerializedVersion: {Xenko: 1.9.0-beta01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Design:
     Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
@@ -17,7 +17,7 @@ Hierarchy:
                 Margin: {Bottom: 10.0}
                 Name: ButtonRun
                 Padding: {Left: 10.0, Top: 10.0, Right: 10.0, Bottom: 10.0}
-                Content: !TextBlock 60b1cc6b-2427-495e-b930-506b84ac1c70
+                Content: !TextBlock ref!! 60b1cc6b-2427-495e-b930-506b84ac1c70
         -   UIElement: !StackPanel
                 DependencyProperties: {}
                 Id: 5b412922-4e5e-4292-9f16-7af3df8b4252
@@ -25,8 +25,8 @@ Hierarchy:
                 HorizontalAlignment: Left
                 Margin: {}
                 Children:
-                    04b81abca9841e4683a98a6f7f3077ee: !Button bc1ab804-84a9-461e-83a9-8a6f7f3077ee
-                    63e07c4da2d669408e6dd23f1064c283: !Button 4d7ce063-d6a2-4069-8e6d-d23f1064c283
+                    04b81abca9841e4683a98a6f7f3077ee: !Button ref!! bc1ab804-84a9-461e-83a9-8a6f7f3077ee
+                    63e07c4da2d669408e6dd23f1064c283: !Button ref!! 4d7ce063-d6a2-4069-8e6d-d23f1064c283
         -   UIElement: !TextBlock
                 DependencyProperties: {}
                 Id: 60b1cc6b-2427-495e-b930-506b84ac1c70
@@ -58,4 +58,4 @@ Hierarchy:
                 Margin: {Bottom: 10.0}
                 Name: ButtonIdle
                 Padding: {Left: 10.0, Top: 10.0, Right: 10.0, Bottom: 10.0}
-                Content: !TextBlock 9f510b68-796c-4a15-9021-281acb5432ea
+                Content: !TextBlock ref!! 9f510b68-796c-4a15-9021-281acb5432ea

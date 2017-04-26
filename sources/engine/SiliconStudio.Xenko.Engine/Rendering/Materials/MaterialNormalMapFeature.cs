@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,7 +19,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("Normal Map")]
     public class MaterialNormalMapFeature : MaterialFeature, IMaterialSurfaceFeature, IMaterialStreamProvider
     {
-        private static readonly MaterialStreamDescriptor NormalStream = new MaterialStreamDescriptor("Normal", "matNormal", MaterialKeys.NormalValue.PropertyType);
+        private static readonly MaterialStreamDescriptor NormalStream = new MaterialStreamDescriptor("Normal (Tangent)", "matNormal", MaterialKeys.NormalValue.PropertyType, true);
+        private static readonly MaterialStreamDescriptor NormalStreamWorld = new MaterialStreamDescriptor("Normal (World)", "NormalStream.normalWS", new ShaderClassSource("MaterialSurfaceNormalStreamShading"));
 
         private static readonly Color DefaultNormalColor = new Color(0x80, 0x80, 0xFF, 0xFF);
 
@@ -37,7 +38,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public MaterialNormalMapFeature(IComputeColor normalMap)
         {
             ScaleAndBias = true;
-            InvertY = true;
             NormalMap = normalMap;
         }
 
@@ -77,17 +77,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [Display("Reconstruct Z")]
         public bool IsXYNormal { get; set; }
 
-        /// <summary>
-        /// Indicating whether the Y-component of normals should be inverted, to compensate for a flipped tangent space.
-        /// </summary>
-        /// <userdoc>
-        /// Indicating whether the Y-component of normals should be inverted, to compensate for a flipped tangent space. This options depends on your normal maps generation tools.
-        /// </userdoc>
-        [DataMember(40)]
-        [DefaultValue(true)]
-        [Display("Y is up")]
-        public bool InvertY { get; set; }
-
         public override void VisitFeature(MaterialGeneratorContext context)
         {
             if (NormalMap != null)
@@ -116,11 +105,22 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                             computeColor.Value = DefaultNormalColor;
                         }
                     }
+                    else
+                    {
+                        var computeFloat4 = normalMap as ComputeFloat4;
+                        if (computeFloat4 != null)
+                        {
+                            if (computeFloat4.Value == Vector4.Zero)
+                            {
+                                computeFloat4.Value = DefaultNormalColor.ToVector4();
+                            }
+                        }
+                    }
                 }
 
                 var computeColorSource = NormalMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.NormalMap, MaterialKeys.NormalValue, DefaultNormalColor, false));
                 var mixin = new ShaderMixinSource();
-                mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", IsXYNormal, ScaleAndBias, InvertY));
+                mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", IsXYNormal, ScaleAndBias));
                 mixin.AddComposition("normalMap", computeColorSource);
                 context.AddShaderSource(MaterialShaderStage.Pixel, mixin);
             }
@@ -129,6 +129,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public IEnumerable<MaterialStreamDescriptor> GetStreams()
         {
             yield return NormalStream;
+            yield return NormalStreamWorld;
         }
     }
 }

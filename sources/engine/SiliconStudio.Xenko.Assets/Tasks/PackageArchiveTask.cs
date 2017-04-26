@@ -1,5 +1,7 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
+using System;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using SiliconStudio.Assets;
@@ -15,8 +17,6 @@ namespace SiliconStudio.Xenko.Assets.Tasks
         /// <value>The file.</value>
         [Required]
         public ITaskItem File { get; set; }
-
-        public string SpecialVersion { get; set; }
 
         public override bool Execute()
         {
@@ -53,8 +53,35 @@ namespace SiliconStudio.Xenko.Assets.Tasks
 
             Log.LogMessage(MessageImportance.High, "Packaging [{0}] version [{1}]", package.Meta.Name, package.Meta.Version);
 
+            var log = new LoggerResult();
+
             // Build the package
-            PackageArchive.Build(package, !string.IsNullOrEmpty(SpecialVersion) ? SpecialVersion : null);
+            PackageArchive.Build(log, package);
+
+            // Output log
+            foreach (var message in log.Messages)
+            {
+                MessageImportance importance;
+                switch (message.Type)
+                {
+                    case LogMessageType.Debug:
+                    case LogMessageType.Verbose:
+                        importance = MessageImportance.Low;
+                        break;
+                    case LogMessageType.Info:
+                        importance = MessageImportance.Normal;
+                        break;
+                    case LogMessageType.Warning:
+                    case LogMessageType.Error:
+                    case LogMessageType.Fatal:
+                        importance = MessageImportance.High;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                Log.LogMessage(importance, message.Text);
+            }
+
             return true;
         }
     }

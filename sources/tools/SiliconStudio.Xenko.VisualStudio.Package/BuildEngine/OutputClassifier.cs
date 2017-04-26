@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -8,6 +8,7 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
+using SiliconStudio.Xenko.VisualStudio.Commands;
 
 namespace SiliconStudio.Xenko.VisualStudio
 {
@@ -15,12 +16,9 @@ namespace SiliconStudio.Xenko.VisualStudio
     {
         private IClassificationTypeRegistryService classificationRegistry;
 
-        private int messageTypeCharPosition;
-
         public OutputClassifier(IClassificationTypeRegistryService classificationRegistry)
         {
             this.classificationRegistry = classificationRegistry;
-            this.messageTypeCharPosition = "[BuildEngine] ".Length;
 
             InitializeClassifiers();
         }
@@ -30,9 +28,9 @@ namespace SiliconStudio.Xenko.VisualStudio
             var spans = new List<ClassificationSpan>();
             var text = span.GetText();
 
-            if (text.StartsWith("[BuildEngine]"))
+            string messageType;
+            if (BuildMonitorCallback.FilterMessage(text, out messageType))
             {
-                var messageType = text[messageTypeCharPosition];
                 string classificationType;
                 if (classificationTypes.TryGetValue(messageType, out classificationType))
                 {

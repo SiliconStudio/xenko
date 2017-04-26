@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under MIT License. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // -----------------------------------------------------------------------------
 // Original code from SlimMath project. http://code.google.com/p/slimmath/
@@ -522,6 +522,8 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>The nearest interval to the provided value.</returns>
         public static float Snap(float value, float gap)
         {
+            if (gap == 0)
+                return value;
             return (float)Math.Round((value / gap), MidpointRounding.AwayFromZero) * gap;
         }
 
@@ -533,6 +535,8 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>The nearest interval to the provided value.</returns>
         public static double Snap(double value, double gap)
         {
+            if (gap == 0)
+                return value;
             return Math.Round((value / gap), MidpointRounding.AwayFromZero) * gap;
         }
 
@@ -544,6 +548,8 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>A vector which components are snapped to the nearest interval.</returns>
         public static Vector2 Snap(Vector2 value, float gap)
         {
+            if (gap == 0)
+                return value;
             return new Vector2(
                 (float)Math.Round((value.X / gap), MidpointRounding.AwayFromZero) * gap,
                 (float)Math.Round((value.Y / gap), MidpointRounding.AwayFromZero) * gap);
@@ -557,6 +563,8 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>A vector which components are snapped to the nearest interval.</returns>
         public static Vector3 Snap(Vector3 value, float gap)
         {
+            if (gap == 0)
+                return value;
             return new Vector3(
                 (float)Math.Round((value.X / gap), MidpointRounding.AwayFromZero) * gap,
                 (float)Math.Round((value.Y / gap), MidpointRounding.AwayFromZero) * gap,
@@ -571,6 +579,8 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>A vector which components are snapped to the nearest interval.</returns>
         public static Vector4 Snap(Vector4 value, float gap)
         {
+            if (gap == 0)
+                return value;
             return new Vector4(
                 (float)Math.Round((value.X / gap), MidpointRounding.AwayFromZero) * gap,
                 (float)Math.Round((value.Y / gap), MidpointRounding.AwayFromZero) * gap,

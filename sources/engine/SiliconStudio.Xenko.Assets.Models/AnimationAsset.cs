@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -21,19 +21,21 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("Animation")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(AnimationClip))]
-    [AssetCompiler(typeof(AnimationAssetCompiler))]
     [Display(1805, "Animation")]
-    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
-    [AssetUpgrader(XenkoConfig.PackageName, "0", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha02", "1.10.0-alpha01", typeof(AnimationAssetUpgraderFramerate))]     // Force re-import for Min/Max frames
-    public partial class AnimationAsset : Asset, IAssetCompileTimeDependencies
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.10.0-alpha01")]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-alpha01", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
+    public class AnimationAsset : Asset
     {
-        private const string CurrentVersion = "1.10.0-alpha01";
+        private const string CurrentVersion = "2.0.0.0";
 
         /// <summary>
         /// The default file extension used by the <see cref="AnimationAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkanim;.pdxanim";
+        public const string FileExtension = ".xkanim";
 
         public static readonly TimeSpan LongestTimeSpan = TimeSpan.FromMinutes(30);  // Avoid TimeSpan.MaxValue because it results in overflow exception when used in some calculations
 
@@ -69,7 +71,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// Enable clipping of the animation duration, constraining start and end frames.
         /// </userdoc>
         [DataMember(0)]
-        [Display("Clip duration")]
+        [Display("Clip duration", Expand = ExpandRule.Always)]
         public AnimationAssetDuration ClipDuration { get; set; }
 
         // This property is marked as hidden by the AnimationViewModel
@@ -146,15 +148,5 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// </userdoc>
         [DataMember(100)]
         public Model PreviewModel { get; set; }
-
-        /// <inheritdoc/>
-        public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
-        {
-            var reference = AttachedReferenceManager.GetAttachedReference(Skeleton);
-            if (reference != null)
-            {
-                yield return new AssetReference(reference.Id, reference.Url);
-            }
-        }
     }
 }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -151,18 +151,23 @@ namespace SiliconStudio.Assets
                 return projs;
             });
 
-            foreach (var proj in allProjs)
+            await RestoreNugetPackagesNonRecursive(logger, solutionFullPath, force, allProjs.Select(x => x.DirectoryPath));
+        }
+
+        public static async Task RestoreNugetPackagesNonRecursive(ILogger logger, string solutionFullPath, bool force, IEnumerable<string> projectPaths)
+        {
+            foreach (var projectPath in projectPaths)
             {
                 // TODO: We directly find the project.json rather than the solution file (otherwise NuGet reports an error if the solution didn't contain a project.json or if solution is not saved yet)
                 // However, the problem is that if Game was referencing another assembly with a project.json, it won't be updated
                 // At some point we should find all project.json of the full solution, and keep regenerating them if any of them changed
-                var projectJson = Path.Combine(proj.DirectoryPath, "project.json");
+                var projectJson = Path.Combine(projectPath, "project.json");
 
                 // Nothing to do if there is no project.json
                 if (!File.Exists(projectJson)) continue;
 
                 // Check if project.json is newer than project.lock.json (GetLastWriteTimeUtc returns year 1601 if file doesn't exist so it will also generate it)
-                var projectLockJson = Path.Combine(proj.DirectoryPath, "project.lock.json");
+                var projectLockJson = Path.Combine(projectPath, "project.lock.json");
                 if (force || File.GetLastWriteTimeUtc(projectJson) > File.GetLastWriteTimeUtc(projectLockJson))
                 {
                     // Check if it needs to be regenerated
@@ -295,7 +300,7 @@ namespace SiliconStudio.Assets
 
                 // Make sure that we are using the project collection from the loaded project, otherwise we are getting
                 // weird cache behavior with the msbuild system
-                var projectInstance = new ProjectInstance(project.Xml, project.ProjectCollection.GlobalProperties, null, project.ProjectCollection);
+                var projectInstance = new ProjectInstance(project.Xml, project.ProjectCollection.GlobalProperties, project.ToolsVersion, project.ProjectCollection);
 
                 BuildTask = previousTask.ContinueWith(completedPreviousTask =>
                 {

@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using SiliconStudio.Assets.Quantum.Internal;
+using SiliconStudio.Assets.Quantum.Tests.Helpers;
 using SiliconStudio.Assets.Tests.Helpers;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core.Reflection;
@@ -49,29 +51,29 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(expectedYaml, yaml);
         }
 
-        private const string SimplePropertyUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset1,SiliconStudio.Assets.Quantum.Tests
+        private const string SimplePropertyUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset1,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 Tags: []
 MyString: MyBaseString
 ";
-        private const string SimplePropertyUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset1,SiliconStudio.Assets.Quantum.Tests
+        private const string SimplePropertyUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset1,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
 Tags: []
 Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyString*: MyDerivedString
 ";
-        private const string SimplePropertyWithOverrideToDefaultValueBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset10,SiliconStudio.Assets.Quantum.Tests
+        private const string SimplePropertyWithOverrideToDefaultValueBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset10,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 Tags: []
 MyBool: false
 ";
-        private const string SimplePropertyWithOverrideToDefaultValueDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset10,SiliconStudio.Assets.Quantum.Tests
+        private const string SimplePropertyWithOverrideToDefaultValueDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset10,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
 Tags: []
 Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyBool*: true
 ";
-        private const string SimpleCollectionUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+        private const string SimpleCollectionUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 Tags: []
 Struct:
@@ -80,7 +82,7 @@ MyStrings:
     0a0000000a0000000a0000000a000000: String1
     14000000140000001400000014000000: MyBaseString
 ";
-        private const string SimpleCollectionUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+        private const string SimpleCollectionUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
 Tags: []
 Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
@@ -90,14 +92,14 @@ MyStrings:
     0a0000000a0000000a0000000a000000*: MyDerivedString
     14000000140000001400000014000000: MyBaseString
 ";
-        private const string SimpleDictionaryUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+        private const string SimpleDictionaryUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 Tags: []
 MyDictionary:
     0a0000000a0000000a0000000a000000~Key1: String1
     14000000140000001400000014000000~Key2: MyBaseString
 ";
-        private const string SimpleDictionaryUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+        private const string SimpleDictionaryUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
 Tags: []
 Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
@@ -105,7 +107,7 @@ MyDictionary:
     0a0000000a0000000a0000000a000000*~Key1: MyDerivedString
     14000000140000001400000014000000~Key2: MyBaseString
 ";
-        private const string CollectionInStructBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+        private const string CollectionInStructBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 Tags: []
 Struct:
@@ -114,7 +116,7 @@ Struct:
         14000000140000001400000014000000: MyBaseString
 MyStrings: {}
 ";
-        private const string CollectionInStructDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+        private const string CollectionInStructDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
 Tags: []
 Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
@@ -124,7 +126,7 @@ Struct:
         14000000140000001400000014000000: MyBaseString
 MyStrings: {}
 ";
-        private const string SimpleCollectionAddBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+        private const string SimpleCollectionAddBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 Tags: []
 Struct:
@@ -134,7 +136,7 @@ MyStrings:
     14000000140000001400000014000000: String2
     {0}: String4
 ";
-        private const string SimpleCollectionAddDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+        private const string SimpleCollectionAddDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
 Tags: []
 Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
@@ -146,7 +148,7 @@ MyStrings:
     {0}: String4
     {1}*: String3
 ";
-        private const string SimpleDictionaryAddBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+        private const string SimpleDictionaryAddBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 Tags: []
 MyDictionary:
@@ -154,7 +156,7 @@ MyDictionary:
     14000000140000001400000014000000~Key2: String2
     {0}~Key4: String4
 ";
-        private const string SimpleDictionaryAddDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+        private const string SimpleDictionaryAddDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
 Tags: []
 Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
@@ -164,7 +166,7 @@ MyDictionary:
     {1}*~Key3: String3
     {0}~Key4: String4
 ";
-        private const string ObjectCollectionUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
+        private const string ObjectCollectionUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 Tags: []
 MyObjects:
@@ -173,7 +175,7 @@ MyObjects:
     14000000140000001400000014000000:
         Value: MyBaseString
 ";
-        private const string ObjectCollectionUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
+        private const string ObjectCollectionUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
 Tags: []
 Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
@@ -183,7 +185,7 @@ MyObjects:
     14000000140000001400000014000000:
         Value: MyBaseString
 ";
-        private const string ObjectCollectionAddBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
+        private const string ObjectCollectionAddBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 Tags: []
 MyObjects:
@@ -194,7 +196,7 @@ MyObjects:
     {0}:
         Value: String4
 ";
-        private const string ObjectCollectionAddDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
+        private const string ObjectCollectionAddDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
 Tags: []
 Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
@@ -208,7 +210,7 @@ MyObjects:
     {1}*:
         Value: String3
 ";
-        private const string ObjectCollectionPropertyUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
+        private const string ObjectCollectionPropertyUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 Tags: []
 MyObjects:
@@ -217,7 +219,7 @@ MyObjects:
     14000000140000001400000014000000:
         Value: MyBaseString
 ";
-        private const string ObjectCollectionPropertyUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
+        private const string ObjectCollectionPropertyUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
 Tags: []
 Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
@@ -227,14 +229,14 @@ MyObjects:
     14000000140000001400000014000000:
         Value: MyBaseString
 ";
-        private const string NonIdentifiableObjectCollectionPropertyUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset8,SiliconStudio.Assets.Quantum.Tests
+        private const string NonIdentifiableObjectCollectionPropertyUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset8,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 Tags: []
 MyObjects:
     -   Value: String1
     -   Value: MyBaseString
 ";
-        private const string NonIdentifiableObjectCollectionPropertyUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset8,SiliconStudio.Assets.Quantum.Tests
+        private const string NonIdentifiableObjectCollectionPropertyUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset8,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
 Tags: []
 Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
@@ -247,7 +249,7 @@ MyObjects:
         public void TestSimplePropertySerialization()
         {
             var asset = new Types.MyAsset1 { MyString = "String" };
-            var context = DeriveAssetTest<Types.MyAsset1>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset1, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset1.MyString)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset1.MyString)];
 
@@ -260,7 +262,7 @@ MyObjects:
         [Test]
         public void TestSimplePropertyDeserialization()
         {
-            var context = DeriveAssetTest<Types.MyAsset1>.LoadFromYaml(SimplePropertyUpdateBaseYaml, SimplePropertyUpdateDerivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset1, Types.MyAssetBasePropertyGraph>.LoadFromYaml(SimplePropertyUpdateBaseYaml, SimplePropertyUpdateDerivedYaml);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset1.MyString)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset1.MyString)];
 
@@ -274,7 +276,7 @@ MyObjects:
         public void TestSimplePropertyWithOverrideToDefaultValueSerialization()
         {
             var asset = new Types.MyAsset10 { MyBool = false };
-            var context = DeriveAssetTest<Types.MyAsset10>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset10, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset10.MyBool)];
 
             derivedPropertyNode.Update(true);
@@ -285,7 +287,7 @@ MyObjects:
         [Test]
         public void TestSimplePropertyWithOverrideToDefaultValueDeserialization()
         {
-            var context = DeriveAssetTest<Types.MyAsset10>.LoadFromYaml(SimplePropertyWithOverrideToDefaultValueBaseYaml, SimplePropertyWithOverrideToDefaultValueDerivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset10, Types.MyAssetBasePropertyGraph>.LoadFromYaml(SimplePropertyWithOverrideToDefaultValueBaseYaml, SimplePropertyWithOverrideToDefaultValueDerivedYaml);
             var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset10.MyBool)];
             var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset10.MyBool)];
 
@@ -302,7 +304,7 @@ MyObjects:
             var ids = CollectionItemIdHelper.GetCollectionItemIds(asset.MyStrings);
             ids.Add(0, IdentifierGenerator.Get(10));
             ids.Add(1, IdentifierGenerator.Get(20));
-            var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
 
@@ -315,7 +317,7 @@ MyObjects:
         [Test]
         public void TestSimpleCollectionUpdateDeserialization()
         {
-            var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(SimpleCollectionUpdateBaseYaml, SimpleCollectionUpdateDerivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.LoadFromYaml(SimpleCollectionUpdateBaseYaml, SimpleCollectionUpdateDerivedYaml);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
@@ -349,7 +351,7 @@ MyObjects:
             var ids = CollectionItemIdHelper.GetCollectionItemIds(asset.MyDictionary);
             ids.Add("Key1", IdentifierGenerator.Get(10));
             ids.Add("Key2", IdentifierGenerator.Get(20));
-            var context = DeriveAssetTest<Types.MyAsset3>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
 
@@ -358,7 +360,7 @@ MyObjects:
             SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, SimpleDictionaryUpdateBaseYaml, false);
             SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, SimpleDictionaryUpdateDerivedYaml, true);
 
-            context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(SimpleDictionaryUpdateBaseYaml, SimpleDictionaryUpdateDerivedYaml);
+            context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.LoadFromYaml(SimpleDictionaryUpdateBaseYaml, SimpleDictionaryUpdateDerivedYaml);
             basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
             derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
@@ -388,7 +390,7 @@ MyObjects:
         [Test]
         public void TestSimpleDictionaryDeserialization()
         {
-            var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(SimpleDictionaryUpdateBaseYaml, SimpleDictionaryUpdateDerivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.LoadFromYaml(SimpleDictionaryUpdateBaseYaml, SimpleDictionaryUpdateDerivedYaml);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
@@ -424,7 +426,7 @@ MyObjects:
             var ids = CollectionItemIdHelper.GetCollectionItemIds(asset.Struct.MyStrings);
             ids.Add(0, IdentifierGenerator.Get(10));
             ids.Add(1, IdentifierGenerator.Get(20));
-            var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset2.Struct)].Target[nameof(Types.MyAsset2.MyStrings)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset2.Struct)].Target[nameof(Types.MyAsset2.MyStrings)];
 
@@ -437,7 +439,7 @@ MyObjects:
         [Test]
         public void TestCollectionInStructUpdateDeserialization()
         {
-            var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(CollectionInStructBaseYaml, CollectionInStructDerivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.LoadFromYaml(CollectionInStructBaseYaml, CollectionInStructDerivedYaml);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset2.Struct)].Target[nameof(Types.MyAsset2.MyStrings)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset2.Struct)].Target[nameof(Types.MyAsset2.MyStrings)];
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.Struct.MyStrings);
@@ -471,7 +473,7 @@ MyObjects:
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(asset.MyStrings);
             baseIds.Add(0, IdentifierGenerator.Get(10));
             baseIds.Add(1, IdentifierGenerator.Get(20));
-            var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
 
@@ -489,7 +491,7 @@ MyObjects:
         {
             var expectedBaseYaml = string.Format(SimpleCollectionAddBaseYaml.Replace("{}", "{{}}"), IdentifierGenerator.Get(30));
             var expectedDerivedYaml = string.Format(SimpleCollectionAddDerivedYaml.Replace("{}", "{{}}"), IdentifierGenerator.Get(30), IdentifierGenerator.Get(40));
-            var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(expectedBaseYaml, expectedDerivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset2, Types.MyAssetBasePropertyGraph>.LoadFromYaml(expectedBaseYaml, expectedDerivedYaml);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
@@ -529,7 +531,7 @@ MyObjects:
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(asset.MyDictionary);
             baseIds.Add("Key1", IdentifierGenerator.Get(10));
             baseIds.Add("Key2", IdentifierGenerator.Get(20));
-            var context = DeriveAssetTest<Types.MyAsset3>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
 
@@ -549,7 +551,7 @@ MyObjects:
         {
             var expectedBaseYaml = string.Format(SimpleDictionaryAddBaseYaml.Replace("{}", "{{}}"), IdentifierGenerator.Get(30));
             var expectedDerivedYaml = string.Format(SimpleDictionaryAddDerivedYaml.Replace("{}", "{{}}"), IdentifierGenerator.Get(30), IdentifierGenerator.Get(40));
-            var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(expectedBaseYaml, expectedDerivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.LoadFromYaml(expectedBaseYaml, expectedDerivedYaml);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
@@ -592,7 +594,7 @@ MyObjects:
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(asset.MyObjects);
             baseIds.Add(0, IdentifierGenerator.Get(10));
             baseIds.Add(1, IdentifierGenerator.Get(20));
-            var context = DeriveAssetTest<Types.MyAsset4>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset4, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset4.MyObjects)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset4.MyObjects)];
 
@@ -605,7 +607,7 @@ MyObjects:
         [Test]
         public void TestObjectCollectionUpdateDeserialization()
         {
-            var context = DeriveAssetTest<Types.MyAsset4>.LoadFromYaml(ObjectCollectionUpdateBaseYaml, ObjectCollectionUpdateDerivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset4, Types.MyAssetBasePropertyGraph>.LoadFromYaml(ObjectCollectionUpdateBaseYaml, ObjectCollectionUpdateDerivedYaml);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset4.MyObjects)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset4.MyObjects)];
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyObjects);
@@ -643,7 +645,7 @@ MyObjects:
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(asset.MyObjects);
             baseIds.Add(0, IdentifierGenerator.Get(10));
             baseIds.Add(1, IdentifierGenerator.Get(20));
-            var context = DeriveAssetTest<Types.MyAsset4>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset4, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyObjects);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset4.MyObjects)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset4.MyObjects)];
@@ -661,7 +663,7 @@ MyObjects:
         {
             var expectedBaseYaml = string.Format(ObjectCollectionAddBaseYaml.Replace("{}", "{{}}"), IdentifierGenerator.Get(30));
             var expectedDerivedYaml = string.Format(ObjectCollectionAddDerivedYaml.Replace("{}", "{{}}"), IdentifierGenerator.Get(30), IdentifierGenerator.Get(40));
-            var context = DeriveAssetTest<Types.MyAsset4>.LoadFromYaml(expectedBaseYaml, expectedDerivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset4, Types.MyAssetBasePropertyGraph>.LoadFromYaml(expectedBaseYaml, expectedDerivedYaml);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset4.MyObjects)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset4.MyObjects)];
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyObjects);
@@ -708,7 +710,7 @@ MyObjects:
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(asset.MyObjects);
             baseIds.Add(0, IdentifierGenerator.Get(10));
             baseIds.Add(1, IdentifierGenerator.Get(20));
-            var context = DeriveAssetTest<Types.MyAsset4>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset4, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset4.MyObjects)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset4.MyObjects)];
 
@@ -721,7 +723,7 @@ MyObjects:
         [Test]
         public void TestObjectCollectionPropertyUpdateDeserialization()
         {
-            var context = DeriveAssetTest<Types.MyAsset4>.LoadFromYaml(ObjectCollectionPropertyUpdateBaseYaml, ObjectCollectionPropertyUpdateDerivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset4, Types.MyAssetBasePropertyGraph>.LoadFromYaml(ObjectCollectionPropertyUpdateBaseYaml, ObjectCollectionPropertyUpdateDerivedYaml);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset4.MyObjects)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset4.MyObjects)];
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyObjects);
@@ -756,13 +758,13 @@ MyObjects:
         public void TestNonIdentifiableObjectCollectionUpdateSerialization()
         {
             var asset = new Types.MyAsset8 { MyObjects = { new Types.SomeObject { Value = "String1" }, new Types.SomeObject { Value = "String2" } } };
-            var context = DeriveAssetTest<Types.MyAsset8>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset8, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset8.MyObjects)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset8.MyObjects)];
             // Manually link base of non-identifiable items - this simulates a scenario similar to prefabs
             context.DerivedGraph.RegisterCustomBaseLink(derivedPropertyNode.Target.IndexedTarget(new Index(0)), basePropertyNode.Target.IndexedTarget(new Index(0)));
             context.DerivedGraph.RegisterCustomBaseLink(derivedPropertyNode.Target.IndexedTarget(new Index(1)), basePropertyNode.Target.IndexedTarget(new Index(1)));
-            context.DerivedGraph.RefreshBase(context.BaseGraph);
+            context.DerivedGraph.RefreshBase();
 
             basePropertyNode.Target.IndexedTarget(new Index(1))[nameof(Types.SomeObject.Value)].Update("MyBaseString");
             derivedPropertyNode.Target.IndexedTarget(new Index(0))[nameof(Types.SomeObject.Value)].Update("MyDerivedString");
@@ -773,13 +775,13 @@ MyObjects:
         [Test]
         public void TestNonIdentifiableObjectCollectionUpdateDeserialization()
         {
-            var context = DeriveAssetTest<Types.MyAsset8>.LoadFromYaml(NonIdentifiableObjectCollectionPropertyUpdateBaseYaml, NonIdentifiableObjectCollectionPropertyUpdateDerivedYaml);
+            var context = DeriveAssetTest<Types.MyAsset8, Types.MyAssetBasePropertyGraph>.LoadFromYaml(NonIdentifiableObjectCollectionPropertyUpdateBaseYaml, NonIdentifiableObjectCollectionPropertyUpdateDerivedYaml);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset8.MyObjects)];
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset8.MyObjects)];
             // Manually link base of non-identifiable items - this simulates a scenario similar to prefabs
             context.DerivedGraph.RegisterCustomBaseLink(derivedPropertyNode.Target.IndexedTarget(new Index(0)), basePropertyNode.Target.IndexedTarget(new Index(0)));
             context.DerivedGraph.RegisterCustomBaseLink(derivedPropertyNode.Target.IndexedTarget(new Index(1)), basePropertyNode.Target.IndexedTarget(new Index(1)));
-            context.DerivedGraph.RefreshBase(context.BaseGraph);
+            context.DerivedGraph.RefreshBase();
 
             Assert.AreEqual(2, context.BaseAsset.MyObjects.Count);
             Assert.AreEqual(2, context.DerivedAsset.MyObjects.Count);
@@ -802,11 +804,11 @@ MyObjects:
         [Test]
         public void TestGenerateOverridesForSerializationOfObjectMember()
         {
-            const string expectedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+SomeObject,SiliconStudio.Assets.Quantum.Tests
+            const string expectedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+SomeObject,SiliconStudio.Assets.Quantum.Tests
 Value*: OverriddenString
 ";
             var asset = new Types.MyAsset9 { MyObject = new Types.SomeObject { Value = "String1" } };
-            var context = DeriveAssetTest<Types.MyAsset9>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset9, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset9.MyObject)];
             derivedPropertyNode.Target[nameof(Types.SomeObject.Value)].Update("OverriddenString");
             var expectedPath = new YamlAssetPath();
@@ -829,7 +831,7 @@ Value*: OverriddenString
             SerializeAndCompare(context.DerivedAsset.MyObject, overrides, expectedYaml);
             bool aliasOccurred;
             AttachedYamlAssetMetadata metadata;
-            var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(DeriveAssetTestBase.ToStream(expectedYaml), null, null, true, out aliasOccurred, out metadata);
+            var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(AssetTestContainer.ToStream(expectedYaml), null, null, true, out aliasOccurred, out metadata);
             overrides = metadata.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
             Assert.NotNull(overrides);
             overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value);
@@ -842,11 +844,11 @@ Value*: OverriddenString
         [Test]
         public void TestGenerateOverridesForSerializationOfCollectionItem()
         {
-            const string expectedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+SomeObject,SiliconStudio.Assets.Quantum.Tests
+            const string expectedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+SomeObject,SiliconStudio.Assets.Quantum.Tests
 Value*: OverriddenString
 ";
             var asset = new Types.MyAsset4 { MyObjects = { new Types.SomeObject { Value = "String1" }, new Types.SomeObject { Value = "String2" } } };
-            var context = DeriveAssetTest<Types.MyAsset4>.DeriveAsset(asset);
+            var context = DeriveAssetTest<Types.MyAsset4, Types.MyAssetBasePropertyGraph>.DeriveAsset(asset);
             var derivedPropertyNode = (AssetObjectNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset4.MyObjects)].Target.IndexedTarget(new Index(1));
             derivedPropertyNode[nameof(Types.SomeObject.Value)].Update("OverriddenString");
             var expectedPath = new YamlAssetPath();
@@ -862,7 +864,7 @@ Value*: OverriddenString
             SerializeAndCompare(context.DerivedAsset.MyObjects[1], overrides, expectedYaml);
             bool aliasOccurred;
             AttachedYamlAssetMetadata metadata;
-            var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(DeriveAssetTestBase.ToStream(expectedYaml), null, null, true, out aliasOccurred, out metadata);
+            var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(AssetTestContainer.ToStream(expectedYaml), null, null, true, out aliasOccurred, out metadata);
             overrides = metadata.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
             Assert.NotNull(overrides);
             overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value);

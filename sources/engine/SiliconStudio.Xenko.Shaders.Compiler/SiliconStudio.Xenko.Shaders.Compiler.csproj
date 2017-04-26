@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+    <SiliconStudioXenkoGraphicsApiDependent>true</SiliconStudioXenkoGraphicsApiDependent>
   </PropertyGroup>
   <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
@@ -11,7 +12,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Xenko.Shaders.Compiler</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.Shaders.Compiler</AssemblyName>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
@@ -19,16 +20,20 @@
     <WindowsSdkDir_81 Condition="'$(WindowsSdkDir_81)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v8.1@InstallationFolder)</WindowsSdkDir_81>
     <WindowsSdkDir_81 Condition="'$(WindowsSdkDir_81)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\Windows\v8.1@InstallationFolder)</WindowsSdkDir_81>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
-    <Reference Include="SharpDX">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.D3DCompiler">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+  <Choose>
+	<When Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' Or '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D12' ">
+		<ItemGroup>
+			<Reference Include="SharpDX">
+			  <SpecificVersion>False</SpecificVersion>
+			  <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
+			</Reference>
+			<Reference Include="SharpDX.D3DCompiler">
+			  <SpecificVersion>False</SpecificVersion>
+			  <HintPath>$(SharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
+			</Reference>
+	  </ItemGroup>
+	</When>
+  </Choose>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
       <ItemGroup>
@@ -58,11 +63,6 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
-      <Project>{fcf36d39-bffe-4719-b245-05640ee34c5f}</Project>
-      <Name>SiliconStudio.Core.Native</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
@@ -97,24 +97,28 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'Windows'">
-    <Content Include="$(WindowsSdkDir_81)\Redist\D3D\**\d3dcompiler_47.dll">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    <SiliconStudioNativeLib Include="$(WindowsSdkDir_81)\Redist\D3D\**\d3dcompiler_47.dll">
+      <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\..\deps\glsl-optimizer\$(SiliconStudioPlatform)\**\glsl_optimizer.dll">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </SiliconStudioNativeLib>
+    <SiliconStudioNativeLib Include="..\..\..\deps\glsl-optimizer\$(SiliconStudioPlatform)\**\glsl_optimizer.dll">
+      <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\..\deps\glslang\glslangValidator.exe">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </SiliconStudioNativeLib>
+    <SiliconStudioContent Include="..\..\..\deps\glslang\glslangValidator.exe">
+      <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </SiliconStudioContent>
   </ItemGroup>
-  <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'Linux'">
-    <Content Include="..\..\..\deps\glslang\glslangValidator">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+  <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'Linux' And '$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan'">
+    <SiliconStudioContent Include="..\..\..\deps\glslang\glslangValidator">
+      <Link>..\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </SiliconStudioContent>
   </ItemGroup>
   <Import Project="..\..\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

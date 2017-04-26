@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 
@@ -19,8 +19,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <param name="name">The name.</param>
         /// <param name="stream">The stream.</param>
         /// <param name="colorType">Type of the color.</param>
-        public MaterialStreamDescriptor(string name, string stream, Type colorType)
-            : this(name, stream, GetDefaultFilter(stream, colorType))
+        public MaterialStreamDescriptor(string name, string stream, Type colorType, bool remapSigned = false)
+            : this(name, stream, GetDefaultFilter(stream, remapSigned, colorType))
         {
         }
 
@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             if (stream == null) throw new ArgumentNullException("stream");
             Name = name;
             Stream = stream;
-            Filter = filter ?? GetDefaultFilter(stream, typeof(Color3));
+            Filter = filter ?? GetDefaultFilter(stream, false, typeof(Color3));
         }
 
         /// <summary>
@@ -62,14 +62,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <value>The filter.</value>
         public ShaderSource Filter { get; private set; }
 
-        private static ShaderSource GetDefaultFilter(string streamName, Type colorType)
+        private static ShaderSource GetDefaultFilter(string streamName, bool remapSigned, Type colorType)
         {
             string colorChannel = "rrr";
             if (colorType == typeof(Vector3) || colorType == typeof(Color3) || colorType == typeof(Vector2) || colorType == typeof(Color4) || colorType == typeof(Vector4) || colorType == typeof(Color))
             {
                 colorChannel = "rgb";
             }
-            return new ShaderClassSource("MaterialSurfaceStreamShading", streamName, colorChannel);
+            return new ShaderClassSource("MaterialSurfaceStreamShading", streamName, colorChannel, remapSigned);
         }
     }
 }

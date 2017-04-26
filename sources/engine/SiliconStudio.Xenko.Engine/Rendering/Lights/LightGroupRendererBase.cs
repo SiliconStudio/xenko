@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -67,12 +67,17 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public RenderView View;
             public FastList<RenderView> Views;
 
+            // Current renderers in this group
+            public LightGroupRendererBase[] Renderers;
+            // Index into the Renderers array
+            public int RendererIndex;
+            
             public LightComponentCollection LightCollection;
             public Type LightType;
             
             // Light range to process in LightCollection
-            public int LightStart;
-            public int LightEnd;
+            // The light group renderer should remove lights it processes
+            public List<int> LightIndices;
 
             public IShadowMapRenderer ShadowMapRenderer;
 

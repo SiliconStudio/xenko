@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Linq;
 using Mono.Cecil;
@@ -41,7 +41,7 @@ namespace SiliconStudio.AssemblyProcessor
             // Note: Not perfectly valid but hopefully it should be fast enough.
             if (objectType.IsGenericInstance && checkInterfaces)
             {
-                if (objectType.GetElementType().Resolve().Interfaces.Any(x => x.IsGenericInstance && x.GetElementType().FullName == genericSerializableType.FullName))
+                if (objectType.GetElementType().Resolve().Interfaces.Any(x => x.InterfaceType.IsGenericInstance && x.InterfaceType.GetElementType().FullName == genericSerializableType.FullName))
                     return CreateSerializer(objectType);
             }
             if (objectType.IsGenericInstance && objectType.GetElementType().FullName == genericSerializableType.FullName)

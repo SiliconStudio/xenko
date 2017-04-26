@@ -1,6 +1,5 @@
-// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
@@ -28,7 +27,6 @@ namespace SiliconStudio.Xenko.Profiling
             registry.AddService(typeof(DebugConsoleSystem), this);
 
             Visible = true;
-            Enabled = true;
 
             DrawOrder = 0xffffff;
             UpdateOrder = -100100; //before script

@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -68,6 +70,11 @@ namespace SiliconStudio.Core.Yaml
         public void PushItemId(ItemId itemId)
         {
             items.Add(new Item(ItemType.ItemId, itemId));
+        }
+
+        public void Push(Item item)
+        {
+            items.Add(item);
         }
 
         public void RemoveFirstItem()

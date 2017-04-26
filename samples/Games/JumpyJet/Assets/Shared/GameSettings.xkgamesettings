@@ -1,9 +1,11 @@
 !GameSettingsAsset
-Id: c187225f-74f5-4b60-ab59-7e9a6af4f41e
-SerializedVersion: {Xenko: 1.6.1-alpha01}
+Id: 01d3d03e-3826-4da4-982f-449133dec729
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
-DefaultScene: b07987b2-a262-45fb-9da6-ba05fc7aaf74:Scene
-GraphicsCompositor: 59a84fe5-4282-470b-b179-0a0619973756:GraphicsCompositor
+DefaultScene: 286382bf-b1c4-41b4-b566-949b1ad1e443:Scene
+GraphicsCompositor: 5f2073ff-fa35-4484-a925-0b899d8e759d:GraphicsCompositor
+SplashScreenTexture: d26edb11-10bd-403c-b3c2-9c7fcccf25e5:XenkoDefaultSplashScreen
+SplashScreenColor: {R: 0, G: 0, B: 0, A: 255}
 Defaults:
     - !SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics
         DefaultBackBufferWidth: 640
@@ -19,8 +21,24 @@ Defaults:
         TextureQuality: Fast
     - !SiliconStudio.Xenko.Physics.PhysicsSettings,SiliconStudio.Xenko.Physics
         Flags: None
-        MaxSubSteps: 1
-        FixedTimeStep: 0.0166666675
+        MaxSubSteps: 4
+        FixedTimeStep: 0.016667
+    - !SiliconStudio.Xenko.Audio.AudioEngineSettings,SiliconStudio.Xenko.Audio
+        HrtfSupport: false
+    - !SiliconStudio.Xenko.Navigation.NavigationSettings,SiliconStudio.Xenko.Navigation
+        EnableDynamicNavigationMesh: false
+        IncludedCollisionGroups: AllFilter
+        BuildSettings:
+            CellHeight: 0.2
+            CellSize: 0.3
+            TileSize: 32
+            MinRegionArea: 2
+            RegionMergeArea: 20
+            MaxEdgeLen: 12.0
+            MaxEdgeError: 1.3
+            DetailSamplingDistance: 6.0
+            MaxDetailSamplingError: 1.0
+        Groups: []
 Overrides: []
 PlatformFilters:
     - PowerVR SGX 54[0-9]

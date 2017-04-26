@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -37,7 +37,7 @@ namespace SiliconStudio.AssemblyProcessor
             // UpdateEngineHelper.PtrToObject
             // Simpler "ldarg.0 + ret" doesn't work with Xamarin: https://bugzilla.xamarin.com/show_bug.cgi?id=40608
             var ptrToObject = RewriteBody(updateEngineHelperType.Methods.First(x => x.Name == "PtrToObject"));
-            ptrToObject.Body.Variables.Add(new VariableDefinition("convObj", assembly.MainModule.TypeSystem.Object));
+            ptrToObject.Body.Variables.Add(new VariableDefinition(assembly.MainModule.TypeSystem.Object));
             ptrToObject.Emit(OpCodes.Ldloca_S, (byte)0);
             ptrToObject.Emit(OpCodes.Ldarg, ptrToObject.Body.Method.Parameters[0]);
 

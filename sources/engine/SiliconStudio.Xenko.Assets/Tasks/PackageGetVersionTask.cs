@@ -1,10 +1,12 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
+using System;
 using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Assets.Tasks
@@ -19,51 +21,18 @@ namespace SiliconStudio.Xenko.Assets.Tasks
         public ITaskItem File { get; set; }
 
         [Output]
-        public string Version { get; set; }
+        public string NuGetVersion { get; set; }
 
-        public string SpecialVersion { get; set; }
+        [Output]
+        public string NugetVersionSimpleNoRevision { get; set; }
 
         public override bool Execute()
         {
-            var result = new LoggerResult();
-            var package = Package.Load(result, File.ItemSpec, new PackageLoadParameters()
-                {
-                    AutoCompileProjects = false,
-                    LoadAssemblyReferences = false,
-                    AutoLoadTemporaryAssets = false,
-                });
+            NuGetVersion = XenkoVersion.NuGetVersion;
 
-            foreach (var message in result.Messages)
-            {
-                if (message.Type >= LogMessageType.Error)
-                {
-                    Log.LogError(message.ToString());
-                }
-                else if (message.Type == LogMessageType.Warning)
-                {
-                    Log.LogWarning(message.ToString());
-                }
-                else
-                {
-                    Log.LogMessage(message.ToString());
-                }
-            }
-
-            // If we have errors loading the package, exit
-            if (result.HasErrors)
-            {
-                return false;
-            }
-
-            var version = package.Meta.Version;
-
-            // Override version with task SpecialVersion (if specified by user)
-            if (!string.IsNullOrEmpty(SpecialVersion))
-            {
-                version = new PackageVersion(version.ToString().Split('-').First() + "-" + SpecialVersion);
-            }
-
-            Version = version.ToString();
+            var nugetVersionSimple = new Version(XenkoVersion.NuGetVersionSimple);
+            nugetVersionSimple = new Version(nugetVersionSimple.Major, nugetVersionSimple.Minor, nugetVersionSimple.Build);
+            NugetVersionSimpleNoRevision = nugetVersionSimple.ToString();
             return true;
         }
     }

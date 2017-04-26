@@ -1,8 +1,6 @@
 !Texture
 Id: df2861ce-f1f7-4735-acdc-e97faa01f899
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Source: ../../../Resources/Textures/xenko_coin_c_normals.png
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Hint: NormalMap
-Alpha: None
+Type: !NormalMapTextureType {}

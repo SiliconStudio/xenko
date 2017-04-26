@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -40,10 +42,10 @@ namespace SiliconStudio.Presentation.Controls
                 titleBar.Visibility = Visibility.Collapsed;
         }
 
-        public override async Task<DialogResult> ShowModal()
+        public override Task<DialogResult> ShowModal()
         {
-            await WindowManager.ShowModal(this, WindowOwner.LastModal, WindowInitialPosition.MouseCursor);
-            return Result;
+            WindowManager.ShowAtCursorPosition(this);
+            return base.ShowModal();
         }
 
         protected override void OnKeyDown(KeyEventArgs e)

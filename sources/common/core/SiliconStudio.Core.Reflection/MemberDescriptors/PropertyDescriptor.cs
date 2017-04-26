@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -48,8 +48,10 @@ namespace SiliconStudio.Core.Reflection
 
         public override void Set(object thisObject, object value)
         {
-            if (HasSet)
-                setMethod.Invoke(thisObject, new[] {value});
+            if (!HasSet)
+                throw new InvalidOperationException($"The property [{Name}] of type [{DeclaringType.Name}] has no setter.");
+
+            setMethod.Invoke(thisObject, new[] {value});
         }
 
         public override IEnumerable<T> GetCustomAttributes<T>(bool inherit)

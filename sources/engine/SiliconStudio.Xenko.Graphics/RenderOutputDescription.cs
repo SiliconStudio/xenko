@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.ComponentModel;
@@ -36,21 +36,21 @@ namespace SiliconStudio.Xenko.Graphics
         [DefaultValue(PixelFormat.None)]
         public PixelFormat DepthStencilFormat;
 
-        [DefaultValue(MSAALevel.None)]
-        public MSAALevel MultiSampleLevel;
+        [DefaultValue(MultisampleCount.None)]
+        public MultisampleCount MultisampleCount;
 
-        public RenderOutputDescription(PixelFormat renderTargetFormat, PixelFormat depthStencilFormat = PixelFormat.None, MSAALevel multiSampleLevel = MSAALevel.None) : this()
+        public RenderOutputDescription(PixelFormat renderTargetFormat, PixelFormat depthStencilFormat = PixelFormat.None, MultisampleCount multisampleCount = MultisampleCount.None) : this()
         {
             RenderTargetCount = renderTargetFormat != PixelFormat.None ? 1 : 0;
             RenderTargetFormat0 = renderTargetFormat;
             DepthStencilFormat = depthStencilFormat;
-            MultiSampleLevel = multiSampleLevel;
+            MultisampleCount = multisampleCount;
         }
 
         public unsafe void CaptureState(CommandList commandList)
         {
             DepthStencilFormat = commandList.DepthStencilBuffer != null ? commandList.DepthStencilBuffer.ViewFormat : PixelFormat.None;
-            MultiSampleLevel = commandList.DepthStencilBuffer != null ? commandList.DepthStencilBuffer.MultiSampleLevel : MSAALevel.None;
+            MultisampleCount = commandList.DepthStencilBuffer != null ? commandList.DepthStencilBuffer.MultisampleCount : MultisampleCount.None;
 
             RenderTargetCount = commandList.RenderTargetCount;
             fixed (PixelFormat* renderTargetFormat0 = &RenderTargetFormat0)
@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Graphics
                 for (int i = 0; i < RenderTargetCount; ++i)
                 {
                     *renderTargetFormat++ = commandList.RenderTargets[i].ViewFormat;
-                    MultiSampleLevel = commandList.RenderTargets[i].MultiSampleLevel; // multisample should all be equal
+                    MultisampleCount = commandList.RenderTargets[i].MultisampleCount; // multisample should all be equal
                 }
             }
         }

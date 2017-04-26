@@ -1,4 +1,6 @@
-﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
@@ -23,6 +25,12 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override bool CanInitialize => OpenVR.InitDone || OpenVR.Init();
 
+        public OpenVRHmd()
+        {
+            VRApi = VRApi.OpenVR;
+            SupportsOverlays = true;
+        }
+
         public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror, int mirrorWidth, int mirrorHeight)
         {
             var width = (int)(OptimalRenderFrameSize.Width * RenderFrameScaling);
@@ -45,6 +53,12 @@ namespace SiliconStudio.Xenko.VirtualReality
 
             leftHandController = new OpenVRTouchController(TouchControllerHand.Left);
             rightHandController = new OpenVRTouchController(TouchControllerHand.Right);
+        }
+
+        public override VROverlay CreateOverlay(int width, int height, int mipLevels, int sampleCount)
+        {
+            var overlay = new OpenVROverlay();
+            return overlay;
         }
 
         public override void Draw(GameTime gameTime)

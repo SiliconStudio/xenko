@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Specialized;
@@ -209,10 +209,8 @@ namespace SiliconStudio.Xenko.Engine
                 if (oldParent == value)
                     return;
 
-                if (oldParent != null)
-                    oldParent.Children.Remove(this);
-                if (value != null)
-                    value.Children.Add(this);
+                oldParent?.Children.Remove(this);
+                value?.Children.Add(this);
             }
         }
 
@@ -225,6 +223,34 @@ namespace SiliconStudio.Xenko.Engine
             if (UseTRS)
             {
                 Matrix.Transformation(ref Scale, ref Rotation, ref Position, out LocalMatrix);
+            }
+        }
+
+        /// <summary>
+        /// Updates the local matrix based on the world matrix and the parent entity's or containing scene's world matrix.
+        /// </summary>
+        public void UpdateLocalFromWorld()
+        {
+            if (Parent == null)
+            {
+                var scene = Entity?.Scene;
+                if (scene != null)
+                {
+                    var inverseSceneTransform = scene.WorldMatrix;
+                    inverseSceneTransform.Invert();
+                    Matrix.Multiply(ref WorldMatrix, ref inverseSceneTransform, out LocalMatrix);
+                }
+                else
+                {
+                    LocalMatrix = WorldMatrix;
+                }
+            }
+            else
+            {
+                //We are not root so we need to derive the local matrix as well
+                var inverseParent = Parent.WorldMatrix;
+                inverseParent.Invert();
+                Matrix.Multiply(ref WorldMatrix, ref inverseParent, out LocalMatrix);
             }
         }
 
@@ -256,6 +282,17 @@ namespace SiliconStudio.Xenko.Engine
             else
             {
                 WorldMatrix = LocalMatrix;
+
+                var scene = Entity?.Scene;
+                if (scene != null)
+                {
+                    if (recursive)
+                    {
+                        scene.UpdateWorldMatrix();
+                    }
+
+                    Matrix.Multiply(ref WorldMatrix, ref scene.WorldMatrix, out WorldMatrix);
+                }
             }
 
             foreach (var transformOperation in PostOperations)
@@ -270,6 +307,8 @@ namespace SiliconStudio.Xenko.Engine
                 throw new InvalidOperationException("This TransformComponent already has a Parent, detach it first.");
 
             item.parent = this;
+
+            Entity?.EntityManager?.OnHierarchyChanged(item.Entity);
         }
 
         private void RemoveItem(TransformComponent item)
@@ -278,6 +317,8 @@ namespace SiliconStudio.Xenko.Engine
                 throw new InvalidOperationException("This TransformComponent's parent is not the expected value.");
 
             item.parent = null;
+
+            Entity?.EntityManager?.OnHierarchyChanged(item.Entity);
         }
 
         private void ChildrenCollectionChanged(object sender, TrackingCollectionChangedEventArgs e)

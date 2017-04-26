@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -132,10 +132,28 @@ namespace SiliconStudio.Xenko.Engine.Processors
             foreach (var t in TransformationRoots)
                 notSpecialRootComponents.Add(t);
 
+            // Update scene transforms
+            // TODO: Entity processors should not be aware of scenes
+            var sceneInstance = EntityManager as SceneInstance;
+            if (sceneInstance?.RootScene != null)
+            {
+                UpdateTransfromationsRecursive(sceneInstance.RootScene);
+            }
+
             // Special roots are already filtered out
             UpdateTransformations(notSpecialRootComponents);
         }
-        
+
+        private static void UpdateTransfromationsRecursive(Scene scene)
+        {
+            scene.UpdateWorldMatrixInternal(false);
+
+            foreach (var childScene in scene.Children)
+            {
+                UpdateTransfromationsRecursive(childScene);
+            }
+        }
+
         private void Children_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
             // Added/removed children of entities in the entity manager have to be added/removed of the entity manager.

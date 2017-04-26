@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -289,7 +289,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 var texturePath = new UFile(textureFullPath);
 
                 var source = texturePath;
-                var texture = new TextureAsset { Source = source, PremultiplyAlpha = false };
+                var texture = new TextureAsset { Source = source, Type = new ColorTextureType { PremultiplyAlpha = false } };
 
                 // Create asset reference
                 assetReferences.Add(new AssetItem(texturePath.GetFileNameWithoutExtension(), texture));

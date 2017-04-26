@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.ComponentModel;
 using SiliconStudio.Assets;
@@ -22,6 +24,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         }
 
         [DataMember(-100), Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; }
 
         /// <inheritdoc/>

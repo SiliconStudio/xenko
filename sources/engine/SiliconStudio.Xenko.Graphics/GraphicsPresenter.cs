@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
 // 
@@ -76,8 +76,6 @@ namespace SiliconStudio.Xenko.Graphics
 
             ProcessPresentationParameters();
 
-            DefaultViewport = new Viewport(0, 0, Description.BackBufferWidth, Description.BackBufferHeight);
-
             // Creates a default DepthStencilBuffer.
             CreateDepthStencilBuffer();
         }
@@ -92,12 +90,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets the description of this presenter.
         /// </summary>
         public PresentationParameters Description { get; private set; }
-
-        /// <summary>
-        /// Default viewport that covers the whole presenter surface.
-        /// </summary>
-        [Obsolete("This is not used anywhere anymore, except being created")]
-        public Viewport DefaultViewport { get; protected set; }
 
         /// <summary>
         /// Gets the default back buffer for this presenter.
@@ -170,8 +162,6 @@ namespace SiliconStudio.Xenko.Graphics
             Description.BackBufferHeight = height;
             Description.BackBufferFormat = format;
 
-            DefaultViewport = new Viewport(0, 0, Description.BackBufferWidth, Description.BackBufferHeight);
-
             ResizeBackBuffer(width, height, format);
             ResizeDepthStencilBuffer(width, height, format);
 
@@ -225,14 +215,14 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Creates the depth stencil buffer.
             var flags = TextureFlags.DepthStencil;
-            if (GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_0 && Description.MultiSampleLevel == MSAALevel.None)
+            if (GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_0 && Description.MultisampleCount == MultisampleCount.None)
             {
                 flags |= TextureFlags.ShaderResource;
             }
 
             // Create texture description
             var depthTextureDescription = TextureDescription.New2D(Description.BackBufferWidth, Description.BackBufferHeight, Description.DepthStencilFormat, flags);
-            depthTextureDescription.MultiSampleLevel = Description.MultiSampleLevel;
+            depthTextureDescription.MultisampleCount = Description.MultisampleCount;
 
             var depthTexture = Texture.New(GraphicsDevice, depthTextureDescription);
             DepthStencilBuffer = depthTexture.DisposeBy(this);

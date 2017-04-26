@@ -1,3 +1,6 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
@@ -10,7 +13,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// Associate an <see cref="Entity"/> with design-time data.
     /// </summary>
     [DataContract("EntityDesign")]
-    public class EntityDesign : IAssetPartDesign<Entity>
+    public class EntityDesign : IAssetPartDesign<Entity>, IEquatable<EntityDesign>
     {
         /// <summary>
         /// Initializes a new instance of <see cref="EntityDesign"/>.
@@ -29,8 +32,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         /// <param name="entity">The entity contained in this instance.</param>
         public EntityDesign([NotNull] Entity entity)
+            : this(entity, string.Empty)
         {
-            Entity = entity;
         }
 
         /// <summary>
@@ -65,6 +68,42 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         /// <inheritdoc/>
         Entity IAssetPartDesign<Entity>.Part { get { return Entity; } set { Entity = value; } }
+
+        /// <inheritdoc />
+        public bool Equals(EntityDesign other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return string.Equals(Folder, other.Folder, StringComparison.OrdinalIgnoreCase) && Entity.Equals(other.Entity) && Equals(Base, other.Base);
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((EntityDesign)obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            // ReSharper disable once NonReadonlyMemberInGetHashCode - this property is not supposed to be changed, except in initializers
+            return Entity.GetHashCode();
+        }
+
+        /// <inheritdoc />
+        public static bool operator ==(EntityDesign left, EntityDesign right)
+        {
+            return Equals(left, right);
+        }
+
+        /// <inheritdoc />
+        public static bool operator !=(EntityDesign left, EntityDesign right)
+        {
+            return !Equals(left, right);
+        }
 
         /// <inheritdoc/>
         public override string ToString()

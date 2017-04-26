@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
@@ -15,7 +15,7 @@
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
     <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <Choose>
@@ -36,42 +36,6 @@
       <ItemGroup Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
         <Reference Include="System" />
         <Reference Include="System.Core" />
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
-      <ItemGroup>
-        <Reference Include="SharpDX">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
-        </Reference>
-        <Reference Include="SharpDX.DXGI">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
-        </Reference>
-        <Reference Include="SharpDX.D3DCompiler">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
-      <ItemGroup>
-        <Reference Include="SharpDX.Direct3D11">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D12' ">
-      <ItemGroup>
-        <Reference Include="SharpDX.Direct3D12">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
-        </Reference>
       </ItemGroup>
     </When>
   </Choose>
@@ -118,7 +82,6 @@
     <Compile Include="Animations\CompressedTimeSpan.cs" />
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedQuaternionGroup.cs" />
     <Compile Include="Animations\Interpolator.cs" />
-    <Compile Include="Engine\ChildSceneComponent.cs" />
     <Compile Include="Engine\ComponentOrderAttribute.cs" />
     <Compile Include="Engine\Design\EffectCompilationMode.cs" />
     <Compile Include="Engine\Design\EntityChildPropertyResolver.cs" />
@@ -143,14 +106,6 @@
     <Compile Include="Engine\LightShaftComponent.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
-    <Compile Include="Engine\NavigationComponent.cs" />
-    <Compile Include="Engine\NavigationMesh.cs" />
-    <Compile Include="Engine\NavigationAgentSettings.cs" />
-    <Compile Include="Engine\NavigationMeshBuildSettings.cs" />
-    <Compile Include="Engine\NavigationMeshlayer.cs" />
-    <Compile Include="Engine\NavigationMeshTile.cs" />
-    <Compile Include="Engine\NavigationQuerySettings.cs" />
-    <Compile Include="Engine\NavigationRaycastResult.cs" />
     <Compile Include="Engine\Network\ClientRouterMessage.cs" />
     <Compile Include="Engine\Network\ExceptionMessage.cs" />
     <Compile Include="Engine\Network\SimpleSocketException.cs" />
@@ -171,10 +126,8 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketClient.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
     <Compile Include="Engine\Processors\InputProcessor.cs" />
-    <Compile Include="Engine\Processors\ChildSceneProcessor.cs" />
     <Compile Include="Engine\Processors\ModelTransformProcessor.cs" />
     <Compile Include="Engine\Prefab.cs" />
-    <Compile Include="Engine\Processors\NavigationProcessor.cs" />
     <Compile Include="Engine\StartupScript.cs" />
     <Compile Include="Engine\TransformLink.cs" />
     <Compile Include="Engine\TransformOperation.cs" />
@@ -182,9 +135,15 @@
     <Compile Include="Profiling\GameProfilerSystem.cs" />
     <Compile Include="Profiling\GcProfiling.cs" />
     <Compile Include="Rendering\ActiveRenderStage.cs" />
+    <Compile Include="Rendering\Background\BackgroundShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>BackgroundShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\BackToFrontSortMode.cs" />
     <Compile Include="Rendering\Compositing\ClearRenderer.cs" />
-    <Compile Include="Rendering\Compositing\DefaultRenderTargets.cs" />
+    <Compile Include="Rendering\Compositing\DebugRenderer.cs" />
     <Compile Include="Rendering\Compositing\EditorTopLevelCompositor.cs" />
     <Compile Include="Rendering\Compositing\DelegateSceneRenderer.cs" />
     <Compile Include="Rendering\Compositing\ForceAspectRatioSceneRenderer.cs" />
@@ -192,11 +151,33 @@
     <Compile Include="Rendering\Compositing\ForwardRenderer.LightProbes.cs" />
     <Compile Include="Rendering\Compositing\ForwardRenderer.VRUtils.cs" />
     <Compile Include="Rendering\Compositing\GraphicsCompositor.cs" />
+    <Compile Include="Rendering\Compositing\GraphicsCompositorHelper.cs" />
+    <Compile Include="Rendering\Compositing\IRenderTargetSemantic.cs" />
+    <Compile Include="Rendering\Compositing\MSAAResolver.cs" />
+    <None Include="packages.config" />
+    <None Include="Rendering\Compositing\MSAAResolverEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MSAAResolverEffect.cs</LastGenOutput>
+    </None>
+    <Compile Include="Rendering\Compositing\MSAAResolverEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MSAAResolverEffect.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Compositing\MSAAResolverShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MSAAResolverShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Compositing\RenderTargetDescription.cs" />
     <Compile Include="Rendering\Compositing\RenderTextureSceneRenderer.cs" />
     <Compile Include="Rendering\Compositing\SceneCameraRenderer.cs" />
     <Compile Include="Rendering\Compositing\SceneRendererCollection.cs" />
     <Compile Include="Rendering\Compositing\SingleStageRenderer.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
+    <Compile Include="Rendering\Compositing\VROverlayRenderer.cs" />
     <Compile Include="Rendering\Compositing\VRRendererSettings.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoCompute.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoComputeEffect.cs">
@@ -230,6 +211,19 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Images\ImageScaler\SamplingPattern.cs" />
+    <Compile Include="Rendering\Images\RangeConversion\RangeCompressorShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>RangeCompressorShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\RangeConversion\RangeDecompressorShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>RangeDecompressorShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Compositing\SceneRendererBase.cs" />
     <Compile Include="Rendering\Images\LightShafts\PostEffectBoundingRay.cs">
       <AutoGen>True</AutoGen>
@@ -262,6 +256,14 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>VolumeMinMaxShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Compositing\RenderOutputValidator.cs" />
+    <Compile Include="Rendering\LightProbes\LightProbeProcessor.cs" />
+    <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceNormalStreamShading.cs">
+      <DependentUpon>MaterialSurfaceNormalStreamShading.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\RenderViewFlags.cs" />
     <Compile Include="Rendering\Skyboxes\CubemapSceneRenderer.cs" />
@@ -312,6 +314,22 @@
     <Compile Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightRamp.cs" />
+    <None Include="Rendering\Background\BackgroundShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>BackgroundShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Compositing\MSAAResolverShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MSAAResolverShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\RangeConversion\RangeCompressorShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>RangeCompressorShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\RangeConversion\RangeDecompressorShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>RangeDecompressorShader.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Compositing\DefaultGraphicsCompositorLevel10.xkgfxcomp" />
     <None Include="Rendering\Compositing\DefaultGraphicsCompositorLevel9.xkgfxcomp" />
     <None Include="Rendering\Images\Dither\Dither.xksl">
@@ -574,7 +592,6 @@
     <Compile Include="Rendering\ResourceGroupEntry.cs" />
     <Compile Include="Rendering\RootEffectRenderFeature.cs" />
     <Compile Include="Rendering\RootRenderFeature.cs" />
-    <Compile Include="Rendering\RootRenderFeatureFilter.cs" />
     <Compile Include="Rendering\ShadowMeshPipelineProcessor.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapShaderData.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapShaderGroupData.cs" />
@@ -633,9 +650,6 @@
     <Compile Include="Rendering\Shadows\ShadowMapRenderView.cs" />
     <Compile Include="Rendering\SimpleGroupToRenderStageSelector.cs" />
     <Compile Include="Rendering\SkinningRenderFeature.cs" />
-    <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxRenderProcessor.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxRenderFeature.cs" />
     <Compile Include="Rendering\LightProbes\ComputeSphericalHarmonics.cs">
       <DependentUpon>ComputeSphericalHarmonics.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -716,6 +730,10 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeSphericalHarmonics.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSurfaceNormalStreamShading.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceNormalStreamShading.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Shadows\ShadowMapCasterCubeMap.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapCasterCubeMap.cs</LastGenOutput>
@@ -776,7 +794,6 @@
     <Compile Include="Engine\ModelNodeLinkComponent.cs" />
     <Compile Include="Engine\SceneInstance.cs" />
     <Compile Include="Engine\ScriptComponent.cs" />
-    <Compile Include="Engine\SkyboxComponent.cs" />
     <Compile Include="Engine\SpriteComponent.cs" />
     <Compile Include="Engine\TransformComponent.cs" />
     <Compile Include="Rendering\RenderEffectState.cs" />
@@ -905,7 +922,7 @@
     <Compile Include="Engine\Processors\CameraProjectionMode.cs" />
     <Compile Include="Rendering\Compositing\SceneCameraSlot.cs" />
     <Compile Include="Rendering\Compositing\SceneCameraSlotCollection.cs" />
-    <Compile Include="Rendering\Compositing\SceneCameraSlotIndex.cs" />
+    <Compile Include="Rendering\Compositing\SceneCameraSlotId.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSubtract.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSubtract1.cs">
       <AutoGen>True</AutoGen>
@@ -2490,12 +2507,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Skyboxes\ComputeSkyboxCubeMapColor.cs">
-      <DependentUpon>ComputeSkyboxCubeMapColor.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Rendering\Skyboxes\CubemapUtils.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2521,13 +2532,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\Skyboxes\Skybox.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxBackground.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxEffect.cs">
-      <DependentUpon>SkyboxEffect.xkfx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Rendering\Skyboxes\SkyboxKeys.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxShader.cs">
       <DependentUpon>SkyboxShader.xksl</DependentUpon>
@@ -2822,9 +2826,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Starter\XenkoApplicationDelegate.iOS.cs" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Rendering\BRDF\BRDFMicrofacet.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BRDFMicrofacet.cs</LastGenOutput>
@@ -3776,6 +3777,7 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>PickingShader.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\XenkoDefaultSplashScreen.xktex" />
     <None Include="Rendering\XenkoDefaultFont.xkfnt" />
     <None Include="Rendering\XenkoWireframeShadingEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -3871,10 +3873,6 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TransformationSkinning.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Skyboxes\ComputeSkyboxCubeMapColor.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeSkyboxCubeMapColor.cs</LastGenOutput>
-    </None>
     <None Include="Rendering\Skyboxes\CubemapUtils.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapUtils.cs</LastGenOutput>
@@ -3890,10 +3888,6 @@
     <None Include="Rendering\Skyboxes\RoughnessCubeMapEnvironmentColor.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>RoughnessCubeMapEnvironmentColor.cs</LastGenOutput>
-    </None>
-    <None Include="Rendering\Skyboxes\SkyboxEffect.xkfx">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>SkyboxEffect.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Skyboxes\SkyboxShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -4022,10 +4016,6 @@
     <Folder Include="Rendering\Shadows\obsolete\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
-      <Project>{FCF36D39-BFFE-4719-B245-05640EE34C5F}</Project>
-      <Name>SiliconStudio.Core.Native</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>
@@ -4076,11 +4066,6 @@
       <Name>SiliconStudio.Xenko.Native</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
-      <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
-      <Name>SiliconStudio.Xenko.Native</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
       <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
       <Name>SiliconStudio.Xenko.Shaders</Name>
@@ -4106,8 +4091,10 @@
   <ItemGroup>
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\build\packages\System.Threading.Tasks.Dataflow.4.6.0\lib\netstandard1.1\System.Threading.Tasks.Dataflow.dll</HintPath>
-      <Private>True</Private>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Rendering\XenkoDefaultSplashScreen.jpg" />
   </ItemGroup>
   <Import Project="..\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems" Label="Shared" />
   <Choose>

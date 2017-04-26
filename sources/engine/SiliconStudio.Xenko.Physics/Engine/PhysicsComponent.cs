@@ -1,5 +1,5 @@
-// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.ComponentModel;
@@ -11,7 +11,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Physics;
 using SiliconStudio.Core.MicroThreading;
-using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Physics.Engine;
 
 namespace SiliconStudio.Xenko.Engine
@@ -101,26 +100,6 @@ namespace SiliconStudio.Xenko.Engine
         [DataMemberIgnore]
         public bool ProcessCollisions { get; set; } = false;
 
-        protected bool Simulating = true;
-
-        protected virtual void EnsureEnabledState()
-        {
-            if (NativeCollisionObject == null) return;
-
-            if (base.Enabled && !Simulating)
-            {
-                Simulation.AddCollider(this, (CollisionFilterGroupFlags)CollisionGroup, CanCollideWith);
-                Simulating = true;
-            }
-            else if (!base.Enabled && Simulating)
-            {
-                Simulation.RemoveCollider(this);
-                Simulating = false;
-            }
-
-            DebugEntity?.EnableAll(base.Enabled, true);
-        }
-
         /// <summary>
         /// Gets or sets if this element is enabled in the physics engine
         /// </summary>
@@ -132,7 +111,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </userdoc>
         [DataMember(-10)]
         [DefaultValue(true)]
-        public sealed override bool Enabled
+        public override bool Enabled
         {
             get
             {
@@ -142,7 +121,29 @@ namespace SiliconStudio.Xenko.Engine
             {
                 base.Enabled = value;
 
-                EnsureEnabledState();
+                if (NativeCollisionObject == null) return;
+
+                if (value)
+                {
+                    //allow collisions
+                    if ((NativeCollisionObject.CollisionFlags & BulletSharp.CollisionFlags.NoContactResponse) != 0)
+                    {
+                        NativeCollisionObject.CollisionFlags ^= BulletSharp.CollisionFlags.NoContactResponse;
+                    }
+
+                    //allow simulation
+                    NativeCollisionObject.ForceActivationState(canSleep ? BulletSharp.ActivationState.ActiveTag : BulletSharp.ActivationState.DisableDeactivation);
+                }
+                else
+                {
+                    //prevent collisions
+                    NativeCollisionObject.CollisionFlags |= BulletSharp.CollisionFlags.NoContactResponse;
+
+                    //prevent simulation
+                    NativeCollisionObject.ForceActivationState(BulletSharp.ActivationState.DisableSimulation);
+                }
+
+                DebugEntity?.EnableAll(value, true);
             }
         }
 
@@ -534,17 +535,7 @@ namespace SiliconStudio.Xenko.Engine
             var scaling = Matrix.Scaling(scale);
             Matrix.Multiply(ref scaling, ref physicsTransform, out entity.Transform.WorldMatrix);
 
-            if (entity.Transform.Parent == null)
-            {
-                entity.Transform.LocalMatrix = entity.Transform.WorldMatrix;
-            }
-            else
-            {
-                //We are not root so we need to derive the local matrix as well
-                var inverseParent = entity.Transform.Parent.WorldMatrix;
-                inverseParent.Invert();
-                Matrix.Multiply(ref entity.Transform.WorldMatrix, ref inverseParent, out entity.Transform.LocalMatrix);
-            }
+            entity.Transform.UpdateLocalFromWorld();
 
             Quaternion rotQuat;
             entity.Transform.LocalMatrix.Decompose(out scale, out rotQuat, out translation);

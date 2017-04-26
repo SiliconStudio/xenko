@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -20,6 +20,8 @@ namespace SiliconStudio.Xenko.Engine.Processors
     /// </summary>
     public sealed class ScriptSystem : GameSystemBase
     {
+        private const long UpdateBit = 1L << 32;
+
         internal readonly static Logger Log = GlobalLogger.GetLogger("ScriptSystem");
 
         /// <summary>
@@ -76,7 +78,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 var startupScript = script as StartupScript;
                 if (startupScript != null)
                 {
-                    Scheduler.Add(startupScript.Start, startupScript.Priority);
+                    startupScript.StartSchedulerNode = Scheduler.Add(startupScript.Start, startupScript.Priority);
                 }
                 else
                 {
@@ -84,7 +86,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                     var asyncScript = script as AsyncScript;
                     if (asyncScript != null)
                     {
-                        asyncScript.MicroThread = AddTask(asyncScript.Execute, asyncScript.Priority);
+                        asyncScript.MicroThread = AddTask(asyncScript.Execute, asyncScript.Priority & UpdateBit);
                     }
                 }
             }
@@ -94,7 +96,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             {
                 // Update priority
                 var updateSchedulerNode = syncScript.UpdateSchedulerNode;
-                updateSchedulerNode.Value.Priority = syncScript.Priority;
+                updateSchedulerNode.Value.Priority = syncScript.Priority | UpdateBit;
 
                 // Schedule
                 Scheduler.Schedule(updateSchedulerNode, ScheduleMode.Last);
@@ -106,6 +108,13 @@ namespace SiliconStudio.Xenko.Engine.Processors
             // Flag scripts as not being live reloaded after starting/executing them for the first time
             foreach (var script in scriptsToStartCopy)
             {
+                // Remove the start node after it got executed
+                var startupScript = script as StartupScript;
+                if (startupScript != null)
+                {
+                    startupScript.StartSchedulerNode = null;
+                }
+
                 if (script.IsLiveReloading)
                     script.IsLiveReloading = false;
             }
@@ -128,7 +137,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// </summary>
         /// <param name="microThreadFunction">The micro thread function.</param>
         /// <returns>MicroThread.</returns>
-        public MicroThread AddTask(Func<Task> microThreadFunction, int priority = 0)
+        public MicroThread AddTask(Func<Task> microThreadFunction, long priority = 0)
         {
             var microThread = Scheduler.Create();
             microThread.Priority = priority;
@@ -162,7 +171,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             var syncScript = script as SyncScript;
             if (syncScript != null)
             {
-                syncScript.UpdateSchedulerNode = Scheduler.Create(syncScript.Update, syncScript.Priority);
+                syncScript.UpdateSchedulerNode = Scheduler.Create(syncScript.Update, syncScript.Priority & UpdateBit);
                 syncScript.UpdateSchedulerNode.Value.Token = syncScript;
                 syncScripts.Add(syncScript);
             }
@@ -194,11 +203,23 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 asyncScript?.MicroThread.Cancel();
             }
 
-            var syncScript = script as SyncScript;
-            if (syncScript != null)
+            // Remove script from the scheduler, in case it was removed during scheduler execution
+            var startupScript = script as StartupScript;
+            if (startupScript != null)
             {
-                syncScripts.Remove(syncScript);
-                syncScript.UpdateSchedulerNode = null;
+                if (startupScript.StartSchedulerNode != null)
+                {
+                    Scheduler?.Unschedule(startupScript.StartSchedulerNode);
+                    startupScript.StartSchedulerNode = null;
+                }
+
+                var syncScript = script as SyncScript;
+                if (syncScript != null)
+                {
+                    syncScripts.Remove(syncScript);
+                    Scheduler?.Unschedule(syncScript.UpdateSchedulerNode);
+                    syncScript.UpdateSchedulerNode = null;
+                }
             }
         }
 

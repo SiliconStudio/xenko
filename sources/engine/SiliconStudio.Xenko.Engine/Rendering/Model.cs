@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// Collection of <see cref="Mesh"/>, each one usually being a different LOD of the same Model.
     /// The effect system will select the appropriate LOD depending on distance, current pass, and other effect-specific requirements.
     /// </summary>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Model>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<Model>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<Model>))]
     [DataContract]
     public class Model : IEnumerable

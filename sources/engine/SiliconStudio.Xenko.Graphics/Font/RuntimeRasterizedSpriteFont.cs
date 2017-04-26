@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
     /// <summary>
     /// A dynamic font. That is a font that generate its character bitmaps at execution.
     /// </summary>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<RuntimeRasterizedSpriteFont>), Profile = "Content")]
+    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<RuntimeRasterizedSpriteFont>), Profile = "Content")]
     [ContentSerializer(typeof(RuntimeRasterizedSpriteFontContentSerializer))]
     [DataSerializer(typeof(RuntimeRasterizedSpriteFontSerializer))]
     internal class RuntimeRasterizedSpriteFont : SpriteFont

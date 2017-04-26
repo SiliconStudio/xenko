@@ -1,6 +1,6 @@
 !MaterialAsset
 Id: 9ffbb401-e3ee-455a-93c2-25d9a8d7599d
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
@@ -12,7 +12,6 @@ Attributes:
             Offset: {X: 0.0, Y: 0.0}
             Swizzle: null
         IsXYNormal: true
-        InvertY: false
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeTextureScalar
             Texture: f93c452e-909a-4162-a27d-81358cdde51b:Materials/iron_rust_blend/iron_rust_gls

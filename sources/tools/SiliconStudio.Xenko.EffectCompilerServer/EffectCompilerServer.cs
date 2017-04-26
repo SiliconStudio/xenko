@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
     {
         private readonly Dictionary<Guid, SocketMessageLayer> gameStudioPerPackageId = new Dictionary<Guid, SocketMessageLayer>();
 
-        public EffectCompilerServer() : base($"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.EffectCompilerServer.exe")
+        public EffectCompilerServer() : base($"/service/{XenkoVersion.NuGetVersion}/SiliconStudio.Xenko.EffectCompilerServer.exe")
         {
             // TODO: Asynchronously initialize Irony grammars to improve first compilation request performance?
         }

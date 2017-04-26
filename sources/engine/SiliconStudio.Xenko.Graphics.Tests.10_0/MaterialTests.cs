@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -34,7 +34,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             //CurrentVersion = 2;
             //CurrentVersion = 3; // Fix normal maps
             //CurrentVersion = 4; // Fix normal maps again
-            CurrentVersion = 5; // Noise due to changing normals from signed to unsigned
+            //CurrentVersion = 5; // Noise due to changing normals from signed to unsigned
+            CurrentVersion = 6; // MSBUild tests
             this.createMaterial = createMaterial;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
         }

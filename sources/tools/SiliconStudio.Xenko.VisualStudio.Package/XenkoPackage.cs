@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.VisualStudio
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
     public sealed class XenkoPackage : Package, IOleComponent
     {
-        public const string Version = "1.4";
+        public const string Version = "2.0";
 
         private readonly Dictionary<EnvDTE.Project, string> previousProjectPlatforms = new Dictionary<EnvDTE.Project, string>();
         private EnvDTE.Project currentStartupProject;
@@ -93,31 +93,7 @@ namespace SiliconStudio.Xenko.VisualStudio
         {
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", ToString()));
         }
-
-        /// <summary>
-        ///     This function is called when the user clicks the menu item that shows the
-        ///     tool window. See the Initialize method to see how the menu item is associated to
-        ///     this function using the OleMenuCommandService service and the MenuCommand class.
-        /// </summary>
-        private void ShowToolWindow(object sender, EventArgs e)
-        {
-            // Get the instance number 0 of this tool window. This window is single instance so this instance
-            // is actually the only one.
-            // The last flag is set to true so that if the tool window does not exists it will be created.
-            //ToolWindowPane window = FindToolWindow(typeof (MyToolWindow), 0, true);
-            //if ((null == window) || (null == window.Frame))
-            //{
-            //    throw new NotSupportedException(Resources.CanNotCreateWindow);
-            //}
-            //var windowFrame = (IVsWindowFrame) window.Frame;
-            //ErrorHandler.ThrowOnFailure(windowFrame.Show());
-        }
-
-        private void MenuItemCallback(object sender, EventArgs e)
-        {
-            Environment.SetEnvironmentVariable("Test1", "Test2");
-        }
-
+        
         #region Package Members
 
         /// <summary>
@@ -132,6 +108,7 @@ namespace SiliconStudio.Xenko.VisualStudio
             IDEBuildLogger.UserRegistryRoot = UserRegistryRoot;
 
             solutionEventsListener = new SolutionEventsListener(this);
+            solutionEventsListener.BeforeSolutionClosed += solutionEventsListener_BeforeSolutionClosed;
             solutionEventsListener.AfterSolutionBackgroundLoadComplete += solutionEventsListener_AfterSolutionBackgroundLoadComplete;
             solutionEventsListener.AfterActiveConfigurationChange += SolutionEventsListener_AfterActiveConfigurationChange;
             solutionEventsListener.StartupProjectChanged += SolutionEventsListener_OnStartupProjectChanged;
@@ -207,8 +184,8 @@ namespace SiliconStudio.Xenko.VisualStudio
             foreach (System.Diagnostics.StackFrame stackFrame in new StackTrace().GetFrames())
             {
                 var method = stackFrame.GetMethod();
-                if (method.DeclaringType.FullName == "Xamarin.VisualStudio.TastyFlavoredProject" &&
-                    method.Name == "OnAfterSetStartupProjectCommandExecuted")
+                if (method.DeclaringType.FullName == "Xamarin.VisualStudio.TastyFlavoredProject" && method.Name == "OnAfterSetStartupProjectCommandExecuted" ||
+                    method.DeclaringType.FullName == "Xamarin.VisualStudio.SolutionConfigurationManager" && method.Name == "ChangePlatform")
                 {
                     UpdateConfigurationFromStartupProject();
                     return;
@@ -301,15 +278,7 @@ namespace SiliconStudio.Xenko.VisualStudio
                     var startupProjects = (object[])dte.Solution.SolutionBuild.StartupProjects;
                     if (!startupProjects.Cast<string>().Contains(project.UniqueName))
                     {
-                        try
-                        {
-                            configurationLock = true;
-                            buildManager.set_StartupProject(VsHelper.ToHierarchy(project));
-                        }
-                        finally
-                        {
-                            configurationLock = false;
-                        }
+                        buildManager.set_StartupProject(VsHelper.ToHierarchy(project));
                     }
 
                     previousProjectPlatforms[project] = context.PlatformName;
@@ -367,6 +336,12 @@ namespace SiliconStudio.Xenko.VisualStudio
             }
         }
 
+        private void solutionEventsListener_BeforeSolutionClosed()
+        {
+            // Disable UIContext (this will hide Xenko menus)
+            UpdateCommandVisibilityContext(false);
+        }
+
         private void InitializeCommandProxy()
         {
             // Initialize the command proxy from the current solution's package
@@ -377,8 +352,13 @@ namespace SiliconStudio.Xenko.VisualStudio
             // Get General Output pane (for error logging)
             var generalOutputPane = GetGeneralOutputPane();
 
-            // If a package is associated with the solution, check if the correct version was found
             var xenkoPackageInfo = XenkoCommandsProxy.CurrentPackageInfo;
+
+            // Enable UIContext depending on wheter it is a Xenko project. This will show or hide Xenko menus.
+            var isXenkoSolution = xenkoPackageInfo.LoadedVersion != null;
+            UpdateCommandVisibilityContext(isXenkoSolution);
+
+            // If a package is associated with the solution, check if the correct version was found
             if (xenkoPackageInfo.ExpectedVersion != null && xenkoPackageInfo.ExpectedVersion != xenkoPackageInfo.LoadedVersion)
             {
                 if (xenkoPackageInfo.ExpectedVersion < XenkoCommandsProxy.MinimumVersion)
@@ -405,36 +385,27 @@ namespace SiliconStudio.Xenko.VisualStudio
             }
 
             // Initialize the build monitor, that will display BuildEngine results in the Build Output pane.
-            // Seems like VS2015 display <Exec> output directly without waiting end of execution, so no need for all this anymore!
-            // TODO: Need to find a better way to detect VS version?
-            int visualStudioVersion;
-            if (!int.TryParse(dte2.Version.Split('.')[0], out visualStudioVersion))
-                visualStudioVersion = 12;
+            buildLogPipeGenerator = new BuildLogPipeGenerator(this);
 
-            if (visualStudioVersion < 14)
+            try
             {
-                buildLogPipeGenerator = new BuildLogPipeGenerator(this);
-
-                try
-                {
-                    // Start PackageBuildMonitorRemote in a separate app domain
-                    if (buildMonitorDomain != null)
-                        AppDomain.Unload(buildMonitorDomain);
-
-                    buildMonitorDomain = XenkoCommandsProxy.CreateXenkoDomain();
-                    XenkoCommandsProxy.InitialzeFromSolution(solutionPath, buildMonitorDomain);
-                    var remoteCommands = XenkoCommandsProxy.CreateProxy(buildMonitorDomain);
-                    remoteCommands.StartRemoteBuildLogServer(new BuildMonitorCallback(), buildLogPipeGenerator.LogPipeUrl);
-                }
-                catch (Exception e)
-                {
-                    generalOutputPane.OutputStringThreadSafe($"Error loading Xenko SDK: {e}\r\n");
-                    generalOutputPane.Activate();
-
-                    // Unload domain right away
+                // Start PackageBuildMonitorRemote in a separate app domain
+                if (buildMonitorDomain != null)
                     AppDomain.Unload(buildMonitorDomain);
-                    buildMonitorDomain = null;
-                }
+
+                buildMonitorDomain = XenkoCommandsProxy.CreateXenkoDomain();
+                XenkoCommandsProxy.InitialzeFromSolution(solutionPath, buildMonitorDomain);
+                var remoteCommands = XenkoCommandsProxy.CreateProxy(buildMonitorDomain);
+                remoteCommands.StartRemoteBuildLogServer(new BuildMonitorCallback(), buildLogPipeGenerator.LogPipeUrl);
+            }
+            catch (Exception e)
+            {
+                generalOutputPane.OutputStringThreadSafe($"Error loading Xenko SDK: {e}\r\n");
+                generalOutputPane.Activate();
+
+                // Unload domain right away
+                AppDomain.Unload(buildMonitorDomain);
+                buildMonitorDomain = null;
             }
 
             // Preinitialize the parser in a separate thread
@@ -453,6 +424,15 @@ namespace SiliconStudio.Xenko.VisualStudio
                     }
                 });
             thread.Start();
+        }
+
+        private void UpdateCommandVisibilityContext(bool enabled)
+        {
+            IVsMonitorSelection selMon = (IVsMonitorSelection)GetService(typeof(SVsShellMonitorSelection));
+            uint cmdUIContextXenko;
+            var cmdSet = GuidList.guidXenko_VisualStudio_PackageCmdSet;
+            if (selMon.GetCmdUIContextCookie(ref cmdSet, out cmdUIContextXenko) == VSConstants.S_OK)
+                selMon.SetCmdUIContext(cmdUIContextXenko, enabled ? 1 : 0);
         }
 
         protected override void Dispose(bool disposing)

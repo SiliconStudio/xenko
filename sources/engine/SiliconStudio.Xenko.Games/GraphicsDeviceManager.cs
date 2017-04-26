@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
 // 
@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Games
 
         private bool isFullScreen;
 
-        private MSAALevel preferredMultiSampleLevel;
+        private MultisampleCount preferredMultisampleCount;
 
         private PixelFormat preferredBackBufferFormat;
 
@@ -117,7 +117,7 @@ namespace SiliconStudio.Xenko.Games
             preferredBackBufferWidth = DefaultBackBufferWidth;
             preferredBackBufferHeight = DefaultBackBufferHeight;
             preferredRefreshRate = new Rational(60, 1);
-            PreferredMultiSampleLevel = MSAALevel.None;
+            PreferredMultisampleCount = MultisampleCount.None;
             PreferredGraphicsProfile = new[]
                 {
                     GraphicsProfile.Level_11_1, 
@@ -257,18 +257,18 @@ namespace SiliconStudio.Xenko.Games
         /// Gets or sets a value indicating whether [prefer multi sampling].
         /// </summary>
         /// <value><c>true</c> if [prefer multi sampling]; otherwise, <c>false</c>.</value>
-        public MSAALevel PreferredMultiSampleLevel
+        public MultisampleCount PreferredMultisampleCount
         {
             get
             {
-                return preferredMultiSampleLevel;
+                return preferredMultisampleCount;
             }
 
             set
             {
-                if (preferredMultiSampleLevel != value)
+                if (preferredMultisampleCount != value)
                 {
-                    preferredMultiSampleLevel = value;
+                    preferredMultisampleCount = value;
                     deviceSettingsChanged = true;
                 }
             }
@@ -641,7 +641,7 @@ namespace SiliconStudio.Xenko.Games
                     PreferredRefreshRate =  PreferredRefreshRate,
                     PreferredFullScreenOutputIndex = PreferredFullScreenOutputIndex,
                     IsFullScreen = IsFullScreen,
-                    PreferredMultiSampleLevel = PreferredMultiSampleLevel,
+                    PreferredMultisampleCount = PreferredMultisampleCount,
                     SynchronizeWithVerticalRetrace = SynchronizeWithVerticalRetrace,
                     PreferredGraphicsProfile = (GraphicsProfile[])PreferredGraphicsProfile.Clone(),
                     ColorSpace = PreferredColorSpace,
@@ -743,10 +743,10 @@ namespace SiliconStudio.Xenko.Games
                             return leftFormat >= rightFormat ? 1 : -1;
                         }
 
-                        // Sort by MultiSampleCount
-                        if (leftParams.MultiSampleLevel != rightParams.MultiSampleLevel)
+                        // Sort by MultisampleCount
+                        if (leftParams.MultisampleCount != rightParams.MultisampleCount)
                         {
-                            return leftParams.MultiSampleLevel <= rightParams.MultiSampleLevel ? 1 : -1;
+                            return leftParams.MultisampleCount <= rightParams.MultisampleCount ? 1 : -1;
                         }
 
                         // Sort by AspectRatio

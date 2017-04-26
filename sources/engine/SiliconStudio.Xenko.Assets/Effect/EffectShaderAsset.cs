@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.IO;
@@ -19,14 +19,13 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// </summary>
     [DataContract("EffectShader")]
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true, AllowArchetype = false)]
-    [AssetCompiler(typeof(EffectShaderAssetCompiler))]
     [Display(920, "Effect Shader")]
     public sealed class EffectShaderAsset : ProjectSourceCodeWithFileGeneratorAsset
     {
         /// <summary>
         /// The default file extension used by the <see cref="EffectShaderAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xksl;.pdxsl";
+        public const string FileExtension = ".xksl";
 
         public static Regex Regex = new Regex(@"(^|\s)(class)($|\s)");
 

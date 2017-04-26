@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11 || SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
 
@@ -141,7 +141,7 @@ namespace SiliconStudio.Xenko.Graphics
                 unknown.AddReference();
             }
 
-            tex.InitializeFrom(dxTexture2D, false);
+            tex.InitializeFromImpl(dxTexture2D, false);
 
             return tex;
         }
@@ -205,7 +205,7 @@ namespace SiliconStudio.Xenko.Graphics
                 unknown.AddReference();
             }
 
-            tex.InitializeFrom(dxTexture2D, false);
+            tex.InitializeFromImpl(dxTexture2D, false);
 
             return tex;
         }

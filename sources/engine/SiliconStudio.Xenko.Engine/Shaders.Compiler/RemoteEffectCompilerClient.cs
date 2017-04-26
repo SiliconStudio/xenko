@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
         public async Task<SocketMessageLayer> Connect(Guid? packageId)
         {
-            var url = string.Format("/service/{0}/SiliconStudio.Xenko.EffectCompilerServer.exe", XenkoVersion.CurrentAsText);
+            var url = string.Format("/service/{0}/SiliconStudio.Xenko.EffectCompilerServer.exe", XenkoVersion.NuGetVersion);
             if (packageId.HasValue)
                 url += string.Format("?packageid={0}", packageId.Value);
 

@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Threading.Tasks;
 
@@ -30,7 +30,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestSpriteBatch3D()
         {
-            CurrentVersion = 3;
+            //CurrentVersion = 3;
+            CurrentVersion = 4; // Texture assets set to uncompressed
             GraphicsDeviceManager.PreferredBackBufferWidth = 640;
             GraphicsDeviceManager.PreferredBackBufferHeight = 640;
         }

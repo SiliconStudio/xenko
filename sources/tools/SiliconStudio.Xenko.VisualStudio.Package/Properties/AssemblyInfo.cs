@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Reflection;
 using System.Resources;
@@ -7,30 +7,20 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SiliconStudio.Xenko.VisualStudio;
 
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
+[assembly: AssemblyCompany("Silicon Studio Corporation")]
+[assembly: AssemblyCopyright("Copyright © 2011-2017 Silicon Studio Corp. All rights reserved.")]
+
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+
 [assembly: AssemblyTitle("Xenko.VisualStudio.Package")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("SiliconStudio")]
 [assembly: AssemblyProduct("Xenko.VisualStudio.Package")]
-[assembly: AssemblyCopyright("")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]   
+
+[assembly: AssemblyConfiguration("")]
 [assembly: ComVisible(false)]     
 [assembly: CLSCompliant(false)]
 [assembly: NeutralResourcesLanguage("en-US")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
 
 [assembly: AssemblyVersion(XenkoPackage.Version)]
 [assembly: AssemblyFileVersion(XenkoPackage.Version)]

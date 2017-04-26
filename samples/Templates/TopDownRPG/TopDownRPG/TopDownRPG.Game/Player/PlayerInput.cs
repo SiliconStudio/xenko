@@ -1,4 +1,6 @@
-﻿using System.Linq;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Linq;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Events;
@@ -58,7 +60,7 @@ namespace TopDownRPG.Player
 
                     if (modelComponentA != null && modelComponentB != null)
                     {
-                        var materialCount = modelComponentB.Materials.Count;
+                        var materialCount = modelComponentB.Model.Materials.Count;
                         modelComponentA.Model = modelComponentB.Model;
                         modelComponentA.Materials.Clear();
                         for (int i = 0; i < materialCount; i++)

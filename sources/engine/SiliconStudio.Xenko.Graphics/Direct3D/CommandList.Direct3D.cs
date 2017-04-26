@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 using System;
 using SharpDX.Mathematics.Interop;
@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly SharpDX.Direct3D11.CommonShaderStage[] shaderStages = new SharpDX.Direct3D11.CommonShaderStage[StageCount];
         private readonly Buffer[] constantBuffers = new Buffer[StageCount * ConstantBufferCount];
         private readonly SamplerState[] samplerStates = new SamplerState[StageCount * SamplerStateCount];
-        private readonly GraphicsResourceBase[] unorderedAccessViews = new GraphicsResourceBase[UnorderedAcccesViewCount]; // Only CS
+        private readonly SharpDX.Direct3D11.UnorderedAccessView[] unorderedAccessViews = new SharpDX.Direct3D11.UnorderedAccessView[UnorderedAcccesViewCount]; // Only CS
 
         private PipelineState currentPipelineState;
 
@@ -118,27 +118,16 @@ namespace SiliconStudio.Xenko.Graphics
             outputMerger.SetTargets(depthStencilBuffer != null ? depthStencilBuffer.NativeDepthStencilView : null, renderTargetCount, currentRenderTargetViews);
         }
 
-        /// <summary>
-        /// Binds a single scissor rectangle to the rasterizer stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="top">The top.</param>
-        /// <param name="right">The right.</param>
-        /// <param name="bottom">The bottom.</param>
-        public void SetScissorRectangles(int left, int top, int right, int bottom)
+        unsafe partial void SetScissorRectangleImpl(ref Rectangle scissorRectangle)
         {
-            NativeDeviceContext.Rasterizer.SetScissorRectangle(left, top, right, bottom);
+            NativeDeviceContext.Rasterizer.SetScissorRectangle(scissorRectangle.Left, scissorRectangle.Top, scissorRectangle.Right, scissorRectangle.Bottom);
         }
 
-        /// <summary>
-        /// Binds a set of scissor rectangles to the rasterizer stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="scissorRectangles">The set of scissor rectangles to bind.</param>
-        public unsafe void SetScissorRectangles(params Rectangle[] scissorRectangles)
+        unsafe partial void SetScissorRectanglesImpl(int scissorCount, Rectangle[] scissorRectangles)
         {
             if (scissorRectangles == null) throw new ArgumentNullException("scissorRectangles");
-            var localScissorRectangles = new RawRectangle[scissorRectangles.Length];
-            for (int i = 0; i < scissorRectangles.Length; i++)
+            var localScissorRectangles = new RawRectangle[scissorCount];
+            for (int i = 0; i < scissorCount; i++)
             {
                 localScissorRectangles[i] = new RawRectangle(scissorRectangles[i].X, scissorRectangles[i].Y, scissorRectangles[i].Right, scissorRectangles[i].Bottom);
             }
@@ -181,19 +170,6 @@ namespace SiliconStudio.Xenko.Graphics
             fixed (Viewport* viewportsPtr = viewports)
             {
                 nativeDeviceContext.Rasterizer.SetViewports((RawViewportF*)viewportsPtr, renderTargetCount > 0 ? renderTargetCount : 1);
-            }
-        }
-
-        /// <summary>
-        ///     Unsets the read/write buffers.
-        /// </summary>
-        public void UnsetReadWriteBuffers()
-        {
-            // TODO: This should be done automatically on SetPipelineState
-            // TODO optimize it using SetUnorderedAccessViews
-            for (int i = 0; i < UnorderedAcccesViewCount; i++)
-            {
-                SetUnorderedAccessView(ShaderStage.Compute, i, null);
             }
         }
 
@@ -290,7 +266,32 @@ namespace SiliconStudio.Xenko.Graphics
             if (stage != ShaderStage.Compute)
                 throw new ArgumentException("Invalid stage.", "stage");
 
-            NativeDeviceContext.ComputeShader.SetUnorderedAccessView(slot, unorderedAccessView != null ? unorderedAccessView.NativeUnorderedAccessView : null);
+            var view = unorderedAccessView?.NativeUnorderedAccessView;
+            if (unorderedAccessViews[slot] != view)
+            {
+                unorderedAccessViews[slot] = view;
+                NativeDeviceContext.ComputeShader.SetUnorderedAccessView(slot, view);
+            }
+        }
+
+        /// <summary>
+        /// Unsets an unordered access view from the shader pipeline.
+        /// </summary>
+        /// <param name="unorderedAccessView">The unordered access view.</param>
+        internal void UnsetUnorderedAccessView(GraphicsResource unorderedAccessView)
+        {
+            var view = unorderedAccessView?.NativeUnorderedAccessView;
+            if (view == null)
+                return;
+
+            for (int slot = 0; slot < UnorderedAcccesViewCount; slot++)
+            {
+                if (unorderedAccessViews[slot] == view)
+                {
+                    unorderedAccessViews[slot] = null;
+                    NativeDeviceContext.ComputeShader.SetUnorderedAccessView(slot, null);
+                }
+            }
         }
 
         /// <summary>
@@ -635,13 +636,13 @@ namespace SiliconStudio.Xenko.Graphics
             NativeDeviceContext.CopyResource(source.NativeResource, destination.NativeResource);
         }
 
-        public void CopyMultiSample(Texture sourceMsaaTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
+        public void CopyMultisample(Texture sourceMultisampleTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
         {
-            if (sourceMsaaTexture == null) throw new ArgumentNullException("sourceMsaaTexture");
+            if (sourceMultisampleTexture == null) throw new ArgumentNullException(nameof(sourceMultisampleTexture));
             if (destTexture == null) throw new ArgumentNullException("destTexture");
-            if (!sourceMsaaTexture.IsMultiSample) throw new ArgumentOutOfRangeException("sourceMsaaTexture", "Source texture is not a MSAA texture");
+            if (!sourceMultisampleTexture.IsMultisample) throw new ArgumentOutOfRangeException(nameof(sourceMultisampleTexture), "Source texture is not a MSAA texture");
 
-            NativeDeviceContext.ResolveSubresource(sourceMsaaTexture.NativeResource, sourceSubResource, destTexture.NativeResource, destSubResource, (SharpDX.DXGI.Format)(format == PixelFormat.None ? destTexture.Format : format));
+            NativeDeviceContext.ResolveSubresource(sourceMultisampleTexture.NativeResource, sourceSubResource, destTexture.NativeResource, destSubResource, (SharpDX.DXGI.Format)(format == PixelFormat.None ? destTexture.Format : format));
         }
 
         public void CopyRegion(GraphicsResource source, int sourceSubresource, ResourceRegion? sourecRegion, GraphicsResource destination, int destinationSubResource, int dstX = 0, int dstY = 0, int dstZ = 0)

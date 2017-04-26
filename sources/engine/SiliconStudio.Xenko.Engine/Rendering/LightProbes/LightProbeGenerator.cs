@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -21,9 +21,9 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
 {
     public static class LightProbeGenerator
     {
-        private const int LambertHamonicOrder = 3;
+        public const int LambertHamonicOrder = 3;
 
-        public static Dictionary<LightProbeComponent, FastList<Color3>> GenerateCoefficients(ISceneRendererContext context)
+        public static Dictionary<LightProbeComponent, FastList<Color3>> GenerateCoefficients(ISceneRendererContext context, LightProbeComponent[] lightProbes)
         {
             using (var cubemapRenderer = new CubemapSceneRenderer(context, 256))
             {
@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
                     RadianceMap = cubeTexture,
                 };
 
-                var lightProbes = new Dictionary<LightProbeComponent, FastList<Color3>>();
+                var lightProbesCoefficients = new Dictionary<LightProbeComponent, FastList<Color3>>();
 
                 using (cubemapRenderer.DrawContext.PushRenderTargetsAndRestore())
                 {
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
                             lightProbeCoefficients.Add(coefficients[i]*SphericalHarmonics.BaseCoefficients[i]);
                         }
 
-                        lightProbes.Add(lightProbe, lightProbeCoefficients);
+                        lightProbesCoefficients.Add(lightProbe, lightProbeCoefficients);
 
                         context.GraphicsContext.CommandList.EndProfile(); // Prefilter SphericalHarmonics
 
@@ -85,24 +85,34 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
 
                 cubeTexture.Dispose();
 
-                return lightProbes;
+                return lightProbesCoefficients;
             }
         }
 
-        public static unsafe LightProbeRuntimeData GenerateRuntimeData(SceneInstance sceneInstance)
+        public static unsafe void UpdateCoefficients(LightProbeRuntimeData runtimeData)
         {
-            // Find lightprobes
-            var lightProbes = new FastList<LightProbeComponent>();
-            foreach (var entity in sceneInstance)
+
+            fixed (Color3* destColors = runtimeData.Coefficients)
             {
-                var lightProbe = entity.Get<LightProbeComponent>();
-                if (lightProbe != null)
+                for (var lightProbeIndex = 0; lightProbeIndex < runtimeData.LightProbes.Length; lightProbeIndex++)
                 {
-                    entity.Transform.UpdateWorldMatrix();
-                    lightProbes.Add(lightProbe);
+                    var lightProbe = runtimeData.LightProbes[lightProbeIndex];
+
+                    // Copy coefficients
+                    if (lightProbe.Coefficients != null)
+                    {
+                        var lightProbeCoefStart = lightProbeIndex * LambertHamonicOrder * LambertHamonicOrder;
+                        for (var index = 0; index < LambertHamonicOrder * LambertHamonicOrder; index++)
+                        {
+                            destColors[lightProbeCoefStart + index] = index < lightProbe.Coefficients.Count ? lightProbe.Coefficients[index] : new Color3();
+                        }
+                    }
                 }
             }
+        }
 
+        public static unsafe LightProbeRuntimeData GenerateRuntimeData(FastList<LightProbeComponent> lightProbes)
+        {
             // TODO: Better check: coplanar, etc... (maybe the check inside BowyerWatsonTetrahedralization might be enough -- tetrahedron won't be in positive order)
             if (lightProbes.Count < 4)
                 throw new InvalidOperationException("Can't generate lightprobes if less than 4 of them exists.");
@@ -165,8 +175,13 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
                 probeIndices[i] = *(Int4*)tetrahedron.Vertices;
             }
 
+            var lightProbesCopy = new LightProbeComponent[lightProbes.Count];
+            for (int i = 0; i < lightProbes.Count; ++i)
+                lightProbesCopy[i] = lightProbes[i];
+
             var result = new LightProbeRuntimeData
             {
+                LightProbes = lightProbesCopy,
                 Vertices = tetraResult.Vertices,
                 UserVertexCount = tetraResult.UserVertexCount,
                 Tetrahedra = tetraResult.Tetrahedra,
@@ -181,10 +196,12 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
         }
     }
 
-    [DataContract]
-    [ContentSerializer(typeof(DataContentSerializer<LightProbeRuntimeData>))]
     public class LightProbeRuntimeData
     {
+        // Input data
+        public LightProbeComponent[] LightProbes;
+
+        // Computed data
         public Vector3[] Vertices;
         public int UserVertexCount;
         public FastList<BowyerWatsonTetrahedralization.Tetrahedron> Tetrahedra;

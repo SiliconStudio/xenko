@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under MIT License. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // -----------------------------------------------------------------------------
 // Original code from SlimMath project. http://code.google.com/p/slimmath/
@@ -80,14 +80,20 @@ namespace SiliconStudio.Core.Mathematics
             float d1 = Vector3.Dot(ab, ap);
             float d2 = Vector3.Dot(ac, ap);
             if (d1 <= 0.0f && d2 <= 0.0f)
+            {
                 result = vertex1; //Barycentric coordinates (1,0,0)
+                return;
+            }
 
             //Check if P in vertex region outside B
             Vector3 bp = point - vertex2;
             float d3 = Vector3.Dot(ab, bp);
             float d4 = Vector3.Dot(ac, bp);
             if (d3 >= 0.0f && d4 <= d3)
+            {
                 result = vertex2; // barycentric coordinates (0,1,0)
+                return;
+            }
 
             //Check if P in edge region of AB, if so return projection of P onto AB
             float vc = d1 * d4 - d3 * d2;
@@ -95,6 +101,7 @@ namespace SiliconStudio.Core.Mathematics
             {
                 float v = d1 / (d1 - d3);
                 result = vertex1 + v * ab; //Barycentric coordinates (1-v,v,0)
+                return;
             }
 
             //Check if P in vertex region outside C
@@ -102,7 +109,10 @@ namespace SiliconStudio.Core.Mathematics
             float d5 = Vector3.Dot(ab, cp);
             float d6 = Vector3.Dot(ac, cp);
             if (d6 >= 0.0f && d5 <= d6)
+            {
                 result = vertex3; //Barycentric coordinates (0,0,1)
+                return;
+            }
 
             //Check if P in edge region of AC, if so return projection of P onto AC
             float vb = d5 * d2 - d1 * d6;
@@ -110,6 +120,7 @@ namespace SiliconStudio.Core.Mathematics
             {
                 float w = d2 / (d2 - d6);
                 result = vertex1 + w * ac; //Barycentric coordinates (1-w,0,w)
+                return;
             }
 
             //Check if P in edge region of BC, if so return projection of P onto BC
@@ -118,6 +129,7 @@ namespace SiliconStudio.Core.Mathematics
             {
                 float w = (d4 - d3) / ((d4 - d3) + (d5 - d6));
                 result = vertex2 + w * (vertex3 - vertex2); //Barycentric coordinates (0,1-w,w)
+                return;
             }
 
             //P inside face region. Compute Q through its barycentric coordinates (u,v,w)

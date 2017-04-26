@@ -1,6 +1,6 @@
 !MaterialAsset
 Id: fd20b4c6-2785-4f61-8ed4-1a185979f6e8
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
@@ -12,7 +12,6 @@ Attributes:
             Offset: {X: 0.0, Y: 0.0}
             Swizzle: null
         IsXYNormal: true
-        InvertY: false
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
             Texture: 2952540d-e165-44f6-bdd8-87b1322e99d0:Materials/brick/brick_dif

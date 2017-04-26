@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -22,6 +22,20 @@ namespace SiliconStudio.AssemblyProcessor
         private readonly List<string> referencePaths = new List<string>();
 
         private HashSet<string> existingWindowsKitsReferenceAssemblies;
+
+        protected override void Dispose(bool disposing)
+        {
+            foreach (var ass in cache)
+            {
+                ass.Value.Dispose();
+            }
+            cache.Clear();
+            assemblyData.Clear();
+            references.Clear();
+            existingWindowsKitsReferenceAssemblies?.Clear();
+
+            base.Dispose(disposing);
+        }
 
         /// <summary>
         /// Gets or sets the windows kits directory for Windows 10 apps.
@@ -55,7 +69,7 @@ namespace SiliconStudio.AssemblyProcessor
 			return assembly;
 		}
 
-		protected void RegisterAssembly (AssemblyDefinition assembly)
+		public void RegisterAssembly (AssemblyDefinition assembly)
 		{
 			if (assembly == null)
 				throw new ArgumentNullException ("assembly");
@@ -66,6 +80,14 @@ namespace SiliconStudio.AssemblyProcessor
 
 			cache [name] = assembly;
 		}
+
+        public void RegisterAssemblies(List<AssemblyDefinition> mergedAssemblies)
+        {
+            foreach (var assemblyDefinition in mergedAssemblies)
+            {
+                RegisterAssembly(assemblyDefinition);
+            }
+        }
 
         /// <summary>
         /// Registers the specified assembly.
