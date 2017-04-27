@@ -30,9 +30,6 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Mathematics;
 using Windows.Foundation;
 using Windows.UI.ViewManagement;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Core;
 
 namespace SiliconStudio.Xenko.Games
@@ -40,19 +37,22 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// An abstract window.
     /// </summary>
-    internal class GameWindowUWPSwapChainPanel : GameWindow<SwapChainPanel>
+    internal class GameWindowUWPSwapChainPanel : GameWindow<CoreWindow>
     {
 #region Fields
         private const DisplayOrientations PortraitOrientations = DisplayOrientations.Portrait | DisplayOrientations.PortraitFlipped;
         private const DisplayOrientations LandscapeOrientations = DisplayOrientations.Landscape | DisplayOrientations.LandscapeFlipped;
 
-        private SwapChainPanel swapChainPanel;
+//        private CoreWindow coreWindow;
         private WindowHandle windowHandle;
         private int currentWidth;
         private int currentHeight;
-        private readonly CoreWindow coreWindow;
+        private CoreWindow coreWindow;
         private static readonly Windows.Devices.Input.MouseCapabilities mouseCapabilities = new Windows.Devices.Input.MouseCapabilities();
-        private readonly DispatcherTimer resizeTimer;
+
+        // TODO Handle resizing
+//        private readonly DispatcherTimer resizeTimer;
+
         private double requiredRatio;
         private ApplicationView applicationView;
         private bool canResize;
@@ -62,9 +62,11 @@ namespace SiliconStudio.Xenko.Games
 
         public GameWindowUWPSwapChainPanel()
         {
+            // TODO Assign here?
             coreWindow = CoreWindow.GetForCurrentThread();
-            resizeTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
-            resizeTimer.Tick += ResizeTimerOnTick;
+
+//            resizeTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+//            resizeTimer.Tick += ResizeTimerOnTick;
         } 
 
         public override bool AllowUserResizing
@@ -82,7 +84,7 @@ namespace SiliconStudio.Xenko.Games
         {
             get
             {
-                return new Rectangle(0, 0, (int)(this.swapChainPanel.ActualWidth * swapChainPanel.CompositionScaleX + 0.5f), (int)(this.swapChainPanel.ActualHeight * swapChainPanel.CompositionScaleY + 0.5f));
+                return new Rectangle((int)(coreWindow.Bounds.X), (int)(coreWindow.Bounds.Y), (int)(coreWindow.Bounds.Width), (int)(coreWindow.Bounds.Height));
             }
         }
 
@@ -193,11 +195,12 @@ namespace SiliconStudio.Xenko.Games
 
 #region Methods
 
-        protected override void Initialize(GameContext<SwapChainPanel> windowContext)
+        protected override void Initialize(GameContext<CoreWindow> windowContext)
         {
             Debug.Assert(windowContext is GameContextUWP, "By design only one descendant of GameContext<SwapChainPanel>");
-            swapChainPanel = windowContext.Control;
-            windowHandle = new WindowHandle(AppContextType.UWP, swapChainPanel, IntPtr.Zero);
+            // TODO Or assign here?
+            coreWindow = windowContext.Control;
+            windowHandle = new WindowHandle(AppContextType.UWP, coreWindow, IntPtr.Zero);
 
             applicationView = ApplicationView.GetForCurrentView();            
             if (applicationView != null && windowContext.RequestedWidth != 0 && windowContext.RequestedHeight != 0)
@@ -208,8 +211,6 @@ namespace SiliconStudio.Xenko.Games
 
             requiredRatio = windowContext.RequestedWidth/(double)windowContext.RequestedHeight;
 
-            swapChainPanel.SizeChanged += swapChainPanel_SizeChanged;
-            swapChainPanel.CompositionScaleChanged += swapChainPanel_CompositionScaleChanged;
             coreWindow.SizeChanged += CurrentWindowOnSizeChanged;
         }
 
@@ -219,14 +220,9 @@ namespace SiliconStudio.Xenko.Games
             HandleSizeChanged(sender, newBounds);
         }
 
-        void swapChainPanel_CompositionScaleChanged(SwapChainPanel sender, object args)
-        {
-            OnClientSizeChanged(sender, EventArgs.Empty);
-        }
-
         private void ResizeTimerOnTick(object sender, object o)
         {
-            resizeTimer.Stop();
+//            resizeTimer.Stop();
             OnClientSizeChanged(sender, EventArgs.Empty);
         }
 
@@ -241,53 +237,47 @@ namespace SiliconStudio.Xenko.Games
                 panelWidth = bounds.Width;
                 panelHeight = bounds.Height;
 
-                if (canResize)
-                {
-                    if (swapChainPanel.Width != panelWidth || swapChainPanel.Height != panelHeight)
-                    {
-                        // Center the panel
-                        swapChainPanel.HorizontalAlignment = HorizontalAlignment.Center;
-                        swapChainPanel.VerticalAlignment = VerticalAlignment.Center;
+                //if (canResize)
+                //{
+                //    if (swapChainPanel.Width != panelWidth || swapChainPanel.Height != panelHeight)
+                //    {
+                //        // Center the panel
+                //        swapChainPanel.HorizontalAlignment = HorizontalAlignment.Center;
+                //        swapChainPanel.VerticalAlignment = VerticalAlignment.Center;
 
-                        swapChainPanel.Width = panelWidth;
-                        swapChainPanel.Height = panelHeight;
-                    }
-                }
-                else
-                {
-                    //mobile device, keep aspect fine
-                    var aspect = panelWidth/panelHeight;
-                    if (aspect < requiredRatio)
-                    {
-                        panelWidth = bounds.Width; //real screen width
-                        panelHeight = panelWidth / requiredRatio;
-                    }
-                    else
-                    {
-                        panelHeight = bounds.Height;
-                        panelWidth = panelHeight * requiredRatio;
-                    }
+                //        swapChainPanel.Width = panelWidth;
+                //        swapChainPanel.Height = panelHeight;
+                //    }
+                //}
+                //else
+                //{
+                //    //mobile device, keep aspect fine
+                //    var aspect = panelWidth/panelHeight;
+                //    if (aspect < requiredRatio)
+                //    {
+                //        panelWidth = bounds.Width; //real screen width
+                //        panelHeight = panelWidth / requiredRatio;
+                //    }
+                //    else
+                //    {
+                //        panelHeight = bounds.Height;
+                //        panelWidth = panelHeight * requiredRatio;
+                //    }
 
-                    if (swapChainPanel.Width != panelWidth || swapChainPanel.Height != panelHeight)
-                    {
-                        // Center the panel
-                        swapChainPanel.HorizontalAlignment = HorizontalAlignment.Center;
-                        swapChainPanel.VerticalAlignment = VerticalAlignment.Center;
+                //    if (swapChainPanel.Width != panelWidth || swapChainPanel.Height != panelHeight)
+                //    {
+                //        // Center the panel
+                //        swapChainPanel.HorizontalAlignment = HorizontalAlignment.Center;
+                //        swapChainPanel.VerticalAlignment = VerticalAlignment.Center;
 
-                        swapChainPanel.Width = panelWidth;
-                        swapChainPanel.Height = panelHeight;
-                    }
-                }
+                //        swapChainPanel.Width = panelWidth;
+                //        swapChainPanel.Height = panelHeight;
+                //    }
+                //}
             }
 
-            resizeTimer.Stop();
-            resizeTimer.Start();
-        }
-
-        private void swapChainPanel_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            var bounds = e.NewSize;
-            HandleSizeChanged(sender, bounds);
+//            resizeTimer.Stop();
+//            resizeTimer.Start();
         }
 
         internal override void Resize(int width, int height)
@@ -298,19 +288,31 @@ namespace SiliconStudio.Xenko.Games
 
         internal override void Run()
         {
-            // Perform the rendering loop
-            CompositionTarget.Rendering += CompositionTarget_Rendering;
-        }
-
-        void CompositionTarget_Rendering(object sender, object e)
-        {
             // Call InitCallback only first time
             if (InitCallback != null)
             {
                 InitCallback();
                 InitCallback = null;
             }
-            RunCallback();
+
+            try
+            {
+                while (true)
+                {
+                    coreWindow.Dispatcher.ProcessEvents(CoreProcessEventsOption.ProcessAllIfPresent);
+                    if (Exiting)
+                    {
+                        Destroy();
+                        break;
+                    }
+
+                    RunCallback();
+                }
+            }
+            finally
+            {
+                ExitCallback?.Invoke();
+            }
         }
 
         protected internal override void SetSupportedOrientations(DisplayOrientation orientations)
@@ -325,7 +327,6 @@ namespace SiliconStudio.Xenko.Games
 
         protected override void Destroy()
         {
-            CompositionTarget.Rendering -= CompositionTarget_Rendering;
             base.Destroy();
         }
 #endregion

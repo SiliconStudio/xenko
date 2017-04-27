@@ -26,7 +26,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Xenko.Graphics;
 using Windows.ApplicationModel;
-using Windows.UI.Xaml;
+//using Windows.UI.Xaml;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -34,29 +34,32 @@ namespace SiliconStudio.Xenko.Games
     {
         public GamePlatformUWP(GameBase game) : base(game)
         {
-            Application.Current.Suspending += CurrentOnSuspending;
-            Application.Current.Resuming += CurrentOnResuming;
+            // TODO Implement proper application lifecycle:
+            // https://docs.microsoft.com/en-us/windows/uwp/launch-resume/app-lifecycle
+
+            //            Application.Current.Suspending += CurrentOnSuspending;
+            //           Application.Current.Resuming += CurrentOnResuming;
         }
 
-        private void CurrentOnResuming(object sender, object o)
-        {
-            OnResume(sender, null);
-        }
+        //        private void CurrentOnResuming(object sender, object o)
+        //        {
+        //            OnResume(sender, null);
+        //        }
 
-        private void CurrentOnSuspending(object sender, SuspendingEventArgs suspendingEventArgs)
-        {
-            var deferral = suspendingEventArgs.SuspendingOperation.GetDeferral();
+        //private void CurrentOnSuspending(object sender, SuspendingEventArgs suspendingEventArgs)
+        //{
+        //    var deferral = suspendingEventArgs.SuspendingOperation.GetDeferral();
 
-            using (var device3 = game.GraphicsDevice.NativeDevice.QueryInterface<SharpDX.DXGI.Device3>())
-            {
-                game.GraphicsContext.CommandList.ClearState();
-                device3.Trim();    
-            }
+        //    using (var device3 = game.GraphicsDevice.NativeDevice.QueryInterface<SharpDX.DXGI.Device3>())
+        //    {
+        //        game.GraphicsContext.CommandList.ClearState();
+        //        device3.Trim();    
+        //    }
 
-            OnSuspend(sender, null);
+        //    OnSuspend(sender, null);
 
-            deferral.Complete();
-        }
+        //    deferral.Complete();
+        //}
 
         public override string DefaultAppDirectory
         {
