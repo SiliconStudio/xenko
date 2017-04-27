@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// The number of times the resolution is lowered for the light buffer
         /// </summary>
-        [DataMemberRange(1,32)]
+        [DataMemberRange(1, 32)]
         public int LightBufferDownsampleLevel { get; set; } = 2;
 
         /// <summary>
@@ -34,8 +34,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         [DataMemberRange(1, 32)]
         public int BoundingVolumeBufferDownsampleLevel { get; set; } = 8;
-        
-        // TODO: Permutations
+
         private ImageEffectShader lightShaftsEffectShader;
 
         private ImageEffectShader applyLightEffectShader;
@@ -50,10 +49,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private EffectBytecode previousMinmaxEffectBytecode;
 
         private LightShaftBoundingVolumeProcessor.Data[] singleBoundingVolume = new LightShaftBoundingVolumeProcessor.Data[1];
-        
+
         // This could be used at some point when we have colored shadows
         private bool needsColorLightBuffer = true;
-        
+
+        private int usageCounter = 0;
+
+        private Dictionary<IDirectLight, LightShaftRenderData> renderData = new Dictionary<IDirectLight, LightShaftRenderData>();
+        private List<IDirectLight> unusedLights = new List<IDirectLight>();
+
         protected override void InitializeCore()
         {
             base.InitializeCore();
@@ -67,12 +71,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             minmaxVolumeEffectShader = new DynamicEffectInstance("VolumeMinMaxShader");
             minmaxVolumeEffectShader.Initialize(Context.Services);
-            
+
             blur = ToLoadAndUnload(new GaussianBlur());
 
             // Need the shadow map renderer in order to render light shafts
             var meshRenderFeature = Context.RenderSystem.RenderFeatures.OfType<MeshRenderFeature>().FirstOrDefault();
-            if(meshRenderFeature == null)
+            if (meshRenderFeature == null)
                 throw new ArgumentNullException("Missing mesh render feature");
 
             var forwardLightingFeature = meshRenderFeature.RenderFeatures.OfType<ForwardLightingRenderFeature>().FirstOrDefault();
@@ -91,7 +95,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 minmaxPipelineState.State.BlendState.RenderTarget0.ColorDestinationBlend = Blend.One;
                 minmaxPipelineState.State.BlendState.RenderTarget0.ColorBlendFunction = i == 0 ? BlendFunction.Max : BlendFunction.Min;
                 minmaxPipelineState.State.BlendState.RenderTarget0.ColorWriteChannels = i == 0 ? ColorWriteChannels.Red : ColorWriteChannels.Green;
-                
+
                 minmaxPipelineState.State.DepthStencilState.DepthBufferEnable = false;
                 minmaxPipelineState.State.DepthStencilState.DepthBufferWriteEnable = false;
                 minmaxPipelineState.State.RasterizerState.DepthClipEnable = false;
@@ -118,7 +122,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (lightShaftProcessor == null || lightShaftBoundingVolumeProcessor == null)
                 return; // Not collected
 
-            if(LightBufferDownsampleLevel < 1)
+            if (LightBufferDownsampleLevel < 1)
                 throw new ArgumentOutOfRangeException(nameof(LightBufferDownsampleLevel));
             if (BoundingVolumeBufferDownsampleLevel < 1)
                 throw new ArgumentOutOfRangeException(nameof(BoundingVolumeBufferDownsampleLevel));
@@ -129,10 +133,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Create a min/max buffer generated from scene bounding volumes
             var boundingBoxBuffer = NewScopedRenderTarget2D(depthInput.Width / BoundingVolumeBufferDownsampleLevel, depthInput.Height / BoundingVolumeBufferDownsampleLevel, PixelFormat.R32G32_Float);
-            
+
             // Create a single channel light buffer
             PixelFormat lightBufferPixelFormat = needsColorLightBuffer ? PixelFormat.R16G16B16A16_Float : PixelFormat.R16_Float;
-            var lightBuffer = NewScopedRenderTarget2D(depthInput.Width/ LightBufferDownsampleLevel, depthInput.Height/ LightBufferDownsampleLevel, lightBufferPixelFormat);
+            var lightBuffer = NewScopedRenderTarget2D(depthInput.Width / LightBufferDownsampleLevel, depthInput.Height / LightBufferDownsampleLevel, lightBufferPixelFormat);
             lightShaftsEffectShader.SetOutput(lightBuffer);
             var lightShaftsParameters = lightShaftsEffectShader.Parameters;
             lightShaftsParameters.Set(DepthBaseKeys.DepthStencil, depthInput); // Bind scene depth
@@ -144,16 +148,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var viewInverse = Matrix.Invert(renderView.View);
             lightShaftsParameters.Set(TransformationKeys.ViewInverse, viewInverse);
             lightShaftsParameters.Set(TransformationKeys.Eye, new Vector4(viewInverse.TranslationVector, 1));
-            
+
             // Setup parameters for Z reconstruction
             lightShaftsParameters.Set(CameraKeys.ZProjection, CameraKeys.ZProjectionACalculate(renderView.NearClipPlane, renderView.FarClipPlane));
-            
+
             Matrix projectionInverse;
             Matrix.Invert(ref renderView.Projection, out projectionInverse);
             lightShaftsParameters.Set(TransformationKeys.ProjectionInverse, projectionInverse);
-            
+
             applyLightEffectShader.SetOutput(GetSafeOutput(0));
-            
+
             foreach (var lightShaft in lightShaftDatas)
             {
                 if (lightShaft.LightComponent == null)
@@ -233,6 +237,19 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 applyLightEffectShader.SetInput(lightBuffer);
                 applyLightEffectShader.Draw(context);
             }
+
+            // Clean up unused render data
+            unusedLights.Clear();
+            foreach (var data in renderData)
+            {
+                if (data.Value.UsageCounter != usageCounter)
+                    unusedLights.Add(data.Key);
+            }
+            foreach (var unusedLight in unusedLights)
+            {
+                renderData.Remove(unusedLight);
+            }
+            usageCounter++;
         }
 
         public void Draw(RenderDrawContext drawContext, Texture inputDepthStencil, Texture output)
@@ -242,54 +259,73 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Draw(drawContext);
         }
 
-        private void SetupLight(RenderDrawContext context, LightShaftProcessor.Data lightShaft, LightShadowMapTexture shadowMapTexture, ParameterCollection lightParameterCollection)
+        private void UpdateRenderData(RenderDrawContext context, LightShaftRenderData data, LightShaftProcessor.Data lightShaft, LightShadowMapTexture shadowMapTexture)
         {
-            var shadowGroup = shadowMapTexture.Renderer.CreateShaderGroupData(shadowMapTexture.ShadowType);
-            BoundingBoxExt box = new BoundingBoxExt(new Vector3(-float.MaxValue), new Vector3(float.MaxValue)); // TODO
-
-            // Some testing
-            LightGroupRendererDynamic groupRenderer = null;
             if (lightShaft.Light is LightPoint)
             {
-                groupRenderer = new LightPointGroupRenderer();
+                data.GroupRenderer = new LightPointGroupRenderer();
             }
             else if (lightShaft.Light is LightSpot)
             {
-                groupRenderer = new LightSpotGroupRenderer();
+                data.GroupRenderer = new LightSpotGroupRenderer();
             }
             else if (lightShaft.Light is LightDirectional)
             {
-                groupRenderer = new LightDirectionalGroupRenderer();
+                data.GroupRenderer = new LightDirectionalGroupRenderer();
             }
             else
             {
                 throw new InvalidOperationException("Unsupported light type");
             }
-            
-            // TODO: Caching
-            var directLightGroup = groupRenderer.CreateLightShaderGroup(context, shadowGroup);
-            directLightGroup.SetViews(new FastList<RenderView>(new []{ context.RenderContext.RenderView }));
-            directLightGroup.AddView(0, context.RenderContext.RenderView, 1);
-            directLightGroup.AddLight(lightShaft.LightComponent, shadowMapTexture);
-            directLightGroup.UpdateLayout("lightGroup");
-            
-            lightParameterCollection.Set(LightShaftsEffectKeys.LightGroup, directLightGroup.ShaderSource);
+
+            data.ShadowType = shadowMapTexture.ShadowType;
+            data.ShadowMapRenderer = shadowMapTexture.Renderer;
+            var shadowGroup = data.ShadowMapRenderer.CreateShaderGroupData(data.ShadowType);
+            data.ShaderGroup = data.GroupRenderer.CreateLightShaderGroup(context, shadowGroup);
+        }
+
+        private void SetupLight(RenderDrawContext context, LightShaftProcessor.Data lightShaft, LightShadowMapTexture shadowMapTexture, ParameterCollection lightParameterCollection)
+        {
+            BoundingBoxExt box = new BoundingBoxExt(new Vector3(-float.MaxValue), new Vector3(float.MaxValue)); // TODO
+
+            LightShaftRenderData data;
+            if (!renderData.TryGetValue(lightShaft.Light, out data))
+            {
+                data = new LightShaftRenderData();
+                renderData.Add(lightShaft.Light, data);
+                UpdateRenderData(context, data, lightShaft, shadowMapTexture);
+            }
+
+            // Detect changed shadow map renderer or type
+            if (data.ShadowMapRenderer != shadowMapTexture.Renderer || data.ShadowType != shadowMapTexture.ShadowType)
+                UpdateRenderData(context, data, lightShaft, shadowMapTexture);
+
+            data.RenderViews[0] = context.RenderContext.RenderView;
+            data.ShaderGroup.Reset();
+            data.ShaderGroup.SetViews(data.RenderViews);
+            data.ShaderGroup.AddView(0, context.RenderContext.RenderView, 1);
+            data.ShaderGroup.AddLight(lightShaft.LightComponent, shadowMapTexture);
+            data.ShaderGroup.UpdateLayout("lightGroup");
+
+            lightParameterCollection.Set(LightShaftsEffectKeys.LightGroup, data.ShaderGroup.ShaderSource);
             lightParameterCollection.Set(LightShaftsEffectKeys.SampleCount, lightShaft.SampleCount);
 
             // Update the effect here so the layout is correct
             lightShaftsEffectShader.EffectInstance.UpdateEffect(GraphicsDevice);
 
-            directLightGroup.ApplyViewParameters(context, 0, lightParameterCollection);
-            directLightGroup.ApplyDrawParameters(context, 0, lightParameterCollection, ref box);
+            data.ShaderGroup.ApplyViewParameters(context, 0, lightParameterCollection);
+            data.ShaderGroup.ApplyDrawParameters(context, 0, lightParameterCollection, ref box);
+
+            data.UsageCounter = usageCounter;
         }
 
         private void DrawLightShaft(RenderDrawContext context, LightShaftProcessor.Data lightShaft)
         {
             lightShaftsEffectShader.Parameters.Set(LightShaftsShaderKeys.DensityFactor, lightShaft.DensityFactor);
-            
+
             lightShaftsEffectShader.Draw(context, $"Light shaft [{lightShaft.LightComponent.Entity.Name}]");
         }
-        
+
         private bool DrawBoundingVolumeMinMax(RenderDrawContext context, IReadOnlyList<LightShaftBoundingVolumeProcessor.Data> boundingVolumes)
         {
             var commandList = context.CommandList;
@@ -300,7 +336,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             var needEffectUpdate = effectUpdated || previousMinmaxEffectBytecode != minmaxVolumeEffectShader.Effect.Bytecode;
             bool visibleMeshes = false;
-            
+
             for (int pass = 0; pass < 2; ++pass)
             {
                 var minmaxPipelineState = minmaxPipelineStates[pass];
@@ -394,5 +430,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             return visibleMeshes;
         }
+
+        private class LightShaftRenderData
+        {
+            public LightGroupRendererDynamic GroupRenderer;
+            public LightShaderGroupDynamic ShaderGroup;
+            public IDirectLight Light;
+            public FastList<RenderView> RenderViews = new FastList<RenderView>(new RenderView[1]);
+            public LightShadowType ShadowType;
+            public ILightShadowMapRenderer ShadowMapRenderer;
+            public int UsageCounter = 0;
+        };
     }
 }
