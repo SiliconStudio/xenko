@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Streaming
 
             // Calculate first chunk location (in file)
             int chunksCount = chunksData.Count;
-            int offset =
+            /*int offset =
                 // Version
                 sizeof(int)
                 // Package Time (ticks)
@@ -102,7 +102,8 @@ namespace SiliconStudio.Xenko.Streaming
                 // Header hash code
                 + sizeof(int)
                 // Chunk locations and sizes
-                + (sizeof(int) + sizeof(int)) * chunksCount;
+                + (sizeof(int) + sizeof(int)) * chunksCount;*/
+            int offset = 0;
 
             // Calculate header hash code (used to provide simple data verification during loading)
             // Note: this must match ContentStorage.GetHashCode()

@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
             public bool IsSizeInPercentage;
 
             public bool ShouldCompress;
-
+            
             public AlphaFormat DesiredAlpha;
 
             public TextureHint TextureHint;
@@ -146,7 +146,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// Utility function to check that the texture size is supported on the graphics platform for the provided graphics profile.
         /// </summary>
         /// <param name="parameters">The import parameters</param>
-        /// <param name="textureSizeRequested">The texture size requested.</param>
+        /// <param name="textureSize">The texture size requested.</param>
         /// <param name="logger">The logger.</param>
         /// <returns>true if the texture size is supported</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">graphicsProfile</exception>
@@ -413,10 +413,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
             return outputFormat;
         }
 
-        public static ResultStatus ImportTextureImage(TextureTool textureTool, TexImage texImage, ImportParameters parameters, CancellationToken cancellationToken, Logger logger)
+        public static ResultStatus ImportTextureImageRaw(TextureTool textureTool, TexImage texImage, ImportParameters parameters, CancellationToken cancellationToken, Logger logger)
         {
-            var assetManager = new ContentManager();
-
             // Apply transformations
             textureTool.Decompress(texImage, parameters.IsSRgb);
 
@@ -500,6 +498,18 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
             if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                 return ResultStatus.Cancelled;
+
+            return ResultStatus.Successful;
+        }
+
+        public static ResultStatus ImportTextureImage(TextureTool textureTool, TexImage texImage, ImportParameters parameters, CancellationToken cancellationToken, Logger logger)
+        {
+            var assetManager = new ContentManager();
+
+            // Convert image to the final format
+            var result = ImportTextureImageRaw(textureTool, texImage, parameters, cancellationToken, logger);
+            if (result != ResultStatus.Successful)
+                return result;
 
             // Save the texture
             using (var outputImage = textureTool.ConvertToXenkoImage(texImage))

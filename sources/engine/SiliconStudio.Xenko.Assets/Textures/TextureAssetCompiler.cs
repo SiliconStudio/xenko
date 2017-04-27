@@ -1,8 +1,10 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Analysis;
@@ -12,8 +14,11 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Streaming;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.TextureConverter;
+using SiliconStudio.Xenko.Graphics.Data;
+using SiliconStudio.Xenko.Streaming;
 
 namespace SiliconStudio.Xenko.Assets.Textures
 {
@@ -46,10 +51,14 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         public class TextureConvertCommand : AssetCommand<TextureConvertParameters>
         {
+            private readonly TagSymbol disableCompressionSymbol;
+
             public TextureConvertCommand(string url, TextureConvertParameters description, Package package)
                 : base(url, description, package)
             {
                 InputFilesGetter = GetInputFilesImpl;
+                disableCompressionSymbol = RegisterTag(Builder.DoNotCompressTag, () => Builder.DoNotCompressTag);
+                Version = 3;
             }
 
             private IEnumerable<ObjectUrl> GetInputFilesImpl()
@@ -58,13 +67,72 @@ namespace SiliconStudio.Xenko.Assets.Textures
                 yield return new ObjectUrl(UrlType.File, Parameters.SourcePathFromDisk);
             }
 
+            private ResultStatus Import(ICommandContext commandContext, TextureTool textureTool, TexImage texImage, TextureHelper.ImportParameters convertParameters)
+            {
+                bool useSeparateDataContainer = Parameters.IsStreamable;
+
+                // Note: for streamable textures we want to store mip maps in a separate storage container and read them on request instead of whole asset deserialization (at once)
+
+                if (useSeparateDataContainer)
+                {
+                    // Perform normal texture importing (but don't save it to file now)
+                    var importResult = TextureHelper.ImportTextureImageRaw(textureTool, texImage, convertParameters, CancellationToken, commandContext.Logger);
+                    if (importResult != ResultStatus.Successful)
+                        return importResult;
+
+                    var assetManager = new ContentManager();
+                    
+                    // Make sure we don't compress mips data
+                    var dataUrl = Url + "_Data";
+                    commandContext.AddTag(new ObjectUrl(UrlType.ContentLink, dataUrl), disableCompressionSymbol);
+                    
+                    using (var outputImage = textureTool.ConvertToXenkoImage(texImage))
+                    {
+                        if (CancellationToken.IsCancellationRequested)
+                            return ResultStatus.Cancelled;
+
+                        // Create texture mips data containers
+                        var desc = outputImage.Description;
+                        List<byte[]> mipsData = new List<byte[]>(desc.MipLevels);
+                        for (int mipIndex = 0; mipIndex < desc.MipLevels; mipIndex++)
+                        {
+                            var pixelBuffer = outputImage.GetPixelBuffer(0, 0, mipIndex);
+                            int size = pixelBuffer.BufferStride;
+                            var buf = new byte[size];
+                            // TODO: maybe optimize it and don't allocate that memory; use raw ptr to serialize mip?
+                            Marshal.Copy(pixelBuffer.DataPointer, buf, 0, size);
+                            mipsData.Add(buf);
+                        }
+
+                        // Pack mip maps to the storage container
+                        ContentStorageHeader storageHeader;
+                        ContentStorage.Create(dataUrl, mipsData, out storageHeader);
+                        
+                        if (CancellationToken.IsCancellationRequested)
+                            return ResultStatus.Cancelled;
+
+                        // Serialize texture to file
+                        var outputTexture = new TextureSerializationData(outputImage, Parameters.IsStreamable, storageHeader);
+                        assetManager.Save(convertParameters.OutputUrl, outputTexture.ToSerializableVersion());
+
+                        commandContext.Logger.Verbose($"Compression successful [{dataUrl}] to ({outputImage.Description.Width}x{outputImage.Description.Height},{outputImage.Description.Format})");
+                    }
+
+                    return ResultStatus.Successful;
+                }
+
+                // Import texture and save to file
+                return TextureHelper.ImportTextureImage(textureTool, texImage, convertParameters, CancellationToken, commandContext.Logger);
+            }
+
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var convertParameters = new TextureHelper.ImportParameters(Parameters) { OutputUrl = Url };
+
                 using (var texTool = new TextureTool())
                 using (var texImage = texTool.Load(Parameters.SourcePathFromDisk, convertParameters.IsSRgb))
                 {
-                    var importResult = TextureHelper.ImportTextureImage(texTool, texImage, convertParameters, CancellationToken, commandContext.Logger);
+                    var importResult = Import(commandContext, texTool, texImage, convertParameters);
 
                     return Task.FromResult(importResult);
                 }
@@ -102,6 +170,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         {
             SourcePathFromDisk = sourcePathFromDisk;
             Texture = texture;
+            IsStreamable = texture.IsStreamable;
             Platform = platform;
             GraphicsPlatform = graphicsPlatform;
             GraphicsProfile = graphicsProfile;
@@ -112,6 +181,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
         public UFile SourcePathFromDisk;
 
         public TextureAsset Texture;
+
+        public bool IsStreamable;
 
         public PlatformType Platform;
 

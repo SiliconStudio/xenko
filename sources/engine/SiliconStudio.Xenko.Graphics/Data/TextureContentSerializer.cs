@@ -5,6 +5,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Streaming;
 
 namespace SiliconStudio.Xenko.Graphics.Data
 {
@@ -23,10 +24,40 @@ namespace SiliconStudio.Xenko.Graphics.Data
                 var services = stream.Context.Tags.Get(ServiceRegistry.ServiceRegistryKey);
                 var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
 
-                // TODO: serialize TextureAsset.IsStreamable
-                //bool isStreamable = stream.ReadBoolean();
-                bool isStreamable = true;
+                // Read header
+                var startPosition = stream.NativeStream.Position;
+                var version = stream.NativeStream.ReadUInt32();
+                switch (version)
+                {
+                    case 1481919316:
+                    {
+                        // Note: 1st version was using raw Image without any information about texture streaming options, etc.
+                        stream.NativeStream.Position = startPosition;
+                        break;
+                    }
 
+                    case 2:
+                    {
+                        var isStreamable = stream.ReadBoolean();
+                        
+                        if (isStreamable)
+                        {
+                            // Read image header
+                            var imageDescription = new ImageDescription();
+                            ImageHelper.ImageDescriptionSerializer.Serialize(ref imageDescription, ArchiveMode.Deserialize, stream);
+                            
+                            // Read content storage header
+                            var storageHeader = ContentStorageHeader.Read(stream);
+                            
+                           // TODO: start streaming
+                        }
+                        break;
+                    }
+
+                    default:
+                        throw new NotSupportedException("Unknown texture format version.");
+                }
+                
                 // TODO: Error handling?
                 using (var textureData = Image.Load(stream.NativeStream))
                 {
@@ -59,7 +90,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
                 if (textureData == null)
                     throw new InvalidOperationException("Trying to serialize a Texture without CPU info.");
 
-                textureData.Save(stream.NativeStream, ImageFileType.Xenko);
+                textureData.Write(stream);
             }
         }
 
