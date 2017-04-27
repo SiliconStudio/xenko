@@ -13,16 +13,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     /// <remarks>
     /// Since it sets a view, it is usually not shareable for multiple rendering.
     /// </remarks>
-    [Display("Render Camera")]
+    [Display("Camera Renderer")]
     public partial class SceneCameraRenderer : SceneRendererBase
     {
         [DataMemberIgnore]
         public RenderView RenderView { get; } = new RenderView();
-
-        public SceneCameraRenderer()
-        {
-
-        }
+        
         /// <summary>
         /// Gets or sets the camera.
         /// </summary>
