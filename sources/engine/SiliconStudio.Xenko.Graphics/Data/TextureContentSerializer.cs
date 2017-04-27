@@ -49,7 +49,8 @@ namespace SiliconStudio.Xenko.Graphics.Data
                             // Read content storage header
                             var storageHeader = ContentStorageHeader.Read(stream);
                             
-                           // TODO: start streaming
+                            // Register texture for streaming
+                            services.GetSafeServiceAs<ITexturesStreamingProvider>().RegisterTexture(texture, storageHeader);
                         }
                         break;
                     }

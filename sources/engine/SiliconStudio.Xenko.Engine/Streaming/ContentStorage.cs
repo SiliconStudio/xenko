@@ -19,6 +19,11 @@ namespace SiliconStudio.Xenko.Streaming
         private readonly ContentChunk[] chunks;
 
         /// <summary>
+        /// Gets the storage URL path.
+        /// </summary>
+        public string Url { get; }
+
+        /// <summary>
         /// Gets the time when container has been created.
         /// </summary>
         public DateTime PackageTime { get; }
@@ -48,6 +53,7 @@ namespace SiliconStudio.Xenko.Streaming
         internal ContentStorage(ContentStorageHeader header)
         {
             // Init
+            Url = header.DataUrl;
             chunks = new ContentChunk[header.ChunksCount];
             for (int i = 0; i < chunks.Length; i++)
             {
