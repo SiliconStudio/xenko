@@ -13,16 +13,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     /// <remarks>
     /// Since it sets a view, it is usually not shareable for multiple rendering.
     /// </remarks>
-    [Display("Render Camera")]
+    [Display("Camera Renderer")]
     public partial class SceneCameraRenderer : SceneRendererBase
     {
         [DataMemberIgnore]
         public RenderView RenderView { get; } = new RenderView();
-
-        public SceneCameraRenderer()
-        {
-
-        }
+        
         /// <summary>
         /// Gets or sets the camera.
         /// </summary>
@@ -70,7 +66,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         protected virtual CameraComponent ResolveCamera(RenderContext renderContext)
         {
             var camera = Camera?.Camera;
-            if (camera == null) throw new InvalidOperationException($"A {nameof(SceneCameraRenderer)} in use has not camera set. Make sure the camera component to use is enabled and has its [{nameof(CameraComponent.Slot)}] property correctly set.");
+            if (camera == null) throw new InvalidOperationException($"A {nameof(SceneCameraRenderer)} in use has no camera set. Make sure the camera component to use is enabled and has its [{nameof(CameraComponent.Slot)}] property correctly set.");
             return camera;
         }
 
