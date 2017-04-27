@@ -3,23 +3,18 @@
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
-    shader LightShaftsShader<int SampleCount> : ImageEffectShader, ShadowMapCommon<PerFrame>, PostEffectBoundingRay<SampleCount>, LightStream, NormalStream
+    shader LightShaftsShader<int SampleCount> : ImageEffectShader, PostEffectBoundingRay<SampleCount>, LightStream, NormalStream
     {
         stage compose DirectLightGroup lightGroup;
 
         cbuffer PerFrame
         {
-            stage float ExtinctionFactor;
             stage float DensityFactor;
-            stage float ExtinctionRatio;
         };
 
         override float ComputeColorIn(float4 positionWS, float stepSize, int stepIndex)
         {
             float3 lightResult = 0;
-            float3 sigmaT = ComputeDensity(positionWS) * ExtinctionFactor;
-            float3 sigmaS = sigmaT * ExtinctionRatio;
-            float3 stepExtinction = exp(-sigmaT * stepSize);
 
             // Most shadow groups use these for normal scaled bias
             ResetLightStream();
@@ -33,18 +28,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // So take the max here
             float shadow = max(max(shadowColor.x, shadowColor.y), shadowColor.z);
 
-            lightResult = stepExtinction * sigmaS * stepSize * shadow * atten;
+            lightResult = DensityFactor * stepSize * shadow * atten;
             return lightResult;
-        }
-
-        override float ComputeColorOut()
-        {
-            return 0.0f;
-        }
-
-        float ComputeDensity(float positionVS)
-        {
-            return DensityFactor;
         }
     };
 }

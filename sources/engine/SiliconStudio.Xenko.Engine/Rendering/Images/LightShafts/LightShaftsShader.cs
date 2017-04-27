@@ -18,8 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     public static partial class LightShaftsShaderKeys
     {
-        public static readonly ValueParameterKey<float> ExtinctionFactor = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<float> DensityFactor = ParameterKeys.NewValue<float>();
-        public static readonly ValueParameterKey<float> ExtinctionRatio = ParameterKeys.NewValue<float>();
     }
 }
