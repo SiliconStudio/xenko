@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core;
@@ -63,6 +63,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             }
         }
 
+        /// <summary>
+        /// Resolves camera to the one contained in slot <see cref="Camera"/>.
+        /// </summary>
         protected virtual CameraComponent ResolveCamera(RenderContext renderContext)
         {
             var camera = Camera?.Camera;
