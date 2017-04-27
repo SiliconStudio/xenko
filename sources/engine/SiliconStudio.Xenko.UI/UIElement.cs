@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -101,7 +101,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>The list of the dependency properties attached to the UI element.</userdoc>
         [DataMember]
-        public PropertyContainerClass DependencyProperties;
+        public PropertyContainerClass DependencyProperties { get; }
 
         /// <summary>
         /// Gets or sets the LocalMatrix of this element.
@@ -649,7 +649,7 @@ namespace SiliconStudio.Xenko.UI
                 {
                     foreach (var setter in currentStyle.Setters)
                     {
-                        setter.ApplyIfNotSet(ref DependencyProperties);
+                        setter.ApplyIfNotSet(DependencyProperties);
                     }
                     currentStyle = currentStyle.BasedOn;
                 }
