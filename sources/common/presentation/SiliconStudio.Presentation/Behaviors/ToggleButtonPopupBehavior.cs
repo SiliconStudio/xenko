@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls.Primitives;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interactivity;
 using SiliconStudio.Core.Annotations;

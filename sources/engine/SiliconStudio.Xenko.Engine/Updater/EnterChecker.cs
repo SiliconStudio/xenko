@@ -1,4 +1,6 @@
-﻿namespace SiliconStudio.Xenko.Updater
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+namespace SiliconStudio.Xenko.Updater
 {
     /// <summary>
     /// Provides a way to perform additional checks when entering an object (typically out of bounds checks).

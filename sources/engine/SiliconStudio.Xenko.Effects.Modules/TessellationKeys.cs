@@ -1,4 +1,6 @@
-﻿namespace Xenko.Effects.Modules
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+namespace Xenko.Effects.Modules
 {
     public class TessellationKeys
     {

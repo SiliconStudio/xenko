@@ -1,4 +1,6 @@
-﻿#if !SILICONSTUDIO_PLATFORM_UWP
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+#if !SILICONSTUDIO_PLATFORM_UWP
 using System;
 using System.Net;
 using System.Net.Sockets;

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Assets
         {
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
             // Graphics Compositor asset
-            if (dependency.Version.MinVersion < new PackageVersion("1.10.0-alpha02"))
+            if (dependency.Version.MinVersion < new PackageVersion("1.11.0.0"))
             {
                 // Find game settings (if there is none, it's not a game and nothing to do)
                 var gameSettings = assetFiles.FirstOrDefault(x => x.AssetLocation == GameSettingsAsset.GameSettingsLocation);
@@ -224,6 +224,13 @@ namespace SiliconStudio.Xenko.Assets
                             {
                                 asset.Game.Camera = $"ref!! {localSlotIds[index]}";
                             }
+                        }
+                        else
+                        {
+                            asset.Cameras = new YamlMappingNode();
+                            asset.Cameras.de2e75c3b2b23e54162686363f3f138e = new YamlMappingNode();
+                            asset.Cameras.de2e75c3b2b23e54162686363f3f138e.Id = defaultGraphicsCompositorCameraSlot;
+                            asset.Cameras.de2e75c3b2b23e54162686363f3f138e.Name = "Main";
                         }
                     }
                 }

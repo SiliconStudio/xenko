@@ -1,4 +1,6 @@
-﻿using System.Windows;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using SiliconStudio.Core.Annotations;

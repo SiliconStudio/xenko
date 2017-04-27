@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -13,49 +15,58 @@ namespace SiliconStudio.Xenko.VisualStudio.PackageInstall
     {
         static int Main(string[] args)
         {
-            if (args.Length == 0)
+            try
             {
-                throw new Exception("Expecting a parameter such as /install, /repair or /uninstall");
-            }
+                if (args.Length == 0)
+                {
+                    throw new Exception("Expecting a parameter such as /install, /repair or /uninstall");
+                }
 
-            bool isRepair = false;
-            var vsixFile = "SiliconStudio.Xenko.vsix";
-            switch (args[0])
+                bool isRepair = false;
+                var vsixFile = "SiliconStudio.Xenko.vsix";
+                switch (args[0])
+                {
+                    case "/install":
+                    case "/repair":
+                    {
+                        // Run it once per VSIX installer version (VS2015 and VS2017+ are separate)
+                        foreach (var visualStudioVersionByVsixVersion in VisualStudioVersions.AvailableVisualStudioVersions.GroupBy(x => x.VsixInstallerVersion)
+                            .Where(x => x.Key != VSIXInstallerVersion.None))
+                        {
+                            var visualStudioVersion = visualStudioVersionByVsixVersion.Last();
+                            if (visualStudioVersion.VsixInstallerPath != null && File.Exists(visualStudioVersion.VsixInstallerPath))
+                            {
+                                var exitCode = RunVsixInstaller(visualStudioVersion.VsixInstallerPath, "\"" + vsixFile + "\"");
+                                if (exitCode != 0)
+                                    throw new InvalidOperationException($"VSIX Installer didn't run properly: exit code {exitCode}");
+                            }
+                        }
+                        break;
+                    }
+                    case "/uninstall":
+                    {
+                        // Run it once per VSIX installer version (VS2015 and VS2017+ are separate)
+                        foreach (var visualStudioVersionByVsixVersion in VisualStudioVersions.AvailableVisualStudioVersions.GroupBy(x => x.VsixInstallerVersion)
+                            .Where(x => x.Key != VSIXInstallerVersion.None))
+                        {
+                            var visualStudioVersion = visualStudioVersionByVsixVersion.Last();
+                            if (visualStudioVersion.VsixInstallerPath != null && File.Exists(visualStudioVersion.VsixInstallerPath))
+                            {
+                                // Note: we allow uninstall to fail (i.e. VSIX was not installed for that specific VIsual Studio version)
+                                RunVsixInstaller(visualStudioVersion.VsixInstallerPath, "/uninstall:b0b8feb1-7b83-43fc-9fc0-70065ddb80a1");
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                return 0;
+            }
+            catch (Exception e)
             {
-                case "/install":
-                case "/repair":
-                {
-                    // Run it once per VSIX installer version (VS2015 and VS2017+ are separate)
-                    foreach (var visualStudioVersionByVsixVersion in VisualStudioVersions.AvailableVisualStudioVersions.GroupBy(x => x.VsixInstallerVersion).Where(x => x.Key != VSIXInstallerVersion.None))
-                    {
-                        var visualStudioVersion = visualStudioVersionByVsixVersion.Last();
-                        if (visualStudioVersion.VsixInstallerPath != null && File.Exists(visualStudioVersion.VsixInstallerPath))
-                        {
-                            var exitCode = RunVsixInstaller(visualStudioVersion.VsixInstallerPath, "\"" + vsixFile + "\"");
-                            if (exitCode != 0)
-                                throw new InvalidOperationException($"VSIX Installer didn't run properly: exit code {exitCode}");
-                        }
-                    }
-                    break;
-                }
-                case "/uninstall":
-                {
-                    // Run it once per VSIX installer version (VS2015 and VS2017+ are separate)
-                    foreach (var visualStudioVersionByVsixVersion in VisualStudioVersions.AvailableVisualStudioVersions.GroupBy(x => x.VsixInstallerVersion).Where(x => x.Key != VSIXInstallerVersion.None))
-                    {
-                        var visualStudioVersion = visualStudioVersionByVsixVersion.Last();
-                        if (visualStudioVersion.VsixInstallerPath != null && File.Exists(visualStudioVersion.VsixInstallerPath))
-                        {
-                            var exitCode = RunVsixInstaller(visualStudioVersion.VsixInstallerPath, "/uninstall:b0b8feb1-7b83-43fc-9fc0-70065ddb80a1");
-                            if (exitCode != 0)
-                                throw new InvalidOperationException($"VSIX Installer didn't run properly: exit code {exitCode}");
-                        }
-                    }
-                    break;
-                }
+                Console.WriteLine($"Error: {e}");
+                return 1;
             }
-
-            return 0;
         }
 
         /// <summary>

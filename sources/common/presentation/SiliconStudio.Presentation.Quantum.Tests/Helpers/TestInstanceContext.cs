@@ -1,4 +1,6 @@
-﻿using SiliconStudio.Presentation.Quantum.Presenters;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Presentation.Quantum.ViewModels;
 using SiliconStudio.Quantum;
 
