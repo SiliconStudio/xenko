@@ -32,28 +32,30 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
                 var entity = pair.Key.Entity;
                 var light = entity.Get<LightComponent>();
+                if (light == null)
+                    continue;
+
+                var directLight = light.Type as IDirectLight;
+                if (directLight == null)
+                    continue;
+
                 var data = activeLightShafts.Add();
                 data.Component = pair.Key;
                 data.LightComponent = light;
-                data.Light = light?.Type as IDirectLight;
-                data.LightWorld = entity.Transform.WorldMatrix;
-                data.ExtinctionFactor = pair.Key.ExtinctionFactor;
-                data.ExtinctionRatio = pair.Key.ExtinctionRatio;
-                data.DensityFactor = pair.Key.DensityFactor;
-                data.SampleCount = pair.Key.SampleCount;
+                data.Light = directLight;
             }
         }
 
         public class Data
         {
             public LightShaftComponent Component;
-            public Matrix LightWorld;
-            public IDirectLight Light;
             public LightComponent LightComponent;
-            public float ExtinctionFactor;
-            public float ExtinctionRatio;
-            public float DensityFactor;
-            public int SampleCount;
+            public IDirectLight Light;
+            public int SampleCount => Component.SampleCount;
+            public Matrix LightWorld => Component.Entity.Transform.WorldMatrix;
+            public float ExtinctionFactor => Component.ExtinctionFactor;
+            public float DensityFactor => Component.DensityFactor;
+            public float ExtinctionRatio => Component.ExtinctionRatio;
         }
     }
 }

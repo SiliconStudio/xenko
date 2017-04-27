@@ -1,6 +1,7 @@
 // Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
@@ -11,33 +12,16 @@ namespace SiliconStudio.Xenko.Engine.Processors
     public class LightShaftBoundingVolumeProcessor : EntityProcessor<LightShaftBoundingVolumeComponent, LightShaftBoundingVolumeComponent>
     {
         private Dictionary<LightShaftComponent, List<Data>> volumesPerLightShaft = new Dictionary<LightShaftComponent, List<Data>>();
+        private bool isDirty;
 
         public override void Update(GameTime time)
         {
             base.Update(time);
-            volumesPerLightShaft.Clear();
 
-            // TODO: Make this more efficient
-            foreach (var pair in ComponentDatas)
+            if (isDirty)
             {
-                if (!pair.Key.Enabled)
-                    continue;
-
-                var world = pair.Key.Entity.Transform.WorldMatrix;
-
-                var lightShaft = pair.Key.LightShaft;
-                if (lightShaft == null)
-                    continue;
-
-                List<Data> data;
-                if (!volumesPerLightShaft.TryGetValue(lightShaft, out data))
-                    volumesPerLightShaft.Add(lightShaft, data = new List<Data>());
-
-                data.Add(new Data
-                {
-                    World = world,
-                    Model = pair.Key.Model
-                });
+                UpdateVolumesPerLightShaft();
+                isDirty = false;
             }
         }
 
@@ -54,10 +38,61 @@ namespace SiliconStudio.Xenko.Engine.Processors
             return component;
         }
 
+        protected override void OnEntityComponentAdding(Entity entity, LightShaftBoundingVolumeComponent component, LightShaftBoundingVolumeComponent data)
+        {
+            base.OnEntityComponentAdding(entity, component, data);
+            component.LightShaftChanged += ComponentOnLightShaftChanged;
+            component.ModelChanged += ComponentOnModelChanged;
+            isDirty = true;
+        }
+
+        protected override void OnEntityComponentRemoved(Entity entity, LightShaftBoundingVolumeComponent component, LightShaftBoundingVolumeComponent data)
+        {
+            base.OnEntityComponentRemoved(entity, component, data);
+            component.LightShaftChanged -= ComponentOnLightShaftChanged;
+            component.ModelChanged -= ComponentOnModelChanged;
+            isDirty = true;
+        }
+
+        private void ComponentOnModelChanged(object sender, EventArgs eventArgs)
+        {
+            isDirty = true;
+        }
+
+        private void ComponentOnLightShaftChanged(object sender, EventArgs eventArgs)
+        {
+            isDirty = true;
+        }
+
+        private void UpdateVolumesPerLightShaft()
+        {
+            volumesPerLightShaft.Clear();
+
+            foreach (var pair in ComponentDatas)
+            {
+                if (!pair.Key.Enabled)
+                    continue;
+                
+                var lightShaft = pair.Key.LightShaft;
+                if (lightShaft == null)
+                    continue;
+
+                List<Data> data;
+                if (!volumesPerLightShaft.TryGetValue(lightShaft, out data))
+                    volumesPerLightShaft.Add(lightShaft, data = new List<Data>());
+
+                data.Add(new Data
+                {
+                    Component = pair.Key,
+                });
+            }
+        }
+
         public class Data
         {
-            public Matrix World;
-            public Model Model;
+            public LightShaftBoundingVolumeComponent Component;
+            public Matrix World => Component.Entity.Transform.WorldMatrix;
+            public Model Model => Component.Model;
         }
     }
 }

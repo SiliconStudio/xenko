@@ -338,7 +338,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     {
                         // Frustum culling
                         BoundingBox meshBoundingBox;
-                        BoundingBox.Transform(ref mesh.BoundingBox, ref volume.World, out meshBoundingBox);
+                        Matrix world = volume.World;
+                        BoundingBox.Transform(ref mesh.BoundingBox, ref world, out meshBoundingBox);
                         var boundingBoxExt = new BoundingBoxExt(meshBoundingBox);
                         if (boundingBoxExt.Extent != Vector3.Zero
                             && !VisibilityGroup.FrustumContainsBox(ref frustum, ref boundingBoxExt, true))
