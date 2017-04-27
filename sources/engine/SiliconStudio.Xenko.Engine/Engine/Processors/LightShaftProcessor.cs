@@ -1,6 +1,7 @@
 // Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
@@ -11,9 +12,9 @@ namespace SiliconStudio.Xenko.Engine.Processors
 {
     public class LightShaftProcessor : EntityProcessor<LightShaftComponent, LightShaftProcessor.Data>
     {
-        private PoolListStruct<Data> activeLightShafts = new PoolListStruct<Data>(4, () => new Data());
+        private List<Data> activeLightShafts = new List<Data>();
 
-        public PoolListStruct<Data> LightShafts => activeLightShafts;
+        public List<Data> LightShafts => activeLightShafts;
 
         protected override Data GenerateComponentData(Entity entity, LightShaftComponent component)
         {
@@ -39,10 +40,11 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 if (directLight == null)
                     continue;
 
-                var data = activeLightShafts.Add();
-                data.Component = pair.Key;
-                data.LightComponent = light;
-                data.Light = directLight;
+                var lightShaft = pair.Value;
+                lightShaft.Component = pair.Key;
+                lightShaft.LightComponent = light;
+                lightShaft.Light = directLight;
+                activeLightShafts.Add(lightShaft);
             }
         }
 
