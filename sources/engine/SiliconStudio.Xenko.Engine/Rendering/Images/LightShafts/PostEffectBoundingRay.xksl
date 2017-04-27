@@ -3,10 +3,8 @@
 
 /// <remarks>
 /// SampleCount: generic int - number of iterations.
-/// Animate: generic bool - animate jitter
 /// </remarks>
-shader PostEffectBoundingRay<int SampleCount> 
-    : ImageEffectShader, DepthBase, Transformation, Camera, Utilities, Global, PositionStream4
+shader PostEffectBoundingRay<int SampleCount> : ImageEffectShader, DepthBase, Transformation, PositionStream4
 {
     float ComputeColorOut() 
     {
@@ -22,6 +20,7 @@ shader PostEffectBoundingRay<int SampleCount>
     {
         return int(input.z * 300 + input.x * 1002 + input.y * 6007 * 100);
     }
+
     float RayStepJitter(float3 input, float stepSize) 
     {
         return stepSize * Math.FastRandom(HashXYZ(input));

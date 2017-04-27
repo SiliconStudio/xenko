@@ -10,19 +10,21 @@ using SiliconStudio.Xenko.Rendering.Shadows;
 
 namespace SiliconStudio.Xenko.Engine
 {
+    /// <summary>
+    /// The source for light shafts, should be placed on the same entity as the light component which will be used for light shafts
+    /// </summary>
     [Display("Light Shaft", Expand = ExpandRule.Always)]
     [DataContract("LightShaftComponent")]
     [DefaultEntityComponentProcessor(typeof(LightShaftProcessor), ExecutionMode = ExecutionMode.All)]
     public class LightShaftComponent : ActivableEntityComponent
     {
         /// <summary>
-        /// Density of the volumetric fog generated for areas that are covered by this light
+        /// Density of the light shaft fog
         /// </summary>
-        public float DensityFactor { get; set; } = 0.01f;
-
-        public float ExtinctionFactor { get; set; } = 0.001f;
-
-        public float ExtinctionRatio { get; set; } = 0.9f;
+        /// <userdoc>
+        /// Density of the light shaft fog
+        /// </userdoc>
+        public float DensityFactor { get; set; } = 0.002f;
         
         /// <summary>
         /// Number of samples taken per pixel

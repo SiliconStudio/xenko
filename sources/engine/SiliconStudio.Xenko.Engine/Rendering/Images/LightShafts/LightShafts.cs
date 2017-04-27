@@ -285,8 +285,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         private void DrawLightShaft(RenderDrawContext context, LightShaftProcessor.Data lightShaft)
         {
-            lightShaftsEffectShader.Parameters.Set(LightShaftsShaderKeys.ExtinctionFactor, lightShaft.ExtinctionFactor);
-            lightShaftsEffectShader.Parameters.Set(LightShaftsShaderKeys.ExtinctionRatio, lightShaft.ExtinctionRatio);
             lightShaftsEffectShader.Parameters.Set(LightShaftsShaderKeys.DensityFactor, lightShaft.DensityFactor);
             
             lightShaftsEffectShader.Draw(context, $"Light shaft [{lightShaft.LightComponent.Entity.Name}]");

@@ -53,9 +53,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             public IDirectLight Light;
             public int SampleCount => Component.SampleCount;
             public Matrix LightWorld => Component.Entity.Transform.WorldMatrix;
-            public float ExtinctionFactor => Component.ExtinctionFactor;
             public float DensityFactor => Component.DensityFactor;
-            public float ExtinctionRatio => Component.ExtinctionRatio;
         }
     }
 }
