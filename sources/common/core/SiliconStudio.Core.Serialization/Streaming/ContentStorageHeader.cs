@@ -41,6 +41,7 @@ namespace SiliconStudio.Core.Streaming
                 stream.Write(e.Location);
                 stream.Write(e.Size);
             }
+            stream.Write(HashCode);
         }
 
         /// <summary>
@@ -62,6 +63,7 @@ namespace SiliconStudio.Core.Streaming
                     result.Chunks[i].Location = stream.ReadInt32();
                     result.Chunks[i].Size = stream.ReadInt32();
                 }
+                result.HashCode = stream.ReadInt32();
 
                 return result;
             }

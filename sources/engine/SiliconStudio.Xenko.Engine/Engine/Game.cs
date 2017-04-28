@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -22,6 +22,7 @@ using SiliconStudio.Xenko.Profiling;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Fonts;
 using SiliconStudio.Xenko.Rendering.Sprites;
+using SiliconStudio.Xenko.Streaming;
 using SiliconStudio.Xenko.VirtualReality;
 
 namespace SiliconStudio.Xenko.Engine
@@ -81,6 +82,12 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         /// <value>The effect system.</value>
         public EffectSystem EffectSystem { get; private set; }
+        
+        /// <summary>
+        /// Gets the streaming system.
+        /// </summary>
+        /// <value>The streaming system.</value>
+        public StreamingManager Streaming { get; private set; }
 
         /// <summary>
         /// Gets the audio system.
@@ -191,6 +198,7 @@ namespace SiliconStudio.Xenko.Engine
             // Registration takes place in `Initialize'.
             Script = new ScriptSystem(Services);
             SceneSystem = new SceneSystem(Services);
+            Streaming = new StreamingManager(Services);
             Audio = new AudioSystem(Services);
             gameFontSystem = new GameFontSystem(Services);
             SpriteAnimation = new SpriteAnimationSystem(Services);
@@ -340,8 +348,9 @@ namespace SiliconStudio.Xenko.Engine
 
             GameSystems.Add(EffectSystem);
 
+            GameSystems.Add(Streaming);
             GameSystems.Add(SceneSystem);
-
+            
             // Add the Audio System
             GameSystems.Add(Audio);
 

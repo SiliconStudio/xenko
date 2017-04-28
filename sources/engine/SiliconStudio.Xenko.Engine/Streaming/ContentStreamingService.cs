@@ -18,6 +18,21 @@ namespace SiliconStudio.Xenko.Streaming
             registry.AddService(typeof(ContentStreamingService), this);
         }
 
+        protected override void Destroy()
+        {
+            lock (containers)
+            {
+                containers.Clear();
+            }
+
+            if (Services.GetService(typeof(ContentStreamingService)) == this)
+            {
+                Services.RemoveService(typeof(ContentStreamingService));
+            }
+
+            base.Destroy();
+        }
+
         public ContentStorage GetStorage(ContentStorageHeader storageHeader)
         {
             ContentStorage result;
@@ -34,16 +49,6 @@ namespace SiliconStudio.Xenko.Streaming
             }
 
             return result;
-        }
-
-        protected override void Destroy()
-        {
-            lock (containers)
-            {
-                containers.Clear();
-            }
-
-            base.Destroy();
         }
     }
 }

@@ -17,6 +17,11 @@ namespace SiliconStudio.Xenko.Streaming
         private readonly HashSet<StreamableResource> _resources = new HashSet<StreamableResource>();
 
         /// <summary>
+        /// Gets the content streaming service.
+        /// </summary>
+        public ContentStreamingService ContentStreaming { get; }
+
+        /// <summary>
         /// List with all registered streamable resources.
         /// </summary>
         public ICollection<StreamableResource> Resources => _resources;
@@ -25,6 +30,22 @@ namespace SiliconStudio.Xenko.Streaming
         {
             registry.AddService(typeof(StreamingManager), this);
             registry.AddService(typeof(ITexturesStreamingProvider), this);
+
+            ContentStreaming = new ContentStreamingService(registry);
+        }
+
+        protected override void Destroy()
+        {
+            if (Services.GetService(typeof(ContentStreamingService)) == this)
+            {
+                Services.RemoveService(typeof(ContentStreamingService));
+            }
+            if (Services.GetService(typeof(ITexturesStreamingProvider)) == this)
+            {
+                Services.RemoveService(typeof(ITexturesStreamingProvider));
+            }
+
+            base.Destroy();
         }
 
         internal void RegisterResource(StreamableResource resource)
