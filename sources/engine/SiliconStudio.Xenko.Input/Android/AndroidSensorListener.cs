@@ -16,12 +16,12 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     internal class AndroidSensorListener : Java.Lang.Object, ISensorEventListener
     {
-        private const int SensorDesiredUpdateDelay = (int)(1/InputManager.DesiredSensorUpdateRate*1000f*1000.0f);
+        private const int SensorDesiredUpdateDelay = (int)(1/InputManager.DesiredSensorUpdateRate * 1000f * 1000.0f);
 
-        private IList<float> lastValues;
         private readonly List<float> lastQueriedValues = new List<float>();
-        private bool updated = false;
-        private Sensor sensor;
+        private IList<float> lastValues;
+        private bool updated;
+        private Android.Hardware.Sensor sensor;
         private SensorManager sensorManager;
 
         public AndroidSensorListener(SensorType sensorType)
@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        public void OnAccuracyChanged(Sensor sensor, SensorStatus accuracy)
+        public void OnAccuracyChanged(Android.Hardware.Sensor sensor, SensorStatus accuracy)
         {
         }
 
