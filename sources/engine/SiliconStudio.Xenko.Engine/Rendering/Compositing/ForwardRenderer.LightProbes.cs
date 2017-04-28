@@ -46,8 +46,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             continue;
 
                         var mappedCB = (LightProbeCBuffer*)(resourceGroup.ConstantBuffer.Data + logicalGroup.ConstantBufferOffset);
-                        mappedCB->Enabled = lightProbesData != null ? 1 : 0;
-                        mappedCB->UserVertexCount = lightProbesData?.UserVertexCount ?? 0;
+                        mappedCB->UserVertexCount = lightProbesData.UserVertexCount;
                     }
                 }
             }
@@ -383,7 +382,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         [StructLayout(LayoutKind.Sequential)]
         struct LightProbeCBuffer
         {
-            public int Enabled;
             public int UserVertexCount;
         }
     }

@@ -15,6 +15,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         override void PrepareEnvironmentLight()
         {
+            base.PrepareEnvironmentLight();
+
             float3 lightColor = AmbientLight * streams.matAmbientOcclusion;
             streams.envLightDiffuseColor = lightColor;
             streams.envLightSpecularColor = lightColor;
