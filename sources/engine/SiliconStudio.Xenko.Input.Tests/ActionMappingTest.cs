@@ -130,7 +130,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             base.Update(gameTime);
             
             // Log events
-            foreach (var evt in Input.InputEvents)
+            foreach (var evt in Input.Events)
             {
                 LogEvent(evt.ToString());
             }
