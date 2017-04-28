@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System.Linq;
 using NUnit.Framework;
@@ -12,14 +12,14 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestSimplePropertyChangeInBase()
         {
-            var baseAsset = AssetHierarchyHelper.BuildAssetContainer(1, 2, 1, null, x => x.Parts[x.RootPartIds.Single()].Part.Name = "BaseName");
+            var baseAsset = AssetHierarchyHelper.BuildAssetContainer(1, 2, 1, null, x => x.Parts[x.RootParts.Single()].Part.Name = "BaseName");
             var derivedAsset = AssetHierarchyHelper.BuildAssetContainer(1, 2, 1, baseAsset.Container);
             var instances = baseAsset.Asset.CreatePartInstances();
-            var baseRootId = baseAsset.Asset.Hierarchy.RootPartIds.Single();
-            var derivedRootId = instances.RootPartIds.Single();
+            var baseRootId = baseAsset.Asset.Hierarchy.RootParts.Single();
+            var derivedRootId = instances.RootParts.Single();
             derivedAsset.Graph.AddPartToAsset(instances.Parts, instances.Parts[derivedRootId], null, 1);
             derivedAsset.Graph.RefreshBase();
-            Assert.AreEqual(2, derivedAsset.Asset.Hierarchy.RootPartIds.Count);
+            Assert.AreEqual(2, derivedAsset.Asset.Hierarchy.RootParts.Count);
             Assert.AreEqual(baseRootId, derivedAsset.Asset.Hierarchy.Parts[derivedRootId].Base?.BasePartId);
             Assert.AreEqual("BaseName", derivedAsset.Asset.Hierarchy.Parts[derivedRootId].Part.Name);
             var baseRootPartNode = (IAssetObjectNode)baseAsset.Graph.Container.NodeContainer.GetNode(baseAsset.Asset.Hierarchy.Parts[baseRootId].Part);
@@ -39,14 +39,14 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestSimpleNestedPropertyChangeInBase()
         {
-            var baseAsset = AssetHierarchyHelper.BuildAssetContainer(1, 2, 1, null, x => x.Parts[x.RootPartIds.Single()].Part.Object = new Types.SomeObject { Value = "BaseName" });
+            var baseAsset = AssetHierarchyHelper.BuildAssetContainer(1, 2, 1, null, x => x.Parts[x.RootParts.Single()].Part.Object = new Types.SomeObject { Value = "BaseName" });
             var derivedAsset = AssetHierarchyHelper.BuildAssetContainer(1, 2, 1, baseAsset.Container);
             var instances = baseAsset.Asset.CreatePartInstances();
-            var baseRootId = baseAsset.Asset.Hierarchy.RootPartIds.Single();
-            var derivedRootId = instances.RootPartIds.Single();
+            var baseRootId = baseAsset.Asset.Hierarchy.RootParts.Single();
+            var derivedRootId = instances.RootParts.Single();
             derivedAsset.Graph.AddPartToAsset(instances.Parts, instances.Parts[derivedRootId], null, 1);
             derivedAsset.Graph.RefreshBase();
-            Assert.AreEqual(2, derivedAsset.Asset.Hierarchy.RootPartIds.Count);
+            Assert.AreEqual(2, derivedAsset.Asset.Hierarchy.RootParts.Count);
             Assert.AreEqual(baseRootId, derivedAsset.Asset.Hierarchy.Parts[derivedRootId].Base?.BasePartId);
             Assert.AreEqual("BaseName", derivedAsset.Asset.Hierarchy.Parts[derivedRootId].Part.Object.Value);
             var baseRootPartNode = (IAssetObjectNode)baseAsset.Graph.Container.NodeContainer.GetNode(baseAsset.Asset.Hierarchy.Parts[baseRootId].Part.Object);
@@ -66,14 +66,14 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test, Ignore("Overriding an object does not override its member currently, so this test cannot pass")]
         public void TestObjectPropertyChangeInBase()
         {
-            var baseAsset = AssetHierarchyHelper.BuildAssetContainer(1, 2, 1, null, x => x.Parts[x.RootPartIds.Single()].Part.Object = new Types.SomeObject { Value = "BaseName" });
+            var baseAsset = AssetHierarchyHelper.BuildAssetContainer(1, 2, 1, null, x => x.Parts[x.RootParts.Single()].Part.Object = new Types.SomeObject { Value = "BaseName" });
             var derivedAsset = AssetHierarchyHelper.BuildAssetContainer(1, 2, 1, baseAsset.Container);
             var instances = baseAsset.Asset.CreatePartInstances();
-            var baseRootId = baseAsset.Asset.Hierarchy.RootPartIds.Single();
-            var derivedRootId = instances.RootPartIds.Single();
+            var baseRootId = baseAsset.Asset.Hierarchy.RootParts.Single();
+            var derivedRootId = instances.RootParts.Single();
             derivedAsset.Graph.AddPartToAsset(instances.Parts, instances.Parts[derivedRootId], null, 1);
             derivedAsset.Graph.RefreshBase();
-            Assert.AreEqual(2, derivedAsset.Asset.Hierarchy.RootPartIds.Count);
+            Assert.AreEqual(2, derivedAsset.Asset.Hierarchy.RootParts.Count);
             Assert.AreEqual(baseRootId, derivedAsset.Asset.Hierarchy.Parts[derivedRootId].Base?.BasePartId);
             Assert.AreEqual("BaseName", derivedAsset.Asset.Hierarchy.Parts[derivedRootId].Part.Object.Value);
             var baseRootPartNode = (IAssetObjectNode)baseAsset.Graph.Container.NodeContainer.GetNode(baseAsset.Asset.Hierarchy.Parts[baseRootId].Part);
@@ -96,14 +96,14 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestMultiplePropertyChangesInBase()
         {
-            var baseAsset = AssetHierarchyHelper.BuildAssetContainer(1, 2, 1, null, x => x.Parts[x.RootPartIds.Single()].Part.Name = "BaseName");
+            var baseAsset = AssetHierarchyHelper.BuildAssetContainer(1, 2, 1, null, x => x.Parts[x.RootParts.Single()].Part.Name = "BaseName");
             var derivedAsset = AssetHierarchyHelper.BuildAssetContainer(1, 2, 1, baseAsset.Container);
             var instances = baseAsset.Asset.CreatePartInstances();
-            var baseRootId = baseAsset.Asset.Hierarchy.RootPartIds.Single();
-            var derivedRootId = instances.RootPartIds.Single();
+            var baseRootId = baseAsset.Asset.Hierarchy.RootParts.Single();
+            var derivedRootId = instances.RootParts.Single();
             derivedAsset.Graph.AddPartToAsset(instances.Parts, instances.Parts[derivedRootId], null, 1);
             derivedAsset.Graph.RefreshBase();
-            Assert.AreEqual(2, derivedAsset.Asset.Hierarchy.RootPartIds.Count);
+            Assert.AreEqual(2, derivedAsset.Asset.Hierarchy.RootParts.Count);
             Assert.AreEqual(baseRootId, derivedAsset.Asset.Hierarchy.Parts[derivedRootId].Base?.BasePartId);
             Assert.AreEqual("BaseName", derivedAsset.Asset.Hierarchy.Parts[derivedRootId].Part.Name);
             var baseRootPartNode = (IAssetObjectNode)baseAsset.Graph.Container.NodeContainer.GetNode(baseAsset.Asset.Hierarchy.Parts[baseRootId].Part);

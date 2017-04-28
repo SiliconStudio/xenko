@@ -74,9 +74,9 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 originAsset.Hierarchy.Parts.Add(new EntityDesign(entity3));
                 originAsset.Hierarchy.Parts.Add(new EntityDesign(entity4));
 
-                originAsset.Hierarchy.RootPartIds.Add(entity1.Id);
-                originAsset.Hierarchy.RootPartIds.Add(entity3.Id);
-                originAsset.Hierarchy.RootPartIds.Add(entity4.Id);
+                originAsset.Hierarchy.RootParts.Add(entity1.Id);
+                originAsset.Hierarchy.RootParts.Add(entity3.Id);
+                originAsset.Hierarchy.RootParts.Add(entity4.Id);
             }
             return originAsset;
         }
@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         private static void CheckGenericAsset(PrefabAsset originAsset, PrefabAsset newAsset)
         {
             // Check that we have exactly the same root entities
-            Assert.AreEqual(originAsset.Hierarchy.RootPartIds, newAsset.Hierarchy.RootPartIds);
+            Assert.AreEqual(originAsset.Hierarchy.RootParts, newAsset.Hierarchy.RootParts);
             Assert.AreEqual(originAsset.Hierarchy.Parts.Count, newAsset.Hierarchy.Parts.Count);
 
             foreach (var entityDesign in originAsset.Hierarchy.Parts)

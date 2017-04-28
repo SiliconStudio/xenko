@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -18,13 +18,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
         {
             var graph = AssetHierarchyHelper.BuildAssetAndGraph(2, 2, 2);
             Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.Asset));
-            var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootPartIds[1]];
+            var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootParts[1]];
             Dictionary<Guid, Guid> remapping;
             var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.None, out remapping);
-            var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
+            var cloneRoot = clone.Parts[clone.RootParts.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
-            Assert.AreEqual(1, clone.RootPartIds.Count);
+            Assert.AreEqual(1, clone.RootParts.Count);
             foreach (var part in clone.Parts)
             {
                 var matchingPart = graph.Asset.Hierarchy.Parts[part.Part.Id];
@@ -49,13 +49,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
         {
             var graph = AssetHierarchyHelper.BuildAssetAndGraph(2, 2, 2, x => x.Parts[GuidGenerator.Get(5)].Part.MyReference = x.Parts[GuidGenerator.Get(6)].Part);
             Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.Asset));
-            var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootPartIds[1]];
+            var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootParts[1]];
             Dictionary<Guid, Guid> remapping;
             var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.None, out remapping);
-            var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
+            var cloneRoot = clone.Parts[clone.RootParts.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
-            Assert.AreEqual(1, clone.RootPartIds.Count);
+            Assert.AreEqual(1, clone.RootParts.Count);
             foreach (var part in clone.Parts)
             {
                 var matchingPart = graph.Asset.Hierarchy.Parts[part.Part.Id];
@@ -81,13 +81,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
         {
             var graph = AssetHierarchyHelper.BuildAssetAndGraph(2, 2, 2, x => x.Parts[GuidGenerator.Get(5)].Part.MyReferences = new List<Types.MyPart> { x.Parts[GuidGenerator.Get(2)].Part });
             Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.Asset));
-            var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootPartIds[1]];
+            var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootParts[1]];
             Dictionary<Guid, Guid> remapping;
             var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.None, out remapping);
-            var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
+            var cloneRoot = clone.Parts[clone.RootParts.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
-            Assert.AreEqual(1, clone.RootPartIds.Count);
+            Assert.AreEqual(1, clone.RootParts.Count);
             foreach (var part in clone.Parts)
             {
                 var matchingPart = graph.Asset.Hierarchy.Parts[part.Part.Id];
@@ -113,13 +113,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
         {
             var graph = AssetHierarchyHelper.BuildAssetAndGraph(2, 2, 2);
             Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.Asset));
-            var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootPartIds[1]];
+            var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootParts[1]];
             Dictionary<Guid, Guid> remapping;
             var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
-            var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
+            var cloneRoot = clone.Parts[clone.RootParts.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
-            Assert.AreEqual(1, clone.RootPartIds.Count);
+            Assert.AreEqual(1, clone.RootParts.Count);
             foreach (var part in clone.Parts)
             {
                 var matchingPart = graph.Asset.Hierarchy.Parts[part.Part.Id];
@@ -144,13 +144,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
         {
             var graph = AssetHierarchyHelper.BuildAssetAndGraph(2, 2, 2, x => x.Parts[GuidGenerator.Get(5)].Part.MyReference = x.Parts[GuidGenerator.Get(6)].Part);
             Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.Asset));
-            var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootPartIds[1]];
+            var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootParts[1]];
             Dictionary<Guid, Guid> remapping;
             var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
-            var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
+            var cloneRoot = clone.Parts[clone.RootParts.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
-            Assert.AreEqual(1, clone.RootPartIds.Count);
+            Assert.AreEqual(1, clone.RootParts.Count);
             foreach (var part in clone.Parts)
             {
                 var matchingPart = graph.Asset.Hierarchy.Parts[part.Part.Id];
@@ -176,13 +176,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
         {
             var graph = AssetHierarchyHelper.BuildAssetAndGraph(2, 2, 2, x => x.Parts[GuidGenerator.Get(5)].Part.MyReferences = new List<Types.MyPart> { x.Parts[GuidGenerator.Get(2)].Part });
             Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.Asset));
-            var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootPartIds[1]];
+            var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootParts[1]];
             Dictionary<Guid, Guid> remapping;
             var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
-            var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
+            var cloneRoot = clone.Parts[clone.RootParts.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
-            Assert.AreEqual(1, clone.RootPartIds.Count);
+            Assert.AreEqual(1, clone.RootParts.Count);
             foreach (var part in clone.Parts)
             {
                 var matchingPart = graph.Asset.Hierarchy.Parts[part.Part.Id];

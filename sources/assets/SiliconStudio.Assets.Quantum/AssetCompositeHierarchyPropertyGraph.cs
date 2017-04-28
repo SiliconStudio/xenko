@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -47,7 +47,7 @@ namespace SiliconStudio.Assets.Quantum
             : base(container, assetItem, logger)
         {
             HierarchyNode = RootNode[nameof(AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>.Hierarchy)].Target;
-            var rootPartsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootPartIds)].Target;
+            var rootPartsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootParts)].Target;
             rootPartsNode.ItemChanged += RootPartsChanged;
             foreach (var childPartNode in Asset.Hierarchy.Parts.SelectMany(x => RetrieveChildPartNodes(x.Part)))
             {
@@ -88,7 +88,7 @@ namespace SiliconStudio.Assets.Quantum
         public override void Dispose()
         {
             base.Dispose();
-            var rootPartsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootPartIds)].Target;
+            var rootPartsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootParts)].Target;
             rootPartsNode.ItemChanged -= RootPartsChanged;
             registeredChildParts.ToList().ForEach(UnregisterChildPartNode);
             var partsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<IAssetPartDesign<IIdentifiable>, IIdentifiable>.Parts)].Target;
@@ -146,7 +146,7 @@ namespace SiliconStudio.Assets.Quantum
 
         /// <summary>
         /// Adds a part to this asset. This method updates the <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}.Parts"/> collection.
-        /// If <paramref name="parent"/> is null, it also updates the <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}.RootPartIds"/> collection.
+        /// If <paramref name="parent"/> is null, it also updates the <see cref="AssetCompositeHierarchyData{TAssetPartDesign,TAssetPart}.RootParts"/> collection.
         /// Otherwise, it updates the collection containing the list of children from the parent part.
         /// </summary>
         /// <param name="newPartCollection">A collection containing the part to add and all its child parts recursively, with their associated <typeparamref name="TAssetPartDesign"/>.</param>
@@ -157,12 +157,12 @@ namespace SiliconStudio.Assets.Quantum
         {
             // This insert method does not support negative indices.
             if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
-            // For consistency, we need to always add first to the Parts collection before adding to RootPartIds or as a child of an existing part
+            // For consistency, we need to always add first to the Parts collection before adding to RootParts or as a child of an existing part
             InsertPartInPartsCollection(newPartCollection, child);
             if (parent == null)
             {
-                var rootPartsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootPartIds)].Target;
-                rootPartsNode.Add(child.Part.Id, new Index(index));
+                var rootPartsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootParts)].Target;
+                rootPartsNode.Add(child.Part, new Index(index));
             }
             else
             {
@@ -172,22 +172,22 @@ namespace SiliconStudio.Assets.Quantum
 
         /// <summary>
         /// Removes a part from this asset. This method updates the <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}.Parts"/> collection.
-        /// If the part to remove is a root part, it also updates the <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}.RootPartIds"/> collection.
+        /// If the part to remove is a root part, it also updates the <see cref="AssetCompositeHierarchyData{TAssetPartDesign,TAssetPart}.RootParts"/> collection.
         /// Otherwise, it updates the collection containing the list of children from the parent of this part.
         /// </summary>
         /// <param name="partDesign">The part to remove from this asset.</param>
         public void RemovePartFromAsset(TAssetPartDesign partDesign)
         {
-            if (!Asset.Hierarchy.RootPartIds.Contains(partDesign.Part.Id))
+            if (!Asset.Hierarchy.RootParts.Contains(partDesign.Part))
             {
                 var parent = Asset.GetParent(partDesign.Part);
-                if (parent == null) throw new InvalidOperationException("The part has no parent but is not in the RootPartIds collection.");
+                if (parent == null) throw new InvalidOperationException("The part has no parent but is not in the RootParts collection.");
                 RemoveChildPartFromParentPart(parent, partDesign.Part);
             }
             else
             {
-                var index = new Index(Asset.Hierarchy.RootPartIds.IndexOf(partDesign.Part.Id));
-                var rootPartsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootPartIds)].Target;
+                var index = new Index(Asset.Hierarchy.RootParts.IndexOf(partDesign.Part));
+                var rootPartsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootParts)].Target;
                 rootPartsNode.Remove(partDesign.Part.Id, index);
             }
             RemovePartFromPartsCollection(partDesign);
@@ -315,7 +315,7 @@ namespace SiliconStudio.Assets.Quantum
                 if (!Asset.Hierarchy.Parts.ContainsKey(rootId))
                     throw new ArgumentException(@"The source root parts must be parts of this asset.", nameof(sourceRootIds));
 
-                subTreeHierarchy.RootPartIds.Add(rootId);
+                subTreeHierarchy.RootParts.Add(Asset.Hierarchy.Parts[rootId].Part);
 
                 subTreeHierarchy.Parts.Add(Asset.Hierarchy.Parts[rootId]);
                 foreach (var subTreePart in Asset.EnumerateChildParts(Asset.Hierarchy.Parts[rootId].Part, true))
@@ -415,6 +415,10 @@ namespace SiliconStudio.Assets.Quantum
 
             if (value is TAssetPart)
             {
+                // Check if we're a part referenced from the RootPartsIds.
+                if (targetNode.Type == typeof(AssetPartCollection<TAssetPartDesign, TAssetPart>) && !index.IsEmpty)
+                    return true;
+
                 // Check if we're the part referenced by a part design - other cases are references
                 var member = targetNode as IMemberNode;
                 return member == null || member.Parent.Type != typeof(TAssetPartDesign);
@@ -539,11 +543,11 @@ namespace SiliconStudio.Assets.Quantum
             if (newBasePartParent == null)
             {
                 // The part is a root, so we must place it according to its sibling (since no parent exists).
-                var partIndex = baseAsset.Hierarchy.RootPartIds.IndexOf(newBasePart.Part.Id);
+                var partIndex = baseAsset.Hierarchy.RootParts.IndexOf(x => x.Id == newBasePart.Part.Id);
                 // Let's try to find a sibling in the parts preceding it, in order
                 for (var i = partIndex - 1; i >= 0 && insertIndex < 0; --i)
                 {
-                    var sibling = baseAsset.Hierarchy.Parts[baseAsset.Hierarchy.RootPartIds[i]];
+                    var sibling = baseAsset.Hierarchy.Parts[baseAsset.Hierarchy.RootParts[i].Id];
                     var instanceSibling = Asset.Hierarchy.Parts.FirstOrDefault(x => x.Base?.InstanceId == instanceId && x.Base?.BasePartId == sibling.Part.Id);
                     // This sibling still exists instance-side, let's get its parent.
                     if (instanceSibling != null)
@@ -558,9 +562,9 @@ namespace SiliconStudio.Assets.Quantum
                 }
 
                 // Let's try to find a sibling in the parts following it, in order
-                for (var i = partIndex + 1; i < baseAsset.Hierarchy.RootPartIds.Count && insertIndex < 0; ++i)
+                for (var i = partIndex + 1; i < baseAsset.Hierarchy.RootParts.Count && insertIndex < 0; ++i)
                 {
-                    var sibling = baseAsset.Hierarchy.Parts[baseAsset.Hierarchy.RootPartIds[i]];
+                    var sibling = baseAsset.Hierarchy.Parts[baseAsset.Hierarchy.RootParts[i].Id];
                     var instanceSibling = Asset.Hierarchy.Parts.FirstOrDefault(x => x.Base?.InstanceId == instanceId && x.Base?.BasePartId == sibling.Part.Id);
                     // This sibling still exists instance-side, let's get its parent.
                     if (instanceSibling != null)
@@ -669,7 +673,7 @@ namespace SiliconStudio.Assets.Quantum
 
             // We want to enumerate parts that are actually "reachable", so we don't use Hierarchy.Parts for iteration - we iterate from the root parts instead.
             // We use Hierarchy.Parts at the end just to retrieve the part design from the actual part.
-            var currentParts = Asset.Hierarchy.RootPartIds.Select(x => Asset.Hierarchy.Parts[x].Part).DepthFirst(x => Asset.EnumerateChildParts(x, false)).Select(x => Asset.Hierarchy.Parts[x.Id]);
+            var currentParts = Asset.Hierarchy.RootParts.DepthFirst(x => Asset.EnumerateChildParts(x, false)).Select(x => Asset.Hierarchy.Parts[x.Id]);
             foreach (var part in currentParts.Where(x => x.Base != null))
             {
                 var baseAssetGraph = Container.GetGraph(part.Base.BasePartAsset.Id) as AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>;
@@ -762,8 +766,8 @@ namespace SiliconStudio.Assets.Quantum
                     if (!deletedPartsInstanceMapping.Contains(mappingKey) && baseInstanceMapping.TryGetValue(mappingKey, out existingPart))
                     {
                         // Replace the cloned part by the one to restore in the list of root if needed
-                        if (baseHierarchy.RootPartIds.Remove(clone.Part.Id))
-                            baseHierarchy.RootPartIds.Add(existingPart.Id);
+                        if (baseHierarchy.RootParts.Remove(clone.Part))
+                            baseHierarchy.RootParts.Add(existingPart);
 
                         // Overwrite the Ids of the cloned part with the id of the existing one so the cloned part will be considered as a proxy object by the fix reference pass
                         RewriteIds(clone.Part, existingPart);
@@ -777,7 +781,7 @@ namespace SiliconStudio.Assets.Quantum
                 baseHierarchy.Parts.Sort();
 
                 // Then actually add the new part
-                var rootClone = baseHierarchy.Parts[baseHierarchy.RootPartIds.Single()];
+                var rootClone = baseHierarchy.Parts[baseHierarchy.RootParts.Single().Id];
                 AddPartToAsset(baseHierarchy.Parts, rootClone, instanceParent?.Part, insertIndex);
             }
 
@@ -838,10 +842,10 @@ namespace SiliconStudio.Assets.Quantum
             switch (e.ChangeType)
             {
                 case ContentChangeType.CollectionAdd:
-                    NotifyPartAdded((Guid)e.NewValue);
+                    NotifyPartAdded(((TAssetPart)e.NewValue).Id);
                     break;
                 case ContentChangeType.CollectionRemove:
-                    NotifyPartRemoved((Guid)e.OldValue);
+                    NotifyPartRemoved(((TAssetPart)e.OldValue).Id);
                     break;
             }
         }

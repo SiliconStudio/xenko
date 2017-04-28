@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -25,7 +25,7 @@ namespace SiliconStudio.Assets
         [DataMember(10)]
         [NonIdentifiableCollectionItems]
         [NotNull]
-        public List<Guid> RootPartIds { get; } = new List<Guid>();
+        public List<TAssetPart> RootParts { get; } = new List<TAssetPart>();
 
         /// <summary>
         /// Gets a collection of all the parts, root or not, contained in this hierarchy.

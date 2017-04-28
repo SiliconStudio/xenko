@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -228,7 +228,7 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
         public class MyAssetHierarchy : AssetCompositeHierarchy<MyPartDesign, MyPart>
         {
             public override MyPart GetParent(MyPart part) => part.Parent;
-            public override int IndexOf(MyPart part) => GetParent(part)?.Children.IndexOf(part) ?? Hierarchy.RootPartIds.IndexOf(part.Id);
+            public override int IndexOf(MyPart part) => GetParent(part)?.Children.IndexOf(part) ?? Hierarchy.RootParts.IndexOf(part.Id);
             public override MyPart GetChild(MyPart part, int index) => part.Children[index];
             public override int GetChildCount(MyPart part) => part.Children.Count;
             public override IEnumerable<MyPart> EnumerateChildParts(MyPart part, bool isRecursive) => isRecursive ? part.Children.DepthFirst(t => t.Children) : part.Children;

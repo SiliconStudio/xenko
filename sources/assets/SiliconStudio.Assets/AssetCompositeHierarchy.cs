@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -122,12 +122,7 @@ namespace SiliconStudio.Assets
         /// <inheritdoc />
         public override void RemapIdentifiableIds(Dictionary<Guid, Guid> remapping)
         {
-            for (var i = 0; i < Hierarchy.RootPartIds.Count; ++i)
-            {
-                Guid newId;
-                if (remapping.TryGetValue(Hierarchy.RootPartIds[i], out newId))
-                    Hierarchy.RootPartIds[i] = newId;
-            }
+
         }
 
         /// <summary>
@@ -150,7 +145,7 @@ namespace SiliconStudio.Assets
                 result.Parts.Add(child);
             }
             result.Parts.Add(partDesign);
-            result.RootPartIds.Add(partDesign.Part.Id);
+            result.RootParts.Add(partDesign.Part);
             return result;
         }
     }
