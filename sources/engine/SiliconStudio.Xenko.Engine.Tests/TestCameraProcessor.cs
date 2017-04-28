@@ -40,6 +40,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             // Create graphics compositor
             graphicsCompositor = new GraphicsCompositor();
             sceneSystem = new SceneSystem(services) { GraphicsCompositor = graphicsCompositor };
+            services.AddService(typeof(SceneSystem), sceneSystem);
         }
 
         private CameraComponent AddCamera(bool enabled, SceneCameraSlotId slot)

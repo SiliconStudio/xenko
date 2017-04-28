@@ -19,8 +19,6 @@ namespace SiliconStudio.Xenko.Rendering.Fonts
         {
             Visible = true;
             FontSystem = new FontSystem();
-            Services.AddService(typeof(FontSystem), FontSystem);
-            Services.AddService(typeof(IFontFactory), FontSystem);
         }
 
         public override void Draw(GameTime gameTime)

@@ -30,14 +30,18 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             Skybox = skybox;
             Services = new ServiceRegistry();
             Content = new ContentManager(Services);
+            Services.AddService(typeof(IContentManager), Content);
+            Services.AddService(typeof(ContentManager), Content);
 
             GraphicsDevice = GraphicsDevice.New();
             GraphicsDeviceService = new GraphicsDeviceServiceLocal(Services, GraphicsDevice);
+            Services.AddService(typeof(IGraphicsDeviceService), GraphicsDeviceService);
 
             var graphicsContext = new GraphicsContext(GraphicsDevice);
             Services.AddService(typeof(GraphicsContext), graphicsContext);
 
             EffectSystem = new EffectSystem(Services);
+            Services.AddService(typeof(EffectSystem), EffectSystem);
             EffectSystem.Initialize();
             ((IContentable)EffectSystem).LoadContent();
             ((EffectCompilerCache)EffectSystem.Compiler).CompileEffectAsynchronously = false;

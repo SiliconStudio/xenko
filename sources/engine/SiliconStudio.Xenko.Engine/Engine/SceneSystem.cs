@@ -34,7 +34,6 @@ namespace SiliconStudio.Xenko.Engine
         public SceneSystem(IServiceRegistry registry)
             : base(registry)
         {
-            registry.AddService(typeof(SceneSystem), this);
             Enabled = true;
             Visible = true;
             GraphicsCompositor = new GraphicsCompositor();

@@ -24,8 +24,6 @@ namespace SiliconStudio.Xenko.Profiling
 
         public DebugConsoleSystem(IServiceRegistry registry) : base(registry)
         {
-            registry.AddService(typeof(DebugConsoleSystem), this);
-
             Visible = true;
 
             DrawOrder = 0xffffff;
