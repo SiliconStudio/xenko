@@ -152,6 +152,7 @@
     <Compile Include="BasicInputTest.cs" />
     <Compile Include="AdvancedInputTest.cs" />
     <Compile Include="SensorGameTest.cs" />
+    <Compile Include="TestDirection.cs" />
     <Compile Include="TestGestures.cs" />
     <Compile Include="TestInput.cs" />
   </ItemGroup>

@@ -75,6 +75,7 @@
     <Compile Include="ButtonEvent.cs" />
     <Compile Include="DeviceChangedEventArgs.cs" />
     <Compile Include="DeviceChangedEventType.cs" />
+    <Compile Include="Direction.cs" />
     <Compile Include="GamePadAxisEvent.cs" />
     <Compile Include="GamePadButtonEvent.cs" />
     <Compile Include="GamePadDeviceBase.cs" />
