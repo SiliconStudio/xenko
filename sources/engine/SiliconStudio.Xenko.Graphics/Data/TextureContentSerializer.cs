@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
                         if (isStreamable)
                         {
                             // Register texture for streaming
-                            services.GetSafeServiceAs<ITexturesStreamingProvider>().RegisterTexture(texture, storageHeader);
+                            services.GetSafeServiceAs<ITexturesStreamingProvider>().RegisterTexture(texture, ref imageDescription, storageHeader);
 
                             // Note: we don't load texture data here and don't allocate GPU memory
                         }

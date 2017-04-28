@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using SharpDX.Win32;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Streaming;
 using SiliconStudio.Xenko.Games;
@@ -18,6 +19,7 @@ namespace SiliconStudio.Xenko.Streaming
         private readonly List<StreamableResource> _priorityUpdateQueue = new List<StreamableResource>(64); // Could be Queue<T> but it doesn't support .Remove(T)
         private int _lastUpdateResourcesIndex;
         private DateTime _lastUpdateTime = DateTime.MinValue;
+        private bool _isDisposing;
 
         /// <summary>
         /// Gets the content streaming service.
@@ -42,11 +44,15 @@ namespace SiliconStudio.Xenko.Streaming
             registry.AddService(typeof(ITexturesStreamingProvider), this);
 
             ContentStreaming = new ContentStreamingService();
-        }
 
+            Enabled = true;
+        }
+        
         /// <inheritdoc />
         protected override void Destroy()
         {
+            _isDisposing = true;
+
             if (Services.GetService(typeof(StreamingManager)) == this)
             {
                 Services.RemoveService(typeof(StreamingManager));
@@ -70,21 +76,21 @@ namespace SiliconStudio.Xenko.Streaming
 
         internal void RegisterResource(StreamableResource resource)
         {
-            Debug.Assert(resource != null);
+            Debug.Assert(resource != null && _isDisposing == false);
 
             lock (_resources)
             {
                 Debug.Assert(!_resources.Contains(resource));
 
                 _resources.Add(resource);
-
-                // Register quicker update for that resource
-                RequestUpdate(resource);
             }
         }
 
         internal void UnregisterResource(StreamableResource resource)
         {
+            if (_isDisposing)
+                return;
+
             Debug.Assert(resource != null);
 
             lock (_resources)
@@ -109,7 +115,7 @@ namespace SiliconStudio.Xenko.Streaming
         }
 
         /// <inheritdoc />
-        void ITexturesStreamingProvider.RegisterTexture(Texture obj, ContentStorageHeader storageHeader)
+        void ITexturesStreamingProvider.RegisterTexture(Texture obj, ref ImageDescription imageDescription, ContentStorageHeader storageHeader)
         {
             Debug.Assert(obj != null && storageHeader != null);
 
@@ -121,9 +127,21 @@ namespace SiliconStudio.Xenko.Streaming
                 return;
             }
 
-            // Create streamable resource
-            var resource = new StreamingTexture(this, storage, obj);
-            RegisterResource(resource);
+            lock (_resources)
+            {
+                // Find resource or create new
+                var resource = _resources.Find(x => x.Resource == obj) as StreamingTexture;
+                if (resource == null)
+                {
+                    resource = new StreamingTexture(this, obj);
+                }
+
+                // Update resource storage/description information (may be modified on asset rebuilding)
+                resource.Init(storage, ref imageDescription);
+
+                // Register quicker update for that resource
+                RequestUpdate(resource);
+            }
         }
 
         /// <inheritdoc />

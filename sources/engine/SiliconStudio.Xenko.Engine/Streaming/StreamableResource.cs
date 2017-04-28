@@ -26,6 +26,11 @@ namespace SiliconStudio.Xenko.Streaming
         public bool IsDisposed => Manager == null;
 
         /// <summary>
+        /// Gets the resource object.
+        /// </summary>
+        public abstract object Resource { get; }
+
+        /// <summary>
         /// Gets the current residency level.
         /// </summary>
         public abstract int CurrentResidency { get; }
@@ -56,11 +61,26 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         internal DateTime LastUpdate;
 
-        protected StreamableResource(StreamingManager manager, ContentStorage storage)
+        protected StreamableResource(StreamingManager manager)
         {
-            Storage = storage;
             Manager = manager;
+            Manager.RegisterResource(this);
             LastUpdate = DateTime.MinValue;
+        }
+
+        protected void Init(ContentStorage storage)
+        {
+            if (Storage != null)
+            {
+                // TODO: remove reference?
+            }
+
+            Storage = storage;
+
+            if (Storage != null)
+            {
+                // TODO: add reference?
+            }
         }
 
         public virtual void Dispose()
@@ -68,6 +88,7 @@ namespace SiliconStudio.Xenko.Streaming
             if (IsDisposed)
                 throw new InvalidOperationException();
 
+            Manager.UnregisterResource(this);
             Manager = null;
         }
     }

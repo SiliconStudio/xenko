@@ -14,7 +14,8 @@ namespace SiliconStudio.Xenko.Graphics.Data
         /// Registers the texture in a streaming service.
         /// </summary>
         /// <param name="obj">The texture object.</param>
+        /// <param name="imageDescription">The image description.</param>
         /// <param name="storageHeader">The storage header.</param>
-        void RegisterTexture(Texture obj, ContentStorageHeader storageHeader);
+        void RegisterTexture(Texture obj, ref ImageDescription imageDescription, ContentStorageHeader storageHeader);
     }
 }
