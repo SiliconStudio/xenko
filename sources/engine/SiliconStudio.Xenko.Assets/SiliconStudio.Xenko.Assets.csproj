@@ -333,9 +333,6 @@
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
     <Compile Include="Entities\SceneAsset.Upgraders.cs" />
     <Compile Include="Entities\SceneAssetFactories.cs" />
-    <Compile Include="Input\InputActionConfigurationAsset.cs" />
-    <Compile Include="Input\InputActionConfigurationAssetCompiler.cs" />
-    <Compile Include="Input\InputMappingFactory.cs" />
     <Compile Include="Rendering\GraphicsCompositorAsset.cs" />
     <Compile Include="Navigation\NavigationMeshAsset.cs" />
     <Compile Include="Navigation\NavigationMeshFactory.cs" />
