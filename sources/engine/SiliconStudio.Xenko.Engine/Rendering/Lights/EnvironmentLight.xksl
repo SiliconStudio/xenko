@@ -9,6 +9,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     {
         void PrepareEnvironmentLight()
         {
+            streams.envLightDiffuseColor = 0;
+            streams.envLightSpecularColor = 0;
         }
     };
 }
