@@ -2,7 +2,7 @@
 // See LICENSE.md for full license information.
 
 using System.Diagnostics;
-using System.IO;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Streaming;
 
@@ -37,9 +37,20 @@ namespace SiliconStudio.Xenko.Graphics.Data
         /// Initializes a new instance of the <see cref="TextureSerializationData"/> class.
         /// </summary>
         /// <param name="image">The image.</param>
+        public TextureSerializationData([NotNull] Image image)
+        {
+            Image = image;
+            EnableStreaming = false;
+            StorageHeader = null;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextureSerializationData"/> class.
+        /// </summary>
+        /// <param name="image">The image.</param>
         /// <param name="enableStreaming">Enables/disables texture streaming</param>
         /// <param name="storageHeader">Streaming storage data</param>
-        public TextureSerializationData(Image image, bool enableStreaming, ContentStorageHeader storageHeader)
+        public TextureSerializationData([NotNull] Image image, bool enableStreaming, ContentStorageHeader storageHeader)
         {
             Image = image;
             EnableStreaming = enableStreaming;
@@ -52,10 +63,12 @@ namespace SiliconStudio.Xenko.Graphics.Data
         /// <param name="stream">The destination stream.</param>
         public void Write(SerializationStream stream)
         {
-            stream.Write(Version);
-            stream.Write(EnableStreaming);
             if (EnableStreaming)
             {
+                // Write version number and streaming options
+                stream.Write(Version);
+                stream.Write(EnableStreaming);
+
                 // Write image header
                 ImageHelper.ImageDescriptionSerializer.Serialize(ref Image.Description, ArchiveMode.Serialize, stream);
 
@@ -63,9 +76,9 @@ namespace SiliconStudio.Xenko.Graphics.Data
                 Debug.Assert(StorageHeader != null);
                 StorageHeader.Write(stream);
             }
-            //else
+            else
             {
-                // Write whole image
+                // Write whole image (old texture content serialization)
                 Image.Save(stream.NativeStream, ImageFileType.Xenko);
             }
         }

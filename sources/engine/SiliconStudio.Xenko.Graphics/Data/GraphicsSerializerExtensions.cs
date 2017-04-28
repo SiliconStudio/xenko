@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
         /// <param name="image">The image.</param>
         public static void SetSerializationData(this Texture texture, Image image)
         {
-            texture.SetSerializationData(new TextureSerializationData(image, false, null));
+            texture.SetSerializationData(new TextureSerializationData(image));
         }
 
         /// <summary>
