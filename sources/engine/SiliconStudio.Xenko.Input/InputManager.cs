@@ -35,17 +35,16 @@ namespace SiliconStudio.Xenko.Input
 
         internal static Logger Logger = GlobalLogger.GetLogger("Input");
 
-        private readonly List<IInputSource> inputSources = new List<IInputSource>();
-        private readonly List<IInputDevice> inputDevices = new List<IInputDevice>();
+        private readonly List<IInputSource> sources = new List<IInputSource>();
+        private readonly List<IInputDevice> devices = new List<IInputDevice>();
+        private readonly List<InputEvent> events = new List<InputEvent>();
 
         // Mapping of device guid to device
-        private readonly Dictionary<Guid, IInputDevice> inputDevicesById = new Dictionary<Guid, IInputDevice>();
+        private readonly Dictionary<Guid, IInputDevice> devicesById = new Dictionary<Guid, IInputDevice>();
 
         // List mapping GamePad index to the guid of the device
         private readonly List<List<IGamePadDevice>> gamePadRequestedIndex = new List<List<IGamePadDevice>>();
         private readonly List<IGamePadDevice> gamePadsByIndex = new List<IGamePadDevice>();
-
-        private readonly List<InputEvent> inputEvents = new List<InputEvent>();
 
         private readonly List<IKeyboardDevice> keyboardDevices = new List<IKeyboardDevice>();
         private readonly List<IPointerDevice> pointerDevices = new List<IPointerDevice>();
@@ -72,12 +71,6 @@ namespace SiliconStudio.Xenko.Input
         /// List of the gestures to recognize.
         /// </summary>
         public TrackingCollection<IInputGesture> Gestures { get; }
-
-        /// <summary>
-        /// List of the gestures to recognize.
-        /// </summary>
-        [Obsolete("Use InputManager.Gestures instead")]
-        public TrackingCollection<IInputGesture> ActivatedGestures => Gestures;
 
         /// <summary>
         /// Gets the reference to the accelerometer sensor. The accelerometer measures all the acceleration forces applied on the device.
@@ -117,7 +110,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// All input events that happened since the last frame
         /// </summary>
-        public IReadOnlyList<InputEvent> InputEvents => inputEvents;
+        public IReadOnlyList<InputEvent> Events => events;
 
         /// <summary>
         /// Gets a value indicating whether pointer device is available.
@@ -321,7 +314,7 @@ namespace SiliconStudio.Xenko.Input
         /// </remarks>
         public void Scan()
         {
-            foreach (var source in inputSources)
+            foreach (var source in sources)
             {
                 source.Scan();
             }
@@ -332,23 +325,23 @@ namespace SiliconStudio.Xenko.Input
             ResetGlobalInputState();
 
             // Recycle input event to reduce garbage generation
-            foreach (var evt in inputEvents)
+            foreach (var evt in events)
             {
                 // The router takes care of putting the event back in its respective InputEventPool since it already has the type information
                 eventRouters[evt.GetType()].PoolEvent(evt);
             }
-            inputEvents.Clear();
+            events.Clear();
 
             // Update all input sources so they can route events to input devices and possible register new devices
-            foreach (var source in inputSources)
+            foreach (var source in sources)
             {
                 source.Update();
             }
 
             // Update all input sources so they can send events and update their state
-            foreach (var inputDevice in inputDevices)
+            foreach (var inputDevice in devices)
             {
-                inputDevice.Update(inputEvents);
+                inputDevice.Update(events);
             }
 
             // Notify PreUpdateInput
@@ -361,7 +354,7 @@ namespace SiliconStudio.Xenko.Input
             }
 
             // Send events to input listeners
-            foreach (var evt in inputEvents)
+            foreach (var evt in events)
             {
                 IInputEventRouter router;
                 if (!eventRouters.TryGetValue(evt.GetType(), out router))
@@ -410,7 +403,7 @@ namespace SiliconStudio.Xenko.Input
         public void OnApplicationPaused(object sender, EventArgs e)
         {
             // Pause sources
-            foreach (var source in inputSources)
+            foreach (var source in sources)
             {
                 source.Pause();
             }
@@ -419,7 +412,7 @@ namespace SiliconStudio.Xenko.Input
         public void OnApplicationResumed(object sender, EventArgs e)
         {
             // Resume sources
-            foreach (var source in inputSources)
+            foreach (var source in sources)
             {
                 source.Resume();
             }
@@ -431,9 +424,9 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="source">The input source to add</param>
         public void AddInputSource(IInputSource source)
         {
-            if (inputSources.Contains(source)) throw new InvalidOperationException("Input Source already added");
+            if (sources.Contains(source)) throw new InvalidOperationException("Input Source already added");
 
-            inputSources.Add(source);
+            sources.Add(source);
             source.InputDevices.CollectionChanged += (sender, args) => InputDevicesOnCollectionChanged(source, args);
             source.Initialize(this);
         }
@@ -463,11 +456,11 @@ namespace SiliconStudio.Xenko.Input
         public void ReinitializeSources()
         {
             // Destroy all input sources
-            foreach (var source in inputSources)
+            foreach (var source in sources)
             {
                 source.Dispose();
             }
-            inputSources.Clear();
+            sources.Clear();
 
             InitializeSources();
         }
@@ -528,7 +521,7 @@ namespace SiliconStudio.Xenko.Input
             Gestures.Clear();
 
             // Destroy all input sources
-            foreach (var source in inputSources)
+            foreach (var source in sources)
             {
                 source.Dispose();
             }
@@ -584,11 +577,11 @@ namespace SiliconStudio.Xenko.Input
 
         private void OnInputDeviceAdded(IInputSource source, IInputDevice device)
         {
-            inputDevices.Add(device);
-            if (inputDevicesById.ContainsKey(device.Id))
-                throw new InvalidOperationException($"Device with Id {device.Id}({device.Name}) already registered to {inputDevicesById[device.Id].Name}");
+            devices.Add(device);
+            if (devicesById.ContainsKey(device.Id))
+                throw new InvalidOperationException($"Device with Id {device.Id}({device.Name}) already registered to {devicesById[device.Id].Name}");
 
-            inputDevicesById.Add(device.Id, device);
+            devicesById.Add(device.Id, device);
 
             if (device is IKeyboardDevice)
             {
@@ -621,12 +614,12 @@ namespace SiliconStudio.Xenko.Input
 
         private void OnInputDeviceRemoved(IInputDevice device)
         {
-            if (!inputDevices.Contains(device))
+            if (!devices.Contains(device))
                 throw new InvalidOperationException("Input device was not registered");
 
             var source = device.Source;
-            inputDevices.Remove(device);
-            inputDevicesById.Remove(device.Id);
+            devices.Remove(device);
+            devicesById.Remove(device.Id);
 
             if (device is IKeyboardDevice)
             {
@@ -658,7 +651,7 @@ namespace SiliconStudio.Xenko.Input
             Keyboard = keyboardDevices.FirstOrDefault();
             HasKeyboard = Keyboard != null;
 
-            TextInput = inputDevices.OfType<ITextInputDevice>().FirstOrDefault();
+            TextInput = devices.OfType<ITextInputDevice>().FirstOrDefault();
 
             Mouse = pointerDevices.OfType<IMouseDevice>().FirstOrDefault();
             HasMouse = Mouse != null;

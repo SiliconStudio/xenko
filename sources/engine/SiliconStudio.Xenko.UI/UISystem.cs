@@ -185,7 +185,7 @@ namespace SiliconStudio.Xenko.UI
             if (UIElement.FocusedElement == null || !UIElement.FocusedElement.IsHierarchyEnabled) return;
 
             // Raise text input events
-            var textEvents = input.InputEvents.OfType<TextInputEvent>();
+            var textEvents = input.Events.OfType<TextInputEvent>();
             bool enteredText = false;
             foreach (var textEvent in textEvents)
             {

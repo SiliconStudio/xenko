@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         
         void TestPressRelease()
         {
-            var events = Input.InputEvents;
+            var events = Input.Events;
             Input.SimulateKeyDown(Keys.A);
             Input.Update(DrawTime);
 
@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Input.Tests
 
         void TestRepeat()
         {
-            var events = Input.InputEvents;
+            var events = Input.Events;
             Input.SimulateKeyDown(Keys.A);
             Input.Update(DrawTime);
             Input.SimulateKeyDown(Keys.A);
