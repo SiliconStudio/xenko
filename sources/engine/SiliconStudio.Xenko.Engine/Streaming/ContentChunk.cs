@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 
 using System;
+using System.IO;
 
 namespace SiliconStudio.Xenko.Streaming
 {
@@ -63,6 +64,22 @@ namespace SiliconStudio.Xenko.Streaming
         public void RegisterUsage()
         {
             LastAccessTime = DateTime.UtcNow;
+        }
+
+        public void Load()
+        {
+            if (IsLoaded)
+                return;
+
+            using (var stream = new FileStream(Storage.Url, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                stream.Position = Location;
+                var data = new byte[Size];
+                stream.Read(data, 0, Size);
+                Data = data;
+            }
+
+            RegisterUsage();
         }
     }
 }

@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Streaming
 
             var packageTime = DateTime.UtcNow;
 
-            // TODO: sort chunks (smaller ones should go first)
+            // TODO: sort chunks (smaller ones should go first), but keep order after loading - so save entries in the same order but data in a diffrent
 
             // Calculate first chunk location (in file)
             int chunksCount = chunksData.Count;

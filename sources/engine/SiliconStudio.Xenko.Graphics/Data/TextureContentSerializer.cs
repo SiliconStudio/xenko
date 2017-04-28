@@ -84,6 +84,8 @@ namespace SiliconStudio.Xenko.Graphics.Data
                             // TODO: should we use the new format for non streamable textures?
                             throw new NotImplementedException();
                         }
+                        
+                        texture.AttachToGraphicsDevice(graphicsDeviceService.GraphicsDevice);
 
                         break;
                     }

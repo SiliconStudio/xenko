@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 
 using System;
+using System.Threading.Tasks;
 
 namespace SiliconStudio.Xenko.Streaming
 {
@@ -61,11 +62,16 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         internal DateTime LastUpdate;
 
+        /// <summary>
+        /// The last target residency change time.
+        /// </summary>
+        internal DateTime TargetResidencyChange;
+
         protected StreamableResource(StreamingManager manager)
         {
             Manager = manager;
             Manager.RegisterResource(this);
-            LastUpdate = DateTime.MinValue;
+            LastUpdate = TargetResidencyChange = DateTime.MinValue;
         }
 
         protected void Init(ContentStorage storage)
@@ -82,7 +88,25 @@ namespace SiliconStudio.Xenko.Streaming
                 // TODO: add reference?
             }
         }
+        
+        /// <summary>
+        /// Updates the resource allocation to the given residency level. May not be updated now but in an async operation.
+        /// </summary>
+        /// <param name="residency">The target allocation residency.</param>
+        /// <returns>Async task that updates resource allocation or null if already done it. Warning: need to call task start to perform allocation.</returns>
+        internal abstract Task UpdateAllocation(int residency);
 
+        /// <summary>
+        /// Creates streaming task (or tasks sequence) to perform resource streaming for the desire residency level.
+        /// </summary>
+        /// <param name="residency">The target residency.</param>
+        /// <returns>Async task or tasks that update resource residency level. Must be preceded with UpdateAllocation call.</returns>
+        internal abstract Task CreateStreamingTask(int residency);
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException"></exception>
         public virtual void Dispose()
         {
             if (IsDisposed)
