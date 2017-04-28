@@ -8,11 +8,11 @@ shader HSVUtils
     float GetSaturation(float3 tex)
     {
         float e = 1.0e-10;
-        float maxChan = max(max(tex.r, tex.g), tex.b);
-        if(maxChan < e)
+        float maxChannel = max(max(tex.r, tex.g), tex.b);
+        if(maxChannel < e)
             return 0.0f;
         else
-            return 1.0f - min(min(tex.r, tex.g), tex.b) / maxChan;
+            return 1.0f - min(min(tex.r, tex.g), tex.b) / maxChannel;
     }
 
     float GetValue(float3 tex)
@@ -23,16 +23,16 @@ shader HSVUtils
     float GetHue(float3 tex)
     {
         float e = 1.0e-10;
-        float maxChan = max(max(tex.r, tex.g), tex.b);
+        float maxChannel = max(max(tex.r, tex.g), tex.b);
         
-        float delta = maxChan - min(min(tex.r, tex.g), tex.b);
+        float delta = maxChannel - min(min(tex.r, tex.g), tex.b);
         if (delta < e)
             return 0.0f;
-        if(maxChan == tex.r)
+        if(maxChannel == tex.r)
         {
             return frac(1.0f + (tex.g - tex.b) / (6.0f * delta));
         }
-        else if(maxChan == tex.g)
+        else if(maxChannel == tex.g)
         {
             return 1.0f / 3.0f + (tex.b - tex.r) / (6.0f * delta);
         }
