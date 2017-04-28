@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
 
         private void AxisOnChanged(object sender, AxisGestureEventArgs args)
         {
-            var state = args.State > Threshold ? ButtonState.Down : ButtonState.Up;
+            var state = args.State > Threshold;
             UpdateButton(state, args.Device);
         }
         

@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
             if (inputEvent.GamePad.Index == gamePadIndex)
             {
                 if (GamePadButton == inputEvent.Button)
-                    UpdateButton(inputEvent.State, inputEvent.Device);
+                    UpdateButton(inputEvent.IsDown, inputEvent.Device);
             }
         }
 

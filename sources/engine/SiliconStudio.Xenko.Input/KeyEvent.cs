@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override string ToString()
         {
-            return $"{nameof(Key)}: {Key}, {nameof(State)}: {State}, {nameof(RepeatCount)}: {RepeatCount}, {nameof(Keyboard)}: {Keyboard}";
+            return $"{nameof(Key)}: {Key}, {nameof(IsDown)}: {IsDown}, {nameof(RepeatCount)}: {RepeatCount}, {nameof(Keyboard)}: {Keyboard}";
         }
     }
 }

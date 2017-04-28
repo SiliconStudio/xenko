@@ -35,19 +35,19 @@ namespace SiliconStudio.Xenko.Input.Gestures
             if (inputEvent.RepeatCount > 0) return;
             if (Keys?.Contains(inputEvent.Key) ?? false)
             {
-                if (inputEvent.State == ButtonState.Down)
+                if (inputEvent.IsDown)
                 {
                     heldKeys.Add(inputEvent.Key);
                     if (heldKeys.Count == Keys.Count) // Is held after this
                     {
-                        UpdateButton(ButtonState.Down, inputEvent.Device);
+                        UpdateButton(true, inputEvent.Device);
                     }
                 }
                 else
                 {
                     if (heldKeys.Count == Keys.Count) // Was held before this
                     {
-                        UpdateButton(ButtonState.Up, inputEvent.Device);
+                        UpdateButton(false, inputEvent.Device);
                     }
                     heldKeys.Remove(inputEvent.Key);
                 }

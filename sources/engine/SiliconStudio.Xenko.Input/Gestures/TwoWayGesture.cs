@@ -64,12 +64,12 @@ namespace SiliconStudio.Xenko.Input.Gestures
 
         private void PositiveChanged(object sender, ButtonGestureEventArgs args)
         {
-            stateA = args.State == ButtonState.Down ? 1.0f : 0.0f;
+            stateA = args.State ? 1.0f : 0.0f;
             UpdateAxis(stateA + stateB, args.Device);
         }
         private void NegativeChanged(object sender, ButtonGestureEventArgs args)
         {
-            stateB = args.State == ButtonState.Down ? -1.0f : 0.0f;
+            stateB = args.State ? -1.0f : 0.0f;
             UpdateAxis(stateA + stateB, args.Device);
         }
     }

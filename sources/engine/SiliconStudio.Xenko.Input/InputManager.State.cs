@@ -149,7 +149,7 @@ namespace SiliconStudio.Xenko.Input
 
         public void ProcessEvent(KeyEvent inputEvent)
         {
-            if (inputEvent.State == ButtonState.Down)
+            if (inputEvent.IsDown)
             {
                 if (inputEvent.RepeatCount == 0)
                     DownKeys.Add(inputEvent.Key);
@@ -182,7 +182,7 @@ namespace SiliconStudio.Xenko.Input
 
         public void ProcessEvent(MouseButtonEvent inputEvent)
         {
-            if (inputEvent.State == ButtonState.Down)
+            if (inputEvent.IsDown)
             {
                 DownButtons.Add(inputEvent.Button);
                 PressedButtons.Add(inputEvent.Button);
@@ -204,7 +204,7 @@ namespace SiliconStudio.Xenko.Input
 
         public void ProcessEvent(GamePadButtonEvent inputEvent)
         {
-            if (inputEvent.State == ButtonState.Down)
+            if (inputEvent.IsDown)
             {
                 PressedGamePadButtonEvents.Add(inputEvent);
             }

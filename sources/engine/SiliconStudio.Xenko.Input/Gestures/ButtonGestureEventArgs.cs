@@ -7,11 +7,14 @@ namespace SiliconStudio.Xenko.Input.Gestures
 {
     public class ButtonGestureEventArgs : GestureEventArgs
     {
-        public ButtonGestureEventArgs(IInputDevice device, ButtonState state) : base(device)
+        public ButtonGestureEventArgs(IInputDevice device, bool state) : base(device)
         {
             this.State = state;
         }
         
-        public ButtonState State { get; internal set; }
+        /// <summary>
+        /// The new state of the button gesture
+        /// </summary>
+        public bool State { get; internal set; }
     }
 }

@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Input
             {
                 ButtonStates[index] = state;
                 var buttonEvent = InputEventPool<GameControllerButtonEvent>.GetOrCreate(this);
-                buttonEvent.State = state ? ButtonState.Down : ButtonState.Up;
+                buttonEvent.IsDown = state;
                 buttonEvent.Index = index;
                 events.Add(buttonEvent);
             }

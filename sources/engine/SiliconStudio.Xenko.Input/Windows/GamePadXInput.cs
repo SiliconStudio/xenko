@@ -76,9 +76,9 @@ namespace SiliconStudio.Xenko.Input
                     var masked = ((int)xinputState.Gamepad.Buttons & mask);
                     if (masked != ((int)state.Buttons & mask))
                     {
-                        ButtonState buttonState = (masked != 0) ? ButtonState.Down : ButtonState.Up;
+                        bool buttonState = (masked != 0);
                         GamePadButtonEvent buttonEvent = InputEventPool<GamePadButtonEvent>.GetOrCreate(this);
-                        buttonEvent.State = buttonState;
+                        buttonEvent.IsDown = buttonState;
                         buttonEvent.Button = (GamePadButton)mask; // 1 to 1 mapping with XInput buttons
                         inputEvents.Add(buttonEvent);
                         state.Update(buttonEvent);

@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
             if (inputEvent.RepeatCount > 0) return;
             if (inputEvent.Key == Key)
             {
-                UpdateButton(inputEvent.State, inputEvent.Device);
+                UpdateButton(inputEvent.IsDown, inputEvent.Device);
             }
         }
 

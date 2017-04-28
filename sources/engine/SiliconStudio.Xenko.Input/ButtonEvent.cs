@@ -11,6 +11,6 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// The new state of the button
         /// </summary>
-        public ButtonState State;
+        public bool IsDown;
     }
 }
