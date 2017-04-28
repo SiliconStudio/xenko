@@ -495,11 +495,6 @@ namespace SiliconStudio.Xenko.Input
                         AddInputSource(new InputSourceiOS());
                         break;
 #endif
-#if SILICONSTUDIO_UI_OPENTK
-                    case AppContextType.DesktopOpenTK:
-                        AddInputSource(new InputSourceOpenTK());
-                        break;
-#endif
 #if SILICONSTUDIO_PLATFORM_UWP
                     case  AppContextType.UWP:
                         AddInputSource(new InputSourceUWP());
@@ -511,11 +506,12 @@ namespace SiliconStudio.Xenko.Input
                         AddInputSource(new InputSourceWindowsDirectInput());
                         if (InputSourceWindowsXInput.IsSupported())
                             AddInputSource(new InputSourceWindowsXInput());
-                        if (UseRawInput) AddInputSource(new InputSourceWindowsRawInput());
+                        if (UseRawInput)
+                            AddInputSource(new InputSourceWindowsRawInput());
                         break;
 #endif
                     default:
-                        throw new InvalidOperationException("Unsupported InputManager-GameContext combination");
+                        throw new InvalidOperationException("GameContext type is not supported by the InputManager");
                 }
             }
 

@@ -197,9 +197,6 @@
     <Compile Include="MouseDeviceBase.cs" />
     <Compile Include="MouseWheelEvent.cs" />
     <Compile Include="OrientationSensor.cs" />
-    <Compile Include="OpenTK\InputSourceOpenTK.cs" />
-    <Compile Include="OpenTK\KeyboardOpenTK.cs" />
-    <Compile Include="OpenTK\MouseOpenTK.cs" />
     <Compile Include="PointerDeviceBase.cs" />
     <Compile Include="Sensor.cs" />
     <Compile Include="SDL\GameControllerSDL.cs" />
