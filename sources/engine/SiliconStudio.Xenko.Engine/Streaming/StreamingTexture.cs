@@ -31,5 +31,8 @@ namespace SiliconStudio.Xenko.Streaming
 
         /// <inheritdoc />
         public override int AllocatedResidency => _texture.MipLevels;
+
+        /// <inheritdoc />
+        internal override bool CanBeUpdated => true;// TODO: check if there is no streaming tasks goin on for that texture
     }
 }

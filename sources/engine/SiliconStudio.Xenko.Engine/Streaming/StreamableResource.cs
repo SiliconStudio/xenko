@@ -44,12 +44,23 @@ namespace SiliconStudio.Xenko.Streaming
         /// Gets a value indicating whether this resource is allocated.
         /// </summary>
         public bool IsAllocated => AllocatedResidency > 0;
-        
+
+        /// <summary>
+        /// Determines whether this instance can be updated. Which means: no async streaming, no pending action in background.
+        /// </summary>
+        /// <returns><c>true</c> if this instance can be updated; otherwise, <c>false</c>.</returns>
+        internal abstract bool CanBeUpdated { get; }
+
+        /// <summary>
+        /// The last update time.
+        /// </summary>
+        internal DateTime LastUpdate;
+
         protected StreamableResource(StreamingManager manager, ContentStorage storage)
         {
             Storage = storage;
             Manager = manager;
-            Manager.RegisterResource(this);
+            LastUpdate = DateTime.MinValue;
         }
 
         public virtual void Dispose()
