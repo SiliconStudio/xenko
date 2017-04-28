@@ -398,12 +398,6 @@ namespace SiliconStudio.Assets.Quantum
 
             preCloningAssetGraph.Dispose();
 
-            // Remap ids from the root id collection to the new ids generated during cloning
-            if (idRemapping != null)
-            {
-                preCloningAsset.RemapIdentifiableIds(idRemapping);
-            }
-
             return clonedHierarchy;
         }
 
