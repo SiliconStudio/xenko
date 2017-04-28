@@ -137,6 +137,8 @@ namespace SiliconStudio.Xenko.Streaming
         internal override Task CreateStreamingTask(int residency)
         {
             // temporary code!
+            
+            // TODO: cache tasks? we need to get streaming tasks that reference any resources to se we detect if any task is running and dont update resource then
 
             return new Task(() =>
             {
@@ -168,6 +170,7 @@ namespace SiliconStudio.Xenko.Streaming
                         }
                     }
                     _texture.InitializeFrom(_desc, new TextureViewDescription(), dataBoxArray);
+                    _residentMips = _desc.MipLevels;
                 }
             });
 

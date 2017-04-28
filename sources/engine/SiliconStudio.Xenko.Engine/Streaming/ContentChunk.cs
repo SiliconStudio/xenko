@@ -3,6 +3,10 @@
 
 using System;
 using System.IO;
+using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Streaming
 {
@@ -71,7 +75,11 @@ namespace SiliconStudio.Xenko.Streaming
             if (IsLoaded)
                 return;
 
-            using (var stream = new FileStream(Storage.Url, FileMode.Open, FileAccess.Read, FileShare.Read))
+            var getFP = ContentManager.GetFileProvider;
+            var FP = ContentManager.FileProvider;
+
+            //using (var stream = Storage.FileProvider.OpenStream(Storage.Url, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read, StreamFlags.Seekable))
+            using (var stream = ContentManager.FileProvider.OpenStream(Storage.Url, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read, StreamFlags.Seekable))
             {
                 stream.Position = Location;
                 var data = new byte[Size];

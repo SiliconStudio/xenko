@@ -7,6 +7,8 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Streaming;
 
 namespace SiliconStudio.Xenko.Streaming
@@ -84,10 +86,10 @@ namespace SiliconStudio.Xenko.Streaming
         /// <summary>
         /// Creates the new storage container at the specified location and generates header for that.
         /// </summary>
-        /// <param name="path">The file path.</param>
+        /// <param name="dataUrl">The file url.</param>
         /// <param name="chunksData">The chunks data.</param>
         /// <param name="header">The header data.</param>
-        public static void Create(string path, List<byte[]> chunksData, out ContentStorageHeader header)
+        public static void Create(string dataUrl, List<byte[]> chunksData, out ContentStorageHeader header)
         {
             if (chunksData == null || chunksData.Count == 0 || chunksData.Any(x => x == null || x.Length == 0))
                 throw new ArgumentException(nameof(chunksData));
@@ -121,7 +123,7 @@ namespace SiliconStudio.Xenko.Streaming
             // Create header
             header = new ContentStorageHeader
             {
-                DataUrl = path,
+                DataUrl = dataUrl,
                 PackageTime = packageTime,
                 HashCode = hashCode,
                 Chunks = new ContentStorageHeader.ChunkEntry[chunksCount]
@@ -135,15 +137,15 @@ namespace SiliconStudio.Xenko.Streaming
             }
 
             // Create file with a raw data
-            using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read))
-            using (var stream = new BinaryWriter(fileStream))
+            using (var outputStream = ContentManager.FileProvider.OpenStream(dataUrl, VirtualFileMode.Create, VirtualFileAccess.Write, VirtualFileShare.Read, StreamFlags.Seekable))
+            using (var stream = new BinaryWriter(outputStream))
             {
                 // Write data (one after another)
                 for (int i = 0; i < chunksCount; i++)
                     stream.Write(chunksData[i]);
 
                 // Validate calculated offset
-                if (offset != fileStream.Position)
+                if (offset != outputStream.Position)
                     throw new DataException("Invalid storage offset.");
             }
         }
