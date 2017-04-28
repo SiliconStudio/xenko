@@ -427,7 +427,7 @@ namespace SiliconStudio.Xenko.Input
             if (sources.Contains(source)) throw new InvalidOperationException("Input Source already added");
 
             sources.Add(source);
-            source.InputDevices.CollectionChanged += (sender, args) => InputDevicesOnCollectionChanged(source, args);
+            source.Devices.CollectionChanged += (sender, args) => InputDevicesOnCollectionChanged(source, args);
             source.Initialize(this);
         }
 

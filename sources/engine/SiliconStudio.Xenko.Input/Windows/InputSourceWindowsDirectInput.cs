@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Input
         public override void Dispose()
         {
             // Dispose all the gamepads
-            foreach (var pair in InputDevices)
+            foreach (var pair in Devices)
             {
                 var gameController = pair.Value as GameControllerDirectInput;
                 gameController?.Dispose();
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Input
             // Process device removals
             foreach (var deviceIdToRemove in devicesToRemove)
             {
-                var gameController = InputDevices[deviceIdToRemove] as GameControllerDirectInput;
+                var gameController = Devices[deviceIdToRemove] as GameControllerDirectInput;
                 UnregisterDevice(gameController);
                 gameController.Dispose();
             }
@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Input
             var connectedDevices = directInput.GetDevices(DeviceClass.GameControl, DeviceEnumerationFlags.AttachedOnly);
             foreach (var device in connectedDevices)
             {
-                if (!InputDevices.ContainsKey(device.InstanceGuid))
+                if (!Devices.ContainsKey(device.InstanceGuid))
                 {
                     OpenDevice(device);
                 }
@@ -79,7 +79,7 @@ namespace SiliconStudio.Xenko.Input
             if (XInputChecker.IsXInputDevice(ref deviceInstance.ProductGuid))
                 return;
 
-            if (InputDevices.ContainsKey(deviceInstance.InstanceGuid))
+            if (Devices.ContainsKey(deviceInstance.InstanceGuid))
                 throw new InvalidOperationException($"DirectInput GameController already opened {deviceInstance.InstanceGuid}/{deviceInstance.InstanceName}");
 
 
