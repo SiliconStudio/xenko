@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -37,9 +37,7 @@ namespace SiliconStudio.Xenko.Assets.UI
             {
                 return new Engine.UIPage
                 {
-                    RootElement = Parameters.Hierarchy.RootPartIds.Count == 1
-                        ? Parameters.Hierarchy.Parts[Parameters.Hierarchy.RootPartIds[0]].UIElement
-                        : null,
+                    RootElement = Parameters.Hierarchy.RootParts.Count == 1 ? Parameters.Hierarchy.RootParts[0] : null
                 };
             }
         }
