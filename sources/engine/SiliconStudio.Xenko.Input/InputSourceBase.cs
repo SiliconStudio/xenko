@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public abstract class InputSourceBase : IInputSource
     {       
-        public TrackingDictionary<Guid, IInputDevice> InputDevices { get; } = new TrackingDictionary<Guid, IInputDevice>();
+        public TrackingDictionary<Guid, IInputDevice> Devices { get; } = new TrackingDictionary<Guid, IInputDevice>();
 
         public abstract void Initialize(InputManager inputManager);
 
@@ -37,31 +37,31 @@ namespace SiliconStudio.Xenko.Input
         public virtual void Dispose()
         {
             // Remove all devices, done by clearing the tracking dictionary
-            InputDevices.Clear();
+            Devices.Clear();
         }
 
         /// <summary>
-        /// Adds the device to the list <see cref="InputDevices"/>
+        /// Adds the device to the list <see cref="Devices"/>
         /// </summary>
         /// <param name="device">The device</param>
         protected void RegisterDevice(IInputDevice device)
         {
-            if (InputDevices.ContainsKey(device.Id))
+            if (Devices.ContainsKey(device.Id))
                 throw new InvalidOperationException($"Input device with Id {device.Id} already registered");
 
-            InputDevices.Add(device.Id, device);
+            Devices.Add(device.Id, device);
         }
 
         /// <summary>
-        /// CRemoves the device from the list <see cref="InputDevices"/>
+        /// CRemoves the device from the list <see cref="Devices"/>
         /// </summary>
         /// <param name="device">The device</param>
         protected void UnregisterDevice(IInputDevice device)
         {
-            if (!InputDevices.ContainsKey(device.Id))
+            if (!Devices.ContainsKey(device.Id))
                 throw new InvalidOperationException($"Input device with Id {device.Id} was not registered");
 
-            InputDevices.Remove(device.Id);
+            Devices.Remove(device.Id);
         }
     }
 }

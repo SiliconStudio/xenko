@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// All the input devices currently proviced by this source
         /// </summary>
-        TrackingDictionary<Guid, IInputDevice> InputDevices { get; }
+        TrackingDictionary<Guid, IInputDevice> Devices { get; }
         
         /// <summary>
         /// Initializes the input source

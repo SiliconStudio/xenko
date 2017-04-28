@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Input
             uiControl.JoystickDeviceRemoved -= UIControlOnJoystickDeviceRemoved;
 
             // Dispose all the game controllers
-            foreach (var pair in InputDevices)
+            foreach (var pair in Devices)
             {
                 var gameController = pair.Value as GameControllerSDL;
                 gameController?.Dispose();
@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Input
             // Notify event listeners of device removals
             foreach (var deviceIdToRemove in devicesToRemove)
             {
-                var gameController = InputDevices[deviceIdToRemove];
+                var gameController = Devices[deviceIdToRemove];
                 (gameController as IDisposable)?.Dispose();
                 UnregisterDevice(gameController);
             }
