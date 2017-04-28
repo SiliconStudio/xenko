@@ -3,35 +3,16 @@
 
 using System;
 using System.Collections.Generic;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Streaming;
-using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Streaming
 {
-    public class ContentStreamingService : GameSystemBase
+    /// <summary>
+    /// Streamable resources content management service.
+    /// </summary>
+    public class ContentStreamingService : IDisposable
     {
         private readonly List<ContentStorage> containers = new List<ContentStorage>();
-
-        public ContentStreamingService(IServiceRegistry registry) : base(registry)
-        {
-            registry.AddService(typeof(ContentStreamingService), this);
-        }
-
-        protected override void Destroy()
-        {
-            lock (containers)
-            {
-                containers.Clear();
-            }
-
-            if (Services.GetService(typeof(ContentStreamingService)) == this)
-            {
-                Services.RemoveService(typeof(ContentStreamingService));
-            }
-
-            base.Destroy();
-        }
 
         public ContentStorage GetStorage(ContentStorageHeader storageHeader)
         {
@@ -49,6 +30,14 @@ namespace SiliconStudio.Xenko.Streaming
             }
 
             return result;
+        }
+
+        public void Dispose()
+        {
+            lock (containers)
+            {
+                containers.Clear();
+            }
         }
     }
 }

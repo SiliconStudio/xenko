@@ -52,12 +52,11 @@ namespace SiliconStudio.Xenko.Streaming
             Manager.RegisterResource(this);
         }
 
-        void IDisposable.Dispose()
+        public virtual void Dispose()
         {
             if (IsDisposed)
                 throw new InvalidOperationException();
 
-            Manager.UnregisterResource(this);
             Manager = null;
         }
     }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Streaming;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
@@ -31,19 +32,27 @@ namespace SiliconStudio.Xenko.Streaming
             registry.AddService(typeof(StreamingManager), this);
             registry.AddService(typeof(ITexturesStreamingProvider), this);
 
-            ContentStreaming = new ContentStreamingService(registry);
+            ContentStreaming = new ContentStreamingService();
         }
 
         protected override void Destroy()
         {
-            if (Services.GetService(typeof(ContentStreamingService)) == this)
+            if (Services.GetService(typeof(StreamingManager)) == this)
             {
-                Services.RemoveService(typeof(ContentStreamingService));
+                Services.RemoveService(typeof(StreamingManager));
             }
             if (Services.GetService(typeof(ITexturesStreamingProvider)) == this)
             {
                 Services.RemoveService(typeof(ITexturesStreamingProvider));
             }
+
+            lock (_resources)
+            {
+                _resources.ForEach(x => x.Dispose());
+                _resources.Clear();
+            }
+
+            ContentStreaming.Dispose();
 
             base.Destroy();
         }
@@ -71,7 +80,7 @@ namespace SiliconStudio.Xenko.Streaming
             Debug.Assert(obj != null && storageHeader != null);
             
             // Get content storage container
-            var storage = Services.GetSafeServiceAs<ContentStreamingService>().GetStorage(storageHeader);
+            var storage = ContentStreaming.GetStorage(storageHeader);
             if (storage == null)
             {
                 // TODO: send error to log?
