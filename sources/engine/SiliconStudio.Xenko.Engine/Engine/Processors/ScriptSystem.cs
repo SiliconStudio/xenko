@@ -50,7 +50,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
             Enabled = true;
             Scheduler = new Scheduler();
             Scheduler.ActionException += Scheduler_ActionException;
-            Services.AddService(typeof(ScriptSystem), this);
         }
 
         protected override void Destroy()

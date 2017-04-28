@@ -46,7 +46,6 @@ namespace SiliconStudio.Xenko.Games
         {
             this.game = game;
             Services = game.Services;
-            Services.AddService(typeof(IGraphicsDeviceFactory), this);
         }
 
         public static GamePlatform Create(GameBase game)
