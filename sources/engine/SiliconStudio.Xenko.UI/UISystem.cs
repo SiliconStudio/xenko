@@ -205,7 +205,7 @@ namespace SiliconStudio.Xenko.UI
                 var evt = new KeyEventArgs { Key = key, Input = input };
                 if (enteredText)
                     continue; // Skip key events if text was entered
-                if (keyEvent.State == ButtonState.Down)
+                if (keyEvent.IsDown)
                 {
                     UIElement.FocusedElement?.RaiseKeyPressedEvent(evt);
                 }

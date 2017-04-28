@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
             if (inputEvent.GameController.Id == ControllerId || ControllerId == Guid.Empty)
             {
                 if (inputEvent.Index == ButtonIndex)
-                    UpdateButton(inputEvent.State, inputEvent.Device);
+                    UpdateButton(inputEvent.IsDown, inputEvent.Device);
             }
         }
 

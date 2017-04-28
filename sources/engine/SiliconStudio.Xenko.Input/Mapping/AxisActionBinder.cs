@@ -53,25 +53,25 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public void ProcessEvent(KeyEvent inputEvent)
         {
-            if (inputEvent.State == ButtonState.Down)
+            if (inputEvent.IsDown)
                 TryBindSingleButton(new KeyGesture(inputEvent.Key));
         }
 
         public void ProcessEvent(MouseButtonEvent inputEvent)
         {
-            if (inputEvent.State == ButtonState.Down)
+            if (inputEvent.IsDown)
                 TryBindSingleButton(new MouseButtonGesture(inputEvent.Button));
         }
 
         public void ProcessEvent(GameControllerButtonEvent inputEvent)
         {
-            if (inputEvent.State == ButtonState.Down)
+            if (inputEvent.IsDown)
                 TryBindSingleButton(new GameControllerButtonGesture(inputEvent.Index, inputEvent.GameController.Id));
         }
 
         public void ProcessEvent(GamePadButtonEvent inputEvent)
         {
-            if (inputEvent.State == ButtonState.Down)
+            if (inputEvent.IsDown)
                 TryBindSingleButton(new GamePadButtonGesture(inputEvent.Button, inputEvent.GamePad.Index));
         }
 

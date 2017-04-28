@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// Last state of the button
         /// </summary>
-        public ButtonState LastState { get; private set; }
+        public bool LastState { get; private set; }
 
         public TrackingCollection<IButtonGesture> Gestures { get; } = new TrackingCollection<IButtonGesture>();
 

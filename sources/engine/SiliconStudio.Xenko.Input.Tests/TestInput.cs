@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.IsTrue(events[0] is KeyEvent);
             var keyEvent = (KeyEvent)events[0];
             Assert.IsTrue(keyEvent.Key == Keys.A);
-            Assert.IsTrue(keyEvent.State == ButtonState.Down);
+            Assert.IsTrue(keyEvent.IsDown);
             Assert.IsTrue(keyEvent.RepeatCount == 0);
             Assert.IsTrue(keyEvent.Device == keyboard);
 
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.IsTrue(events[0] is KeyEvent);
             keyEvent = (KeyEvent)events[0];
             Assert.IsTrue(keyEvent.Key == Keys.A);
-            Assert.IsTrue(keyEvent.State == ButtonState.Up);
+            Assert.IsTrue(!keyEvent.IsDown);
         }
 
         void TestRepeat()
@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.IsTrue(events[0] is KeyEvent);
             var keyEvent = (KeyEvent)events[0];
             Assert.IsTrue(keyEvent.Key == Keys.A);
-            Assert.IsTrue(keyEvent.State == ButtonState.Down);
+            Assert.IsTrue(keyEvent.IsDown);
             Assert.IsTrue(keyEvent.RepeatCount == 3);
             Assert.IsTrue(keyEvent.Device == keyboard);
 
@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.IsTrue(events[0] is KeyEvent);
             keyEvent = (KeyEvent)events[0];
             Assert.IsTrue(keyEvent.Key == Keys.A);
-            Assert.IsTrue(keyEvent.State == ButtonState.Up);
+            Assert.IsTrue(!keyEvent.IsDown);
         }
 
         void TestMouse()

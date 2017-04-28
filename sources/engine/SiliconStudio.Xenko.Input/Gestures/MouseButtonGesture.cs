@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
         public void ProcessEvent(MouseButtonEvent inputEvent)
         {
             if (inputEvent.Button == Button)
-                UpdateButton(inputEvent.State, inputEvent.Device);
+                UpdateButton(inputEvent.IsDown, inputEvent.Device);
         }
 
         public override string ToString()

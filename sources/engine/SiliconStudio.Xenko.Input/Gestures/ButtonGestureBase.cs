@@ -12,11 +12,11 @@ namespace SiliconStudio.Xenko.Input.Gestures
     [DataContract]
     public abstract class ButtonGestureBase : InputGestureBase, IButtonGesture
     {
-        private ButtonState lastState;
+        private bool lastState;
 
         public event EventHandler<ButtonGestureEventArgs> Changed;
 
-        protected void UpdateButton(ButtonState newState, IInputDevice sourceDevice)
+        protected void UpdateButton(bool newState, IInputDevice sourceDevice)
         {
             if (newState != lastState)
             {

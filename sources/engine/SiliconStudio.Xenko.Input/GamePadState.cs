@@ -131,7 +131,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if the event made any changes</returns>
         public bool Update(GamePadButtonEvent buttonEvent)
         {
-            if (buttonEvent.State == ButtonState.Down)
+            if (buttonEvent.IsDown)
             {
                 if ((Buttons & buttonEvent.Button) != 0)
                     return false;

@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.Input
 
             var buttonEvent = InputEventPool<MouseButtonEvent>.GetOrCreate(this);
             buttonEvent.Button = button;
-            buttonEvent.State = ButtonState.Down;
+            buttonEvent.IsDown = true;
             Events.Add(buttonEvent);
 
             // Simulate tap on primary mouse button
@@ -114,7 +114,7 @@ namespace SiliconStudio.Xenko.Input
 
             var buttonEvent = InputEventPool<MouseButtonEvent>.GetOrCreate(this);
             buttonEvent.Button = button;
-            buttonEvent.State = ButtonState.Up;
+            buttonEvent.IsDown = false;
             Events.Add(buttonEvent);
 
             // Simulate tap on primary mouse button

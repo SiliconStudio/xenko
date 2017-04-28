@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Input.Tests
                 int saveIndex = i;
                 key.Changed += (sender, args) =>
                 {
-                    if (args.State == ButtonState.Down)
+                    if (args.State)
                     {
                         var kb = (IKeyboardDevice)args.Device;
                         if (kb.IsKeyDown(Keys.LeftCtrl) || kb.IsKeyDown(Keys.RightCtrl))

@@ -145,7 +145,6 @@
     <Compile Include="GameControllerAxisInfo.cs" />
     <Compile Include="GameControllerButtonEvent.cs" />
     <Compile Include="GameControllerButtonInfo.cs" />
-    <Compile Include="ButtonState.cs" />
     <Compile Include="GameControllerButtonType.cs" />
     <Compile Include="GameControllerObjectInfo.cs" />
     <Compile Include="PointerPoint.cs" />

@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Input
                 {
                     GamePadButtonEvent buttonEvent1 = InputEventPool<GamePadButtonEvent>.GetOrCreate(targetDevice);
                     buttonEvent1.Button = buttonMap[buttonEvent.Index];
-                    buttonEvent1.State = buttonEvent.State;
+                    buttonEvent1.IsDown = buttonEvent.IsDown;
                     target.Add(buttonEvent1);
                 }
 
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Input
 
                     GamePadAxisEvent axisEvent1 = InputEventPool<GamePadAxisEvent>.GetOrCreate(targetDevice);
                     axisEvent1.Axis = mappedAxis.Axis;
-                    axisEvent1.Value = buttonEvent.State == ButtonState.Down ? 1.0f : 0.0f;
+                    axisEvent1.Value = buttonEvent.IsDown ? 1.0f : 0.0f;
                     if (mappedAxis.Invert)
                         axisEvent1.Value = -axisEvent1.Value;
                     target.Add(axisEvent1);
@@ -122,7 +122,7 @@ namespace SiliconStudio.Xenko.Input
                     {
                         GamePadButtonEvent buttonEvent1 = InputEventPool<GamePadButtonEvent>.GetOrCreate(targetDevice);
                         buttonEvent1.Button = axisToButtonMap[axisEvent.Index];
-                        buttonEvent1.State = axisEvent.Value > 0.5f ? ButtonState.Down : ButtonState.Up;
+                        buttonEvent1.IsDown = axisEvent.Value > 0.5f;
                         target.Add(buttonEvent1);
                     }
                 }
@@ -141,7 +141,7 @@ namespace SiliconStudio.Xenko.Input
                             {
                                 GamePadButtonEvent buttonEvent1 = InputEventPool<GamePadButtonEvent>.GetOrCreate(targetDevice);
                                 buttonEvent1.Button = (GamePadButton)mask;
-                                buttonEvent1.State = ((int)targetButtons & mask) != 0 ? ButtonState.Down : ButtonState.Up;
+                                buttonEvent1.IsDown = ((int)targetButtons & mask) != 0;
                                 target.Add(buttonEvent1);
                             }
                         }

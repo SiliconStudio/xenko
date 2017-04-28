@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Input
             }
 
             var keyEvent = InputEventPool<KeyEvent>.GetOrCreate(this);
-            keyEvent.State = ButtonState.Down;
+            keyEvent.IsDown = true;
             keyEvent.Key = key;
             keyEvent.RepeatCount = repeatCount;
             Events.Add(keyEvent);
@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Input
             KeyRepeats.Remove(key);
             downKeys.Remove(key);
             var keyEvent = InputEventPool<KeyEvent>.GetOrCreate(this);
-            keyEvent.State = ButtonState.Up;
+            keyEvent.IsDown = false;
             keyEvent.Key = key;
             keyEvent.RepeatCount = 0;
             Events.Add(keyEvent);
