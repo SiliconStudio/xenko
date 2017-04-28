@@ -14,7 +14,7 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
         public static string PrintHierarchy(AssetCompositeHierarchy<Types.MyPartDesign, Types.MyPart> asset)
         {
             var stack = new Stack<Tuple<Types.MyPartDesign, int>>();
-            asset.Hierarchy.RootParts.Select(x => asset.Hierarchy.Parts[x]).Reverse().ForEach(x => stack.Push(Tuple.Create(x, 0)));
+            asset.Hierarchy.RootParts.Select(x => asset.Hierarchy.Parts[x.Id]).Reverse().ForEach(x => stack.Push(Tuple.Create(x, 0)));
             var sb = new StringBuilder();
             while (stack.Count > 0)
             {
@@ -57,7 +57,7 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
             for (var i = 0; i < rootCount; ++i)
             {
                 var rootPart = BuildPart(asset, $"Part{i + 1}", depth - 1, childPerPart, ref guid);
-                asset.Hierarchy.RootParts.Add(rootPart.Part.Id);
+                asset.Hierarchy.RootParts.Add(rootPart.Part);
             }
             return asset;
         }
