@@ -1,16 +1,16 @@
 // Copyright (c) 2014-2016 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Input.Gestures;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -37,6 +37,7 @@ namespace SiliconStudio.Xenko.Input
 
         private readonly List<IInputSource> sources = new List<IInputSource>();
         private readonly List<IInputDevice> devices = new List<IInputDevice>();
+
         private readonly List<InputEvent> events = new List<InputEvent>();
 
         // Mapping of device guid to device
@@ -46,11 +47,11 @@ namespace SiliconStudio.Xenko.Input
         private readonly List<List<IGamePadDevice>> gamePadRequestedIndex = new List<List<IGamePadDevice>>();
         private readonly List<IGamePadDevice> gamePadsByIndex = new List<IGamePadDevice>();
 
-        private readonly List<IKeyboardDevice> keyboardDevices = new List<IKeyboardDevice>();
-        private readonly List<IPointerDevice> pointerDevices = new List<IPointerDevice>();
-        private readonly List<IGameControllerDevice> gameControllerDevices = new List<IGameControllerDevice>();
-        private readonly List<IGamePadDevice> gamePadDevices = new List<IGamePadDevice>();
-        private readonly List<ISensorDevice> sensorDevices = new List<ISensorDevice>();
+        private readonly List<IKeyboardDevice> keyboards = new List<IKeyboardDevice>();
+        private readonly List<IPointerDevice> pointers = new List<IPointerDevice>();
+        private readonly List<IGameControllerDevice> gameControllers = new List<IGameControllerDevice>();
+        private readonly List<IGamePadDevice> gamePads = new List<IGamePadDevice>();
+        private readonly List<ISensorDevice> sensors = new List<ISensorDevice>();
 
         private readonly Dictionary<Type, IInputEventRouter> eventRouters = new Dictionary<Type, IInputEventRouter>();
 
@@ -182,27 +183,27 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Gets the collection of connected game controllers
         /// </summary>
-        public IReadOnlyList<IGameControllerDevice> GameControllers => gameControllerDevices;
+        public IReadOnlyList<IGameControllerDevice> GameControllers => gameControllers;
 
         /// <summary>
         /// Gets the collection of connected gamepads
         /// </summary>
-        public IReadOnlyList<IGamePadDevice> GamePads => gamePadDevices;
+        public IReadOnlyList<IGamePadDevice> GamePads => gamePads;
 
         /// <summary>
         /// Gets the collection of connected pointing devices (mouses, touchpads, etc)
         /// </summary>
-        public IReadOnlyList<IPointerDevice> Pointers => pointerDevices;
+        public IReadOnlyList<IPointerDevice> Pointers => pointers;
 
         /// <summary>
         /// Gets the collection of connected keyboard inputs
         /// </summary>
-        public IReadOnlyList<IKeyboardDevice> Keyboards => keyboardDevices;
+        public IReadOnlyList<IKeyboardDevice> Keyboards => keyboards;
 
         /// <summary>
         /// Gets the collection of connected sensor devices
         /// </summary>
-        public IReadOnlyList<ISensorDevice> Sensors => sensorDevices;
+        public IReadOnlyList<ISensorDevice> Sensors => sensors;
 
         /// <summary>
         /// Gets or sets the mouse position.
@@ -586,22 +587,22 @@ namespace SiliconStudio.Xenko.Input
             if (device is IKeyboardDevice)
             {
                 RegisterKeyboard((IKeyboardDevice)device);
-                keyboardDevices.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
+                keyboards.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
             }
             else if (device is IPointerDevice)
             {
                 RegisterPointer((IPointerDevice)device);
-                pointerDevices.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
+                pointers.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
             }
             else if (device is IGameControllerDevice)
             {
                 RegisterGameController((IGameControllerDevice)device);
-                gameControllerDevices.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
+                gameControllers.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
             }
             else if (device is IGamePadDevice)
             {
                 RegisterGamePad((IGamePadDevice)device);
-                gamePadDevices.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
+                gamePads.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
             }
             else if (device is ISensorDevice)
             {
@@ -648,15 +649,15 @@ namespace SiliconStudio.Xenko.Input
 
         private void UpdateConnectedDevices()
         {
-            Keyboard = keyboardDevices.FirstOrDefault();
+            Keyboard = keyboards.FirstOrDefault();
             HasKeyboard = Keyboard != null;
 
             TextInput = devices.OfType<ITextInputDevice>().FirstOrDefault();
 
-            Mouse = pointerDevices.OfType<IMouseDevice>().FirstOrDefault();
+            Mouse = pointers.OfType<IMouseDevice>().FirstOrDefault();
             HasMouse = Mouse != null;
 
-            Pointer = pointerDevices.FirstOrDefault();
+            Pointer = pointers.FirstOrDefault();
             HasPointer = Pointer != null;
 
             GameControllerCount = GameControllers.Count;
@@ -665,41 +666,41 @@ namespace SiliconStudio.Xenko.Input
             GamePadCount = GamePads.Count;
             HasGamePad = GamePadCount > 0;
 
-            gamePadDevices.Sort((l, r) => l.Index.CompareTo(r.Index));
+            gamePads.Sort((l, r) => l.Index.CompareTo(r.Index));
 
-            DefaultGamePad = gamePadDevices.FirstOrDefault();
+            DefaultGamePad = gamePads.FirstOrDefault();
 
-            Accelerometer = sensorDevices.OfType<IAccelerometerSensor>().FirstOrDefault();
-            Gyroscope = sensorDevices.OfType<IGyroscopeSensor>().FirstOrDefault();
-            Compass = sensorDevices.OfType<ICompassSensor>().FirstOrDefault();
-            UserAcceleration = sensorDevices.OfType<IUserAccelerationSensor>().FirstOrDefault();
-            Orientation = sensorDevices.OfType<IOrientationSensor>().FirstOrDefault();
-            Gravity = sensorDevices.OfType<IGravitySensor>().FirstOrDefault();
+            Accelerometer = sensors.OfType<IAccelerometerSensor>().FirstOrDefault();
+            Gyroscope = sensors.OfType<IGyroscopeSensor>().FirstOrDefault();
+            Compass = sensors.OfType<ICompassSensor>().FirstOrDefault();
+            UserAcceleration = sensors.OfType<IUserAccelerationSensor>().FirstOrDefault();
+            Orientation = sensors.OfType<IOrientationSensor>().FirstOrDefault();
+            Gravity = sensors.OfType<IGravitySensor>().FirstOrDefault();
         }
 
         private void RegisterPointer(IPointerDevice pointer)
         {
-            pointerDevices.Add(pointer);
+            pointers.Add(pointer);
         }
 
         private void UnregisterPointer(IPointerDevice pointer)
         {
-            pointerDevices.Remove(pointer);
+            pointers.Remove(pointer);
         }
 
         private void RegisterKeyboard(IKeyboardDevice keyboard)
         {
-            keyboardDevices.Add(keyboard);
+            keyboards.Add(keyboard);
         }
 
         private void UnregisterKeyboard(IKeyboardDevice keyboard)
         {
-            keyboardDevices.Remove(keyboard);
+            keyboards.Remove(keyboard);
         }
 
         private void RegisterGamePad(IGamePadDevice gamePad)
         {
-            gamePadDevices.Add(gamePad);
+            gamePads.Add(gamePad);
 
             // Check if the gamepad provides an interface for assigning gamepad index
             var assignable = gamePad as IGamePadIndexAssignable;
@@ -728,18 +729,18 @@ namespace SiliconStudio.Xenko.Input
 
             gamePadRequestedIndex[gamePad.Index].Remove(gamePad);
 
-            gamePadDevices.Remove(gamePad);
+            gamePads.Remove(gamePad);
             gamePad.IndexChanged -= GamePadOnIndexChanged;
         }
 
         private void RegisterGameController(IGameControllerDevice gameController)
         {
-            gameControllerDevices.Add(gameController);
+            gameControllers.Add(gameController);
         }
 
         private void UnregisterGameController(IGameControllerDevice gameController)
         {
-            gameControllerDevices.Remove(gameController);
+            gameControllers.Remove(gameController);
         }
 
         private void GamePadOnIndexChanged(object sender, GamePadIndexChangedEventArgs gamePadIndexChangedEventArgs)
@@ -749,12 +750,12 @@ namespace SiliconStudio.Xenko.Input
 
         private void RegisterSensor(ISensorDevice sensorDevice)
         {
-            sensorDevices.Add(sensorDevice);
+            sensors.Add(sensorDevice);
         }
 
         private void UnregisterSensor(ISensorDevice sensorDevice)
         {
-            sensorDevices.Remove(sensorDevice);
+            sensors.Remove(sensorDevice);
         }
 
         private void AssignGamepad(IGamePadIndexAssignable assignable)
