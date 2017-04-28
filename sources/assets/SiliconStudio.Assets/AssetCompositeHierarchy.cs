@@ -119,12 +119,6 @@ namespace SiliconStudio.Assets
             return newAsset;
         }
 
-        /// <inheritdoc />
-        public override void RemapIdentifiableIds(Dictionary<Guid, Guid> remapping)
-        {
-
-        }
-
         /// <summary>
         /// Generates a hierarchy object from the given part that is compatible with the given asset.
         /// </summary>
