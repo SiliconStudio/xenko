@@ -2802,6 +2802,7 @@
     <Compile Include="Streaming\ContentStreamingService.cs" />
     <Compile Include="Streaming\StreamableResource.cs" />
     <Compile Include="Streaming\StreamingManager.cs" />
+    <Compile Include="Streaming\StreamingQuality.cs" />
     <Compile Include="Streaming\StreamingTexture.cs" />
     <Compile Include="Updater\ArrayUpdateResolver.cs" />
     <Compile Include="Updater\BlittableHelper.cs" />
