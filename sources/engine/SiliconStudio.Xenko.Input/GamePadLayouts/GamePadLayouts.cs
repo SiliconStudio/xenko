@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
@@ -10,15 +10,12 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public static class GamePadLayouts
     {
-        private static List<GamePadLayout> layouts = new List<GamePadLayout>();
+        private static readonly List<GamePadLayout> layouts = new List<GamePadLayout>();
 
         static GamePadLayouts()
         {
             // XInput device layout for any plaform that does not support xinput directly
             AddLayout(new GamePadLayoutXInput());
-
-            // Register layouts from the mapping database
-            GameControllerDatabase.RegisterLayouts();
         }
 
         /// <summary>
@@ -27,9 +24,12 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="layout">The layout to add</param>
         public static void AddLayout(GamePadLayout layout)
         {
-            if (!layouts.Contains(layout))
+            lock (layouts)
             {
-                layouts.Add(layout);
+                if (!layouts.Contains(layout))
+                {
+                    layouts.Add(layout);
+                }
             }
         }
 
@@ -41,12 +41,15 @@ namespace SiliconStudio.Xenko.Input
         /// <returns>The gamepad layout that was found, or null if none was found</returns>
         public static GamePadLayout FindLayout(IInputSource source, IGameControllerDevice device)
         {
-            foreach (var layout in layouts)
+            lock (layouts)
             {
-                if (layout.MatchDevice(source, device))
-                    return layout;
+                foreach (var layout in layouts)
+                {
+                    if (layout.MatchDevice(source, device))
+                        return layout;
+                }
+                return null;
             }
-            return null;
         }
     }
 }

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 14.0.23107.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "90-Tools", "90-Tools", "{1AE1AC60-5D2F-4CA7-AE20-888F44551185}"
 EndProject
@@ -428,8 +428,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.VirtualReality", "..\sources\engine\SiliconStudio.Xenko.VirtualReality\SiliconStudio.Xenko.VirtualReality.csproj", "{53782603-3096-40C2-ABD3-F8F311BAE4BE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Presentation.Quantum.Tests", "..\sources\common\presentation\SiliconStudio.Presentation.Quantum.Tests\SiliconStudio.Presentation.Quantum.Tests.csproj", "{E8C458AE-7B42-4DCE-B326-7F3A9065EA19}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.GameControllerDatabaseGenerator", "..\sources\tools\SiliconStudio.Xenko.GameControllerDatabaseGenerator\SiliconStudio.Xenko.GameControllerDatabaseGenerator.csproj", "{72319A20-7C64-48CA-A1D3-04793CD104B9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Code.Tests", "..\sources\tools\SiliconStudio.Xenko.Code.Tests\SiliconStudio.Xenko.Code.Tests.csproj", "{3C855DB2-EEA3-415C-A0A8-C834DEC40531}"
 EndProject
@@ -3845,30 +3843,6 @@ Global
 		{E8C458AE-7B42-4DCE-B326-7F3A9065EA19}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{E8C458AE-7B42-4DCE-B326-7F3A9065EA19}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{E8C458AE-7B42-4DCE-B326-7F3A9065EA19}.Testing|Win32.Build.0 = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.AppStore|Any CPU.Build.0 = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.AppStore|Win32.ActiveCfg = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.AppStore|Win32.Build.0 = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Debug|Win32.Build.0 = Debug|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Release|Win32.ActiveCfg = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Release|Win32.Build.0 = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Testing|Any CPU.ActiveCfg = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Testing|Any CPU.Build.0 = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Testing|Win32.ActiveCfg = Release|Any CPU
-		{72319A20-7C64-48CA-A1D3-04793CD104B9}.Testing|Win32.Build.0 = Release|Any CPU
 		{3C855DB2-EEA3-415C-A0A8-C834DEC40531}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
 		{3C855DB2-EEA3-415C-A0A8-C834DEC40531}.AppStore|Any CPU.Build.0 = Release|Any CPU
 		{3C855DB2-EEA3-415C-A0A8-C834DEC40531}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
@@ -4268,7 +4242,6 @@ Global
 		{A1A3EB96-46CE-4F2F-A3B6-EF869043DD49} = {9D5D9861-AE68-429C-8B21-2263F9DA07A1}
 		{53782603-3096-40C2-ABD3-F8F311BAE4BE} = {4C142567-C42B-40F5-B092-798882190209}
 		{E8C458AE-7B42-4DCE-B326-7F3A9065EA19} = {52AE329E-B588-40D0-A578-8D0DB1BD83E5}
-		{72319A20-7C64-48CA-A1D3-04793CD104B9} = {860946E4-CC77-4FDA-A4FD-3DB2A502A696}
 		{3C855DB2-EEA3-415C-A0A8-C834DEC40531} = {1AE1AC60-5D2F-4CA7-AE20-888F44551185}
 		{991E796A-D1D1-48B8-B9AA-95C2744FE112} = {E4508D15-6503-4A29-ADC4-27B3A5E99545}
 		{FB9ED2C4-94A0-4004-A498-3F29A9D5BB5D} = {A2A4342E-024B-4063-B10C-1DA96CA3046D}
