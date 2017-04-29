@@ -1,8 +1,7 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using NUnit.Framework;
 
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Panels;
@@ -16,7 +15,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
     {
         private void ResetState()
         {
-            DependencyProperties = new PropertyContainerClass(this);
+            DependencyProperties.Clear();
             LocalMatrix = Matrix.Identity;
             Children.Clear();
         }
