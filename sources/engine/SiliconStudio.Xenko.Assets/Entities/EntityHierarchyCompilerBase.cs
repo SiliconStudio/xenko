@@ -43,12 +43,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     }
                 }
 
-                var spriteComponent = entityData.Entity.Components.Get<SpriteComponent>();
-                if (spriteComponent != null && spriteComponent.SpriteProvider.GetSprite() == null)
-                {
-                    result.Warning($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] has a sprite component that does not reference any sprite group.");
-                }
-
                 var nodeLinkComponent = entityData.Entity.Components.Get<ModelNodeLinkComponent>();
                 if (nodeLinkComponent != null)
                 {

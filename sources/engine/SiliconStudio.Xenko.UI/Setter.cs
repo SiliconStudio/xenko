@@ -1,7 +1,8 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.UI
 {
@@ -14,7 +15,7 @@ namespace SiliconStudio.Xenko.UI
         /// Internal helper to apply value (if not already overriden).
         /// </summary>
         /// <param name="propertyContainer"></param>
-        internal abstract void ApplyIfNotSet(ref PropertyContainerClass propertyContainer);
+        internal abstract void ApplyIfNotSet([NotNull] PropertyContainerClass propertyContainer);
     }
 
     /// <summary>
@@ -40,7 +41,7 @@ namespace SiliconStudio.Xenko.UI
         public T Value { get; set; }
 
         /// <inheritdoc/>
-        internal override void ApplyIfNotSet(ref PropertyContainerClass propertyContainer)
+        internal override void ApplyIfNotSet(PropertyContainerClass propertyContainer)
         {
             if (!propertyContainer.ContainsKey(Property))
                 propertyContainer.Set(Property, Value);
