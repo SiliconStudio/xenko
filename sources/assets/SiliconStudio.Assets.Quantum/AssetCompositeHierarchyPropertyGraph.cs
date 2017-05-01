@@ -188,7 +188,7 @@ namespace SiliconStudio.Assets.Quantum
             {
                 var index = new Index(Asset.Hierarchy.RootParts.IndexOf(partDesign.Part));
                 var rootPartsNode = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.RootParts)].Target;
-                rootPartsNode.Remove(partDesign.Part.Id, index);
+                rootPartsNode.Remove(partDesign.Part, index);
             }
             RemovePartFromPartsCollection(partDesign);
         }
