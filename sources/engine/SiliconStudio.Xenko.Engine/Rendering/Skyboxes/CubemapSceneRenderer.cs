@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core.Mathematics;
@@ -29,13 +29,9 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 UseCustomViewMatrix = true,
             };
 
-            var slot = new SceneCameraSlot();
-            Camera.Slot = slot.ToSlotId();
-            context.SceneSystem.GraphicsCompositor.Cameras.Add(slot);
-
             // Replace graphics compositor (don't want post fx, etc...)
             gameCompositor = context.SceneSystem.GraphicsCompositor.Game;
-            context.SceneSystem.GraphicsCompositor.Game = new SceneCameraRenderer { Child = context.SceneSystem.GraphicsCompositor.SingleView, Camera = slot };
+            context.SceneSystem.GraphicsCompositor.Game = new SceneExternalCameraRenderer { Child = context.SceneSystem.GraphicsCompositor.SingleView, ExternalCamera = Camera };
 
             // Setup projection matrix
             Camera.ProjectionMatrix = Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(90.0f), 1.0f, Camera.NearClipPlane, Camera.FarClipPlane);
@@ -51,7 +47,6 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         public void Dispose()
         {
             context.SceneSystem.GraphicsCompositor.Game = gameCompositor;
-            context.SceneSystem.GraphicsCompositor.Cameras.RemoveAt(context.SceneSystem.GraphicsCompositor.Cameras.Count - 1);
 
             renderTarget.Dispose();
             depthStencil.Dispose();
