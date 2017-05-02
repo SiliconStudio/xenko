@@ -1,4 +1,7 @@
-﻿shader Dither : ColorTransformShader, Texturing
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
+shader Dither : ColorTransformShader, Texturing
 {
     // Time changing at each frame for the animation
     float Time;
