@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 
@@ -124,6 +124,11 @@ namespace SiliconStudio.Xenko.VirtualReality
         public override Size2 ActualRenderFrameSize { get; protected set; }
 
         public override Size2 OptimalRenderFrameSize => new Size2(2160, 1200);
+
+        public override void Dispose()
+        {
+            OpenVR.Shutdown();
+        }
     }
 }
 
