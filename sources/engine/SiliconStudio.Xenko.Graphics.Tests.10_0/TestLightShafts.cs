@@ -20,7 +20,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         public TestLightShafts()
         {
             // 2 = Fix projection issues
-            CurrentVersion = 2;
+            // 3 = Simplifiy density parameters
+            CurrentVersion = 3;
 
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
             GraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
