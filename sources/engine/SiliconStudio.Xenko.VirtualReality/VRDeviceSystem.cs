@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -11,6 +11,8 @@ namespace SiliconStudio.Xenko.VirtualReality
 {
     public class VRDeviceSystem : GameSystemBase
     {
+        private static bool physicalDeviceInUse;
+
         public VRDeviceSystem(IServiceRegistry registry) : base(registry)
         {
             registry.AddService(typeof(VRDeviceSystem), this);
@@ -47,6 +49,12 @@ namespace SiliconStudio.Xenko.VirtualReality
                 if (PreferredApis == null)
                 {
                     return;
+                }
+
+                if (physicalDeviceInUse)
+                {
+                    Device = null;
+                    goto postswitch;
                 }
 
                 foreach (var hmdApi in PreferredApis)
@@ -107,11 +115,14 @@ namespace SiliconStudio.Xenko.VirtualReality
                     }
                 }
 
+postswitch:
+
                 var deviceManager = (GraphicsDeviceManager)Services.GetService(typeof(IGraphicsDeviceManager));
                 if (Device != null)
                 {
                     Device.RenderFrameScaling = PreferredScalings[Device.VRApi];
                     Device.Enable(GraphicsDevice, deviceManager, RequireMirror, MirrorWidth, MirrorHeight);
+                    physicalDeviceInUse = true;
                 }
                 else
                 {
@@ -134,6 +145,20 @@ namespace SiliconStudio.Xenko.VirtualReality
         public override void Draw(GameTime gameTime)
         {
             Device?.Draw(gameTime);
+        }
+
+        protected override void Destroy()
+        {
+            if (Device != null)
+            {
+                if (!(Device is DummyDevice))
+                {
+                    physicalDeviceInUse = false;
+                }
+
+                Device.Dispose();
+                Device = null;
+            }
         }
     }
 }

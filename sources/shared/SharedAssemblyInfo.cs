@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 #pragma warning disable 436 // The type 'type' in 'assembly' conflicts with the imported type 'type2' in 'assembly' (due to XenkoVersion being duplicated)
 using System;
@@ -38,7 +38,7 @@ namespace SiliconStudio
         /// <summary>
         /// The version used by editor for display purpose. 4th digit needs to be at least 1 if used (due to NuGet special cases).
         /// </summary>
-        public const string PublicVersion = "2.0.0.2";
+        public const string PublicVersion = "2.0.1.1";
 
         /// <summary>
         /// The current assembly version as text, currently same as <see cref="PublicVersion"/>.
