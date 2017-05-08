@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// </summary>
         /// <param name="inputManager">The <see cref="InputManager"/> to monitor for input events</param>
         /// /// <param name="usedGestures">A set of already used gesture that are filtered out from the input, can be null</param>
-        public DirectionActionBinder(InputManager inputManager, HashSet<IInputGesture> usedGestures = null) : base(inputManager, usedGestures)
+        public DirectionActionBinder(InputManager inputManager, HashSet<InputGesture> usedGestures = null) : base(inputManager, usedGestures)
         {
             // A direction is always generated from a four way gesture
             TargetGesture = TargetFourWayGesture = new FourWayGesture();
@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             return null;
         }
 
-        protected override void TryBindAxis(IAxisGesture axis, bool isBidirectional)
+        protected override void TryBindAxis(AxisGesture axis, bool isBidirectional)
         {
             // Filter out duplicate axes
             if (UsedGestures.Contains(axis))

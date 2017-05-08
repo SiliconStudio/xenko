@@ -183,8 +183,8 @@ namespace SiliconStudio.Xenko.Input.Tests
                 WriteLine($"[{i}] {actions[i]}", 1);
 
                 // Print out the tree of gestures, some gestures like TwoWay and FourWay have childrens so expand those using a stack with a gesture/indentation amount pair
-                Stack<Tuple<IInputGesture, int>> gestures = new Stack<Tuple<IInputGesture, int>>();
-                actions[i].ReadOnlyGestures.ForEach(x => gestures.Push(new Tuple<IInputGesture, int>(x, 2)));
+                Stack<Tuple<InputGesture, int>> gestures = new Stack<Tuple<InputGesture, int>>();
+                actions[i].ReadOnlyGestures.ForEach(x => gestures.Push(new Tuple<InputGesture, int>(x, 2)));
 
                 while (gestures.Count > 0)
                 {
@@ -198,28 +198,28 @@ namespace SiliconStudio.Xenko.Input.Tests
                     {
                         var twoWayGesture = (TwoWayGesture)gesture;
                         WriteLine($"Two Way Gesture (+/-): {twoWayGesture}", tuple.Item2);
-                        gestures.Push(new Tuple<IInputGesture, int>(twoWayGesture.Negative, tuple.Item2 + 1));
-                        gestures.Push(new Tuple<IInputGesture, int>(twoWayGesture.Positive, tuple.Item2 + 1));
+                        gestures.Push(new Tuple<InputGesture, int>(twoWayGesture.Negative, tuple.Item2 + 1));
+                        gestures.Push(new Tuple<InputGesture, int>(twoWayGesture.Positive, tuple.Item2 + 1));
                     }
                     else if (gesture.GetType() == typeof(FourWayGesture))
                     {
                         var fourWayGesture = (FourWayGesture)gesture;
                         WriteLine($"Four Way Gesture (X/Y): {fourWayGesture}", tuple.Item2);
-                        gestures.Push(new Tuple<IInputGesture, int>(fourWayGesture.Y, tuple.Item2 + 1));
-                        gestures.Push(new Tuple<IInputGesture, int>(fourWayGesture.X, tuple.Item2 + 1));
+                        gestures.Push(new Tuple<InputGesture, int>(fourWayGesture.Y, tuple.Item2 + 1));
+                        gestures.Push(new Tuple<InputGesture, int>(fourWayGesture.X, tuple.Item2 + 1));
                     }
                     else if (gesture.GetType() == typeof(AxisButtonGesture))
                     {
                         var axisButton = (AxisButtonGesture)gesture;
                         WriteLine($"Axis Button Gesture: {axisButton}", tuple.Item2);
-                        gestures.Push(new Tuple<IInputGesture, int>(axisButton.Axis, tuple.Item2 + 1));
+                        gestures.Push(new Tuple<InputGesture, int>(axisButton.Axis, tuple.Item2 + 1));
                     }
                     else if (gesture.GetType() == typeof(CompoundAxisGesture))
                     {
                         var compound = (CompoundAxisGesture)gesture;
                         WriteLine($"Compound Axis Gesture: {compound}", tuple.Item2);
                         foreach(var child in compound.Gestures)
-                            gestures.Push(new Tuple<IInputGesture, int>(child, tuple.Item2 + 1));
+                            gestures.Push(new Tuple<InputGesture, int>(child, tuple.Item2 + 1));
                     }
                     else
                     {

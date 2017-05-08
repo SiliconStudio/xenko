@@ -29,10 +29,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// </summary>
         public float LastState { get; private set; }
 
-        public TrackingCollection<IAxisGesture> Gestures { get; } = new TrackingCollection<IAxisGesture>();
+        public TrackingCollection<AxisGesture> Gestures { get; } = new TrackingCollection<AxisGesture>();
 
         [DataMemberIgnore]
-        public override IReadOnlyList<IInputGesture> ReadOnlyGestures => Gestures;
+        public override IReadOnlyList<InputGesture> ReadOnlyGestures => Gestures;
 
         /// <summary>
         /// Raised when the axis state changed
@@ -58,9 +58,9 @@ namespace SiliconStudio.Xenko.Input.Mapping
             return $"Axis Action \"{MappingName}\", {nameof(LastState)}: {LastState}";
         }
 
-        public override bool TryAddGesture(IInputGesture gesture)
+        public override bool TryAddGesture(InputGesture gesture)
         {
-            var item = gesture as IAxisGesture;
+            var item = gesture as AxisGesture;
             if (item != null)
             {
                 Gestures.Add(item);
@@ -75,15 +75,15 @@ namespace SiliconStudio.Xenko.Input.Mapping
             Gestures.Clear();
         }
 
-        protected override void OnGestureAdded(InputGestureBase gesture)
+        protected override void OnGestureAdded(InputGesture gesture)
         {
-            var axis = gesture as IAxisGesture;
+            var axis = gesture as AxisGesture;
             axis.Changed += AxisOnChanged;
         }
 
-        protected override void OnGestureRemoved(InputGestureBase gesture)
+        protected override void OnGestureRemoved(InputGesture gesture)
         {
-            var axis = gesture as IAxisGesture;
+            var axis = gesture as AxisGesture;
             axis.Changed -= AxisOnChanged;
         }
 

@@ -6,11 +6,11 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
-using SiliconStudio.Xenko.Input.Gestures;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -62,8 +62,8 @@ namespace SiliconStudio.Xenko.Input
         {
             Enabled = true;
 
-            Gestures = new TrackingCollection<IInputGesture>();
-            Gestures.CollectionChanged += Gestures_CollectionChanged;
+            Gestures = new TrackingCollection<InputGesture>();
+            Gestures.CollectionChanged += GesturesOnCollectionChanged;
 
             Services.AddService(typeof(InputManager), this);
         }
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// List of the gestures to recognize.
         /// </summary>
-        public TrackingCollection<IInputGesture> Gestures { get; }
+        public TrackingCollection<InputGesture> Gestures { get; }
 
         /// <summary>
         /// Gets the reference to the accelerometer sensor. The accelerometer measures all the acceleration forces applied on the device.
@@ -359,7 +359,7 @@ namespace SiliconStudio.Xenko.Input
             {
                 IInputEventRouter router;
                 if (!eventRouters.TryGetValue(evt.GetType(), out router))
-                    throw new InvalidOperationException($"The event type {evt.GetType()} was not registered with the input mapper and cannot be processed");
+                    throw new InvalidOperationException($"The event type {evt.GetType()} was not registered with the input manager and cannot be processed");
 
                 router.RouteEvent(evt);
             }
@@ -534,21 +534,20 @@ namespace SiliconStudio.Xenko.Input
             OnApplicationPaused(this, EventArgs.Empty);
         }
 
-        private void Gestures_CollectionChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
+        private void GesturesOnCollectionChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
         {
-            // TODO: Rename
-            var gesture = trackingCollectionChangedEventArgs.Item as InputGestureBase;
-            if (gesture == null) throw new InvalidOperationException("Added gesture does not inherit from InputGestureBase");
+            var gesture = trackingCollectionChangedEventArgs.Item as InputGesture;
 
             switch (trackingCollectionChangedEventArgs.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    gesture.InputManager = this;
-                    gesture.OnAdded();
+                    gesture.OnAdded(this);
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     gesture.OnRemoved();
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(trackingCollectionChangedEventArgs.Action));
             }
         }
 

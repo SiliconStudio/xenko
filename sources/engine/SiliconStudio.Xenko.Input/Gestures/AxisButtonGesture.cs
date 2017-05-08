@@ -7,23 +7,23 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Input.Gestures
 {
     /// <summary>
-    /// A button gesture generated from an <see cref="IAxisGesture"/>, with a customizable threshold
+    /// A button gesture generated from an <see cref="AxisGesture"/>, with a customizable threshold
     /// </summary>
     [DataContract]
     [Display("Axis to Button")]
-    public class AxisButtonGesture : ButtonGestureBase
+    public class AxisButtonGesture : ButtonGesture
     {
         /// <summary>
         /// The threshold value the axis needs to reach in order to trigger a button press
         /// </summary>
         public float Threshold = 0.5f;
 
-        private IAxisGesture axis;
+        private AxisGesture axis;
         
         /// <summary>
         /// The axis that triggers this button
         /// </summary>
-        public IAxisGesture Axis
+        public AxisGesture Axis
         {
             get { return axis; }
             set

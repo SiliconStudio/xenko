@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Input;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
@@ -53,7 +52,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             });
         }
 
-        private void ProcessGestures(Action<IInputGesture> action)
+        private void ProcessGestures(Action<InputGesture> action)
         {
             foreach (var inputAction in Actions)
             {

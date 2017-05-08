@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// A recognizer for a long press gesture.
     /// </summary>
     /// <remarks>A long press gesture can be composed of 1 or more fingers.</remarks>
-    public class LongPressGesture : PointerGestureBase
+    public class LongPressGesture : PointerGesture
     {
         private float maximumTransDst;
         private TimeSpan requiredPressTime;

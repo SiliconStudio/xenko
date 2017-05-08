@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// The gestures that are used for this action
         /// </summary>
         [DataMemberIgnore]
-        public abstract IReadOnlyList<IInputGesture> ReadOnlyGestures { get; }
+        public abstract IReadOnlyList<InputGesture> ReadOnlyGestures { get; }
 
         /// <summary>
         /// Pre update of the input action
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// </summary>
         /// <param name="gesture">A gesture to add</param>
         /// <returns><c>true</c> if successful; <c>false</c> if the gesture was not of the correct type for this action</returns>
-        public abstract bool TryAddGesture(IInputGesture gesture);
+        public abstract bool TryAddGesture(InputGesture gesture);
 
         /// <summary>
         /// Removes all the gestures from this action
@@ -101,7 +101,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// Clones the list of input gestures used by this action
         /// </summary>
         /// <returns>A copy of this input action</returns>
-        public List<IInputGesture> CloneGestures()
+        public List<InputGesture> CloneGestures()
         {
             return Clone().ReadOnlyGestures.ToList();
         }
@@ -110,12 +110,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// Performs a foreach operation on every gesture on this action recursively
         /// </summary>
         /// <param name="action"></param>
-        public void GestureForEach(Action<IInputGesture> action)
+        public void GestureForEach(Action<InputGesture> action)
         {
             foreach (var rootGesture in ReadOnlyGestures)
             {
-                var gestures = new List<IInputGesture>();
-                ((InputGestureBase)rootGesture).GetGesturesRecursive(gestures);
+                var gestures = new List<InputGesture>();
+                ((InputGesture)rootGesture).GetGesturesRecursive(gestures);
 
                 foreach (var gesture in gestures)
                 {
@@ -128,20 +128,20 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// Called when a gesture should be linked to this action
         /// </summary>
         /// <param name="gesture"></param>
-        protected abstract void OnGestureAdded(InputGestureBase gesture);
+        protected abstract void OnGestureAdded(InputGesture gesture);
 
         /// <summary>
         /// Called when a gesture should be unlinked from this action
         /// </summary>
         /// <param name="gesture"></param>
-        protected abstract void OnGestureRemoved(InputGestureBase gesture);
+        protected abstract void OnGestureRemoved(InputGesture gesture);
 
         protected void Gestures_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
             var inputManager = ActionMapping?.InputManager;
 
             // Handles adding/removing new gestures to/from the action mapping when this action is registered as well
-            var gesture = e.Item as InputGestureBase;
+            var gesture = e.Item as InputGesture;
             if (gesture == null)
                 return; // This might happen when adding a new gesture in the GameStudio
 

@@ -4,19 +4,18 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Input.Mapping;
 
 namespace SiliconStudio.Xenko.Input.Gestures
 {
     /// <summary>
-    /// Base class for implementing <see cref="IInputGesture"/>, every input gesture should inherit from this class
+    /// Base class for input gestures
     /// </summary>
     [DataContract]
-    public abstract class InputGestureBase : IInputGesture
+    public abstract class InputGesture
     {
-        protected InputGestureBase Parent;
+        protected InputGesture Parent;
         protected internal InputManager InputManager;
-        private readonly List<InputGestureBase> childGestures = new List<InputGestureBase>();
+        private readonly List<InputGesture> childGestures = new List<InputGesture>();
         
         public virtual void PreUpdate(TimeSpan elapsedTime)
         {
@@ -33,7 +32,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// <summary>
         /// Fills a collection with all gestures in this tree
         /// </summary>
-        public void GetGesturesRecursive(ICollection<IInputGesture> gestures)
+        public void GetGesturesRecursive(ICollection<InputGesture> gestures)
         {
             gestures.Add(this);
             foreach (var child in childGestures)
@@ -46,31 +45,35 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// Registers a child gesture of this gesture
         /// </summary>
         /// <param name="child">The child to add</param>
-        protected void AddChild(IInputGesture child)
+        protected void AddChild(InputGesture child)
         {
             if (child == null) throw new ArgumentNullException(nameof(child));
-            var gesture = child as InputGestureBase;
+            var gesture = child as InputGesture;
             if (gesture == null) throw new InvalidOperationException("Gesture does not inherit from InputGestureBase");
             gesture.Parent = this;
             childGestures.Add(gesture);
 
             // Call initialize on new gesture
             if (InputManager != null)
-                gesture.OnAdded();
+                gesture.OnAdded(InputManager);
         }
         
         /// <summary>
         /// Called when the gesture or it's parent is attached to the <see cref="InputManager"/>
         /// </summary>
-        protected internal virtual void OnAdded()
+        protected internal virtual void OnAdded(InputManager inputManager)
         {
+            if(InputManager != null)
+                throw new InvalidOperationException("Can not add a gesture twice or to separate input managers");
+            InputManager = inputManager;
+
             var eventListener = this as IInputEventListener;
             if (eventListener != null) InputManager.AddListener(eventListener);
 
             foreach (var child in childGestures)
             {
                 child.InputManager = InputManager;
-                child.OnAdded();
+                child.OnAdded(inputManager);
             }
         }
 
@@ -79,6 +82,9 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// </summary>
         protected internal virtual void OnRemoved()
         {
+            if (InputManager == null)
+                throw new InvalidOperationException("Trying to remove a gesture that has not been added to any input manager");
+
             var eventListener = this as IInputEventListener;
             if (eventListener != null) InputManager.RemoveListener(eventListener);
 
@@ -93,13 +99,11 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// Removes a child gesture from this gesture
         /// </summary>
         /// <param name="child">The child to remove</param>
-        protected void RemoveChild(IInputGesture child)
+        protected void RemoveChild(InputGesture child)
         {
             if (child == null) throw new ArgumentNullException(nameof(child));
-            var gesture = child as InputGestureBase;
-            if (gesture == null) throw new InvalidOperationException("Gesture does not inherit from InputGestureBase");
-            gesture.Parent = null;
-            childGestures.Remove(gesture);
+            child.Parent = null;
+            childGestures.Remove(child);
         }
 
         /// <summary>
@@ -107,7 +111,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// </summary>
         /// <param name="oldChild">A child to remove (if not null)</param>
         /// <param name="newChild">A child to add (if not null)</param>
-        protected void UpdateChild(IInputGesture oldChild, IInputGesture newChild)
+        protected void UpdateChild(InputGesture oldChild, InputGesture newChild)
         {
             if (oldChild != null)
                 RemoveChild(oldChild);

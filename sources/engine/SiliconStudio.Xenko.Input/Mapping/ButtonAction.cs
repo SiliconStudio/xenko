@@ -29,10 +29,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// </summary>
         public bool LastState { get; private set; }
 
-        public TrackingCollection<IButtonGesture> Gestures { get; } = new TrackingCollection<IButtonGesture>();
+        public TrackingCollection<ButtonGesture> Gestures { get; } = new TrackingCollection<ButtonGesture>();
 
         [DataMemberIgnore]
-        public override IReadOnlyList<IInputGesture> ReadOnlyGestures => Gestures;
+        public override IReadOnlyList<InputGesture> ReadOnlyGestures => Gestures;
 
         /// <summary>
         /// Raised when the action was trigerred
@@ -58,9 +58,9 @@ namespace SiliconStudio.Xenko.Input.Mapping
             return $"Button Action \"{MappingName}\", {nameof(LastState)}: {LastState}";
         }
 
-        public override bool TryAddGesture(IInputGesture gesture)
+        public override bool TryAddGesture(InputGesture gesture)
         {
-            var item = gesture as IButtonGesture;
+            var item = gesture as ButtonGesture;
             if (item != null)
             {
                 Gestures.Add(item);
@@ -75,15 +75,15 @@ namespace SiliconStudio.Xenko.Input.Mapping
             Gestures.Clear();
         }
 
-        protected override void OnGestureAdded(InputGestureBase gesture)
+        protected override void OnGestureAdded(InputGesture gesture)
         {
-            var button = (IButtonGesture)gesture;
+            var button = (ButtonGesture)gesture;
             button.Changed += ButtonOnChanged;
         }
 
-        protected override void OnGestureRemoved(InputGestureBase gesture)
+        protected override void OnGestureRemoved(InputGesture gesture)
         {
-            var button = (IButtonGesture)gesture;
+            var button = (ButtonGesture)gesture;
             button.Changed -= ButtonOnChanged;
         }
 

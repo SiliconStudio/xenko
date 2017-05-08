@@ -8,21 +8,21 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Input.Gestures
 {
     /// <summary>
-    /// A direction gesture generated from 2 <see cref="IAxisGesture"/>s (X and Y axis)
+    /// A direction gesture generated from 2 <see cref="AxisGesture"/>s (X and Y axis)
     /// </summary>
     [DataContract]
     [Display("Axes to Direction")]
-    public class FourWayGesture : DirectionGestureBase
+    public class FourWayGesture : DirectionGesture
     {
-        private IAxisGesture y;
-        private IAxisGesture x;
+        private AxisGesture y;
+        private AxisGesture x;
 
         private Vector2 state;
 
         /// <summary>
         /// The source for the X-axis component of the generated direction
         /// </summary>
-        public IAxisGesture X
+        public AxisGesture X
         {
             get { return x; }
             set
@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// <summary>
         /// The source for the Y-axis component of the generated direction
         /// </summary>
-        public IAxisGesture Y
+        public AxisGesture Y
         {
             get { return y; }
             set

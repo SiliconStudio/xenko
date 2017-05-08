@@ -10,10 +10,10 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// </summary>
     [DataContract]
     [Display("Positive & Negative Axes")]
-    public class TwoWayGesture : AxisGestureBase
+    public class TwoWayGesture : AxisGesture
     {
-        private IButtonGesture positive;
-        private IButtonGesture negative;
+        private ButtonGesture positive;
+        private ButtonGesture negative;
 
         private float stateA;
         private float stateB;
@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// <summary>
         /// The button that generates a positive (1) axis value
         /// </summary>
-        public IButtonGesture Positive
+        public ButtonGesture Positive
         {
             get { return positive; }
             set
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// <summary>
         /// The button that generates a negative (-1) axis value
         /// </summary>
-        public IButtonGesture Negative
+        public ButtonGesture Negative
         {
             get { return negative; }
             set

@@ -7,7 +7,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input.Gestures
 {
-    public abstract class PointerGestureBase : InputGestureBase, IInputEventListener<PointerEvent>
+    public abstract class PointerGesture : InputGesture, IInputEventListener<PointerEvent>
     {
         protected int RestrictedFingerCount;
         protected readonly Dictionary<int, Vector2> FingerIdToBeginPositions = new Dictionary<int, Vector2>();
@@ -109,9 +109,9 @@ namespace SiliconStudio.Xenko.Input.Gestures
 
         protected abstract void ProcessUpEventPointer(int id, Vector2 pos);
 
-        protected internal override void OnAdded()
+        protected internal override void OnAdded(InputManager inputManager)
         {
-            base.OnAdded();
+            base.OnAdded(inputManager);
 
             SelectPointerDevice(InputManager.Pointer);
             InputManager.DeviceAdded += InputManagerOnDeviceChanged;

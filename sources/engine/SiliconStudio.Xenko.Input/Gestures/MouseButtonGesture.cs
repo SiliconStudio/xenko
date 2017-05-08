@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// </summary>
     [DataContract]
     [Display("Mouse Button")]
-    public class MouseButtonGesture : ButtonGestureBase, IInputEventListener<MouseButtonEvent>
+    public class MouseButtonGesture : ButtonGesture, IInputEventListener<MouseButtonEvent>
     {
         /// <summary>
         /// Button used for this gesture

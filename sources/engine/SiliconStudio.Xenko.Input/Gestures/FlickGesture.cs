@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// Recognizer for a flick gesture.
     /// </summary>
     /// <remarks>A Flick gesture can be composed of 1 or more fingers.</remarks>
-    public class FlickGesture : PointerGestureBase
+    public class FlickGesture : PointerGesture
     {
         private Vector2 allowedErrorMargins;
         private GestureShape flickShape;

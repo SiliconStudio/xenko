@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// </summary>
     [DataContract]
     [Display("Gamepad Button")]
-    public class GamePadButtonGesture : ButtonGestureBase, IInputEventListener<GamePadButtonEvent>, IGamePadGesture
+    public class GamePadButtonGesture : ButtonGesture, IInputEventListener<GamePadButtonEvent>, IGamePadGesture
     {
         /// <summary>
         /// The gamepad button identifier

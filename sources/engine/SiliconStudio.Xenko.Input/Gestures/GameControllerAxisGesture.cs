@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// </summary>
     [DataContract]
     [Display("Controller Axis")]
-    public class GameControllerAxisGesture : AxisGestureBase, IInputEventListener<GameControllerAxisEvent>, IGameControllerGesture
+    public class GameControllerAxisGesture : AxisGesture, IInputEventListener<GameControllerAxisEvent>, IGameControllerGesture
     {
         /// <summary>
         /// The index of the axis to use

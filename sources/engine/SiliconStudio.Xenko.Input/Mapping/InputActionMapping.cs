@@ -10,13 +10,13 @@ using SiliconStudio.Xenko.Input.Gestures;
 namespace SiliconStudio.Xenko.Input.Mapping
 {
     /// <summary>
-    /// Maps <see cref="InputGestureBase"/>s to <see cref="InputAction"/>s. This allows the user to change what physical inputs map to a certain input gesture
+    /// Maps <see cref="InputGesture"/>s to <see cref="InputAction"/>s. This allows the user to change what physical inputs map to a certain input gesture
     /// </summary>
     public class InputActionMapping : IDisposable
     {
         internal InputManager InputManager;
         // NOTE: Gestures are compared by reference here since normally they are equal if they are monitoring the same thing
-        private readonly HashSet<IInputGesture> gestures = new HashSet<IInputGesture>(ReferenceEqualityComparer<IInputGesture>.Default);
+        private readonly HashSet<InputGesture> gestures = new HashSet<InputGesture>(ReferenceEqualityComparer<InputGesture>.Default);
         private readonly List<InputAction> inputActions = new List<InputAction>();
         private readonly Dictionary<string, InputAction> inputActionsByName = new Dictionary<string, InputAction>();
 
@@ -61,16 +61,16 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// A set of gestures that is already bound
         /// </summary>
         /// <remarks>This function is not cached, it will traverse all the gestures on this action mapping to list all gestures</remarks>
-        public HashSet<IInputGesture> BoundGestures
+        public HashSet<InputGesture> BoundGestures
         {
             get
             {
-                var gestures = new HashSet<IInputGesture>();
+                var gestures = new HashSet<InputGesture>();
                 foreach (var action in Actions)
                 {
                     foreach (var gesture in action.ReadOnlyGestures)
                     {
-                        var gestureBase = gesture as InputGestureBase;
+                        var gestureBase = gesture as InputGesture;
                         gestureBase.GetGesturesRecursive(gestures);
                     }
                 }
@@ -81,15 +81,15 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// Use this to serialize/deserialize the action mapping
         /// </summary>
-        public Dictionary<string, List<InputGestureBase>> Bindings
+        public Dictionary<string, List<InputGesture>> Bindings
         {
             get
             {
                 // Collect all the gesture bindings into a key/value pair mapping
-                var settings = new Dictionary<string, List<InputGestureBase>>();
+                var settings = new Dictionary<string, List<InputGesture>>();
                 foreach (var pair in inputActionsByName)
                 {
-                    settings.Add(pair.Key, pair.Value.ReadOnlyGestures.OfType<InputGestureBase>().ToList());
+                    settings.Add(pair.Key, pair.Value.ReadOnlyGestures.OfType<InputGesture>().ToList());
                 }
 
                 return settings;
@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             inputActionsByName.Add(name, action);
 
             // Add gestures to the input managers
-            foreach (var gesture in action.ReadOnlyGestures.OfType<InputGestureBase>())
+            foreach (var gesture in action.ReadOnlyGestures.OfType<InputGesture>())
             {
                 InputManager.Gestures.Add(gesture);
             }
@@ -160,7 +160,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 throw new InvalidOperationException("Action was not added to this mapping");
 
             // Remove gestures from event routers
-            foreach (var gesture in action.ReadOnlyGestures.OfType<InputGestureBase>())
+            foreach (var gesture in action.ReadOnlyGestures.OfType<InputGesture>())
             {
                 InputManager.Gestures.Remove(gesture);
             }
