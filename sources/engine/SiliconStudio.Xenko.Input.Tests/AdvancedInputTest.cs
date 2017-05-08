@@ -51,6 +51,8 @@ namespace SiliconStudio.Xenko.Input.Tests
         private VirtualButtonBinding b2;
         private VirtualButtonBinding b3;
 
+        private VirtualButtonConfig virtualButtonConfig;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Input"/> class.
         /// </summary>
@@ -89,17 +91,17 @@ namespace SiliconStudio.Xenko.Input.Tests
             Input.VirtualButtonConfigSet = Input.VirtualButtonConfigSet ?? new VirtualButtonConfigSet();
 
             //Bind "M" key, GamePad "Start" button and left mouse button to a virtual button "MyButton".
-            b1 = new VirtualButtonBinding("MyButton", VirtualButton.Keyboard.M);
-            b2 = new VirtualButtonBinding("MyButton", VirtualButton.GamePad.Start);
-            b3 = new VirtualButtonBinding("MyButton", VirtualButton.Mouse.Left);
+            b1 = new VirtualButtonBinding("M Key", VirtualButton.Keyboard.M);
+            b2 = new VirtualButtonBinding("GamePad Start", VirtualButton.GamePad.Start);
+            b3 = new VirtualButtonBinding("Mouse Left Button", VirtualButton.Mouse.Left);
 
-            VirtualButtonConfig c = new VirtualButtonConfig();
+            virtualButtonConfig = new VirtualButtonConfig();
 
-            c.Add(b1);
-            c.Add(b2);
-            c.Add(b3);
+            virtualButtonConfig.Add(b1);
+            virtualButtonConfig.Add(b2);
+            virtualButtonConfig.Add(b3);
 
-            Input.VirtualButtonConfigSet.Add(c);
+            Input.VirtualButtonConfigSet.Add(virtualButtonConfig);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -112,11 +114,6 @@ namespace SiliconStudio.Xenko.Input.Tests
             GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             BeginSpriteBatch();
-
-            WriteLine($"b1: {b1.GetValue(Input)}");
-            WriteLine($"b2: {b2.GetValue(Input)}");
-            WriteLine($"b3: {b3.GetValue(Input)}");
-            LineOffset++;
 
             // render the keyboard key states
             WriteLine("Keyboard:");
@@ -147,6 +144,26 @@ namespace SiliconStudio.Xenko.Input.Tests
             WriteLine("LongPress: " + longPressEvent, 1);
             WriteLine("Composite: " + compositeEvent, 1);
             WriteLine("Tap: " + tapEvent, 1);
+            LineOffset++;
+            
+            WriteLine("Virtual Buttons :");
+            foreach (var btn in virtualButtonConfig)
+            {
+                WriteLine($"VirtualButton ({btn.Name}): {btn.GetValue(Input)}", 1);
+            }
+            LineOffset++;
+
+            WriteLine("Game Pads :");
+            foreach (var gp in Input.GamePads)
+            {
+                WriteLine($"{gp.Name} ({gp.GetType()}) [{gp.Index}]", 1);
+            }
+
+            WriteLine("Game Controllers :");
+            foreach (var gp in Input.GameControllers)
+            {
+                WriteLine($"{gp.Name} ({gp.GetType()})", 1);
+            }
 
             DrawCursor();
 
