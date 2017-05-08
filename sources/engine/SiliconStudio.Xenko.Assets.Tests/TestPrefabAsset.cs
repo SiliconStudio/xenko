@@ -2,11 +2,11 @@
 // See LICENSE.md for full license information.
 
 using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Tests.Helpers;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Engine;
@@ -27,21 +27,21 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [Test, Ignore("This test is obsolete, assets require a PropertyGraph to create metadata before being saved")]
         public void TestSerialization()
         {
-            var originAsset = CreateOriginAsset();
+            //var originAsset = CreateOriginAsset();
 
-            using (var stream = new MemoryStream())
-            {
-                AssetFileSerializer.Save(stream, originAsset, null);
+            //using (var stream = new MemoryStream())
+            //{
+            //    AssetFileSerializer.Save(stream, originAsset, null);
 
-                stream.Position = 0;
-                var serializedVersion = Encoding.UTF8.GetString(stream.ToArray());
-                Console.WriteLine(serializedVersion);
+            //    stream.Position = 0;
+            //    var serializedVersion = Encoding.UTF8.GetString(stream.ToArray());
+            //    Console.WriteLine(serializedVersion);
 
-                stream.Position = 0;
-                var newAsset = AssetFileSerializer.Load<PrefabAsset>(stream, "Prefab.xkprefab").Asset;
+            //    stream.Position = 0;
+            //    var newAsset = AssetFileSerializer.Load<PrefabAsset>(stream, "Prefab.xkprefab").Asset;
 
-                CheckAsset(originAsset, newAsset);
-            }
+            //    CheckAsset(originAsset, newAsset);
+            //}
         }
 
         [Test]
@@ -49,7 +49,16 @@ namespace SiliconStudio.Xenko.Assets.Tests
         {
             var originAsset = CreateOriginAsset();
             var newAsset = AssetCloner.Clone(originAsset);
-            CheckAsset(originAsset, newAsset);
+            CheckAsset(originAsset, newAsset, originAsset.Hierarchy.Parts.Select(x => x.Entity.Id).ToDictionary(x => x, x => x));
+        }
+
+        [Test]
+        public void TestCloneWithNewIds()
+        {
+            var originAsset = CreateOriginAsset();
+            Dictionary<Guid, Guid> idRemapping;
+            var newAsset = AssetCloner.Clone(originAsset, AssetClonerFlags.GenerateNewIdsForIdentifiableObjects, out idRemapping);
+            CheckAsset(originAsset, newAsset, idRemapping);
         }
 
         private static PrefabAsset CreateOriginAsset()
@@ -63,10 +72,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var originAsset = new PrefabAsset();
 
             {
-                var entity1 = new Entity() { Name = "E1" };
-                var entity2 = new Entity() { Name = "E2" }; // Use group property to make sure that it is properly serialized
-                var entity3 = new Entity() { Name = "E3" };
-                var entity4 = new Entity() { Name = "E4" };
+                var entity1 = new Entity() { Name = "E1", Id = GuidGenerator.Get(200) };
+                var entity2 = new Entity() { Name = "E2", Id = GuidGenerator.Get(400) }; // Use group property to make sure that it is properly serialized
+                var entity3 = new Entity() { Name = "E3", Id = GuidGenerator.Get(100) };
+                var entity4 = new Entity() { Name = "E4", Id = GuidGenerator.Get(300) };
 
                 // TODO: Add script link
 
@@ -90,15 +99,19 @@ namespace SiliconStudio.Xenko.Assets.Tests
             return originAsset;
         }
 
-        private static void CheckGenericAsset(PrefabAsset originAsset, PrefabAsset newAsset)
+        private static void CheckAsset(PrefabAsset originAsset, PrefabAsset newAsset, Dictionary<Guid, Guid> idRemapping)
         {
             // Check that we have exactly the same root entities
-            Assert.AreEqual(originAsset.Hierarchy.RootParts, newAsset.Hierarchy.RootParts);
+            Assert.AreEqual(originAsset.Hierarchy.RootParts.Count, newAsset.Hierarchy.RootParts.Count);
+            for (var i = 0; i < originAsset.Hierarchy.RootParts.Count;++i)
+            {
+                Assert.AreEqual(idRemapping[originAsset.Hierarchy.RootParts[i].Id], newAsset.Hierarchy.RootParts[i].Id);
+            }
             Assert.AreEqual(originAsset.Hierarchy.Parts.Count, newAsset.Hierarchy.Parts.Count);
 
             foreach (var entityDesign in originAsset.Hierarchy.Parts)
             {
-                var newEntityDesign = newAsset.Hierarchy.Parts[entityDesign.Entity.Id];
+                var newEntityDesign = newAsset.Hierarchy.Parts[idRemapping[entityDesign.Entity.Id]];
                 Assert.NotNull(newEntityDesign);
 
                 // Check properties
@@ -115,18 +128,13 @@ namespace SiliconStudio.Xenko.Assets.Tests
                     var children = entityDesign.Entity.Transform.Children[i];
                     var newChildren = newEntityDesign.Entity.Transform.Children[i];
                     // Make sure that it is the same entity id
-                    Assert.AreEqual(children.Entity.Id, newChildren.Entity.Id);
+                    Assert.AreEqual(idRemapping[children.Entity.Id], newChildren.Entity.Id);
 
                     // Make sure that we resolve to the global entity and not a copy
                     Assert.True(newAsset.Hierarchy.Parts.ContainsKey(newChildren.Entity.Id));
                     Assert.AreEqual(newChildren.Entity, newAsset.Hierarchy.Parts[newChildren.Entity.Id].Entity);
                 }
             }
-        }
-
-        private static void CheckAsset(PrefabAsset originAsset, PrefabAsset newAsset)
-        {
-            CheckGenericAsset(originAsset, newAsset);
 
             var entity1 = originAsset.Hierarchy.Parts.First(it => it.Entity.Name == "E1").Entity;
             var entity2 = originAsset.Hierarchy.Parts.First(it => it.Entity.Name == "E2").Entity;
@@ -134,11 +142,11 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var entity4 = originAsset.Hierarchy.Parts.First(it => it.Entity.Name == "E4").Entity;
 
             // Check that we have exactly the same root entities
-            var newEntityDesign1 = newAsset.Hierarchy.Parts[entity1.Id];
-            var newEntityDesign2 = newAsset.Hierarchy.Parts[entity2.Id];
-            var newEntityDesign3 = newAsset.Hierarchy.Parts[entity3.Id];
-            var newEntityDesign4 = newAsset.Hierarchy.Parts[entity4.Id];
-
+            var newEntityDesign1 = newAsset.Hierarchy.Parts[idRemapping[entity1.Id]];
+            var newEntityDesign2 = newAsset.Hierarchy.Parts[idRemapping[entity2.Id]];
+            var newEntityDesign3 = newAsset.Hierarchy.Parts[idRemapping[entity3.Id]];
+            var newEntityDesign4 = newAsset.Hierarchy.Parts[idRemapping[entity4.Id]];
+            
             // Check that Transform.Children is correctly setup
             Assert.AreEqual(newEntityDesign2.Entity.Transform, newEntityDesign1.Entity.Transform.Children.FirstOrDefault());
 
