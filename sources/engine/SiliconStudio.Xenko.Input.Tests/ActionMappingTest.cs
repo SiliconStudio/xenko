@@ -25,22 +25,10 @@ using SiliconStudio.Xenko.UI.Panels;
 
 namespace SiliconStudio.Xenko.Input.Tests
 {
-    public class ActionMappingTest : GameTestBase
+    public class ActionMappingTest : InputTestBase
     {
-        private const float TextSpaceY = 3;
-        private const float TextSubSectionOffsetX = 15;
-
         private static readonly string[] directionNames = new[] { "Right", "Left", "Up", "Down" };
         private static readonly string[] axisNames = new[] { "Positive", "Negative" };
-
-        private readonly Vector2 textLeftTopCorner = new Vector2(5, 5);
-        private readonly Color fontColor;
-
-        private SpriteBatch spriteBatch;
-        private float textHeight;
-        private SpriteFont spriteFont11;
-        private Texture roundTexture;
-        private int lineOffset = 0;
         
         // List of actions
         List<InputAction> actions = new List<InputAction>();
@@ -67,7 +55,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.None;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 };
 
-            fontColor = Color.White;
+            DefaultTextColor = Color.White;
             checkNewDevicesStopwatch.Start();
         }
 
@@ -85,19 +73,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             SceneSystem.GraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
             actionMapping = new InputActionMapping(Input);
-
-            // Load the fonts
-            spriteFont11 = Content.Load<SpriteFont>("Arial");
-
-            // load the round texture 
-            roundTexture = Content.Load<Texture>("round");
-
-            // create the SpriteBatch used to render them
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // Measure typical text height
-            textHeight = spriteFont11.MeasureString("Dummy").Y;
-
+            
             SetupActions();
 
             BuildUI();
@@ -151,8 +127,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
             GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
-            spriteBatch.Begin(GraphicsContext);
-            lineOffset = 0;
+            BeginSpriteBatch();
 
             if (currentlyBindingAction != null)
             {
@@ -173,7 +148,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             {
                 WriteLine("Press F1-12 to load bindings (with Ctrl held to save them)");
             }
-            lineOffset += 1;
+            LineOffset += 1;
 
             if (Input.HasGamePad)
             {
@@ -186,7 +161,7 @@ namespace SiliconStudio.Xenko.Input.Tests
                     WriteLine($"GamePad Index: {gamePad.Index}", 2);
                     WriteLine(gamePad.State.ToString(), 2);
                 }
-                lineOffset += 1;
+                LineOffset += 1;
             }
 
             if (Input.HasGameController)
@@ -199,7 +174,7 @@ namespace SiliconStudio.Xenko.Input.Tests
                     WriteLine($"PID: {gameController.ProductId}", 2);
                     WriteLine(gameController.ToString(), 2);
                 }
-                lineOffset += 1;
+                LineOffset += 1;
             }
 
             WriteLine("Actions:");
@@ -253,7 +228,7 @@ namespace SiliconStudio.Xenko.Input.Tests
                 }
             }
 
-            lineOffset += 1;
+            LineOffset += 1;
             WriteLine("Input Events:");
             foreach (var eventLogLine in eventLog.Reverse())
                 WriteLine(eventLogLine, 1);
@@ -275,7 +250,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             if (Input.IsKeyReleased(Keys.E))
                 WriteLine("E Key was released", 1);
 
-            spriteBatch.End();
+            EndSpriteBatch();
         }
         
         private void UpdateActionBinder()
@@ -343,9 +318,9 @@ namespace SiliconStudio.Xenko.Input.Tests
             var stackPanel = new StackPanel();
             for (int i = 0; i < actions.Count; i++)
             {
-                var text = new TextBlock { Font = spriteFont11, Text = $"Action {actions[i].MappingName}", TextSize = 3.5f };
-                var add = new Button { Content = new TextBlock { Font = spriteFont11, Text = "Add Binding", TextSize = 3.5f }, BackgroundColor = Color.Gray};
-                var clear = new Button { Content = new TextBlock { Font = spriteFont11, Text = "Clear", TextSize = 3.5f }, BackgroundColor = Color.Gray };
+                var text = new TextBlock { Font = SpriteFont, Text = $"Action {actions[i].MappingName}", TextSize = 3.5f };
+                var add = new Button { Content = new TextBlock { Font = SpriteFont, Text = "Add Binding", TextSize = 3.5f }, BackgroundColor = Color.Gray};
+                var clear = new Button { Content = new TextBlock { Font = SpriteFont, Text = "Clear", TextSize = 3.5f }, BackgroundColor = Color.Gray };
 
                 var i1 = i;
                 add.Click += (sender, args) =>
@@ -373,8 +348,8 @@ namespace SiliconStudio.Xenko.Input.Tests
                 });
             }
 
-            var numberField = new EditText() { Font = spriteFont11, Text = $"0", TextSize = 3.5f, BackgroundColor = Color.DarkSlateGray };
-            var changeGamePad = new Button { Content = new TextBlock { Font = spriteFont11, Text = "Change GamePad IDs", TextSize = 3.5f }, BackgroundColor = Color.Gray };
+            var numberField = new EditText() { Font = SpriteFont, Text = $"0", TextSize = 3.5f, BackgroundColor = Color.DarkSlateGray };
+            var changeGamePad = new Button { Content = new TextBlock { Font = SpriteFont, Text = "Change GamePad IDs", TextSize = 3.5f }, BackgroundColor = Color.Gray };
             changeGamePad.Click += (sender, args) =>
             {
                 int newIndex = 0;
@@ -400,12 +375,6 @@ namespace SiliconStudio.Xenko.Input.Tests
             };
             stackPanel.SetCanvasPinOrigin(new Vector3(1.0f, 0, 0));
             stackPanel.SetCanvasRelativePosition(new Vector3(1.0f, 0.0f, 0.0f));
-        }
-        
-        private void WriteLine(string str, int indent = 0)
-        {
-            spriteBatch.DrawString(spriteFont11, str,
-                textLeftTopCorner + new Vector2(TextSubSectionOffsetX * indent, lineOffset++ * (textHeight + TextSpaceY)), fontColor);
         }
 
         private void LogEvent(string s)
@@ -435,7 +404,6 @@ namespace SiliconStudio.Xenko.Input.Tests
                 // For each action, restore the gestures.
                 //  this will leave all bindings to actions intact and just restore default gesture bindings
                 var action = actionMapping.TryGetAction(defaultAction.MappingName);
-                //var defaultGestures = defaultAction.CloneGestures();
                 action.Clear();
                 foreach(var gesture in defaultAction.ReadOnlyGestures)
                     action.TryAddGesture(gesture);
@@ -450,7 +418,6 @@ namespace SiliconStudio.Xenko.Input.Tests
                 using (stream)
                 {
                     BinarySerializationReader reader = new BinarySerializationReader(stream);
-                    //inputComponent.RestoreBindings(reader.Read<InputActionConfiguration>());
                     InputActionConfiguration config = reader.Read<InputActionConfiguration>();
                     SetConfiguration(config);
                 }
