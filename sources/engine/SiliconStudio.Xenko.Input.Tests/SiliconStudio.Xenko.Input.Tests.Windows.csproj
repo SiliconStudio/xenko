@@ -149,7 +149,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionMappingTest.cs" />
-    <Compile Include="BasicInputTest.cs" />
     <Compile Include="AdvancedInputTest.cs" />
     <Compile Include="InputTestBase.cs" />
     <Compile Include="SensorGameTest.cs" />
