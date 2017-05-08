@@ -19,14 +19,14 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Sets all the gamepad left and right motors to the given amounts
+        /// Sets the gamepad's large and small motors to the given amounts
         /// </summary>
         /// <param name="pad">The gamepad</param>
-        /// <param name="leftMotors">The amount of vibration for the left side</param>
-        /// <param name="rightMotors">The amount of vibration for the right side</param>
-        public static void SetVibration(this IGamePadDevice pad, float leftMotors, float rightMotors)
+        /// <param name="largeMotors">The amount of vibration for the large motors</param>
+        /// <param name="smallMotors">The amount of vibration for the small motors</param>
+        public static void SetVibration(this IGamePadDevice pad, float largeMotors, float smallMotors)
         {
-            pad.SetVibration(leftMotors, rightMotors, leftMotors, rightMotors);
+            pad.SetVibration(smallMotors, smallMotors, largeMotors, largeMotors);
         }
     }
 }
