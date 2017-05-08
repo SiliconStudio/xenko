@@ -19,13 +19,13 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// <summary>
         /// Initializes a new instance of the <see cref="ClearObjectReferenceVisitor"/> class.
         /// </summary>
-        /// <param name="propertyGraph">The <see cref="AssetPropertyGraph"/> used to analyze object references.</param>
+        /// <param name="propertyGraphDefinition">The <see cref="AssetPropertyGraphDefinition"/> used to analyze object references.</param>
         /// <param name="targetIds">The identifiers of the objects for which to clear references.</param>
         /// <param name="shouldClearReference">A method allowing to select which object reference to clear. If null, all object references to the given id will be cleared.</param>
-        public ClearObjectReferenceVisitor([NotNull] AssetPropertyGraph propertyGraph, [NotNull] IEnumerable<Guid> targetIds, [CanBeNull] Func<IGraphNode, Index, bool> shouldClearReference = null)
-            : base(propertyGraph)
+        public ClearObjectReferenceVisitor([NotNull] AssetPropertyGraphDefinition propertyGraphDefinition, [NotNull] IEnumerable<Guid> targetIds, [CanBeNull] Func<IGraphNode, Index, bool> shouldClearReference = null)
+            : base(propertyGraphDefinition)
         {
-            if (propertyGraph == null) throw new ArgumentNullException(nameof(propertyGraph));
+            if (propertyGraphDefinition == null) throw new ArgumentNullException(nameof(propertyGraphDefinition));
             if (targetIds == null) throw new ArgumentNullException(nameof(targetIds));
             this.targetIds = new HashSet<Guid>(targetIds);
             this.shouldClearReference = shouldClearReference;
@@ -37,7 +37,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
             if (!targetIds.Contains(identifiable.Id))
                 return;
 
-            if (PropertyGraph.Definition.IsMemberTargetObjectReference(member, identifiable))
+            if (PropertyGraphDefinition.IsMemberTargetObjectReference(member, identifiable))
             {
                 if (shouldClearReference?.Invoke(member, Index.Empty) ?? true)
                 {
@@ -53,7 +53,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
             if (!targetIds.Contains(identifiable.Id))
                 return;
 
-            if (PropertyGraph.Definition.IsTargetItemObjectReference(collection, index, identifiable))
+            if (PropertyGraphDefinition.IsTargetItemObjectReference(collection, index, identifiable))
             {
                 if (shouldClearReference?.Invoke(collection, index) ?? true)
                 {

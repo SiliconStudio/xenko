@@ -13,15 +13,15 @@ namespace SiliconStudio.Assets.Quantum.Visitors
     /// </summary>
     public class ObjectReferencePathGenerator : AssetNodeMetadataCollectorBase
     {
-        private readonly AssetPropertyGraph propertyGraph;
+        private readonly AssetPropertyGraphDefinition propertyGraphDefinition;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectReferencePathGenerator"/> class.
         /// </summary>
-        /// <param name="propertyGraph">The <see cref="AssetPropertyGraph"/> used to analyze object references.</param>
-        public ObjectReferencePathGenerator(AssetPropertyGraph propertyGraph)
+        /// <param name="propertyGraphDefinition">The <see cref="AssetPropertyGraphDefinition"/> used to analyze object references.</param>
+        public ObjectReferencePathGenerator(AssetPropertyGraphDefinition propertyGraphDefinition)
         {
-            this.propertyGraph = propertyGraph;
+            this.propertyGraphDefinition = propertyGraphDefinition;
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// <inheritdoc/>
         protected override void VisitMemberNode(IAssetMemberNode memberNode, int inNonIdentifiableType)
         {
-            if (propertyGraph.Definition.IsMemberTargetObjectReference(memberNode, memberNode.Retrieve()))
+            if (propertyGraphDefinition.IsMemberTargetObjectReference(memberNode, memberNode.Retrieve()))
             {
                 var value = memberNode.Retrieve();
                 if (value == null)
@@ -61,7 +61,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
 
             foreach (var index in ((IAssetObjectNodeInternal)objectNode).Indices)
             {
-                if (!propertyGraph.Definition.IsTargetItemObjectReference(objectNode, index, objectNode.Retrieve(index)))
+                if (!propertyGraphDefinition.IsTargetItemObjectReference(objectNode, index, objectNode.Retrieve(index)))
                     continue;
 
                 var itemPath = ConvertPath(CurrentPath, inNonIdentifiableType);

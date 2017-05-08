@@ -10,27 +10,27 @@ namespace SiliconStudio.Assets.Quantum.Visitors
     /// <remarks>This visitor requires a <see cref="AssetPropertyGraph"/> to analyze if a node represents an object reference.</remarks>
     public class AssetGraphVisitorBase : GraphVisitorBase
     {
-        protected readonly AssetPropertyGraph PropertyGraph;
+        protected readonly AssetPropertyGraphDefinition PropertyGraphDefinition;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetGraphVisitorBase"/> class.
         /// </summary>
-        /// <param name="propertyGraph">The <see cref="AssetPropertyGraph"/> used to analyze object references.</param>
-        public AssetGraphVisitorBase(AssetPropertyGraph propertyGraph)
+        /// <param name="propertyGraphDefinition">The <see cref="AssetPropertyGraphDefinition"/> used to analyze object references.</param>
+        public AssetGraphVisitorBase(AssetPropertyGraphDefinition propertyGraphDefinition)
         {
-            PropertyGraph = propertyGraph;
+            PropertyGraphDefinition = propertyGraphDefinition;
         }
 
         /// <inheritdoc/>
         protected override bool ShouldVisitMemberTarget(IMemberNode member)
         {
-            return !PropertyGraph.Definition.IsMemberTargetObjectReference(member, member.Retrieve()) && base.ShouldVisitMemberTarget(member);
+            return !PropertyGraphDefinition.IsMemberTargetObjectReference(member, member.Retrieve()) && base.ShouldVisitMemberTarget(member);
         }
 
         /// <inheritdoc/>
         protected override bool ShouldVisitTargetItem(IObjectNode collectionNode, Index index)
         {
-            return !PropertyGraph.Definition.IsTargetItemObjectReference(collectionNode, index, collectionNode.Retrieve(index)) && base.ShouldVisitTargetItem(collectionNode, index);
+            return !PropertyGraphDefinition.IsTargetItemObjectReference(collectionNode, index, collectionNode.Retrieve(index)) && base.ShouldVisitTargetItem(collectionNode, index);
         }
     }
 }

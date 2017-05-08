@@ -264,7 +264,7 @@ namespace SiliconStudio.Assets.Quantum
             }
             if (visitRoot != null)
             {
-                var visitor = new AssetGraphVisitorBase(this);
+                var visitor = new AssetGraphVisitorBase(Definition);
                 // If we're in scenario where rootNode is an object node and index is not empty, we might already have the node in the dictionary so let's check this in Visiting
                 visitor.Visiting += (node, path) => { if (!nodesToReset.ContainsKey(node)) nodesToReset.Add(node, Index.Empty); };
                 visitor.Visit(rootNode);
@@ -280,7 +280,7 @@ namespace SiliconStudio.Assets.Quantum
         public virtual void ClearReferencesToObjects([NotNull] IEnumerable<Guid> objectIds)
         {
             if (objectIds == null) throw new ArgumentNullException(nameof(objectIds));
-            var visitor = new ClearObjectReferenceVisitor(this, objectIds);
+            var visitor = new ClearObjectReferenceVisitor(Definition, objectIds);
             visitor.Visit(RootNode);
         }
 
@@ -290,7 +290,7 @@ namespace SiliconStudio.Assets.Quantum
         /// <returns>A new instance of <see cref="GraphVisitorBase"/> for reconciliation.</returns>
         public virtual GraphVisitorBase CreateReconcilierVisitor()
         {
-            return new AssetGraphVisitorBase(this);
+            return new AssetGraphVisitorBase(Definition);
         }
 
         public virtual IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
@@ -413,7 +413,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
 
-            var visitor = new ObjectReferencePathGenerator(this);
+            var visitor = new ObjectReferencePathGenerator(Definition);
             visitor.Visit(rootNode);
             return visitor.Result;
         }

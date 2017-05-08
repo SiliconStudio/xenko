@@ -15,9 +15,9 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// <summary>
         /// Initializes a new instance of hte <see cref="IdentifiableObjectVisitorBase"/> class.
         /// </summary>
-        /// <param name="propertyGraph">The <see cref="AssetPropertyGraph"/> used to analyze object references.</param>
-        protected IdentifiableObjectVisitorBase(AssetPropertyGraph propertyGraph)
-            : base(propertyGraph)
+        /// <param name="propertyGraphDefinition">The <see cref="AssetPropertyGraphDefinition"/> used to analyze object references.</param>
+        protected IdentifiableObjectVisitorBase(AssetPropertyGraphDefinition propertyGraphDefinition)
+            : base(propertyGraphDefinition)
         {
         }
 
