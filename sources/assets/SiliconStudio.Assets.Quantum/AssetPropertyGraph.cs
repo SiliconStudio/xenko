@@ -772,7 +772,7 @@ namespace SiliconStudio.Assets.Quantum
 
                         object clonedValue;
                         // Object references
-                        if (baseValue is IIdentifiable && Definition.IsObjectReference(memberNode.BaseNode, Index.Empty, memberNode.BaseNode.Retrieve()))
+                        if (baseValue is IIdentifiable && Definition.IsMemberTargetObjectReference((IMemberNode)memberNode.BaseNode, memberNode.BaseNode.Retrieve()))
                             clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseValue, memberNode);
                         else
                             clonedValue = CloneValueFromBase(baseValue, assetNode);
@@ -873,7 +873,7 @@ namespace SiliconStudio.Assets.Quantum
                                 object clonedValue;
                                 var baseItemValue = objectNode.BaseNode.Retrieve(index);
                                 // Object references
-                                if (baseItemValue is IIdentifiable && Definition.IsObjectReference(objectNode.BaseNode, index, objectNode.BaseNode.Retrieve(index)))
+                                if (baseItemValue is IIdentifiable && Definition.IsTargetItemObjectReference((IObjectNode)objectNode.BaseNode, index, objectNode.BaseNode.Retrieve(index)))
                                     clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseItemValue, objectNode);
                                 else
                                     clonedValue = CloneValueFromBase(baseItemValue, assetNode);
@@ -971,7 +971,7 @@ namespace SiliconStudio.Assets.Quantum
                 return false;
 
             // Object references
-            if (baseValue is IIdentifiable && Definition.IsObjectReference(memberNode.BaseNode, Index.Empty, memberNode.BaseNode.Retrieve()))
+            if (baseValue is IIdentifiable && Definition.IsMemberTargetObjectReference((IMemberNode)memberNode.BaseNode, memberNode.BaseNode.Retrieve()))
             {
                 if (!reconcileObjectReference)
                     return false;
@@ -1015,7 +1015,7 @@ namespace SiliconStudio.Assets.Quantum
                 return false;
 
             // Object references
-            if (baseValue is IIdentifiable && Definition.IsObjectReference(node.BaseNode, baseIndex, node.BaseNode.Retrieve(baseIndex)))
+            if (baseValue is IIdentifiable && Definition.IsTargetItemObjectReference((IObjectNode)node.BaseNode, baseIndex, node.BaseNode.Retrieve(baseIndex)))
             {
                 if (!reconcileObjectReference)
                     return false;

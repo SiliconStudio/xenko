@@ -167,23 +167,28 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
         {
             public static Func<IGraphNode, Index, bool> IsObjectReferenceFunc { get; set; }
 
-            public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
+            public override bool IsMemberTargetObjectReference(IMemberNode member, object value)
             {
-                return IsObjectReferenceFunc?.Invoke(targetNode, index) ?? base.IsObjectReference(targetNode, index, value);
+                return IsObjectReferenceFunc?.Invoke(member, Index.Empty) ?? base.IsMemberTargetObjectReference(member, value);
+            }
+
+            public override bool IsTargetItemObjectReference(IObjectNode collection, Index itemIndex, object value)
+            {
+                return IsObjectReferenceFunc?.Invoke(collection, itemIndex) ?? base.IsTargetItemObjectReference(collection, itemIndex, value);
             }
         }
 
         [AssetPropertyGraphDefinition(typeof(MyAssetWithRef2))]
         public class AssetWithRefPropertyGraph2 : AssetPropertyGraphDefinition
         {
-            public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
+            public override bool IsMemberTargetObjectReference(IMemberNode member, object value)
             {
-                if ((targetNode as IMemberNode)?.Name == nameof(MyAssetWithRef2.Reference))
-                    return true;
-                if ((targetNode as IObjectNode)?.Retrieve() is List<MyReferenceable>)
-                    return true;
+                return member.Name == nameof(MyAssetWithRef2.Reference);
+            }
 
-                return false;
+            public override bool IsTargetItemObjectReference(IObjectNode collection, Index itemIndex, object value)
+            {
+                return collection.Retrieve() is List<MyReferenceable>;
             }
         }
 

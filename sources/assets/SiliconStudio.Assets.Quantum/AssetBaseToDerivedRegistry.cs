@@ -23,33 +23,32 @@ namespace SiliconStudio.Assets.Quantum
             if (baseValue == null)
                 return;
 
-            if (!propertyGraph.Definition.IsObjectReference(baseNode, Index.Empty, baseNode.Retrieve()))
+            if (baseValue is IIdentifiable)
             {
-                if (baseValue is IIdentifiable)
+                baseToDerived[baseNode] = derivedNode;
+                var baseMemberNode = baseNode as IAssetMemberNode;
+                if (baseMemberNode?.Target != null && !propertyGraph.Definition.IsMemberTargetObjectReference(baseMemberNode, baseValue))
                 {
-                    baseToDerived[baseNode] = derivedNode;
-                    var baseMemberNode = baseNode as IAssetMemberNode;
-                    if (baseMemberNode?.Target != null)
-                    {
-                        baseToDerived[baseMemberNode.Target] = ((IAssetMemberNode)derivedNode).Target;
-                    }
+                    baseToDerived[baseMemberNode.Target] = ((IAssetMemberNode)derivedNode).Target;
                 }
             }
-            var objectNode = derivedNode as IObjectNode;
-            if (objectNode?.ItemReferences != null)
+
+            var derivedObjectNode = derivedNode as IObjectNode;
+            var baseObjectNode = baseNode as IObjectNode;
+            if (derivedObjectNode?.ItemReferences != null && baseObjectNode?.ItemReferences != null)
             {
-                foreach (var reference in objectNode.ItemReferences)
+                foreach (var reference in derivedObjectNode.ItemReferences)
                 {
                     var target = propertyGraph.baseLinker.FindTargetReference(derivedNode, baseNode, reference);
                     if (target == null)
                         continue;
 
                     baseValue = target.TargetNode?.Retrieve();
-                    if (!propertyGraph.Definition.IsObjectReference(baseNode, target.Index, baseNode.Retrieve(target.Index)))
+                    if (!propertyGraph.Definition.IsTargetItemObjectReference(baseObjectNode, target.Index, baseNode.Retrieve(target.Index)))
                     {
                         if (baseValue is IIdentifiable)
                         {
-                            baseToDerived[(IAssetNode)target.TargetNode] = (IAssetNode)objectNode.IndexedTarget(reference.Index);
+                            baseToDerived[(IAssetNode)target.TargetNode] = (IAssetNode)derivedObjectNode.IndexedTarget(reference.Index);
                         }
                     }
                 }

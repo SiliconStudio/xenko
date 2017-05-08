@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -24,32 +24,48 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// <inheritdoc/>
         protected override void VisitMemberTarget(IMemberNode node)
         {
-            CheckAndProcessIdentifiable(node, Index.Empty);
+            CheckAndProcessIdentifiableMember(node);
             base.VisitMemberTarget(node);
         }
 
         /// <inheritdoc/>
         protected override void VisitItemTargets(IObjectNode node)
         {
-            node.ItemReferences?.ForEach(x => CheckAndProcessIdentifiable(node, x.Index));
+            node.ItemReferences?.ForEach(x => CheckAndProcessIdentifiableItem(node, x.Index));
             base.VisitItemTargets(node);
         }
 
         /// <summary>
-        /// Processes the <see cref="IIdentifiable"/> instance.
+        /// Processes an <see cref="IIdentifiable"/> instance that is a member of an object.
         /// </summary>
         /// <param name="identifiable">The identifiable instance to process.</param>
-        /// <param name="node">The node containing the identifiable instance.</param>
-        /// <param name="index">The index at which the identifiable instance can be reached in the node, or <see cref="Index.Empty"/> if the instance is not indexed.</param>
-        protected abstract void ProcessIdentifiable([NotNull] IIdentifiable identifiable, IGraphNode node, Index index);
+        /// <param name="member">The member node referencing the identifiable instance.</param>
+        protected abstract void ProcessIdentifiableMembers([NotNull] IIdentifiable identifiable, IMemberNode member);
 
-        private void CheckAndProcessIdentifiable(IGraphNode node, Index index)
+        /// <summary>
+        /// Processes an <see cref="IIdentifiable"/> instance that is an item of a collection.
+        /// </summary>
+        /// <param name="identifiable">The identifiable instance to process.</param>
+        /// <param name="collection">The object node representing the collection referencing the identifiable instance.</param>
+        /// <param name="index">The index at which the identifiable instance is referenced.</param>
+        protected abstract void ProcessIdentifiableItems([NotNull] IIdentifiable identifiable, IObjectNode collection, Index index);
+
+        private void CheckAndProcessIdentifiableMember(IMemberNode member)
         {
-            var identifiable = node?.Retrieve(index) as IIdentifiable;
+            var identifiable = member.Retrieve() as IIdentifiable;
             if (identifiable == null)
                 return;
 
-            ProcessIdentifiable(identifiable, node, index);
+            ProcessIdentifiableMembers(identifiable, member);
+        }
+
+        private void CheckAndProcessIdentifiableItem(IObjectNode collection, Index index)
+        {
+            var identifiable = collection.Retrieve(index) as IIdentifiable;
+            if (identifiable == null)
+                return;
+
+            ProcessIdentifiableItems(identifiable, collection, index);
         }
     }
 }

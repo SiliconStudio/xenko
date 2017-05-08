@@ -1,12 +1,10 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Assets.Quantum.Internal;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
-using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum.Visitors
 {
@@ -39,7 +37,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// <inheritdoc/>
         protected override void VisitMemberNode(IAssetMemberNode memberNode, int inNonIdentifiableType)
         {
-            if (propertyGraph.Definition.IsObjectReference(memberNode, Index.Empty, memberNode.Retrieve()))
+            if (propertyGraph.Definition.IsMemberTargetObjectReference(memberNode, memberNode.Retrieve()))
             {
                 var value = memberNode.Retrieve();
                 if (value == null)
@@ -63,7 +61,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
 
             foreach (var index in ((IAssetObjectNodeInternal)objectNode).Indices)
             {
-                if (!propertyGraph.Definition.IsObjectReference(objectNode, index, objectNode.Retrieve(index)))
+                if (!propertyGraph.Definition.IsTargetItemObjectReference(objectNode, index, objectNode.Retrieve(index)))
                     continue;
 
                 var itemPath = ConvertPath(CurrentPath, inNonIdentifiableType);

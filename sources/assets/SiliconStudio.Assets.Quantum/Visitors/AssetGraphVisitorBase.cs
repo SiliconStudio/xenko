@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using SiliconStudio.Quantum;
 
@@ -24,13 +24,13 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// <inheritdoc/>
         protected override bool ShouldVisitMemberTarget(IMemberNode member)
         {
-            return !PropertyGraph.Definition.IsObjectReference(member, Index.Empty, member.Retrieve()) && base.ShouldVisitMemberTarget(member);
+            return !PropertyGraph.Definition.IsMemberTargetObjectReference(member, member.Retrieve()) && base.ShouldVisitMemberTarget(member);
         }
 
         /// <inheritdoc/>
         protected override bool ShouldVisitTargetItem(IObjectNode collectionNode, Index index)
         {
-            return !PropertyGraph.Definition.IsObjectReference(collectionNode, index, collectionNode.Retrieve(index)) && base.ShouldVisitTargetItem(collectionNode, index);
+            return !PropertyGraph.Definition.IsTargetItemObjectReference(collectionNode, index, collectionNode.Retrieve(index)) && base.ShouldVisitTargetItem(collectionNode, index);
         }
     }
 }

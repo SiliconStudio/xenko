@@ -8,20 +8,19 @@ namespace SiliconStudio.Assets.Quantum
         where TAssetPart : class, IIdentifiable
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
     {
-        /// <inheritdoc/>
-        public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
+        public override bool IsMemberTargetObjectReference(IMemberNode member, object value)
         {
-            if (targetNode is IObjectNode && index.IsEmpty)
-                return base.IsObjectReference(targetNode, index, value);
-
             if (value is TAssetPart)
             {
                 // Check if we're the part referenced by a part design - other cases are references
-                var member = targetNode as IMemberNode;
-                return member == null || member.Parent.Type != typeof(TAssetPartDesign);
+                return member.Parent.Type != typeof(TAssetPartDesign);
             }
+            return base.IsMemberTargetObjectReference(member, value);
+        }
 
-            return base.IsObjectReference(targetNode, index, value);
+        public override bool IsTargetItemObjectReference(IObjectNode collection, Index itemIndex, object value)
+        {
+            return value is TAssetPart || base.IsTargetItemObjectReference(collection, itemIndex, value);
         }
     }
 }

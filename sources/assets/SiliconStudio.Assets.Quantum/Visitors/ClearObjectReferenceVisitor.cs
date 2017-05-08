@@ -32,19 +32,32 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         }
 
         /// <inheritdoc/>
-        protected override void ProcessIdentifiable(IIdentifiable identifiable, IGraphNode node, Index index)
+        protected override void ProcessIdentifiableMembers(IIdentifiable identifiable, IMemberNode member)
         {
             if (!targetIds.Contains(identifiable.Id))
                 return;
 
-            if (PropertyGraph.Definition.IsObjectReference(node, index, node.Retrieve(index)))
+            if (PropertyGraph.Definition.IsMemberTargetObjectReference(member, identifiable))
             {
-                if (shouldClearReference?.Invoke(node, index) ?? true)
+                if (shouldClearReference?.Invoke(member, Index.Empty) ?? true)
                 {
-                    if (index == Index.Empty)
-                        ((IMemberNode)node).Update(null);
-                    else
-                        ((IObjectNode)node).Update(null, index);
+                    member.Update(null);
+                }
+            }
+
+        }
+
+        /// <inheritdoc/>
+        protected override void ProcessIdentifiableItems(IIdentifiable identifiable, IObjectNode collection, Index index)
+        {
+            if (!targetIds.Contains(identifiable.Id))
+                return;
+
+            if (PropertyGraph.Definition.IsTargetItemObjectReference(collection, index, identifiable))
+            {
+                if (shouldClearReference?.Invoke(collection, index) ?? true)
+                {
+                    collection.Update(null, index);
                 }
             }
         }

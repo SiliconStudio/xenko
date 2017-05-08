@@ -1,7 +1,9 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum.Visitors
@@ -37,9 +39,17 @@ namespace SiliconStudio.Assets.Quantum.Visitors
             return visitor.externalReferences;
         }
 
-        protected override void ProcessIdentifiable(IIdentifiable identifiable, IGraphNode node, Index index)
+        protected override void ProcessIdentifiableMembers(IIdentifiable identifiable, IMemberNode member)
         {
-            if (propertyGraph.Definition.IsObjectReference(node, index, node.Retrieve(index)))
+            if (propertyGraph.Definition.IsMemberTargetObjectReference(member, identifiable))
+                externalReferences.Add(identifiable);
+            else
+                internalReferences.Add(identifiable);
+        }
+
+        protected override void ProcessIdentifiableItems(IIdentifiable identifiable, IObjectNode collection, Index index)
+        {
+            if (propertyGraph.Definition.IsTargetItemObjectReference(collection, index, identifiable))
                 externalReferences.Add(identifiable);
             else
                 internalReferences.Add(identifiable);
