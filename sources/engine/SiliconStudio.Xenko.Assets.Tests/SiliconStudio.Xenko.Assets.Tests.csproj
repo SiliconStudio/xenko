@@ -277,6 +277,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\assets\SiliconStudio.Assets.Tests\Helpers\GuidGenerator.cs">
+      <Link>GuidGenerator.cs</Link>
+    </Compile>
     <Compile Include="TestMaterialGenerator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
