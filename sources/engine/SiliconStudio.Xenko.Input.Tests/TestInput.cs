@@ -7,7 +7,6 @@ using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics.Regression;
-using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input.Tests
 {
