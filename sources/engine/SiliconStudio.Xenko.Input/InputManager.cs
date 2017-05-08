@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -39,6 +38,10 @@ namespace SiliconStudio.Xenko.Input
         private readonly List<IInputDevice> devices = new List<IInputDevice>();
 
         private readonly List<InputEvent> events = new List<InputEvent>();
+        private readonly List<GestureEvent> currentGestureEvents = new List<GestureEvent>();
+
+        private readonly Dictionary<GestureConfig, GestureRecognizer> gestureConfigToRecognizer = new Dictionary<GestureConfig, GestureRecognizer>();
+        private readonly List<Dictionary<object, float>> virtualButtonValues = new List<Dictionary<object, float>>();
 
         // Mapping of device guid to device
         private readonly Dictionary<Guid, IInputDevice> devicesById = new Dictionary<Guid, IInputDevice>();
@@ -62,17 +65,24 @@ namespace SiliconStudio.Xenko.Input
         {
             Enabled = true;
 
-            Gestures = new TrackingCollection<InputGesture>();
+            GestureEvents = currentGestureEvents;
+            Gestures = new TrackingCollection<GestureConfig>();
             Gestures.CollectionChanged += GesturesOnCollectionChanged;
 
             Services.AddService(typeof(InputManager), this);
         }
+        
+        /// <summary>
+        /// Gets or sets the configuration for virtual buttons.
+        /// </summary>
+        /// <value>The current binding.</value>
+        public VirtualButtonConfigSet VirtualButtonConfigSet { get; set; }
 
         /// <summary>
         /// List of the gestures to recognize.
         /// </summary>
-        public TrackingCollection<InputGesture> Gestures { get; }
-
+        public TrackingCollection<GestureConfig> Gestures { get; }
+        
         /// <summary>
         /// Gets the reference to the accelerometer sensor. The accelerometer measures all the acceleration forces applied on the device.
         /// </summary>
@@ -112,6 +122,12 @@ namespace SiliconStudio.Xenko.Input
         /// All input events that happened since the last frame
         /// </summary>
         public IReadOnlyList<InputEvent> Events => events;
+        
+        /// <summary>
+        /// Gets the collection of gesture events since the previous updates.
+        /// </summary>
+        /// <value>The gesture events.</value>
+        public List<GestureEvent> GestureEvents { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether pointer device is available.
@@ -231,6 +247,12 @@ namespace SiliconStudio.Xenko.Input
         public event EventHandler<DeviceChangedEventArgs> DeviceAdded;
 
         /// <summary>
+        /// Gets or sets the value indicating if simultaneous multiple finger touches are enabled or not.
+        /// If not enabled only the events of one finger at a time are triggered.
+        /// </summary>
+        public bool MultiTouchEnabled { get; set; } = false;
+
+        /// <summary>
         /// Helper method to transform mouse and pointer event positions to sub rectangles
         /// </summary>
         /// <param name="fromSize">the size of the source rectangle</param>
@@ -347,13 +369,7 @@ namespace SiliconStudio.Xenko.Input
 
             // Notify PreUpdateInput
             PreUpdateInput?.Invoke(this, new InputPreUpdateEventArgs { GameTime = gameTime });
-
-            // Pre Update on gestures
-            foreach (var gesture in Gestures)
-            {
-                gesture.PreUpdate(gameTime.Elapsed);
-            }
-
+            
             // Send events to input listeners
             foreach (var evt in events)
             {
@@ -364,11 +380,11 @@ namespace SiliconStudio.Xenko.Input
                 router.RouteEvent(evt);
             }
 
+            // Update virtual buttons
+            UpdateVirtualButtonValues();
+
             // Update gestures
-            foreach (var gesture in Gestures)
-            {
-                gesture.Update(gameTime.Elapsed);
-            }
+            UpdateGestureEvents(gameTime.Elapsed);
         }
 
         /// <summary>
@@ -394,12 +410,25 @@ namespace SiliconStudio.Xenko.Input
                 pair.Value.Listeners.Remove(listener);
             }
         }
-
+        
         /// <summary>
-        /// Gets or sets the value indicating if simultaneous multiple finger touches are enabled or not.
-        /// If not enabled only the events of one finger at a time are triggered.
+        /// Gets a binding value for the specified name and the specified config extract from the current <see cref="VirtualButtonConfigSet"/>.
         /// </summary>
-        public bool MultiTouchEnabled { get; set; } = false;
+        /// <param name="configIndex">An index to a <see cref="VirtualButtonConfig"/> stored in the <see cref="VirtualButtonConfigSet"/></param>
+        /// <param name="bindingName">Name of the binding.</param>
+        /// <returns>The value of the binding.</returns>
+        public virtual float GetVirtualButton(int configIndex, object bindingName)
+        {
+            if (VirtualButtonConfigSet == null || configIndex < 0 || configIndex >= virtualButtonValues.Count)
+            {
+                return 0.0f;
+            }
+
+            float value;
+            virtualButtonValues[configIndex].TryGetValue(bindingName, out value);
+            return value;
+        }
+
 
         public void OnApplicationPaused(object sender, EventArgs e)
         {
@@ -536,19 +565,33 @@ namespace SiliconStudio.Xenko.Input
 
         private void GesturesOnCollectionChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
         {
-            var gesture = trackingCollectionChangedEventArgs.Item as InputGesture;
-
             switch (trackingCollectionChangedEventArgs.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    gesture.OnAdded(this);
+                    StartGestureRecognition((GestureConfig)trackingCollectionChangedEventArgs.Item);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    gesture.OnRemoved();
+                    StopGestureRecognition((GestureConfig)trackingCollectionChangedEventArgs.Item);
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                case NotifyCollectionChangedAction.Reset:
+                    throw new NotSupportedException("ActivatedGestures collection was modified but the action was not supported by the system.");
+                case NotifyCollectionChangedAction.Move:
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(trackingCollectionChangedEventArgs.Action));
+                    throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private void StartGestureRecognition(GestureConfig config)
+        {
+            float aspectRatio = Pointer?.SurfaceAspectRatio ?? 1.0f; 
+            gestureConfigToRecognizer.Add(config, config.CreateRecognizer(aspectRatio));
+        }
+
+        private void StopGestureRecognition(GestureConfig config)
+        {
+            gestureConfigToRecognizer.Remove(config);
         }
 
         private void SetMousePosition(Vector2 normalizedPosition)
@@ -828,6 +871,47 @@ namespace SiliconStudio.Xenko.Input
                 gamePadRequestedIndex.Add(new List<IGamePadDevice>());
             }
             return gamePadRequestedIndex[gamepadIndex];
+        }
+
+
+        private void UpdateGestureEvents(TimeSpan elapsedGameTime)
+        {
+            currentGestureEvents.Clear();
+
+            foreach (var gestureRecognizer in gestureConfigToRecognizer.Values)
+                currentGestureEvents.AddRange(gestureRecognizer.ProcessPointerEvents(elapsedGameTime, PointerEvents));
+        }
+
+        private void UpdateVirtualButtonValues()
+        {
+            if (VirtualButtonConfigSet != null)
+            {
+                for (int i = 0; i < VirtualButtonConfigSet.Count; i++)
+                {
+                    var config = VirtualButtonConfigSet[i];
+
+                    Dictionary<object, float> mapNameToValue;
+                    if (i == virtualButtonValues.Count)
+                    {
+                        mapNameToValue = new Dictionary<object, float>();
+                        virtualButtonValues.Add(mapNameToValue);
+                    }
+                    else
+                    {
+                        mapNameToValue = virtualButtonValues[i];
+                    }
+
+                    mapNameToValue.Clear();
+
+                    if (config != null)
+                    {
+                        foreach (var name in config.BindingNames)
+                        {
+                            mapNameToValue[name] = config.GetValue(this, name);
+                        }
+                    }
+                }
+            }
         }
 
         private interface IInputEventRouter

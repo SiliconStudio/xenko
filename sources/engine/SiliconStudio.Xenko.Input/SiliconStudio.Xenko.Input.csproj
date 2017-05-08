@@ -84,31 +84,29 @@
     <Compile Include="GamePadLayouts\GamePadLayout.cs" />
     <Compile Include="GamePadLayouts\GamePadLayouts.cs" />
     <Compile Include="GamePadLayouts\GamePadLayoutXInput.cs" />
-    <Compile Include="Gestures\AxisButtonGesture.cs" />
-    <Compile Include="Gestures\AxisGestureEventArgs.cs" />
-    <Compile Include="Gestures\ButtonGesture.cs" />
-    <Compile Include="Gestures\ButtonGestureEventArgs.cs" />
-    <Compile Include="Gestures\CompoundAxisGesture.cs" />
-    <Compile Include="Gestures\ContinuousMotionGesture.cs" />
-    <Compile Include="Gestures\DirectionGesture.cs" />
-    <Compile Include="Gestures\DirectionGestureEventArgs.cs" />
-    <Compile Include="Gestures\DragGesture.cs" />
-    <Compile Include="Gestures\FlickGesture.cs" />
-    <Compile Include="Gestures\FourWayGesture.cs" />
-    <Compile Include="Gestures\GameControllerAxisGesture.cs" />
-    <Compile Include="Gestures\GameControllerButtonGesture.cs" />
-    <Compile Include="Gestures\IGameControllerDevice.cs" />
-    <Compile Include="Gestures\IGamePadGesture.cs" />
-    <Compile Include="Gestures\PovControllerGesture.cs" />
-    <Compile Include="Gestures\GamePadAxisGesture.cs" />
-    <Compile Include="Gestures\GamePadButtonGesture.cs" />
-    <Compile Include="Gestures\GestureEventArgs.cs" />
-    <Compile Include="Gestures\LongPressGesture.cs" />
-    <Compile Include="Gestures\MouseButtonGesture.cs" />
-    <Compile Include="Gestures\MouseMovementGesture.cs" />
-    <Compile Include="Gestures\PointerGesture.cs" />
-    <Compile Include="Gestures\TapGesture.cs" />
-    <Compile Include="Gestures\CompositeGesture.cs" />
+    <Compile Include="Gestures\GestureConfig.cs" />
+    <Compile Include="Gestures\GestureConfigComposite.cs" />
+    <Compile Include="Gestures\GestureConfigDrag.cs" />
+    <Compile Include="Gestures\GestureConfigFlick.cs" />
+    <Compile Include="Gestures\GestureConfigLongPress.cs" />
+    <Compile Include="Gestures\GestureConfigTap.cs" />
+    <Compile Include="Gestures\GestureEvent.cs" />
+    <Compile Include="Gestures\GestureEventComposite.cs" />
+    <Compile Include="Gestures\GestureEventDrag.cs" />
+    <Compile Include="Gestures\GestureEventFlick.cs" />
+    <Compile Include="Gestures\GestureEventLongPress.cs" />
+    <Compile Include="Gestures\GestureEventTap.cs" />
+    <Compile Include="Gestures\GestureEventTranslation.cs" />
+    <Compile Include="Gestures\GestureRecognizer.cs" />
+    <Compile Include="Gestures\GestureRecognizerComposite.cs" />
+    <Compile Include="Gestures\GestureRecognizerContMotion.cs" />
+    <Compile Include="Gestures\GestureRecognizerDrag.cs" />
+    <Compile Include="Gestures\GestureRecognizerFlick.cs" />
+    <Compile Include="Gestures\GestureRecognizerLongPress.cs" />
+    <Compile Include="Gestures\GestureRecognizerTap.cs" />
+    <Compile Include="Gestures\GestureShape.cs" />
+    <Compile Include="Gestures\GestureState.cs" />
+    <Compile Include="Gestures\GestureType.cs" />
     <Compile Include="IGamePadDevice.cs" />
     <Compile Include="IGamePadIndexAssignable.cs" />
     <Compile Include="InputManager.State.cs" />
@@ -119,22 +117,6 @@
     <Compile Include="ITextInputDevice.cs" />
     <Compile Include="IInputEventListener.cs" />
     <Compile Include="InputEvent.cs" />
-    <Compile Include="Mapping\ActionBinder.cs" />
-    <Compile Include="Mapping\AxisAction.cs" />
-    <Compile Include="Mapping\AxisActionBinder.cs" />
-    <Compile Include="Mapping\ButtonAction.cs" />
-    <Compile Include="Mapping\ButtonActionBinder.cs" />
-    <Compile Include="Mapping\DirectionAction.cs" />
-    <Compile Include="Mapping\DirectionActionBinder.cs" />
-    <Compile Include="Mapping\InputAction.cs" />
-    <Compile Include="Mapping\InputActionConfiguration.cs" />
-    <Compile Include="Mapping\InputActionMapping.cs" />
-    <Compile Include="Gestures\InputGesture.cs" />
-    <Compile Include="Gestures\AxisGesture.cs" />
-    <Compile Include="Gestures\KeyCombinationGesture.cs" />
-    <Compile Include="Gestures\KeyGesture.cs" />
-    <Compile Include="Gestures\MouseAxisGesture.cs" />
-    <Compile Include="Gestures\TwoWayGesture.cs" />
     <Compile Include="AccelerometerSensor.cs" />
     <Compile Include="CompassSensor.cs" />
     <Compile Include="GameControllerAxisEvent.cs" />
@@ -159,6 +141,17 @@
     <Compile Include="UWP\KeyboardUWP.cs" />
     <Compile Include="UWP\PointerUWP.cs" />
     <Compile Include="UWP\WinFormsKeys.cs" />
+    <Compile Include="VirtualButton\IVirtualButton.cs" />
+    <Compile Include="VirtualButton\VirtualButton.cs" />
+    <Compile Include="VirtualButton\VirtualButton.GamePad.cs" />
+    <Compile Include="VirtualButton\VirtualButton.Keyboard.cs" />
+    <Compile Include="VirtualButton\VirtualButton.Mouse.cs" />
+    <Compile Include="VirtualButton\VirtualButtonBinding.cs" />
+    <Compile Include="VirtualButton\VirtualButtonConfig.cs" />
+    <Compile Include="VirtualButton\VirtualButtonConfigSet.cs" />
+    <Compile Include="VirtualButton\VirtualButtonGroup.cs" />
+    <Compile Include="VirtualButton\VirtualButtonTwoWay.cs" />
+    <Compile Include="VirtualButton\VirtualButtonType.cs" />
     <Compile Include="Windows\DeviceObjectIdExtensions.cs" />
     <Compile Include="GamePadAxis.cs" />
     <Compile Include="GameControllerDeviceBase.cs" />
@@ -166,15 +159,6 @@
     <Compile Include="GamePadExtensions.cs" />
     <Compile Include="GamePadButton.cs" />
     <Compile Include="GamePadState.cs" />
-    <Compile Include="Gestures\PointerGestureEventArgs.cs" />
-    <Compile Include="Gestures\DragEventArgs.cs" />
-    <Compile Include="Gestures\FlickEventArgs.cs" />
-    <Compile Include="Gestures\LongPressEventArgs.cs" />
-    <Compile Include="Gestures\CompositeEventArgs.cs" />
-    <Compile Include="Gestures\TapEventArgs.cs" />
-    <Compile Include="Gestures\TranslationEventArgs.cs" />
-    <Compile Include="Gestures\GestureShape.cs" />
-    <Compile Include="Gestures\PointerGestureEventType.cs" />
     <Compile Include="IGravitySensor.cs" />
     <Compile Include="IGyroscopeSensor.cs" />
     <Compile Include="IGameControllerDevice.cs" />
@@ -259,9 +243,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Events\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

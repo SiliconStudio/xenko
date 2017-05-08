@@ -148,12 +148,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActionMappingTest.cs" />
     <Compile Include="AdvancedInputTest.cs" />
     <Compile Include="InputTestBase.cs" />
     <Compile Include="SensorGameTest.cs" />
     <Compile Include="TestDirection.cs" />
-    <Compile Include="TestGestures.cs" />
     <Compile Include="TestInput.cs" />
   </ItemGroup>
   <ItemGroup>

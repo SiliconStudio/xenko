@@ -1,7 +1,6 @@
-// Copyright (c) 2014-2016 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
-
-namespace SiliconStudio.Xenko.Input.Gestures
+namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// Gesture possible shapes.
@@ -12,12 +11,10 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// Represent a gesture that has its shape along the horizontal axis.
         /// </summary>
         Horizontal,
-
         /// <summary>
         /// Represent a gesture that has its shape along the vertical axis.
         /// </summary>
         Vertical,
-
         /// <summary>
         /// Represent a gesture that has a random shape.
         /// </summary>

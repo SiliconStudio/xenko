@@ -11,8 +11,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Regression;
-using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input.Tests
 {
@@ -29,7 +27,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         private string mouseButtonDown;
         private string mouseButtonReleased;
         private string mouseWheelDelta;
-        
+
         // pointers
         private readonly Queue<Tuple<Vector2, TimeSpan, int>> pointerPressed = new Queue<Tuple<Vector2, TimeSpan, int>>();
         private readonly Queue<Tuple<Vector2, TimeSpan, int>> pointerMoved = new Queue<Tuple<Vector2, TimeSpan, int>>();
@@ -43,20 +41,15 @@ namespace SiliconStudio.Xenko.Input.Tests
         private string longPressEvent;
         private string compositeEvent;
         private string tapEvent;
-        
-        private Tuple<FlickEventArgs, TimeSpan> lastFlickEvent = new Tuple<FlickEventArgs, TimeSpan>(null, TimeSpan.Zero);
-        private Tuple<LongPressEventArgs, TimeSpan> lastLongPressEvent = new Tuple<LongPressEventArgs, TimeSpan>(null, TimeSpan.Zero);
-        private Tuple<TapEventArgs, TimeSpan> lastTapEvent = new Tuple<TapEventArgs, TimeSpan>(null, TimeSpan.Zero);
-        private Tuple<DragEventArgs, TimeSpan> lastDragEvent = new Tuple<DragEventArgs, TimeSpan>(null, TimeSpan.Zero);
-        private Tuple<CompositeEventArgs, TimeSpan> lastCompositeEvent = new Tuple<CompositeEventArgs, TimeSpan>(null, TimeSpan.Zero);
 
-        private DragGesture dragGesture = new DragGesture();
-        private FlickGesture flickGesture = new FlickGesture();
-        private LongPressGesture longPressGesture = new LongPressGesture();
-        private CompositeGesture compositeGesture = new CompositeGesture();
-        private TapGesture tapGesture = new TapGesture();
+        private Tuple<GestureEvent, TimeSpan> lastFlickEvent = new Tuple<GestureEvent, TimeSpan>(null, TimeSpan.Zero);
+        private Tuple<GestureEvent, TimeSpan> lastLongPressEvent = new Tuple<GestureEvent, TimeSpan>(null, TimeSpan.Zero);
+        private Tuple<GestureEvent, TimeSpan> lastTapEvent = new Tuple<GestureEvent, TimeSpan>(null, TimeSpan.Zero);
 
         private readonly TimeSpan displayGestureDuration;
+        private VirtualButtonBinding b1;
+        private VirtualButtonBinding b2;
+        private VirtualButtonBinding b3;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Input"/> class.
@@ -72,6 +65,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.None;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 };
 
+            DefaultTextColor = Color.Black;
 
             displayPointerDuration = TimeSpan.FromSeconds(1.5f);
             displayGestureDuration = TimeSpan.FromSeconds(1f);
@@ -81,40 +75,31 @@ namespace SiliconStudio.Xenko.Input.Tests
         {
             await base.LoadContent();
 
-            // Add the gestures to the input manager
-            Input.Gestures.Add(dragGesture);
-            Input.Gestures.Add(flickGesture);
-            Input.Gestures.Add(longPressGesture);
-            Input.Gestures.Add(compositeGesture);
-            Input.Gestures.Add(tapGesture);
-
-            compositeGesture.Changed += (sender, args) =>
-            {
-                lastCompositeEvent = Tuple.Create(args, DrawTime.Total);
-            };
-
-            dragGesture.Drag += (sender, args) =>
-            {
-                lastDragEvent = Tuple.Create(args, DrawTime.Total);
-            };
-
-            flickGesture.Flick += (sender, args) =>
-            {
-                lastFlickEvent = Tuple.Create(args, DrawTime.Total);
-            };
-
-            longPressGesture.LongPress += (sender, args) =>
-            {
-                lastLongPressEvent = Tuple.Create(args, DrawTime.Total);
-            };
-
-            tapGesture.Tap += (sender, args) =>
-            {
-                lastTapEvent = Tuple.Create(args, DrawTime.Total);
-            };
+            // activate the gesture recognitions
+            Input.Gestures.Add(new GestureConfigDrag());
+            Input.Gestures.Add(new GestureConfigFlick());
+            Input.Gestures.Add(new GestureConfigLongPress());
+            Input.Gestures.Add(new GestureConfigComposite());
+            Input.Gestures.Add(new GestureConfigTap());
 
             // add a task to the task scheduler that will be executed asynchronously 
             Script.AddTask(UpdateInputStates);
+
+            // Create a new VirtualButtonConfigSet if none exists. 
+            Input.VirtualButtonConfigSet = Input.VirtualButtonConfigSet ?? new VirtualButtonConfigSet();
+
+            //Bind "M" key, GamePad "Start" button and left mouse button to a virtual button "MyButton".
+            b1 = new VirtualButtonBinding("MyButton", VirtualButton.Keyboard.M);
+            b2 = new VirtualButtonBinding("MyButton", VirtualButton.GamePad.Start);
+            b3 = new VirtualButtonBinding("MyButton", VirtualButton.Mouse.Left);
+
+            VirtualButtonConfig c = new VirtualButtonConfig();
+
+            c.Add(b1);
+            c.Add(b2);
+            c.Add(b3);
+
+            Input.VirtualButtonConfigSet.Add(c);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -127,6 +112,11 @@ namespace SiliconStudio.Xenko.Input.Tests
             GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             BeginSpriteBatch();
+
+            WriteLine($"b1: {b1.GetValue(Input)}");
+            WriteLine($"b2: {b2.GetValue(Input)}");
+            WriteLine($"b3: {b3.GetValue(Input)}");
+            LineOffset++;
 
             // render the keyboard key states
             WriteLine("Keyboard:");
@@ -141,7 +131,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             WriteLine("Mouse button down: " + mouseButtonDown, 1);
             WriteLine("Mouse button released: " + mouseButtonReleased, 1);
             WriteLine("Mouse wheel delta: " + mouseWheelDelta, 1);
-                
+
             // render the pointer states
             foreach (var tuple in pointerPressed)
                 DrawPointers(tuple, 1.5f, Color.Blue);
@@ -262,32 +252,47 @@ namespace SiliconStudio.Xenko.Input.Tests
                 }
 
                 // Gestures
+                foreach (var gestureEvent in Input.GestureEvents)
+                {
+                    switch (gestureEvent.Type)
+                    {
+                        case GestureType.Drag:
+                            var dragGestureEvent = (GestureEventDrag)gestureEvent;
+                            dragEvent = "Position = " + dragGestureEvent.TotalTranslation;
+                            break;
+                        case GestureType.Flick:
+                            lastFlickEvent = Tuple.Create(gestureEvent, currentTime);
+                            break;
+                        case GestureType.LongPress:
+                            lastLongPressEvent = Tuple.Create(gestureEvent, currentTime);
+                            break;
+                        case GestureType.Composite:
+                            var compositeGestureEvent = (GestureEventComposite)gestureEvent;
+                            compositeEvent = "Rotation = " + compositeGestureEvent.TotalRotation + " - Scale = " + compositeGestureEvent.TotalScale + " - Position = " + compositeGestureEvent.TotalTranslation;
+                            break;
+                        case GestureType.Tap:
+                            lastTapEvent = Tuple.Create(gestureEvent, currentTime);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+
                 if (currentTime - lastFlickEvent.Item2 < displayGestureDuration && lastFlickEvent.Item1 != null)
                 {
-                    var args = lastFlickEvent.Item1;
-                    flickEvent = $"Start Position = {args.StartPosition} - Speed = {args.AverageSpeed} - EventType = {args.EventType}";
+                    var flickGestureEvent = (GestureEventFlick)lastFlickEvent.Item1;
+                    flickEvent = " Start Position = " + flickGestureEvent.StartPosition + " - Speed = " + flickGestureEvent.AverageSpeed;
                 }
                 if (currentTime - lastLongPressEvent.Item2 < displayGestureDuration && lastLongPressEvent.Item1 != null)
                 {
-                    var args = lastLongPressEvent.Item1;
-                    longPressEvent = $"Position = {args.Position} - EventType = {args.EventType}";
+                    var longPressGestureEvent = (GestureEventLongPress)lastLongPressEvent.Item1;
+                    longPressEvent = " Position = " + longPressGestureEvent.Position;
                 }
                 if (currentTime - lastTapEvent.Item2 < displayGestureDuration && lastTapEvent.Item1 != null)
                 {
-                    var args = lastTapEvent.Item1;
-                    tapEvent = $"Position = {args.TapPosition} - number of taps = {args.TapCount} - EventType = {args.EventType}";
+                    var tapGestureEvent = (GestureEventTap)lastTapEvent.Item1;
+                    tapEvent = " Position = " + tapGestureEvent.TapPosition + " - number of taps = " + tapGestureEvent.NumberOfTaps;
                 }
-                if (currentTime - lastDragEvent.Item2 < displayGestureDuration && lastDragEvent.Item1 != null)
-                {
-                    var args = lastDragEvent.Item1;
-                    dragEvent = $"Position = {args.TotalTranslation} - EventType = {args.EventType}";
-                }
-                if (currentTime - lastCompositeEvent.Item2 < displayGestureDuration && lastCompositeEvent.Item1 != null)
-                {
-                    var args = lastCompositeEvent.Item1;
-                    compositeEvent = $"Rotation = {args.TotalRotation} - Scale = {args.TotalScale} - Position = {args.TotalTranslation} - EventType = {args.EventType}";
-                }
-
             }
         }
 

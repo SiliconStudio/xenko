@@ -9,36 +9,6 @@ namespace SiliconStudio.Xenko.Input
     public static class GameControllerUtils
     {
         /// <summary>
-        /// Applies a deadzone to an axis input value
-        /// </summary>
-        /// <param name="value">The axis input value</param>
-        /// <param name="deadZone">The deadzone treshold</param>
-        /// <returns>The axis value with the applied deadzone</returns>
-        public static float ClampDeadZone(float value, float deadZone)
-        {
-            if (value > 0.0f)
-            {
-                value -= deadZone;
-                if (value < 0.0f)
-                {
-                    value = 0.0f;
-                }
-            }
-            else
-            {
-                value += deadZone;
-                if (value > 0.0f)
-                {
-                    value = 0.0f;
-                }
-            }
-
-            // Renormalize the value according to the dead zone
-            value = value/(1.0f - deadZone);
-            return value < -1.0f ? -1.0f : value > 1.0f ? 1.0f : value;
-        }
-        
-        /// <summary>
         /// Returns the button next to this DPad button, going clockwise
         /// </summary>
         /// <param name="start">The starting button</param>
