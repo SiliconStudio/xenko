@@ -198,14 +198,9 @@ namespace SiliconStudio.Xenko.Input.Tests
                 // Keyboard
                 if (Input.HasKeyboard)
                 {
-                    foreach (var key in Input.KeyEvents.Where(keyEvent => keyEvent.IsDown))
-                        keyPressed += key + ", ";
-
-                    foreach (var key in Input.DownKeys)
-                        keyDown += key + ", ";
-
-                    foreach (var key in Input.KeyEvents.Where(keyEvent => !keyEvent.IsDown))
-                        keyReleased += key + ", ";
+                    keyPressed = string.Join(", ", Input.KeyEvents.Where(keyEvent => keyEvent.IsDown));
+                    keyDown = string.Join(", ", Input.DownKeys);
+                    keyReleased = string.Join(", ", Input.KeyEvents.Where(keyEvent => !keyEvent.IsDown));
                 }
 
                 // Mouse
@@ -216,11 +211,23 @@ namespace SiliconStudio.Xenko.Input.Tests
                     {
                         var button = (MouseButton)i;
                         if (Input.IsMouseButtonPressed(button))
-                            mouseButtonPressed += button + ", ";
+                        {
+                            if (mouseButtonPressed.Length > 0)
+                                mouseButtonPressed += ", ";
+                            mouseButtonPressed += button;
+                        }
                         if (Input.IsMouseButtonDown(button))
-                            mouseButtonDown += button + ", ";
+                        {
+                            if (mouseButtonDown.Length > 0)
+                                mouseButtonDown += ", ";
+                            mouseButtonDown += button;
+                        }
                         if (Input.IsMouseButtonReleased(button))
-                            mouseButtonReleased += button + ", ";
+                        {
+                            if (mouseButtonReleased.Length > 0)
+                                mouseButtonReleased += ", ";
+                            mouseButtonReleased += button;
+                        }
                     }
                 }
                 mouseWheelDelta = Input.MouseWheelDelta.ToString();
