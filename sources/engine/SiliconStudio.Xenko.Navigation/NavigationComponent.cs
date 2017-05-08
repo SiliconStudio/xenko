@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Navigation
         internal event EventHandler NavigationMeshChanged;
 
         /// <summary>
-        /// Finds a path from the entity's current location to <see cref="end"/>
+        /// Finds a path from the entity's current location to <paramref cref="end"/>
         /// </summary>
         /// <param name="end">The ending location of the pathfinding query</param>
         /// <param name="path">The resulting collection of waypoints for the found path, if any (at least 2 if a path was found)</param>
@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Navigation
         }
 
         /// <summary>
-        /// Finds a path from the entity's current location to <see cref="end"/>
+        /// Finds a path from the entity's current location to <paramref cref="end"/>
         /// </summary>
         /// <param name="end">The ending location of the pathfinding query</param>
         /// <param name="querySettings">Advanced settings to be provided to the navigation mesh query</param>
@@ -85,7 +85,7 @@ namespace SiliconStudio.Xenko.Navigation
         }
 
         /// <summary>
-        /// Finds a path from point <see cref="start"/> to <see cref="end"/>
+        /// Finds a path from point <paramref cref="start"/> to <paramref cref="end"/>
         /// </summary>
         /// <param name="start">The starting location of the pathfinding query</param>
         /// <param name="end">The ending location of the pathfinding query</param>
@@ -97,7 +97,7 @@ namespace SiliconStudio.Xenko.Navigation
         }
 
         /// <summary>
-        /// Finds a path from point <see cref="start"/> to <see cref="end"/>
+        /// Finds a path from point <paramref cref="start"/> to <paramref cref="end"/>
         /// </summary>
         /// <param name="start">The starting location of the pathfinding query</param>
         /// <param name="end">The ending location of the pathfinding query</param>
