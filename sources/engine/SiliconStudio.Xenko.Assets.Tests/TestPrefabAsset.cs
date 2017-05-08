@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -7,11 +7,20 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Tests
 {
+    [DataContract("TestEntityComponent")]
+    public sealed class TestEntityComponent : EntityComponent
+    {
+        public Entity EntityLink { get; set; }
+
+        public EntityComponent EntityComponentLink { get; set; }
+    }
+
     [TestFixture]
     public class TestPrefabAsset
     {
@@ -74,9 +83,9 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 originAsset.Hierarchy.Parts.Add(new EntityDesign(entity3));
                 originAsset.Hierarchy.Parts.Add(new EntityDesign(entity4));
 
-                originAsset.Hierarchy.RootPartIds.Add(entity1.Id);
-                originAsset.Hierarchy.RootPartIds.Add(entity3.Id);
-                originAsset.Hierarchy.RootPartIds.Add(entity4.Id);
+                originAsset.Hierarchy.RootParts.Add(entity1);
+                originAsset.Hierarchy.RootParts.Add(entity3);
+                originAsset.Hierarchy.RootParts.Add(entity4);
             }
             return originAsset;
         }
@@ -84,7 +93,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         private static void CheckGenericAsset(PrefabAsset originAsset, PrefabAsset newAsset)
         {
             // Check that we have exactly the same root entities
-            Assert.AreEqual(originAsset.Hierarchy.RootPartIds, newAsset.Hierarchy.RootPartIds);
+            Assert.AreEqual(originAsset.Hierarchy.RootParts, newAsset.Hierarchy.RootParts);
             Assert.AreEqual(originAsset.Hierarchy.Parts.Count, newAsset.Hierarchy.Parts.Count);
 
             foreach (var entityDesign in originAsset.Hierarchy.Parts)

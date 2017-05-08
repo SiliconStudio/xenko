@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioNETFrameworkVersion>v1.0</SiliconStudioNETFrameworkVersion>
   </PropertyGroup>
@@ -18,11 +18,6 @@
     -->
     <XenkoMTouchExtras></XenkoMTouchExtras>
   </PropertyGroup>
-
-  <Target Name="EnsureXamarinVersion" BeforeTargets="PrepareForBuild">
-    <Error Condition="'$(XamarinVersion)' == ''" Text="Xamarin iOS version was not found. Ensure HKEY_LOCAL_MACHINE\SOFTWARE\Xamarin\iOS\InstalledVersion is properly set."/>
-    <Error Condition="($(XamarinIOSMajorVersion) == 8 And $(XamarinIOSMinorVersion) &lt; 10) Or $(XamarinIOSMajorVersion) &lt; 8" Text="Xamarin iOS version less than 8.10 is not compatible with Xenko. Please upgrade to 8.10."/>
-  </Target>
 
   <!-- Rewrite BuildDependsOn and ResolveReferencesDependsOn -->
   <PropertyGroup Condition=" '$(SiliconStudioIsExecutable)' == 'true'">

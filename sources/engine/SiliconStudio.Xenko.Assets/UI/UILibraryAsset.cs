@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -72,13 +72,13 @@ namespace SiliconStudio.Xenko.Assets.UI
             var instance = (UILibraryAsset)CreateDerivedAsset(targetLocation, out idRemapping);
 
             var rootElementId = idRemapping[elementId];
-            if (!instance.Hierarchy.RootPartIds.Contains(rootElementId))
+            if (instance.Hierarchy.RootParts.All(x => x.Id != rootElementId))
                 throw new ArgumentException(@"The given id cannot be found in the root parts of this library.", nameof(elementId));
 
             instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
 
             var result = new AssetCompositeHierarchyData<UIElementDesign, UIElement>();
-            result.RootPartIds.Add(rootElementId);
+            result.RootParts.Add(instance.Hierarchy.Parts[rootElementId].UIElement);
             result.Parts.Add(instance.Hierarchy.Parts[rootElementId]);
             foreach (var element in this.EnumerateChildPartDesigns(instance.Hierarchy.Parts[rootElementId], instance.Hierarchy, true))
             {
