@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Input
             SetIndexInternal(index);
             Id = id;
 
-            // Used to create a produc ID that is consistent with SDL2's method of generating them
+            // Used to create a product ID that matches SDL2's method of generating them
             // Taken from SDL 2.0.5 (src\joystick\windows\SDL_xinputjoystick.c:149)
             var subType = controller.GetCapabilities(DeviceQueryType.Any).SubType;
             var pidBytes = Encoding.ASCII.GetBytes("xinput").ToList();
@@ -44,8 +44,6 @@ namespace SiliconStudio.Xenko.Input
         {
             if (Disconnected == null)
                 throw new InvalidOperationException("Something should handle controller disconnect");
-
-            Disconnected.Invoke(this, null);
         }
 
         public override string Name => $"XInput GamePad {Index}";
@@ -104,7 +102,7 @@ namespace SiliconStudio.Xenko.Input
 
             if (!controller.IsConnected)
             {
-                Dispose();
+                DisconnectAndDispose();
             }
         }
 
@@ -123,7 +121,7 @@ namespace SiliconStudio.Xenko.Input
             }
             catch (SharpDXException)
             {
-                Dispose();
+                DisconnectAndDispose();
             }
         }
 
@@ -150,6 +148,12 @@ namespace SiliconStudio.Xenko.Input
             axisEvent.Axis = axis;
             state.Update(axisEvent);
             return axisEvent;
+        }
+
+        private void DisconnectAndDispose()
+        {
+            Disconnected?.Invoke(this, null);
+            Dispose();
         }
     }
 }
