@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Navigation
         }
 
         /// <summary>
-        /// Generates vertices and indices for an infinite size, limited by the <see cref="size"/> parameter
+        /// Generates vertices and indices for an infinite size, limited by the <paramref cref="size"/> parameter
         /// </summary>
         /// <param name="plane"></param>
         /// <param name="size">the amount from the origin the plane points are placed</param>
