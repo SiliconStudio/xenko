@@ -19,6 +19,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         override void PrepareEnvironmentLight()
         {
+            base.PrepareEnvironmentLight();
+
             var ambientAccessibility = streams.matAmbientOcclusion;
 
             // -----------------------------------------

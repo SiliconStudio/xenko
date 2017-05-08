@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         {
             if (part == null) throw new ArgumentNullException(nameof(part));
             var parent = GetParent(part);
-            return parent?.VisualChildren.IndexOf(x => x == part) ?? Hierarchy.RootPartIds.IndexOf(part.Id);
+            return parent?.VisualChildren.IndexOf(x => x == part) ?? Hierarchy.RootParts.IndexOf(part);
         }
 
         /// <inheritdoc/>
