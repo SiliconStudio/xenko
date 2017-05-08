@@ -29,7 +29,6 @@ namespace SiliconStudio.Xenko.Physics
             : base(registry)
         {
             UpdateOrder = -1000; //make sure physics runs before everything
-            registry.AddService(typeof(IPhysicsSystem), this);
 
             Enabled = true; //enabled by default
         }

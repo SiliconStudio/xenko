@@ -27,9 +27,6 @@ namespace SiliconStudio.Xenko.Audio
             : base(registry)
         {
             Enabled = true;
-
-            registry.AddService(typeof(AudioSystem), this);
-            registry.AddService(typeof(IAudioEngineProvider), this);
         }
 
         /// <summary>

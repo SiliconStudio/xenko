@@ -52,8 +52,6 @@ namespace SiliconStudio.Xenko.Games
             currentlyUpdatingGameSystems = new List<KeyValuePair<IUpdateable, ProfilingKey>>();
             contentableGameSystems = new List<IContentable>();
 
-            registry.AddService(typeof(IGameSystemCollection), this);
-
             // Register events on GameSystems.
             CollectionChanged += GameSystems_CollectionChanged;
         }

@@ -208,8 +208,6 @@ namespace SiliconStudio.Xenko.Input
             ActivatedGestures = new GestureConfigCollection();
             ActivatedGestures.CollectionChanged += ActivatedGesturesChanged;
 
-            Services.AddService(typeof(InputManager), this);
-
             Accelerometer = new AccelerometerSensor();
             Compass = new CompassSensor();
             Gyroscope = new GyroscopeSensor();
