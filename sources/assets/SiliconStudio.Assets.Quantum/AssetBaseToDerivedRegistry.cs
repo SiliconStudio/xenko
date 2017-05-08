@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets.Quantum
             if (baseValue == null)
                 return;
 
-            if (!propertyGraph.IsObjectReference(baseNode, Index.Empty, baseNode.Retrieve()))
+            if (!propertyGraph.Definition.IsObjectReference(baseNode, Index.Empty, baseNode.Retrieve()))
             {
                 if (baseValue is IIdentifiable)
                 {
@@ -45,7 +45,7 @@ namespace SiliconStudio.Assets.Quantum
                         continue;
 
                     baseValue = target.TargetNode?.Retrieve();
-                    if (!propertyGraph.IsObjectReference(baseNode, target.Index, baseNode.Retrieve(target.Index)))
+                    if (!propertyGraph.Definition.IsObjectReference(baseNode, target.Index, baseNode.Retrieve(target.Index)))
                     {
                         if (baseValue is IIdentifiable)
                         {

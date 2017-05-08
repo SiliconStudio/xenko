@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace SiliconStudio.Assets.Quantum
     public class AssetGraphNodeChangeListener : GraphNodeChangeListener
     {
         public AssetGraphNodeChangeListener(IGraphNode rootNode, [NotNull] AssetPropertyGraph propertyGraph)
-            : base(rootNode, member => !propertyGraph.IsObjectReference(member, Index.Empty, member.Retrieve()), (node, index) => !propertyGraph.IsObjectReference(node, index, node.Retrieve(index)))
+            : base(rootNode, member => !propertyGraph.Definition.IsObjectReference(member, Index.Empty, member.Retrieve()), (node, index) => !propertyGraph.Definition.IsObjectReference(node, index, node.Retrieve(index)))
         {
         }
     }

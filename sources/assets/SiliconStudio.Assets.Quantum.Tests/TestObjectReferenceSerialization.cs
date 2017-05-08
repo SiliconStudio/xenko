@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System.IO;
 using NUnit.Framework;
@@ -45,7 +45,7 @@ MyNonIdObjects: []
         [Test]
         public void TestSimpleReference()
         {
-            Types.AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) =>
+            Types.AssetWithRefPropertyGraphDefinition.IsObjectReferenceFunc = (targetNode, index) =>
             {
                 return (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
             };

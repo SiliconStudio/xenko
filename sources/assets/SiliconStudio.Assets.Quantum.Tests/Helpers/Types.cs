@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -162,14 +162,9 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
             public int Number { get; set; }
         }
 
-        [AssetPropertyGraph(typeof(MyAssetWithRef))]
-        public class AssetWithRefPropertyGraph : MyAssetBasePropertyGraph
+        [AssetPropertyGraphDefinition(typeof(MyAssetWithRef))]
+        public class AssetWithRefPropertyGraphDefinition : AssetPropertyGraphDefinition
         {
-            public AssetWithRefPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
-                : base(container, assetItem, logger)
-            {
-            }
-
             public static Func<IGraphNode, Index, bool> IsObjectReferenceFunc { get; set; }
 
             public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
@@ -178,19 +173,14 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
             }
         }
 
-        [AssetPropertyGraph(typeof(MyAssetWithRef2))]
-        public class AssetWithRefPropertyGraph2 : MyAssetBasePropertyGraph
+        [AssetPropertyGraphDefinition(typeof(MyAssetWithRef2))]
+        public class AssetWithRefPropertyGraph2 : AssetPropertyGraphDefinition
         {
-            public AssetWithRefPropertyGraph2(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
-                : base(container, assetItem, logger)
-            {
-            }
-
             public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
             {
                 if ((targetNode as IMemberNode)?.Name == nameof(MyAssetWithRef2.Reference))
                     return true;
-                if ((targetNode as IObjectNode)?.Retrieve() == ((MyAssetWithRef2)Asset).References)
+                if ((targetNode as IObjectNode)?.Retrieve() is List<MyReferenceable>)
                     return true;
 
                 return false;

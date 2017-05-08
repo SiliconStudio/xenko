@@ -17,12 +17,12 @@ namespace SiliconStudio.Assets.Quantum
 
         protected override bool ShouldVisitMemberTarget(IMemberNode member)
         {
-            return !propertyGraph.IsObjectReference(member, Index.Empty, member.Retrieve()) && base.ShouldVisitMemberTarget(member);
+            return !propertyGraph.Definition.IsObjectReference(member, Index.Empty, member.Retrieve()) && base.ShouldVisitMemberTarget(member);
         }
 
         protected override bool ShouldVisitTargetItem(IObjectNode collectionNode, Index index)
         {
-            return !propertyGraph.IsObjectReference(collectionNode, index, collectionNode.Retrieve(index)) && base.ShouldVisitTargetItem(collectionNode, index);
+            return !propertyGraph.Definition.IsObjectReference(collectionNode, index, collectionNode.Retrieve(index)) && base.ShouldVisitTargetItem(collectionNode, index);
         }
     }
 }

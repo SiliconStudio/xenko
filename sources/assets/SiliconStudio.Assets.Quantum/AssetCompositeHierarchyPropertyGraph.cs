@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -405,22 +405,6 @@ namespace SiliconStudio.Assets.Quantum
             }
 
             return clonedHierarchy;
-        }
-
-        /// <inheritdoc/>
-        public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
-        {
-            if (targetNode is IObjectNode && index.IsEmpty)
-                return base.IsObjectReference(targetNode, index, value);
-
-            if (value is TAssetPart)
-            {
-                // Check if we're the part referenced by a part design - other cases are references
-                var member = targetNode as IMemberNode;
-                return member == null || member.Parent.Type != typeof(TAssetPartDesign);
-            }
-
-            return base.IsObjectReference(targetNode, index, value);
         }
 
         /// <inheritdoc/>

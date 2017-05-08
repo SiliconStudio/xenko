@@ -39,7 +39,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// <inheritdoc/>
         protected override void VisitMemberNode(IAssetMemberNode memberNode, int inNonIdentifiableType)
         {
-            if (propertyGraph.IsObjectReference(memberNode, Index.Empty, memberNode.Retrieve()))
+            if (propertyGraph.Definition.IsObjectReference(memberNode, Index.Empty, memberNode.Retrieve()))
             {
                 var value = memberNode.Retrieve();
                 if (value == null)
@@ -63,7 +63,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
 
             foreach (var index in ((IAssetObjectNodeInternal)objectNode).Indices)
             {
-                if (!propertyGraph.IsObjectReference(objectNode, index, objectNode.Retrieve(index)))
+                if (!propertyGraph.Definition.IsObjectReference(objectNode, index, objectNode.Retrieve(index)))
                     continue;
 
                 var itemPath = ConvertPath(CurrentPath, inNonIdentifiableType);
