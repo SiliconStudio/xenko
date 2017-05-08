@@ -218,7 +218,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override IInputSource Source { get; }
 
-        void HandleKey(ButtonState state, KeyRoutedEventArgs args)
+        void HandleKey(bool state, KeyRoutedEventArgs args)
         {
             // If our EditText TextBox is active, let's ignore all key events
             if (((GameContextUWP)game.Context).EditTextBox.Parent != null)
@@ -251,7 +251,7 @@ namespace SiliconStudio.Xenko.Input
             if (!mapKeys.TryGetValue(virtualKey, out xenkoKey))
                 return;
 
-            if (state == ButtonState.Down)
+            if (state)
             {
                 HandleKeyDown(xenkoKey);
             }
@@ -263,12 +263,12 @@ namespace SiliconStudio.Xenko.Input
         
         private void UIControlOnKeyDown(object sender, KeyRoutedEventArgs args)
         {
-            HandleKey(ButtonState.Down, args);
+            HandleKey(true, args);
         }
 
         private void UIControlOnKeyUp(object sender, KeyRoutedEventArgs args)
         {   
-            HandleKey(ButtonState.Up, args);
+            HandleKey(false, args);
         }
 
         private static void AddKeys(WinFormsKeys fromKey, Keys toKey)
