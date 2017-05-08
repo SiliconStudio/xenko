@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// <summary>
     /// A variable-count tap gesture recognizer
     /// </summary>
-    public class TapGesture : PointerGestureBase
+    public class TapGesture : PointerGesture
     {
         /// <summary>
         /// This value represents the maximum amount of time that the user can stay touching the screen before taking off its finger. 

@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// </summary>
         /// <param name="inputManager">The <see cref="InputManager"/> to monitor for input events</param>
         /// <param name="usedGestures">A set of already used gesture that are filtered out from the input, can be null</param>
-        public ButtonActionBinder(InputManager inputManager, HashSet<IInputGesture> usedGestures = null) : base(inputManager, usedGestures)
+        public ButtonActionBinder(InputManager inputManager, HashSet<InputGesture> usedGestures = null) : base(inputManager, usedGestures)
         {
             inputManager.AddListener(this);
         }
@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             }
         }
 
-        protected void TryBindButton(IButtonGesture button)
+        protected void TryBindButton(ButtonGesture button)
         {
             // Filter out duplicate buttons
             if (UsedGestures.Contains(button)) return;

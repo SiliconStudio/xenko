@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// <para>A composite gesture is a transformation which is a composition of a translation, a rotation and a scale.
     /// It is performed by using two fingers and performing translation, scale and rotation motions.</para>
     /// <para>A composite gesture can only be composed of 2 fingers. 
-    /// Trying to modify the <see cref="PointerGestureBase.RequiredFingerCount"/> field will throw an exception.</para></remarks>
+    /// Trying to modify the <see cref="PointerGesture.RequiredFingerCount"/> field will throw an exception.</para></remarks>
     public class CompositeGesture : ContinuousMotionGesture
     {
         private int firstFingerId;

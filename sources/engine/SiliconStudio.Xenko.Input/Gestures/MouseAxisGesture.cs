@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// </summary>
     [DataContract]
     [Display("Mouse Axis")]
-    public class MouseAxisGesture : AxisGestureBase, IInputEventListener<PointerEvent>, IInputEventListener<MouseWheelEvent>
+    public class MouseAxisGesture : AxisGesture, IInputEventListener<PointerEvent>, IInputEventListener<MouseWheelEvent>
     {
         private float lastValue = 0.0f;
         private IInputDevice lastDevice;

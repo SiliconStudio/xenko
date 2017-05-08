@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// </summary>
     [DataContract]
     [Display("Key")]
-    public class KeyGesture : ButtonGestureBase, IInputEventListener<KeyEvent>
+    public class KeyGesture : ButtonGesture, IInputEventListener<KeyEvent>
     {
         /// <summary>
         /// Key used for this gesture

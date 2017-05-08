@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// </summary>
     [DataContract]
     [Display("Key Combination")]
-    public class KeyCombinationGesture : ButtonGestureBase, IInputEventListener<KeyEvent>
+    public class KeyCombinationGesture : ButtonGesture, IInputEventListener<KeyEvent>
     {
         /// <summary>
         /// The keys that are checked. When all these keys are pressed, the button evaluates to true.

@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// </summary>
         /// <param name="inputManager">The <see cref="InputManager"/> to monitor for input events</param>
         /// <param name="usedGestures">A set of already used gesture that are filtered out from the input, can be null</param>
-        public AxisActionBinder(InputManager inputManager, HashSet<IInputGesture> usedGestures = null) : base(inputManager, usedGestures)
+        public AxisActionBinder(InputManager inputManager, HashSet<InputGesture> usedGestures = null) : base(inputManager, usedGestures)
         {
             inputManager.AddListener(this);
         }
@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             }
         }
 
-        protected virtual void TryBindAxis(IAxisGesture axis, bool isBidirectional = true)
+        protected virtual void TryBindAxis(AxisGesture axis, bool isBidirectional = true)
         {
             // Filter out duplicate axes
             if (UsedGestures.Contains(axis)) return;
@@ -137,7 +137,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             {
                 ((CompoundAxisGesture)TargetGesture).Gestures.Add(axis);
                 // Invert axis since this is now being used as the negative trigger
-                var scalable = axis as AxisGestureBase;
+                var scalable = axis as AxisGesture;
                 if (scalable != null) scalable.Inverted = !scalable.Inverted;
                 Advance(1);
             }
@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             return TargetGesture as TwoWayGesture;
         }
 
-        protected virtual void TryBindSingleButton(IButtonGesture button)
+        protected virtual void TryBindSingleButton(ButtonGesture button)
         {
             // Filter out duplicate buttons
             if (UsedGestures.Contains(button)) return;

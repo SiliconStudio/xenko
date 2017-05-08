@@ -13,18 +13,18 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// An axis made up out of multiple child axis gestures, for example a positive and negative gamepad trigger to make a full axis
     /// </summary>
     [DataContract]
-    public class CompoundAxisGesture : AxisGestureBase
+    public class CompoundAxisGesture : AxisGesture
     {
         private readonly Dictionary<object, float> states = new Dictionary<object, float>();
         
         public CompoundAxisGesture()
         {
-            Gestures = new TrackingCollection<IAxisGesture>();
+            Gestures = new TrackingCollection<AxisGesture>();
             Gestures.CollectionChanged += GesturesOnCollectionChanged;
         }
         
         // Child axis gestures
-        public TrackingCollection<IAxisGesture> Gestures { get; }
+        public TrackingCollection<AxisGesture> Gestures { get; }
         
         private void GestureOnChanged(object sender, AxisGestureEventArgs axisGestureEventArgs)
         {
@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
 
         private void GesturesOnCollectionChanged(object sender, TrackingCollectionChangedEventArgs args)
         {
-            var axis = (IAxisGesture)args.Item;
+            var axis = (AxisGesture)args.Item;
 
             switch (args.Action)
             {

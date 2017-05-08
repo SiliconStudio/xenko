@@ -86,11 +86,11 @@
     <Compile Include="GamePadLayouts\GamePadLayoutXInput.cs" />
     <Compile Include="Gestures\AxisButtonGesture.cs" />
     <Compile Include="Gestures\AxisGestureEventArgs.cs" />
-    <Compile Include="Gestures\ButtonGestureBase.cs" />
+    <Compile Include="Gestures\ButtonGesture.cs" />
     <Compile Include="Gestures\ButtonGestureEventArgs.cs" />
     <Compile Include="Gestures\CompoundAxisGesture.cs" />
     <Compile Include="Gestures\ContinuousMotionGesture.cs" />
-    <Compile Include="Gestures\DirectionGestureBase.cs" />
+    <Compile Include="Gestures\DirectionGesture.cs" />
     <Compile Include="Gestures\DirectionGestureEventArgs.cs" />
     <Compile Include="Gestures\DragGesture.cs" />
     <Compile Include="Gestures\FlickGesture.cs" />
@@ -103,11 +103,10 @@
     <Compile Include="Gestures\GamePadAxisGesture.cs" />
     <Compile Include="Gestures\GamePadButtonGesture.cs" />
     <Compile Include="Gestures\GestureEventArgs.cs" />
-    <Compile Include="Gestures\IDirectionGesture.cs" />
     <Compile Include="Gestures\LongPressGesture.cs" />
     <Compile Include="Gestures\MouseButtonGesture.cs" />
     <Compile Include="Gestures\MouseMovementGesture.cs" />
-    <Compile Include="Gestures\PointerGestureBase.cs" />
+    <Compile Include="Gestures\PointerGesture.cs" />
     <Compile Include="Gestures\TapGesture.cs" />
     <Compile Include="Gestures\CompositeGesture.cs" />
     <Compile Include="IGamePadDevice.cs" />
@@ -120,8 +119,6 @@
     <Compile Include="ITextInputDevice.cs" />
     <Compile Include="IInputEventListener.cs" />
     <Compile Include="InputEvent.cs" />
-    <Compile Include="Gestures\IAxisGesture.cs" />
-    <Compile Include="Gestures\IButtonGesture.cs" />
     <Compile Include="Mapping\ActionBinder.cs" />
     <Compile Include="Mapping\AxisAction.cs" />
     <Compile Include="Mapping\AxisActionBinder.cs" />
@@ -130,11 +127,10 @@
     <Compile Include="Mapping\DirectionAction.cs" />
     <Compile Include="Mapping\DirectionActionBinder.cs" />
     <Compile Include="Mapping\InputAction.cs" />
-    <Compile Include="Gestures\IInputGesture.cs" />
     <Compile Include="Mapping\InputActionConfiguration.cs" />
     <Compile Include="Mapping\InputActionMapping.cs" />
-    <Compile Include="Gestures\InputGestureBase.cs" />
-    <Compile Include="Gestures\AxisGestureBase.cs" />
+    <Compile Include="Gestures\InputGesture.cs" />
+    <Compile Include="Gestures\AxisGesture.cs" />
     <Compile Include="Gestures\KeyCombinationGesture.cs" />
     <Compile Include="Gestures\KeyGesture.cs" />
     <Compile Include="Gestures\MouseAxisGesture.cs" />
@@ -263,7 +259,9 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Events\" />
+  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

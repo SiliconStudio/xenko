@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// </summary>
     [DataContract]
     [Display("Gamepad Axis")]
-    public class GamePadAxisGesture : AxisGestureBase, IInputEventListener<GamePadAxisEvent>, IGamePadGesture
+    public class GamePadAxisGesture : AxisGesture, IInputEventListener<GamePadAxisEvent>, IGamePadGesture
     {
         /// <summary>
         /// The gamepad axis identifier

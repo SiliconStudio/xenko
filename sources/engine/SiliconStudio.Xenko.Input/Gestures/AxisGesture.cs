@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// Base class for axis gestures
     /// </summary>
     [DataContract]
-    public abstract class AxisGestureBase : InputGestureBase, IAxisGesture
+    public abstract class AxisGesture : InputGesture
     {
         /// <summary>
         /// Should the axis be inverted

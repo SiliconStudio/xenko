@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// </summary>
     [DataContract]
     [Display("Mouse Movement")]
-    public class MouseMovementGesture : DirectionGestureBase, IInputEventListener<PointerEvent>
+    public class MouseMovementGesture : DirectionGesture, IInputEventListener<PointerEvent>
     {
         private Vector2 lastValue = Vector2.Zero;
         private IInputDevice lastDevice;

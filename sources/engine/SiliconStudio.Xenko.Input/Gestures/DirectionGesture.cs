@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// Base class for direction gestures
     /// </summary>
     [DataContract]
-    public abstract class DirectionGestureBase : InputGestureBase, IDirectionGesture
+    public abstract class DirectionGesture : InputGesture
     {
         /// <summary>
         /// Should the direction be inverted

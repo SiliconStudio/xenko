@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// </summary>
     [DataContract]
     [Display("Point-of-view Switch")]
-    public class PovControllerGesture : DirectionGestureBase, IInputEventListener<PovControllerEvent>, IGameControllerGesture
+    public class PovControllerGesture : DirectionGesture, IInputEventListener<PovControllerEvent>, IGameControllerGesture
     {
         /// <summary>
         /// The index of the pov controller to use

@@ -7,7 +7,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input.Gestures
 {
-    public abstract class ContinuousMotionGesture : PointerGestureBase
+    public abstract class ContinuousMotionGesture : PointerGesture
     {
         protected bool GestureBeganEventSent { get; private set; }
         

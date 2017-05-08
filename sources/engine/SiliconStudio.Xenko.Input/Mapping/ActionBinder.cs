@@ -8,21 +8,21 @@ using SiliconStudio.Xenko.Input.Gestures;
 namespace SiliconStudio.Xenko.Input.Mapping
 {
     /// <summary>
-    /// Receives a single or chain of inputs in order to create a <see cref="IInputGesture"/> that represents the given input
+    /// Receives a single or chain of inputs in order to create a <see cref="InputGesture"/> that represents the given input
     /// </summary>
     public abstract class ActionBinder : IInputEventListener, IDisposable
     {
         protected readonly InputManager InputManager;
-        protected readonly HashSet<IInputGesture> UsedGestures;
+        protected readonly HashSet<InputGesture> UsedGestures;
 
         /// <summary>
         /// Initialize the <see cref="ActionBinder"/> base class
         /// </summary>
         /// <param name="inputManager">The input manager that can be used to watch for inputs</param>
         /// <param name="usedGestures">A set of already used gesture that are filtered out from the input, can be null</param>
-        protected ActionBinder(InputManager inputManager, HashSet<IInputGesture> usedGestures = null)
+        protected ActionBinder(InputManager inputManager, HashSet<InputGesture> usedGestures = null)
         {
-            UsedGestures = usedGestures ?? new HashSet<IInputGesture>();
+            UsedGestures = usedGestures ?? new HashSet<InputGesture>();
             InputManager = inputManager;
         }
 
@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// The generated gesture
         /// </summary>
-        public IInputGesture TargetGesture { get; protected set; }
+        public InputGesture TargetGesture { get; protected set; }
 
         /// <summary>
         /// Moves the input being detected by a given amount (default = 1). 

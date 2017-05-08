@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// Base class for button gestures
     /// </summary>
     [DataContract]
-    public abstract class ButtonGestureBase : InputGestureBase, IButtonGesture
+    public abstract class ButtonGesture : InputGesture
     {
         private bool lastState;
 

@@ -30,10 +30,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// </summary>
         public Vector2 LastState { get; private set; }
 
-        public TrackingCollection<IDirectionGesture> Gestures { get; } = new TrackingCollection<IDirectionGesture>();
+        public TrackingCollection<DirectionGesture> Gestures { get; } = new TrackingCollection<DirectionGesture>();
 
         [DataMemberIgnore]
-        public override IReadOnlyList<IInputGesture> ReadOnlyGestures => Gestures;
+        public override IReadOnlyList<InputGesture> ReadOnlyGestures => Gestures;
 
         /// <summary>
         /// Raised when the direction state changed
@@ -59,9 +59,9 @@ namespace SiliconStudio.Xenko.Input.Mapping
             return $"Direction Action \"{MappingName}\", {nameof(LastState)}: {LastState}";
         }
 
-        public override bool TryAddGesture(IInputGesture gesture)
+        public override bool TryAddGesture(InputGesture gesture)
         {
-            var item = gesture as IDirectionGesture;
+            var item = gesture as DirectionGesture;
             if (item != null)
             {
                 Gestures.Add(item);
@@ -76,15 +76,15 @@ namespace SiliconStudio.Xenko.Input.Mapping
             Gestures.Clear();
         }
 
-        protected override void OnGestureAdded(InputGestureBase gesture)
+        protected override void OnGestureAdded(InputGesture gesture)
         {
-            var direction = (IDirectionGesture)gesture;
+            var direction = (DirectionGesture)gesture;
             direction.Changed += DirectionOnChanged;
         }
 
-        protected override void OnGestureRemoved(InputGestureBase gesture)
+        protected override void OnGestureRemoved(InputGesture gesture)
         {
-            var direction = (IDirectionGesture)gesture;
+            var direction = (DirectionGesture)gesture;
             direction.Changed -= DirectionOnChanged;
         }
 
