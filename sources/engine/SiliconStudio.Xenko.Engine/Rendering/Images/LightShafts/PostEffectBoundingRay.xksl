@@ -18,7 +18,7 @@ shader PostEffectBoundingRay<int SampleCount> : ImageEffectShader, DepthBase, Tr
 
     int HashXYZ(float3 input)
     {
-        return int(input.z * 300 + input.x * 1002 + input.y * 6007 * 100);
+        return int(input.z * 313 + input.x * 1039 + input.y * 638359);
     }
 
     float RayStepJitter(float3 input, float stepSize) 
@@ -50,8 +50,8 @@ shader PostEffectBoundingRay<int SampleCount> : ImageEffectShader, DepthBase, Tr
             // Compute world space direction and position of the ending position
             float4 positionClipSpace = float4((1.0 - streams.TexCoord.xy * 2.0) * float2(-1.0f, 1.0f), maxZ, 1.0f);
             float4 positionVS = mul(positionClipSpace, ProjectionInverse);
+            positionVS.xyzw /= positionVS.w;
             float4 endingPosition = mul(positionVS, ViewInverse);
-            endingPosition /= endingPosition.w;
             float4 directionWS = float4(endingPosition.xyz - Eye.xyz, 0);
             directionWS = normalize(directionWS);
             
@@ -72,7 +72,7 @@ shader PostEffectBoundingRay<int SampleCount> : ImageEffectShader, DepthBase, Tr
                 stepSize = (maxDistance - minDistance) / (float)SampleCount;
 
                 // Starting position
-                float4 positionWS = endingPosition + (RayStepJitter(positionVS.xyz / positionVS.w, stepSize)-stepRange) * directionWS;
+                float4 positionWS = endingPosition + (RayStepJitter(positionVS.xyz, stepSize)-stepRange) * directionWS;
                 streams.DepthVS = minDistance;
 
                 for(int i = 0; i < SampleCount; i++) 

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -21,7 +21,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             // 2 = Fix projection issues
             // 3 = Simplifiy density parameters
-            CurrentVersion = 3;
+            // 4 = Change random jitter position hash
+            CurrentVersion = 4;
 
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
             GraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
