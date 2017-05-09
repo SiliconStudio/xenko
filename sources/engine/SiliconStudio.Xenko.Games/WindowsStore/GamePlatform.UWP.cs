@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -26,7 +26,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Xenko.Graphics;
 using Windows.ApplicationModel;
-//using Windows.UI.Xaml;
+using Windows.UI.Xaml;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -37,29 +37,31 @@ namespace SiliconStudio.Xenko.Games
             // TODO Implement proper application lifecycle:
             // https://docs.microsoft.com/en-us/windows/uwp/launch-resume/app-lifecycle
 
-            //            Application.Current.Suspending += CurrentOnSuspending;
-            //           Application.Current.Resuming += CurrentOnResuming;
+            // TODO With d3d (CoreWindow) implementation this throws
+            //  System.Exception: 'Catastrophic failure (Exception from HRESULT: 0x8000FFFF (E_UNEXPECTED))'
+//            Application.Current.Suspending += CurrentOnSuspending;
+//            Application.Current.Resuming += CurrentOnResuming;
         }
 
-        //        private void CurrentOnResuming(object sender, object o)
-        //        {
-        //            OnResume(sender, null);
-        //        }
+        private void CurrentOnResuming(object sender, object o)
+        {
+            OnResume(sender, null);
+        }
 
-        //private void CurrentOnSuspending(object sender, SuspendingEventArgs suspendingEventArgs)
-        //{
-        //    var deferral = suspendingEventArgs.SuspendingOperation.GetDeferral();
+        private void CurrentOnSuspending(object sender, SuspendingEventArgs suspendingEventArgs)
+        {
+            var deferral = suspendingEventArgs.SuspendingOperation.GetDeferral();
 
-        //    using (var device3 = game.GraphicsDevice.NativeDevice.QueryInterface<SharpDX.DXGI.Device3>())
-        //    {
-        //        game.GraphicsContext.CommandList.ClearState();
-        //        device3.Trim();    
-        //    }
+            using (var device3 = game.GraphicsDevice.NativeDevice.QueryInterface<SharpDX.DXGI.Device3>())
+            {
+                game.GraphicsContext.CommandList.ClearState();
+                device3.Trim();
+            }
 
-        //    OnSuspend(sender, null);
+            OnSuspend(sender, null);
 
-        //    deferral.Complete();
-        //}
+            deferral.Complete();
+        }
 
         public override string DefaultAppDirectory
         {
