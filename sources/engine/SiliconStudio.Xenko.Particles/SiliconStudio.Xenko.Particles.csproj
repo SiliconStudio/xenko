@@ -22,6 +22,9 @@
     </When>
   </Choose>
   <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="BoundingShapes\BoundingBoxStatic.cs" />
     <Compile Include="BoundingShapes\BoundingShape.cs" />
     <Compile Include="BoundingShapes\BoundingSphereStatic.cs" />

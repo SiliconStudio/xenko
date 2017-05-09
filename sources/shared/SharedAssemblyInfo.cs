@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 #pragma warning disable 436 // The type 'type' in 'assembly' conflicts with the imported type 'type2' in 'assembly' (due to XenkoVersion being duplicated)
 using System;
@@ -35,6 +35,11 @@ namespace SiliconStudio
     /// </remarks>
     internal class XenkoVersion
     {
+        /// <summary>
+        /// The copyright year or year range.
+        /// </summary>
+        public const string CopyrightYear = "2011-2017";
+
         /// <summary>
         /// The version used by editor for display purpose. 4th digit needs to be at least 1 if used (due to NuGet special cases).
         /// </summary>
