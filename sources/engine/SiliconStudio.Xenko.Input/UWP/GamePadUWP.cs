@@ -85,7 +85,7 @@ namespace SiliconStudio.Xenko.Input
                 if (oldState != newState)
                 {
                     GamePadButtonEvent buttonEvent = InputEventPool<GamePadButtonEvent>.GetOrCreate(this);
-                    buttonEvent.State = newState ? ButtonState.Down : ButtonState.Up;
+                    buttonEvent.IsDown = newState;
                     buttonEvent.Button = button;
                     inputEvents.Add(buttonEvent);
                     state.Update(buttonEvent);
