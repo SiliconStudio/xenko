@@ -90,6 +90,7 @@
     <Compile Include="Analysis\IAssetDependencyManager.cs" />
     <Compile Include="Analysis\IdentifiableObjectAnalysis.cs" />
     <Compile Include="AssetCollectionItemIdHelper.cs" />
+    <Compile Include="AssetCompositeHierarchy.Upgraders.cs" />
     <Compile Include="AssetCompositeHierarchy.cs" />
     <Compile Include="AssetCompositeHierarchyData.cs" />
     <Compile Include="AssetCompositeHierarchyExtensions.cs" />
