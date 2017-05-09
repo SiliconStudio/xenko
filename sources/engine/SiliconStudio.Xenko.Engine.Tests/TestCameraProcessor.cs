@@ -30,16 +30,13 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             var services = new ServiceRegistry();
 
-            // Note: GameSystemBase needs service IContentManager
-            //       remove this line once this dependency is removed
-            new ContentManager(services);
-
             // Create entity manager and camera
             entityManager = new CustomEntityManager(services);
 
             // Create graphics compositor
             graphicsCompositor = new GraphicsCompositor();
             sceneSystem = new SceneSystem(services) { GraphicsCompositor = graphicsCompositor };
+            services.AddService(typeof(SceneSystem), sceneSystem);
         }
 
         private CameraComponent AddCamera(bool enabled, SceneCameraSlotId slot)
