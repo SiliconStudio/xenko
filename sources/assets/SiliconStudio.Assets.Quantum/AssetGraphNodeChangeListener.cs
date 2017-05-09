@@ -9,8 +9,8 @@ namespace SiliconStudio.Assets.Quantum
 {
     public class AssetGraphNodeChangeListener : GraphNodeChangeListener
     {
-        public AssetGraphNodeChangeListener(IGraphNode rootNode, [NotNull] AssetPropertyGraph propertyGraph)
-            : base(rootNode, member => !propertyGraph.Definition.IsMemberTargetObjectReference(member, member.Retrieve()), (node, index) => !propertyGraph.Definition.IsTargetItemObjectReference(node, index, node.Retrieve(index)))
+        public AssetGraphNodeChangeListener(IGraphNode rootNode, [NotNull] AssetPropertyGraphDefinition propertyGraphDefinition)
+            : base(rootNode, member => !propertyGraphDefinition.IsMemberTargetObjectReference(member, member.Retrieve()), (node, index) => !propertyGraphDefinition.IsTargetItemObjectReference(node, index, node.Retrieve(index)))
         {
         }
     }

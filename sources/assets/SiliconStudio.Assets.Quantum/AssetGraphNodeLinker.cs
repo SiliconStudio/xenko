@@ -8,21 +8,21 @@ namespace SiliconStudio.Assets.Quantum
 {
     public class AssetGraphNodeLinker : GraphNodeLinker
     {
-        private readonly AssetPropertyGraph propertyGraph;
+        private readonly AssetPropertyGraphDefinition propertyGraphDefinition;
 
-        public AssetGraphNodeLinker(AssetPropertyGraph propertyGraph)
+        public AssetGraphNodeLinker(AssetPropertyGraphDefinition propertyGraphDefinition)
         {
-            this.propertyGraph = propertyGraph;
+            this.propertyGraphDefinition = propertyGraphDefinition;
         }
 
         protected override bool ShouldVisitMemberTarget(IMemberNode member)
         {
-            return !propertyGraph.Definition.IsMemberTargetObjectReference(member, member.Retrieve()) && base.ShouldVisitMemberTarget(member);
+            return !propertyGraphDefinition.IsMemberTargetObjectReference(member, member.Retrieve()) && base.ShouldVisitMemberTarget(member);
         }
 
         protected override bool ShouldVisitTargetItem(IObjectNode collectionNode, Index index)
         {
-            return !propertyGraph.Definition.IsTargetItemObjectReference(collectionNode, index, collectionNode.Retrieve(index)) && base.ShouldVisitTargetItem(collectionNode, index);
+            return !propertyGraphDefinition.IsTargetItemObjectReference(collectionNode, index, collectionNode.Retrieve(index)) && base.ShouldVisitTargetItem(collectionNode, index);
         }
     }
 }
