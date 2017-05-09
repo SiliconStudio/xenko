@@ -42,9 +42,16 @@ namespace SiliconStudio.Xenko.Games
             if (control is SwapChainControlUWP)
             {
                 EditTextBox = new TextBox();
+                ContextType = AppContextType.UWPSwapChain;
             }
-
-            ContextType = AppContextType.UWP;
+            else if (control is CoreWindowControlUWP)
+            {
+                ContextType = AppContextType.UWPCoreWindow;
+            }
+            else
+            {
+                throw  new ArgumentException($"{nameof(control)} can only be CoreWindowControlUWP or SwapChainControlUWP!");
+            }
         }
     }
 

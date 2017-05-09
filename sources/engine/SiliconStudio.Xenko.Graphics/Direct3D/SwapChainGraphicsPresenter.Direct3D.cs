@@ -24,7 +24,6 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
 using System;
 using System.Reflection;
-using Windows.UI.Xaml.Controls;
 using SharpDX;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
@@ -322,44 +321,41 @@ namespace SiliconStudio.Xenko.Graphics
             SwapChain swapChain = null;
             switch (Description.DeviceWindowHandle.Context)
             {
-                case Games.AppContextType.UWP:
+                case Games.AppContextType.UWPSwapChain:
                 {
-                    var swapChainPanel = Description.DeviceWindowHandle.NativeWindow as SwapChainPanel;
+                    var nativePanel = ComObject.As<ISwapChainPanelNative>(Description.DeviceWindowHandle.NativeWindow);
 
-                    if (swapChainPanel != null)
+                    // Creates the swap chain for XAML composition
+                    swapChain = new SwapChain1(GraphicsAdapterFactory.NativeFactory, GraphicsDevice.NativeDevice, ref description);
+
+                    // Associate the SwapChainPanel with the swap chain
+                    nativePanel.SwapChain = swapChain;
+
+                    break;
+                }
+
+                case Games.AppContextType.UWPCoreWindow:
+                {
+                    using (var dxgiDevice = GraphicsDevice.NativeDevice.QueryInterface<SharpDX.DXGI.Device2>())
                     {
-                        var nativePanel = ComObject.As<ISwapChainPanelNative>(swapChainPanel);
+                        // Ensure that DXGI does not queue more than one frame at a time. This both reduces
+                        // latency and ensures that the application will only render after each VSync, minimizing
+                        // power consumption.
+                        dxgiDevice.MaximumFrameLatency = 1;
 
-                        // Creates the swap chain for XAML composition
-                        swapChain = new SwapChain1(GraphicsAdapterFactory.NativeFactory, GraphicsDevice.NativeDevice, ref description);
-
-                        // Associate the SwapChainPanel with the swap chain
-                        nativePanel.SwapChain = swapChain;
-                    }
-                    else
-                    {
-                        using (var dxgiDevice = GraphicsDevice.NativeDevice.QueryInterface<SharpDX.DXGI.Device2>())
+                        // Next, get the parent factory from the DXGI Device.
+                        using (var dxgiAdapter = dxgiDevice.Adapter)
+                        using (var dxgiFactory = dxgiAdapter.GetParent<SharpDX.DXGI.Factory2>())
+                            // Finally, create the swap chain.
+                        using (var coreWindow = new SharpDX.ComObject(Description.DeviceWindowHandle.NativeWindow))
                         {
-                            // Ensure that DXGI does not queue more than one frame at a time. This both reduces
-                            // latency and ensures that the application will only render after each VSync, minimizing
-                            // power consumption.
-                            dxgiDevice.MaximumFrameLatency = 1;
-
-                            // Next, get the parent factory from the DXGI Device.
-                            using (var dxgiAdapter = dxgiDevice.Adapter)
-                            using (var dxgiFactory = dxgiAdapter.GetParent<SharpDX.DXGI.Factory2>())
-                                // Finally, create the swap chain.
-                            using (var coreWindow = new SharpDX.ComObject(Description.DeviceWindowHandle.NativeWindow))
-                            {
-                                swapChain = new SharpDX.DXGI.SwapChain1(dxgiFactory
-                                    , GraphicsDevice.NativeDevice, coreWindow, ref description);
-                            }
+                            swapChain = new SharpDX.DXGI.SwapChain1(dxgiFactory
+                                , GraphicsDevice.NativeDevice, coreWindow, ref description);
                         }
                     }
 
                     break;
                 }
-
                 default:
                     throw new NotSupportedException(string.Format("Window context [{0}] not supported while creating SwapChain", Description.DeviceWindowHandle.Context));
             }

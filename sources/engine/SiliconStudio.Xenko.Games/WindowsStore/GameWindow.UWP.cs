@@ -224,12 +224,12 @@ namespace SiliconStudio.Xenko.Games
                 //resizeTimer.Tick += ResizeTimerOnTick;
 
                 swapChainPanel = swapChainControl.SwapChainPanel;
-                windowHandle = new WindowHandle(AppContextType.UWP, swapChainPanel, IntPtr.Zero);
+                windowHandle = new WindowHandle(AppContextType.UWPSwapChain, swapChainPanel, IntPtr.Zero);
             }
             else if (coreWindowControl != null)
             {
                 coreWindow = coreWindowControl.CoreWindow;
-                windowHandle = new WindowHandle(AppContextType.UWP, coreWindow, IntPtr.Zero);
+                windowHandle = new WindowHandle(AppContextType.UWPCoreWindow, coreWindow, IntPtr.Zero);
             }
 
             applicationView = ApplicationView.GetForCurrentView();            

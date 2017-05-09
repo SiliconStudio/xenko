@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2015-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Games
             type = AppContextType.Desktop;
     #endif
 #elif SILICONSTUDIO_PLATFORM_UWP
-            type = AppContextType.UWP;
+            type = AppContextType.UWPSwapChain; // Can change later to CoreWindow
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             type = AppContextType.Android;
 #elif SILICONSTUDIO_PLATFORM_IOS
@@ -64,7 +64,8 @@ namespace SiliconStudio.Xenko.Games
                 case AppContextType.DesktopWpf:
                     res = NewGameContextWpf();
                     break;
-                case AppContextType.UWP:
+                case AppContextType.UWPSwapChain:
+                case AppContextType.UWPCoreWindow:
                     res = NewGameContextUWP();
                     break;
                 case AppContextType.iOS:
