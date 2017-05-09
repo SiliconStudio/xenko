@@ -15,7 +15,6 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public VRDeviceSystem(IServiceRegistry registry) : base(registry)
         {
-            registry.AddService(typeof(VRDeviceSystem), this);
             EnabledChanged += OnEnabledChanged;
 
             DrawOrder = -100;

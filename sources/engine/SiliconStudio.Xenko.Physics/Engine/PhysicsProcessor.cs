@@ -163,6 +163,7 @@ namespace SiliconStudio.Xenko.Physics
             if (physicsSystem == null)
             {
                 physicsSystem = new Bullet2PhysicsSystem(Services);
+                Services.AddService(typeof(IPhysicsSystem), physicsSystem);
                 var gameSystems = Services.GetServiceAs<IGameSystemCollection>();
                 gameSystems.Add(physicsSystem);
             }

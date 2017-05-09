@@ -98,6 +98,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             if (UI == null)
             {
                 UI = new UISystem(Services);
+                Services.AddService(typeof(UISystem), UI);
                 GameSystems.Add(UI);
             }
 

@@ -129,10 +129,6 @@ namespace SiliconStudio.Xenko.Games
                     GraphicsProfile.Level_9_1, 
                 };
 
-            // Register the services to the registry
-            game.Services.AddService(typeof(IGraphicsDeviceManager), this);
-            game.Services.AddService(typeof(IGraphicsDeviceService), this);
-
             graphicsDeviceFactory = (IGraphicsDeviceFactory)game.Services.GetService(typeof(IGraphicsDeviceFactory));
             if (graphicsDeviceFactory == null)
             {
