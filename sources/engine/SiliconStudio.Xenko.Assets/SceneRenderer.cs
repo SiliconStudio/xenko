@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core;
@@ -83,8 +83,8 @@ namespace SiliconStudio.Xenko.Assets
             Services.AddService(typeof(IGameSystemCollection), GameSystems);
 
             var gameFontSystem = new GameFontSystem(Services);
-            Services.AddService(typeof(FontSystem), gameFontSystem);
-            Services.AddService(typeof(IFontFactory), gameFontSystem);
+            Services.AddService(typeof(FontSystem), gameFontSystem.FontSystem);
+            Services.AddService(typeof(IFontFactory), gameFontSystem.FontSystem);
             GameSystems.Add(gameFontSystem);
 
             var uiSystem = new UISystem(Services);
