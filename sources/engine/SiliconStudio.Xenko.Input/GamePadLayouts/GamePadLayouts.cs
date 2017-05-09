@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// Keeps track of <see cref="GamePadLayout"/>s
+    /// Keeps track of <see cref="GamePadLayout"/>
     /// </summary>
     public static class GamePadLayouts
     {
@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Adds a new layout that cane be used for mapping gamepads to <see cref="GamePadState"/>s
+        /// Adds a new layout that cane be used for mapping gamepads to <see cref="GamePadState"/>
         /// </summary>
         /// <param name="layout">The layout to add</param>
         public static void AddLayout(GamePadLayout layout)

@@ -117,7 +117,7 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Some additional data kept on top of <see cref="PointerPoint"/> for the purpose of generating <see cref="PointerEvent"/>s
+        /// Some additional data kept on top of <see cref="PointerPoint"/> for the purpose of generating <see cref="PointerEvent"/>
         /// </summary>
         protected class PointerData : PointerPoint
         {
