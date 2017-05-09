@@ -190,18 +190,37 @@ namespace SiliconStudio.Xenko.Engine
             // Create all core services, except Input which is created during `Initialize'.
             // Registration takes place in `Initialize'.
             Script = new ScriptSystem(Services);
+            Services.AddService(typeof(ScriptSystem), Script);
+
             SceneSystem = new SceneSystem(Services);
+            Services.AddService(typeof(SceneSystem), SceneSystem);
+
             Audio = new AudioSystem(Services);
+            Services.AddService(typeof(AudioSystem), Audio);
+            Services.AddService(typeof(IAudioEngineProvider), Audio);
+
             gameFontSystem = new GameFontSystem(Services);
+            Services.AddService(typeof(FontSystem), gameFontSystem.FontSystem);
+            Services.AddService(typeof(IFontFactory), gameFontSystem.FontSystem);
+
             SpriteAnimation = new SpriteAnimationSystem(Services);
+            Services.AddService(typeof(SpriteAnimationSystem), SpriteAnimation);
+
             DebugConsoleSystem = new DebugConsoleSystem(Services);
+            Services.AddService(typeof(DebugConsoleSystem), DebugConsoleSystem);
+
             ProfilerSystem = new GameProfilingSystem(Services);
+            Services.AddService(typeof(GameProfilingSystem), ProfilerSystem);
+
             VRDeviceSystem = new VRDeviceSystem(Services);
+            Services.AddService(typeof(VRDeviceSystem), VRDeviceSystem);
 
             Content.Serializer.LowLevelSerializerSelector = ParameterContainerExtensions.DefaultSceneSerializerSelector;
 
             // Creates the graphics device manager
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
+            Services.AddService(typeof(IGraphicsDeviceManager), GraphicsDeviceManager);
+            Services.AddService(typeof(IGraphicsDeviceService), GraphicsDeviceManager);
 
             AutoLoadDefaultSettings = true;
         }
@@ -312,6 +331,7 @@ namespace SiliconStudio.Xenko.Engine
             // Add the input manager
             // Add it first so that it can obtained by the UI system
             Input = new InputManager(Services);
+            Services.AddService(typeof(InputManager), Input);
             GameSystems.Add(Input);
 
             // Initialize the systems
@@ -333,6 +353,7 @@ namespace SiliconStudio.Xenko.Engine
             GameSystems.Add(ProfilerSystem);
 
             EffectSystem = new EffectSystem(Services);
+            Services.AddService(typeof(EffectSystem), EffectSystem);
 
             // If requested in game settings, compile effects remotely and/or notify new shader requests
             if (Settings != null)

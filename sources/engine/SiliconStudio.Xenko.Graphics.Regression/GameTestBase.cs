@@ -59,6 +59,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 DeviceCreationFlags = DeviceCreationFlags.Debug,
                 PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 }
             };
+            Services.AddService(typeof(IGraphicsDeviceManager), GraphicsDeviceManager);
+            Services.AddService(typeof(IGraphicsDeviceService), GraphicsDeviceManager);
 
             // Enable profiling
             //Profiler.EnableAll();

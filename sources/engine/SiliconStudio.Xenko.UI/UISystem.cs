@@ -31,7 +31,6 @@ namespace SiliconStudio.Xenko.UI
         public UISystem(IServiceRegistry registry)
             : base(registry)
         {
-            Services.AddService(typeof(UISystem), this);
         }
 
         public override void Initialize()

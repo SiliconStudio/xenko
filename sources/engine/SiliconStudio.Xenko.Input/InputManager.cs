@@ -68,8 +68,6 @@ namespace SiliconStudio.Xenko.Input
             GestureEvents = currentGestureEvents;
             Gestures = new TrackingCollection<GestureConfig>();
             Gestures.CollectionChanged += GesturesOnCollectionChanged;
-
-            Services.AddService(typeof(InputManager), this);
         }
         
         /// <summary>
