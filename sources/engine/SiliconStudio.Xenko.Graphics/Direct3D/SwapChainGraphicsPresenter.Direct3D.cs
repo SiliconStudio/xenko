@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -24,6 +24,7 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
 using System;
 using System.Reflection;
+using Windows.UI.Xaml.Controls;
 using SharpDX;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
@@ -211,16 +212,16 @@ namespace SiliconStudio.Xenko.Graphics
             var fastList = DestroyChildrenTextures(backBuffer);
 
 #if SILICONSTUDIO_PLATFORM_UWP
-            //var swapChainPanel = Description.DeviceWindowHandle.NativeWindow as Windows.UI.Xaml.Controls.SwapChainPanel;
-            //if (swapChainPanel != null)
-            //{
-            //    var swapChain2 = swapChain.QueryInterface<SwapChain2>();
-            //    if (swapChain2 != null)
-            //    {
-            //        swapChain2.MatrixTransform = new RawMatrix3x2 { M11 = 1f / swapChainPanel.CompositionScaleX, M22 = 1f / swapChainPanel.CompositionScaleY };
-            //        swapChain2.Dispose();
-            //    }
-            //}
+            var swapChainPanel = Description.DeviceWindowHandle.NativeWindow as Windows.UI.Xaml.Controls.SwapChainPanel;
+            if (swapChainPanel != null)
+            {
+                var swapChain2 = swapChain.QueryInterface<SwapChain2>();
+                if (swapChain2 != null)
+                {
+                    swapChain2.MatrixTransform = new RawMatrix3x2 { M11 = 1f / swapChainPanel.CompositionScaleX, M22 = 1f / swapChainPanel.CompositionScaleY };
+                    swapChain2.Dispose();
+                }
+            }
 #endif
 
             // If format is same as before, using Unknown (None) will keep the current
@@ -323,27 +324,38 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 case Games.AppContextType.UWP:
                 {
-                    using (var dxgiDevice = GraphicsDevice.NativeDevice.QueryInterface<SharpDX.DXGI.Device2>())
-                    {
-                        // Ensure that DXGI does not queue more than one frame at a time. This both reduces
-                        // latency and ensures that the application will only render after each VSync, minimizing
-                        // power consumption.
-                        dxgiDevice.MaximumFrameLatency = 1;
+                    var swapChainPanel = Description.DeviceWindowHandle.NativeWindow as SwapChainPanel;
 
-                        // Next, get the parent factory from the DXGI Device.
-                        using (var dxgiAdapter = dxgiDevice.Adapter)
-                        using (var dxgiFactory = dxgiAdapter.GetParent<SharpDX.DXGI.Factory2>())
-                        // Finally, create the swap chain.
-                        using (var coreWindow = new SharpDX.ComObject(Description.DeviceWindowHandle.NativeWindow))
+                    if (swapChainPanel != null)
+                    {
+                        var nativePanel = ComObject.As<ISwapChainPanelNative>(swapChainPanel);
+
+                        // Creates the swap chain for XAML composition
+                        swapChain = new SwapChain1(GraphicsAdapterFactory.NativeFactory, GraphicsDevice.NativeDevice, ref description);
+
+                        // Associate the SwapChainPanel with the swap chain
+                        nativePanel.SwapChain = swapChain;
+                    }
+                    else
+                    {
+                        using (var dxgiDevice = GraphicsDevice.NativeDevice.QueryInterface<SharpDX.DXGI.Device2>())
                         {
+                            // Ensure that DXGI does not queue more than one frame at a time. This both reduces
+                            // latency and ensures that the application will only render after each VSync, minimizing
+                            // power consumption.
+                            dxgiDevice.MaximumFrameLatency = 1;
+
+                            // Next, get the parent factory from the DXGI Device.
+                            using (var dxgiAdapter = dxgiDevice.Adapter)
+                            using (var dxgiFactory = dxgiAdapter.GetParent<SharpDX.DXGI.Factory2>())
+                                // Finally, create the swap chain.
+                            using (var coreWindow = new SharpDX.ComObject(Description.DeviceWindowHandle.NativeWindow))
+                            {
                                 swapChain = new SharpDX.DXGI.SwapChain1(dxgiFactory
-                                , GraphicsDevice.NativeDevice, coreWindow, ref description);
+                                    , GraphicsDevice.NativeDevice, coreWindow, ref description);
+                            }
                         }
                     }
-
-                    //var coreWindow = new SharpDX.ComObject(Description.DeviceWindowHandle.NativeWindow);
-                    //// Creates the swap chain for XAML composition
-                    //swapChain = new SwapChain1(GraphicsAdapterFactory.NativeFactory, GraphicsDevice.NativeDevice, coreWindow, ref description);
 
                     break;
                 }

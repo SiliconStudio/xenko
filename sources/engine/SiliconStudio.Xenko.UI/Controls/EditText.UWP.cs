@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 #if SILICONSTUDIO_PLATFORM_UWP
 using System;
@@ -51,24 +51,28 @@ namespace SiliconStudio.Xenko.UI.Controls
 
                 gameContext = (GameContextUWP)game.Context;
 
-                // TODO Enable EditText
-//                var swapChainPanel = gameContext.Control;
-
                 // Detach previous EditText (if any)
                 if (activeEditText != null)
                     activeEditText.IsSelectionActive = false;
                 activeEditText = this;
 
-                // Make sure it doesn't have a parent (another text box being edited)
-//                editText = gameContext.EditTextBox;
-//                editText.Text = text;
-//                swapChainPanel.Children.Add(new Windows.UI.Xaml.Controls.StackPanel { Children = { editText } });
+                // TODO Enable EditText for d3d applications
+                var swapChainControl = gameContext.Control as SwapChainControlUWP;
+                if (swapChainControl == null)
+                    return;
 
-//                editText.TextChanged += EditText_TextChanged;
-//                editText.KeyDown += EditText_KeyDown;
+                var swapChainPanel = swapChainControl.SwapChainPanel;
+
+                // Make sure it doesn't have a parent (another text box being edited)
+                editText = gameContext.EditTextBox;
+                editText.Text = text;
+                swapChainPanel.Children.Add(new Windows.UI.Xaml.Controls.StackPanel { Children = { editText } });
+
+                editText.TextChanged += EditText_TextChanged;
+                editText.KeyDown += EditText_KeyDown;
 
                 // Focus
-//                editText.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+                editText.Focus(Windows.UI.Xaml.FocusState.Programmatic);
             }
         }
 
@@ -114,7 +118,8 @@ namespace SiliconStudio.Xenko.UI.Controls
                 var stackPanel = (Windows.UI.Xaml.Controls.Panel)editText.Parent;
                 stackPanel.Children.Remove(editText);
 
-//                gameContext.Control.Children.Remove(stackPanel);
+                var swapChainControl = gameContext.Control as SwapChainControlUWP;
+                swapChainControl?.SwapChainPanel.Children.Remove(stackPanel);
 
                 editText = null;
                 activeEditText = null;

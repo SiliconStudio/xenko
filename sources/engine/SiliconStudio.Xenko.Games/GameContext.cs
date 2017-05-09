@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -140,17 +140,6 @@ namespace SiliconStudio.Xenko.Games
         }
 #endif
 #endif
-#elif SILICONSTUDIO_PLATFORM_UWP
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="Windows.UI.Core.CoreWindow"/> to <see cref="GameContextUWP"/>.
-        /// </summary>
-        /// <param name="coreWindow">CoreWindow</param>
-        /// <returns>The result of the conversion.</returns>
-        [Obsolete ("Use new GameContextWindowsRuntime(panel) instead.")]
-        public static implicit operator GameContext(Windows.UI.Core.CoreWindow coreWindow)
-        {
-            return new GameContextUWP(coreWindow);
-        }
 #endif
     }
 

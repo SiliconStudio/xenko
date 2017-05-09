@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -23,32 +23,67 @@
 #if SILICONSTUDIO_PLATFORM_UWP
 using System;
 using Windows.UI.Core;
-//using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls;
 
 namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="Control"/>.
     /// </summary>
-    public partial class GameContextUWP : GameContextWindows<CoreWindow>
+    public class GameContextUWP : GameContextWindows<IGameControlUWP>
     {
         // Used internally by systems such as UI to capture input in a TextBox
-//        internal TextBox EditTextBox = new TextBox();
+        internal TextBox EditTextBox = null;
 
         /// <inheritDoc/>
-        public GameContextUWP(CoreWindow control, int requestedWidth = 0, int requestedHeight = 0)
-            : base (control ?? CoreWindow.GetForCurrentThread(), requestedWidth, requestedHeight)
+        public GameContextUWP(IGameControlUWP control, int requestedWidth = 0, int requestedHeight = 0)
+            : base (control, requestedWidth, requestedHeight)
         {
+            if (control is SwapChainControlUWP)
+            {
+                EditTextBox = new TextBox();
+            }
+
             ContextType = AppContextType.UWP;
         }
     }
 
-    [Obsolete("Use GameContextUWP instead")]
-    public class GameContextWindowsRuntime : GameContextUWP
+    public interface IGameControlUWP
     {
-        public GameContextWindowsRuntime(CoreWindow control, int requestedWidth = 0, int requestedHeight = 0)
-            : base(control, requestedWidth, requestedHeight)
+        
+    }
+
+    public class CoreWindowControlUWP : IGameControlUWP
+    {
+        private readonly CoreWindow coreWindow;
+
+        public CoreWindow CoreWindow => coreWindow;
+
+        public CoreWindowControlUWP()
         {
+            coreWindow = CoreWindow.GetForCurrentThread();
+        }
+
+        public CoreWindowControlUWP(CoreWindow coreWindow)
+        {
+            this.coreWindow = coreWindow;
+        }
+    }
+
+    public class SwapChainControlUWP : IGameControlUWP
+    {
+        private readonly SwapChainPanel swapChainPanel;
+
+        public SwapChainPanel SwapChainPanel => swapChainPanel;
+
+        public SwapChainControlUWP()
+        {
+            swapChainPanel = new SwapChainPanel();
+        }
+
+        public SwapChainControlUWP(SwapChainPanel swapChainPanel)
+        {
+            this.swapChainPanel = swapChainPanel;
         }
     }
 }
