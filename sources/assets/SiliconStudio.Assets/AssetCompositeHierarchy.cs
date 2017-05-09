@@ -1,9 +1,8 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Assets.Analysis;
 using System.Diagnostics.Contracts;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -83,28 +82,28 @@ namespace SiliconStudio.Assets
         {
             return EnumerateChildParts(partDesign.Part, isRecursive).Select(e => hierarchyData.Parts[e.Id]);
         }
-        
-        /// <inheritdoc/>
+
+        /// <inheritdoc />
         [NotNull]
         public override IEnumerable<AssetPart> CollectParts()
         {
             return Hierarchy.Parts.Select(x => new AssetPart(x.Part.Id, x.Base, newBase => x.Base = newBase));
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         [CanBeNull]
         public override IIdentifiable FindPart(Guid partId)
         {
             return Hierarchy.Parts.FirstOrDefault(x => x.Part.Id == partId)?.Part;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override bool ContainsPart(Guid id)
         {
             return Hierarchy.Parts.ContainsKey(id);
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override Asset CreateDerivedAsset(string baseLocation, out Dictionary<Guid, Guid> idRemapping)
         {
             var newAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)base.CreateDerivedAsset(baseLocation, out idRemapping);
@@ -119,39 +118,5 @@ namespace SiliconStudio.Assets
             return newAsset;
         }
 
-        /// <inheritdoc />
-        public override void RemapIdentifiableIds(Dictionary<Guid, Guid> remapping)
-        {
-            for (var i = 0; i < Hierarchy.RootPartIds.Count; ++i)
-            {
-                Guid newId;
-                if (remapping.TryGetValue(Hierarchy.RootPartIds[i], out newId))
-                    Hierarchy.RootPartIds[i] = newId;
-            }
-        }
-
-        /// <summary>
-        /// Generates a hierarchy object from the given part that is compatible with the given asset.
-        /// </summary>
-        /// <typeparam name="TAssetPartDesign">The type of part design for this asset.</typeparam>
-        /// <typeparam name="TAssetPart">The type of part for this asset.</typeparam>
-        /// <param name="partDesign">The root part design for the hierarchy to generate.</param>
-        /// <returns>A hierarchy containing the given part as root and all its children.</returns>
-        /// <remarks>
-        /// The given part design does not need to be a member of the given asset for this method to work.
-        /// </remarks>
-        [NotNull]
-        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> GenerateHierarchyFromPart([NotNull] TAssetPartDesign partDesign)
-        {
-            if (partDesign == null) throw new ArgumentNullException(nameof(partDesign));
-            var result = new AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>();
-            foreach (var child in EnumerateChildPartDesigns(partDesign, Hierarchy, true))
-            {
-                result.Parts.Add(child);
-            }
-            result.Parts.Add(partDesign);
-            result.RootPartIds.Add(partDesign.Part.Id);
-            return result;
-        }
     }
 }
