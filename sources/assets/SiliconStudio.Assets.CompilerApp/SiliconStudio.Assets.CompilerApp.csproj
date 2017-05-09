@@ -34,6 +34,9 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="..\..\shared\ToolAssemblyResolveModuleInitializer.cs">
       <Link>ToolAssemblyResolveModuleInitializer.cs</Link>
     </Compile>
