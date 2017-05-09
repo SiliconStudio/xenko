@@ -248,23 +248,14 @@ namespace SiliconStudio.Xenko.Input
             var windowHandle = Game.Window.NativeWindow;
             switch (windowHandle.Context)
             {
-                case AppContextType.UWP:
-                {
-                    var swapChainPanel = windowHandle.NativeWindow as SwapChainPanel;
-                    if (swapChainPanel != null)
-                    {
-                        InitializeFromFrameworkElement((FrameworkElement)swapChainPanel);
-                        break;
-                    }
-
-                    var coreWindow = windowHandle.NativeWindow as CoreWindow;
-                    if (coreWindow != null)
-                    {
-                        InitializeFromCoreWindow(coreWindow);
-                        break;
-                    }
-                }
+                case AppContextType.UWPSwapChain:
+                    InitializeFromFrameworkElement((FrameworkElement)windowHandle.NativeWindow);
                     break;
+
+                case AppContextType.UWPCoreWindow:
+                    InitializeFromCoreWindow(windowHandle.NativeWindow as CoreWindow);
+                    break;
+
                 default:
                     throw new ArgumentException(string.Format("WindowContext [{0}] not supported", Game.Context.ContextType));
             }

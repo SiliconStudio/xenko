@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2015-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -47,7 +47,8 @@ namespace SiliconStudio.Xenko.Input
                     res = NewInputManagerSDL(registry);
                     break;
 
-                case AppContextType.UWP:
+                case AppContextType.UWPCoreWindow:
+                case AppContextType.UWPSwapChain:
                     res = NewInputManagerUWP(registry);
                     break;
 
