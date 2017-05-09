@@ -56,20 +56,5 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
             }
         }
-
-        protected class RootPartIdsToRootPartsUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                var rootPartIds = asset.Hierarchy.RootPartIds;
-                int i = 0;
-                foreach (dynamic rootPartId in rootPartIds)
-                {
-                    rootPartIds[i++] = "ref!! " + rootPartId.ToString();
-                }
-                asset.Hierarchy.RootParts = rootPartIds;
-                asset.Hierarchy.RootPartIds = DynamicYamlEmpty.Default;
-            }
-        }
     }
 }
