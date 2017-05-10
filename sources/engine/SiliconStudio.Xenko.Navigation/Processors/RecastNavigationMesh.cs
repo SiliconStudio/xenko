@@ -84,9 +84,9 @@ namespace SiliconStudio.Xenko.Navigation.Processors
             result.Normal = queryResult.Normal;
             return result;
         }
-        
+
         /// <summary>
-        /// Finds a path from point <see cref="start"/> to <see cref="end"/>
+        /// Finds a path from point <paramref cref="start"/> to <paramref cref="end"/>
         /// </summary>
         /// <param name="start">The starting location of the pathfinding query</param>
         /// <param name="end">The ending location of the pathfinding query</param>
