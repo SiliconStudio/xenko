@@ -25,7 +25,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Xenko.Input.Tests.AdvancedInputTest</StartupObject>
+    <StartupObject>SiliconStudio.Xenko.Input.Tests.TestInputEvents</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Input.Tests.xkpkg</SiliconStudioCurrentPackagePath>
@@ -153,6 +153,7 @@
     <Compile Include="SensorGameTest.cs" />
     <Compile Include="TestDirection.cs" />
     <Compile Include="TestInput.cs" />
+    <Compile Include="TestInputEvents.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />
