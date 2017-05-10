@@ -12,6 +12,7 @@ namespace SiliconStudio.Assets.Quantum
         private static readonly Type[] AssetPropertyNodeGraphConstructorSignature = { typeof(AssetPropertyGraphContainer), typeof(AssetItem), typeof(ILogger) };
         private static readonly Dictionary<Type, Type> NodeGraphTypes = new Dictionary<Type, Type>();
         private static readonly Dictionary<Type, AssetPropertyGraphDefinition> NodeGraphDefinitions = new Dictionary<Type, AssetPropertyGraphDefinition>();
+        private static readonly Dictionary<Type, Type> GenericNodeGraphDefinitionTypes = new Dictionary<Type, Type>();
 
         public static void RegisterAssembly(Assembly assembly)
         {
@@ -44,8 +45,18 @@ namespace SiliconStudio.Assets.Quantum
                     if (NodeGraphDefinitions.ContainsKey(attribute.AssetType))
                         throw new ArgumentException($"The type {attribute.AssetType.Name} already has an associated property node graph type.");
 
-                    var definition = (AssetPropertyGraphDefinition)Activator.CreateInstance(type);
-                    NodeGraphDefinitions.Add(attribute.AssetType, definition);
+                    if (attribute.AssetType.IsGenericTypeDefinition && type.IsGenericType)
+                    {
+                        // If the asset type is generic (usually a base class of other asset types), we cannot create instances yet.
+                        // So we just store the generic type definition in another dictionary.
+                        GenericNodeGraphDefinitionTypes.Add(attribute.AssetType, type.GetGenericTypeDefinition());
+                    }
+                    else
+                    {
+                        // Normal case, we create an instance of the definition immediately.
+                        var definition = (AssetPropertyGraphDefinition)Activator.CreateInstance(type);
+                        NodeGraphDefinitions.Add(attribute.AssetType, definition);
+                    }
                 }
             }
         }
@@ -71,14 +82,43 @@ namespace SiliconStudio.Assets.Quantum
             if (!typeof(Asset).IsAssignableFrom(assetType))
                 throw new ArgumentException($"The type {assetType.Name} is not an asset type");
 
-            while (assetType != typeof(Asset))
+            var currentType = assetType;
+            while (currentType != typeof(Asset))
             {
                 AssetPropertyGraphDefinition definition;
                 // ReSharper disable once AssignNullToNotNullAttribute - cannot happen
-                if (NodeGraphDefinitions.TryGetValue(assetType, out definition))
+                if (NodeGraphDefinitions.TryGetValue(currentType, out definition))
+                {
+                    // Register the instance for this specific type so we don't have to do this again next time.
+                    if (currentType != assetType)
+                    {
+                        NodeGraphDefinitions.Add(assetType, definition);
+                    }
                     return definition;
+                }
 
-                assetType = assetType.BaseType;
+                if (currentType.IsGenericType)
+                {
+                    // If we reach a generic type, we must check if we have a matching generic definition and if so, create a proper instance of this generic type.
+                    var assetGenericDefinitionType = currentType.GetGenericTypeDefinition();
+                    if (GenericNodeGraphDefinitionTypes.TryGetValue(assetGenericDefinitionType, out var definitionGenericDefinitionType))
+                    {
+                        try
+                        {
+                            var definitionType = definitionGenericDefinitionType.MakeGenericType(currentType.GetGenericArguments());
+                            definition = (AssetPropertyGraphDefinition)Activator.CreateInstance(definitionType);
+                            // Register the (new) instance for this specific type so we don't have to do this again next time.
+                            NodeGraphDefinitions.Add(assetType, definition);
+                            return definition;
+                        }
+                        catch (Exception)
+                        {
+                            throw new InvalidOperationException($"Unable to create an instance of definition type {definitionGenericDefinitionType.Name} for asset type {currentType.Name}.");
+                        }
+                    }
+                }
+
+                currentType = currentType.BaseType;
             }
 
             return NodeGraphDefinitions[typeof(Asset)];

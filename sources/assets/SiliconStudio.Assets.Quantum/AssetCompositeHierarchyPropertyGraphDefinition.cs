@@ -4,7 +4,8 @@ using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum
 {
-    public abstract class AssetCompositeHierarchyPropertyGraphDefinition<TAssetPartDesign, TAssetPart> : AssetPropertyGraphDefinition
+    [AssetPropertyGraphDefinition(typeof(AssetCompositeHierarchy<,>))]
+    public class AssetCompositeHierarchyPropertyGraphDefinition<TAssetPartDesign, TAssetPart> : AssetPropertyGraphDefinition
         where TAssetPart : class, IIdentifiable
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
     {
