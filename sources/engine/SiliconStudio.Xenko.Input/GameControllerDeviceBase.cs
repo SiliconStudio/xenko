@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -17,9 +17,7 @@ namespace SiliconStudio.Xenko.Input
 
         protected float[] AxisStates;
 
-        protected float[] PovStates;
-
-        protected bool[] PovEnabledStates;
+        protected Direction[] DirectionStates;
 
         public abstract string Name { get; }
 
@@ -35,7 +33,7 @@ namespace SiliconStudio.Xenko.Input
 
         public abstract IReadOnlyList<GameControllerAxisInfo> AxisInfos { get; }
 
-        public abstract IReadOnlyList<PovControllerInfo> PovControllerInfos { get; }
+        public abstract IReadOnlyList<GameControllerDirectionInfo> DirectionInfos { get; }
 
         /// <summary>
         /// Creates the correct amount of states based on the amount of object infos that are set
@@ -44,8 +42,7 @@ namespace SiliconStudio.Xenko.Input
         {
             ButtonStates = new bool[ButtonInfos.Count];
             AxisStates = new float[AxisInfos.Count];
-            PovStates = new float[PovControllerInfos.Count];
-            PovEnabledStates = new bool[PovControllerInfos.Count];
+            DirectionStates = new Direction[DirectionInfos.Count];
         }
         
         public virtual bool GetButton(int index)
@@ -64,20 +61,9 @@ namespace SiliconStudio.Xenko.Input
             return AxisStates[index];
         }
         
-        public virtual float GetPovController(int index)
+        public virtual Direction GetDirection(int index)
         {
-            if (index < 0 || index > PovStates.Length)
-                return 0.0f;
-
-            return PovStates[index];
-        }
-        
-        public virtual bool GetPovControllerEnabled(int index)
-        {
-            if (index < 0 || index > PovStates.Length)
-                return false;
-
-            return PovEnabledStates[index];
+            return DirectionStates[index];
         }
 
         /// <summary>
@@ -123,21 +109,18 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        protected void HandlePovController(int index, float state, bool enabled)
+        protected void HandleDirection(int index, Direction state)
         {
-            if (index < 0 || index > PovStates.Length)
+            if (index < 0 || index > DirectionStates.Length)
                 throw new IndexOutOfRangeException();
 
-            if (enabled && PovStates[index] != state || PovEnabledStates[index] != enabled)
+            if (DirectionStates[index] != state)
             {
-                PovStates[index] = state;
-                PovEnabledStates[index] = enabled;
-                var povEvent = InputEventPool<PovControllerEvent>.GetOrCreate(this);
-                povEvent.Value = state;
-                povEvent.Index = index;
-                povEvent.Enabled = enabled;
-                povEvent.Value = enabled ? state : 0.0f;
-                events.Add(povEvent);
+                DirectionStates[index] = state;
+                var directionEvent = InputEventPool<GameControllerDirectionEvent>.GetOrCreate(this);
+                directionEvent.Index = index;
+                directionEvent.Direction = state;
+                events.Add(directionEvent);
             }
         }
     }

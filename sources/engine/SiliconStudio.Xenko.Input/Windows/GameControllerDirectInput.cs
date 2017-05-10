@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Input
 
         private readonly List<GameControllerButtonInfo> buttonInfos = new List<GameControllerButtonInfo>();
         private readonly List<DirectInputAxisInfo> axisInfos = new List<DirectInputAxisInfo>();
-        private readonly List<PovControllerInfo> povControllerInfos = new List<PovControllerInfo>();
+        private readonly List<GameControllerDirectionInfo> directionInfos = new List<GameControllerDirectionInfo>();
         
         //private DirectInputGameController gamepad;
         private readonly DirectInputJoystick joystick;
@@ -45,13 +45,13 @@ namespace SiliconStudio.Xenko.Input
                 var objectId = obj.ObjectId;
                 string objectName = obj.Name.TrimEnd('\0');
                 
-                GameControllerObjectInfo objInfo = null;
+                GameControllerObjectInfo objectInfo = null;
                 if (objectId.HasAnyFlag(DeviceObjectTypeFlags.Button | DeviceObjectTypeFlags.PushButton | DeviceObjectTypeFlags.ToggleButton))
                 {
-                    var btn = new GameControllerButtonInfo();
-                    btn.Type = objectId.HasFlags(DeviceObjectTypeFlags.ToggleButton) ? GameControllerButtonType.ToggleButton : GameControllerButtonType.PushButton;
-                    objInfo = btn;
-                    buttonInfos.Add(btn);
+                    var buttonInfo = new GameControllerButtonInfo();
+                    buttonInfo.Type = objectId.HasFlags(DeviceObjectTypeFlags.ToggleButton) ? GameControllerButtonType.ToggleButton : GameControllerButtonType.PushButton;
+                    objectInfo = buttonInfo;
+                    buttonInfos.Add(buttonInfo);
                 }
                 else if (objectId.HasAnyFlag(DeviceObjectTypeFlags.Axis | DeviceObjectTypeFlags.AbsoluteAxis | DeviceObjectTypeFlags.RelativeAxis))
                 {
@@ -66,19 +66,19 @@ namespace SiliconStudio.Xenko.Input
                     if (obj.ObjectType == ObjectGuid.Slider)
                         axis.Offset += sliderCount++;
                     
-                    objInfo = axis;
+                    objectInfo = axis;
                     axisInfos.Add(axis);
                 }
                 else if (objectId.HasFlags(DeviceObjectTypeFlags.PointOfViewController))
                 {
-                    var pov = new PovControllerInfo();
-                    objInfo = pov;
-                    povControllerInfos.Add(pov);
+                    var directionInfo = new GameControllerDirectionInfo();
+                    objectInfo = directionInfo;
+                    directionInfos.Add(directionInfo);
                 }
 
-                if (objInfo != null)
+                if (objectInfo != null)
                 {
-                    objInfo.Name = objectName;
+                    objectInfo.Name = objectName;
                 }
             }
             
@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override IReadOnlyList<GameControllerAxisInfo> AxisInfos => axisInfos;
 
-        public override IReadOnlyList<PovControllerInfo> PovControllerInfos => povControllerInfos;
+        public override IReadOnlyList<GameControllerDirectionInfo> DirectionInfos => directionInfos;
 
         public override IInputSource Source { get; }
 
@@ -161,11 +161,10 @@ namespace SiliconStudio.Xenko.Input
                     HandleAxis(i, ClampDeadZone(state.Axes[axisInfos[i].Offset] * 2.0f - 1.0f, InputManager.GameControllerAxisDeadZone));
                 }
 
-                for (int i = 0; i < povControllerInfos.Count; i++)
+                for (int i = 0; i < directionInfos.Count; i++)
                 {
                     int povController = state.PovControllers[i];
-                    float v = povController / 36000.0f;
-                    HandlePovController(i, v, povController >= 0);
+                    HandleDirection(i, povController >= 0 ? Direction.FromTicks(povController, 36000) : Direction.None);
                 }
             }
             catch (SharpDXException)

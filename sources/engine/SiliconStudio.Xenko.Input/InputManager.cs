@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
@@ -280,7 +280,7 @@ namespace SiliconStudio.Xenko.Input
             RegisterEventType<PointerEvent>();
             RegisterEventType<GameControllerButtonEvent>();
             RegisterEventType<GameControllerAxisEvent>();
-            RegisterEventType<PovControllerEvent>();
+            RegisterEventType<GameControllerDirectionEvent>();
             RegisterEventType<GamePadButtonEvent>();
             RegisterEventType<GamePadAxisEvent>();
 

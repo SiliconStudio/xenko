@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 namespace SiliconStudio.Xenko.Input
@@ -26,28 +26,25 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Gets the number of pov controllers on this gamepad
+        /// Gets the number of direction inputs on this gamepad
         /// </summary>
         /// <param name="device">The gamepad</param>
-        /// <returns>The number of pov controllers</returns>
-        public static int GetPovControllersCount(this IGameControllerDevice device)
+        /// <returns>The number of direction controllers</returns>
+        public static int GetDirectionCount(this IGameControllerDevice device)
         {
-            return device.PovControllerInfos.Count;
+            return device.DirectionInfos.Count;
         }
 
         /// <summary>
-        /// Returns the value of a point of view controller converted to a <see cref="GamePadButton"/> which has the matching Pad flags set
+        /// Returns the value of a direction controller converted to a <see cref="GamePadButton"/> which has the matching Pad flags set
         /// </summary>
         /// <param name="device">The gamepad</param>
-        /// <param name="index">The index of the point of view controller</param>
+        /// <param name="index">The index of the direction controller</param>
         /// <returns></returns>
         public static GamePadButton GetDPad(this IGameControllerDevice device, int index)
         {
-            if (device.GetPovControllerEnabled(index))
-            {
-                return GameControllerUtils.PovControllerToButton(device.GetPovController(index));
-            }
-            return 0;
+            var dir = device.GetDirection(index);
+            return dir.IsNeutral ? GamePadButton.None : GameControllerUtils.DirectionToButtons(dir);
         }
     }
 }

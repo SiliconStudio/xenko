@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 #if SILICONSTUDIO_XENKO_UI_SDL
@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Input
     {
         private readonly List<GameControllerButtonInfo> buttonInfos = new List<GameControllerButtonInfo>();
         private readonly List<GameControllerAxisInfo> axisInfos = new List<GameControllerAxisInfo>();
-        private readonly List<PovControllerInfo> povControllerInfos = new List<PovControllerInfo>();
+        private readonly List<GameControllerDirectionInfo> povControllerInfos = new List<GameControllerDirectionInfo>();
         
         private readonly IntPtr joystick;
 
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Input
 
             for (int i = 0; i < SDL.SDL_JoystickNumHats(joystick); i++)
             {
-                povControllerInfos.Add(new PovControllerInfo { Name = $"Hat {i}" });
+                povControllerInfos.Add(new GameControllerDirectionInfo { Name = $"Hat {i}" });
             }
 
             InitializeButtonStates();
@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override IReadOnlyList<GameControllerAxisInfo> AxisInfos => axisInfos;
 
-        public override IReadOnlyList<PovControllerInfo> PovControllerInfos => povControllerInfos;
+        public override IReadOnlyList<GameControllerDirectionInfo> DirectionInfos => povControllerInfos;
 
         public event EventHandler Disconnected;
 
@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Input
                 var hat = SDL.SDL_JoystickGetHat(joystick, i);
                 GamePadButton buttons;
                 bool hatEnabled = ConvertJoystickHat(hat, out buttons);
-                HandlePovController(i, GameControllerUtils.ButtonToPovController(buttons), hatEnabled);
+                HandleDirection(i, hatEnabled ? GameControllerUtils.ButtonsToDirection(buttons) : Direction.None);
             }
 
             base.Update(inputEvents);

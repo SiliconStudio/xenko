@@ -50,5 +50,22 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.AreEqual(2000, c.GetTicks(4000));
             Assert.AreEqual(4000, c.GetTicks(8000));
         }
+
+        [Test]
+        public void TestDPadConversion()
+        {
+            Assert.AreEqual(Direction.Right, GameControllerUtils.ButtonsToDirection(GamePadButton.PadRight));
+            Assert.AreEqual(Direction.Left, GameControllerUtils.ButtonsToDirection(GamePadButton.PadLeft));
+            Assert.AreEqual(Direction.None, GameControllerUtils.ButtonsToDirection(GamePadButton.None));
+            Assert.AreEqual(GamePadButton.PadRight, GameControllerUtils.DirectionToButtons(Direction.Right));
+            Assert.AreEqual(GamePadButton.PadLeft, GameControllerUtils.DirectionToButtons(Direction.Left));
+            Assert.AreEqual(GamePadButton.None, GameControllerUtils.DirectionToButtons(Direction.None));
+
+            // Test rounding
+            Assert.AreEqual(GamePadButton.PadUp, GameControllerUtils.DirectionToButtons(Direction.FromTicks(99,100)));
+            Assert.AreEqual(GamePadButton.PadUp, GameControllerUtils.DirectionToButtons(Direction.FromTicks(1, 100)));
+            Assert.AreEqual(GamePadButton.PadDown, GameControllerUtils.DirectionToButtons(Direction.FromTicks(49, 100)));
+            Assert.AreEqual(GamePadButton.PadDown, GameControllerUtils.DirectionToButtons(Direction.FromTicks(51, 100)));
+        }
     }
 }
