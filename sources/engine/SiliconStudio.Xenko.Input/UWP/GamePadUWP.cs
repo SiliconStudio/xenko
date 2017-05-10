@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// UWP Gamepad
     /// </summary>
-    internal class GamePadUWP : GameControllerDeviceBase, IGamePadDevice, IGamePadIndexAssignable
+    internal class GamePadUWP : GamePadDeviceBase, IGamePadIndexAssignable
     {
         internal Gamepad Gamepad;
         private readonly double[] lastAxisState = new double[6];
@@ -41,6 +41,7 @@ namespace SiliconStudio.Xenko.Input
         {
             Source = source;
             Id = id;
+            ProductId = new Guid("800BE63B-49DC-4214-A4D2-E39E24EA3542");
             Gamepad = gamepad;
         }
 
@@ -48,13 +49,9 @@ namespace SiliconStudio.Xenko.Input
 
         public override Guid Id { get; }
 
+        public override Guid ProductId { get; }
+
         public override IInputSource Source { get; }
-
-        public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos { get; } = new List<GameControllerButtonInfo>();
-
-        public override IReadOnlyList<GameControllerAxisInfo> AxisInfos { get; } = new List<GameControllerAxisInfo>();
-
-        public override IReadOnlyList<PovControllerInfo> PovControllerInfos { get; } = new List<PovControllerInfo>();
 
         public GamePadState State => state;
         
@@ -72,8 +69,9 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Update(List<InputEvent> inputEvents)
         {
-            base.Update(inputEvents);
             var reading = Gamepad.GetCurrentReading();
+
+            ClearButtonStates();
 
             // Check buttons
             for (int i = 0; i < 14; i++)
@@ -88,7 +86,10 @@ namespace SiliconStudio.Xenko.Input
                     buttonEvent.IsDown = newState;
                     buttonEvent.Button = button;
                     inputEvents.Add(buttonEvent);
-                    state.Update(buttonEvent);
+                    if (state.Update(buttonEvent))
+                    {
+                        UpdateButtonState(buttonEvent);
+                    }
                 }
             }
             if (ChangeAxis(0, reading.LeftThumbstickX))

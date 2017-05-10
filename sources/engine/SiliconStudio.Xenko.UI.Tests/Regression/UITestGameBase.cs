@@ -153,7 +153,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
 
-            PointerEvents = Input.PointerEvents;
+            PointerEvents = Input.pointerEvents;
         }
 
         #region Temporary Fix (Style)

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
@@ -14,59 +15,21 @@ namespace SiliconStudio.Xenko.Input
     public partial class InputManager : IInputEventListener<KeyEvent>, 
         IInputEventListener<PointerEvent>, 
         IInputEventListener<MouseButtonEvent>, 
-        IInputEventListener<MouseWheelEvent>,
-        IInputEventListener<GamePadButtonEvent>
+        IInputEventListener<MouseWheelEvent>
     {
-        /// <summary>
-        /// The keys that are down
-        /// </summary>
-        public readonly List<Keys> DownKeys = new List<Keys>();
+        private Vector2 mousePosition;
+        
+        private readonly HashSet<Keys> downKeys = new HashSet<Keys>();
+        private readonly HashSet<Keys> pressedKeys = new HashSet<Keys>();
+        private readonly HashSet<Keys> releasedKeys = new HashSet<Keys>();
+        private readonly HashSet<MouseButton> downButtons = new HashSet<MouseButton>();
+        private readonly HashSet<MouseButton> pressedButtons = new HashSet<MouseButton>();
+        private readonly HashSet<MouseButton> releasedButtons = new HashSet<MouseButton>();
+        private readonly List<KeyEvent> keyEvents = new List<KeyEvent>();
 
-        /// <summary>
-        /// The keys that have been pressed since the last frame
-        /// </summary>
-        public readonly List<Keys> PressedKeys = new List<Keys>();
-
-        /// <summary>
-        /// The keys that have been released since the last frame
-        /// </summary>
-        public readonly List<Keys> ReleasedKeys = new List<Keys>();
-
-        /// <summary>
-        /// The mouse buttons that are down
-        /// </summary>
-        public readonly List<MouseButton> DownButtons = new List<MouseButton>();
-
-        /// <summary>
-        /// The mouse buttons that have been pressed since the last frame
-        /// </summary>
-        public readonly List<MouseButton> PressedButtons = new List<MouseButton>();
-
-        /// <summary>
-        /// The mouse buttons that have been released since the last frame
-        /// </summary>
-        public readonly List<MouseButton> ReleasedButtons = new List<MouseButton>();
-
-        /// <summary>
-        /// Pointer events that happened since the last frame
-        /// </summary>
-        public readonly List<PointerEvent> PointerEvents = new List<PointerEvent>();
-
-        /// <summary>
-        /// Key events that happened since the last frame
-        /// </summary>
-        public readonly List<KeyEvent> KeyEvents = new List<KeyEvent>();
-
-        /// <summary>
-        /// Gamepad button press events that happened since the last frame
-        /// </summary>
-        public readonly List<GamePadButtonEvent> PressedGamePadButtonEvents = new List<GamePadButtonEvent>();
-
-        /// <summary>
-        /// Gamepad button release events that happened since the last frame
-        /// </summary>
-        public readonly List<GamePadButtonEvent> ReleasedGamePadButtonEvents = new List<GamePadButtonEvent>();
-
+        // TODO: This is left internal until the UI test have been upgraded to use the input simulation layer
+        internal readonly List<PointerEvent> pointerEvents = new List<PointerEvent>();
+        
         /// <summary>
         /// Mouse delta in normalized (0,1) coordinates
         /// </summary>
@@ -76,12 +39,7 @@ namespace SiliconStudio.Xenko.Input
         /// Mouse movement in device coordinates
         /// </summary>
         public Vector2 AbsoluteMouseDelta { get; private set; }
-
-        /// <summary>
-        /// Normalized mouse position
-        /// </summary>
-        private Vector2 mousePosition;
-
+        
         /// <summary>
         /// Gets the delta value of the mouse wheel button since last frame.
         /// </summary>
@@ -96,52 +54,90 @@ namespace SiliconStudio.Xenko.Input
         /// Determines whether one or more keys are down
         /// </summary>
         /// <returns><c>true</c> if one or more keys are down; otherwise, <c>false</c>.</returns>
-        public bool HasDownKeys => DownKeys.Count > 0;
+        public bool HasDownKeys => downKeys.Count > 0;
 
         /// <summary>
         /// Determines whether one or more keys are released
         /// </summary>
         /// <returns><c>true</c> if one or more keys are released; otherwise, <c>false</c>.</returns>
-        public bool HasReleasedKeys => ReleasedKeys.Count > 0;
+        public bool HasReleasedKeys => releasedKeys.Count > 0;
         
         /// <summary>
         /// Determines whether one or more keys are pressed
         /// </summary>
         /// <returns><c>true</c> if one or more keys are pressed; otherwise, <c>false</c>.</returns>
-        public bool HasPressedKeys => PressedKeys.Count > 0;
+        public bool HasPressedKeys => pressedKeys.Count > 0;
 
         /// <summary>
         /// Determines whether one or more of the mouse buttons are down
         /// </summary>
         /// <returns><c>true</c> if one or more of the mouse buttons are down; otherwise, <c>false</c>.</returns>
-        public bool HasDownMouseButtons => DownButtons.Count > 0;
+        public bool HasDownMouseButtons => downButtons.Count > 0;
 
         /// <summary>
         /// Determines whether one or more of the mouse buttons are released
         /// </summary>
         /// <returns><c>true</c> if one or more of the mouse buttons are released; otherwise, <c>false</c>.</returns>
-        public bool HasReleasedMouseButtons => ReleasedButtons.Count > 0;
+        public bool HasReleasedMouseButtons => releasedButtons.Count > 0;
 
         /// <summary>
         /// Determines whether one or more of the mouse buttons are pressed
         /// </summary>
         /// <returns><c>true</c> if one or more of the mouse buttons are pressed; otherwise, <c>false</c>.</returns>
-        public bool HasPressedMouseButtons => PressedButtons.Count > 0;
+        public bool HasPressedMouseButtons => pressedButtons.Count > 0;
 
+        /// <summary>
+        /// The keys that are down
+        /// </summary>
+        public IReadOnlySet<Keys> DownKeys { get; }
+
+        /// <summary>
+        /// The keys that have been pressed since the last frame
+        /// </summary>
+        public IReadOnlySet<Keys> PressedKeys { get; }
+
+        /// <summary>
+        /// The keys that have been released since the last frame
+        /// </summary>
+        public IReadOnlySet<Keys> ReleasedKeys { get; }
+
+        /// <summary>
+        /// The mouse buttons that are down
+        /// </summary>
+        public IReadOnlySet<MouseButton> DownButtons { get; }
+
+        /// <summary>
+        /// The mouse buttons that have been pressed since the last frame
+        /// </summary>
+        public IReadOnlySet<MouseButton> PressedButtons { get; }
+
+        /// <summary>
+        /// The mouse buttons that have been released since the last frame
+        /// </summary>
+        public IReadOnlySet<MouseButton> ReleasedButtons { get; }
+
+        /// <summary>
+        /// Pointer events that happened since the last frame
+        /// </summary>
+        public IReadOnlyList<PointerEvent> PointerEvents => pointerEvents;
+
+        /// <summary>
+        /// Key events that happened since the last frame
+        /// </summary>
+        public IReadOnlyList<KeyEvent> KeyEvents => keyEvents;
+        
         /// <summary>
         /// Resets the state before updating
         /// </summary>
         public void ResetGlobalInputState()
         {
             // Reset convenience states
-            PressedKeys.Clear();
-            ReleasedKeys.Clear();
-            PressedButtons.Clear();
-            ReleasedButtons.Clear();
-            KeyEvents.Clear();
-            PointerEvents.Clear();
-            PressedGamePadButtonEvents.Clear();
-            ReleasedGamePadButtonEvents.Clear();
+            pressedKeys.Clear();
+            releasedKeys.Clear();
+            pressedButtons.Clear();
+            releasedButtons.Clear();
+            keyEvents.Clear();
+            pointerEvents.Clear();
             MouseWheelDelta = 0;
             MouseDelta = Vector2.Zero;
             AbsoluteMouseDelta = Vector2.Zero;
@@ -152,20 +148,20 @@ namespace SiliconStudio.Xenko.Input
             if (inputEvent.IsDown)
             {
                 if (inputEvent.RepeatCount == 0)
-                    DownKeys.Add(inputEvent.Key);
-                PressedKeys.Add(inputEvent.Key);
+                    downKeys.Add(inputEvent.Key);
+                pressedKeys.Add(inputEvent.Key);
             }
             else
             {
-                DownKeys.Remove(inputEvent.Key);
-                ReleasedKeys.Add(inputEvent.Key);
+                downKeys.Remove(inputEvent.Key);
+                releasedKeys.Add(inputEvent.Key);
             }
-            KeyEvents.Add(inputEvent);
+            keyEvents.Add(inputEvent);
         }
 
         public void ProcessEvent(PointerEvent inputEvent)
         {
-            PointerEvents.Add(inputEvent);
+            pointerEvents.Add(inputEvent);
 
             // Update position and delta from whatever device sends position updates
             LastPointerDevice = inputEvent.Pointer;
@@ -184,13 +180,13 @@ namespace SiliconStudio.Xenko.Input
         {
             if (inputEvent.IsDown)
             {
-                DownButtons.Add(inputEvent.Button);
-                PressedButtons.Add(inputEvent.Button);
+                downButtons.Add(inputEvent.Button);
+                pressedButtons.Add(inputEvent.Button);
             }
             else
             {
-                DownButtons.Remove(inputEvent.Button);
-                ReleasedButtons.Add(inputEvent.Button);
+                downButtons.Remove(inputEvent.Button);
+                releasedButtons.Add(inputEvent.Button);
             }
         }
 
@@ -202,18 +198,6 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        public void ProcessEvent(GamePadButtonEvent inputEvent)
-        {
-            if (inputEvent.IsDown)
-            {
-                PressedGamePadButtonEvents.Add(inputEvent);
-            }
-            else
-            {
-                ReleasedGamePadButtonEvents.Add(inputEvent);
-            }
-        }
-
         /// <summary>
         /// Determines whether the specified key is being pressed down.
         /// </summary>
@@ -221,7 +205,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if the specified key is being pressed down; otherwise, <c>false</c>.</returns>
         public bool IsKeyDown(Keys key)
         {
-            return DownKeys.Contains(key);
+            return downKeys.Contains(key);
         }
 
         /// <summary>
@@ -231,7 +215,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if the specified key is pressed; otherwise, <c>false</c>.</returns>
         public bool IsKeyPressed(Keys key)
         {
-            return PressedKeys.Contains(key);
+            return pressedKeys.Contains(key);
         }
 
         /// <summary>
@@ -241,7 +225,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if the specified key is released; otherwise, <c>false</c>.</returns>
         public bool IsKeyReleased(Keys key)
         {
-            return ReleasedKeys.Contains(key);
+            return releasedKeys.Contains(key);
         }
 
         /// <summary>
@@ -251,7 +235,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if the specified mouse button is being pressed down; otherwise, <c>false</c>.</returns>
         public bool IsMouseButtonDown(MouseButton mouseButton)
         {
-            return DownButtons.Contains(mouseButton);
+            return downButtons.Contains(mouseButton);
         }
 
         /// <summary>
@@ -261,7 +245,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if the specified mouse button is pressed since the previous update; otherwise, <c>false</c>.</returns>
         public bool IsMouseButtonPressed(MouseButton mouseButton)
         {
-            return PressedButtons.Contains(mouseButton);
+            return pressedButtons.Contains(mouseButton);
         }
 
         /// <summary>
@@ -271,85 +255,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if the specified mouse button is released; otherwise, <c>false</c>.</returns>
         public bool IsMouseButtonReleased(MouseButton mouseButton)
         {
-            return ReleasedButtons.Contains(mouseButton);
-        }
-
-        /// <summary>
-        /// Determines whether the specified game pad button is pressed since the previous update.
-        /// </summary>
-        /// <param name="device">The gamepad</param>
-        /// <param name="button">The button to check</param>
-        /// <returns></returns>
-        public bool IsPadButtonPressed(IGamePadDevice device, GamePadButton button)
-        {
-            return PressedGamePadButtonEvents.Any(x => x.Device == device && (x.Button & button) == button);
-        }
-
-        /// <summary>
-        /// Determines whether the specified game pad button is released since the previous update.
-        /// </summary>
-        /// <param name="device">The gamepad</param>
-        /// <param name="button">The button to check</param>
-        /// <returns></returns>
-        public bool IsPadButtonReleased(IGamePadDevice device, GamePadButton button)
-        {
-            return ReleasedGamePadButtonEvents.Any(x => x.Device == device && (x.Button & button) == button);
-        }
-
-        /// <summary>
-        /// Determines whether the specified game pad button is being pressed down.
-        /// </summary>
-        /// <param name="gamePadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
-        /// <param name="button">The button to check</param>
-        /// <returns></returns>
-        public bool IsPadButtonDown(int gamePadIndex, GamePadButton button)
-        {
-            return (GetGamePad(gamePadIndex).State.Buttons & button) != 0;
-        }
-
-        /// <summary>
-        /// Determines whether the specified game pad button is pressed since the previous update.
-        /// </summary>
-        /// <param name="gamePadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
-        /// <param name="button">The button to check</param>
-        /// <returns></returns>
-        public bool IsPadButtonPressed(int gamePadIndex, GamePadButton button)
-        {
-            var device = GetGamePad(gamePadIndex);
-            if (device == null)
-                return false;
-
-            return IsPadButtonPressed(device, button);
-        }
-        
-        /// <summary>
-        /// Determines whether the specified game pad button is pressed since the previous update.
-        /// </summary>
-        /// <param name="gamePadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
-        /// <param name="button">The button to check</param>
-        /// <returns></returns>
-        public bool IsPadButtonReleased(int gamePadIndex, GamePadButton button)
-        {
-            var device = GetGamePad(gamePadIndex);
-            if (device == null)
-                return false;
-
-            return IsPadButtonReleased(device, button);
-        }
-
-        /// <summary>
-        /// Determines whether the specified game pad button is released since the previous update.
-        /// </summary>
-        /// <param name="gamePadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
-        /// <param name="button">The button to check</param>
-        /// <returns></returns>
-        public bool GetGamePad(int gamePadIndex, GamePadButton button)
-        {
-            var device = GetGamePad(gamePadIndex);
-            if (device == null)
-                return false;
-
-            return IsPadButtonReleased(device, button);
+            return releasedButtons.Contains(mouseButton);
         }
     }
 }

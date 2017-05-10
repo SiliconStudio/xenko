@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Input
     public class InputSourceSimulated : InputSourceBase
     {
         /// <summary>
-        /// Should simulated input added to the input manager by default
+        /// Should simulated input be added to the input manager
         /// </summary>
         public static bool Enabled = false;
 
