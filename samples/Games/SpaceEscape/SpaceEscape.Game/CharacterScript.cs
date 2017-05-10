@@ -8,7 +8,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SpaceEscape
 {
@@ -80,15 +79,13 @@ namespace SpaceEscape
         private float targetChangeLanePosX; // Position of X after changning lane
         private readonly Dictionary<BoundingBoxKeys, BoundingBox> boundingBoxes = new Dictionary<BoundingBoxKeys, BoundingBox>();
         
-        private DragGesture dragGesture = new DragGesture(GestureShape.Free) { MinimumDragDistance = 0.02f, RequiredFingerCount = 1 };
-
         public bool IsDead { get { return State == AgentState.Die; } }
 
         public void Start()
         {
             // Configure Gestures for controlling the agent
             if (!IsLiveReloading) // Live scripting: add the gesture only once (on first load).
-                Input.Gestures.Add(dragGesture);
+                Input.ActivatedGestures.Add(new GestureConfigDrag(GestureShape.Free) { MinimumDragDistance = 0.02f, RequiredNumberOfFingers = 1 });
 
             // Setup Normal pose BoundingBox with that of obtained by ModelComponent.
             boundingBoxes[BoundingBoxKeys.Normal] = Entity.Get<ModelComponent>().Model.BoundingBox;
@@ -209,12 +206,12 @@ namespace SpaceEscape
         private InputState GetInputFromGesture()
         {
             // Gesture recognition
-            foreach (var gestureEvent in dragGesture.Events)
+            foreach (var gestureEvent in Input.GestureEvents)
             {
                 // Select only Drag gesture with Began state.
-                if (gestureEvent.EventType == PointerGestureEventType.Began)
+                if (gestureEvent.Type == GestureType.Drag && gestureEvent.State == GestureState.Began)
                     // From Draw gesture, determine the InputState from direction of the swipe.
-                    return ProcessInputFromDragGesture(gestureEvent as DragEventArgs);
+                    return ProcessInputFromDragGesture((GestureEventDrag)gestureEvent);
             }
 
             return InputState.None;
@@ -225,7 +222,7 @@ namespace SpaceEscape
         /// </summary>
         /// <param name="gestureEvent"></param>
         /// <returns></returns>
-        private InputState ProcessInputFromDragGesture(DragEventArgs gestureEvent)
+        private InputState ProcessInputFromDragGesture(GestureEventDrag gestureEvent)
         {
             // Get drag vector and multiply by the screenRatio of the screen, also flip y (-screenRatio).
             var screenRatio = (float)GraphicsDevice.Presenter.BackBuffer.Height / GraphicsDevice.Presenter.BackBuffer.Width;
