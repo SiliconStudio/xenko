@@ -1,4 +1,7 @@
-﻿namespace SiliconStudio.Xenko.Rendering
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// A shader used to output the id of the model component, mesh and material for a particular RenderMesh

@@ -1,4 +1,7 @@
-﻿namespace SiliconStudio.Xenko.Rendering
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
+namespace SiliconStudio.Xenko.Rendering
 {
     // TODO GRAPHICS REFACTOR: Unify passthrough color shaders (picking, highlight, etc.)
     shader HighlightShader : ShaderBase
