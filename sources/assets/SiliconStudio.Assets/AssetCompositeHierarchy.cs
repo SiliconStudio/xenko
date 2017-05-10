@@ -9,7 +9,7 @@ using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets
 {
-    public abstract class AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> : AssetComposite
+    public abstract partial class AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> : AssetComposite
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
         where TAssetPart : class, IIdentifiable
     {
