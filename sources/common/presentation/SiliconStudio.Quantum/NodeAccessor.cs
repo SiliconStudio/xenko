@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Diagnostics.Contracts;
@@ -29,9 +29,20 @@ namespace SiliconStudio.Quantum
         public NodeAccessor([NotNull] IGraphNode node, Index index)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
+            if (node is IMemberNode && !index.IsEmpty) throw new ArgumentException($"Cannot create an accessor for an {nameof(IMemberNode)} that use a non-empty index.");
             Node = node;
             Index = index;
         }
+
+        /// <summary>
+        /// Gets whether this accessor is targeting a member of an object.
+        /// </summary>
+        public bool IsMember => Node is IMemberNode;
+
+        /// <summary>
+        /// Gets whether this accessor is targeting an item of a collection.
+        /// </summary>
+        public bool IsItem => Node is IObjectNode && !Index.IsEmpty;
 
         /// <summary>
         /// Retrieves the value backed by this accessor.

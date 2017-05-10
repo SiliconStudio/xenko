@@ -17,8 +17,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="PrefabAsset"/>)
     /// </summary>
     [DataContract]
-    //[AssetPartReference(typeof(Entity), typeof(EntityComponent), ExistsTopLevel = true)]
-    //[AssetPartReference(typeof(EntityComponent), ReferenceType = typeof(EntityComponentReference))]
     public abstract partial class EntityHierarchyAssetBase : AssetCompositeHierarchy<EntityDesign, Entity>
     {
         /// <summary>
