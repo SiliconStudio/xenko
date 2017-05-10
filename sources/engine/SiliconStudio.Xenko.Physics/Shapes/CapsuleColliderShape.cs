@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Physics
 
             switch (orientation)
             {
-                case ShapeOrientation.UpZ:
+                case ShapeOrientation.UpX:
                     shape = new CapsuleShapeZ(radius, length)
                     {
                         LocalScaling = CachedScaling
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Physics
                     rotation = Matrix.Identity;
                     break;
 
-                case ShapeOrientation.UpX:
+                case ShapeOrientation.UpZ:
                     shape = new CapsuleShapeX(radius, length)
                     {
                         LocalScaling = CachedScaling
