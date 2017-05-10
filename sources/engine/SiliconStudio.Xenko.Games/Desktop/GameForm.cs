@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
@@ -78,6 +78,7 @@ namespace SiliconStudio.Xenko.Games
         private bool isUserResizing;
         private bool isBackgroundFirstDraw;
         private bool isSizeChangedWithoutResizeBegin;
+        private bool isSwitchingFullScreen;
 
         /// Initializes a new instance of the <see cref="GameForm"/> class.
         /// </summary>
@@ -365,7 +366,7 @@ namespace SiliconStudio.Xenko.Games
                         OnAppDeactivated(EventArgs.Empty);
 
                         //also remove full screen if this is the case
-                        if (IsFullScreen) //exit full screen on alt-tab if in fullscreen
+                        if (IsFullScreen && !isSwitchingFullScreen) //exit full screen on alt-tab if in fullscreen
                         {
                             OnFullscreenToggle(new EventArgs());
                         }
@@ -404,8 +405,10 @@ namespace SiliconStudio.Xenko.Games
                 case Win32Native.WM_SYSKEYDOWN: //alt is down
                     if(wparam == VK_RETURN)
                     {
-                        if(!EnableFullscreenToggle) return;
+                        isSwitchingFullScreen = true;
+                        if (!EnableFullscreenToggle) return;
                         OnFullscreenToggle(new EventArgs()); //we handle alt enter manually
+                        isSwitchingFullScreen = false;
                     }
                     break;
             }
