@@ -12,14 +12,14 @@ namespace ThirdPersonPlatformer.Core
             if (input.GamePadCount < index)
                 return false;
 
-            return (input.GetGamePad(index).State.Buttons & button) == button;
+            return (input.GetGamePad(index).Buttons & button) == button;
         }
 
         public static bool IsGamePadButtonDownAny(this InputManager input, GamePadButton button)
         {
             for (int i = 0; i < input.GamePadCount; i++)
             {
-                if ((input.GetGamePad(i).State.Buttons & button) == button)
+                if ((input.GetGamePad(i).Buttons & button) == button)
                     return true;
             }
 
@@ -28,7 +28,7 @@ namespace ThirdPersonPlatformer.Core
 
         public static Vector2 GetLeftThumb(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePad(index).State.LeftThumb : Vector2.Zero;
+            return input.GamePadCount >= index ? input.GetGamePad(index).LeftThumb : Vector2.Zero;
         }
 
         public static Vector2 GetLeftThumbAny(this InputManager input, float deadZone)
@@ -37,7 +37,7 @@ namespace ThirdPersonPlatformer.Core
             Vector2 totalMovement = Vector2.Zero;
             for (int i = 0; i < input.GamePadCount; i++)
             {
-                var leftVector = input.GetGamePad(i).State.LeftThumb;
+                var leftVector = input.GetGamePad(i).LeftThumb;
                 if (leftVector.Length() >= deadZone)
                 {
                     totalCount++;
@@ -50,7 +50,7 @@ namespace ThirdPersonPlatformer.Core
 
         public static Vector2 GetRightThumb(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePad(index).State.RightThumb : Vector2.Zero;
+            return input.GamePadCount >= index ? input.GetGamePad(index).RightThumb : Vector2.Zero;
         }
 
         public static Vector2 GetRightThumbAny(this InputManager input, float deadZone)
@@ -59,7 +59,7 @@ namespace ThirdPersonPlatformer.Core
             Vector2 totalMovement = Vector2.Zero;
             for (int i = 0; i < input.GamePadCount; i++)
             {
-                var rightVector = input.GetGamePad(i).State.RightThumb;
+                var rightVector = input.GetGamePad(i).RightThumb;
                 if (rightVector.Length() >= deadZone)
                 {
                     totalCount++;
@@ -72,7 +72,7 @@ namespace ThirdPersonPlatformer.Core
 
         public static float GetLeftTrigger(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePad(index).State.LeftTrigger : 0.0f;
+            return input.GamePadCount >= index ? input.GetGamePad(index).LeftTrigger : 0.0f;
         }
 
         public static float GetLeftTriggerAny(this InputManager input, float deadZone)
@@ -81,7 +81,7 @@ namespace ThirdPersonPlatformer.Core
             float totalInput = 0;
             for (int i = 0; i < input.GamePadCount; i++)
             {
-                float triggerValue = input.GetGamePad(i).State.LeftTrigger;
+                float triggerValue = input.GetGamePad(i).LeftTrigger;
                 if (triggerValue >= deadZone)
                 {
                     totalCount++;
@@ -94,7 +94,7 @@ namespace ThirdPersonPlatformer.Core
 
         public static float GetRightTrigger(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePad(index).State.RightTrigger : 0.0f;
+            return input.GamePadCount >= index ? input.GetGamePad(index).RightTrigger : 0.0f;
         }
 
         public static float GetRightTriggerAny(this InputManager input, float deadZone)
@@ -103,7 +103,7 @@ namespace ThirdPersonPlatformer.Core
             float totalInput = 0;
             for (int i = 0; i < input.GamePadCount; i++)
             {
-                float triggerValue = input.GetGamePad(i).State.RightTrigger;
+                float triggerValue = input.GetGamePad(i).RightTrigger;
                 if (triggerValue >= deadZone)
                 {
                     totalCount++;
