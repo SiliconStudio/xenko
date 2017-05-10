@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Input
             if (maxValue <= 0)
                 throw new ArgumentOutOfRangeException(nameof(maxValue));
             
-            return (int)(value.Value / (MaxValue / (uint)maxValue));
+            return (int)Math.Round(value.Value / ((double)MaxValue / (uint)maxValue)) % maxValue;
         }
 
         public static explicit operator Vector2(Direction value)

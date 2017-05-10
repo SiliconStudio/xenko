@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Input
     public abstract class GamePadLayout
     {
         /// <summary>
-        /// Should pov controller 0 be mapped to the directional pad?
+        /// Should direction controller 0 be mapped to the directional pad?
         /// </summary>
         protected bool MapFirstPovToPad = true;
 
@@ -128,10 +128,10 @@ namespace SiliconStudio.Xenko.Input
                 }
                 else if (MapFirstPovToPad)
                 {
-                    var povEvent = controllerEvent as PovControllerEvent;
-                    if (povEvent?.Index == 0)
+                    var directionEvent = controllerEvent as GameControllerDirectionEvent;
+                    if (directionEvent?.Index == 0)
                     {
-                        GamePadButton targetButtons = povEvent.Enabled ? GameControllerUtils.PovControllerToButton(povEvent.Value) : GamePadButton.None;
+                        GamePadButton targetButtons = GameControllerUtils.DirectionToButtons(directionEvent.Direction);
 
                         // Pad buttons down
                         for (int i = 0; i < 4; i++)

@@ -59,14 +59,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         public AdvancedInputTest()
         {
             CurrentVersion = 1;
-
-            // create and set the Graphic Device to the service register of the parent Game class
-            GraphicsDeviceManager.PreferredBackBufferWidth = 1280;
-            GraphicsDeviceManager.PreferredBackBufferHeight = 720;
-            GraphicsDeviceManager.PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
-            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.None;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 };
-
+            
             DefaultTextColor = Color.Black;
 
             displayPointerDuration = TimeSpan.FromSeconds(1.5f);

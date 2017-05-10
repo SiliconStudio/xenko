@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -27,9 +27,9 @@ namespace SiliconStudio.Xenko.Input
         IReadOnlyList<GameControllerAxisInfo> AxisInfos { get; }
 
         /// <summary>
-        /// Information about the point of view controllers on this game controller 
+        /// Information about the direction controllers on this game controller 
         /// </summary>
-        IReadOnlyList<PovControllerInfo> PovControllerInfos { get; }
+        IReadOnlyList<GameControllerDirectionInfo> DirectionInfos { get; }
 
         /// <summary>
         /// Retrieves the button state of a single button
@@ -46,17 +46,10 @@ namespace SiliconStudio.Xenko.Input
         float GetAxis(int index);
 
         /// <summary>
-        /// Retrieves the state of a single point of view controller
+        /// Retrieves the state of a single point of direction controller
         /// </summary>
-        /// <param name="index">The pov controller's index, as exposed in <see cref="PovControllerInfos"/></param>
-        /// <returns>The direction of the pov controller, starting from 0 being up, going clockwise</returns>
-        float GetPovController(int index);
-
-        /// <summary>
-        /// Retrieves the state of a single point of view controller
-        /// </summary>
-        /// <param name="index">The pov controller's index, as exposed in <see cref="PovControllerInfos"/></param>
-        /// <returns><c>true</c> if the pov controller is enabled, <c>false</c> otherwise</returns>
-        bool GetPovControllerEnabled(int index);
+        /// <param name="index">The direction controller's index, as exposed in <see cref="DirectionInfos"/></param>
+        /// <returns>The current state of the direction controller</returns>
+        Direction GetDirection(int index);
     }
 }

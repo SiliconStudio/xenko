@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 namespace SiliconStudio.Xenko.Input
@@ -9,56 +9,15 @@ namespace SiliconStudio.Xenko.Input
     public static class GameControllerUtils
     {
         /// <summary>
-        /// Returns the button next to this DPad button, going clockwise
+        /// Converts a <see cref="Direction"/> to a combination of <see cref="GamePadButton"/>'s
         /// </summary>
-        /// <param name="start">The starting button</param>
-        /// <returns>The button that lies next to this button</returns>
-        public static GamePadButton NextGamePadButtonCW(GamePadButton start)
+        public static GamePadButton DirectionToButtons(Direction direction)
         {
-            switch (start)
-            {
-                default:
-                case GamePadButton.PadUp:
-                    return GamePadButton.PadRight;
-                case GamePadButton.PadDown:
-                    return GamePadButton.PadLeft;
-                case GamePadButton.PadLeft:
-                    return GamePadButton.PadUp;
-                case GamePadButton.PadRight:
-                    return GamePadButton.PadDown;
-            }
-        }
+            GamePadButton buttonState = GamePadButton.None;
+            if (direction.IsNeutral)
+                return buttonState;
 
-        /// <summary>
-        /// Returns the button next to this DPad button, going counter-clockwise
-        /// </summary>
-        /// <param name="start">The starting button</param>
-        /// <returns>The button that lies next to this button</returns>
-        public static GamePadButton NextGamePadButtonCCW(GamePadButton start)
-        {
-            switch (start)
-            {
-                default:
-                case GamePadButton.PadUp:
-                    return GamePadButton.PadLeft;
-                case GamePadButton.PadDown:
-                    return GamePadButton.PadRight;
-                case GamePadButton.PadLeft:
-                    return GamePadButton.PadDown;
-                case GamePadButton.PadRight:
-                    return GamePadButton.PadUp;
-            }
-        }
-
-        /// <summary>
-        /// Converts a point of view controller's value to a combination of <see cref="GamePadButton"/>'s
-        /// </summary>
-        /// <param name="padValue">The pov controller's direction from 0 to 1 where 0 is up, rotating clockwise</param>
-        /// <returns>A <see cref="GamePadButton"/> that has the values set to matching the input direction</returns>
-        public static GamePadButton PovControllerToButton(float padValue)
-        {
-            GamePadButton buttonState = 0;
-            int dPadValue = (int)(padValue*8);
+            int dPadValue = direction.GetTicks(8);
             switch (dPadValue)
             {
                 case 0:
@@ -94,52 +53,40 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Converts the pad buttons of a <see cref="GamePadButton"/> to a direction from 0 to 1
+        /// Converts the pad buttons of a <see cref="GamePadButton"/> to a <see cref="Direction"/>
         /// </summary>
-        /// <param name="padDirection">The pad buttons that need to be converted</param>
-        /// <returns>A value from 0 to 1 indicating a direction where 0 is up, rotating clockwise</returns>
-        public static float ButtonToPovController(GamePadButton padDirection)
+        public static Direction ButtonsToDirection(GamePadButton padDirection)
         {
-            int dpadValue = 0;
-            for (int i = 0; i < 4; i++)
+            int ticks = ButtonToTicks(padDirection);
+            if(ticks < 0)
+                return Direction.None;
+
+            return Direction.FromTicks(ticks, 8);
+        }
+
+        private static int ButtonToTicks(GamePadButton padDirection)
+        {
+            switch (padDirection)
             {
-                int mask = 1 << i;
-                if (((int)padDirection & mask) != 0)
-                {
-                    switch ((GamePadButton)mask)
-                    {
-                        case GamePadButton.PadUp:
-                            dpadValue = 0;
-                            break;
-                        case GamePadButton.PadRight:
-                            dpadValue = 2;
-                            break;
-                        case GamePadButton.PadDown:
-                            dpadValue = 4;
-                            break;
-                        case GamePadButton.PadLeft:
-                            dpadValue = 6;
-                            break;
-                    }
-
-                    // The masks for the neighbouring buttons
-                    int maskPos = (int)NextGamePadButtonCW((GamePadButton)mask);
-                    int maskNeg = (int)NextGamePadButtonCCW((GamePadButton)mask);
-
-                    // Apply 2 button combinations by adjusting +1 or -1
-                    if (((int)padDirection & maskPos) != 0)
-                    {
-                        dpadValue = (int)(((uint)dpadValue + 1)%8);
-                    }
-                    else if (((int)padDirection & maskNeg) != 0)
-                    {
-                        dpadValue = (int)(((uint)dpadValue - 1)%8);
-                    }
-                    break;
-                }
+                case GamePadButton.PadUp:
+                    return 0;
+                case GamePadButton.PadUp | GamePadButton.PadRight:
+                    return 1;
+                case GamePadButton.PadRight:
+                    return 2;
+                case GamePadButton.PadRight | GamePadButton.PadDown:
+                    return 3;
+                case GamePadButton.PadDown:
+                    return 4;
+                case GamePadButton.PadDown | GamePadButton.PadLeft:
+                    return 5;
+                case GamePadButton.PadLeft:
+                    return 6;
+                case GamePadButton.PadLeft | GamePadButton.PadUp:
+                    return 7;
+                default:
+                    return -1;
             }
-
-            return dpadValue/8.0f;
         }
     }
 }

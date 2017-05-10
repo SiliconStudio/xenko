@@ -4,18 +4,13 @@
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// Provides information about an object exposed by a gamepad
+    /// Provides information about a gamepad direction input
     /// </summary>
-    public class GameControllerObjectInfo
+    public class GameControllerDirectionInfo : GameControllerObjectInfo
     {
-        /// <summary>
-        /// The name of the object, reported by the device
-        /// </summary>
-        public string Name;
-
         public override string ToString()
         {
-            return $"GameController Object {{{Name}}}";
+            return $"GameController Direction {{{Name}}}";
         }
     }
 }

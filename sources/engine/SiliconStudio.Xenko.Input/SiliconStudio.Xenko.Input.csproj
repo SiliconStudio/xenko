@@ -128,8 +128,8 @@
     <Compile Include="PointerPoint.cs" />
     <Compile Include="SDL\GamePadSDL.cs" />
     <Compile Include="SurfaceSizeChangedEventArgs.cs" />
-    <Compile Include="PovControllerEvent.cs" />
-    <Compile Include="PovControllerInfo.cs" />
+    <Compile Include="GameControllerDirectionEvent.cs" />
+    <Compile Include="GameControllerDirectionInfo.cs" />
     <Compile Include="GameControllerUtils.cs" />
     <Compile Include="GravitySensor.cs" />
     <Compile Include="GyroscopeSensor.cs" />
