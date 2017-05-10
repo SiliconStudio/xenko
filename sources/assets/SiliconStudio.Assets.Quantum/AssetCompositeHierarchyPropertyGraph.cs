@@ -699,12 +699,14 @@ namespace SiliconStudio.Assets.Quantum
                     while (parent != Guid.Empty)
                     {
                         parents.Add(parent);
-                        parent = Asset.GetParent(Asset.Hierarchy.Parts[parent].Part)?.Id ?? Guid.Empty;
+                        // Note: parent could have been deleted
+                        parent = Asset.Hierarchy.Parts.TryGetValue(parent, out TAssetPartDesign assetPartDesign) ? Asset.GetParent(assetPartDesign.Part)?.Id ?? Guid.Empty : Guid.Empty;
                     }
                     ancestorId = Asset.GetParent(part.Part)?.Id ?? Guid.Empty;
                     while (ancestorId != Guid.Empty && !parents.Contains(ancestorId))
                     {
-                        ancestorId = Asset.GetParent(Asset.Hierarchy.Parts[ancestorId].Part)?.Id ?? Guid.Empty;
+                        // Note: ancestor could have been deleted
+                        ancestorId = Asset.Hierarchy.Parts.TryGetValue(ancestorId, out TAssetPartDesign assetPartDesign) ? (Asset.GetParent(assetPartDesign.Part)?.Id ?? Guid.Empty) : Guid.Empty;
                     }
                     instancesCommonAncestors[part.Base.InstanceId] = ancestorId;
                 }
