@@ -65,6 +65,8 @@ namespace SiliconStudio.Xenko.Input
                 SetIndexInternal((int)controller.UserIndex);
             }
 
+            ClearButtonStates();
+
             if (controller.GetState(out xinputState))
             {
                 // DPad/Shoulder/Thumb/Option buttons
@@ -79,7 +81,10 @@ namespace SiliconStudio.Xenko.Input
                         buttonEvent.IsDown = buttonState;
                         buttonEvent.Button = (GamePadButton)mask; // 1 to 1 mapping with XInput buttons
                         inputEvents.Add(buttonEvent);
-                        state.Update(buttonEvent);
+                        if (state.Update(buttonEvent))
+                        {
+                            UpdateButtonState(buttonEvent);
+                        }
                     }
                 }
                 

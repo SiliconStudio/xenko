@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 
 using System;
+using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -24,6 +25,21 @@ namespace SiliconStudio.Xenko.Input
         /// The index of the gamepad assigned by the input manager
         /// </summary>
         int Index { get; }
+
+        /// <summary>
+        /// The gamepad buttons that have been pressed since the last frame
+        /// </summary>
+        IReadOnlySet<GamePadButton> PressedButtons { get; }
+
+        /// <summary>
+        /// The gamepad buttons that have been released since the last frame
+        /// </summary>
+        IReadOnlySet<GamePadButton> ReleasedButtons { get; }
+
+        /// <summary>
+        /// The gamepad buttons that are down
+        /// </summary>
+        IReadOnlySet<GamePadButton> DownButtons { get; }
 
         /// <summary>
         /// Raised if the index assigned to this gamepad changed

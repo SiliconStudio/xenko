@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public abstract class GamePadFromLayout : GamePadDeviceBase
     {
-        private static readonly List<InputEvent> Events = new List<InputEvent>();
+        private readonly List<InputEvent> events = new List<InputEvent>();
 
         private GamePadState state = new GamePadState();
 
@@ -32,15 +32,17 @@ namespace SiliconStudio.Xenko.Input
         public override void Update(List<InputEvent> inputEvents)
         {
             // Wrap the controller device and turn it's events into gamepad events
-            GameControllerDevice.Update(Events);
+            GameControllerDevice.Update(events);
 
             int eventStart = inputEvents.Count;
 
-            foreach (var e in Events)
+            foreach (var e in events)
             {
                 Layout.MapInputEvent(this, GameControllerDevice, e, inputEvents);
                 InputManager.PoolInputEvent(e); // Put event back into event pool
             }
+
+            ClearButtonStates();
 
             // Apply events to gamepad state
             for (int index = eventStart; index < inputEvents.Count;)
@@ -53,11 +55,15 @@ namespace SiliconStudio.Xenko.Input
                 }
                 else
                 {
+                    var buttonEvent = inputEvents[index] as GamePadButtonEvent;
+                    if(buttonEvent != null)
+                        UpdateButtonState(buttonEvent);
+
                     index++;
                 }
             }
 
-            Events.Clear();
+            events.Clear();
         }
     }
 }

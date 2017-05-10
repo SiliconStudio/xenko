@@ -68,6 +68,14 @@ namespace SiliconStudio.Xenko.Input
             GestureEvents = currentGestureEvents;
             Gestures = new TrackingCollection<GestureConfig>();
             Gestures.CollectionChanged += GesturesOnCollectionChanged;
+
+            // Initialize read only sets for key states
+            DownKeys = new ReadOnlySet<Keys>(downKeys = new HashSet<Keys>());
+            PressedKeys = new ReadOnlySet<Keys>(pressedKeys = new HashSet<Keys>());
+            ReleasedKeys = new ReadOnlySet<Keys>(releasedKeys = new HashSet<Keys>());
+            DownButtons = new ReadOnlySet<MouseButton>(downButtons = new HashSet<MouseButton>());
+            PressedButtons = new ReadOnlySet<MouseButton>(pressedButtons = new HashSet<MouseButton>());
+            ReleasedButtons = new ReadOnlySet<MouseButton>(releasedButtons = new HashSet<MouseButton>());
         }
         
         /// <summary>
@@ -315,7 +323,7 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Gets the gamepad with a specific index
+        /// Gets the gamepad with a specific id
         /// </summary>
         /// <param name="gamePadIndex">The index of the gamepad</param>
         /// <returns>The gamepad, or null if no gamepad has this index</returns>
@@ -470,9 +478,9 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Inserts any supported pointer event back into it's respective <see cref="InputEventPool"/>. This should normally not be used
+        /// Inserts any registered event back into it's <see cref="InputEventPool&lt;"/>.
         /// </summary>
-        /// <param name="inputEvent">The event to instert into it's event pool</param>
+        /// <param name="inputEvent">The event to insert into it's event pool</param>
         public void PoolInputEvent(InputEvent inputEvent)
         {
             eventRouters[inputEvent.GetType()].PoolEvent(inputEvent);
@@ -877,7 +885,7 @@ namespace SiliconStudio.Xenko.Input
             currentGestureEvents.Clear();
 
             foreach (var gestureRecognizer in gestureConfigToRecognizer.Values)
-                currentGestureEvents.AddRange(gestureRecognizer.ProcessPointerEvents(elapsedGameTime, PointerEvents));
+                currentGestureEvents.AddRange(gestureRecognizer.ProcessPointerEvents(elapsedGameTime, pointerEvents));
         }
 
         private void UpdateVirtualButtonValues()
