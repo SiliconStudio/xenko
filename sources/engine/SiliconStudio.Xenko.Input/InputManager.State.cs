@@ -14,17 +14,13 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public partial class InputManager : IInputEventListener<KeyEvent>, 
         IInputEventListener<PointerEvent>, 
-        IInputEventListener<MouseButtonEvent>, 
         IInputEventListener<MouseWheelEvent>
     {
         private Vector2 mousePosition;
         
-        private readonly HashSet<Keys> downKeys = new HashSet<Keys>();
-        private readonly HashSet<Keys> pressedKeys = new HashSet<Keys>();
-        private readonly HashSet<Keys> releasedKeys = new HashSet<Keys>();
-        private readonly HashSet<MouseButton> downButtons = new HashSet<MouseButton>();
-        private readonly HashSet<MouseButton> pressedButtons = new HashSet<MouseButton>();
-        private readonly HashSet<MouseButton> releasedButtons = new HashSet<MouseButton>();
+        private readonly ReadOnlySet<MouseButton> NoButtons = new ReadOnlySet<MouseButton>(new HashSet<MouseButton>());
+        private readonly ReadOnlySet<Keys> NoKeys = new ReadOnlySet<Keys>(new HashSet<Keys>());
+
         private readonly List<KeyEvent> keyEvents = new List<KeyEvent>();
 
         // TODO: This is left internal until the UI test have been upgraded to use the input simulation layer
@@ -51,70 +47,154 @@ namespace SiliconStudio.Xenko.Input
         public IPointerDevice LastPointerDevice { get; private set; }
 
         /// <summary>
-        /// Determines whether one or more keys are down
+        /// Determines whether one or more keys are pressed
         /// </summary>
-        /// <returns><c>true</c> if one or more keys are down; otherwise, <c>false</c>.</returns>
-        public bool HasDownKeys => downKeys.Count > 0;
+        /// <returns><c>true</c> if one or more keys are pressed; otherwise, <c>false</c>.</returns>
+        public bool HasPressedKeys
+        {
+            get
+            {
+                if (!HasKeyboard) return false;
+                return Keyboard.PressedKeys.Count > 0;
+            }
+        }
 
         /// <summary>
         /// Determines whether one or more keys are released
         /// </summary>
         /// <returns><c>true</c> if one or more keys are released; otherwise, <c>false</c>.</returns>
-        public bool HasReleasedKeys => releasedKeys.Count > 0;
-        
-        /// <summary>
-        /// Determines whether one or more keys are pressed
-        /// </summary>
-        /// <returns><c>true</c> if one or more keys are pressed; otherwise, <c>false</c>.</returns>
-        public bool HasPressedKeys => pressedKeys.Count > 0;
+        public bool HasReleasedKeys
+        {
+            get
+            {
+                if (!HasKeyboard) return false;
+                return Keyboard.ReleasedKeys.Count > 0;
+            }
+        }
 
         /// <summary>
-        /// Determines whether one or more of the mouse buttons are down
+        /// Determines whether one or more keys are down
         /// </summary>
-        /// <returns><c>true</c> if one or more of the mouse buttons are down; otherwise, <c>false</c>.</returns>
-        public bool HasDownMouseButtons => downButtons.Count > 0;
-
-        /// <summary>
-        /// Determines whether one or more of the mouse buttons are released
-        /// </summary>
-        /// <returns><c>true</c> if one or more of the mouse buttons are released; otherwise, <c>false</c>.</returns>
-        public bool HasReleasedMouseButtons => releasedButtons.Count > 0;
+        /// <returns><c>true</c> if one or more keys are down; otherwise, <c>false</c>.</returns>
+        public bool HasDownKeys
+        {
+            get
+            {
+                if (!HasKeyboard) return false;
+                return Keyboard.DownKeys.Count > 0;
+            }
+        }
 
         /// <summary>
         /// Determines whether one or more of the mouse buttons are pressed
         /// </summary>
         /// <returns><c>true</c> if one or more of the mouse buttons are pressed; otherwise, <c>false</c>.</returns>
-        public bool HasPressedMouseButtons => pressedButtons.Count > 0;
-
-        /// <summary>
-        /// The keys that are down
-        /// </summary>
-        public IReadOnlySet<Keys> DownKeys { get; }
+        public bool HasPressedMouseButtons
+        {
+            get
+            {
+                if (!HasMouse) return false;
+                return Mouse.PressedButtons.Count > 0;
+            }
+        }
 
         /// <summary>
         /// The keys that have been pressed since the last frame
         /// </summary>
-        public IReadOnlySet<Keys> PressedKeys { get; }
+        public IReadOnlySet<Keys> PressedKeys
+        {
+            get
+            {
+                if (!HasMouse) return NoKeys;
+                return Keyboard.PressedKeys;
+            }
+        }
 
         /// <summary>
         /// The keys that have been released since the last frame
         /// </summary>
-        public IReadOnlySet<Keys> ReleasedKeys { get; }
+        public IReadOnlySet<Keys> ReleasedKeys
+        {
+            get
+            {
+                if (!HasMouse) return NoKeys;
+                return Keyboard.ReleasedKeys;
+            }
+        }
 
         /// <summary>
-        /// The mouse buttons that are down
+        /// The keys that are down
         /// </summary>
-        public IReadOnlySet<MouseButton> DownButtons { get; }
+        public IReadOnlySet<Keys> DownKeys
+        {
+            get
+            {
+                if (!HasMouse) return NoKeys;
+                return Keyboard.DownKeys;
+            }
+        }
 
         /// <summary>
         /// The mouse buttons that have been pressed since the last frame
         /// </summary>
-        public IReadOnlySet<MouseButton> PressedButtons { get; }
+        public IReadOnlySet<MouseButton> PressedButtons
+        {
+            get
+            {
+                if (!HasMouse) return NoButtons;
+                return Mouse.PressedButtons;
+            }
+        }
 
         /// <summary>
         /// The mouse buttons that have been released since the last frame
         /// </summary>
-        public IReadOnlySet<MouseButton> ReleasedButtons { get; }
+        public IReadOnlySet<MouseButton> ReleasedButtons
+        {
+            get
+            {
+                if (!HasMouse) return NoButtons;
+                return Mouse.ReleasedButtons;
+            }
+        }
+
+        /// <summary>
+        /// The mouse buttons that are down
+        /// </summary>
+        public IReadOnlySet<MouseButton> DownButtons
+        {
+            get
+            {
+                if (!HasMouse) return NoButtons;
+                return Mouse.DownButtons;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether one or more of the mouse buttons are released
+        /// </summary>
+        /// <returns><c>true</c> if one or more of the mouse buttons are released; otherwise, <c>false</c>.</returns>
+        public bool HasReleasedMouseButtons
+        {
+            get
+            {
+                if (!HasMouse) return false;
+                return Mouse.ReleasedButtons.Count > 0;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether one or more of the mouse buttons are down
+        /// </summary>
+        /// <returns><c>true</c> if one or more of the mouse buttons are down; otherwise, <c>false</c>.</returns>
+        public bool HasDownMouseButtons
+        {
+            get
+            {
+                if (!HasMouse) return false;
+                return Mouse.DownButtons.Count > 0;
+            }
+        }
 
         /// <summary>
         /// Pointer events that happened since the last frame
@@ -131,11 +211,6 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         public void ResetGlobalInputState()
         {
-            // Reset convenience states
-            pressedKeys.Clear();
-            releasedKeys.Clear();
-            pressedButtons.Clear();
-            releasedButtons.Clear();
             keyEvents.Clear();
             pointerEvents.Clear();
             MouseWheelDelta = 0;
@@ -145,17 +220,6 @@ namespace SiliconStudio.Xenko.Input
 
         public void ProcessEvent(KeyEvent inputEvent)
         {
-            if (inputEvent.IsDown)
-            {
-                if (inputEvent.RepeatCount == 0)
-                    downKeys.Add(inputEvent.Key);
-                pressedKeys.Add(inputEvent.Key);
-            }
-            else
-            {
-                downKeys.Remove(inputEvent.Key);
-                releasedKeys.Add(inputEvent.Key);
-            }
             keyEvents.Add(inputEvent);
         }
 
@@ -176,20 +240,6 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        public void ProcessEvent(MouseButtonEvent inputEvent)
-        {
-            if (inputEvent.IsDown)
-            {
-                downButtons.Add(inputEvent.Button);
-                pressedButtons.Add(inputEvent.Button);
-            }
-            else
-            {
-                downButtons.Remove(inputEvent.Button);
-                releasedButtons.Add(inputEvent.Button);
-            }
-        }
-
         public void ProcessEvent(MouseWheelEvent inputEvent)
         {
             if (Math.Abs(inputEvent.WheelDelta) > Math.Abs(MouseWheelDelta))
@@ -199,23 +249,13 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Determines whether the specified key is being pressed down.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns><c>true</c> if the specified key is being pressed down; otherwise, <c>false</c>.</returns>
-        public bool IsKeyDown(Keys key)
-        {
-            return downKeys.Contains(key);
-        }
-
-        /// <summary>
         /// Determines whether the specified key is pressed since the previous update.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns><c>true</c> if the specified key is pressed; otherwise, <c>false</c>.</returns>
         public bool IsKeyPressed(Keys key)
         {
-            return pressedKeys.Contains(key);
+            return Keyboard?.IsKeyPressed(key) ?? false;
         }
 
         /// <summary>
@@ -225,17 +265,17 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if the specified key is released; otherwise, <c>false</c>.</returns>
         public bool IsKeyReleased(Keys key)
         {
-            return releasedKeys.Contains(key);
+            return Keyboard?.IsKeyReleased(key) ?? false;
         }
 
         /// <summary>
-        /// Determines whether the specified mouse button is being pressed down.
+        /// Determines whether the specified key is being pressed down.
         /// </summary>
-        /// <param name="mouseButton">The mouse button.</param>
-        /// <returns><c>true</c> if the specified mouse button is being pressed down; otherwise, <c>false</c>.</returns>
-        public bool IsMouseButtonDown(MouseButton mouseButton)
+        /// <param name="key">The key.</param>
+        /// <returns><c>true</c> if the specified key is being pressed down; otherwise, <c>false</c>.</returns>
+        public bool IsKeyDown(Keys key)
         {
-            return downButtons.Contains(mouseButton);
+            return Keyboard?.IsKeyDown(key) ?? false;
         }
 
         /// <summary>
@@ -245,7 +285,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if the specified mouse button is pressed since the previous update; otherwise, <c>false</c>.</returns>
         public bool IsMouseButtonPressed(MouseButton mouseButton)
         {
-            return pressedButtons.Contains(mouseButton);
+            return Mouse?.IsButtonPressed(mouseButton) ?? false;
         }
 
         /// <summary>
@@ -255,7 +295,17 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if the specified mouse button is released; otherwise, <c>false</c>.</returns>
         public bool IsMouseButtonReleased(MouseButton mouseButton)
         {
-            return releasedButtons.Contains(mouseButton);
+            return Mouse?.IsButtonReleased(mouseButton) ?? false;
+        }
+
+        /// <summary>
+        /// Determines whether the specified mouse button is being pressed down.
+        /// </summary>
+        /// <param name="mouseButton">The mouse button.</param>
+        /// <returns><c>true</c> if the specified mouse button is being pressed down; otherwise, <c>false</c>.</returns>
+        public bool IsMouseButtonDown(MouseButton mouseButton)
+        {
+            return Mouse?.IsButtonDown(mouseButton) ?? false;
         }
     }
 }

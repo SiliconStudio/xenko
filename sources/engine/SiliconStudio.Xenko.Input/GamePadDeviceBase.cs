@@ -9,9 +9,9 @@ namespace SiliconStudio.Xenko.Input
 {
     public abstract class GamePadDeviceBase : IGamePadDevice
     {
-        private readonly HashSet<GamePadButton> releasedButtons;
-        private readonly HashSet<GamePadButton> pressedButtons;
-        private readonly HashSet<GamePadButton> downButtons;
+        private readonly HashSet<GamePadButton> releasedButtons = new HashSet<GamePadButton>();
+        private readonly HashSet<GamePadButton> pressedButtons = new HashSet<GamePadButton>();
+        private readonly HashSet<GamePadButton> downButtons = new HashSet<GamePadButton>();
         private int index;
 
         public abstract string Name { get; }
@@ -45,9 +45,9 @@ namespace SiliconStudio.Xenko.Input
 
         protected GamePadDeviceBase()
         {
-            DownButtons = new ReadOnlySet<GamePadButton>(downButtons = new HashSet<GamePadButton>());
-            PressedButtons = new ReadOnlySet<GamePadButton>(pressedButtons = new HashSet<GamePadButton>());
-            ReleasedButtons = new ReadOnlySet<GamePadButton>(releasedButtons = new HashSet<GamePadButton>());
+            PressedButtons = new ReadOnlySet<GamePadButton>(pressedButtons);
+            ReleasedButtons = new ReadOnlySet<GamePadButton>(releasedButtons);
+            DownButtons = new ReadOnlySet<GamePadButton>(downButtons);
         }
 
         protected void SetIndexInternal(int newIndex, bool isDeviceSideChange = true)

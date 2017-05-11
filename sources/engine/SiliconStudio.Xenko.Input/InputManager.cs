@@ -67,14 +67,6 @@ namespace SiliconStudio.Xenko.Input
             GestureEvents = currentGestureEvents;
             Gestures = new TrackingCollection<GestureConfig>();
             Gestures.CollectionChanged += GesturesOnCollectionChanged;
-
-            // Initialize read only sets for key states
-            DownKeys = new ReadOnlySet<Keys>(downKeys = new HashSet<Keys>());
-            PressedKeys = new ReadOnlySet<Keys>(pressedKeys = new HashSet<Keys>());
-            ReleasedKeys = new ReadOnlySet<Keys>(releasedKeys = new HashSet<Keys>());
-            DownButtons = new ReadOnlySet<MouseButton>(downButtons = new HashSet<MouseButton>());
-            PressedButtons = new ReadOnlySet<MouseButton>(pressedButtons = new HashSet<MouseButton>());
-            ReleasedButtons = new ReadOnlySet<MouseButton>(releasedButtons = new HashSet<MouseButton>());
         }
         
         /// <summary>

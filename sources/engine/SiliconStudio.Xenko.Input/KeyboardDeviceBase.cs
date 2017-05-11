@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -11,13 +12,24 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public abstract class KeyboardDeviceBase : IKeyboardDevice
     {
-        private readonly List<Keys> downKeys = new List<Keys>();
+        private readonly HashSet<Keys> pressedKeys = new HashSet<Keys>();
+        private readonly HashSet<Keys> releasedKeys = new HashSet<Keys>();
+        private readonly HashSet<Keys> downKeys = new HashSet<Keys>();
 
         protected readonly List<KeyEvent> Events = new List<KeyEvent>();
 
         public readonly Dictionary<Keys, int> KeyRepeats = new Dictionary<Keys, int>();
 
-        public IReadOnlyList<Keys> DownKeys => downKeys;
+        protected KeyboardDeviceBase()
+        {
+            PressedKeys = new ReadOnlySet<Keys>(pressedKeys);
+            ReleasedKeys = new ReadOnlySet<Keys>(releasedKeys);
+            DownKeys = new ReadOnlySet<Keys>(downKeys);
+        }
+
+        public IReadOnlySet<Keys> PressedKeys { get; }
+        public IReadOnlySet<Keys> ReleasedKeys { get; }
+        public IReadOnlySet<Keys> DownKeys { get; }
 
         public abstract string Name { get; }
 
@@ -29,19 +41,44 @@ namespace SiliconStudio.Xenko.Input
 
         public virtual void Update(List<InputEvent> inputEvents)
         {
+            pressedKeys.Clear();
+            releasedKeys.Clear();
+            
             // Fire events
-            foreach (var evt in Events)
+            foreach (var keyEvent in Events)
             {
-                inputEvents.Add(evt);
+                inputEvents.Add(keyEvent);
+                
+                if (keyEvent != null)
+                {
+                    if (keyEvent.IsDown)
+                    {
+                        pressedKeys.Add(keyEvent.Key);
+                    }
+                    else
+                    {
+                        releasedKeys.Add(keyEvent.Key);
+                    }
+                }
             }
             Events.Clear();
         }
-        
+
+        public bool IsKeyPressed(Keys key)
+        {
+            return pressedKeys.Contains(key);
+        }
+
+        public bool IsKeyReleased(Keys key)
+        {
+            return releasedKeys.Contains(key);
+        }
+
         public virtual bool IsKeyDown(Keys key)
         {
             return KeyRepeats.ContainsKey(key);
         }
-
+        
         public void HandleKeyDown(Keys key)
         {
             // Increment repeat count on subsequent down events
