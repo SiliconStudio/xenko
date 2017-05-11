@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
@@ -16,27 +17,34 @@ namespace SiliconStudio.Xenko.Input
         protected readonly List<PointerInputEvent> PointerInputEvents = new List<PointerInputEvent>();
         protected readonly List<PointerData> PointerDatas = new List<PointerData>();
 
+        private readonly HashSet<PointerPoint> pressedPointers = new HashSet<PointerPoint>();
+        private readonly HashSet<PointerPoint> releasedPointers = new HashSet<PointerPoint>();
+        private readonly HashSet<PointerPoint> downPointers = new HashSet<PointerPoint>();
+        
         private Vector2 surfaceSize;
         private Vector2 invSurfaceSize;
         private float aspectRatio;
 
+        protected PointerDeviceBase()
+        {
+            PressedPointers = new ReadOnlySet<PointerPoint>(pressedPointers);
+            ReleasedPointers = new ReadOnlySet<PointerPoint>(releasedPointers);
+            DownPointers = new ReadOnlySet<PointerPoint>(downPointers);
+        }
+
         public abstract string Name { get; }
-
         public abstract Guid Id { get; }
-
         public abstract PointerType Type { get; }
-
         public int Priority { get; set; }
-
         public abstract IInputSource Source { get; }
 
         public Vector2 SurfaceSize => surfaceSize;
-
         public Vector2 InverseSurfaceSize => invSurfaceSize;
-
         public float SurfaceAspectRatio => aspectRatio;
 
-        public IReadOnlyList<PointerPoint> PointerPoints => PointerDatas;
+        public IReadOnlySet<PointerPoint> PressedPointers { get; }
+        public IReadOnlySet<PointerPoint> ReleasedPointers { get; }
+        public IReadOnlySet<PointerPoint> DownPointers { get; }
 
         public event EventHandler<SurfaceSizeChangedEventArgs> SurfaceSizeChanged;
 
@@ -86,10 +94,14 @@ namespace SiliconStudio.Xenko.Input
             {
                 data.Clock.Restart();
                 data.IsDown = true;
+                pressedPointers.Add(data);
+                downPointers.Add(data);
             }
             else if (evt.Type == PointerEventType.Released || evt.Type == PointerEventType.Canceled)
             {
                 data.IsDown = false;
+                pressedPointers.Add(data);
+                downPointers.Remove(data);
             }
             
             var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(this);
