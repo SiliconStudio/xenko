@@ -124,6 +124,8 @@
     <Compile Include="GameControllerButtonInfo.cs" />
     <Compile Include="GameControllerButtonType.cs" />
     <Compile Include="GameControllerObjectInfo.cs" />
+    <Compile Include="KeyboardDeviceExtensions.cs" />
+    <Compile Include="MouseDeviceExtensions.cs" />
     <Compile Include="PointerPoint.cs" />
     <Compile Include="SDL\GamePadSDL.cs" />
     <Compile Include="Simulated\GamePadSimulated.cs" />
@@ -158,7 +160,7 @@
     <Compile Include="GamePadAxis.cs" />
     <Compile Include="GameControllerDeviceBase.cs" />
     <Compile Include="GameControllerExtensions.cs" />
-    <Compile Include="GamePadExtensions.cs" />
+    <Compile Include="GamePadDeviceExtensions.cs" />
     <Compile Include="GamePadButton.cs" />
     <Compile Include="GamePadState.cs" />
     <Compile Include="IGravitySensor.cs" />

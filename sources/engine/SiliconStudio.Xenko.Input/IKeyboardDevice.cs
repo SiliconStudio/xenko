@@ -25,26 +25,5 @@ namespace SiliconStudio.Xenko.Input
         /// List of keys that are currently down on this keyboard
         /// </summary>
         IReadOnlySet<Keys> DownKeys { get; }
-
-        /// <summary>
-        /// Determines whether the specified key is pressed since the previous update.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns><c>true</c> if the specified key is pressed; otherwise, <c>false</c>.</returns>
-        bool IsKeyPressed(Keys key);
-
-        /// <summary>
-        /// Determines whether the specified key is released since the previous update.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns><c>true</c> if the specified key is released; otherwise, <c>false</c>.</returns>
-        bool IsKeyReleased(Keys key);
-
-        /// <summary>
-        /// Determines whether the specified key is being pressed down
-        /// </summary>
-        /// <param name="key">The key</param>
-        /// <returns><c>true</c> if the specified key is being pressed down; otherwise, <c>false</c>.</returns>
-        bool IsKeyDown(Keys key);
     }
 }

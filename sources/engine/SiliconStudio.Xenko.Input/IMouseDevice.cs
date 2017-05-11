@@ -53,27 +53,6 @@ namespace SiliconStudio.Xenko.Input
         void UnlockPosition();
 
         /// <summary>
-        /// Determines whether the specified button is being pressed down
-        /// </summary>
-        /// <param name="mouseButton">The button</param>
-        /// <returns><c>true</c> if the specified button is being pressed down; otherwise, <c>false</c>.</returns>
-        bool IsButtonDown(MouseButton mouseButton);
-
-        /// <summary>
-        /// Determines whether the specified mouse button is pressed since the previous update.
-        /// </summary>
-        /// <param name="mouseButton">The mouse button.</param>
-        /// <returns><c>true</c> if the specified mouse button is pressed since the previous update; otherwise, <c>false</c>.</returns>
-        bool IsButtonPressed(MouseButton mouseButton);
-
-        /// <summary>
-        /// Determines whether the specified mouse button is released.
-        /// </summary>
-        /// <param name="mouseButton">The mouse button.</param>
-        /// <returns><c>true</c> if the specified mouse button is released; otherwise, <c>false</c>.</returns>
-        bool IsButtonReleased(MouseButton mouseButton);
-
-        /// <summary>
         /// Attempts to set the pointer position, this only makes sense for mouse pointers
         /// </summary>
         /// <param name="normalizedPosition"></param>

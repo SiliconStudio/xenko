@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -30,14 +31,22 @@ namespace SiliconStudio.Xenko.Input
         /// Information about the direction controllers on this game controller 
         /// </summary>
         IReadOnlyList<GameControllerDirectionInfo> DirectionInfos { get; }
+        
+        /// <summary>
+        /// The buttons that have been pressed since the last frame
+        /// </summary>
+        IReadOnlySet<int> PressedButtons { get; }
 
         /// <summary>
-        /// Retrieves the button state of a single button
+        /// The buttons that have been released since the last frame
         /// </summary>
-        /// <param name="index">The button's index, as exposed in <see cref="ButtonInfos"/></param>
-        /// <returns><c>true</c> if the button is pressed, <c>false</c> otherwise</returns>
-        bool GetButton(int index);
+        IReadOnlySet<int> ReleasedButtons { get; }
 
+        /// <summary>
+        /// The buttons that are down
+        /// </summary>
+        IReadOnlySet<int> DownButtons { get; }
+        
         /// <summary>
         /// Retrieves the state of a single axis
         /// </summary>
