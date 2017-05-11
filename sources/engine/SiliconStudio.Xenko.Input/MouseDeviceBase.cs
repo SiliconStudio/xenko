@@ -70,22 +70,7 @@ namespace SiliconStudio.Xenko.Input
             Delta = nextDelta;
             nextDelta = Vector2.Zero;
         }
-
-        public bool IsButtonPressed(MouseButton mouseButton)
-        {
-            return pressedButtons.Contains(mouseButton);
-        }
-
-        public bool IsButtonReleased(MouseButton mouseButton)
-        {
-            return releasedButtons.Contains(mouseButton);
-        }
-
-        public virtual bool IsButtonDown(MouseButton mouseButton)
-        {
-            return downButtons.Contains(mouseButton);
-        }
-
+        
         public abstract void SetPosition(Vector2 normalizedPosition);
         
         public abstract void LockPosition(bool forceCenter = false);

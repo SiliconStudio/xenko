@@ -63,21 +63,6 @@ namespace SiliconStudio.Xenko.Input
             }
             Events.Clear();
         }
-
-        public bool IsKeyPressed(Keys key)
-        {
-            return pressedKeys.Contains(key);
-        }
-
-        public bool IsKeyReleased(Keys key)
-        {
-            return releasedKeys.Contains(key);
-        }
-
-        public virtual bool IsKeyDown(Keys key)
-        {
-            return KeyRepeats.ContainsKey(key);
-        }
         
         public void HandleKeyDown(Keys key)
         {

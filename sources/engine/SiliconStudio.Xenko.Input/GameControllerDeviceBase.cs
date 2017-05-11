@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -11,29 +12,37 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public abstract class GameControllerDeviceBase : IGameControllerDevice
     {
+        private readonly HashSet<int> pressedButtons = new HashSet<int>();
+        private readonly HashSet<int> releasedButtons = new HashSet<int>();
+        private readonly HashSet<int> downButtons = new HashSet<int>();
+
         private readonly List<InputEvent> events = new List<InputEvent>();
 
         protected bool[] ButtonStates;
-
         protected float[] AxisStates;
-
         protected Direction[] DirectionStates;
 
+        protected GameControllerDeviceBase()
+        {
+            PressedButtons = new ReadOnlySet<int>(pressedButtons);
+            ReleasedButtons = new ReadOnlySet<int>(releasedButtons);
+            DownButtons = new ReadOnlySet<int>(downButtons);
+        }
+
         public abstract string Name { get; }
-
         public abstract Guid Id { get; }
-
         public virtual Guid ProductId => Id;
 
         public int Priority { get; set; }
 
         public abstract IInputSource Source { get; }
-
         public abstract IReadOnlyList<GameControllerButtonInfo> ButtonInfos { get; }
-
         public abstract IReadOnlyList<GameControllerAxisInfo> AxisInfos { get; }
-
         public abstract IReadOnlyList<GameControllerDirectionInfo> DirectionInfos { get; }
+
+        public IReadOnlySet<int> PressedButtons { get; }
+        public IReadOnlySet<int> ReleasedButtons { get; }
+        public IReadOnlySet<int> DownButtons { get; }
 
         /// <summary>
         /// Creates the correct amount of states based on the amount of object infos that are set
@@ -43,14 +52,6 @@ namespace SiliconStudio.Xenko.Input
             ButtonStates = new bool[ButtonInfos.Count];
             AxisStates = new float[AxisInfos.Count];
             DirectionStates = new Direction[DirectionInfos.Count];
-        }
-        
-        public virtual bool GetButton(int index)
-        {
-            if (index < 0 || index > ButtonStates.Length)
-                return false;
-
-            return ButtonStates[index];
         }
         
         public virtual float GetAxis(int index)
@@ -71,10 +72,28 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         public virtual void Update(List<InputEvent> inputEvents)
         {
+            pressedButtons.Clear();
+            releasedButtons.Clear();
+
             // Collect events from queue
             foreach (var evt in events)
             {
                 inputEvents.Add(evt);
+
+                var buttonEvent = evt as GameControllerButtonEvent;
+                if (buttonEvent != null)
+                {
+                    if (buttonEvent.IsDown)
+                    {
+                        pressedButtons.Add(buttonEvent.Index);
+                        downButtons.Add(buttonEvent.Index);
+                    }
+                    else
+                    {
+                        releasedButtons.Add(buttonEvent.Index);
+                        downButtons.Remove(buttonEvent.Index);
+                    }
+                }
             }
             events.Clear();
         }
