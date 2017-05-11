@@ -60,7 +60,6 @@ namespace SiliconStudio.Xenko.Engine
                 var nodeTransformations = skeleton.NodeTransformations;
                 if (nodeIndex < nodes.Length)
                 {
-                    // Hopefully, if ref locals gets merged in roslyn, this code can be refactored
                     // Compute
                     matrix = nodeTransformations[nodeIndex].WorldMatrix;
                     return;
