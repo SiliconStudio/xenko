@@ -21,10 +21,15 @@ namespace SiliconStudio.Xenko.Streaming
         private readonly ContentChunk[] chunks;
 
         /// <summary>
+        /// The content streaming service which manages this storage container.
+        /// </summary>
+        public ContentStreamingService Service { get; }
+
+        /// <summary>
         /// Gets the storage URL path.
         /// </summary>
         public string Url { get; }
-
+        
         /// <summary>
         /// Gets the time when container has been created.
         /// </summary>
@@ -52,9 +57,10 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         public int ChunksCount => chunks.Length;
 
-        internal ContentStorage(ContentStorageHeader header)
+        internal ContentStorage(ContentStreamingService service, ContentStorageHeader header)
         {
             // Init
+            Service = service;
             Url = header.DataUrl;
             chunks = new ContentChunk[header.ChunksCount];
             for (int i = 0; i < chunks.Length; i++)

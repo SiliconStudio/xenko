@@ -11,8 +11,8 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public class ImageHelper
     {
-        public static DataSerializer<ImageDescription> ImageDescriptionSerializer = SerializerSelector.Default.GetSerializer<ImageDescription>();
-        private static readonly FourCC MagicCode = "TKTX";
+        internal static DataSerializer<ImageDescription> ImageDescriptionSerializer = SerializerSelector.Default.GetSerializer<ImageDescription>();
+        internal static readonly FourCC MagicCode = "TKTX";
 
         public static unsafe Image LoadFromMemory(IntPtr pSource, int size, bool makeACopy, GCHandle? handle)
         {

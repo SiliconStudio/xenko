@@ -23,75 +23,67 @@ namespace SiliconStudio.Xenko.Graphics.Data
                 var services = stream.Context.Tags.Get(ServiceRegistry.ServiceRegistryKey);
                 var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
 
-                // Read header
                 var startPosition = stream.NativeStream.Position;
-                var version = stream.NativeStream.ReadUInt32();
-                switch (version)
+                var magicCode = stream.NativeStream.ReadUInt32();
+                if (magicCode == ImageHelper.MagicCode)
                 {
-                    case 1481919316:
+                    stream.NativeStream.Position = startPosition;
+
+                    // TODO: Error handling?
+                    using (var textureData = Image.Load(stream.NativeStream))
                     {
-                        // Note: 1st version was using raw Image without any information about texture streaming options, etc.
-                        stream.NativeStream.Position = startPosition;
+                        if (texture.GraphicsDevice != null)
+                            texture.OnDestroyed(); //Allows fast reloading todo review maybe?
 
-                        // TODO: Error handling?
-                        using (var textureData = Image.Load(stream.NativeStream))
-                        {
-                            if (texture.GraphicsDevice != null)
-                                texture.OnDestroyed(); //Allows fast reloading todo review maybe?
-
-                            texture.AttachToGraphicsDevice(graphicsDeviceService.GraphicsDevice);
-                            texture.InitializeFrom(textureData.Description, new TextureViewDescription(), textureData.ToDataBox());
-
-                            // Setup reload callback (reload from asset manager)
-                            var contentSerializerContext = stream.Context.Get(ContentSerializerContext.ContentSerializerContextProperty);
-                            if (contentSerializerContext != null)
-                            {
-                                var assetManager = contentSerializerContext.ContentManager;
-                                var url = contentSerializerContext.Url;
-                                
-                                texture.Reload = (graphicsResource) =>
-                                {
-                                    var textureDataReloaded = assetManager.Load<Image>(url);
-                                    ((Texture)graphicsResource).Recreate(textureDataReloaded.ToDataBox());
-                                    assetManager.Unload(textureDataReloaded);
-                                };
-                            }
-                        }
-
-                        break;
-                    }
-
-                    case 2:
-                    {
-                        var isStreamable = stream.ReadBoolean();
-
-                        // Read image header
-                        var imageDescription = new ImageDescription();
-                        ImageHelper.ImageDescriptionSerializer.Serialize(ref imageDescription, ArchiveMode.Deserialize, stream);
-                            
-                        // Read content storage header
-                        var storageHeader = ContentStorageHeader.Read(stream);
-
-                        if (isStreamable)
-                        {
-                            // Register texture for streaming
-                            services.GetSafeServiceAs<ITexturesStreamingProvider>().RegisterTexture(texture, ref imageDescription, storageHeader);
-
-                            // Note: we don't load texture data here and don't allocate GPU memory
-                        }
-                        else
-                        {
-                            // TODO: should we use the new format for non streamable textures?
-                            throw new NotImplementedException();
-                        }
-                        
                         texture.AttachToGraphicsDevice(graphicsDeviceService.GraphicsDevice);
+                        texture.InitializeFrom(textureData.Description, new TextureViewDescription(), textureData.ToDataBox());
 
-                        break;
+                        // Setup reload callback (reload from asset manager)
+                        var contentSerializerContext = stream.Context.Get(ContentSerializerContext.ContentSerializerContextProperty);
+                        if (contentSerializerContext != null)
+                        {
+                            var assetManager = contentSerializerContext.ContentManager;
+                            var url = contentSerializerContext.Url;
+
+                            texture.Reload = (graphicsResource) =>
+                            {
+                                var textureDataReloaded = assetManager.Load<Image>(url);
+                                ((Texture)graphicsResource).Recreate(textureDataReloaded.ToDataBox());
+                                assetManager.Unload(textureDataReloaded);
+                            };
+                        }
+                    }
+                }
+                else if (magicCode == TextureSerializationData.MagicCode)
+                {
+                    var isStreamable = stream.ReadBoolean();
+
+                    // Read image header
+                    var imageDescription = new ImageDescription();
+                    ImageHelper.ImageDescriptionSerializer.Serialize(ref imageDescription, ArchiveMode.Deserialize, stream);
+
+                    // Read content storage header
+                    var storageHeader = ContentStorageHeader.Read(stream);
+
+                    if (isStreamable)
+                    {
+                        // Register texture for streaming
+                        services.GetSafeServiceAs<ITexturesStreamingProvider>().RegisterTexture(texture, ref imageDescription, storageHeader);
+
+                        // Note: we don't load texture data here and don't allocate GPU memory
+                    }
+                    else
+                    {
+                        // TODO: should we use the new format for non streamable textures?
+                        throw new NotImplementedException();
                     }
 
-                    default:
-                        throw new NotSupportedException("Unknown texture format version.");
+                    texture.AttachToGraphicsDevice(graphicsDeviceService.GraphicsDevice);
+
+                }
+                else
+                {
+                    throw new NotSupportedException("Unknown texture format version.");
                 }
             }
             else

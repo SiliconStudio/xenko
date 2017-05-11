@@ -3,9 +3,11 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Streaming
@@ -72,7 +74,7 @@ namespace SiliconStudio.Xenko.Streaming
         public override int AllocatedResidency => _texture.MipLevels;
 
         /// <inheritdoc />
-        internal override bool CanBeUpdated => true;// TODO: check if there is no streaming tasks goin on for that texture
+        internal override bool CanBeUpdated => true; // TODO: check if there is no streaming tasks goin on for that texture
 
         internal void Init([NotNull] ContentStorage storage, ref ImageDescription imageDescription)
         {
@@ -87,7 +89,7 @@ namespace SiliconStudio.Xenko.Streaming
         {
             Debug.Assert(MathUtil.IsInRange(residency, 0, TotalMipLevels));
             Task result = null;
-            
+
             var allocatedResidency = AllocatedResidency;
             Debug.Assert(allocatedResidency >= 0);
 
@@ -133,48 +135,58 @@ namespace SiliconStudio.Xenko.Streaming
 
             return result;
         }
-        
+
         internal override Task CreateStreamingTask(int residency)
         {
             // temporary code!
-            
+
             // TODO: cache tasks? we need to get streaming tasks that reference any resources to se we detect if any task is running and dont update resource then
 
-            return new Task(() =>
+            var microThread = Scheduler.CurrentMicroThread;
+
+            return new Task(async () =>
             {
-                unsafe
+                var initialContext = SynchronizationContext.Current;
+                SynchronizationContext.SetSynchronizationContext(new MicrothreadProxySynchronizationContext(microThread));
+
+                var lockDatabase = Manager.ContentStreaming.MountDatabase();
+                await lockDatabase;
+                using (lockDatabase.Result)
                 {
-                    var dataBoxArray = new DataBox[_desc.MipLevels];
+                    unsafe
                     {
-                        for (int mipIndex = 0; mipIndex < Description.MipLevels; mipIndex++)
+                        var dataBoxArray = new DataBox[_desc.MipLevels];
                         {
-                            //var pixelBuffer = this.GetPixelBufferUnsafe(arrayIndex, 0, mipIndex);
-
-                            int w = TotalWidth >> mipIndex;
-                            int h = TotalWidth >> mipIndex;
-
-                            int rowPitch, slicePitch;
-                            int widthPacked;
-                            int heightPacked;
-                            Image.ComputePitch(Format, w, h, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
-
-                            var chunk = Storage.GetChunk(mipIndex);
-                            chunk.Load();
-
-                            fixed (byte* p = chunk.Data)
+                            for (int mipIndex = 0; mipIndex < Description.MipLevels; mipIndex++)
                             {
-                                dataBoxArray[mipIndex].DataPointer = (IntPtr)p;
-                                dataBoxArray[mipIndex].RowPitch = rowPitch;
-                                dataBoxArray[mipIndex].SlicePitch = slicePitch;
+                                //var pixelBuffer = this.GetPixelBufferUnsafe(arrayIndex, 0, mipIndex);
+
+                                int w = TotalWidth >> mipIndex;
+                                int h = TotalWidth >> mipIndex;
+
+                                int rowPitch, slicePitch;
+                                int widthPacked;
+                                int heightPacked;
+                                Image.ComputePitch(Format, w, h, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
+
+                                var chunk = Storage.GetChunk(mipIndex);
+                                chunk.Load();
+
+                                fixed (byte* p = chunk.Data)
+                                {
+                                    dataBoxArray[mipIndex].DataPointer = (IntPtr)p;
+                                    dataBoxArray[mipIndex].RowPitch = rowPitch;
+                                    dataBoxArray[mipIndex].SlicePitch = slicePitch;
+                                }
                             }
                         }
+                        _texture.InitializeFrom(_desc, new TextureViewDescription(), dataBoxArray);
+                        _residentMips = _desc.MipLevels;
                     }
-                    _texture.InitializeFrom(_desc, new TextureViewDescription(), dataBoxArray);
-                    _residentMips = _desc.MipLevels;
                 }
-            });
 
-            return null;
+                SynchronizationContext.SetSynchronizationContext(initialContext);
+            });
         }
     }
 }

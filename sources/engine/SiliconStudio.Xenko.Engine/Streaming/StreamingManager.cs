@@ -5,9 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using SharpDX.Win32;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Streaming;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
@@ -19,11 +18,16 @@ namespace SiliconStudio.Xenko.Streaming
 {
     public class StreamingManager : GameSystemBase, ITexturesStreamingProvider
     {
-        private readonly List<StreamableResource> _resources = new List<StreamableResource>(512);
-        private readonly List<StreamableResource> _priorityUpdateQueue = new List<StreamableResource>(64); // Could be Queue<T> but it doesn't support .Remove(T)
-        private int _lastUpdateResourcesIndex;
-        private DateTime _lastUpdateTime = DateTime.MinValue;
-        private bool _isDisposing;
+        private readonly List<StreamableResource> resources = new List<StreamableResource>(512);
+        private readonly List<StreamableResource> priorityUpdateQueue = new List<StreamableResource>(64); // Could be Queue<T> but it doesn't support .Remove(T)
+        private int lastUpdateResourcesIndex;
+        private DateTime lastUpdateTime = DateTime.MinValue;
+        private bool isDisposing;
+
+        // Configuration
+        public TimeSpan ManagerUpdatesInterval = TimeSpan.FromMilliseconds(10);
+        public TimeSpan ResourceUpdatesInterval = TimeSpan.FromMilliseconds(200);
+        public const int MaxResourcesPerUpdate = 30;
 
         /// <summary>
         /// Gets the content streaming service.
@@ -33,7 +37,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// <summary>
         /// List with all registered streamable resources.
         /// </summary>
-        public ICollection<StreamableResource> Resources => _resources;
+        public ICollection<StreamableResource> Resources => resources;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingManager"/> class.
@@ -49,13 +53,13 @@ namespace SiliconStudio.Xenko.Streaming
 
             ContentStreaming = new ContentStreamingService();
 
-            Enabled = true;
+            ((Game)Game).Script.AddTask(Update, -100);
         }
         
         /// <inheritdoc />
         protected override void Destroy()
         {
-            _isDisposing = true;
+            isDisposing = true;
 
             if (Services.GetService(typeof(StreamingManager)) == this)
             {
@@ -66,11 +70,11 @@ namespace SiliconStudio.Xenko.Streaming
                 Services.RemoveService(typeof(ITexturesStreamingProvider));
             }
 
-            lock (_resources)
+            lock (resources)
             {
-                _resources.ForEach(x => x.Dispose());
-                _resources.Clear();
-                _priorityUpdateQueue.Clear();
+                resources.ForEach(x => x.Dispose());
+                resources.Clear();
+                priorityUpdateQueue.Clear();
             }
 
             ContentStreaming.Dispose();
@@ -80,29 +84,29 @@ namespace SiliconStudio.Xenko.Streaming
 
         internal void RegisterResource(StreamableResource resource)
         {
-            Debug.Assert(resource != null && _isDisposing == false);
+            Debug.Assert(resource != null && isDisposing == false);
 
-            lock (_resources)
+            lock (resources)
             {
-                Debug.Assert(!_resources.Contains(resource));
+                Debug.Assert(!resources.Contains(resource));
 
-                _resources.Add(resource);
+                resources.Add(resource);
             }
         }
 
         internal void UnregisterResource(StreamableResource resource)
         {
-            if (_isDisposing)
+            if (isDisposing)
                 return;
 
             Debug.Assert(resource != null);
 
-            lock (_resources)
+            lock (resources)
             {
-                Debug.Assert(_resources.Contains(resource));
+                Debug.Assert(resources.Contains(resource));
 
-                _resources.Remove(resource);
-                _priorityUpdateQueue.RemoveAll(x => x == resource);
+                resources.Remove(resource);
+                priorityUpdateQueue.RemoveAll(x => x == resource);
             }
         }
 
@@ -112,9 +116,9 @@ namespace SiliconStudio.Xenko.Streaming
         /// <param name="resource">The resource to update.</param>
         public void RequestUpdate(StreamableResource resource)
         {
-            lock (_resources)
+            lock (resources)
             {
-                _priorityUpdateQueue.Add(resource);
+                priorityUpdateQueue.Add(resource);
             }
         }
 
@@ -131,10 +135,10 @@ namespace SiliconStudio.Xenko.Streaming
                 return;
             }
 
-            lock (_resources)
+            lock (resources)
             {
                 // Find resource or create new
-                var resource = _resources.Find(x => x.Resource == obj) as StreamingTexture;
+                var resource = resources.Find(x => x.Resource == obj) as StreamingTexture;
                 if (resource == null)
                 {
                     resource = new StreamingTexture(this, obj);
@@ -148,65 +152,67 @@ namespace SiliconStudio.Xenko.Streaming
             }
         }
 
-        /// <inheritdoc />
-        public override void Update(GameTime gameTime)
+        private async Task Update()
         {
-            base.Update(gameTime);
-
-            // Configuration
-            TimeSpan ManagerUpdatesInterval = TimeSpan.FromMilliseconds(10);
-            TimeSpan ResourceUpdatesInterval = TimeSpan.FromMilliseconds(200);
-            const int MaxResourcesPerUpdate = 30;
-
-            if (!((Game)Game).Input.IsKeyDown(Keys.P))
-                return;
-
-            // Check time since last update
-            var now = DateTime.UtcNow;
-            var delta = now - _lastUpdateTime;
-            int resourcesCount = Resources.Count;
-            if (resourcesCount == 0 || delta < ManagerUpdatesInterval)
-                return;
-            _lastUpdateTime = now;
-
-            // Update resources
-            lock (_resources)
+            while (!IsDisposed)
             {
-                int resourcesUpdates = Math.Min(MaxResourcesPerUpdate, resourcesCount);
-
-                // Update high priority queue and then rest of the resources
-                // Note: resources in the update queue are updated always, while others only between specified intervals
-                int resourcesChecks = resourcesCount - _priorityUpdateQueue.Count;
-                while (_priorityUpdateQueue.Count > 0 && resourcesUpdates-- > 0)
+                // temp for testing...
+                if (!((Game)Game).Input.IsKeyDown(Keys.P))
                 {
-                    var resource = _priorityUpdateQueue[0];
-                    _priorityUpdateQueue.RemoveAt(0);
-                    if (resource.CanBeUpdated)
-                        update(resource, ref now);
+                    await ((Game)Game).Script.NextFrame();
+                    continue;
                 }
-                while (resourcesUpdates > 0 && resourcesChecks-- > 0)
+
+                // Update resources
+                lock (resources)
                 {
-                    // Move forward
-                    _lastUpdateResourcesIndex++;
-                    if (_lastUpdateResourcesIndex >= resourcesCount)
-                        _lastUpdateResourcesIndex = 0;
-
-                    // Peek resource
-                    var resource = _resources[_lastUpdateResourcesIndex];
-
-                    // Try to update it
-                    if (now - resource.LastUpdate >= ResourceUpdatesInterval && resource.CanBeUpdated)
+                    // Check if update resources
+                    var now = DateTime.UtcNow;
+                    var delta = now - lastUpdateTime;
+                    int resourcesCount = Resources.Count;
+                    if (Resources.Count > 0 && delta >= ManagerUpdatesInterval)
                     {
-                        update(resource, ref now);
-                        resourcesUpdates--;
+                        lastUpdateTime = now;
+                        int resourcesUpdates = Math.Min(MaxResourcesPerUpdate, resourcesCount);
+
+                        // Update high priority queue and then rest of the resources
+                        // Note: resources in the update queue are updated always, while others only between specified intervals
+                        int resourcesChecks = resourcesCount - priorityUpdateQueue.Count;
+                        while (priorityUpdateQueue.Count > 0 && resourcesUpdates-- > 0)
+                        {
+                            var resource = priorityUpdateQueue[0];
+                            priorityUpdateQueue.RemoveAt(0);
+                            if (resource.CanBeUpdated)
+                                Update(resource, ref now);
+                        }
+                        while (resourcesUpdates > 0 && resourcesChecks-- > 0)
+                        {
+                            // Move forward
+                            lastUpdateResourcesIndex++;
+                            if (lastUpdateResourcesIndex >= resourcesCount)
+                                lastUpdateResourcesIndex = 0;
+
+                            // Peek resource
+                            var resource = resources[lastUpdateResourcesIndex];
+
+                            // Try to update it
+                            if (now - resource.LastUpdate >= ResourceUpdatesInterval && resource.CanBeUpdated)
+                            {
+                                Update(resource, ref now);
+                                resourcesUpdates--;
+                            }
+                        }
+
+                        // TODO: add StreamingManager stats, update time per frame, updates per frame, etc.
                     }
                 }
 
-                // TODO: add StreamingManager stats, update time per frame, updates per frame, etc.
+                // TODO: sleep microThread for ManagerUpdatesInterval ??
+                await ((Game)Game).Script.NextFrame();
             }
         }
 
-        private void update(StreamableResource resource, ref DateTime now)
+        private void Update(StreamableResource resource, ref DateTime now)
         {
             Debug.Assert(resource != null && resource.CanBeUpdated);
 
@@ -253,53 +259,54 @@ namespace SiliconStudio.Xenko.Streaming
             // Check if need to change resource current residency
             if (targetResidency != currentResidency)
             {
-                // for now just hardoced streaming for textures to make it work
+                /*// for now just hardoced streaming for textures to make it work
                 resource.CreateStreamingTask(targetResidency).Start();
 
-                // TODO: finish dynamic streaming using code below \/ \/ \/
 
-                /*// Check if need to increase it's residency
+                //var task = resource.CreateStreamingTask(targetResidency);
+
+                //((Game)Game).Script.AddTask(async () => await task);
+                //Task.Run(async () => await task);
+
+                /*var lockDatabase = ContentStreaming.MountDatabase();
+                lockDatabase.RunSynchronously();
+                using (lockDatabase.Result)
+                {
+                    task.Start();
+                }*/
+                
+                // Check if need to increase it's residency
                 if (targetResidency > currentResidency)
                 {
                     // Check if need to allocate memory for that resource
-                    Task allocateTask = null;
+                    Task allocatingTask = null;
                     if (allocatedResidency < targetResidency)
                     {
                         // TODO: check memory pool for that resource group -> if out of memory call memory decrease situation for a group
 
                         // Update resource allocation
-                        allocateTask = resource.UpdateAllocation(targetResidency);
+                        allocatingTask = resource.UpdateAllocation(targetResidency);
 
                         // Ensure that resource residency didn't change (just check for any leaks)
                         Debug.Assert(currentResidency == resource.CurrentResidency);
                     }
 
                     // Calculate residency level to stream in (resources may want to incease/decrease it's quality in steps rather than at once)
-                    //var requestedResidency = handler.CalculateRequestedResidency(resource, targetResidency);
+                    //var requestedResidency = handler.CalculateRequestedResidency(resource, targetResidency);// TODO: use resource groups and handlers
                     var requestedResidency = targetResidency;
 
                     // Create streaming task (resource type specific)
                     var streamingTask = resource.CreateStreamingTask(requestedResidency);
 
                     // Start tasks
-                    if (streamingTask != null)
+                    if (allocatingTask != null)
                     {
-                        if (allocateTask != null)
-                        {
-                            allocateTask.ContinueWith(streamingTask);
-                            allocateTask.Start();
-                        }
-                        else
-                        {
-                            streamingTask.Start();
-                        }
+                        allocatingTask.ContinueWith(x => streamingTask);
+                        allocatingTask.Start();
                     }
                     else
                     {
-                        // Log Resource created null streaming task?
-
-                        if (allocateTask != null)
-                            allocateTask.Start();
+                        streamingTask.Start();
                     }
                 }
                 else
@@ -309,7 +316,7 @@ namespace SiliconStudio.Xenko.Streaming
                     // TODO: decrease residency level
 
                     // TODO: check case for deallocation, when do it?
-                }*/
+                }
             }
             else
             {

@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
             {
                 InputFilesGetter = GetInputFilesImpl;
                 disableCompressionSymbol = RegisterTag(Builder.DoNotCompressTag, () => Builder.DoNotCompressTag);
-                Version = 4;
+                Version = 6;
             }
 
             private IEnumerable<ObjectUrl> GetInputFilesImpl()
@@ -141,6 +141,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
             protected override void ComputeAssemblyHash(BinarySerializationWriter writer)
             {
                 writer.Write(DataSerializer.BinaryFormatVersion);
+                writer.Write(TextureSerializationData.Version);
 
                 // Since Image format is quite stable, we want to manually control it's assembly hash here
                 writer.Write(1);

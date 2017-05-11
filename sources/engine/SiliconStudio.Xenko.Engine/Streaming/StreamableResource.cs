@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.Streaming
 {
@@ -93,7 +94,8 @@ namespace SiliconStudio.Xenko.Streaming
         /// Updates the resource allocation to the given residency level. May not be updated now but in an async operation.
         /// </summary>
         /// <param name="residency">The target allocation residency.</param>
-        /// <returns>Async task that updates resource allocation or null if already done it. Warning: need to call task start to perform allocation.</returns>
+        /// <returns>Async task that updates resource allocation or null if already done it.</returns>
+        [CanBeNull]
         internal abstract Task UpdateAllocation(int residency);
 
         /// <summary>
@@ -101,6 +103,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         /// <param name="residency">The target residency.</param>
         /// <returns>Async task or tasks that update resource residency level. Must be preceded with UpdateAllocation call.</returns>
+        [NotNull]
         internal abstract Task CreateStreamingTask(int residency);
 
         /// <summary>

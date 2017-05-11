@@ -2,11 +2,9 @@
 // See LICENSE.md for full license information.
 
 using System;
-using System.IO;
+using System.Data;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Streaming
 {
@@ -70,16 +68,20 @@ namespace SiliconStudio.Xenko.Streaming
             LastAccessTime = DateTime.UtcNow;
         }
 
+        /// <summary>
+        /// Loads chunk data from the storage container.
+        /// </summary>
+        /// <exception cref="DataException">Cannot load content chunk. Missing File Provider.</exception>
         public void Load()
         {
             if (IsLoaded)
                 return;
+            
+            var fileProvider = ContentManager.FileProvider;
+            if (fileProvider == null)
+                throw new DataException("Cannot load content chunk. Missing File Provider.");
 
-            var getFP = ContentManager.GetFileProvider;
-            var FP = ContentManager.FileProvider;
-
-            //using (var stream = Storage.FileProvider.OpenStream(Storage.Url, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read, StreamFlags.Seekable))
-            using (var stream = ContentManager.FileProvider.OpenStream(Storage.Url, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read, StreamFlags.Seekable))
+            using (var stream = fileProvider.OpenStream(Storage.Url, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read, StreamFlags.Seekable))
             {
                 stream.Position = Location;
                 var data = new byte[Size];
