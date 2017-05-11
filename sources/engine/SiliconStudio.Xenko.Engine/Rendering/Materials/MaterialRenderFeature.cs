@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 var materialHashCode = material != null ? (uint)material.GetHashCode() : 0;
                 renderObject.StateSortKey = (renderObject.StateSortKey & 0x0000FFFF) | (materialHashCode << 16);
 
-                var tessellationState = tessellationStates[staticObjectNode];
+                ref var tessellationState = ref tessellationStates[staticObjectNode];
 
                 // Update draw data if tessellation is active
                 if (material.TessellationMethod != XenkoTessellationMethod.None)
@@ -147,9 +147,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                             Utilities.Dispose(ref tessellationState.GeneratedIndicesAEN);
                         }
                         tessellationState.MeshDraw = tessellationMeshDraw;
-
-                        // Save back new state
-                        tessellationStates[staticObjectNode] = tessellationState;
 
                         // Reset pipeline states
                         resetPipelineState = true;

@@ -225,8 +225,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public void ComputeViewParameter(int viewIndex)
             {
-                // TODO ref locals when C# 7 is out
-                var renderViewInfo = renderViewInfos[viewIndex];
+                ref var renderViewInfo = ref renderViewInfos[viewIndex];
                 var renderView = renderViewInfo.RenderView;
 
                 var viewSize = renderView.ViewSize;
@@ -419,9 +418,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 // Clear data
                 lightNodes.Clear();
                 clusterInfos.Clear();
-
-                // Struct, so copy back (TODO: remove this when C# 7 is out with ref locals)
-                renderViewInfos[viewIndex] = renderViewInfo;
             }
 
             public unsafe void ComputeViewsParameter(RenderDrawContext drawContext)
@@ -476,11 +472,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 // Note: no need to fill CurrentLights since we have no shadow maps
                 base.ApplyViewParameters(context, viewIndex, parameters);
 
-                // TODO ref locals when C# 7 is out
-                var renderViewInfo = renderViewInfos[viewIndex];
-                var renderView = renderViewInfo.RenderView;
-
-                var viewSize = renderView.ViewSize;
+                ref var renderViewInfo = ref renderViewInfos[viewIndex];
+                var viewSize = renderViewInfo.RenderView.ViewSize;
 
                 // No screen size set?
                 if (viewSize.X == 0 || viewSize.Y == 0)
@@ -500,8 +493,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             /// <inheritdoc/>
             public override unsafe void UpdateViewResources(RenderDrawContext context, int viewIndex)
             {
-                // TODO ref locals when C# 7 is out
-                var renderViewInfo = renderViewInfos[viewIndex];
+                ref var renderViewInfo = ref renderViewInfos[viewIndex];
 
                 // Upload data to texture
                 if (renderViewInfo.LightClusters != null && renderViewInfo.LightClusters.Length > 0)
