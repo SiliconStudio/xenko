@@ -151,6 +151,18 @@ namespace SiliconStudio.Xenko.Streaming
             }
         }
 
+        /// <inheritdoc />
+        void ITexturesStreamingProvider.UnregisterTexture(Texture obj)
+        {
+            Debug.Assert(obj != null);
+
+            lock (resources)
+            {
+                var resource = resources.Find(x => x.Resource == obj) as StreamingTexture;
+                resource?.Dispose();
+            }
+        }
+
         private async Task Update()
         {
             while (!IsDisposed)

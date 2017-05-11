@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Streaming
             foreach (var chunk in chunks)
             {
                 if (chunk.IsLoaded && now - chunk.LastAccessTime >= Service.UnusedDataChunksLifetime)
-                    chunk.Data = null;
+                    chunk.Unload();
             }
         }
 

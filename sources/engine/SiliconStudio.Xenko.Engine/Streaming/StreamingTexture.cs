@@ -201,18 +201,7 @@ namespace SiliconStudio.Xenko.Streaming
 
                     var chunk = Storage.GetChunk(mipIndex);
                     Debug.Assert(chunk != null && chunk.Size == slicePitch);
-
-                    //
-                    var initialContext = SynchronizationContext.Current;
-                    SynchronizationContext.SetSynchronizationContext(new MicrothreadProxySynchronizationContext(microThread));
-                    var lockDatabase = Manager.ContentStreaming.MountDatabase();
-                    await lockDatabase;
-                    using (lockDatabase.Result)
-                    {
-                        chunk.Load();
-                    }
-                    SynchronizationContext.SetSynchronizationContext(initialContext);
-                    //
+                    chunk.Load(microThread);
 
                     unsafe
                     {

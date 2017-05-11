@@ -22,12 +22,15 @@ namespace SiliconStudio.Xenko.Graphics.Data
             {
                 var services = stream.Context.Tags.Get(ServiceRegistry.ServiceRegistryKey);
                 var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
+                var texturesStreamingProvider = services.GetSafeServiceAs<ITexturesStreamingProvider>();
 
                 var startPosition = stream.NativeStream.Position;
                 var magicCode = stream.NativeStream.ReadUInt32();
                 if (magicCode == ImageHelper.MagicCode)
                 {
                     stream.NativeStream.Position = startPosition;
+
+                    texturesStreamingProvider.UnregisterTexture(texture);
 
                     // TODO: Error handling?
                     using (var textureData = Image.Load(stream.NativeStream))
@@ -68,7 +71,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
                     if (isStreamable)
                     {
                         // Register texture for streaming
-                        services.GetSafeServiceAs<ITexturesStreamingProvider>().RegisterTexture(texture, ref imageDescription, storageHeader);
+                        texturesStreamingProvider.RegisterTexture(texture, ref imageDescription, storageHeader);
 
                         // Note: we don't load texture data here and don't allocate GPU memory
                     }

@@ -3,7 +3,9 @@
 
 using System;
 using System.Data;
+using System.Threading;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Streaming
@@ -71,25 +73,39 @@ namespace SiliconStudio.Xenko.Streaming
         /// <summary>
         /// Loads chunk data from the storage container.
         /// </summary>
+        /// <param name="microThread">Micro thread.</param>
         /// <exception cref="DataException">Cannot load content chunk. Missing File Provider.</exception>
-        public void Load()
+        public async void Load(MicroThread microThread)
         {
             if (IsLoaded)
                 return;
-            
-            var fileProvider = ContentManager.FileProvider;
-            if (fileProvider == null)
-                throw new DataException("Cannot load content chunk. Missing File Provider.");
 
-            using (var stream = fileProvider.OpenStream(Storage.Url, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read, StreamFlags.Seekable))
+            var initialContext = SynchronizationContext.Current;
+            SynchronizationContext.SetSynchronizationContext(new MicrothreadProxySynchronizationContext(microThread));
+            var lockDatabase = Storage.Service.MountDatabase();
+            await lockDatabase;
+            using (lockDatabase.Result)
             {
-                stream.Position = Location;
-                var data = new byte[Size];
-                stream.Read(data, 0, Size);
-                Data = data;
-            }
+                var fileProvider = ContentManager.FileProvider;
+                if (fileProvider == null)
+                    throw new DataException("Cannot load content chunk. Missing File Provider.");
 
-            RegisterUsage();
+                using (var stream = fileProvider.OpenStream(Storage.Url, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read, StreamFlags.Seekable))
+                {
+                    stream.Position = Location;
+                    var data = new byte[Size];
+                    stream.Read(data, 0, Size);
+                    Data = data;
+                }
+
+                RegisterUsage();
+            }
+            SynchronizationContext.SetSynchronizationContext(initialContext);
+        }
+
+        internal void Unload()
+        {
+            Data = null;
         }
     }
 }

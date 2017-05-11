@@ -17,5 +17,11 @@ namespace SiliconStudio.Xenko.Graphics.Data
         /// <param name="imageDescription">The image description.</param>
         /// <param name="storageHeader">The storage header.</param>
         void RegisterTexture(Texture obj, ref ImageDescription imageDescription, ContentStorageHeader storageHeader);
+
+        /// <summary>
+        /// Unregisters the texture.
+        /// </summary>
+        /// <param name="obj">The texture object.</param>
+        void UnregisterTexture(Texture obj);
     }
 }
