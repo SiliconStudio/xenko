@@ -4,8 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Streaming;
 
 namespace SiliconStudio.Xenko.Streaming
@@ -16,11 +14,7 @@ namespace SiliconStudio.Xenko.Streaming
     public class ContentStreamingService : IDisposable
     {
         private readonly List<ContentStorage> containers = new List<ContentStorage>();
-
-        //public static DatabaseFileProvider FileProvider => ContentManager.FileProvider ?? GetCustomFileProvider?.Invoke();
-
-        //public static Func<DatabaseFileProvider> GetCustomFileProvider { get; set; }
-
+        
         internal Func<Task<IDisposable>> MountDatabase { get; set; }
 
         internal ContentStreamingService()

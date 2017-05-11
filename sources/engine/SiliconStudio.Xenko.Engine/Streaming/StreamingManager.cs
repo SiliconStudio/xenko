@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
-using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Streaming;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
@@ -259,22 +258,6 @@ namespace SiliconStudio.Xenko.Streaming
             // Check if need to change resource current residency
             if (targetResidency != currentResidency)
             {
-                /*// for now just hardoced streaming for textures to make it work
-                resource.CreateStreamingTask(targetResidency).Start();
-
-
-                //var task = resource.CreateStreamingTask(targetResidency);
-
-                //((Game)Game).Script.AddTask(async () => await task);
-                //Task.Run(async () => await task);
-
-                /*var lockDatabase = ContentStreaming.MountDatabase();
-                lockDatabase.RunSynchronously();
-                using (lockDatabase.Result)
-                {
-                    task.Start();
-                }*/
-                
                 // Check if need to increase it's residency
                 if (targetResidency > currentResidency)
                 {
