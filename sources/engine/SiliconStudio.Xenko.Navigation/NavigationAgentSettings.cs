@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Navigation
         /// The height of the entities in this group. Entities can't enter areas with ceilings lower than this value.
         /// </userdoc>
         [DataMember(0)]
-        [DataMemberRange(0, float.MaxValue)]
+        [DataMemberRange(0, 3)]
         public float Height;
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Navigation
         /// </userdoc>
         [DataMember(1)]
         [Display("Maximum climb height")]
-        [DataMemberRange(0, float.MaxValue)]
+        [DataMemberRange(0, 3)]
         public float MaxClimb;
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Navigation
         /// The larger this value, the larger the area of the navigation mesh entities use. Entities can't pass through gaps of less than twice the radius.
         /// </userdoc>
         [DataMember(3)]
-        [DataMemberRange(0, float.MaxValue)]
+        [DataMemberRange(0, 3)]
         public float Radius;
 
         public override int GetHashCode()

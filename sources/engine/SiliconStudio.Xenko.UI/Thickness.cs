@@ -78,7 +78,6 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>The Back side of the bounding cuboid.</userdoc>
         [DataMember(2)]
-        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Back;
 
@@ -87,7 +86,6 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>The bottom side of the bounding rectangle or cuboid.</userdoc>
         [DataMember(4)]
-        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Bottom;
 
@@ -96,7 +94,6 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>The front side of the bounding cuboid.</userdoc>
         [DataMember(5)]
-        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Front;
 
@@ -105,7 +102,6 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>The left side of the bounding rectangle or cuboid.</userdoc>
         [DataMember(0)]
-        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Left;
 
@@ -114,7 +110,6 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>The right side of the bounding rectangle or cuboid.</userdoc>
         [DataMember(3)]
-        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Right;
 
@@ -123,7 +118,6 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>The upper side of the bounding rectangle or cuboid.</userdoc>
         [DataMember(1)]
-        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Top;
 
