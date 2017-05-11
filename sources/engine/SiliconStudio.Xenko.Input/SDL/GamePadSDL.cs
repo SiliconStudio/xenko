@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// A known gamepad that uses SDL as a driver
     /// </summary>
-    internal class GamePadSDL : GamePadFromLayout, IGamePadIndexAssignable, IDisposable
+    internal class GamePadSDL : GamePadFromLayout, IDisposable, IGamePadDevice
     {
         private bool disposed;
 
@@ -34,11 +34,8 @@ namespace SiliconStudio.Xenko.Input
         }
 
         public override string Name { get; }
-
         public override Guid Id { get; }
-
         public override Guid ProductId { get; }
-
         public override IInputSource Source { get; }
 
         public new int Index

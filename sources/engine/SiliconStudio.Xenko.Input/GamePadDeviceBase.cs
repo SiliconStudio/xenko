@@ -12,12 +12,25 @@ namespace SiliconStudio.Xenko.Input
         private readonly HashSet<GamePadButton> releasedButtons;
         private readonly HashSet<GamePadButton> pressedButtons;
         private readonly HashSet<GamePadButton> downButtons;
+        private int index;
+
         public abstract string Name { get; }
         public abstract Guid Id { get; }
         public abstract Guid ProductId { get; }
         public abstract GamePadState State { get; }
+        public bool CanChangeIndex { get; protected set; } = true;
         public int Priority { get; set; }
-        public int Index { get; private set; }
+
+        public int Index
+        {
+            get { return index; }
+            set
+            {
+                if (!CanChangeIndex)
+                    throw new InvalidOperationException("This GamePad's index can not be changed");
+                SetIndexInternal(value, false);
+            }
+        }
 
         public IReadOnlySet<GamePadButton> PressedButtons { get; }
         public IReadOnlySet<GamePadButton> ReleasedButtons { get; }
@@ -37,15 +50,15 @@ namespace SiliconStudio.Xenko.Input
             ReleasedButtons = new ReadOnlySet<GamePadButton>(releasedButtons = new HashSet<GamePadButton>());
         }
 
-        protected void SetIndexInternal(int index, bool isDeviceSideChange = true)
+        protected void SetIndexInternal(int newIndex, bool isDeviceSideChange = true)
         {
-            if (index != Index)
+            if (this.index != newIndex)
             {
-                Index = index;
-                IndexChanged?.Invoke(this, new GamePadIndexChangedEventArgs() { Index = index, IsDeviceSideChange = isDeviceSideChange });
+                this.index = newIndex;
+                IndexChanged?.Invoke(this, new GamePadIndexChangedEventArgs() { Index = newIndex, IsDeviceSideChange = isDeviceSideChange });
             }
         }
-
+        
         /// <summary>
         /// Clears previous Pressed/Released states
         /// </summary>

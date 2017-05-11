@@ -24,7 +24,15 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// The index of the gamepad assigned by the input manager
         /// </summary>
-        int Index { get; }
+        /// <remarks>
+        /// If <see cref="CanChangeIndex"/> is false, this value can not be changed
+        /// </remarks>
+        int Index { get; set; }
+
+        /// <summary>
+        /// <c>true</c> if the index of this gamepad can be changed
+        /// </summary>
+        bool CanChangeIndex { get; }
 
         /// <summary>
         /// The gamepad buttons that have been pressed since the last frame
