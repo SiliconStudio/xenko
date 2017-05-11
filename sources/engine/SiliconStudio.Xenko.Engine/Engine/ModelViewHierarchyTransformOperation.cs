@@ -18,8 +18,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <inheritdoc/>
         public override void Process(TransformComponent transformComponent)
         {
-            // Waiting for roslyn ref locals to avoid having to pass world matrix
-            modelComponent.Update(transformComponent, ref transformComponent.WorldMatrix);
+            modelComponent.Update(transformComponent);
         }
     }
 }
