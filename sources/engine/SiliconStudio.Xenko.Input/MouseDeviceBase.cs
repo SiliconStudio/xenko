@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
@@ -16,13 +17,25 @@ namespace SiliconStudio.Xenko.Input
 
         protected readonly List<InputEvent> Events = new List<InputEvent>();
 
-        public readonly HashSet<MouseButton> DownButtons = new HashSet<MouseButton>();
+        private readonly HashSet<MouseButton> pressedButtons = new HashSet<MouseButton>();
+        private readonly HashSet<MouseButton> releasedButtons = new HashSet<MouseButton>();
+        private readonly HashSet<MouseButton> downButtons = new HashSet<MouseButton>();
+
+        protected MouseDeviceBase()
+        {
+            DownButtons = new ReadOnlySet<MouseButton>(downButtons);
+            PressedButtons = new ReadOnlySet<MouseButton>(pressedButtons);
+            ReleasedButtons = new ReadOnlySet<MouseButton>(releasedButtons);
+        }
 
         public abstract bool IsPositionLocked { get; }
         
         public Vector2 Position { get; protected set; }
-
         public Vector2 Delta { get; protected set; }
+
+        public IReadOnlySet<MouseButton> PressedButtons { get; }
+        public IReadOnlySet<MouseButton> ReleasedButtons { get; }
+        public IReadOnlySet<MouseButton> DownButtons { get; }
 
         public override PointerType Type => PointerType.Mouse;
         
@@ -30,10 +43,26 @@ namespace SiliconStudio.Xenko.Input
         {
             base.Update(inputEvents);
             
+            pressedButtons.Clear();
+            releasedButtons.Clear();
+
             // Collect events from queue
-            foreach (var e in Events)
+            foreach (var evt in Events)
             {
-                inputEvents.Add(e);
+                inputEvents.Add(evt);
+
+                var mouseButtonEvent = evt as MouseButtonEvent;
+                if (mouseButtonEvent != null)
+                {
+                    if (mouseButtonEvent.IsDown)
+                    {
+                        pressedButtons.Add(mouseButtonEvent.Button);
+                    }
+                    else
+                    {
+                        releasedButtons.Add(mouseButtonEvent.Button);
+                    }
+                }
             }
             Events.Clear();
 
@@ -41,12 +70,22 @@ namespace SiliconStudio.Xenko.Input
             Delta = nextDelta;
             nextDelta = Vector2.Zero;
         }
-        
-        public virtual bool IsButtonDown(MouseButton button)
+
+        public bool IsButtonPressed(MouseButton mouseButton)
         {
-            return DownButtons.Contains(button);
+            return pressedButtons.Contains(mouseButton);
         }
-        
+
+        public bool IsButtonReleased(MouseButton mouseButton)
+        {
+            return releasedButtons.Contains(mouseButton);
+        }
+
+        public virtual bool IsButtonDown(MouseButton mouseButton)
+        {
+            return downButtons.Contains(mouseButton);
+        }
+
         public abstract void SetPosition(Vector2 normalizedPosition);
         
         public abstract void LockPosition(bool forceCenter = false);
@@ -89,10 +128,10 @@ namespace SiliconStudio.Xenko.Input
         public void HandleButtonDown(MouseButton button)
         {
             // Prevent duplicate events
-            if (DownButtons.Contains(button))
+            if (downButtons.Contains(button))
                 return;
 
-            DownButtons.Add(button);
+            downButtons.Add(button);
 
             var buttonEvent = InputEventPool<MouseButtonEvent>.GetOrCreate(this);
             buttonEvent.Button = button;
@@ -107,10 +146,10 @@ namespace SiliconStudio.Xenko.Input
         public void HandleButtonUp(MouseButton button)
         {
             // Prevent duplicate events
-            if (!DownButtons.Contains(button))
+            if (!downButtons.Contains(button))
                 return;
 
-            DownButtons.Remove(button);
+            downButtons.Remove(button);
 
             var buttonEvent = InputEventPool<MouseButtonEvent>.GetOrCreate(this);
             buttonEvent.Button = button;

@@ -126,6 +126,9 @@
     <Compile Include="GameControllerObjectInfo.cs" />
     <Compile Include="PointerPoint.cs" />
     <Compile Include="SDL\GamePadSDL.cs" />
+    <Compile Include="Simulated\GamePadSimulated.cs" />
+    <Compile Include="Simulated\KeyboardSimulated.cs" />
+    <Compile Include="Simulated\MouseSimulated.cs" />
     <Compile Include="SurfaceSizeChangedEventArgs.cs" />
     <Compile Include="GameControllerDirectionEvent.cs" />
     <Compile Include="GameControllerDirectionInfo.cs" />
