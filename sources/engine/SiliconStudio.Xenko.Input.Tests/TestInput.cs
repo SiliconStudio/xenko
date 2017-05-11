@@ -1,6 +1,7 @@
 // Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
+using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics.Regression;
@@ -232,6 +233,50 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.AreEqual(new Vector2(0.6f, 0.5f), mouse.Position);
         }
 
+        void TestGamePad()
+        {
+            Assert.AreEqual(0, InputSourceSimulated.Instance.GamePads.Count);
+
+            // Gamepad should only actually be added after update
+            var gamePad0 = InputSourceSimulated.Instance.AddGamePad();
+            Assert.AreEqual(0, Input.GamePadCount);
+
+            Input.Update(DrawTime);
+            
+            Assert.AreEqual(1, Input.GamePadCount);
+
+            // Add another gamepad
+            var gamePad1 = InputSourceSimulated.Instance.AddGamePad();
+            Input.Update(DrawTime);
+
+            // Test automatic index assignment
+            Assert.AreEqual(0, gamePad0.Index);
+            Assert.AreEqual(1, gamePad1.Index);
+
+            Assert.AreEqual(1, Input.GetGamePadsByIndex(0).Count());
+            Assert.AreEqual(1, Input.GetGamePadsByIndex(1).Count());
+
+            // Test putting both gamepads on the same index
+            gamePad1.Index = 0;
+            Assert.AreEqual(2, Input.GetGamePadsByIndex(0).Count());
+            Assert.IsEmpty(Input.GetGamePadsByIndex(1));
+
+            // Test reassign suggestions
+            gamePad1.Index = Input.GetFreeGamePadIndex(gamePad1);
+            gamePad0.Index = Input.GetFreeGamePadIndex(gamePad0);
+            Assert.True(gamePad1.Index == 0 || gamePad0.Index == 0);
+            Assert.True(gamePad0.Index != gamePad1.Index);
+
+            // Gamepad should only actually be removed after update
+            InputSourceSimulated.Instance.RemoveGamePad(gamePad0);
+            InputSourceSimulated.Instance.RemoveGamePad(gamePad1);
+            Assert.AreEqual(2, Input.GamePadCount);
+
+            Input.Update(DrawTime);
+
+            Assert.AreEqual(0, Input.GamePadCount);
+        }
+
         protected override void RegisterTests()
         {
             base.RegisterTests();
@@ -242,6 +287,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             FrameGameSystem.Update(TestMouse);
             FrameGameSystem.Update(TestLockedMousePosition);
             FrameGameSystem.Update(TestSingleFrameStates);
+            FrameGameSystem.Update(TestGamePad);
         }
 
         [Test]

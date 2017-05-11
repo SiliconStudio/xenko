@@ -142,7 +142,7 @@ namespace SiliconStudio.Xenko.Input
             {
                 IGamePadDevice gamePad = null;
                 if(PadIndex >= 0)
-                    gamePad= manager.GetGamePad(PadIndex);
+                    gamePad= manager.GetGamePadByIndex(PadIndex);
                 else
                     gamePad = manager.DefaultGamePad;
 

@@ -4,14 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// Provides a virtual mouse and keyboard that generate input events like a normal mouse/keyboard when any of the functions (Simulate...) are called
     /// </summary>
-    public class InputSourceSimulated : InputSourceBase
+    public partial class InputSourceSimulated : InputSourceBase
     {
         /// <summary>
         /// Should simulated input be added to the input manager
@@ -26,9 +25,15 @@ namespace SiliconStudio.Xenko.Input
         private bool keyboardConnected;
         private bool mouseConnected;
 
-        public KeyboardSimulated Keyboard;
+        private List<GamePadSimulated> gamePads = new List<GamePadSimulated>();
+        private List<Tuple<IInputDevice, DeviceEventType>> deviceEvents = new List<Tuple<IInputDevice, DeviceEventType>>();
 
-        public MouseSimulated Mouse;
+        public KeyboardSimulated Keyboard { get; private set; }
+
+        public MouseSimulated Mouse { get; private set; }
+
+        public IReadOnlyList<GamePadSimulated> GamePads => gamePads;
+
 
         public override void Initialize(InputManager inputManager)
         {
@@ -43,6 +48,47 @@ namespace SiliconStudio.Xenko.Input
         {
             base.Dispose();
             Instance = null;
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            foreach (var evt in deviceEvents)
+            {
+                switch (evt.Item2)
+                {
+                    case DeviceEventType.Add:
+                        RegisterDevice(evt.Item1);
+                        break;
+                    case DeviceEventType.Remove:
+                        UnregisterDevice(evt.Item1);
+                        break;
+                }
+            }
+            deviceEvents.Clear();
+        }
+
+        public GamePadSimulated AddGamePad()
+        {
+            var gamePad = new GamePadSimulated(this);
+            gamePads.Add(gamePad);
+            deviceEvents.Add(new Tuple<IInputDevice, DeviceEventType>(gamePad, DeviceEventType.Add));
+            return gamePad;
+        }
+
+        public void RemoveGamePad(GamePadSimulated gamePad)
+        {
+            if (!gamePads.Contains(gamePad))
+                throw new InvalidOperationException("Simulated GamePad does not exist");
+            deviceEvents.Add(new Tuple<IInputDevice, DeviceEventType>(gamePad, DeviceEventType.Remove));
+            gamePads.Remove(gamePad);
+        }
+
+        public void RemoveAllGamePads()
+        {
+            foreach (var gamePad in gamePads)
+                deviceEvents.Add(new Tuple<IInputDevice, DeviceEventType>(gamePad, DeviceEventType.Remove));
+            gamePads.Clear();
         }
 
         public void SetKeyboardConnected(bool connected)
@@ -79,119 +125,10 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        public class KeyboardSimulated : KeyboardDeviceBase
+        private enum DeviceEventType
         {
-            public KeyboardSimulated()
-            {
-                Priority = -1000;
-            }
-
-            public override string Name => "Simulated Keyboard";
-
-            public override Guid Id => new Guid(10, 10, 1, 0, 0, 0, 0, 0, 0, 0, 0);
-
-            public override IInputSource Source => Instance;
-
-            public void SimulateDown(Keys key)
-            {
-                HandleKeyDown(key);
-            }
-
-            public void SimulateUp(Keys key)
-            {
-                HandleKeyUp(key);
-            }
-        }
-
-        public class MouseSimulated : MouseDeviceBase
-        {
-            private readonly List<PointerEvent> injectedPointerEvents = new List<PointerEvent>();
-            private bool positionLocked;
-            private Vector2 capturedPosition;
-
-            public MouseSimulated()
-            {
-                Priority = -1000;
-                SetSurfaceSize(Vector2.One);
-            }
-
-            public override string Name => "Simulated Mouse";
-
-            public override Guid Id => new Guid(10, 10, 2, 0, 0, 0, 0, 0, 0, 0, 0);
-
-            public override bool IsPositionLocked => positionLocked;
-
-            public override IInputSource Source => Instance;
-
-            public override void Update(List<InputEvent> inputEvents)
-            {
-                base.Update(inputEvents);
-                inputEvents.AddRange(injectedPointerEvents);
-                injectedPointerEvents.Clear();
-
-                if (positionLocked)
-                {
-                    Position = capturedPosition;
-                    GetPointerData(0).Position = capturedPosition;
-                }
-            }
-
-            public void SimulateMouseDown(MouseButton button)
-            {
-                HandleButtonDown(button);
-            }
-
-            public void SimulateMouseUp(MouseButton button)
-            {
-                HandleButtonUp(button);
-            }
-
-            public void SimulateMouseWheel(float wheelDelta)
-            {
-                HandleMouseWheel(wheelDelta);
-            }
-
-            public override void SetPosition(Vector2 position)
-            {
-                if (IsPositionLocked)
-                {
-                    HandleMouseDelta(position * SurfaceSize - capturedPosition);
-                }
-                else
-                {
-                    HandleMove(position * SurfaceSize);
-                }
-            }
-            
-            public void SimulatePointer(PointerEventType pointerEventType, Vector2 position, int id = 0)
-            {
-                PointerInputEvents.Add(new PointerInputEvent { Id = id, Position = position, Type = pointerEventType });
-            }
-
-            public void InjectPointerEvent(Vector2 position, Vector2 deltaPosition, TimeSpan delta, PointerEventType eventType, int id = 0, PointerType type = PointerType.Mouse)
-            {
-                var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(this);
-                pointerEvent.Position = position;
-                pointerEvent.DeltaPosition = deltaPosition;
-                pointerEvent.DeltaTime = delta;
-                pointerEvent.IsDown = eventType != PointerEventType.Released;
-                pointerEvent.PointerId = id;
-                pointerEvent.PointerType = type;
-                pointerEvent.EventType = eventType;
-
-                injectedPointerEvents.Add(pointerEvent);
-            }
-
-            public override void LockPosition(bool forceCenter = false)
-            {
-                positionLocked = true;
-                capturedPosition = forceCenter ? new Vector2(0.5f) : Position;
-            }
-
-            public override void UnlockPosition()
-            {
-                positionLocked = false;
-            }
+            Add,
+            Remove
         }
     }
 }
