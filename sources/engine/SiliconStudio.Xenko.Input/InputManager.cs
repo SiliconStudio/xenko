@@ -279,6 +279,16 @@ namespace SiliconStudio.Xenko.Input
 
             InitializeSources();
 
+            // After adding initial devices, reassign gamepad id's
+            // this creates a beter index assignment in the case where you have both an xbox controller and another controller at startup
+            var sortedGamePads = GamePads.OrderBy(x => x.CanChangeIndex);
+            
+            foreach (var gamePad in sortedGamePads)
+            {
+                if (gamePad.CanChangeIndex)
+                    gamePad.Index = GetFreeGamePadIndex(gamePad);
+            }
+
             // Register event types
             RegisterEventType<KeyEvent>();
             RegisterEventType<TextInputEvent>();
@@ -512,6 +522,34 @@ namespace SiliconStudio.Xenko.Input
             sources.Clear();
 
             InitializeSources();
+        }
+        
+        /// <summary>
+        /// Suggests an index that is unused for a given <see cref="IGamePadDevice"/>
+        /// </summary>
+        /// <param name="gamePad">The gamepad to find an index for</param>
+        /// <returns>The unused gamepad index</returns>
+        public int GetFreeGamePadIndex(IGamePadDevice gamePad)
+        {
+            if (gamePad == null)
+                throw new ArgumentNullException(nameof(gamePad));
+            if (!GamePads.Contains(gamePad))
+                throw new InvalidOperationException("Not a valid gamepad");
+
+            // Find a new index for this game controller
+            int targetIndex = 0;
+            for (int i = 0; i < gamePadRequestedIndex.Count; i++)
+            {
+                var collection = gamePadRequestedIndex[i];
+                if (collection.Count == 0 || collection.Count == 1 && collection[0] == gamePad)
+                {
+                    targetIndex = i;
+                    break;
+                }
+                targetIndex++;
+            }
+
+            return targetIndex;
         }
 
         private void InitializeSources()
@@ -766,7 +804,7 @@ namespace SiliconStudio.Xenko.Input
             // Check if the gamepad provides an interface for assigning gamepad index
             if (gamePad.CanChangeIndex)
             {
-                gamePad.Index = GetFreeGamePadIndex();
+                gamePad.Index = GetFreeGamePadIndex(gamePad);
             }
             
             // Handle later index changed
@@ -812,23 +850,6 @@ namespace SiliconStudio.Xenko.Input
             sensors.Remove(sensorDevice);
         }
 
-        private int GetFreeGamePadIndex()
-        {
-            // Find a new index for this game controller
-            int targetIndex = 0;
-            for (int i = 0; i < gamePadRequestedIndex.Count; i++)
-            {
-                if (gamePadRequestedIndex[i].Count == 0)
-                {
-                    targetIndex = i;
-                    break;
-                }
-                targetIndex++;
-            }
-
-            return targetIndex;
-        }
-
         /// <summary>
         /// Updates the <see cref="gamePadRequestedIndex"/> collection to contains every gamepad with a given index
         /// </summary>
@@ -848,7 +869,6 @@ namespace SiliconStudio.Xenko.Input
                 gamePadRequestedIndex[gamePad.Index].Add(gamePad);
             }
         }
-
 
         private void UpdateGestureEvents(TimeSpan elapsedGameTime)
         {

@@ -25,9 +25,9 @@ namespace SiliconStudio.Xenko.Input.Tests
             [typeof(PointerEvent)] = Color.Orange,
             [typeof(GamePadAxisEvent)] = Color.Green,
             [typeof(GamePadButtonEvent)] = Color.Green,
-            [typeof(GameControllerAxisEvent)] = Color.Green,
-            [typeof(GameControllerButtonEvent)] = Color.Green,
-            [typeof(GameControllerDirectionEvent)] = Color.Green,
+            [typeof(GameControllerAxisEvent)] = Color.Bisque,
+            [typeof(GameControllerButtonEvent)] = Color.Bisque,
+            [typeof(GameControllerDirectionEvent)] = Color.Bisque,
         };
 
         protected TestInputEvents()
