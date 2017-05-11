@@ -108,7 +108,6 @@
     <Compile Include="Gestures\GestureState.cs" />
     <Compile Include="Gestures\GestureType.cs" />
     <Compile Include="IGamePadDevice.cs" />
-    <Compile Include="IGamePadIndexAssignable.cs" />
     <Compile Include="InputManager.State.cs" />
     <Compile Include="InputEventPool.cs" />
     <Compile Include="InputPreUpdateEventArgs.cs" />

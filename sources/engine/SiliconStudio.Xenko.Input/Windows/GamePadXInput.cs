@@ -23,6 +23,10 @@ namespace SiliconStudio.Xenko.Input
         {
             Source = source;
             this.controller = controller;
+
+            // XBox controllers have a fixed index, given by the controller
+            CanChangeIndex = false;
+
             SetIndexInternal(index);
             Id = id;
 
@@ -47,13 +51,9 @@ namespace SiliconStudio.Xenko.Input
         }
 
         public override string Name => $"XInput GamePad {Index}";
-
         public override Guid Id { get; }
-
         public override Guid ProductId { get; }
-
         public override GamePadState State => state;
-
         public override IInputSource Source { get; }
 
         public event EventHandler Disconnected;
