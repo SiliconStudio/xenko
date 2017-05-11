@@ -158,6 +158,7 @@ namespace SiliconStudio.Xenko.Streaming
                 // temp for testing...
                 if (!((Game)Game).Input.IsKeyDown(Keys.P))
                 {
+                    ContentStreaming.Update();
                     await ((Game)Game).Script.NextFrame();
                     continue;
                 }
@@ -205,6 +206,8 @@ namespace SiliconStudio.Xenko.Streaming
                         // TODO: add StreamingManager stats, update time per frame, updates per frame, etc.
                     }
                 }
+                
+                ContentStreaming.Update();
 
                 // TODO: sleep microThread for ManagerUpdatesInterval ??
                 await ((Game)Game).Script.NextFrame();

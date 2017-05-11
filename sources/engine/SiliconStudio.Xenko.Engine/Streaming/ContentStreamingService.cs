@@ -15,6 +15,9 @@ namespace SiliconStudio.Xenko.Streaming
     {
         private readonly List<ContentStorage> containers = new List<ContentStorage>();
         
+        // Configuration
+        public TimeSpan UnusedDataChunksLifetime = TimeSpan.FromSeconds(2);
+
         internal Func<Task<IDisposable>> MountDatabase { get; set; }
 
         internal ContentStreamingService()
@@ -43,6 +46,15 @@ namespace SiliconStudio.Xenko.Streaming
             }
 
             return result;
+        }
+
+        internal void Update()
+        {
+            lock (containers)
+            {
+                foreach (var e in containers)
+                    e.ReleaseUnusedChunks();
+            }
         }
 
         public void Dispose()

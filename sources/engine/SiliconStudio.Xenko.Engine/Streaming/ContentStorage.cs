@@ -89,6 +89,16 @@ namespace SiliconStudio.Xenko.Streaming
             return chunk;
         }
 
+        internal void ReleaseUnusedChunks()
+        {
+            var now = DateTime.UtcNow;
+            foreach (var chunk in chunks)
+            {
+                if (chunk.IsLoaded && now - chunk.LastAccessTime >= Service.UnusedDataChunksLifetime)
+                    chunk.Data = null;
+            }
+        }
+
         /// <summary>
         /// Creates the new storage container at the specified location and generates header for that.
         /// </summary>
