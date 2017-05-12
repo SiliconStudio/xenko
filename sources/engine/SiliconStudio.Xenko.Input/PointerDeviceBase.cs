@@ -56,6 +56,9 @@ namespace SiliconStudio.Xenko.Input
                 pointerData.Delta = Vector2.Zero;
             }
 
+            pressedPointers.Clear();
+            releasedPointers.Clear();
+
             // Turn internal input events into pointer events and mouse position + delta
             foreach (var evt in PointerInputEvents)
             {
@@ -100,7 +103,7 @@ namespace SiliconStudio.Xenko.Input
             else if (evt.Type == PointerEventType.Released || evt.Type == PointerEventType.Canceled)
             {
                 data.IsDown = false;
-                pressedPointers.Add(data);
+                releasedPointers.Add(data);
                 downPointers.Remove(data);
             }
             

@@ -82,8 +82,8 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.IsTrue(keyEvent.RepeatCount == 3);
             Assert.IsTrue(keyEvent.Device == keyboard);
 
-            // Check pressed/released states
-            Assert.IsFalse(keyboard.IsKeyPressed(Keys.A));
+            // Check pressed/released states (Pressed events should still be sent when repeating)
+            Assert.IsTrue(keyboard.IsKeyPressed(Keys.A));
             Assert.IsFalse(keyboard.IsKeyReleased(Keys.A));
             Assert.IsTrue(keyboard.IsKeyDown(Keys.A));
 
