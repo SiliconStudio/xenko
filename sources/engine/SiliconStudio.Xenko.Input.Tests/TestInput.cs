@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Input.Tests
     {
         public TestInput()
         {
-            InputSourceSimulated.Enabled = true;
+            EnableSimulatedInputSource();
         }
         
         /// <summary>
@@ -21,9 +21,9 @@ namespace SiliconStudio.Xenko.Input.Tests
         void TestPressRelease()
         {
             var events = Input.Events;
-            var keyboard = InputSourceSimulated.Instance.Keyboard;
+            var keyboard = KeyboardSimulated;
 
-            Input.SimulateKeyDown(Keys.A);
+            keyboard.SimulateDown(Keys.A);
             Input.Update(DrawTime);
             
             // Test press
@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.IsFalse(keyboard.IsKeyReleased(Keys.A));
             Assert.IsTrue(keyboard.IsKeyDown(Keys.A));
 
-            Input.SimulateKeyUp(Keys.A);
+            keyboard.SimulateUp(Keys.A);
             Input.Update(DrawTime);
 
             // Test release
@@ -62,15 +62,15 @@ namespace SiliconStudio.Xenko.Input.Tests
         void TestRepeat()
         {
             var events = Input.Events;
-            var keyboard = InputSourceSimulated.Instance.Keyboard;
+            var keyboard = KeyboardSimulated;
 
-            Input.SimulateKeyDown(Keys.A);
+            keyboard.SimulateDown(Keys.A);
             Input.Update(DrawTime);
-            Input.SimulateKeyDown(Keys.A);
+            keyboard.SimulateDown(Keys.A);
             Input.Update(DrawTime);
-            Input.SimulateKeyDown(Keys.A);
+            keyboard.SimulateDown(Keys.A);
             Input.Update(DrawTime);
-            Input.SimulateKeyDown(Keys.A);
+            keyboard.SimulateDown(Keys.A);
             Input.Update(DrawTime);
             
             // Test press with release
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.IsFalse(keyboard.IsKeyReleased(Keys.A));
             Assert.IsTrue(keyboard.IsKeyDown(Keys.A));
 
-            Input.SimulateKeyUp(Keys.A);
+            keyboard.SimulateUp(Keys.A);
             Input.Update(DrawTime);
 
             // Test release
@@ -103,7 +103,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         /// </summary>
         void TestMouse()
         {
-            var mouse = InputSourceSimulated.Instance.Mouse;
+            var mouse = MouseSimulated;
 
             Vector2 targetPosition;
             mouse.SetPosition(targetPosition = new Vector2(0.5f, 0.5f));
@@ -166,7 +166,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         /// </summary>
         void TestSingleFrameStates()
         {
-            var keyboard = InputSourceSimulated.Instance.Keyboard;
+            var keyboard = KeyboardSimulated;
 
             keyboard.SimulateDown(Keys.Space);
             keyboard.SimulateUp(Keys.Space);
@@ -176,7 +176,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.IsTrue(Input.IsKeyReleased(Keys.Space));
             Assert.IsFalse(Input.IsKeyDown(Keys.Space));
             
-            var mouse = InputSourceSimulated.Instance.Mouse;
+            var mouse = MouseSimulated;
 
             mouse.SimulateMouseDown(MouseButton.Extended2);
             mouse.SimulateMouseUp(MouseButton.Extended2);
@@ -219,38 +219,38 @@ namespace SiliconStudio.Xenko.Input.Tests
             Input.DeviceRemoved += (sender, args) =>
             {
                 Assert.AreEqual(DeviceChangedEventType.Removed, args.Type);
-                if (args.Device == InputSourceSimulated.Instance.Keyboard)
+                if (args.Device is KeyboardSimulated)
                     keyboardRemoved = true;
             };
             Input.DeviceAdded += (sender, args) =>
             {
                 Assert.AreEqual(DeviceChangedEventType.Added, args.Type);
-                if (args.Device == InputSourceSimulated.Instance.Keyboard)
+                if (args.Device is KeyboardSimulated)
                     keyboardAdded = true;
             };
 
             // Check keyboard removal
-            InputSourceSimulated.Instance.SetKeyboardConnected(false);
+            InputSourceSimulated.RemoveAllKeyboards();
             Assert.IsTrue(keyboardRemoved);
             Assert.IsFalse(keyboardAdded);
             Assert.IsNull(Input.Keyboard);
             Assert.IsFalse(Input.HasKeyboard);
 
             // Check keyboard addition
-            InputSourceSimulated.Instance.SetKeyboardConnected(true);
+            InputSourceSimulated.AddKeyboard();
             Assert.IsTrue(keyboardAdded);
             Assert.IsNotNull(Input.Keyboard);
             Assert.IsTrue(Input.HasKeyboard);
 
             // Test not crashing with no keyboard/mouse in a few update loops
-            InputSourceSimulated.Instance.SetKeyboardConnected(false);
-            InputSourceSimulated.Instance.SetMouseConnected(false);
+            InputSourceSimulated.RemoveAllKeyboards();
+            InputSourceSimulated.RemoveAllMice();
 
             for(int i = 0; i < 3; i++)
                 Input.Update(DrawTime);
 
-            InputSourceSimulated.Instance.SetKeyboardConnected(true);
-            InputSourceSimulated.Instance.SetMouseConnected(true);
+            // Reset input source state
+            EnableSimulatedInputSource();
         }
 
         /// <summary>
@@ -258,7 +258,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         /// </summary>
         void TestLockedMousePosition()
         {
-            var mouse = InputSourceSimulated.Instance.Mouse;
+            var mouse = MouseSimulated;
             mouse.LockPosition(true);
             Input.Update(DrawTime);
             
@@ -289,24 +289,18 @@ namespace SiliconStudio.Xenko.Input.Tests
         /// </summary>
         void TestGamePad()
         {
-            Assert.AreEqual(0, InputSourceSimulated.Instance.GamePads.Count);
+            Assert.AreEqual(0, InputSourceSimulated.GamePads.Count);
             Assert.IsFalse(Input.HasGamePad);
             Assert.IsNull(Input.DefaultGamePad);
-
-            // Gamepad should only actually be added after update
-            var gamePad0 = InputSourceSimulated.Instance.AddGamePad();
-            Assert.AreEqual(0, Input.GamePadCount);
-
-            Input.Update(DrawTime);
+            
+            var gamePad0 = InputSourceSimulated.AddGamePad();
             
             Assert.AreEqual(1, Input.GamePadCount);
-
             Assert.IsTrue(Input.HasGamePad);
             Assert.IsNotNull(Input.DefaultGamePad);
 
             // Add another gamepad
-            var gamePad1 = InputSourceSimulated.Instance.AddGamePad();
-            Input.Update(DrawTime);
+            var gamePad1 = InputSourceSimulated.AddGamePad();
 
             // Test automatic index assignment
             Assert.AreEqual(0, gamePad0.Index);
@@ -340,13 +334,9 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.IsFalse(gamePad0.IsButtonPressed(GamePadButton.A));
             Assert.IsTrue(gamePad0.IsButtonReleased(GamePadButton.A));
             Assert.IsFalse(gamePad0.IsButtonDown(GamePadButton.A));
-
-            // Gamepad should only actually be removed after update
-            InputSourceSimulated.Instance.RemoveGamePad(gamePad0);
-            InputSourceSimulated.Instance.RemoveGamePad(gamePad1);
-            Assert.AreEqual(2, Input.GamePadCount);
-
-            Input.Update(DrawTime);
+            
+            InputSourceSimulated.RemoveGamePad(gamePad0);
+            InputSourceSimulated.RemoveGamePad(gamePad1);
 
             Assert.AreEqual(0, Input.GamePadCount);
         }

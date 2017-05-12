@@ -1,34 +1,32 @@
-﻿// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputSourceSimulated : InputSourceBase
+    public class KeyboardSimulated : KeyboardDeviceBase
     {
-        public class KeyboardSimulated : KeyboardDeviceBase
+        public KeyboardSimulated(InputSourceSimulated source)
         {
-            public KeyboardSimulated()
-            {
-                Priority = -1000;
-            }
+            Priority = -1000;
+            Source = source;
+        }
 
-            public override string Name => "Simulated Keyboard";
+        public override string Name => "Simulated Keyboard";
 
-            public override Guid Id => new Guid(10, 10, 1, 0, 0, 0, 0, 0, 0, 0, 0);
+        public override Guid Id => new Guid(10, 10, 1, 0, 0, 0, 0, 0, 0, 0, 0);
 
-            public override IInputSource Source => Instance;
+        public override IInputSource Source { get; }
 
-            public void SimulateDown(Keys key)
-            {
-                HandleKeyDown(key);
-            }
+        public void SimulateDown(Keys key)
+        {
+            HandleKeyDown(key);
+        }
 
-            public void SimulateUp(Keys key)
-            {
-                HandleKeyUp(key);
-            }
+        public void SimulateUp(Keys key)
+        {
+            HandleKeyUp(key);
         }
     }
 }

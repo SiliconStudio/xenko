@@ -32,9 +32,9 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         public static float GameControllerAxisDeadZone = 0.05f;
 
+
         internal static Logger Logger = GlobalLogger.GetLogger("Input");
 
-        private readonly List<IInputSource> sources = new List<IInputSource>();
         private readonly List<IInputDevice> devices = new List<IInputDevice>();
 
         private readonly List<InputEvent> events = new List<InputEvent>();
@@ -56,7 +56,9 @@ namespace SiliconStudio.Xenko.Input
         private readonly List<ISensorDevice> sensors = new List<ISensorDevice>();
 
         private readonly Dictionary<Type, IInputEventRouter> eventRouters = new Dictionary<Type, IInputEventRouter>();
-        
+
+        private Dictionary<IInputSource, EventHandler<TrackingCollectionChangedEventArgs>> devicesCollectionChangedActions = new Dictionary<IInputSource, EventHandler<TrackingCollectionChangedEventArgs>>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="InputManager"/> class.
         /// </summary>
@@ -66,8 +68,11 @@ namespace SiliconStudio.Xenko.Input
             
             Gestures = new TrackingCollection<GestureConfig>();
             Gestures.CollectionChanged += GesturesOnCollectionChanged;
+
+            Sources = new TrackingCollection<IInputSource>();
+            Sources.CollectionChanged += SourcesOnCollectionChanged;
         }
-        
+
         /// <summary>
         /// Gets or sets the configuration for virtual buttons.
         /// </summary>
@@ -79,6 +84,11 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         public TrackingCollection<GestureConfig> Gestures { get; }
         
+        /// <summary>
+        /// Input sources
+        /// </summary>
+        public TrackingCollection<IInputSource> Sources { get; }
+
         /// <summary>
         /// Gets the reference to the accelerometer sensor. The accelerometer measures all the acceleration forces applied on the device.
         /// </summary>
@@ -268,7 +278,7 @@ namespace SiliconStudio.Xenko.Input
             Game.Activated += OnApplicationResumed;
             Game.Deactivated += OnApplicationPaused;
 
-            InitializeSources();
+            AddSources();
 
             // After adding initial devices, reassign gamepad id's
             // this creates a beter index assignment in the case where you have both an xbox controller and another controller at startup
@@ -358,7 +368,7 @@ namespace SiliconStudio.Xenko.Input
         /// </remarks>
         public void Scan()
         {
-            foreach (var source in sources)
+            foreach (var source in Sources)
             {
                 source.Scan();
             }
@@ -377,7 +387,7 @@ namespace SiliconStudio.Xenko.Input
             events.Clear();
 
             // Update all input sources so they can route events to input devices and possible register new devices
-            foreach (var source in sources)
+            foreach (var source in Sources)
             {
                 source.Update();
             }
@@ -453,7 +463,7 @@ namespace SiliconStudio.Xenko.Input
         public void OnApplicationPaused(object sender, EventArgs e)
         {
             // Pause sources
-            foreach (var source in sources)
+            foreach (var source in Sources)
             {
                 source.Pause();
             }
@@ -462,23 +472,34 @@ namespace SiliconStudio.Xenko.Input
         public void OnApplicationResumed(object sender, EventArgs e)
         {
             // Resume sources
-            foreach (var source in sources)
+            foreach (var source in Sources)
             {
                 source.Resume();
             }
         }
-
-        /// <summary>
-        /// Adds a new input source to be used by the input manager
-        /// </summary>
-        /// <param name="source">The input source to add</param>
-        public void AddInputSource(IInputSource source)
+        
+        private void SourcesOnCollectionChanged(object o, TrackingCollectionChangedEventArgs e)
         {
-            if (sources.Contains(source)) throw new InvalidOperationException("Input Source already added");
+            var source = (IInputSource)e.Item;
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    if (Sources.Where(x=>x == source).Count() > 1)
+                        throw new InvalidOperationException("Input Source already added");
 
-            sources.Add(source);
-            source.Devices.CollectionChanged += (sender, args) => InputDevicesOnCollectionChanged(source, args);
-            source.Initialize(this);
+                    EventHandler<TrackingCollectionChangedEventArgs> eventHandler = (sender, args) => InputDevicesOnCollectionChanged(source, args);
+                    devicesCollectionChangedActions.Add(source, eventHandler);
+                    source.Devices.CollectionChanged += eventHandler;
+                    source.Initialize(this);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    source.Dispose();
+                    source.Devices.CollectionChanged -= devicesCollectionChangedActions[source];
+                    devicesCollectionChangedActions.Remove(source);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(e.Action));
+            }
         }
 
         /// <summary>
@@ -501,18 +522,12 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Reinitializes the input sources, useful if you want to add or remove simulated input
+        /// Resets the <see cref="Sources"/> collection back to it's default values
         /// </summary>
-        public void ReinitializeSources()
+        public void ResetSources()
         {
-            // Destroy all input sources
-            foreach (var source in sources)
-            {
-                source.Dispose();
-            }
-            sources.Clear();
-
-            InitializeSources();
+            Sources.Clear();
+            AddSources();
         }
         
         /// <summary>
@@ -543,52 +558,43 @@ namespace SiliconStudio.Xenko.Input
             return targetIndex;
         }
 
-        private void InitializeSources()
+        private void AddSources()
         {
-            // Don't create any other device when using simulated input
-            if (!InputSourceSimulated.Enabled)
+            // Create input sources
+            switch (Game.Context.ContextType)
             {
-                // Create input sources
-                switch (Game.Context.ContextType)
-                {
 #if SILICONSTUDIO_XENKO_UI_SDL
-                    case AppContextType.DesktopSDL:
-                        AddInputSource(new InputSourceSDL());
-                        break;
+                case AppContextType.DesktopSDL:
+                    Sources.Add(new InputSourceSDL());
+                    break;
 #endif
 #if SILICONSTUDIO_PLATFORM_ANDROID
-                    case AppContextType.Android:
-                        AddInputSource(new InputSourceAndroid());
-                        break;
+                case AppContextType.Android:
+                    AddInputSource(new InputSourceAndroid());
+                    break;
 #endif
 #if SILICONSTUDIO_PLATFORM_IOS
-                    case AppContextType.iOS:
-                        AddInputSource(new InputSourceiOS());
-                        break;
+                case AppContextType.iOS:
+                    AddInputSource(new InputSourceiOS());
+                    break;
 #endif
 #if SILICONSTUDIO_PLATFORM_UWP
-                    case  AppContextType.UWP:
-                        AddInputSource(new InputSourceUWP());
-                        break;
+                case  AppContextType.UWP:
+                    AddInputSource(new InputSourceUWP());
+                    break;
 #endif
 #if SILICONSTUDIO_PLATFORM_WINDOWS && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
-                    case AppContextType.Desktop:
-                        AddInputSource(new InputSourceWinforms());
-                        AddInputSource(new InputSourceWindowsDirectInput());
-                        if (InputSourceWindowsXInput.IsSupported())
-                            AddInputSource(new InputSourceWindowsXInput());
-                        if (UseRawInput)
-                            AddInputSource(new InputSourceWindowsRawInput());
-                        break;
+                case AppContextType.Desktop:
+                    Sources.Add(new InputSourceWinforms());
+                    Sources.Add(new InputSourceWindowsDirectInput());
+                    if (InputSourceWindowsXInput.IsSupported())
+                        Sources.Add(new InputSourceWindowsXInput());
+                    if (UseRawInput)
+                        Sources.Add(new InputSourceWindowsRawInput());
+                    break;
 #endif
-                    default:
-                        throw new InvalidOperationException("GameContext type is not supported by the InputManager");
-                }
-            }
-            else
-            {
-                // Simulated input, if enabled
-                AddInputSource(new InputSourceSimulated());
+                default:
+                    throw new InvalidOperationException("GameContext type is not supported by the InputManager");
             }
         }
 
@@ -600,7 +606,7 @@ namespace SiliconStudio.Xenko.Input
             Gestures.Clear();
 
             // Destroy all input sources
-            foreach (var source in sources)
+            foreach (var source in Sources)
             {
                 source.Dispose();
             }

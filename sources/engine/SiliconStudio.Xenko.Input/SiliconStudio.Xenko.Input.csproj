@@ -171,7 +171,6 @@
     <Compile Include="IKeyboardDevice.cs" />
     <Compile Include="IMouseDevice.cs" />
     <Compile Include="InputDeviceUtils.cs" />
-    <Compile Include="InputManagerExtensions.cs" />
     <Compile Include="InputSourceBase.cs" />
     <Compile Include="IPointerDevice.cs" />
     <Compile Include="InputManager.cs" />
