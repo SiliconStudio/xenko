@@ -1,4 +1,4 @@
-#region Header Licence
+﻿#region Header Licence
 //  ---------------------------------------------------------------------
 // 
 //  Copyright (c) 2009 Alexandre Mutel and Microsoft Corporation.  
@@ -46,7 +46,7 @@ namespace NShader
         {
             Init();
 
-            string ext = Path.GetExtension(filepath).ToLower();
+            string ext = Path.GetExtension(filepath).ToLowerInvariant();
             NShaderScanner scanner;
             if (!mapExtensionToScanner.TryGetValue(ext, out scanner))
             {

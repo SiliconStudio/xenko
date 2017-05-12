@@ -39,7 +39,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static char ConvertToChar(object value, IFormatProvider culture)
         {
-            return value != DependencyProperty.UnsetValue ? Convert.ToChar(value, culture) : default(char);
+            return value != DependencyProperty.UnsetValue ? Convert.ToChar(Convert.ToUInt32(value), culture) : default(char);
         }
 
         /// <summary>

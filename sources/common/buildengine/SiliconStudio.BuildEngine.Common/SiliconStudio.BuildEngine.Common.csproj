@@ -24,6 +24,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="AnonymousBuildStepProvider.cs" />
     <Compile Include="AssemblyHash.cs" />
     <Compile Include="BuildResultCode.cs" />
