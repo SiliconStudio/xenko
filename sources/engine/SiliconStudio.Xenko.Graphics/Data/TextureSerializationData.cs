@@ -14,11 +14,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
     public sealed class TextureSerializationData
     {
         internal static readonly FourCC MagicCode = 10;
-
-        /// <summary>
-        /// The version number.
-        /// </summary>
-        public const int Version = 2;
+        internal const int Version = 3;
 
         /// <summary>
         /// The texture image.
@@ -81,6 +77,8 @@ namespace SiliconStudio.Xenko.Graphics.Data
             }
             else
             {
+                stream.Write(ImageHelper.MagicCode);
+
                 // Write whole image (old texture content serialization)
                 Image.Save(stream.NativeStream, ImageFileType.Xenko);
             }

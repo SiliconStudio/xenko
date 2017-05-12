@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// <summary>
         /// Gets the data. Can be null if hasn't been laoded yet.
         /// </summary>
-        public byte[] Data { get; internal set; }
+        public byte[] Data { get; protected set; }
 
         /// <summary>
         /// Gets the last access time.

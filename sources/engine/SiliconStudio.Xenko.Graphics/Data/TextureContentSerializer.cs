@@ -24,12 +24,9 @@ namespace SiliconStudio.Xenko.Graphics.Data
                 var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
                 var texturesStreamingProvider = services.GetSafeServiceAs<ITexturesStreamingProvider>();
 
-                var startPosition = stream.NativeStream.Position;
                 var magicCode = stream.NativeStream.ReadUInt32();
                 if (magicCode == ImageHelper.MagicCode)
                 {
-                    stream.NativeStream.Position = startPosition;
-
                     texturesStreamingProvider.UnregisterTexture(texture);
 
                     // TODO: Error handling?
