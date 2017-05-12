@@ -10,69 +10,33 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Provides a virtual mouse and keyboard that generate input events like a normal mouse/keyboard when any of the functions (Simulate...) are called
     /// </summary>
-    public partial class InputSourceSimulated : InputSourceBase
+    public class InputSourceSimulated : InputSourceBase
     {
-        /// <summary>
-        /// Should simulated input be added to the input manager
-        /// </summary>
-        public static bool Enabled = false;
-
-        /// <summary>
-        /// The simulated input source
-        /// </summary>
-        public static InputSourceSimulated Instance;
-
-        private bool keyboardConnected;
-        private bool mouseConnected;
-
         private List<GamePadSimulated> gamePads = new List<GamePadSimulated>();
-        private List<Tuple<IInputDevice, DeviceEventType>> deviceEvents = new List<Tuple<IInputDevice, DeviceEventType>>();
-
-        public KeyboardSimulated Keyboard { get; private set; }
-
-        public MouseSimulated Mouse { get; private set; }
-
+        private List<MouseSimulated> mice = new List<MouseSimulated>();
+        private List<KeyboardSimulated> keyboards = new List<KeyboardSimulated>();
+        
+        public IReadOnlyList<KeyboardSimulated> Keyboards => keyboards;
+        public IReadOnlyList<MouseSimulated> Mice => mice;
         public IReadOnlyList<GamePadSimulated> GamePads => gamePads;
-
-
+        
         public override void Initialize(InputManager inputManager)
         {
-            Keyboard = new KeyboardSimulated();
-            Mouse = new MouseSimulated();
-            SetKeyboardConnected(true);
-            SetMouseConnected(true);
-            Instance = this;
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            Instance = null;
-        }
-
-        public override void Update()
-        {
-            base.Update();
-            foreach (var evt in deviceEvents)
-            {
-                switch (evt.Item2)
-                {
-                    case DeviceEventType.Add:
-                        RegisterDevice(evt.Item1);
-                        break;
-                    case DeviceEventType.Remove:
-                        UnregisterDevice(evt.Item1);
-                        break;
-                }
-            }
-            deviceEvents.Clear();
+            keyboards.Clear();
+            mice.Clear();
+            gamePads.Clear();
         }
 
         public GamePadSimulated AddGamePad()
         {
             var gamePad = new GamePadSimulated(this);
             gamePads.Add(gamePad);
-            deviceEvents.Add(new Tuple<IInputDevice, DeviceEventType>(gamePad, DeviceEventType.Add));
+            RegisterDevice(gamePad);
             return gamePad;
         }
 
@@ -80,49 +44,61 @@ namespace SiliconStudio.Xenko.Input
         {
             if (!gamePads.Contains(gamePad))
                 throw new InvalidOperationException("Simulated GamePad does not exist");
-            deviceEvents.Add(new Tuple<IInputDevice, DeviceEventType>(gamePad, DeviceEventType.Remove));
+            UnregisterDevice(gamePad);
             gamePads.Remove(gamePad);
         }
 
         public void RemoveAllGamePads()
         {
             foreach (var gamePad in gamePads)
-                deviceEvents.Add(new Tuple<IInputDevice, DeviceEventType>(gamePad, DeviceEventType.Remove));
+                UnregisterDevice(gamePad);
             gamePads.Clear();
         }
 
-        public void SetKeyboardConnected(bool connected)
+        public MouseSimulated AddMouse()
         {
-            if (connected != keyboardConnected)
-            {
-                if (connected)
-                {
-                    RegisterDevice(Keyboard);
-                }
-                else
-                {
-                    UnregisterDevice(Keyboard);
-                }
-
-                keyboardConnected = connected;
-            }
+            var mouse = new MouseSimulated(this);
+            mice.Add(mouse);
+            RegisterDevice(mouse);
+            return mouse;
         }
 
-        public void SetMouseConnected(bool connected)
+        public void RemoveMouse(MouseSimulated mouse)
         {
-            if (connected != mouseConnected)
-            {
-                if (connected)
-                {
-                    RegisterDevice(Mouse);
-                }
-                else
-                {
-                    UnregisterDevice(Mouse);
-                }
+            if (!mice.Contains(mouse))
+                throw new InvalidOperationException("Simulated Mouse does not exist");
+            UnregisterDevice(mouse);
+            mice.Remove(mouse);
+        }
 
-                mouseConnected = connected;
-            }
+        public void RemoveAllMice()
+        {
+            foreach (var mouse in mice)
+                UnregisterDevice(mouse);
+            mice.Clear();
+        }
+
+        public KeyboardSimulated AddKeyboard()
+        {
+            var keyboard = new KeyboardSimulated(this);
+            keyboards.Add(keyboard);
+            RegisterDevice(keyboard);
+            return keyboard;
+        }
+
+        public void RemoveKeyboard(KeyboardSimulated keyboard)
+        {
+            if (!keyboards.Contains(keyboard))
+                throw new InvalidOperationException("Simulated Keyboard does not exist");
+            UnregisterDevice(keyboard);
+            keyboards.Remove(keyboard);
+        }
+
+        public void RemoveAllKeyboards()
+        {
+            foreach (var keyboard in keyboards)
+                UnregisterDevice(keyboard);
+            keyboards.Clear();
         }
 
         private enum DeviceEventType

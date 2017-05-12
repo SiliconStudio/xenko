@@ -32,6 +32,10 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         public int StopOnFrameCount { get; set; }
 
+        public InputSourceSimulated InputSourceSimulated { get; private set; }
+        public MouseSimulated MouseSimulated { get; private set; }
+        public KeyboardSimulated KeyboardSimulated { get; private set; }
+
         /// <summary>
         /// The current version of the test
         /// </summary>
@@ -45,6 +49,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         public int FrameIndex;
 
         private bool screenshotAutomationEnabled;
+
         private BackBufferSizeMode backBufferSizeMode;
 
         protected GameTestBase()
@@ -139,7 +144,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 screenshotAutomationEnabled = value;
             }
         }
-        
+
         public BackBufferSizeMode BackBufferSizeMode
         {
             get { return backBufferSizeMode; }
@@ -163,6 +168,21 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 }
 #endif // TODO implement it other mobile platforms
             }
+        }
+
+        protected internal void EnableSimulatedInputSource()
+        {
+            InputSourceSimulated = new InputSourceSimulated();
+            if(Input != null)
+                InitializeSimulatedInputSource();
+        }
+
+        private void InitializeSimulatedInputSource()
+        {
+            Input.Sources.Clear();
+            Input.Sources.Add(InputSourceSimulated);
+            MouseSimulated = InputSourceSimulated.AddMouse();
+            KeyboardSimulated = InputSourceSimulated.AddKeyboard();
         }
 
         private void FitPresentationParametersToDesiredValues(int windowWidth, int windowHeight, PresentationParameters parameters)
@@ -195,8 +215,10 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         {
             await base.LoadContent();
 
+            InitializeSimulatedInputSource();
+
 #if !SILICONSTUDIO_XENKO_UI_SDL
-            // Disabled for SDL as a positio of (0,0) actually means that the client area of the
+            // Disabled for SDL as a position of (0,0) actually means that the client area of the
             // window will be at (0,0) not the top left corner of the non-client area of the window.
             Window.Position = Int2.Zero; // avoid possible side effects due to position of the window in the screen.
 #endif
@@ -301,8 +323,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         protected static void RunGameTest(GameTestBase game)
         {
-            // Enabled simulated input
-            InputSourceSimulated.Enabled = true;
+            game.EnableSimulatedInputSource();
 
             game.CurrentTestContext = TestContext.CurrentContext;
 
@@ -325,7 +346,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             if (failedTests.Count > 0)
                 Assert.Fail($"Some image comparison tests failed: {string.Join(", ", failedTests.Select(x => x))}");
         }
-        
+
         /// <summary>
         /// Send the data of the test to the server.
         /// </summary>

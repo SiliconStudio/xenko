@@ -25,10 +25,6 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 
-            // Enable simulated input
-            // This prevents intervention in tests from external sources and allows the use of InjectPointerEvent, etc.
-            InputSourceSimulated.Enabled = true;
-
             using (game)
             {
                 game.Run();
