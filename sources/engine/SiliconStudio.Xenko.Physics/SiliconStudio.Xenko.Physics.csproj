@@ -50,6 +50,9 @@
     </When>
   </Choose>
   <ItemGroup>
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Bullet2PhysicsSystem.cs" />
     <Compile Include="Collision.cs" />
     <Compile Include="Data\BoxColliderShapeDesc.cs" />
@@ -72,9 +75,6 @@
     <Compile Include="Engine\PhysicsShapesRenderingService.cs" />
     <Compile Include="Engine\PhysicsProcessor.cs" />
     <Compile Include="IPhysicsSystem.cs" />
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="IRelative.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="PhysicsConfiguration.cs" />
