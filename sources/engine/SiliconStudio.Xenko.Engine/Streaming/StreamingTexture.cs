@@ -205,16 +205,17 @@ namespace SiliconStudio.Xenko.Streaming
 
                         var chunk = Storage.GetChunk(mipIndex);
                         Debug.Assert(chunk != null && chunk.Size == slicePitch);
-                        chunk.Load(microThread);
-                        if (chunk.Data == null)
+                        var data = await chunk.GetData(microThread);
+                        if (data == null)
                         {
                             int a = 1;
+                            data = await chunk.GetData(microThread);
                         }
                         Debug.Assert(chunk.IsLoaded);
 
                         unsafe
                         {
-                            fixed (byte* p = chunk.Data)
+                            fixed (byte* p = data)
                             {
                                 dataBoxArray[mip].DataPointer = (IntPtr)p;
                                 dataBoxArray[mip].RowPitch = rowPitch;

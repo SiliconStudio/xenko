@@ -4,6 +4,7 @@
 using System;
 using System.Data;
 using System.Threading;
+using System.Threading.Tasks;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Serialization.Contents;
@@ -15,6 +16,8 @@ namespace SiliconStudio.Xenko.Streaming
     /// </summary>
     public class ContentChunk
     {
+        private byte[] data;
+
         /// <summary>
         /// Gets the parent storage container.
         /// </summary>
@@ -29,12 +32,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// Gets the chunk size in file (in bytes).
         /// </summary>
         public int Size { get; }
-
-        /// <summary>
-        /// Gets the data. Can be null if hasn't been laoded yet.
-        /// </summary>
-        public byte[] Data { get; protected set; }
-
+        
         /// <summary>
         /// Gets the last access time.
         /// </summary>
@@ -43,12 +41,12 @@ namespace SiliconStudio.Xenko.Streaming
         /// <summary>
         /// Gets a value indicating whether this chunk is loaded.
         /// </summary>
-        public bool IsLoaded => Data != null;
+        public bool IsLoaded => data != null;
 
         /// <summary>
         /// Gets a value indicating whether this chunk is not loaded.
         /// </summary>
-        public bool IsMissing => Data == null;
+        public bool IsMissing => data == null;
 
         /// <summary>
         /// Gets a value indicating whether this exists in file.
@@ -75,10 +73,10 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         /// <param name="microThread">Micro thread.</param>
         /// <exception cref="DataException">Cannot load content chunk. Missing File Provider.</exception>
-        public async void Load(MicroThread microThread)
+        public async Task<byte[]> GetData(MicroThread microThread)
         {
             if (IsLoaded)
-                return;
+                return data;
 
             var initialContext = SynchronizationContext.Current;
             SynchronizationContext.SetSynchronizationContext(new MicrothreadProxySynchronizationContext(microThread));
@@ -93,19 +91,21 @@ namespace SiliconStudio.Xenko.Streaming
                 using (var stream = fileProvider.OpenStream(Storage.Url, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read, StreamFlags.Seekable))
                 {
                     stream.Position = Location;
-                    var data = new byte[Size];
-                    stream.Read(data, 0, Size);
-                    Data = data;
+                    var bytes = new byte[Size];
+                    stream.Read(bytes, 0, Size);
+                    data = bytes;
                 }
 
                 RegisterUsage();
             }
             SynchronizationContext.SetSynchronizationContext(initialContext);
+
+            return data;
         }
 
         internal void Unload()
         {
-            Data = null;
+            data = null;
         }
     }
 }
