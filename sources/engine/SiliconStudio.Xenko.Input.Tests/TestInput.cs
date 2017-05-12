@@ -15,14 +15,17 @@ namespace SiliconStudio.Xenko.Input.Tests
             InputSourceSimulated.Enabled = true;
         }
         
+        /// <summary>
+        /// Checks keyboard press/release
+        /// </summary>
         void TestPressRelease()
         {
             var events = Input.Events;
-            Input.SimulateKeyDown(Keys.A);
-            Input.Update(DrawTime);
-
             var keyboard = InputSourceSimulated.Instance.Keyboard;
 
+            Input.SimulateKeyDown(Keys.A);
+            Input.Update(DrawTime);
+            
             // Test press
             Assert.AreEqual(1, events.Count);
             Assert.IsTrue(events[0] is KeyEvent);
@@ -32,6 +35,11 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.IsTrue(keyEvent.RepeatCount == 0);
             Assert.IsTrue(keyEvent.Device == keyboard);
 
+            // Check pressed/released states
+            Assert.IsTrue(keyboard.IsKeyPressed(Keys.A));
+            Assert.IsFalse(keyboard.IsKeyReleased(Keys.A));
+            Assert.IsTrue(keyboard.IsKeyDown(Keys.A));
+
             Input.SimulateKeyUp(Keys.A);
             Input.Update(DrawTime);
 
@@ -41,22 +49,30 @@ namespace SiliconStudio.Xenko.Input.Tests
             keyEvent = (KeyEvent)events[0];
             Assert.IsTrue(keyEvent.Key == Keys.A);
             Assert.IsTrue(!keyEvent.IsDown);
+
+            // Check pressed/released states
+            Assert.IsFalse(keyboard.IsKeyPressed(Keys.A));
+            Assert.IsTrue(keyboard.IsKeyReleased(Keys.A));
+            Assert.IsFalse(keyboard.IsKeyDown(Keys.A));
         }
 
+        /// <summary>
+        /// Checks reported events and state when key repeats occur
+        /// </summary>
         void TestRepeat()
         {
             var events = Input.Events;
-            Input.SimulateKeyDown(Keys.A);
-            Input.Update(DrawTime);
-            Input.SimulateKeyDown(Keys.A);
-            Input.Update(DrawTime);
-            Input.SimulateKeyDown(Keys.A);
-            Input.Update(DrawTime);
-            Input.SimulateKeyDown(Keys.A);
-            Input.Update(DrawTime);
-
             var keyboard = InputSourceSimulated.Instance.Keyboard;
 
+            Input.SimulateKeyDown(Keys.A);
+            Input.Update(DrawTime);
+            Input.SimulateKeyDown(Keys.A);
+            Input.Update(DrawTime);
+            Input.SimulateKeyDown(Keys.A);
+            Input.Update(DrawTime);
+            Input.SimulateKeyDown(Keys.A);
+            Input.Update(DrawTime);
+            
             // Test press with release
             Assert.AreEqual(1, events.Count);
             Assert.IsTrue(events[0] is KeyEvent);
@@ -66,6 +82,11 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.IsTrue(keyEvent.RepeatCount == 3);
             Assert.IsTrue(keyEvent.Device == keyboard);
 
+            // Check pressed/released states
+            Assert.IsFalse(keyboard.IsKeyPressed(Keys.A));
+            Assert.IsFalse(keyboard.IsKeyReleased(Keys.A));
+            Assert.IsTrue(keyboard.IsKeyDown(Keys.A));
+
             Input.SimulateKeyUp(Keys.A);
             Input.Update(DrawTime);
 
@@ -77,6 +98,9 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.IsTrue(!keyEvent.IsDown);
         }
 
+        /// <summary>
+        /// Checks mouse and pointer events
+        /// </summary>
         void TestMouse()
         {
             var mouse = InputSourceSimulated.Instance.Mouse;
@@ -90,7 +114,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             mouse.SetPosition(targetPosition = new Vector2(0.6f, 0.5f));
             mouse.HandleButtonDown(MouseButton.Left);
             Input.Update(DrawTime);
-
+            
             // Check for pointer events (2, 1 move, 1 down)
             Assert.AreEqual(2, Input.PointerEvents.Count);
             Assert.AreEqual(PointerEventType.Moved, Input.PointerEvents[0].EventType);
@@ -100,6 +124,15 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.AreEqual(PointerEventType.Pressed, Input.PointerEvents[1].EventType);
             Assert.IsTrue(Input.PointerEvents[1].IsDown);
 
+            // Check pressed/released states
+            Assert.IsTrue(mouse.IsButtonPressed(MouseButton.Left));
+            Assert.IsFalse(mouse.IsButtonReleased(MouseButton.Left));
+            Assert.IsTrue(mouse.IsButtonDown(MouseButton.Left));
+
+            Assert.AreEqual(1, mouse.PressedPointers.Count);
+            Assert.AreEqual(0, mouse.ReleasedPointers.Count);
+            Assert.AreEqual(1, mouse.DownPointers.Count);
+            
             // Check delta
             Assert.AreEqual(new Vector2(0.1f, 0.0f), Input.PointerEvents[0].DeltaPosition);
             Assert.AreEqual(new Vector2(0.0f, 0.0f), Input.PointerEvents[1].DeltaPosition);
@@ -117,8 +150,20 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.AreEqual(1, Input.PointerEvents.Count);
             Assert.AreEqual(PointerEventType.Released, Input.PointerEvents[0].EventType);
             Assert.IsFalse(Input.PointerEvents[0].IsDown);
+
+            // Check pressed/released states
+            Assert.IsFalse(mouse.IsButtonPressed(MouseButton.Left));
+            Assert.IsTrue(mouse.IsButtonReleased(MouseButton.Left));
+            Assert.IsFalse(mouse.IsButtonDown(MouseButton.Left));
+
+            Assert.AreEqual(0, mouse.PressedPointers.Count);
+            Assert.AreEqual(1, mouse.ReleasedPointers.Count);
+            Assert.AreEqual(0, mouse.DownPointers.Count);
         }
 
+        /// <summary>
+        /// Checks if the pressed/released states work correctly when the occur on the same frame
+        /// </summary>
         void TestSingleFrameStates()
         {
             var keyboard = InputSourceSimulated.Instance.Keyboard;
@@ -130,8 +175,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.IsTrue(Input.IsKeyPressed(Keys.Space));
             Assert.IsTrue(Input.IsKeyReleased(Keys.Space));
             Assert.IsFalse(Input.IsKeyDown(Keys.Space));
-
-
+            
             var mouse = InputSourceSimulated.Instance.Mouse;
 
             mouse.SimulateMouseDown(MouseButton.Extended2);
@@ -155,6 +199,9 @@ namespace SiliconStudio.Xenko.Input.Tests
             Input.Update(DrawTime);
         }
         
+        /// <summary>
+        /// Checks adding/removal of keyboard and mouse
+        /// </summary>
         void TestConnectedDevices()
         {
             Assert.IsTrue(Input.HasMouse);
@@ -171,11 +218,13 @@ namespace SiliconStudio.Xenko.Input.Tests
 
             Input.DeviceRemoved += (sender, args) =>
             {
+                Assert.AreEqual(DeviceChangedEventType.Removed, args.Type);
                 if (args.Device == InputSourceSimulated.Instance.Keyboard)
                     keyboardRemoved = true;
             };
             Input.DeviceAdded += (sender, args) =>
             {
+                Assert.AreEqual(DeviceChangedEventType.Added, args.Type);
                 if (args.Device == InputSourceSimulated.Instance.Keyboard)
                     keyboardAdded = true;
             };
@@ -193,18 +242,20 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.IsNotNull(Input.Keyboard);
             Assert.IsTrue(Input.HasKeyboard);
 
-            // Test not crashing with no keyboard/mouse
+            // Test not crashing with no keyboard/mouse in a few update loops
             InputSourceSimulated.Instance.SetKeyboardConnected(false);
             InputSourceSimulated.Instance.SetMouseConnected(false);
 
-            Input.Update(DrawTime);
-            Input.Update(DrawTime);
-            Input.Update(DrawTime);
+            for(int i = 0; i < 3; i++)
+                Input.Update(DrawTime);
 
             InputSourceSimulated.Instance.SetKeyboardConnected(true);
             InputSourceSimulated.Instance.SetMouseConnected(true);
         }
 
+        /// <summary>
+        /// Checks reported mouse delta and position with cursor position locked
+        /// </summary>
         void TestLockedMousePosition()
         {
             var mouse = InputSourceSimulated.Instance.Mouse;
@@ -233,6 +284,9 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.AreEqual(new Vector2(0.6f, 0.5f), mouse.Position);
         }
 
+        /// <summary>
+        /// Checks adding/removing gamepads and index assignment
+        /// </summary>
         void TestGamePad()
         {
             Assert.AreEqual(0, InputSourceSimulated.Instance.GamePads.Count);

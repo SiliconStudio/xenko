@@ -585,10 +585,11 @@ namespace SiliconStudio.Xenko.Input
                         throw new InvalidOperationException("GameContext type is not supported by the InputManager");
                 }
             }
-
-            // Simulated input, if enabled
-            if (InputSourceSimulated.Enabled)
+            else
+            {
+                // Simulated input, if enabled
                 AddInputSource(new InputSourceSimulated());
+            }
         }
 
         protected override void Destroy()
