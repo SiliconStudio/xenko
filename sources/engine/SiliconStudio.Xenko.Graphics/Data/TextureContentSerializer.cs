@@ -10,15 +10,15 @@ namespace SiliconStudio.Xenko.Graphics.Data
 {
     internal class TextureContentSerializer : ContentSerializerBase<Texture>
     {
-        public override Type SerializationType
-        {
-            get { return typeof(Image); }
-        }
-
+        /// <inheritdoc/>
         public override void Serialize(ContentSerializerContext context, SerializationStream stream, Texture texture)
         {
-            // TODO: This is the same as TextureConverter. Use DataContentSerializer for both Texture and Image?
-            if (context.Mode == ArchiveMode.Deserialize)
+            Serialize(context.Mode, stream, texture);
+        }
+
+        internal static void Serialize(ArchiveMode mode, SerializationStream stream, Texture texture)
+        {
+            if (mode == ArchiveMode.Deserialize)
             {
                 var services = stream.Context.Tags.Get(ServiceRegistry.ServiceRegistryKey);
                 var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
