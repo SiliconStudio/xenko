@@ -259,7 +259,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             var pointerEvent = new PointerEvent
             {
-                Device = InputSourceSimulated.Instance.Mouse,
+                Device = MouseSimulated,
                 PointerId = 0,
                 Position = position,
                 DeltaPosition = position - lastTouchPosition,
