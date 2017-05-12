@@ -63,8 +63,7 @@ namespace SiliconStudio.Xenko.Input
         internal InputManager(IServiceRegistry registry) : base(registry)
         {
             Enabled = true;
-
-            GestureEvents = currentGestureEvents;
+            
             Gestures = new TrackingCollection<GestureConfig>();
             Gestures.CollectionChanged += GesturesOnCollectionChanged;
         }
@@ -119,12 +118,12 @@ namespace SiliconStudio.Xenko.Input
         /// All input events that happened since the last frame
         /// </summary>
         public IReadOnlyList<InputEvent> Events => events;
-        
+
         /// <summary>
         /// Gets the collection of gesture events since the previous updates.
         /// </summary>
         /// <value>The gesture events.</value>
-        public List<GestureEvent> GestureEvents { get; private set; }
+        public IReadOnlyList<GestureEvent> GestureEvents => currentGestureEvents;
 
         /// <summary>
         /// Gets a value indicating whether pointer device is available.
