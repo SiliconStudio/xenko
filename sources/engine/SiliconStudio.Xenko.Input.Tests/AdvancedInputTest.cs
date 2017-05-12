@@ -12,6 +12,9 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Input.Tests
 {
+    /// <summary>
+    /// Interactive test that displays the state of various input devices on the screen
+    /// </summary>
     class AdvancedInputTest : InputTestBase
     {
         // keyboard
@@ -321,7 +324,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         }
 
         [Test]
-        public void RunSampleInputTest()
+        public void RunAdvancedInputTest()
         {
             RunGameTest(new AdvancedInputTest());
         }
