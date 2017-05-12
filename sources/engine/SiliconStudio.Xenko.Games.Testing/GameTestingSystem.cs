@@ -28,6 +28,10 @@ namespace SiliconStudio.Xenko.Games.Testing
         private readonly ConcurrentQueue<Action> drawActions = new ConcurrentQueue<Action>();
         private SocketMessageLayer socketMessageLayer;
 
+        private InputSourceSimulated inputSourceSimulated;
+        private KeyboardSimulated keyboardSimulated;
+        private MouseSimulated mouseSimulated;
+
         public GameTestingSystem(IServiceRegistry registry) : base(registry)
         {
             DrawOrder = int.MaxValue;
@@ -36,8 +40,10 @@ namespace SiliconStudio.Xenko.Games.Testing
             
             // Switch to simulated input
             InputManager input = (InputManager)registry.GetService(typeof(InputManager));
-            InputSourceSimulated.Enabled = true;
-            input.ReinitializeSources();
+            input.Sources.Clear();
+            input.Sources.Add(inputSourceSimulated = new InputSourceSimulated());
+            keyboardSimulated = inputSourceSimulated.AddKeyboard();
+            mouseSimulated = inputSourceSimulated.AddMouse();
         }
 
         public override async void Initialize()
@@ -54,17 +60,17 @@ namespace SiliconStudio.Xenko.Games.Testing
             {
                 if (request.Down)
                 {
-                    game.Input.SimulateKeyDown(request.Key);
+                    keyboardSimulated.SimulateDown(request.Key);
                 }
                 else
                 {
-                    game.Input.SimulateKeyUp(request.Key);
+                    keyboardSimulated.SimulateUp(request.Key);
                 }
             });
 
             socketMessageLayer.AddPacketHandler<TapSimulationRequest>(request =>
             {
-                InputSourceSimulated.Instance.Mouse.InjectPointerEvent(request.Coords, request.CoordsDelta, request.Delta, request.EventType);
+                mouseSimulated.InjectPointerEvent(request.Coords, request.CoordsDelta, request.Delta, request.EventType);
             });
 
             socketMessageLayer.AddPacketHandler<ScreenshotRequest>(request =>
