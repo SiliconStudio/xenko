@@ -229,7 +229,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The size of the text in virtual pixels unit.</userdoc>
         [DataMember]
-        [DataMemberRange(0, float.MaxValue, AllowNaN = true)]
+        [DataMemberRange(0, 2)]
         [Display(category: AppearanceCategory)]
         [DefaultValue(float.NaN)]
         public float TextSize
@@ -300,7 +300,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The width of the edit text's cursor (in virtual pixels).</userdoc>
         [DataMember]
-        [DataMemberRange(0, float.MaxValue)]
+        [DataMemberRange(0, 2)]
         [Display(category: AppearanceCategory)]
         [DefaultValue(0)]
         public float CaretWidth
@@ -371,7 +371,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
         /// <userdoc>The maximum number of characters that can be manually entered into the text box.</userdoc>
         [DataMember]
-        [DataMemberRange(1, int.MaxValue)]
+        [DataMemberRange(1, 0)]
         [Display(category: BehaviorCategory)]
         [DefaultValue(int.MaxValue)]
         public int MaxLength
@@ -390,7 +390,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
         /// <userdoc>The minimum number of visible lines.</userdoc>
         [DataMember]
-        [DataMemberRange(1, int.MaxValue)]
+        [DataMemberRange(1, 0)]
         [Display(category: BehaviorCategory)]
         [DefaultValue(1)]
         public int MinLines
@@ -409,7 +409,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [int, <see cref="int.MaxValue"/>].</remarks>
         /// <userdoc>The maximum number of visible lines.</userdoc>
         [DataMember]
-        [DataMemberRange(1, int.MaxValue)]
+        [DataMemberRange(1, 0)]
         [Display(category: BehaviorCategory)]
         [DefaultValue(int.MaxValue)]
         public int MaxLines
@@ -439,7 +439,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The caret blinking frequency.</userdoc>
         [DataMember]
-        [DataMemberRange(0, float.MaxValue)]
+        [DataMemberRange(0, 3)]
         [Display(category: BehaviorCategory)]
         [DefaultValue(0)]
         public float CaretFrequency

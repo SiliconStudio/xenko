@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <value>The map specifying the intensity of the specular reflection. An intensity of 0 means no reflection. An intensity of 1 means full reflection.</value>
         [DataMember(20)]
         [NotNull]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar Intensity { get; set; }
 
         /// <summary>

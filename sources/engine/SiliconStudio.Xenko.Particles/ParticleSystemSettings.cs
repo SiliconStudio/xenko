@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         [DataMember(10)]
         [Display("Warm-up time")]
-        [DataMemberRange(0, 5, 0.01, 1)]
+        [DataMemberRange(0, 5, 0.01, 1, 3)]
         [DefaultValue(0f)]
         public float WarmupTime { get; set; } = 0f;
 
