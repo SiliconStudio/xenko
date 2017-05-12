@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override IInputSource Source { get; }
 
-        public GamePadState State => state;
+        public override GamePadState State => state;
 
         public override void Update(List<InputEvent> inputEvents)
         {
@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Input
                 inputEvents.Add(CreateAxisEvent(GamePadAxis.RightTrigger, reading.RightTrigger));
         }
 
-        public void SetVibration(float smallLeft, float smallRight, float largeLeft, float largeRight)
+        public override void SetVibration(float smallLeft, float smallRight, float largeLeft, float largeRight)
         {
             Gamepad.Vibration = new GamepadVibration
             {
