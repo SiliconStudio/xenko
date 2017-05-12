@@ -39,6 +39,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         private bool isReadOnly;
         private string displayName;
         private bool isHighlighted;
+        private bool valueChanging;
 
 #if DEBUG
         private static bool DebugQuantumPropertyChanges = true;
@@ -69,6 +70,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             {
                 nodePresenter.ValueChanging += ValueChanging;
                 nodePresenter.ValueChanged += ValueChanged;
+                nodePresenter.AttachedProperties.PropertyUpdated += AttachedPropertyUpdated;
             }
 
             UpdateViewModelProperties();
@@ -468,11 +470,33 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
 
         private void ValueChanging(object sender, ValueChangingEventArgs valueChangingEventArgs)
         {
+            OnValueChanging();
+        }
+
+        private void ValueChanged(object sender, ValueChangedEventArgs valueChangedEventArgs)
+        {
+            OnValueChanged();
+        }
+
+        private void AttachedPropertyUpdated(ref PropertyContainer propertycontainer, PropertyKey propertykey, object newvalue, object oldvalue)
+        {
+            // This is the only legit scenario where we don't want re-entrancy. valueChanging should not be tested directly in one
+            // of those methods, because other cases could actually be problem.
+            if (!valueChanging)
+            {
+                OnValueChanging();
+                OnValueChanged();
+            }
+        }
+
+        private void OnValueChanging()
+        {
+            valueChanging = true;
             Parent?.NotifyPropertyChanging(Name);
             OnPropertyChanging(nameof(NodeValue));
         }
 
-        private void ValueChanged(object sender, ValueChangedEventArgs valueChangedEventArgs)
+        private void OnValueChanged()
         {
             Parent?.NotifyPropertyChanged(Name);
 
@@ -488,6 +512,8 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
 
             OnPropertyChanged(nameof(NodeValue));
             owner.NotifyNodeChanged(Path);
+
+            valueChanging = false;
         }
 
         private object ConvertValue(object value)
