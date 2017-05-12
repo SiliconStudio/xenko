@@ -12,12 +12,11 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// UWP Gamepad
     /// </summary>
-    internal class GamePadUWP : GamePadDeviceBase, IGamePadIndexAssignable
+    internal class GamePadUWP : GamePadDeviceBase
     {
         internal Gamepad Gamepad;
         private readonly double[] lastAxisState = new double[6];
         private GamePadState state = new GamePadState();
-        private int index;
 
         private Dictionary<GamepadButtons, GamePadButton> buttonMap = new Dictionary<GamepadButtons, GamePadButton>
         {
@@ -54,18 +53,6 @@ namespace SiliconStudio.Xenko.Input
         public override IInputSource Source { get; }
 
         public GamePadState State => state;
-        
-        public int Index
-        {
-            get { return index; }
-            set
-            {
-                index = value;
-                IndexChanged?.Invoke(this, new GamePadIndexChangedEventArgs { Index = value, IsDeviceSideChange = false });
-            }
-        }
-
-        public event EventHandler<GamePadIndexChangedEventArgs> IndexChanged;
 
         public override void Update(List<InputEvent> inputEvents)
         {
