@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             [typeof(GameControllerDirectionEvent)] = Color.Bisque,
         };
 
-        protected TestInputEvents()
+        public TestInputEvents()
         {
             DefaultTextColor = Color.White;
         }
@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         }
 
         [Test]
-        public void RunSampleInputTest()
+        public void RunTestInputEvents()
         {
             RunGameTest(new TestInputEvents());
         }

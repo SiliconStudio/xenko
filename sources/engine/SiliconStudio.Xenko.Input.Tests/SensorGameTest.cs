@@ -20,7 +20,7 @@ using SiliconStudio.Xenko.UI.Panels;
 namespace SiliconStudio.Xenko.Input.Tests
 {
     /// <summary>
-    /// Game class for test on the Input sensors.
+    /// Interactive test that makes use of sensors
     /// </summary>
     class SensorGameTest : GameTestBase
     {
