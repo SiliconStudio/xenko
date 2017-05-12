@@ -155,72 +155,69 @@ namespace SiliconStudio.Xenko.Streaming
         {
             // Cache data
             var texture = Texture;
-            int startMip = HighestResidentMipIndex;
             int mipsChange = residency - CurrentResidency;
             int mipsCount = residency;
             Debug.Assert(mipsChange != 0);
-
-            // Switch if go up or down with residency
-            if (mipsChange > 0)
+            
+            // TODO: allocation task should dispose texture or merge those tasks?
+            if (residency == 0)
             {
-                try
+                texture.OnDestroyed();
+                return;
+            }
+
+            try
+            {
+                Storage.LockChunks();
+
+                // Setup texture description
+                TextureDescription newDesc = _desc;
+                int newHighestResidentMipIndex = TotalMipLevels - mipsCount;
+                newDesc.MipLevels = mipsCount;
+                newDesc.Width = TotalWidth >> (_desc.MipLevels - newDesc.MipLevels);
+                newDesc.Height = TotalHeight >> (_desc.MipLevels - newDesc.MipLevels);
+                var dataBoxes = new DataBox[newDesc.MipLevels];
+
+                // Get mips data
+                for (int i = 0; i < newDesc.MipLevels; i++)
                 {
-                    Storage.LockChunks();
+                    int mipIndex = newHighestResidentMipIndex + i;
+                    int mipWidth = TotalWidth >> mipIndex;
+                    int mipheight = TotalHeight >> mipIndex;
 
-                    // Setup texture description
-                    TextureDescription newDesc = _desc;
-                    int newHighestResidentMipIndex = TotalMipLevels - mipsCount;
-                    newDesc.MipLevels = mipsCount;
-                    newDesc.Width = TotalWidth >> (_desc.MipLevels - newDesc.MipLevels);
-                    newDesc.Height = TotalHeight >> (_desc.MipLevels - newDesc.MipLevels);
-                    var dataBoxes = new DataBox[newDesc.MipLevels];
+                    int rowPitch, slicePitch;
+                    int widthPacked;
+                    int heightPacked;
+                    Image.ComputePitch(Format, mipWidth, mipheight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
 
-                    // Get mips data
-                    for (int i = 0; i < newDesc.MipLevels; i++)
+                    var chunk = Storage.GetChunk(mipIndex);
+                    Debug.Assert(chunk != null && chunk.Size == slicePitch);
+                    var data = await chunk.GetData(microThread);
+                    if (!chunk.IsLoaded)
+                        throw new DataException("Data chunk is not loaded.");
+
+                    unsafe
                     {
-                        int mipIndex = newHighestResidentMipIndex + i;
-                        int mipWidth = TotalWidth >> mipIndex;
-                        int mipheight = TotalHeight >> mipIndex;
-
-                        int rowPitch, slicePitch;
-                        int widthPacked;
-                        int heightPacked;
-                        Image.ComputePitch(Format, mipWidth, mipheight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
-
-                        var chunk = Storage.GetChunk(mipIndex);
-                        Debug.Assert(chunk != null && chunk.Size == slicePitch);
-                        var data = await chunk.GetData(microThread);
-                        if (!chunk.IsLoaded)
-                            throw new DataException("Data chunk is not loaded.");
-
-                        unsafe
+                        fixed (byte* p = data)
                         {
-                            fixed (byte* p = data)
-                            {
-                                dataBoxes[i].DataPointer = (IntPtr)p;
-                                dataBoxes[i].RowPitch = rowPitch;
-                                dataBoxes[i].SlicePitch = slicePitch;
-                            }
+                            dataBoxes[i].DataPointer = (IntPtr)p;
+                            dataBoxes[i].RowPitch = rowPitch;
+                            dataBoxes[i].SlicePitch = slicePitch;
                         }
-
-                        if (IsDisposed)
-                            return;
                     }
 
-                    // Recreate texture
-                    texture.OnDestroyed();
-                    texture.InitializeFrom(newDesc, new TextureViewDescription(), dataBoxes);
-                    _residentMips = newDesc.MipLevels;
+                    if (IsDisposed)
+                        return;
                 }
-                finally
-                {
-                    Storage.UnlockChunks();
-                }
+
+                // Recreate texture
+                texture.OnDestroyed();
+                texture.InitializeFrom(newDesc, new TextureViewDescription(), dataBoxes);
+                _residentMips = newDesc.MipLevels;
             }
-            else
+            finally
             {
-                // TODO: reducing texture quality (using SRV only?)
-                throw new NotImplementedException();
+                Storage.UnlockChunks();
             }
         }
 

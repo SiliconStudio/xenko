@@ -70,7 +70,6 @@ namespace SiliconStudio.Xenko.Graphics.Data
 
                     texture.AttachToGraphicsDevice(graphicsDeviceService.GraphicsDevice);
                     texture.Reload = null;
-
                 }
             }
             else

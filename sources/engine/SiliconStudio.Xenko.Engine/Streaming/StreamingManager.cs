@@ -27,6 +27,7 @@ namespace SiliconStudio.Xenko.Streaming
         public TimeSpan ManagerUpdatesInterval = TimeSpan.FromMilliseconds(10);
         public TimeSpan ResourceUpdatesInterval = TimeSpan.FromMilliseconds(200);
         public const int MaxResourcesPerUpdate = 30;
+        private static int testQuality = 50;
 
         /// <summary>
         /// Gets the content streaming service.
@@ -175,6 +176,16 @@ namespace SiliconStudio.Xenko.Streaming
                     continue;
                 }*/
 
+                // temp for testing quality changing
+                if (((Game)Game).Input.IsKeyPressed(Keys.K))
+                {
+                    testQuality = Math.Min(testQuality + 5, 100);
+                }
+                if (((Game)Game).Input.IsKeyPressed(Keys.L))
+                {
+                    testQuality = Math.Max(testQuality - 5, 0);
+                }
+
                 // Update resources
                 lock (resources)
                 {
@@ -242,6 +253,7 @@ namespace SiliconStudio.Xenko.Streaming
             //if (resource.IsDynamic)
             {
                 //targetQuality = handler.CalculateTargetQuality(resource, now);
+                targetQuality *= (testQuality / 100.0f); // apply quality scale for testing
                 // TODO: here we should apply resources group master scale (based on game settings quality level and memory level)
                 targetQuality.Normalize();
             }
@@ -250,7 +262,7 @@ namespace SiliconStudio.Xenko.Streaming
             var currentResidency = resource.CurrentResidency;
             var allocatedResidency = resource.AllocatedResidency;
             //var targetResidency = handler.CalculateResidency(resource, targetQuality);
-            var targetResidency = (resource as StreamingTexture).Description.MipLevels; // TODO: remove hardoded value for textures, use steraming groups/handlers
+            var targetResidency = (int)((resource as StreamingTexture).Description.MipLevels * targetQuality); // TODO: remove hardoded value for textures, use steraming groups/handlers
             Debug.Assert(allocatedResidency >= currentResidency && allocatedResidency >= 0);
 
             // Update target residency smoothing
@@ -295,6 +307,8 @@ namespace SiliconStudio.Xenko.Streaming
                     //var requestedResidency = currentResidency + 1; // Stream target quality in steps
                     //var requestedResidency = targetResidency; // Stream target quality at once
                     
+                    // TODO: merge allocate and stream tasks?
+
                     // Create streaming task (resource type specific)
                     var streamingTask = resource.CreateStreamingTask(requestedResidency);
 
@@ -311,11 +325,12 @@ namespace SiliconStudio.Xenko.Streaming
                 }
                 else
                 {
-                    // TODO: finish logic here...
+                    // Calculate residency level to stream in (resources may want to incease/decrease it's quality in steps rather than at once)
+                    //var requestedResidency = handler.CalculateRequestedResidency(resource, targetResidency);// TODO: use resource groups and handlers
+                    var requestedResidency = targetResidency; // Stream target quality at once
 
-                    // TODO: decrease residency level
-
-                    // TODO: check case for deallocation, when do it?
+                    // Spawn streaming task (resource type specific)
+                    resource.CreateStreamingTask(requestedResidency).Start();
                 }
             }
             else
