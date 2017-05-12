@@ -13,8 +13,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
     /// </summary>
     public sealed class TextureSerializationData
     {
-        internal static readonly FourCC MagicCode = 10;
-        internal const int Version = 3;
+        internal const int Version = 4;
 
         /// <summary>
         /// The texture image.
@@ -61,13 +60,9 @@ namespace SiliconStudio.Xenko.Graphics.Data
         /// <param name="stream">The destination stream.</param>
         public void Write(SerializationStream stream)
         {
+            stream.Write(EnableStreaming);
             if (EnableStreaming)
             {
-                // Write version number and streaming options
-                stream.Write(MagicCode);
-                stream.Write(EnableStreaming);
-                // TODO: add more options per texture like streaming group or quality
-
                 // Write image header
                 ImageHelper.ImageDescriptionSerializer.Serialize(ref Image.Description, ArchiveMode.Serialize, stream);
 
@@ -77,8 +72,6 @@ namespace SiliconStudio.Xenko.Graphics.Data
             }
             else
             {
-                stream.Write(ImageHelper.MagicCode);
-
                 // Write whole image (old texture content serialization)
                 Image.Save(stream.NativeStream, ImageFileType.Xenko);
             }

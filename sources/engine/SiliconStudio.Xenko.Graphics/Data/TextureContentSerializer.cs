@@ -24,8 +24,8 @@ namespace SiliconStudio.Xenko.Graphics.Data
                 var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
                 var texturesStreamingProvider = services.GetSafeServiceAs<ITexturesStreamingProvider>();
 
-                var magicCode = stream.NativeStream.ReadUInt32();
-                if (magicCode == ImageHelper.MagicCode)
+                var isStreamable = stream.ReadBoolean();
+                if (!isStreamable)
                 {
                     texturesStreamingProvider.UnregisterTexture(texture);
 
@@ -54,10 +54,8 @@ namespace SiliconStudio.Xenko.Graphics.Data
                         }
                     }
                 }
-                else if (magicCode == TextureSerializationData.MagicCode)
+                else
                 {
-                    var isStreamable = stream.ReadBoolean();
-
                     // Read image header
                     var imageDescription = new ImageDescription();
                     ImageHelper.ImageDescriptionSerializer.Serialize(ref imageDescription, ArchiveMode.Deserialize, stream);
@@ -65,25 +63,13 @@ namespace SiliconStudio.Xenko.Graphics.Data
                     // Read content storage header
                     var storageHeader = ContentStorageHeader.Read(stream);
 
-                    if (isStreamable)
-                    {
-                        // Register texture for streaming
-                        texturesStreamingProvider.RegisterTexture(texture, ref imageDescription, storageHeader);
+                    // Register texture for streaming
+                    texturesStreamingProvider.RegisterTexture(texture, ref imageDescription, storageHeader);
 
-                        // Note: we don't load texture data here and don't allocate GPU memory
-                    }
-                    else
-                    {
-                        // TODO: should we use the new format for non streamable textures?
-                        throw new NotImplementedException();
-                    }
+                    // Note: here we don't load texture data and don't allocate GPU memory
 
                     texture.AttachToGraphicsDevice(graphicsDeviceService.GraphicsDevice);
 
-                }
-                else
-                {
-                    throw new NotSupportedException("Unknown texture format version.");
                 }
             }
             else
@@ -93,6 +79,63 @@ namespace SiliconStudio.Xenko.Graphics.Data
                     throw new InvalidOperationException("Trying to serialize a Texture without CPU info.");
 
                 textureData.Write(stream);
+            }
+        }
+
+        public override object Construct(ContentSerializerContext context)
+        {
+            return new Texture();
+        }
+    }
+
+    // Previously Textures were serializated to Image format.
+    internal class DeprecatedTextureContentSerializer : ContentSerializerBase<Texture>
+    {
+        public override Type SerializationType => typeof(Image);
+
+        /// <inheritdoc/>
+        public override void Serialize(ContentSerializerContext context, SerializationStream stream, Texture texture)
+        {
+            if (context.Mode == ArchiveMode.Deserialize)
+            {
+                var services = stream.Context.Tags.Get(ServiceRegistry.ServiceRegistryKey);
+                var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
+                var texturesStreamingProvider = services.GetSafeServiceAs<ITexturesStreamingProvider>();
+
+                texturesStreamingProvider.UnregisterTexture(texture);
+
+                // TODO: Error handling?
+                using (var textureData = Image.Load(stream.NativeStream))
+                {
+                    if (texture.GraphicsDevice != null)
+                        texture.OnDestroyed(); //Allows fast reloading todo review maybe?
+
+                    texture.AttachToGraphicsDevice(graphicsDeviceService.GraphicsDevice);
+                    texture.InitializeFrom(textureData.Description, new TextureViewDescription(), textureData.ToDataBox());
+
+                    // Setup reload callback (reload from asset manager)
+                    var contentSerializerContext = stream.Context.Get(ContentSerializerContext.ContentSerializerContextProperty);
+                    if (contentSerializerContext != null)
+                    {
+                        var assetManager = contentSerializerContext.ContentManager;
+                        var url = contentSerializerContext.Url;
+
+                        texture.Reload = (graphicsResource) =>
+                        {
+                            var textureDataReloaded = assetManager.Load<Image>(url);
+                            ((Texture)graphicsResource).Recreate(textureDataReloaded.ToDataBox());
+                            assetManager.Unload(textureDataReloaded);
+                        };
+                    }
+                }
+            }
+            else
+            {
+                var textureData = texture.GetSerializationData();
+                if (textureData == null)
+                    throw new InvalidOperationException("Trying to serialize a Texture without CPU info.");
+
+                textureData.Image.Save(stream.NativeStream, ImageFileType.Xenko);
             }
         }
 

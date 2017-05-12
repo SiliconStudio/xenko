@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
             {
                 InputFilesGetter = GetInputFilesImpl;
                 disableCompressionSymbol = RegisterTag(Builder.DoNotCompressTag, () => Builder.DoNotCompressTag);
-                Version = 7;
+                Version = 8;
             }
 
             private IEnumerable<ObjectUrl> GetInputFilesImpl()
