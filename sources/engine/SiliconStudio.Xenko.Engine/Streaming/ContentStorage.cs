@@ -7,6 +7,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Streaming;
@@ -19,6 +20,7 @@ namespace SiliconStudio.Xenko.Streaming
     public class ContentStorage
     {
         private readonly ContentChunk[] chunks;
+        private long locks;
 
         /// <summary>
         /// The content streaming service which manages this storage container.
@@ -91,12 +93,25 @@ namespace SiliconStudio.Xenko.Streaming
 
         internal void ReleaseUnusedChunks()
         {
+            if (Interlocked.Read(ref locks) != 0)
+                return;
+
             var now = DateTime.UtcNow;
             foreach (var chunk in chunks)
             {
                 if (chunk.IsLoaded && now - chunk.LastAccessTime >= Service.UnusedDataChunksLifetime)
                     chunk.Unload();
             }
+        }
+
+        internal void LockChunks()
+        {
+            Interlocked.Increment(ref locks);
+        }
+
+        internal void UnlockChunks()
+        {
+            Interlocked.Decrement(ref locks);
         }
 
         /// <summary>

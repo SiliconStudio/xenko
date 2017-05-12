@@ -173,53 +173,67 @@ namespace SiliconStudio.Xenko.Streaming
                 _residentMips = _desc.MipLevels;
             }*/
 
-            for (int ressss = 1; ressss <= Description.MipLevels; ressss++)
+            try
             {
-                if (IsDisposed)
+                Storage.LockChunks();
+
+                for (int ressss = 1; ressss <= Description.MipLevels; ressss++)
                 {
-                    return;
-                }
-
-                var dataBoxArray = new DataBox[ressss];
-
-                TextureDescription desc = _desc;
-                desc.MipLevels = ressss;
-                desc.Width = TotalWidth >> (_desc.MipLevels - ressss);
-                desc.Height = TotalHeight >> (_desc.MipLevels - ressss);
-
-                for (int mip = 0; mip < ressss; mip++)
-                {
-                    int mipIndex = _desc.MipLevels - ressss + mip;
-
-                    int w = desc.Width >> mip;
-                    int h = desc.Height >> mip;
-
-                    int rowPitch, slicePitch;
-                    int widthPacked;
-                    int heightPacked;
-                    Image.ComputePitch(Format, w, h, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
-
-                    var chunk = Storage.GetChunk(mipIndex);
-                    Debug.Assert(chunk != null && chunk.Size == slicePitch);
-                    chunk.Load(microThread);
-
-                    unsafe
+                    if (IsDisposed)
                     {
-                        fixed (byte* p = chunk.Data)
+                        return;
+                    }
+
+                    var dataBoxArray = new DataBox[ressss];
+
+                    TextureDescription desc = _desc;
+                    desc.MipLevels = ressss;
+                    desc.Width = TotalWidth >> (_desc.MipLevels - ressss);
+                    desc.Height = TotalHeight >> (_desc.MipLevels - ressss);
+
+                    for (int mip = 0; mip < ressss; mip++)
+                    {
+                        int mipIndex = _desc.MipLevels - ressss + mip;
+
+                        int w = desc.Width >> mip;
+                        int h = desc.Height >> mip;
+
+                        int rowPitch, slicePitch;
+                        int widthPacked;
+                        int heightPacked;
+                        Image.ComputePitch(Format, w, h, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
+
+                        var chunk = Storage.GetChunk(mipIndex);
+                        Debug.Assert(chunk != null && chunk.Size == slicePitch);
+                        chunk.Load(microThread);
+                        if (chunk.Data == null)
                         {
-                            dataBoxArray[mip].DataPointer = (IntPtr)p;
-                            dataBoxArray[mip].RowPitch = rowPitch;
-                            dataBoxArray[mip].SlicePitch = slicePitch;
+                            int a = 1;
+                        }
+                        Debug.Assert(chunk.IsLoaded);
+
+                        unsafe
+                        {
+                            fixed (byte* p = chunk.Data)
+                            {
+                                dataBoxArray[mip].DataPointer = (IntPtr)p;
+                                dataBoxArray[mip].RowPitch = rowPitch;
+                                dataBoxArray[mip].SlicePitch = slicePitch;
+                            }
                         }
                     }
+
+                    _texture.OnDestroyed();
+
+                    _texture.InitializeFrom(desc, new TextureViewDescription(), dataBoxArray);
+                    _residentMips = ressss;
+
+                    await Task.Delay(1000);
                 }
-
-                _texture.OnDestroyed();
-
-                _texture.InitializeFrom(desc, new TextureViewDescription(), dataBoxArray);
-                _residentMips = ressss;
-
-                await Task.Delay(1000);
+            }
+            finally
+            {
+                Storage.UnlockChunks();
             }
         }
 
