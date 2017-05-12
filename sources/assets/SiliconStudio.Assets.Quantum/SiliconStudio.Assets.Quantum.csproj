@@ -153,16 +153,6 @@
       <Name>SiliconStudio.Quantum</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
-      <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
-      <Name>SiliconStudio.Xenko.Graphics</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
-      <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>
-      <Name>SiliconStudio.Xenko</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
       <Project>{1E54A9A2-4439-4444-AE57-6D2ED3C0DC47}</Project>
       <Name>SiliconStudio.Assets</Name>
