@@ -290,6 +290,8 @@ namespace SiliconStudio.Xenko.Input.Tests
         void TestGamePad()
         {
             Assert.AreEqual(0, InputSourceSimulated.Instance.GamePads.Count);
+            Assert.IsFalse(Input.HasGamePad);
+            Assert.IsNull(Input.DefaultGamePad);
 
             // Gamepad should only actually be added after update
             var gamePad0 = InputSourceSimulated.Instance.AddGamePad();
@@ -298,6 +300,9 @@ namespace SiliconStudio.Xenko.Input.Tests
             Input.Update(DrawTime);
             
             Assert.AreEqual(1, Input.GamePadCount);
+
+            Assert.IsTrue(Input.HasGamePad);
+            Assert.IsNotNull(Input.DefaultGamePad);
 
             // Add another gamepad
             var gamePad1 = InputSourceSimulated.Instance.AddGamePad();
@@ -318,8 +323,23 @@ namespace SiliconStudio.Xenko.Input.Tests
             // Test reassign suggestions
             gamePad1.Index = Input.GetFreeGamePadIndex(gamePad1);
             gamePad0.Index = Input.GetFreeGamePadIndex(gamePad0);
-            Assert.True(gamePad1.Index == 0 || gamePad0.Index == 0);
-            Assert.True(gamePad0.Index != gamePad1.Index);
+            Assert.IsTrue(gamePad1.Index == 0 || gamePad0.Index == 0);
+            Assert.IsTrue(gamePad0.Index != gamePad1.Index);
+
+            // Test button states
+            gamePad0.SetButton(GamePadButton.A, true);
+            Input.Update(DrawTime);
+
+            Assert.IsTrue(gamePad0.IsButtonPressed(GamePadButton.A));
+            Assert.IsFalse(gamePad0.IsButtonReleased(GamePadButton.A));
+            Assert.IsTrue(gamePad0.IsButtonDown(GamePadButton.A));
+
+            gamePad0.SetButton(GamePadButton.A, false);
+            Input.Update(DrawTime);
+
+            Assert.IsFalse(gamePad0.IsButtonPressed(GamePadButton.A));
+            Assert.IsTrue(gamePad0.IsButtonReleased(GamePadButton.A));
+            Assert.IsFalse(gamePad0.IsButtonDown(GamePadButton.A));
 
             // Gamepad should only actually be removed after update
             InputSourceSimulated.Instance.RemoveGamePad(gamePad0);
