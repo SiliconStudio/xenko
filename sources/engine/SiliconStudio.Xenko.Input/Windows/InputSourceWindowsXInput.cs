@@ -31,8 +31,7 @@ namespace SiliconStudio.Xenko.Input
             }
             catch (Exception ex)
             {
-                InputManager.Logger.Warning("XInput dll was not found on the computer. GameController detection will not fully work for the current game instance. " +
-                    "To fix the problem, please install or repair DirectX installation. [Exception details: {0}]", ex.Message);
+                InputManager.Logger.Warning($"XInput dll was not found on the computer. GameController detection will not fully work for the current game instance. To fix the problem, please install or repair DirectX installation. [Exception details: {ex.Message}]");
                 return false;
             }
 
