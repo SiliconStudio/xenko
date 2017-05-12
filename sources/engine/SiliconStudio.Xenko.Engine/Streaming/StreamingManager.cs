@@ -168,12 +168,12 @@ namespace SiliconStudio.Xenko.Streaming
             while (!IsDisposed)
             {
                 // temp for testing...
-                if (!((Game)Game).Input.IsKeyDown(Keys.P))
+                /*if (!((Game)Game).Input.IsKeyDown(Keys.P))
                 {
                     ContentStreaming.Update();
                     await ((Game)Game).Script.NextFrame();
                     continue;
-                }
+                }*/
 
                 // Update resources
                 lock (resources)
@@ -291,8 +291,10 @@ namespace SiliconStudio.Xenko.Streaming
 
                     // Calculate residency level to stream in (resources may want to incease/decrease it's quality in steps rather than at once)
                     //var requestedResidency = handler.CalculateRequestedResidency(resource, targetResidency);// TODO: use resource groups and handlers
-                    var requestedResidency = targetResidency;
-
+                    var requestedResidency = Math.Min(targetResidency, Math.Max(currentResidency + 1, 4)); // Stream target quality in steps but lower mips at once
+                    //var requestedResidency = currentResidency + 1; // Stream target quality in steps
+                    //var requestedResidency = targetResidency; // Stream target quality at once
+                    
                     // Create streaming task (resource type specific)
                     var streamingTask = resource.CreateStreamingTask(requestedResidency);
 

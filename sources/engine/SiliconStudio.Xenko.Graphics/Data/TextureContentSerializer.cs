@@ -69,6 +69,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
                     // Note: here we don't load texture data and don't allocate GPU memory
 
                     texture.AttachToGraphicsDevice(graphicsDeviceService.GraphicsDevice);
+                    texture.Reload = null;
 
                 }
             }

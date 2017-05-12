@@ -2,8 +2,8 @@
 // See LICENSE.md for full license information.
 
 using System;
+using System.Data;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Streaming
     /// </summary>
     public class StreamingTexture : StreamableResource
     {
-        protected Texture _texture;
+        protected WeakReference _texture;
         protected ImageDescription _desc;
         protected int _residentMips;
         protected Task _streamingTask;
@@ -25,14 +25,14 @@ namespace SiliconStudio.Xenko.Streaming
         internal StreamingTexture(StreamingManager manager, [NotNull] Texture texture)
             : base(manager)
         {
-            _texture = texture;
+            _texture = new WeakReference(texture);
             _residentMips = 0;
         }
 
         /// <summary>
         /// Gets the texture object.
         /// </summary>
-        public Texture Texture => _texture;
+        public Texture Texture => _texture.Target as Texture;
 
         /// <summary>
         /// Gets the texture image description (available in the storage container).
@@ -55,6 +55,11 @@ namespace SiliconStudio.Xenko.Streaming
         public int TotalHeight => _desc.Height;
 
         /// <summary>
+        /// Gets the number of textures in an array.
+        /// </summary>
+        public int ArraySize => _desc.ArraySize;
+
+        /// <summary>
         /// Gets a value indicating whether this texture is a cube map.
         /// </summary>
         /// <value><c>true</c> if this texture is a cube map; otherwise, <c>false</c>.</value>
@@ -65,6 +70,12 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>	
         public PixelFormat Format => _desc.Format;
 
+        /// <summary>
+        /// Gets index of the highest resident mip map (may be equal to MipLevels if no mip has been uploaded). Note: mip=0 is the highest (top quality)
+        /// </summary>
+        /// <returns>Mip index</returns>
+        public int HighestResidentMipIndex => TotalMipLevels - _residentMips;
+
         /// <inheritdoc />
         public override object Resource => _texture;
 
@@ -72,7 +83,7 @@ namespace SiliconStudio.Xenko.Streaming
         public override int CurrentResidency => _residentMips;
 
         /// <inheritdoc />
-        public override int AllocatedResidency => _texture.MipLevels;
+        public override int AllocatedResidency => Texture.MipLevels;
 
         /// <inheritdoc />
         internal override bool CanBeUpdated => _streamingTask == null || _streamingTask.IsCompleted;
@@ -83,8 +94,8 @@ namespace SiliconStudio.Xenko.Streaming
             _desc = imageDescription;
             _residentMips = 0;
 
-            if (_texture.GraphicsDevice != null)
-                _texture.OnDestroyed();
+            if (Texture.GraphicsDevice != null)
+                Texture.OnDestroyed();
         }
 
         internal override Task UpdateAllocation(int residency)
@@ -105,7 +116,7 @@ namespace SiliconStudio.Xenko.Streaming
             else if (residency == 0)
             {
                 // Release texture memory
-                _texture.OnDestroyed();
+                Texture.OnDestroyed();
             }
             else
             {
@@ -128,7 +139,7 @@ namespace SiliconStudio.Xenko.Streaming
                     }
 
                     // Initialize texture
-                    _texture.InitializeFrom(desc);
+                    Texture.InitializeFrom(desc);
                 }
                 else
                 {
@@ -142,99 +153,74 @@ namespace SiliconStudio.Xenko.Streaming
 
         private async void StreamingTask(MicroThread microThread, int residency)
         {
-            /*unsafe
-            {
-                var dataBoxArray = new DataBox[_desc.MipLevels];
-                {
-                    for (int mipIndex = 0; mipIndex < Description.MipLevels; mipIndex++)
-                    {
-                        //var pixelBuffer = this.GetPixelBufferUnsafe(arrayIndex, 0, mipIndex);
+            // Cache data
+            var texture = Texture;
+            int startMip = HighestResidentMipIndex;
+            int mipsChange = residency - CurrentResidency;
+            int mipsCount = residency;
+            Debug.Assert(mipsChange != 0);
 
-                        int w = TotalWidth >> mipIndex;
-                        int h = TotalWidth >> mipIndex;
+            // Switch if go up or down with residency
+            if (mipsChange > 0)
+            {
+                try
+                {
+                    Storage.LockChunks();
+
+                    // Setup texture description
+                    TextureDescription newDesc = _desc;
+                    int newHighestResidentMipIndex = TotalMipLevels - mipsCount;
+                    newDesc.MipLevels = mipsCount;
+                    newDesc.Width = TotalWidth >> (_desc.MipLevels - newDesc.MipLevels);
+                    newDesc.Height = TotalHeight >> (_desc.MipLevels - newDesc.MipLevels);
+                    var dataBoxes = new DataBox[newDesc.MipLevels];
+
+                    // Get mips data
+                    for (int i = 0; i < newDesc.MipLevels; i++)
+                    {
+                        int mipIndex = newHighestResidentMipIndex + i;
+                        int mipWidth = TotalWidth >> mipIndex;
+                        int mipheight = TotalHeight >> mipIndex;
 
                         int rowPitch, slicePitch;
                         int widthPacked;
                         int heightPacked;
-                        Image.ComputePitch(Format, w, h, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
-
-                        var chunk = Storage.GetChunk(mipIndex);
-                        chunk.Load();
-
-                        fixed (byte* p = chunk.Data)
-                        {
-                            dataBoxArray[mipIndex].DataPointer = (IntPtr)p;
-                            dataBoxArray[mipIndex].RowPitch = rowPitch;
-                            dataBoxArray[mipIndex].SlicePitch = slicePitch;
-                        }
-                    }
-                }
-                _texture.InitializeFrom(_desc, new TextureViewDescription(), dataBoxArray);
-                _residentMips = _desc.MipLevels;
-            }*/
-
-            try
-            {
-                Storage.LockChunks();
-
-                for (int ressss = 1; ressss <= Description.MipLevels; ressss++)
-                {
-                    if (IsDisposed)
-                    {
-                        return;
-                    }
-
-                    var dataBoxArray = new DataBox[ressss];
-
-                    TextureDescription desc = _desc;
-                    desc.MipLevels = ressss;
-                    desc.Width = TotalWidth >> (_desc.MipLevels - ressss);
-                    desc.Height = TotalHeight >> (_desc.MipLevels - ressss);
-
-                    for (int mip = 0; mip < ressss; mip++)
-                    {
-                        int mipIndex = _desc.MipLevels - ressss + mip;
-
-                        int w = desc.Width >> mip;
-                        int h = desc.Height >> mip;
-
-                        int rowPitch, slicePitch;
-                        int widthPacked;
-                        int heightPacked;
-                        Image.ComputePitch(Format, w, h, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
+                        Image.ComputePitch(Format, mipWidth, mipheight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
 
                         var chunk = Storage.GetChunk(mipIndex);
                         Debug.Assert(chunk != null && chunk.Size == slicePitch);
                         var data = await chunk.GetData(microThread);
-                        if (data == null)
-                        {
-                            int a = 1;
-                            data = await chunk.GetData(microThread);
-                        }
-                        Debug.Assert(chunk.IsLoaded);
+                        if (!chunk.IsLoaded)
+                            throw new DataException("Data chunk is not loaded.");
 
                         unsafe
                         {
                             fixed (byte* p = data)
                             {
-                                dataBoxArray[mip].DataPointer = (IntPtr)p;
-                                dataBoxArray[mip].RowPitch = rowPitch;
-                                dataBoxArray[mip].SlicePitch = slicePitch;
+                                dataBoxes[i].DataPointer = (IntPtr)p;
+                                dataBoxes[i].RowPitch = rowPitch;
+                                dataBoxes[i].SlicePitch = slicePitch;
                             }
                         }
+
+                        if (IsDisposed)
+                            return;
                     }
 
-                    _texture.OnDestroyed();
-
-                    _texture.InitializeFrom(desc, new TextureViewDescription(), dataBoxArray);
-                    _residentMips = ressss;
-
-                    await Task.Delay(1000);
+                    // Recreate texture
+                    texture.OnDestroyed();
+                    texture.InitializeFrom(newDesc, new TextureViewDescription(), dataBoxes);
+                    _residentMips = newDesc.MipLevels;
+                }
+                finally
+                {
+                    Storage.UnlockChunks();
                 }
             }
-            finally
+            else
             {
-                Storage.UnlockChunks();
+                // TODO: reducing texture quality (using SRV only?)
+                throw new NotImplementedException();
             }
         }
 
