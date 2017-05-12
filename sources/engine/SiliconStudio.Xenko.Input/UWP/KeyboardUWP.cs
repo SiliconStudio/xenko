@@ -243,7 +243,7 @@ namespace SiliconStudio.Xenko.Input
             }
 
             // Let Alt + F4 go through
-            if (virtualKey == VirtualKey.F4 && IsKeyDown(Keys.LeftAlt))
+            if (virtualKey == VirtualKey.F4 && this.IsKeyDown(Keys.LeftAlt))
                 return;
 
             // Map key to xenko key
