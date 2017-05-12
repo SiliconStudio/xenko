@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -426,7 +426,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             }
             else
             {
-                var variableTypeName = variableType.Name.Text.ToLower();
+                var variableTypeName = variableType.Name.Text.ToLowerInvariant();
 
                 switch (variableTypeName)
                 {

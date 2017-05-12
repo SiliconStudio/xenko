@@ -12,6 +12,9 @@
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="AdditiveAnimationBaseMode.cs" />
     <Compile Include="AnimationAsset.cs" />
     <Compile Include="AnimationAsset.Upgrader.cs" />

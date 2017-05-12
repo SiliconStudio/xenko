@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
@@ -70,7 +70,7 @@ namespace SiliconStudio.Core.Tests
             watcher.Modified -= fileEventHandler;
 
             Assert.AreEqual(1, events.Count);
-            Assert.AreEqual(p4, events[0].FullPath.ToLower());
+            Assert.AreEqual(p4, events[0].FullPath.ToLowerInvariant());
 
             events.Clear();
             watcher.Modified += fileEventHandler;
@@ -90,7 +90,7 @@ namespace SiliconStudio.Core.Tests
         private string GetDirectoryPath(DirectoryInfo root, string subPath)
         {
             var tempDirectory = Path.Combine(root.FullName, subPath);
-            return tempDirectory.ToLower();
+            return tempDirectory.ToLowerInvariant();
         }
 
         private string CreateDirectoryPath(DirectoryInfo root, string subPath)
