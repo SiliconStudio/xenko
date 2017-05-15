@@ -238,7 +238,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         public bool UseRawInput
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
             get
             {
                 return rawInputEnabled;
