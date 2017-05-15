@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Input
     public interface IMouseDevice : IPointerDevice
     {
         /// <summary>
-        /// Normalized position(0,1) of the mouse
+        /// Normalized position of the mouse inside the window
         /// </summary>
         Vector2 Position { get; }
 

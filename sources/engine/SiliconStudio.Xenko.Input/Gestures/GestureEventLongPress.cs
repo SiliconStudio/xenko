@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Input
     public sealed class GestureEventLongPress : GestureEvent
     {
         /// <summary>
-        /// The position (in pixels) where the LongPress gesture happened.
+        /// The position where the LongPress gesture happened.
         /// </summary>
         public Vector2 Position { get; internal set; }
 

@@ -224,9 +224,9 @@ namespace SiliconStudio.Xenko.Input
         public IReadOnlyList<ISensorDevice> Sensors => sensors;
 
         /// <summary>
-        /// Gets or sets the mouse position.
+        /// Gets or sets the mouse position in normalized coordinates.
         /// </summary>
-        /// <value>The mouse position.</value>
+        /// <value>The mouse position in normalized coordinates.</value>
         public Vector2 MousePosition
         {
             get { return mousePosition; }

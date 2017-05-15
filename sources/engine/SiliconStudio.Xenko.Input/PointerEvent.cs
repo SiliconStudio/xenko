@@ -22,6 +22,12 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Gets the absolute screen position of the pointer.
         /// </summary>
+        /// <value>The absolute delta position.</value>
+        public Vector2 AbsolutePosition => Position * Pointer.SurfaceSize;
+
+        /// <summary>
+        /// Gets the normalized screen position of the pointer.
+        /// </summary>
         /// <value>The position.</value>
         public Vector2 Position { get; internal set; }
 
@@ -67,7 +73,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override string ToString()
         {
-            return $"Pointer {PointerId} {EventType}, {Position}, Delta: {DeltaPosition}/{AbsoluteDeltaPosition}, DT: {DeltaTime}, {nameof(IsDown)}: {IsDown}, {nameof(PointerType)}: {PointerType}, {nameof(Pointer)}: {Pointer.Name}";
+            return $"Pointer {PointerId} {EventType}, {AbsolutePosition}, Delta: {AbsoluteDeltaPosition}, DT: {DeltaTime}, {nameof(IsDown)}: {IsDown}, {nameof(PointerType)}: {PointerType}, {nameof(Pointer)}: {Pointer.Name}";
         }
 
         /// <summary>
