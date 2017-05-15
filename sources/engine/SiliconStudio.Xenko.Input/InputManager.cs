@@ -21,18 +21,12 @@ namespace SiliconStudio.Xenko.Input
         //this is used in some mobile platform for accelerometer stuff
         internal const float G = 9.81f;
         internal const float DesiredSensorUpdateRate = 60;
-
-        /// <summary>
-        /// Does InputManager support raw input? By default true.
-        /// </summary>
-        public static bool UseRawInput = true;
-
+        
         /// <summary>
         /// The deadzone amount applied to all game controller axes
         /// </summary>
         public static float GameControllerAxisDeadZone = 0.05f;
-
-
+        
         internal static Logger Logger = GlobalLogger.GetLogger("Input");
 
         private readonly List<IInputDevice> devices = new List<IInputDevice>();
@@ -58,6 +52,8 @@ namespace SiliconStudio.Xenko.Input
         private readonly Dictionary<Type, IInputEventRouter> eventRouters = new Dictionary<Type, IInputEventRouter>();
 
         private Dictionary<IInputSource, EventHandler<TrackingCollectionChangedEventArgs>> devicesCollectionChangedActions = new Dictionary<IInputSource, EventHandler<TrackingCollectionChangedEventArgs>>();
+
+        private bool rawInputEnabled = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InputManager"/> class.
@@ -238,6 +234,44 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
+        /// Should raw input be used on windows
+        /// </summary>
+        public bool UseRawInput
+        {
+#if SILICONSTUDIO_PLATFORM_WINDOWS
+            get
+            {
+                return rawInputEnabled;
+            }
+            set
+            {
+                InputSourceWindowsRawInput rawInputSource = Sources.OfType<InputSourceWindowsRawInput>().FirstOrDefault();
+
+                if (value)
+                {
+                    if (rawInputSource == null)
+                    {
+                        rawInputSource = new InputSourceWindowsRawInput();
+                        Sources.Add(rawInputSource);
+                    }
+                }
+                else
+                {
+                    // Disable by removing the raw input source
+                    if (rawInputSource != null)
+                    {
+                        Sources.Remove(rawInputSource);
+                    }
+                }
+                rawInputEnabled = value;
+            }
+#else
+            get { return false; }
+            set { }
+#endif
+        }   
+
+        /// <summary>
         /// Raised before new input is sent to their respective event listeners
         /// </summary>
         public event EventHandler<InputPreUpdateEventArgs> PreUpdateInput;
@@ -251,13 +285,7 @@ namespace SiliconStudio.Xenko.Input
         /// Raised when a device was added to the system
         /// </summary>
         public event EventHandler<DeviceChangedEventArgs> DeviceAdded;
-
-        /// <summary>
-        /// Gets or sets the value indicating if simultaneous multiple finger touches are enabled or not.
-        /// If not enabled only the events of one finger at a time are triggered.
-        /// </summary>
-        public bool MultiTouchEnabled { get; set; } = false;
-
+        
         /// <summary>
         /// Helper method to transform mouse and pointer event positions to sub rectangles
         /// </summary>
@@ -460,7 +488,7 @@ namespace SiliconStudio.Xenko.Input
             return value;
         }
         
-        public void OnApplicationPaused(object sender, EventArgs e)
+        private void OnApplicationPaused(object sender, EventArgs e)
         {
             // Pause sources
             foreach (var source in Sources)
@@ -469,7 +497,7 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        public void OnApplicationResumed(object sender, EventArgs e)
+        private void OnApplicationResumed(object sender, EventArgs e)
         {
             // Resume sources
             foreach (var source in Sources)
@@ -589,7 +617,7 @@ namespace SiliconStudio.Xenko.Input
                     Sources.Add(new InputSourceWindowsDirectInput());
                     if (InputSourceWindowsXInput.IsSupported())
                         Sources.Add(new InputSourceWindowsXInput());
-                    if (UseRawInput)
+                    if (rawInputEnabled)
                         Sources.Add(new InputSourceWindowsRawInput());
                     break;
 #endif

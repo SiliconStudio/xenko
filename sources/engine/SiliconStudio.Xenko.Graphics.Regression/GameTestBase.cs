@@ -179,10 +179,13 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         private void InitializeSimulatedInputSource()
         {
-            Input.Sources.Clear();
-            Input.Sources.Add(InputSourceSimulated);
-            MouseSimulated = InputSourceSimulated.AddMouse();
-            KeyboardSimulated = InputSourceSimulated.AddKeyboard();
+            if (InputSourceSimulated != null)
+            {
+                Input.Sources.Clear();
+                Input.Sources.Add(InputSourceSimulated);
+                MouseSimulated = InputSourceSimulated.AddMouse();
+                KeyboardSimulated = InputSourceSimulated.AddKeyboard();
+            }
         }
 
         private void FitPresentationParametersToDesiredValues(int windowWidth, int windowHeight, PresentationParameters parameters)

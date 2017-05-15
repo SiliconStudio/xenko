@@ -374,9 +374,6 @@ namespace SiliconStudio.Xenko.Engine
             // TODO: data-driven?
             Content.Serializer.RegisterSerializer(new ImageSerializer());
 
-            // enable multi-touch by default
-            Input.MultiTouchEnabled = true;
-
             OnGameStarted(this);
         }
 

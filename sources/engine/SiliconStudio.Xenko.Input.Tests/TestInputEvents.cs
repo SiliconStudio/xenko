@@ -64,11 +64,21 @@ namespace SiliconStudio.Xenko.Input.Tests
                 Log(evt.ToString(), GetLogColor(evt));
             }
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS
+            // Toggle raw input
+            WriteLine($"Raw input: {Input.UseRawInput} (Ctrl+R to toggle)");
+            if ((Input.IsKeyDown(Keys.LeftCtrl) || Input.IsKeyDown(Keys.RightCtrl)) && Input.IsKeyPressed(Keys.R))
+            {
+                Input.UseRawInput = !Input.UseRawInput;
+            }
+#endif
+
             WriteLine("Input Events:");
             foreach (var evt in eventLog)
             {
                 WriteLine(evt.Message, evt.Color, 1);
             }
+
 
             EndSpriteBatch();
         }

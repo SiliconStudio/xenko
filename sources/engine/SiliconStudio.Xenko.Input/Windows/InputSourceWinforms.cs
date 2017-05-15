@@ -101,10 +101,7 @@ namespace SiliconStudio.Xenko.Input
                 case Win32Native.WM_SYSKEYDOWN:
                     virtualKey = (WinFormsKeys)wParam.ToInt64();
                     virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
-                    if (!InputManager.UseRawInput)
-                    {
-                        keyboard?.HandleKeyDown(virtualKey);
-                    }
+                    keyboard?.HandleKeyDown(virtualKey);
                     heldKeys.Add(virtualKey);
                     break;
 
@@ -113,10 +110,7 @@ namespace SiliconStudio.Xenko.Input
                     virtualKey = (WinFormsKeys)wParam.ToInt64();
                     virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
                     heldKeys.Remove(virtualKey);
-                    if (!InputManager.UseRawInput)
-                    {
-                        keyboard?.HandleKeyUp(virtualKey);
-                    }
+                    keyboard?.HandleKeyUp(virtualKey);
                     break;
 
                 case Win32Native.WM_DEVICECHANGE:
