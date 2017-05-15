@@ -127,10 +127,14 @@ namespace SiliconStudio.Xenko.Streaming
 
             var packageTime = DateTime.UtcNow;
 
-            // TODO: sort chunks (smaller ones should go first), but keep order after loading - so save entries in the same order but data in a diffrent
+            // Sort chunks (smaller ones go first)
+            int chunksCount = chunksData.Count;
+            List<int> chunksOrder = new List<int>(chunksCount);
+            for (int i = 0; i < chunksCount; i++)
+                chunksOrder.Add(i);
+            chunksOrder.Sort((a, b) => chunksData[a].Length - chunksData[b].Length);
 
             // Calculate first chunk location (in file)
-            int chunksCount = chunksData.Count;
             /*int offset =
                 // Version
                 sizeof(int)
@@ -161,9 +165,10 @@ namespace SiliconStudio.Xenko.Streaming
             };
             for (int i = 0; i < chunksCount; i++)
             {
-                int size = chunksData[i].Length;
-                header.Chunks[i].Location = offset;
-                header.Chunks[i].Size = size;
+                int chunkIndex = chunksOrder[i];
+                int size = chunksData[chunkIndex].Length;
+                header.Chunks[chunkIndex].Location = offset;
+                header.Chunks[chunkIndex].Size = size;
                 offset += size;
             }
 
@@ -173,7 +178,7 @@ namespace SiliconStudio.Xenko.Streaming
             {
                 // Write data (one after another)
                 for (int i = 0; i < chunksCount; i++)
-                    stream.Write(chunksData[i]);
+                    stream.Write(chunksData[chunksOrder[i]]);
 
                 // Validate calculated offset
                 if (offset != outputStream.Position)
