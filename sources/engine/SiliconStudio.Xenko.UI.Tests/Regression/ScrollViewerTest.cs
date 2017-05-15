@@ -146,6 +146,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             AddPointerEvent(PointerEventType.Pressed, new Vector2(0.5f, 0.5f));
             AddPointerEvent(PointerEventType.Moved, new Vector2(0.3f, 0.3f));
 
+            Input.Update(new GameTime());
             UI.Update(new GameTime(new TimeSpan(), new TimeSpan(0, 0, 0, 0, 500)));
         }
 

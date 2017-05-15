@@ -17,9 +17,9 @@ namespace SiliconStudio.Xenko.Input
         protected readonly List<PointerInputEvent> PointerInputEvents = new List<PointerInputEvent>();
         protected readonly List<PointerData> PointerDatas = new List<PointerData>();
 
-        private readonly HashSet<PointerPoint> pressedPointers = new HashSet<PointerPoint>();
-        private readonly HashSet<PointerPoint> releasedPointers = new HashSet<PointerPoint>();
-        private readonly HashSet<PointerPoint> downPointers = new HashSet<PointerPoint>();
+        protected readonly HashSet<PointerPoint> pressedPointers = new HashSet<PointerPoint>();
+        protected readonly HashSet<PointerPoint> releasedPointers = new HashSet<PointerPoint>();
+        protected readonly HashSet<PointerPoint> downPointers = new HashSet<PointerPoint>();
         
         private Vector2 surfaceSize;
         private Vector2 invSurfaceSize;
@@ -86,40 +86,53 @@ namespace SiliconStudio.Xenko.Input
         protected PointerEvent ProcessPointerEvent(PointerInputEvent evt)
         {
             var data = GetPointerData(evt.Id);
+            
+            var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(this);
+            pointerEvent.Position = evt.Position;
+            pointerEvent.PointerId = evt.Id;
+            pointerEvent.PointerType = Type;
+            pointerEvent.EventType = evt.Type;
+            UpdatePointerState(pointerEvent);
+            
+            return pointerEvent;
+        }
+
+        /// <summary>
+        /// Updates a pointer event with position / type / id set and updates the storted pointer data
+        /// </summary>
+        /// <param name="evt"></param>
+        protected void UpdatePointerState(PointerEvent evt)
+        {
+            var data = GetPointerData(evt.PointerId);
 
             // Update pointer position + delta
             // Update delta
             data.Delta = evt.Position - data.Position;
+
             // Update position
             data.Position = evt.Position;
 
-            if (evt.Type == PointerEventType.Pressed)
+            if (evt.EventType == PointerEventType.Pressed)
             {
+                // Start presset events with time 0
                 data.Clock.Restart();
                 data.IsDown = true;
                 pressedPointers.Add(data);
                 downPointers.Add(data);
             }
-            else if (evt.Type == PointerEventType.Released || evt.Type == PointerEventType.Canceled)
+            else if (evt.EventType == PointerEventType.Released || evt.EventType == PointerEventType.Canceled)
             {
-                data.IsDown = false;
                 releasedPointers.Add(data);
                 downPointers.Remove(data);
+                data.IsDown = false;
             }
-            
-            var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(this);
-            pointerEvent.Position = data.Position;
-            pointerEvent.DeltaPosition = data.Delta;
-            pointerEvent.DeltaTime = data.Clock.Elapsed;
-            pointerEvent.IsDown = data.IsDown;
-            pointerEvent.PointerId = evt.Id;
-            pointerEvent.PointerType = Type;
-            pointerEvent.EventType = evt.Type;
 
+            evt.IsDown = data.IsDown;
+            evt.DeltaTime = data.Clock.Elapsed;
+            evt.DeltaPosition = data.Delta;
+            
             // Reset pointer clock
             data.Clock.Restart();
-
-            return pointerEvent;
         }
 
         protected PointerData GetPointerData(int pointerId)

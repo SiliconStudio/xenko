@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public LeaveEnterTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5; // Element is now correctly focused due to simulated input
         }
 
         protected override async Task LoadContent()
@@ -145,7 +145,6 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Input.Update(new GameTime());
             UI.Update(new GameTime());
         }
-
         public void Draw8()
         {
             AddPointerEvent(PointerEventType.Moved, new Vector2(0.6f, 0.65f));
