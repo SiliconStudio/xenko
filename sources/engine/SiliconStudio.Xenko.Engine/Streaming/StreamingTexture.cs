@@ -92,6 +92,9 @@ namespace SiliconStudio.Xenko.Streaming
 
         internal void Init([NotNull] ContentStorage storage, ref ImageDescription imageDescription)
         {
+            if(imageDescription.Depth != 1)
+                throw new NotSupportedException("Texture streaming supports only 2D textures and 2D texture arrays.");
+
             Init(storage);
             _desc = imageDescription;
             _residentMips = 0;
@@ -178,38 +181,42 @@ namespace SiliconStudio.Xenko.Streaming
                 newDesc.MipLevels = mipsCount;
                 newDesc.Width = TotalWidth >> (_desc.MipLevels - newDesc.MipLevels);
                 newDesc.Height = TotalHeight >> (_desc.MipLevels - newDesc.MipLevels);
-                var dataBoxes = new DataBox[newDesc.MipLevels];
+                var dataBoxes = new DataBox[newDesc.MipLevels * newDesc.ArraySize];
+                int dataBoxIndex = 0;
 
-                // Get mips data
-                for (int i = 0; i < newDesc.MipLevels; i++)
+                // Get data boxes data
+                for (int arrayIndex = 0; arrayIndex < newDesc.ArraySize; arrayIndex++)
                 {
-                    int mipIndex = newHighestResidentMipIndex + i;
-                    int mipWidth = TotalWidth >> mipIndex;
-                    int mipheight = TotalHeight >> mipIndex;
-
-                    int rowPitch, slicePitch;
-                    int widthPacked;
-                    int heightPacked;
-                    Image.ComputePitch(Format, mipWidth, mipheight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
-
-                    var chunk = Storage.GetChunk(mipIndex);
-                    Debug.Assert(chunk != null && chunk.Size == slicePitch);
-                    var data = await chunk.GetData(microThread);
-                    if (!chunk.IsLoaded)
-                        throw new DataException("Data chunk is not loaded.");
-
-                    unsafe
+                    for (int mipIndex = 0; mipIndex < newDesc.MipLevels; mipIndex++)
                     {
-                        fixed (byte* p = data)
-                        {
-                            dataBoxes[i].DataPointer = (IntPtr)p;
-                            dataBoxes[i].RowPitch = rowPitch;
-                            dataBoxes[i].SlicePitch = slicePitch;
-                        }
-                    }
+                        int totalMipIndex = newHighestResidentMipIndex + mipIndex;
+                        int mipWidth = TotalWidth >> totalMipIndex;
+                        int mipheight = TotalHeight >> totalMipIndex;
 
-                    if (IsDisposed)// TODO: use cancellation token
-                        return;
+                        int rowPitch, slicePitch;
+                        int widthPacked;
+                        int heightPacked;
+                        Image.ComputePitch(Format, mipWidth, mipheight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
+
+                        var chunk = Storage.GetChunk(totalMipIndex);
+                        if (chunk == null || chunk.Size != slicePitch * newDesc.ArraySize)
+                            throw new DataException("Data chunk is missing or has invalid size.");
+                        var data = await chunk.GetData(microThread);
+                        if (!chunk.IsLoaded)
+                            throw new DataException("Data chunk is not loaded.");
+
+                        unsafe
+                        {
+                            fixed (byte* p = data)
+                                dataBoxes[dataBoxIndex].DataPointer = (IntPtr)p + slicePitch * arrayIndex;
+                            dataBoxes[dataBoxIndex].RowPitch = rowPitch;
+                            dataBoxes[dataBoxIndex].SlicePitch = slicePitch;
+                            dataBoxIndex++;
+                        }
+
+                        if (IsDisposed) // TODO: use cancellation token
+                            return;
+                    }
                 }
 
                 // Recreate texture

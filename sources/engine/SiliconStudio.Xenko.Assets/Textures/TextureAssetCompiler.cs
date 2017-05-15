@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
             {
                 InputFilesGetter = GetInputFilesImpl;
                 disableCompressionSymbol = RegisterTag(Builder.DoNotCompressTag, () => Builder.DoNotCompressTag);
-                Version = 8;
+                Version = 9;
             }
 
             private IEnumerable<ObjectUrl> GetInputFilesImpl()
@@ -91,16 +91,28 @@ namespace SiliconStudio.Xenko.Assets.Textures
                         if (CancellationToken.IsCancellationRequested)
                             return ResultStatus.Cancelled;
 
-                        // Create texture mips data containers
+                        // Create texture mips data containers (storage all array slices for every mip in separate chunks)
                         var desc = outputImage.Description;
                         List<byte[]> mipsData = new List<byte[]>(desc.MipLevels);
                         for (int mipIndex = 0; mipIndex < desc.MipLevels; mipIndex++)
                         {
-                            var pixelBuffer = outputImage.GetPixelBuffer(0, 0, mipIndex);
-                            int size = pixelBuffer.BufferStride;
-                            var buf = new byte[size];
-                            // TODO: maybe optimize it and don't allocate that memory; use raw ptr to serialize mip?
-                            Marshal.Copy(pixelBuffer.DataPointer, buf, 0, size);
+                            int totalSize = 0;
+                            for (int arrayIndex = 0; arrayIndex < desc.ArraySize; arrayIndex++)
+                            {
+                                var pixelBuffer = outputImage.GetPixelBuffer(arrayIndex, 0, mipIndex);
+                                totalSize += pixelBuffer.BufferStride;
+                            }
+
+                            var buf = new byte[totalSize];
+                            int startIndex = 0;
+                            for (int arrayIndex = 0; arrayIndex < desc.ArraySize; arrayIndex++)
+                            {
+                                var pixelBuffer = outputImage.GetPixelBuffer(arrayIndex, 0, mipIndex);
+                                int size = pixelBuffer.BufferStride;
+
+                                Marshal.Copy(pixelBuffer.DataPointer, buf, startIndex, size);
+                                startIndex += size;
+                            }
                             mipsData.Add(buf);
                         }
 
