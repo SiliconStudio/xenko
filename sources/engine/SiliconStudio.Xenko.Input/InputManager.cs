@@ -598,17 +598,17 @@ namespace SiliconStudio.Xenko.Input
 #endif
 #if SILICONSTUDIO_PLATFORM_ANDROID
                 case AppContextType.Android:
-                    AddInputSource(new InputSourceAndroid());
+                    Sources.Add(new InputSourceAndroid());
                     break;
 #endif
 #if SILICONSTUDIO_PLATFORM_IOS
                 case AppContextType.iOS:
-                    AddInputSource(new InputSourceiOS());
+                    Sources.Add(new InputSourceiOS());
                     break;
 #endif
 #if SILICONSTUDIO_PLATFORM_UWP
                 case  AppContextType.UWP:
-                    AddInputSource(new InputSourceUWP());
+                    Sources.Add(new InputSourceUWP());
                     break;
 #endif
 #if SILICONSTUDIO_PLATFORM_WINDOWS && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
