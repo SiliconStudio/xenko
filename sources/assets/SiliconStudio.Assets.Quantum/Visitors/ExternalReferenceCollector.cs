@@ -17,6 +17,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
 
         private readonly HashSet<IIdentifiable> internalReferences = new HashSet<IIdentifiable>();
         private readonly HashSet<IIdentifiable> externalReferences = new HashSet<IIdentifiable>();
+        private readonly Dictionary<IIdentifiable, List<NodeAccessor>> externalReferenceAccessors = new Dictionary<IIdentifiable, List<NodeAccessor>>();
 
         private ExternalReferenceCollector(AssetPropertyGraphDefinition propertyGraphDefinition)
             : base(propertyGraphDefinition)
@@ -39,10 +40,35 @@ namespace SiliconStudio.Assets.Quantum.Visitors
             return visitor.externalReferences;
         }
 
+        /// <summary>
+        /// Computes the external references to the given root node and their accessors.
+        /// </summary>
+        /// <param name="propertyGraphDefinition">The property graph definition to use to analyze the graph.</param>
+        /// <param name="root">The root node to analyze.</param>
+        /// <returns>A set containing all external references to identifiable objects.</returns>
+        public static Dictionary<IIdentifiable, List<NodeAccessor>> GetExternalReferenceAccessors(AssetPropertyGraphDefinition propertyGraphDefinition, IGraphNode root)
+        {
+            var visitor = new ExternalReferenceCollector(propertyGraphDefinition);
+            visitor.Visit(root);
+            // An IIdentifiable can have been recorded both as internal and external reference. In this case we still want to clone it so let's remove it from external references
+            foreach (var internalReference in visitor.internalReferences)
+            {
+                visitor.externalReferenceAccessors.Remove(internalReference);
+            }
+            return visitor.externalReferenceAccessors;
+        }
+
         protected override void ProcessIdentifiableMembers(IIdentifiable identifiable, IMemberNode member)
         {
             if (propertyGraphDefinition.IsMemberTargetObjectReference(member, identifiable))
+            {
                 externalReferences.Add(identifiable);
+                if (!externalReferenceAccessors.TryGetValue(identifiable, out var accessors))
+                {
+                    externalReferenceAccessors.Add(identifiable, accessors = new List<NodeAccessor>());
+                }
+                accessors.Add(CurrentPath.GetAccessor());
+            }
             else
                 internalReferences.Add(identifiable);
         }
@@ -50,7 +76,14 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         protected override void ProcessIdentifiableItems(IIdentifiable identifiable, IObjectNode collection, Index index)
         {
             if (propertyGraphDefinition.IsTargetItemObjectReference(collection, index, identifiable))
+            {
                 externalReferences.Add(identifiable);
+                if (!externalReferenceAccessors.TryGetValue(identifiable, out var accessors))
+                {
+                    externalReferenceAccessors.Add(identifiable, accessors = new List<NodeAccessor>());
+                }
+                accessors.Add(CurrentPath.GetAccessor());
+            }
             else
                 internalReferences.Add(identifiable);
         }
