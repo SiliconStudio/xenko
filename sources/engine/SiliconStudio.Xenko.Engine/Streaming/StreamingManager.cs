@@ -4,8 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Streaming;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
@@ -15,6 +17,11 @@ using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Streaming
 {
+    /// <summary>
+    /// Performs content streaming.
+    /// </summary>
+    /// <seealso cref="SiliconStudio.Xenko.Games.GameSystemBase" />
+    /// <seealso cref="SiliconStudio.Xenko.Graphics.Data.ITexturesStreamingProvider" />
     public class StreamingManager : GameSystemBase, ITexturesStreamingProvider
     {
         private readonly List<StreamableResource> resources = new List<StreamableResource>(512);
@@ -39,21 +46,27 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         public ICollection<StreamableResource> Resources => resources;
 
+        static StreamingManager()
+        {
+            // Register default texture deserialization if no streaming available
+            TextureContentSerializer.DeserializeTexture = DeserializeTexture;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingManager"/> class.
         /// </summary>
-        /// <param name="registry">The servicies registry.</param>
+        /// <param name="services">The servicies registry.</param>
         /// <remarks>
         /// The GameSystem is expecting the following services to be registered: <see cref="T:SiliconStudio.Xenko.Games.IGame" /> and <see cref="T:SiliconStudio.Core.Serialization.Contents.IContentManager" />.
         /// </remarks>
-        public StreamingManager(IServiceRegistry registry) : base(registry)
+        public StreamingManager(IServiceRegistry services) : base(services)
         {
-            registry.AddService(typeof(StreamingManager), this);
-            registry.AddService(typeof(ITexturesStreamingProvider), this);
+            services.AddService(typeof(StreamingManager), this);
+            services.AddService(typeof(ITexturesStreamingProvider), this);
 
             ContentStreaming = new ContentStreamingService();
 
-            ((Game)Game).Script.AddTask(Update, -100);
+            (Game as Game)?.Script.AddTask(Update);
         }
         
         /// <inheritdoc />
@@ -123,7 +136,7 @@ namespace SiliconStudio.Xenko.Streaming
         }
 
         /// <inheritdoc />
-        void ITexturesStreamingProvider.RegisterTexture(Texture obj, ref ImageDescription imageDescription, ContentStorageHeader storageHeader)
+        public void RegisterTexture(Texture obj, ref ImageDescription imageDescription, ContentStorageHeader storageHeader)
         {
             Debug.Assert(obj != null && storageHeader != null);
 
@@ -153,7 +166,7 @@ namespace SiliconStudio.Xenko.Streaming
         }
 
         /// <inheritdoc />
-        void ITexturesStreamingProvider.UnregisterTexture(Texture obj)
+        public void UnregisterTexture(Texture obj)
         {
             Debug.Assert(obj != null);
 
@@ -162,6 +175,34 @@ namespace SiliconStudio.Xenko.Streaming
                 var resource = resources.Find(x => x.Resource == obj) as StreamingTexture;
                 resource?.Dispose();
             }
+        }
+
+        private static void DeserializeTexture(IServiceRegistry services, Texture obj, ref ImageDescription imageDescription, ContentStorageHeader storageHeader)
+        {
+            Debug.Assert(obj != null && storageHeader != null);
+
+            var manager = new StreamingManager(services);
+            try
+            {
+                manager.RegisterTexture(obj, ref imageDescription, storageHeader);
+                manager.FullyLoadAllResources();
+            }
+            finally
+            {
+                manager.Destroy();
+            }
+        }
+
+        private void FullyLoadAllResources()
+        {
+            // Simply stream all resources to the maximum level
+            var tasks = resources.Select(x =>
+            {
+                var task = x.CreateStreamingTask(x.MaxResidency);
+                task.Start();
+                return task;
+            });
+            Task.WaitAll(tasks.ToArray());
         }
 
         private async Task Update()
@@ -236,7 +277,7 @@ namespace SiliconStudio.Xenko.Streaming
                 await ((Game)Game).Script.NextFrame();
             }
         }
-
+        
         private void Update(StreamableResource resource, ref DateTime now)
         {
             Debug.Assert(resource != null && resource.CanBeUpdated);
@@ -263,6 +304,11 @@ namespace SiliconStudio.Xenko.Streaming
             var allocatedResidency = resource.AllocatedResidency;
             //var targetResidency = handler.CalculateResidency(resource, targetQuality);
             var targetResidency = (int)((resource as StreamingTexture).Description.MipLevels * targetQuality); // TODO: remove hardoded value for textures, use steraming groups/handlers
+
+            // Compressed formats have aligment restrictions on the dimensions of the texture
+            if ((resource as StreamingTexture).Format.IsCompressed() && (resource as StreamingTexture).Description.MipLevels >= 3)
+                targetResidency = MathUtil.Clamp(targetResidency, 3, (resource as StreamingTexture).Description.MipLevels);
+
             Debug.Assert(allocatedResidency >= currentResidency && allocatedResidency >= 0);
 
             // Update target residency smoothing

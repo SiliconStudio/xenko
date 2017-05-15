@@ -10,6 +10,10 @@ namespace SiliconStudio.Xenko.Graphics.Data
 {
     internal class TextureContentSerializer : ContentSerializerBase<Texture>
     {
+        public delegate void DeserializeTextureDelegate(IServiceRegistry services, Texture obj, ref ImageDescription imageDescription, ContentStorageHeader storageHeader);
+
+        public static DeserializeTextureDelegate DeserializeTexture;
+
         /// <inheritdoc/>
         public override void Serialize(ContentSerializerContext context, SerializationStream stream, Texture texture)
         {
@@ -22,12 +26,12 @@ namespace SiliconStudio.Xenko.Graphics.Data
             {
                 var services = stream.Context.Tags.Get(ServiceRegistry.ServiceRegistryKey);
                 var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
-                var texturesStreamingProvider = services.GetSafeServiceAs<ITexturesStreamingProvider>();
+                var texturesStreamingProvider = services.GetServiceAs<ITexturesStreamingProvider>();
 
                 var isStreamable = stream.ReadBoolean();
                 if (!isStreamable)
                 {
-                    texturesStreamingProvider.UnregisterTexture(texture);
+                    texturesStreamingProvider?.UnregisterTexture(texture);
 
                     // TODO: Error handling?
                     using (var textureData = Image.Load(stream.NativeStream))
@@ -56,6 +60,9 @@ namespace SiliconStudio.Xenko.Graphics.Data
                 }
                 else
                 {
+                    texture.AttachToGraphicsDevice(graphicsDeviceService.GraphicsDevice);
+                    texture.Reload = null;
+
                     // Read image header
                     var imageDescription = new ImageDescription();
                     ImageHelper.ImageDescriptionSerializer.Serialize(ref imageDescription, ArchiveMode.Deserialize, stream);
@@ -63,13 +70,19 @@ namespace SiliconStudio.Xenko.Graphics.Data
                     // Read content storage header
                     var storageHeader = ContentStorageHeader.Read(stream);
 
-                    // Register texture for streaming
-                    texturesStreamingProvider.RegisterTexture(texture, ref imageDescription, storageHeader);
+                    // Check if streaming service is available
+                    if (texturesStreamingProvider != null)
+                    {
+                        // Register texture for streaming
+                        texturesStreamingProvider.RegisterTexture(texture, ref imageDescription, storageHeader);
 
-                    // Note: here we don't load texture data and don't allocate GPU memory
-
-                    texture.AttachToGraphicsDevice(graphicsDeviceService.GraphicsDevice);
-                    texture.Reload = null;
+                        // Note: here we don't load texture data and don't allocate GPU memory
+                    }
+                    else
+                    {
+                        // Deserialize whole texture without streaming feature
+                        DeserializeTexture(services, texture, ref imageDescription, storageHeader);
+                    }
                 }
             }
             else
