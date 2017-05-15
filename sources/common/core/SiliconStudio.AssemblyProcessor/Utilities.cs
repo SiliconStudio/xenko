@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SiliconStudio.Core.Annotations;
 
 // ReSharper disable once CheckNamespace
 namespace SiliconStudio
@@ -13,26 +14,28 @@ namespace SiliconStudio
         private const string RegexReservedCharacters = @"[ \-;',+*|!`~@#$%^&\?()=[\]{}<>\""]";
 
         /// <summary>
-        /// Build a valid C# class name from the provided string. 
+        /// Build a valid C# class name from the provided string.
         /// It replaces all the forbidden characters by the provided replacement character.
         /// </summary>
         /// <param name="originalName">The original name</param>
         /// <param name="replacementCharacter">The replacement character</param>
         /// <returns></returns>
-        public static string BuildValidClassName(string originalName, char replacementCharacter = '_')
+        [NotNull]
+        public static string BuildValidClassName([NotNull] string originalName, char replacementCharacter = '_')
         {
             return BuildValidClassName(originalName, null, replacementCharacter);
         }
 
         /// <summary>
-        /// Build a valid C# class name from the provided string. 
+        /// Build a valid C# class name from the provided string.
         /// It replaces all the forbidden characters by the provided replacement character.
         /// </summary>
         /// <param name="originalName">The original name</param>
         /// <param name="additionalReservedWords">Reserved words that must be escaped if used directly</param>
         /// <param name="replacementCharacter">The replacement character</param>
         /// <returns></returns>
-        public static string BuildValidClassName(string originalName, IEnumerable<string> additionalReservedWords, char replacementCharacter = '_')
+        [NotNull]
+        public static string BuildValidClassName([NotNull] string originalName, IEnumerable<string> additionalReservedWords, char replacementCharacter = '_')
         {
             if (ReservedNames.Contains(originalName))
                 return originalName + replacementCharacter;
@@ -44,26 +47,28 @@ namespace SiliconStudio
         }
 
         /// <summary>
-        /// Build a valid C# namespace name from the provided string. 
+        /// Build a valid C# namespace name from the provided string.
         /// It replaces all the forbidden characters by the provided replacement character.
         /// </summary>
         /// <param name="originalName">The original name</param>
         /// <param name="replacementCharacter">The replacement character</param>
         /// <returns></returns>
-        public static string BuildValidNamespaceName(string originalName, char replacementCharacter = '_')
+        [NotNull]
+        public static string BuildValidNamespaceName([NotNull] string originalName, char replacementCharacter = '_')
         {
             return BuildValidNamespaceName(originalName, null, replacementCharacter);
         }
 
         /// <summary>
-        /// Build a valid C# namespace name from the provided string. 
+        /// Build a valid C# namespace name from the provided string.
         /// It replaces all the forbidden characters by the provided replacement character.
         /// </summary>
         /// <param name="originalName">The original name</param>
         /// <param name="additionalReservedWords">Reserved words that must be escaped if used directly</param>
         /// <param name="replacementCharacter">The replacement character</param>
         /// <returns></returns>
-        public static string BuildValidNamespaceName(string originalName, IEnumerable<string> additionalReservedWords, char replacementCharacter = '_')
+        [NotNull]
+        public static string BuildValidNamespaceName([NotNull] string originalName, IEnumerable<string> additionalReservedWords, char replacementCharacter = '_')
         {
             if (ReservedNames.Contains(originalName))
                 return originalName + replacementCharacter;
@@ -75,26 +80,28 @@ namespace SiliconStudio
         }
 
         /// <summary>
-        /// Build a valid C# project name from the provided string. 
+        /// Build a valid C# project name from the provided string.
         /// It replaces all the forbidden characters by the provided replacement character.
         /// </summary>
         /// <param name="originalName">The original name</param>
         /// <param name="replacementCharacter">The replacement character</param>
         /// <returns></returns>
-        public static string BuildValidProjectName(string originalName, char replacementCharacter = '_')
+        [NotNull]
+        public static string BuildValidProjectName([NotNull] string originalName, char replacementCharacter = '_')
         {
             return Regex.Replace(originalName, "[=;,/\\?:&*<>|#%\"]", replacementCharacter.ToString());
         }
 
         /// <summary>
-        /// Build a valid file name from the provided string. 
+        /// Build a valid file name from the provided string.
         /// It replaces all the forbidden characters by the provided replacement character.
         /// For reference see: https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247(v=vs.85).aspx
         /// </summary>
         /// <param name="originalName">The original name</param>
         /// <param name="replacementCharacter">The replacement character</param>
         /// <returns></returns>
-        public static string BuildValidFileName(string originalName, char replacementCharacter = '_')
+        [NotNull]
+        public static string BuildValidFileName([NotNull] string originalName, char replacementCharacter = '_')
         {
             return Regex.Replace(originalName, "[=;,/\\?:&!.*<>|#%\"]", replacementCharacter.ToString());
         }

@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
@@ -136,7 +136,7 @@ namespace SiliconStudio.Core.IO
 
             if (path != null && Directory.Exists(path))
             {
-                info = new DirectoryInfo(path.ToLower());
+                info = new DirectoryInfo(path.ToLowerInvariant());
             }
             else
             {
@@ -325,7 +325,7 @@ namespace SiliconStudio.Core.IO
         {
             public DirectoryWatcherItem(DirectoryInfo path)
             {
-                Path = path.FullName.ToLower();
+                Path = path.FullName.ToLowerInvariant();
             }
 
             public DirectoryWatcherItem Parent;
