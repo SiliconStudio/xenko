@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Streaming;
 
@@ -13,7 +14,7 @@ namespace SiliconStudio.Xenko.Streaming
     /// </summary>
     public class ContentStreamingService : IDisposable
     {
-        private readonly List<ContentStorage> containers = new List<ContentStorage>();
+        private readonly Dictionary<int, ContentStorage> containers = new Dictionary<int, ContentStorage>();
         
         // Configuration
         public TimeSpan UnusedDataChunksLifetime = TimeSpan.FromSeconds(3);
@@ -36,15 +37,15 @@ namespace SiliconStudio.Xenko.Streaming
 
             lock (containers)
             {
-                // TODO: make it faster using hash
-                result = containers.Find(e => e.Url == storageHeader.DataUrl);
-                if (result == null)
+                int hash = storageHeader.DataUrl.GetHashCode();
+                if (!containers.TryGetValue(hash, out result))
                 {
                     result = new ContentStorage(this, storageHeader);
-                    containers.Add(result);
+                    containers.Add(hash, result);
                 }
             }
 
+            Debug.Assert(result != null && result.Url == storageHeader.DataUrl);
             return result;
         }
 
@@ -53,7 +54,7 @@ namespace SiliconStudio.Xenko.Streaming
             lock (containers)
             {
                 foreach (var e in containers)
-                    e.ReleaseUnusedChunks();
+                    e.Value.ReleaseUnusedChunks();
             }
         }
 
