@@ -86,19 +86,6 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Determines whether one or more of the mouse buttons are pressed
-        /// </summary>
-        /// <returns><c>true</c> if one or more of the mouse buttons are pressed; otherwise, <c>false</c>.</returns>
-        public bool HasPressedMouseButtons
-        {
-            get
-            {
-                if (!HasMouse) return false;
-                return Mouse.PressedButtons.Count > 0;
-            }
-        }
-
-        /// <summary>
         /// The keys that have been pressed since the last frame
         /// </summary>
         public IReadOnlySet<Keys> PressedKeys
@@ -167,6 +154,19 @@ namespace SiliconStudio.Xenko.Input
             {
                 if (!HasMouse) return NoButtons;
                 return Mouse.DownButtons;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether one or more of the mouse buttons are pressed
+        /// </summary>
+        /// <returns><c>true</c> if one or more of the mouse buttons are pressed; otherwise, <c>false</c>.</returns>
+        public bool HasPressedMouseButtons
+        {
+            get
+            {
+                if (!HasMouse) return false;
+                return Mouse.PressedButtons.Count > 0;
             }
         }
 
