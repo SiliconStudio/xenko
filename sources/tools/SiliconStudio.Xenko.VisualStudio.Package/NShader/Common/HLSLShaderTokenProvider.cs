@@ -1,4 +1,4 @@
-#region Header Licence
+﻿#region Header Licence
 //  ---------------------------------------------------------------------
 // 
 //  Copyright (c) 2009 Alexandre Mutel and Microsoft Corporation.  
@@ -33,7 +33,7 @@ namespace NShader
         {
             text = text.Replace(" ", "");
             ShaderToken token;
-            if (!map.TryGetValue(text.ToUpper(), out token))
+            if (!map.TryGetValue(text.ToUpperInvariant(), out token))
             {
                 token = ShaderToken.IDENTIFIER;
             }

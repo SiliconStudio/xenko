@@ -69,8 +69,6 @@ namespace SiliconStudio.Xenko.Profiling
 
         public GameProfilingSystem(IServiceRegistry registry) : base(registry)
         {
-            registry.AddService(typeof(GameProfilingSystem), this);
-
             DrawOrder = 0xffffff;
 
             gcProfiler = new GcProfiling();        

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -71,12 +71,12 @@ namespace FreeImageAPI.Plugins
 		public static FreeImagePlugin Plugin(string expression)
 		{
 			FreeImagePlugin result = null;
-			expression = expression.ToLower();
+			expression = expression.ToLowerInvariant();
 
 			foreach (FreeImagePlugin plugin in plugins)
 			{
-				if (plugin.Format.ToLower().Contains(expression) ||
-					plugin.RegExpr.ToLower().Contains(expression) ||
+				if (plugin.Format.ToLowerInvariant().Contains(expression) ||
+					plugin.RegExpr.ToLowerInvariant().Contains(expression) ||
 					plugin.ValidExtension(expression, StringComparison.CurrentCultureIgnoreCase) ||
 					plugin.ValidFilename(expression, StringComparison.CurrentCultureIgnoreCase))
 				{

@@ -43,6 +43,7 @@
     <Compile Include="Helpers\IdentifierGenerator.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="PropertyKeySerializerTest.cs" />
+    <Compile Include="TestAbstractInstantiation.cs" />
     <Compile Include="TestAssetCloner.cs" />
     <Compile Include="TestAssetCollision.cs" />
     <Compile Include="TestAssetInheritance.cs" />

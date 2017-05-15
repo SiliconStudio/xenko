@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -86,7 +86,7 @@ namespace SiliconStudio.Packages
 
             var rootFileSystem = new PhysicalFileSystem(rootDirectory);
             RootDirectory = rootFileSystem.Root;
-            settings = Settings.LoadDefaultSettings(rootFileSystem, configFileName, null);
+            settings = new Settings(rootFileSystem, configFileName, false);
 
             InstallPath = settings.GetValue(ConfigurationConstants.Config, RepositoryPathKey, true);
             if (!string.IsNullOrEmpty(InstallPath))

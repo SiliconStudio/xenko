@@ -1,4 +1,4 @@
-// Copyright (c) 2015 SharpYaml - Alexandre Mutel
+﻿// Copyright (c) 2015 SharpYaml - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         public string Convert(string name)
         {
-            return regex2.Replace(regex1.Replace(name, "$1_$2"), "$1_$2").ToLower();
+            return regex2.Replace(regex1.Replace(name, "$1_$2"), "$1_$2").ToLowerInvariant();
         }
     }
 }

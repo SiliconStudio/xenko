@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
@@ -28,9 +28,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 var assetManager = new ContentManager();
 
                 var prefab = new Prefab();
-                foreach (var rootEntity in Parameters.Hierarchy.RootPartIds)
+                foreach (var rootEntity in Parameters.Hierarchy.RootParts)
                 {
-                    prefab.Entities.Add(Parameters.Hierarchy.Parts[rootEntity].Entity);
+                    prefab.Entities.Add(rootEntity);
                 }
                 assetManager.Save(Url, prefab);
 

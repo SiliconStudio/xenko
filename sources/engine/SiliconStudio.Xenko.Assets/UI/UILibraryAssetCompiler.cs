@@ -1,8 +1,9 @@
-// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
@@ -39,7 +40,7 @@ namespace SiliconStudio.Xenko.Assets.UI
                 var uiLibrary = new Engine.UILibrary();
                 foreach (var kv in Parameters.PublicUIElements)
                 {
-                    if (!Parameters.Hierarchy.RootPartIds.Contains(kv.Key))
+                    if (Parameters.Hierarchy.RootParts.All(x => x.Id != kv.Key))
                     {
                         // We might want to allow that in the future.
                         commandContext.Logger.Warning($"Only root elements can be exposed publicly. Skipping [{kv.Key}].");

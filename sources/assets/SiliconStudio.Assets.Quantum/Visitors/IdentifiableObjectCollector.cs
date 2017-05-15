@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -19,24 +19,25 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// <summary>
         /// Initializes a new instance of the <see cref="IdentifiableObjectCollector"/> class.
         /// </summary>
-        /// <param name="propertyGraph">The <see cref="AssetPropertyGraph"/> used to analyze object references.</param>
-        private IdentifiableObjectCollector(AssetPropertyGraph propertyGraph)
-            : base(propertyGraph)
+        /// <param name="propertyGraphDefinition">The <see cref="AssetPropertyGraphDefinition"/> used to analyze object references.</param>
+        private IdentifiableObjectCollector(AssetPropertyGraphDefinition propertyGraphDefinition)
+            : base(propertyGraphDefinition)
         {
         }
 
         /// <summary>
         /// Collects the <see cref="IIdentifiable"/> objects that are visited through nodes that are not representing object references.
         /// </summary>
-        /// <param name="propertyGraph">The <see cref="AssetPropertyGraph"/> used to analyze object references.</param>
+        /// <param name="propertyGraphDefinition">The <see cref="AssetPropertyGraphDefinition"/> used to analyze object references.</param>
         /// <param name="rootNode">The root object from which to collect. If null, <see cref="AssetPropertyGraph.RootNode"/> will be used.</param>
         /// <returns>A dictionary mapping <see cref="IIdentifiable"/> object by their identifier.</returns>
         [NotNull]
-        public static Dictionary<Guid, IIdentifiable> Collect([NotNull] AssetPropertyGraph propertyGraph, [CanBeNull] IGraphNode rootNode = null)
+        public static Dictionary<Guid, IIdentifiable> Collect([NotNull] AssetPropertyGraphDefinition propertyGraphDefinition, [NotNull] IGraphNode rootNode)
         {
-            if (propertyGraph == null) throw new ArgumentNullException(nameof(propertyGraph));
-            var visitor = new IdentifiableObjectCollector(propertyGraph);
-            visitor.Visit(rootNode ?? propertyGraph.RootNode);
+            if (propertyGraphDefinition == null) throw new ArgumentNullException(nameof(propertyGraphDefinition));
+            if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
+            var visitor = new IdentifiableObjectCollector(propertyGraphDefinition);
+            visitor.Visit(rootNode);
             return visitor.result;
         }
 
