@@ -26,8 +26,6 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
     {
         protected readonly Logger Logger = GlobalLogger.GetLogger("Test Game");
         
-        private Vector2 lastTouchPosition;
-        
         protected Scene Scene;
         protected Entity Camera;
         protected Entity UIRoot;
@@ -249,31 +247,13 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         protected void ClearPointerEvents()
         {
+            AddPointerEvent(PointerEventType.Released, Vector2.Zero);
+            Input.Update(new GameTime());
         }
 
         protected void AddPointerEvent(PointerEventType eventType, Vector2 position)
         {
-            MouseSimulated.InjectPointerEvent(CreatePointerEvent(eventType, position));
-        }
-
-        protected PointerEvent CreatePointerEvent(PointerEventType eventType, Vector2 position)
-        {
-            if (eventType == PointerEventType.Pressed)
-                lastTouchPosition = position;
-
-            var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(MouseSimulated);
-            
-            pointerEvent.PointerId = 0;
-            pointerEvent.Position = position;
-            pointerEvent.DeltaPosition = position - lastTouchPosition;
-            pointerEvent.DeltaTime = new TimeSpan();
-            pointerEvent.EventType = eventType;
-            pointerEvent.PointerType = PointerType.Touch;
-            pointerEvent.IsDown = true;
-
-            lastTouchPosition = position;
-
-            return pointerEvent;
+            MouseSimulated.SimulatePointer(eventType, position);
         }
     }
 }

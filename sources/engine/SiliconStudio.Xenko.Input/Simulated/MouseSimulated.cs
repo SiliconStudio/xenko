@@ -9,7 +9,6 @@ namespace SiliconStudio.Xenko.Input
 {
     public class MouseSimulated : MouseDeviceBase
     {
-        private readonly List<PointerEvent> injectedPointerEvents = new List<PointerEvent>();
         private bool positionLocked;
         private Vector2 capturedPosition;
 
@@ -31,8 +30,6 @@ namespace SiliconStudio.Xenko.Input
         public override void Update(List<InputEvent> inputEvents)
         {
             base.Update(inputEvents);
-            inputEvents.AddRange(injectedPointerEvents);
-            injectedPointerEvents.Clear();
 
             if (positionLocked)
             {
@@ -71,25 +68,6 @@ namespace SiliconStudio.Xenko.Input
         public void SimulatePointer(PointerEventType pointerEventType, Vector2 position, int id = 0)
         {
             PointerInputEvents.Add(new PointerInputEvent { Id = id, Position = position, Type = pointerEventType });
-        }
-
-        public void InjectPointerEvent(PointerEvent evt)
-        {
-            injectedPointerEvents.Add(evt);
-        }
-
-        public void InjectPointerEvent(Vector2 position, Vector2 deltaPosition, TimeSpan delta, PointerEventType eventType, int id = 0, PointerType type = PointerType.Mouse)
-        {
-            var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(this);
-            pointerEvent.Position = position;
-            pointerEvent.DeltaPosition = deltaPosition;
-            pointerEvent.DeltaTime = delta;
-            pointerEvent.IsDown = eventType != PointerEventType.Released;
-            pointerEvent.PointerId = id;
-            pointerEvent.PointerType = type;
-            pointerEvent.EventType = eventType;
-
-            injectedPointerEvents.Add(pointerEvent);
         }
 
         public override void LockPosition(bool forceCenter = false)

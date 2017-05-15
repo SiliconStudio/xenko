@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Games.Testing
 
             socketMessageLayer.AddPacketHandler<TapSimulationRequest>(request =>
             {
-                mouseSimulated.InjectPointerEvent(request.Coords, request.CoordsDelta, request.Delta, request.EventType);
+                mouseSimulated.SimulatePointer(request.EventType, request.Coords);
             });
 
             socketMessageLayer.AddPacketHandler<ScreenshotRequest>(request =>
