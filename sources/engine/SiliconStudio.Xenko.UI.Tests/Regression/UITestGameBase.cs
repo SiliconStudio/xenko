@@ -27,10 +27,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         protected readonly Logger Logger = GlobalLogger.GetLogger("Test Game");
         
         private Vector2 lastTouchPosition;
-
-        // The list that the inputmanager uses for pointer events
-        protected List<PointerEvent> PointerEvents;
-
+        
         protected Scene Scene;
         protected Entity Camera;
         protected Entity UIRoot;
@@ -152,8 +149,6 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Window.IsMouseVisible = true;
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
-
-            PointerEvents = Input.pointerEvents;
         }
 
         #region Temporary Fix (Style)
@@ -252,22 +247,29 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 Exit();
         }
 
+        protected void ClearPointerEvents()
+        {
+        }
+
+        protected void AddPointerEvent(PointerEventType eventType, Vector2 position)
+        {
+            MouseSimulated.InjectPointerEvent(CreatePointerEvent(eventType, position));
+        }
+
         protected PointerEvent CreatePointerEvent(PointerEventType eventType, Vector2 position)
         {
             if (eventType == PointerEventType.Pressed)
                 lastTouchPosition = position;
 
-            var pointerEvent = new PointerEvent
-            {
-                Device = MouseSimulated,
-                PointerId = 0,
-                Position = position,
-                DeltaPosition = position - lastTouchPosition,
-                DeltaTime = new TimeSpan(),
-                EventType = eventType,
-                PointerType = PointerType.Touch,
-                IsDown = true
-            };
+            var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(MouseSimulated);
+            
+            pointerEvent.PointerId = 0;
+            pointerEvent.Position = position;
+            pointerEvent.DeltaPosition = position - lastTouchPosition;
+            pointerEvent.DeltaTime = new TimeSpan();
+            pointerEvent.EventType = eventType;
+            pointerEvent.PointerType = PointerType.Touch;
+            pointerEvent.IsDown = true;
 
             lastTouchPosition = position;
 
