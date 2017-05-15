@@ -222,17 +222,7 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the collection of connected sensor devices
         /// </summary>
         public IReadOnlyList<ISensorDevice> Sensors => sensors;
-
-        /// <summary>
-        /// Gets or sets the mouse position in normalized coordinates.
-        /// </summary>
-        /// <value>The mouse position in normalized coordinates.</value>
-        public Vector2 MousePosition
-        {
-            get { return mousePosition; }
-            set { SetMousePosition(value); }
-        }
-
+        
         /// <summary>
         /// Should raw input be used on windows
         /// </summary>
