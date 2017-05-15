@@ -33,7 +33,7 @@
     <Compile Include="OpenGL\ShaderConverter.cs" />
     <Compile Include="OpenGL\ShaderCompiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
   </ItemGroup>
