@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Input
         public int NumberOfTaps { get; internal set; }
 
         /// <summary>
-        /// The position (in pixels) of the tap.
+        /// The position of the tap.
         /// </summary>
         public Vector2 TapPosition { get; internal set; }
 

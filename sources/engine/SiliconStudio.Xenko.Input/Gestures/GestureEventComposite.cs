@@ -44,12 +44,12 @@ namespace SiliconStudio.Xenko.Input
         public float TotalScale { get; internal set; }
 
         /// <summary>
-        /// The translation (in pixels) performed since the last event of the gesture.
+        /// The translation performed since the last event of the gesture.
         /// </summary>
         public Vector2 DeltaTranslation { get; internal set; }
 
         /// <summary>
-        /// The translation (in pixels) performed since the beginning of the gesture.
+        /// The translation performed since the beginning of the gesture.
         /// </summary>
         public Vector2 TotalTranslation { get; internal set; }
 

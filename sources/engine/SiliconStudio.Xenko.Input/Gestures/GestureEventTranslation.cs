@@ -17,22 +17,22 @@ namespace SiliconStudio.Xenko.Input
         public GestureShape Shape { get; internal set; }
 
         /// <summary>
-        /// The position (in pixels) where the drag event started.
+        /// The position where the drag event started.
         /// </summary>
         public Vector2 StartPosition { get; internal set; }
 
         /// <summary>
-        /// The current position (in pixels) of the drag event.
+        /// The current position of the drag event.
         /// </summary>
         public Vector2 CurrentPosition { get; internal set; }
 
         /// <summary>
-        /// The translation (in pixels) performed since the last event of the gesture.
+        /// The translation performed since the last event of the gesture.
         /// </summary>
         public Vector2 DeltaTranslation { get; internal set; }
 
         /// <summary>
-        /// The translation (in pixels) performed since the beginning of the gesture.
+        /// The translation performed since the beginning of the gesture.
         /// </summary>
         public Vector2 TotalTranslation { get; internal set; }
 

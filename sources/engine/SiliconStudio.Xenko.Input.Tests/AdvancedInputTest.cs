@@ -138,14 +138,12 @@ namespace SiliconStudio.Xenko.Input.Tests
             WriteLine("LongPress: " + longPressEvent, 1);
             WriteLine("Composite: " + compositeEvent, 1);
             WriteLine("Tap: " + tapEvent, 1);
-            LineOffset++;
             
             WriteLine("Virtual Buttons :");
             foreach (var btn in virtualButtonConfig)
             {
                 WriteLine($"VirtualButton ({btn.Name}): {btn.GetValue(Input)}", 1);
             }
-            LineOffset++;
 
             WriteLine("Game Pads :");
             foreach (var gp in Input.GamePads)
@@ -154,9 +152,9 @@ namespace SiliconStudio.Xenko.Input.Tests
             }
 
             WriteLine("Game Controllers :");
-            foreach (var gp in Input.GameControllers)
+            foreach (var gc in Input.GameControllers)
             {
-                WriteLine($"{gp.Name} ({gp.GetType()})", 1);
+                WriteLine($"{gc.Name} ({gc.GetType()})", 1);
             }
 
             DrawCursor();
