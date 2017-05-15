@@ -24,7 +24,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
-      <Link>SharedAssemblyInfo.cs</Link>
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CharacterAnalyzer.cs" />
     <Compile Include="Constants.cs" />

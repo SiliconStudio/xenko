@@ -23,10 +23,11 @@ namespace SiliconStudio.Xenko.Assets.UI
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
+    [AssetUpgrader(XenkoConfig.PackageName, "2.0.0.0", "2.1.0.1", typeof(RootPartIdsToRootPartsUpgrader))]
     [Display("UI Library")]
     public class UILibraryAsset : UIAssetBase
     {
-        private const string CurrentVersion = "2.0.0.0";
+        private const string CurrentVersion = "2.1.0.1";
 
         /// <summary>
         /// The default file extension used by the <see cref="UILibraryAsset"/>.
