@@ -9,7 +9,7 @@ namespace ThirdPersonPlatformer.Core
     {
         public static bool IsGamePadButtonDown(this InputManager input, GamePadButton button, int index)
         {
-            var gamepad = input.GetGamePad(index);
+            var gamepad = input.GetGamePadByIndex(index);
             if (gamepad == null)
                 return false;
 
@@ -28,7 +28,7 @@ namespace ThirdPersonPlatformer.Core
 
         public static Vector2 GetLeftThumb(this InputManager input, int index)
         {
-            var gamepad = input.GetGamePad(index);
+            var gamepad = input.GetGamePadByIndex(index);
             if (gamepad == null)
                 return Vector2.Zero;
 
@@ -54,7 +54,7 @@ namespace ThirdPersonPlatformer.Core
 
         public static Vector2 GetRightThumb(this InputManager input, int index)
         {
-            var gamepad = input.GetGamePad(index);
+            var gamepad = input.GetGamePadByIndex(index);
             if (gamepad == null)
                 return Vector2.Zero;
 
@@ -80,7 +80,7 @@ namespace ThirdPersonPlatformer.Core
 
         public static float GetLeftTrigger(this InputManager input, int index)
         {
-            var gamepad = input.GetGamePad(index);
+            var gamepad = input.GetGamePadByIndex(index);
             if (gamepad == null)
                 return 0.0f;
 
@@ -106,7 +106,7 @@ namespace ThirdPersonPlatformer.Core
 
         public static float GetRightTrigger(this InputManager input, int index)
         {
-            var gamepad = input.GetGamePad(index);
+            var gamepad = input.GetGamePadByIndex(index);
             if (gamepad == null)
                 return 0.0f;
 
