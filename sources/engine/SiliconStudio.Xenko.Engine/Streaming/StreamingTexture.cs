@@ -5,6 +5,7 @@ using System;
 using System.Data;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.MicroThreading;
@@ -17,7 +18,7 @@ namespace SiliconStudio.Xenko.Streaming
     /// </summary>
     public class StreamingTexture : StreamableResource
     {
-        protected WeakReference _texture;
+        protected Texture _texture;
         protected ImageDescription _desc;
         protected int _residentMips;
         protected Task _streamingTask;
@@ -25,14 +26,15 @@ namespace SiliconStudio.Xenko.Streaming
         internal StreamingTexture(StreamingManager manager, [NotNull] Texture texture)
             : base(manager)
         {
-            _texture = new WeakReference(texture);
+            _texture = texture;
+            this.DisposeBy(_texture);
             _residentMips = 0;
         }
 
         /// <summary>
         /// Gets the texture object.
         /// </summary>
-        public Texture Texture => _texture.Target as Texture;
+        public Texture Texture => _texture;
 
         /// <summary>
         /// Gets the texture image description (available in the storage container).
@@ -206,7 +208,7 @@ namespace SiliconStudio.Xenko.Streaming
                         }
                     }
 
-                    if (IsDisposed)
+                    if (IsDisposed)// TODO: use cancellation token
                         return;
                 }
 
@@ -227,6 +229,15 @@ namespace SiliconStudio.Xenko.Streaming
 
             var microThread = Scheduler.CurrentMicroThread;
             return _streamingTask = new Task(() => StreamingTask(microThread, residency));
+        }
+
+        /// <inheritdoc />
+        protected override void Destroy()
+        {
+            // Stop streaming
+            // TODO: stop steaming using cancellationToken
+
+            base.Destroy();
         }
     }
 }

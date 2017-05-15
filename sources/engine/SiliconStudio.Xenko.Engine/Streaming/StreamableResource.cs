@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.Streaming
@@ -10,7 +11,7 @@ namespace SiliconStudio.Xenko.Streaming
     /// <summary>
     /// Base class for all resources that can be dynamicly streamed.
     /// </summary>
-    public abstract class StreamableResource : IDisposable
+    public abstract class StreamableResource : ComponentBase
     {
         /// <summary>
         /// Gets the manager.
@@ -21,12 +22,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// Gets the resource storage.
         /// </summary>
         public ContentStorage Storage { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is disposed.
-        /// </summary>
-        public bool IsDisposed => Manager == null;
-
+        
         /// <summary>
         /// Gets the resource object.
         /// </summary>
@@ -106,17 +102,13 @@ namespace SiliconStudio.Xenko.Streaming
         [NotNull]
         internal abstract Task CreateStreamingTask(int residency);
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <exception cref="System.InvalidOperationException"></exception>
-        public virtual void Dispose()
+        /// <inheritdoc />
+        protected override void Destroy()
         {
-            if (IsDisposed)
-                throw new InvalidOperationException();
-
             Manager.UnregisterResource(this);
             Manager = null;
+
+            base.Destroy();
         }
     }
 }

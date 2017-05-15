@@ -80,9 +80,7 @@ namespace SiliconStudio.Xenko.Streaming
 
             var initialContext = SynchronizationContext.Current;
             SynchronizationContext.SetSynchronizationContext(new MicrothreadProxySynchronizationContext(microThread));
-            var lockDatabase = Storage.Service.MountDatabase();
-            await lockDatabase;
-            using (lockDatabase.Result)
+            using (await Storage.Service.MountDatabase())
             {
                 var fileProvider = ContentManager.FileProvider;
                 if (fileProvider == null)
