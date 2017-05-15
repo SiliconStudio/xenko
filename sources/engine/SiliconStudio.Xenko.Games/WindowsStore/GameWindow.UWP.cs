@@ -31,6 +31,7 @@ using SiliconStudio.Core.Mathematics;
 using Windows.Foundation;
 using Windows.UI.ViewManagement;
 using Windows.UI.Core;
+using Windows.UI.Xaml;
 //using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -56,8 +57,7 @@ namespace SiliconStudio.Xenko.Games
 
         private static readonly Windows.Devices.Input.MouseCapabilities mouseCapabilities = new Windows.Devices.Input.MouseCapabilities();
 
-        // TODO With d3d (CoreWindow) implementation this throws
-        // private DispatcherTimer resizeTimer = null;
+        private DispatcherTimer resizeTimer = null;
 
         private double requiredRatio;
         private ApplicationView applicationView;
@@ -219,9 +219,8 @@ namespace SiliconStudio.Xenko.Games
             var coreWindowControl = windowContext.Control as CoreWindowControlUWP;
             if (swapChainControl != null)
             {
-                // TODO With d3d (CoreWindow) implementation this throws
-                //resizeTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
-                //resizeTimer.Tick += ResizeTimerOnTick;
+                resizeTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+                resizeTimer.Tick += ResizeTimerOnTick;
 
                 swapChainPanel = swapChainControl.SwapChainPanel;
                 windowHandle = new WindowHandle(AppContextType.UWPSwapChain, swapChainPanel, IntPtr.Zero);
@@ -229,6 +228,7 @@ namespace SiliconStudio.Xenko.Games
             else if (coreWindowControl != null)
             {
                 coreWindow = coreWindowControl.CoreWindow;
+                coreWindow.SizeChanged += ResizeOnWindowChange;
                 windowHandle = new WindowHandle(AppContextType.UWPCoreWindow, coreWindow, IntPtr.Zero);
             }
 
@@ -243,8 +243,7 @@ namespace SiliconStudio.Xenko.Games
 
             if (swapChainPanel != null)
             {
-                // TODO With d3d (CoreWindow) implementation this throws
-                //swapChainPanel.SizeChanged += swapChainPanel_SizeChanged;
+                swapChainPanel.SizeChanged += swapChainPanel_SizeChanged;
                 swapChainPanel.CompositionScaleChanged += swapChainPanel_CompositionScaleChanged;
             }
 
@@ -264,8 +263,12 @@ namespace SiliconStudio.Xenko.Games
 
         private void ResizeTimerOnTick(object sender, object o)
         {
-            // TODO With d3d (CoreWindow) implementation this throws
-            //resizeTimer.Stop();
+            resizeTimer.Stop();
+            OnClientSizeChanged(sender, EventArgs.Empty);
+        }
+
+        private void ResizeOnWindowChange(object sender, object o)
+        {
             OnClientSizeChanged(sender, EventArgs.Empty);
         }
 
@@ -285,10 +288,9 @@ namespace SiliconStudio.Xenko.Games
                 {
                     if (swapChainPanel.Width != panelWidth || swapChainPanel.Height != panelHeight)
                     {
-                        // TODO With d3d (CoreWindow) implementation this throws
-                        //// Center the panel
-                        //swapChainPanel.HorizontalAlignment = HorizontalAlignment.Center;
-                        //swapChainPanel.VerticalAlignment = VerticalAlignment.Center;
+                        // Center the panel
+                        swapChainPanel.HorizontalAlignment = HorizontalAlignment.Center;
+                        swapChainPanel.VerticalAlignment = VerticalAlignment.Center;
 
                         swapChainPanel.Width = panelWidth;
                         swapChainPanel.Height = panelHeight;
@@ -311,10 +313,9 @@ namespace SiliconStudio.Xenko.Games
 
                     if (swapChainPanel.Width != panelWidth || swapChainPanel.Height != panelHeight)
                     {
-                        // TODO With d3d (CoreWindow) implementation this throws
                         // Center the panel
-                        //swapChainPanel.HorizontalAlignment = HorizontalAlignment.Center;
-                        //swapChainPanel.VerticalAlignment = VerticalAlignment.Center;
+                        swapChainPanel.HorizontalAlignment = HorizontalAlignment.Center;
+                        swapChainPanel.VerticalAlignment = VerticalAlignment.Center;
 
                         swapChainPanel.Width = panelWidth;
                         swapChainPanel.Height = panelHeight;
@@ -322,19 +323,23 @@ namespace SiliconStudio.Xenko.Games
                 }
             }
 
-            // TODO With d3d (CoreWindow) implementation this throws
-            //resizeTimer.Stop();
-            //resizeTimer.Start();
+            if (resizeTimer != null)
+            {
+                resizeTimer.Stop();
+                resizeTimer.Start();
+            }
         }
 
-        // TODO With d3d (CoreWindow) implementation this throws
-        //private void swapChainPanel_SizeChanged(object sender, SizeChangedEventArgs e)
-        //{
-        //    var bounds = e.NewSize;
-        //    HandleSizeChanged(sender, bounds);
-        //    resizeTimer.Stop();
-        //    resizeTimer.Start();
-        //}
+        private void swapChainPanel_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var bounds = e.NewSize;
+            HandleSizeChanged(sender, bounds);
+            if (resizeTimer != null)
+            {
+                resizeTimer.Stop();
+                resizeTimer.Start();
+            }
+        }
 
         internal override void Resize(int width, int height)
         {
