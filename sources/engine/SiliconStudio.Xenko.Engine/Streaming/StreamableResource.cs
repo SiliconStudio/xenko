@@ -39,6 +39,11 @@ namespace SiliconStudio.Xenko.Streaming
         public abstract int AllocatedResidency { get; }
 
         /// <summary>
+        /// Gets the maximum residency level.
+        /// </summary>
+        public abstract int MaxResidency { get; }
+
+        /// <summary>
         /// Gets the target residency level.
         /// </summary>
         public int TargetResidency { get; internal set; }

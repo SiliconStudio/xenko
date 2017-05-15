@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         /// <value><c>true</c> if this texture is a cube map; otherwise, <c>false</c>.</value>
         public bool IsCubeMap => _desc.Dimension == TextureDimension.TextureCube;
-
+        
         /// <summary>	
         /// Gets the texture texels format
         /// </summary>	
@@ -86,6 +86,9 @@ namespace SiliconStudio.Xenko.Streaming
 
         /// <inheritdoc />
         public override int AllocatedResidency => Texture.MipLevels;
+
+        /// <inheritdoc />
+        public override int MaxResidency => _desc.MipLevels;
 
         /// <inheritdoc />
         internal override bool CanBeUpdated => _streamingTask == null || _streamingTask.IsCompleted;
@@ -232,7 +235,7 @@ namespace SiliconStudio.Xenko.Streaming
 
         internal override Task CreateStreamingTask(int residency)
         {
-            Debug.Assert(CanBeUpdated);
+            Debug.Assert(CanBeUpdated && residency <= MaxResidency);
 
             var microThread = Scheduler.CurrentMicroThread;
             return _streamingTask = new Task(() => StreamingTask(microThread, residency));

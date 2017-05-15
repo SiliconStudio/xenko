@@ -84,8 +84,6 @@ namespace SiliconStudio.Xenko.Streaming
         /// <returns>Chunk</returns>
         public ContentChunk GetChunk(int index)
         {
-            Debug.Assert(index >= 0 && chunks.Length > index);
-
             var chunk = chunks[index];
             chunk.RegisterUsage();
             return chunk;
