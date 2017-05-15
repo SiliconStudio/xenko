@@ -76,7 +76,15 @@ namespace SiliconStudio.Xenko.Assets.Models
             importModelCommand.Materials = asset.Materials;
             importModelCommand.ScaleImport = asset.ScaleImport;
             importModelCommand.PivotPosition = asset.PivotPosition;
-            importModelCommand.SkeletonUrl = skeleton?.Location;
+
+            if (skeleton != null)
+            {
+                importModelCommand.SkeletonUrl = skeleton.Location;
+                // Note: skeleton override values
+                importModelCommand.ScaleImport = ((SkeletonAsset)skeleton.Asset).ScaleImport;
+                importModelCommand.PivotPosition = ((SkeletonAsset)skeleton.Asset).PivotPosition;
+            }
+
             importModelCommand.Package = assetItem.Package;
 
             result.BuildSteps = new AssetBuildStep(assetItem) { importModelCommand };
