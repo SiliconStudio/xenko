@@ -26,7 +26,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Xenko.Graphics;
 using Windows.ApplicationModel;
-using Windows.UI.Xaml;
+using Windows.ApplicationModel.Core;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -34,13 +34,12 @@ namespace SiliconStudio.Xenko.Games
     {
         public GamePlatformUWP(GameBase game) : base(game)
         {
-            // TODO Implement proper application lifecycle:
+            // Application lifecycle reference:
             // https://docs.microsoft.com/en-us/windows/uwp/launch-resume/app-lifecycle
+            // https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.core.coreapplication
 
-            // TODO With d3d (CoreWindow) implementation this throws
-            //  System.Exception: 'Catastrophic failure (Exception from HRESULT: 0x8000FFFF (E_UNEXPECTED))'
-//            Application.Current.Suspending += CurrentOnSuspending;
-//            Application.Current.Resuming += CurrentOnResuming;
+            CoreApplication.Suspending += CurrentOnSuspending;
+            CoreApplication.Resuming += CurrentOnResuming;
         }
 
         private void CurrentOnResuming(object sender, object o)
