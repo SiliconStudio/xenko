@@ -12,27 +12,27 @@ namespace TopDownRPG.Core
             if (input.GamePadCount < index)
                 return false;
 
-            return (input.GetGamePad(index).State.Buttons & button) == button;
+            return (input.GetGamePadByIndex(index).State.Buttons & button) == button;
         }
 
         public static Vector2 GetLeftThumb(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePad(index).State.LeftThumb : Vector2.Zero;
+            return input.GamePadCount >= index ? input.GetGamePadByIndex(index).State.LeftThumb : Vector2.Zero;
         }
 
         public static Vector2 GetRightThumb(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePad(index).State.RightThumb : Vector2.Zero;
+            return input.GamePadCount >= index ? input.GetGamePadByIndex(index).State.RightThumb : Vector2.Zero;
         }
 
         public static float GetLeftTrigger(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePad(index).State.LeftTrigger : 0.0f;
+            return input.GamePadCount >= index ? input.GetGamePadByIndex(index).State.LeftTrigger : 0.0f;
         }
 
         public static float GetRightTrigger(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePad(index).State.RightTrigger : 0.0f;
+            return input.GamePadCount >= index ? input.GetGamePadByIndex(index).State.RightTrigger : 0.0f;
         }
     }
 }
