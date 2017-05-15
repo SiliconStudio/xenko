@@ -17,6 +17,8 @@ namespace SiliconStudio.Xenko.Input
         IInputEventListener<MouseWheelEvent>
     {
         private Vector2 mousePosition;
+
+        private Vector2 absoluteMousePosition;
         
         private readonly ReadOnlySet<MouseButton> NoButtons = new ReadOnlySet<MouseButton>(new HashSet<MouseButton>());
         private readonly ReadOnlySet<Keys> NoKeys = new ReadOnlySet<Keys>(new HashSet<Keys>());
@@ -25,9 +27,27 @@ namespace SiliconStudio.Xenko.Input
 
         // TODO: This is left internal until the UI test have been upgraded to use the input simulation layer
         internal readonly List<PointerEvent> pointerEvents = new List<PointerEvent>();
-        
+
+
         /// <summary>
-        /// Mouse delta in normalized (0,1) coordinates
+        /// The mouse position in normalized coordinates.
+        /// </summary>
+        public Vector2 MousePosition
+        {
+            get { return mousePosition; }
+            set { SetMousePosition(value); }
+        }
+
+        /// <summary>
+        /// Mouse coordinates in device coordinates
+        /// </summary>
+        public Vector2 AbsoluteMousePosition
+        {
+            get { return absoluteMousePosition; }
+        }
+
+        /// <summary>
+        /// Mouse delta in normalized coordinate space
         /// </summary>
         public Vector2 MouseDelta { get; private set; }
 
@@ -37,7 +57,7 @@ namespace SiliconStudio.Xenko.Input
         public Vector2 AbsoluteMouseDelta { get; private set; }
         
         /// <summary>
-        /// Gets the delta value of the mouse wheel button since last frame.
+        /// The delta value of the mouse wheel button since last frame.
         /// </summary>
         public float MouseWheelDelta { get; private set; }
 
@@ -205,7 +225,7 @@ namespace SiliconStudio.Xenko.Input
         /// Key events that happened since the last frame
         /// </summary>
         public IReadOnlyList<KeyEvent> KeyEvents => keyEvents;
-        
+
         /// <summary>
         /// Resets the state before updating
         /// </summary>
@@ -233,10 +253,11 @@ namespace SiliconStudio.Xenko.Input
             if (inputEvent.Device is IMouseDevice)
             {
                 mousePosition = inputEvent.Position;
+                absoluteMousePosition = inputEvent.AbsolutePosition;
 
                 // Add deltas together, so nothing gets lost if a down events gets sent after a move event with the actual delta
                 MouseDelta += inputEvent.DeltaPosition;
-                AbsoluteMouseDelta += inputEvent.DeltaPosition * LastPointerDevice.SurfaceSize;
+                AbsoluteMouseDelta += inputEvent.AbsoluteDeltaPosition;
             }
         }
 
