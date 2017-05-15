@@ -512,7 +512,7 @@ namespace SiliconStudio.Xenko.Input
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    if (Sources.Where(x=>x == source).Count() > 1)
+                    if (Sources.Count(x => x == source) > 1)
                         throw new InvalidOperationException("Input Source already added");
 
                     EventHandler<TrackingCollectionChangedEventArgs> eventHandler = (sender, args) => InputDevicesOnCollectionChanged(source, args);
