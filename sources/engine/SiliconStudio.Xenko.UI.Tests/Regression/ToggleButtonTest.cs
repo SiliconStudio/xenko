@@ -61,9 +61,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         private void Click()
         {
-            PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerEventType.Pressed, new Vector2(0.5f)));
-            PointerEvents.Add(CreatePointerEvent(PointerEventType.Released, new Vector2(0.5f)));
+            AddPointerEvent(PointerEventType.Pressed, new Vector2(0.5f));
+            AddPointerEvent(PointerEventType.Released, new Vector2(0.5f));
+            Input.Update(new GameTime());
         }
 
         [Test]

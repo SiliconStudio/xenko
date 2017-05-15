@@ -24,11 +24,9 @@ namespace SiliconStudio.Xenko.Input
         private readonly ReadOnlySet<Keys> NoKeys = new ReadOnlySet<Keys>(new HashSet<Keys>());
 
         private readonly List<KeyEvent> keyEvents = new List<KeyEvent>();
-
-        // TODO: This is left internal until the UI test have been upgraded to use the input simulation layer
-        internal readonly List<PointerEvent> pointerEvents = new List<PointerEvent>();
-
-
+        
+        private readonly List<PointerEvent> pointerEvents = new List<PointerEvent>();
+        
         /// <summary>
         /// The mouse position in normalized coordinates.
         /// </summary>
@@ -226,18 +224,6 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         public IReadOnlyList<KeyEvent> KeyEvents => keyEvents;
 
-        /// <summary>
-        /// Resets the state before updating
-        /// </summary>
-        public void ResetGlobalInputState()
-        {
-            keyEvents.Clear();
-            pointerEvents.Clear();
-            MouseWheelDelta = 0;
-            MouseDelta = Vector2.Zero;
-            AbsoluteMouseDelta = Vector2.Zero;
-        }
-
         public void ProcessEvent(KeyEvent inputEvent)
         {
             keyEvents.Add(inputEvent);
@@ -327,6 +313,18 @@ namespace SiliconStudio.Xenko.Input
         public bool IsMouseButtonDown(MouseButton mouseButton)
         {
             return Mouse?.IsButtonDown(mouseButton) ?? false;
+        }
+
+        /// <summary>
+        /// Resets the state before updating
+        /// </summary>
+        private void ResetGlobalInputState()
+        {
+            keyEvents.Clear();
+            pointerEvents.Clear();
+            MouseWheelDelta = 0;
+            MouseDelta = Vector2.Zero;
+            AbsoluteMouseDelta = Vector2.Zero;
         }
     }
 }

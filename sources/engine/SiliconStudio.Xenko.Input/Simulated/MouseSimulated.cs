@@ -73,6 +73,11 @@ namespace SiliconStudio.Xenko.Input
             PointerInputEvents.Add(new PointerInputEvent { Id = id, Position = position, Type = pointerEventType });
         }
 
+        public void InjectPointerEvent(PointerEvent evt)
+        {
+            injectedPointerEvents.Add(evt);
+        }
+
         public void InjectPointerEvent(Vector2 position, Vector2 deltaPosition, TimeSpan delta, PointerEventType eventType, int id = 0, PointerType type = PointerType.Mouse)
         {
             var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(this);

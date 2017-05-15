@@ -143,9 +143,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         public void Draw1()
         {
             // show the scroll bars
-            PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerEventType.Pressed, new Vector2(0.5f, 0.5f)));
-            PointerEvents.Add(CreatePointerEvent(PointerEventType.Moved, new Vector2(0.3f, 0.3f)));
+            AddPointerEvent(PointerEventType.Pressed, new Vector2(0.5f, 0.5f));
+            AddPointerEvent(PointerEventType.Moved, new Vector2(0.3f, 0.3f));
 
             UI.Update(new GameTime(new TimeSpan(), new TimeSpan(0, 0, 0, 0, 500)));
         }
