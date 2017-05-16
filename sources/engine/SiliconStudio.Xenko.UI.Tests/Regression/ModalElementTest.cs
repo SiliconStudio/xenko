@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public ModalElementTest()
         {
-            CurrentVersion = 10;
+            CurrentVersion = 11; // Elements are now correctly focused due to simulated input
         }
 
         protected override async Task LoadContent()
