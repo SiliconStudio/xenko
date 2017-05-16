@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// Defines if the particles should be rendered as alpha-blended (0), additive (1) or something in-between (any value between 0 and 1)
         /// </userdoc>
         [DataMember(20)]
-        [DataMemberRange(0, 1, 0.001, 0.1)]
+        [DataMemberRange(0, 1, 0.01, 0.1, 3)]
         [Display("Alpha-Add")]
         [DefaultValue(0)]
         public float AlphaAdditive { get; set; }

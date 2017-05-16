@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
         /// The maximum distance from the central point.
         /// </userdoc>
         [DataMember(20)]
-        [DataMemberRange(0f, float.MaxValue)]
+        [DataMemberRange(0f, 3)]
         [Display("Radius")]
         public float Radius
         {

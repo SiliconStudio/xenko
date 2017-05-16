@@ -222,10 +222,12 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
-        internal void Update(TransformComponent transformComponent, ref Matrix worldMatrix)
+        internal void Update(TransformComponent transformComponent)
         {
             if (!Enabled || model == null)
                 return;
+
+            ref Matrix worldMatrix = ref transformComponent.WorldMatrix;
 
             // Check if scaling is negative
             var up = Vector3.Cross(worldMatrix.Right, worldMatrix.Forward);
