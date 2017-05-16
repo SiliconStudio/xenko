@@ -38,7 +38,6 @@ namespace SiliconStudio.Xenko.Graphics.Data
         {
             Image = image;
             EnableStreaming = false;
-            StorageHeader = null;
         }
 
         /// <summary>
@@ -67,7 +66,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
                 ImageHelper.ImageDescriptionSerializer.Serialize(ref Image.Description, ArchiveMode.Serialize, stream);
 
                 // Write storage header
-                Debug.Assert(StorageHeader != null);
+                Debug.Assert(!string.IsNullOrEmpty(StorageHeader.DataUrl));
                 StorageHeader.Write(stream);
             }
             else

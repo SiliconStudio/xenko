@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         public int ChunksCount => chunks.Length;
 
-        internal ContentStorage(ContentStreamingService service, ContentStorageHeader header)
+        internal ContentStorage(ContentStreamingService service, ref ContentStorageHeader header)
         {
             // Init
             Service = service;

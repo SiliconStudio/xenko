@@ -10,7 +10,7 @@ namespace SiliconStudio.Core.Streaming
     /// <summary>
     /// Header with description of streamable resource data storage.
     /// </summary>
-    public class ContentStorageHeader
+    public struct ContentStorageHeader
     {
         public struct ChunkEntry
         {
@@ -48,9 +48,10 @@ namespace SiliconStudio.Core.Streaming
         /// Reads header instance from a stream.
         /// </summary>
         /// <param name="stream">The source stream.</param>
-        public static ContentStorageHeader Read(SerializationStream stream)
+        /// <param name="result">Result data</param>
+        public static void Read(SerializationStream stream, out ContentStorageHeader result)
         {
-            var result = new ContentStorageHeader();
+            result = new ContentStorageHeader();
             var version = stream.ReadInt32();
             if (version == 1)
             {
@@ -65,7 +66,7 @@ namespace SiliconStudio.Core.Streaming
                 }
                 result.HashCode = stream.ReadInt32();
 
-                return result;
+                return;
             }
 
             throw new SerializationException($"Invald {nameof(ContentStorageHeader)} version.");

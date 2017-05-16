@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         /// <param name="storageHeader">The storage header.</param>
         /// <returns>Content Storage container.</returns>
-        public ContentStorage GetStorage(ContentStorageHeader storageHeader)
+        public ContentStorage GetStorage(ref ContentStorageHeader storageHeader)
         {
             ContentStorage result;
 
@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Streaming
                 int hash = storageHeader.DataUrl.GetHashCode();
                 if (!containers.TryGetValue(hash, out result))
                 {
-                    result = new ContentStorage(this, storageHeader);
+                    result = new ContentStorage(this, ref storageHeader);
                     containers.Add(hash, result);
                 }
             }

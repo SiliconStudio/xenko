@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
 {
     internal class TextureContentSerializer : ContentSerializerBase<Texture>
     {
-        public delegate void DeserializeTextureDelegate(IServiceRegistry services, Texture obj, ref ImageDescription imageDescription, ContentStorageHeader storageHeader);
+        public delegate void DeserializeTextureDelegate(IServiceRegistry services, Texture obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader);
 
         public static DeserializeTextureDelegate DeserializeTexture;
 
@@ -68,7 +68,8 @@ namespace SiliconStudio.Xenko.Graphics.Data
                     ImageHelper.ImageDescriptionSerializer.Serialize(ref imageDescription, ArchiveMode.Deserialize, stream);
 
                     // Read content storage header
-                    var storageHeader = ContentStorageHeader.Read(stream);
+                    ContentStorageHeader storageHeader;
+                    ContentStorageHeader.Read(stream, out storageHeader);
 
                     // Check if streaming service is available
                     if (texturesStreamingProvider != null)
@@ -76,20 +77,20 @@ namespace SiliconStudio.Xenko.Graphics.Data
                         if (allowContentStreaming)
                         {
                             // Register texture for streaming
-                            texturesStreamingProvider.RegisterTexture(texture, ref imageDescription, storageHeader);
+                            texturesStreamingProvider.RegisterTexture(texture, ref imageDescription, ref storageHeader);
 
                             // Note: here we don't load texture data and don't allocate GPU memory
                         }
                         else
                         {
                             // Request texture loading (should be fully loaded)
-                            texturesStreamingProvider.FullyLoadTexture(texture, ref imageDescription, storageHeader);
+                            texturesStreamingProvider.FullyLoadTexture(texture, ref imageDescription, ref storageHeader);
                         }
                     }
                     else
                     {
                         // Deserialize whole texture without streaming feature
-                        DeserializeTexture(services, texture, ref imageDescription, storageHeader);
+                        DeserializeTexture(services, texture, ref imageDescription, ref storageHeader);
                     }
                 }
             }
