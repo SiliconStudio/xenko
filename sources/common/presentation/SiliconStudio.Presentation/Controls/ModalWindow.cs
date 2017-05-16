@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Linq;
@@ -15,7 +15,7 @@ namespace SiliconStudio.Presentation.Controls
     {
         public virtual async Task<DialogResult> ShowModal()
         {
-            Loaded += (sender, e) =>
+			Loaded += (sender, e) =>
             {
                 // Disable minimize on modal windows
                 var handle = new WindowInteropHelper(this).Handle;
