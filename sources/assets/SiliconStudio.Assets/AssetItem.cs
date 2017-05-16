@@ -293,52 +293,11 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// This methods returns all assets that would be changed when trying to change this asset.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <param name="action">The action.</param>
-        /// <param name="value">The value.</param>
-        /// <returns>LoggerResult.</returns>
-        /// <exception cref="ArgumentNullException">path</exception>
-        [NotNull]
-        public List<AssetItem> FindAssetsFromChange([NotNull] MemberPath path, MemberPathAction action, object value)
-        {
-            if (path == null) throw new ArgumentNullException(nameof(path));
-
-            var result = new List<AssetItem>();
-
-            FindAssetsFromChange(path, action, value, result);
-            return result;
-        }
-
-        /// <summary>
         /// In case <see cref="SourceFolder"/> or <see cref="SourceProject"/> were null, generates them.
         /// </summary>
         public void UpdateSourceFolders()
         {
             Package.UpdateSourceFolders(new[] { this });
-        }
-
-        private void FindAssetsFromChange(MemberPath path, MemberPathAction action, object value, List<AssetItem> items)
-        {
-            object oldValue;
-            var pathSucceeded = path.TryGetValue(Asset, out oldValue);
-
-            // If the path exists and value changed or we are doing another operation (remove key...etc.)
-            // then add the items as a list of item to change
-            if (pathSucceeded && (action != MemberPathAction.ValueSet || value != oldValue))
-            {
-                items.Add(this);
-            }
-
-            if (Package?.Session != null)
-            {
-                var itemsToDetect = Package.Session.DependencyManager.FindAssetsInheritingFrom(Id);
-                foreach (var item in itemsToDetect)
-                {
-                    item.FindAssetsFromChange(path, action, value, items);
-                }
-            }
         }
 
         private class AssetItemComparerById : IEqualityComparer<AssetItem>
