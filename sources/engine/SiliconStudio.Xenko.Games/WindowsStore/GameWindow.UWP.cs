@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Games
 
         public GameWindowUWPSwapChainPanel()
         {
-            // TODO Assign here?
+            // Assing a default core window. It can be overwritten later if we initialize with the CoreWindowControlUWP control
             coreWindow = CoreWindow.GetForCurrentThread();
         } 
 
@@ -100,7 +100,7 @@ namespace SiliconStudio.Xenko.Games
                     return new Rectangle((int)(coreWindow.Bounds.X), (int)(coreWindow.Bounds.Y), (int)(coreWindow.Bounds.Width), (int)(coreWindow.Bounds.Height));
                 }
 
-                return new Rectangle(0, 0, 1, 1); // Should be unreachable
+                throw new ArgumentException($"{nameof(GameWindow)} should have either {nameof(SwapChainPanel)}(via {nameof(SwapChainControlUWP)}) or {nameof(CoreWindow)} (via {nameof(CoreWindowControlUWP)})!");
             }
         }
 

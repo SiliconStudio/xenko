@@ -236,11 +236,6 @@ namespace SiliconStudio.Xenko.Input
             HasMouse = new Windows.Devices.Input.MouseCapabilities().MousePresent > 0;
         }
 
-        public override void Update(GameTime gameTime)
-        {
-            base.Update(gameTime);
-        }
-
         public override void Initialize()
         {
             base.Initialize();
