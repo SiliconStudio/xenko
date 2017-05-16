@@ -61,15 +61,13 @@ namespace SiliconStudio.Xenko.Rendering
                 var renderMesh = objectNode.RenderObject as RenderMesh;
 
                 // TODO: Extract world
-                var world = renderMesh?.World ?? Matrix.Identity;
-
-                renderModelObjectInfo[objectNodeReference] = new RenderModelFrameInfo { World = world };
+                renderModelObjectInfo[objectNodeReference].World = renderMesh != null ? renderMesh.World : Matrix.Identity;
             });
         }
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public unsafe override void Prepare(RenderDrawContext context)
+        public override unsafe void Prepare(RenderDrawContext context)
         {
             // Compute WorldView, WorldViewProj
             var renderModelObjectInfoData = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
@@ -101,14 +99,11 @@ namespace SiliconStudio.Xenko.Rendering
                 Dispatcher.ForEach(viewFeature.ViewObjectNodes, renderPerViewNodeReference =>
                 {
                     var renderPerViewNode = RootRenderFeature.GetViewObjectNode(renderPerViewNodeReference);
-                    var renderModelFrameInfo = renderModelObjectInfoData[renderPerViewNode.ObjectNode];
+                    ref var renderModelFrameInfo = ref renderModelObjectInfoData[renderPerViewNode.ObjectNode];
 
                     var renderModelViewInfo = new RenderModelViewInfo();
                     Matrix.Multiply(ref renderModelFrameInfo.World, ref view.View, out renderModelViewInfo.WorldView);
                     Matrix.Multiply(ref renderModelFrameInfo.World, ref view.ViewProjection, out renderModelViewInfo.WorldViewProjection);
-
-                    // TODO: Use ref locals or Utilities instead, to avoid double copy
-                    renderModelViewInfoData[renderPerViewNodeReference] = renderModelViewInfo;
                 });
 
                 // Copy ViewProjection to PerView cbuffer
@@ -170,8 +165,8 @@ namespace SiliconStudio.Xenko.Rendering
                 if (worldOffset == -1 && worldInverseOffset == -1)
                     return;
 
-                var renderModelObjectInfo = renderModelObjectInfoData[renderNode.RenderObject.ObjectNode];
-                var renderModelViewInfo = renderModelViewInfoData[renderNode.ViewObjectNode];
+                ref var renderModelObjectInfo = ref renderModelObjectInfoData[renderNode.RenderObject.ObjectNode];
+                ref var renderModelViewInfo = ref renderModelViewInfoData[renderNode.ViewObjectNode];
 
                 var mappedCB = renderNode.Resources.ConstantBuffer.Data;
                 if (worldOffset != -1)

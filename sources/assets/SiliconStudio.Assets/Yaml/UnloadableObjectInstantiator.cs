@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 
 namespace SiliconStudio.Core.Yaml
@@ -42,7 +43,8 @@ namespace SiliconStudio.Core.Yaml
                     var moduleBuilder = asmBuilder.DefineDynamicModule("DynamicModule");
 
                     // Create type
-                    TypeBuilder typeBuilder = moduleBuilder.DefineType($"{baseType}YamlProxy");
+                    var typeBuilder = moduleBuilder.DefineType($"{baseType}YamlProxy");
+                    AbstractObjectInstantiator.InitializeTypeBuilderFromType(typeBuilder, baseType);
 
                     // Add DisplayAttribute
                     var displayAttributeCtor = typeof(DisplayAttribute).GetConstructor(new Type[] { typeof(string), typeof(string) });
@@ -53,12 +55,6 @@ namespace SiliconStudio.Core.Yaml
                     var nonInstantiableAttributeCtor = typeof(NonInstantiableAttribute).GetConstructor(Type.EmptyTypes);
                     var nonInstantiableAttribute = new CustomAttributeBuilder(nonInstantiableAttributeCtor, new object[0]);
                     typeBuilder.SetCustomAttribute(nonInstantiableAttribute);
-
-                    // Inherit expected base type
-                    if (baseType.IsInterface)
-                        typeBuilder.AddInterfaceImplementation(baseType);
-                    else
-                        typeBuilder.SetParent(baseType);
 
                     // Implement IUnloadable
                     typeBuilder.AddInterfaceImplementation(typeof(IUnloadable));
@@ -99,7 +95,7 @@ namespace SiliconStudio.Core.Yaml
                         ctorIL.Emit(OpCodes.Call, defaultCtor);
                     }
                     // Initialize fields
-                    for (int index = 0; index < backingFields.Count; index++)
+                    for (var index = 0; index < backingFields.Count; index++)
                     {
                         var backingField = backingFields[index];
                         ctorIL.Emit(OpCodes.Ldarg_0);
@@ -107,83 +103,6 @@ namespace SiliconStudio.Core.Yaml
                         ctorIL.Emit(OpCodes.Stfld, backingField);
                     }
                     ctorIL.Emit(OpCodes.Ret);
-
-                    // Build list of class hierarchy (from deeper to closer)
-                    var currentType = baseType;
-                    var abstractBaseTypes = new List<Type>();
-                    while (currentType != null)
-                    {
-                        abstractBaseTypes.Add(currentType);
-                        currentType = currentType.BaseType;
-                    }
-                    abstractBaseTypes.Reverse();
-
-                    // Check that all interfaces are implemented
-                    var interfaceMethods = new List<MethodInfo>();
-                    foreach (var @interface in baseType.GetInterfaces())
-                    {
-                        interfaceMethods.AddRange(@interface.GetMethods(BindingFlags.Public | BindingFlags.Instance));
-                    }
-
-                    // Build list of abstract methods
-                    var abstractMethods = new List<MethodInfo>();
-                    foreach (var currentBaseType in abstractBaseTypes)
-                    {
-                        foreach (var method in currentBaseType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
-                        {
-                            if ((method.Attributes & MethodAttributes.Abstract) != 0)
-                            {
-                                // abstract: add it
-                                abstractMethods.Add(method);
-                            }
-                            else if ((method.Attributes & MethodAttributes.Virtual) != 0 && (method.Attributes & MethodAttributes.NewSlot) == 0)
-                            {
-                                // override: check if it overrides a previously described abstract method
-                                for (int index = 0; index < abstractMethods.Count; index++)
-                                {
-                                    var abstractMethod = abstractMethods[index];
-                                    if (abstractMethod.Name == method.Name
-                                        && CompareMethodSignature(abstractMethod, method))
-                                    {
-                                        // Found a match, let's remove it from list of method to reimplement
-                                        abstractMethods.RemoveAt(index);
-                                        break;
-                                    }
-                                }
-                            }
-
-                            // Remove interface methods already implemented
-                            // override: check if it overrides a previously described abstract method
-                            for (int index = 0; index < interfaceMethods.Count; index++)
-                            {
-                                var interfaceMethod = interfaceMethods[index];
-                                if (interfaceMethod.Name == method.Name
-                                    && CompareMethodSignature(interfaceMethod, method))
-                                {
-                                    // Found a match, let's remove it from list of method to reimplement
-                                    interfaceMethods.RemoveAt(index--);
-                                }
-                            }
-                        }
-                    }
-
-                    // Note: It seems that C# also creates a Property/Event for each override; but it doesn't seem to fail when creating the type with only non-abstract getter/setter -- so we don't recreate the property/event
-                    // Implement all abstract methods
-                    foreach (var method in abstractMethods.Concat(interfaceMethods))
-                    {
-                        // Updates MethodAttributes for override method
-                        var attributes = method.Attributes;
-                        attributes &= ~MethodAttributes.Abstract;
-                        attributes &= ~MethodAttributes.NewSlot;
-                        attributes |= MethodAttributes.HideBySig;
-
-                        var overrideMethod = typeBuilder.DefineMethod(method.Name, attributes, method.CallingConvention, method.ReturnType, method.GetParameters().Select(x => x.ParameterType).ToArray());
-                        var overrideMethodIL = overrideMethod.GetILGenerator();
-
-                        // TODO: For properties, do we want get { return default(T); } set { } instead?
-                        //       And for events, add { } remove { } too?
-                        overrideMethodIL.ThrowException(typeof(NotImplementedException));
-                    }
 
                     // User-registered callbacks
                     ProcessProxyType?.Invoke(baseType, typeBuilder);
@@ -194,23 +113,6 @@ namespace SiliconStudio.Core.Yaml
             }
 
             return (IUnloadable)Activator.CreateInstance(proxyType, typeName, assemblyName, error, parsingEvents);
-        }
-
-        private static bool CompareMethodSignature(MethodInfo method1, MethodInfo method2)
-        {
-            var parameters1 = method1.GetParameters();
-            var parameters2 = method2.GetParameters();
-
-            if (parameters1.Length != parameters2.Length)
-                return false;
-
-            for (int i = 0; i < parameters1.Length; ++i)
-            {
-                if (parameters1[i].ParameterType != parameters2[i].ParameterType)
-                    return false;
-            }
-
-            return true;
         }
     }
 }

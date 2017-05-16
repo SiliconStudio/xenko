@@ -97,7 +97,7 @@ namespace SiliconStudio.Assets.Serializers
                 // Return default(T)
                 //return !context.Descriptor.Type.IsValueType ? null : Activator.CreateInstance(context.Descriptor.Type);
                 // Return temporary proxy instance
-                var proxy = (IIdentifiable)Activator.CreateInstance(context.Descriptor.Type);
+                var proxy = (IIdentifiable)AbstractObjectInstantiator.CreateConcreteInstance(context.Descriptor.Type);
                 proxy.Id = identifier;
                 return proxy;
             }

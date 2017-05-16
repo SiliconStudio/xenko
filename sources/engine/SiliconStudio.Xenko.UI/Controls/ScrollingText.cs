@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The scrolling speed of the text. The unit is in virtual pixels.</userdoc>
         [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue)]
+        [DataMemberRange(0.0f, 3)]
         [Display(category: BehaviorCategory)]
         [DefaultValue(40.0f)]
         public float ScrollingSpeed

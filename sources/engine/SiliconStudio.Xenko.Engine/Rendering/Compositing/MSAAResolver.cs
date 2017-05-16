@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// </summary>
         [DataMember(20)]
         [DefaultValue(1.0f)]
-        [DataMemberRange(0.5, 3.0, 0.01, 0.1)]
+        [DataMemberRange(0.5, 3.0, 0.01, 0.1, 3)]
         public float FilterRadius { get; set; }
 
         /// <summary>

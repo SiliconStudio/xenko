@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
         /// Restitution here only affects vertical velocity (perpendicular to the surface).
         /// </userdoc>
         [DataMember(70)]
-        [DataMemberRange(0, 1, 0.001, 0.1)]
+        [DataMemberRange(0, 1, 0.01, 0.1, 3)]
         [Display("Restitution")]
         public float Restitution { get; set; } = 0.5f;
 
@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
         /// Friction here only affects horizonal velocity (along the surface).
         /// </userdoc>
         [DataMember(90)]
-        [DataMemberRange(0, 1, 0.001, 0.1)]
+        [DataMemberRange(0, 1, 0.01, 0.1, 3)]
         [Display("Friction")]
         public float Friction { get; set; } = 0.1f;
 
