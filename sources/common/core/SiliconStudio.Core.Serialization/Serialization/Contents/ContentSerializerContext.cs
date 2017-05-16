@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -37,6 +37,8 @@ namespace SiliconStudio.Core.Serialization.Contents
         internal List<ContentReference> ContentReferences { get; }
 
         internal bool LoadContentReferences { get; set; }
+
+        public bool AllowContentStreaming { get; set; }
 
         internal ContentSerializerContext(string url, ArchiveMode mode, ContentManager contentManager)
         {

@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -492,7 +492,11 @@ namespace SiliconStudio.Core.Serialization.Contents
                     var serializer = Serializer.GetSerializer(headerObjType, objType);
                     if (serializer == null)
                         throw new InvalidOperationException(string.Format("Content serializer for {0}/{1} could not be found.", headerObjType, objType));
-                    contentSerializerContext = new ContentSerializerContext(url, ArchiveMode.Deserialize, this) { LoadContentReferences = settings.LoadContentReferences };
+                    contentSerializerContext = new ContentSerializerContext(url, ArchiveMode.Deserialize, this)
+                    {
+                        LoadContentReferences = settings.LoadContentReferences,
+                        AllowContentStreaming = settings.AllowContentStreaming
+                    };
 
                     // Read chunk references
                     if (chunkHeader != null && chunkHeader.OffsetToReferences != -1)
