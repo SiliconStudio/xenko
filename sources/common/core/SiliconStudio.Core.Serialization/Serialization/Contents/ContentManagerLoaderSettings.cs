@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -30,12 +30,28 @@ namespace SiliconStudio.Core.Serialization.Contents
         public static ContentManagerLoaderSettings IgnoreReferences { get; } = new ContentManagerLoaderSettings { LoadContentReferences = false };
 
         /// <summary>
+        /// Gets the loader settings which doesn't support resources streaming. Resources will be loaded without async streaming.
+        /// </summary>
+        /// <value>
+        /// The loader settings which doesn't support resources streaming.
+        /// </value>
+        public static ContentManagerLoaderSettings DisableStreaming { get; } = new ContentManagerLoaderSettings { AllowContentStreaming = false };
+
+        /// <summary>
         /// Gets or sets a value indicating whether <see cref="IReference"/> should be loaded.
         /// </summary>
         /// <value>
         ///   <c>true</c> if <see cref="IReference"/> should be loaded; otherwise, <c>false</c>.
         /// </value>
         public bool LoadContentReferences { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether assets can be loading using streaming service.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if load content using streaming service; otherwise, <c>false</c>.
+        /// </value>
+        public bool AllowContentStreaming { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a filter that can indicate whether <see cref="IReference"/> should be loaded.
