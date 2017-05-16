@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
@@ -39,12 +41,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                             result.Error($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] is referencing an unreachable model.");
                         }
                     }
-                }
-
-                var spriteComponent = entityData.Entity.Components.Get<SpriteComponent>();
-                if (spriteComponent != null && spriteComponent.SpriteProvider.GetSprite() == null)
-                {
-                    result.Warning($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] has a sprite component that does not reference any sprite group.");
                 }
 
                 var nodeLinkComponent = entityData.Entity.Components.Get<ModelNodeLinkComponent>();

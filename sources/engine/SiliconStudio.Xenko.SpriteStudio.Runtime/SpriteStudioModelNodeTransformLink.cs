@@ -1,4 +1,6 @@
-﻿using SiliconStudio.Core.Mathematics;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 
@@ -50,17 +52,13 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             var nodes = parentModelComponent.Nodes;
             if (nodeIndex >= nodes.Count)
             {
-                goto failed;
+                // Out of bound: fallback to TransformComponent
+                matrix = parentModelComponent.Entity.Transform.WorldMatrix;
+                return;
             }
 
-            // Hopefully, if ref locals gets merged in roslyn, this code can be refactored
-            // Compute
-            matrix = nodes[nodeIndex].ModelTransform * parentModelComponent.Entity.Transform.WorldMatrix;
-            return;
-
-            failed:
-            // Fallback to TransformComponent
-            matrix = parentModelComponent.Entity.Transform.WorldMatrix;
+            // Compute using ModelTransform
+            Matrix.Multiply(ref nodes[nodeIndex].ModelTransform, ref parentModelComponent.Entity.Transform.WorldMatrix, out matrix);
         }
 
         public bool NeedsRecreate(Entity parentEntity, string targetNodeName)

@@ -5089,7 +5089,7 @@ Hierarchy:
                         Id: 65d1b71f-4862-4efc-b7c1-3c9d933979c7
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: c15adccd-88f4-4cd9-a45a-55ce9f8e89e5
         -   Entity:
                 Id: a908db86-0e56-48c8-a3c0-9408ea498279
                 Name: Box3x1x1 (50)

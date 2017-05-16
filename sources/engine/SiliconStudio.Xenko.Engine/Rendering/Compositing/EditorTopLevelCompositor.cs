@@ -1,20 +1,19 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     /// <summary>
     /// Used by editor as top level compositor.
     /// </summary>
-    public partial class EditorTopLevelCompositor : SceneCameraRenderer, ISharedRenderer
+    [NonInstantiable]
+    public partial class EditorTopLevelCompositor : SceneExternalCameraRenderer, ISharedRenderer
     {
-        public CameraComponent EditorCamera { get; set; }
-
         /// <summary>
         /// When true, <see cref="PreviewGame"/> will be used as compositor.
         /// </summary>
@@ -64,11 +63,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 foreach (var gizmoCompositor in PostGizmoCompositors)
                     gizmoCompositor.Draw(context);
             }
-        }
-
-        protected override CameraComponent ResolveCamera(RenderContext renderContext)
-        {
-            return EditorCamera;
         }
     }
 }

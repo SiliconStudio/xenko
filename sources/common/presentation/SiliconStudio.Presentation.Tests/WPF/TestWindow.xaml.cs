@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 
 namespace SiliconStudio.Presentation.Tests.WPF
 {
@@ -7,6 +9,12 @@ namespace SiliconStudio.Presentation.Tests.WPF
     /// </summary>
     public partial class TestWindow
     {
+        public TestWindow(string title)
+            : this()
+        {
+            Title = title;
+        }
+
         public TestWindow()
         {
             InitializeComponent();

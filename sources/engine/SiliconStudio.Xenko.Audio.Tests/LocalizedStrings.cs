@@ -1,4 +1,6 @@
-﻿using SiliconStudio.Xenko.Audio.Tests.Resources;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using SiliconStudio.Xenko.Audio.Tests.Resources;
 
 namespace SiliconStudio.Xenko.Audio.Tests
 {

@@ -1,16 +1,19 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using NuGet;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Windows;
 // Nuget v2.0 types
 using ISettings = NuGet.ISettings;
@@ -46,6 +49,9 @@ namespace SiliconStudio.Packages
         private IPackagesLogger logger;
         private readonly NuGet.PackageManager manager;
         private readonly ISettings settings;
+        private ProgressReport currentProgressReport;
+
+        private static Regex powerShellProgressRegex = new Regex(@".*\[ProgressReport:\s*(\d*)%\].*");
 
         /// <summary>
         /// Initialize NugetStore using <paramref name="rootDirectory"/> as location of the local copies,
@@ -108,7 +114,8 @@ namespace SiliconStudio.Packages
             }
 
             // Setup NugetCachePath in the cache folder
-            Environment.SetEnvironmentVariable("NuGetCachePath", Path.Combine(rootDirectory, "Cache"));
+            CacheDirectory = Path.Combine(rootDirectory, "Cache");
+            Environment.SetEnvironmentVariable("NuGetCachePath", CacheDirectory);
 
             var packagesFileSystem = new PhysicalFileSystem(InstallPath);
             PathResolver = new PackagePathResolver(packagesFileSystem);
@@ -118,16 +125,21 @@ namespace SiliconStudio.Packages
 
             var localRepo = new SharedPackageRepository(PathResolver, packagesFileSystem, rootFileSystem);
             manager = new NuGet.PackageManager(SourceRepository, PathResolver, packagesFileSystem, localRepo);
-            manager.PackageInstalling += (sender, args) => NugetPackageInstalling?.Invoke(sender, new PackageOperationEventArgs(args));
-            manager.PackageInstalled += (sender, args) => NugetPackageInstalled?.Invoke(sender, new PackageOperationEventArgs(args));
-            manager.PackageUninstalling += (sender, args) => NugetPackageUninstalling?.Invoke(sender, new PackageOperationEventArgs(args));
-            manager.PackageUninstalled += (sender, args) => NugetPackageUninstalled?.Invoke(sender, new PackageOperationEventArgs(args));
+            manager.PackageInstalling += OnPackageInstalling;
+            manager.PackageInstalled += OnPackageInstalled;
+            manager.PackageUninstalling += OnPackageUninstalling;
+            manager.PackageUninstalled += OnPackageUninstalled;
         }
 
         /// <summary>
         /// Path under which all packages will be installed or cached.
         /// </summary>
         public string RootDirectory { get; }
+
+        /// <summary>
+        /// Path under which all packages are downloaded and kept before being installed.
+        /// </summary>
+        public string CacheDirectory { get; }
 
         /// <summary>
         /// Path where all packages are installed.
@@ -184,7 +196,6 @@ namespace SiliconStudio.Packages
         /// </summary>
         private PackagePathResolver PathResolver { get; }
 
-        public event Action<int> DownloadProgressChanged;
         public event EventHandler<PackageOperationEventArgs> NugetPackageInstalled;
         public event EventHandler<PackageOperationEventArgs> NugetPackageInstalling;
         public event EventHandler<PackageOperationEventArgs> NugetPackageUninstalled;
@@ -381,6 +392,25 @@ namespace SiliconStudio.Packages
         }
 
         /// <summary>
+        /// Locate the main executable from a given package installation path. It throws exceptions if not found.
+        /// </summary>
+        /// <param name="packagePath">The package installation path.</param>
+        /// <returns>The main executable.</returns>
+        public string LocateMainExecutable(string packagePath)
+        {
+            var mainExecutableList = GetMainExecutables();
+            if (string.IsNullOrWhiteSpace(mainExecutableList))
+            {
+                throw new InvalidOperationException($"Invalid configuration. Expecting [{NugetStore.MainExecutablesKey}] in config");
+            }
+            var fullExePath = mainExecutableList.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => Path.Combine(packagePath, x)).FirstOrDefault(File.Exists);
+            if (fullExePath == null)
+                throw new InvalidOperationException("Unable to locate the executable for the selected version");
+
+            return fullExePath;
+        }
+
+        /// <summary>
         /// Name of prerequisites executable of current store.
         /// </summary>
         /// <returns>Name of the executable.</returns>
@@ -402,37 +432,63 @@ namespace SiliconStudio.Packages
         {
             using (GetLocalRepositoryLock())
             {
-                var package = manager.LocalRepository.FindPackage(packageId, version.ToSemanticVersion(), null, allowPrereleaseVersions: true, allowUnlisted: true);
-                if (package == null)
+                currentProgressReport = progress;
+                try
                 {
-                    // Let's search in our cache
-                    package = MachineCache.Default.FindPackage(packageId, version.ToSemanticVersion(), allowPrereleaseVersions: true, allowUnlisted: true);
-                    // It represents the name of the .nupkg in our cache
-                    var sourceName = Path.Combine(RootDirectory, "Cache", PathResolver.GetPackageFileName(packageId, version.ToSemanticVersion()));
+                    var package = manager.LocalRepository.FindPackage(packageId, version.ToSemanticVersion(), null, allowPrereleaseVersions: true, allowUnlisted: true);
                     if (package == null)
                     {
-                        var downloadPackage =
-                            manager.SourceRepository.FindPackage(packageId, version.ToSemanticVersion(), NullConstraintProvider.Instance, allowPrereleaseVersions: true, allowUnlisted: true) as
-                                DataServicePackage;
-                        if (downloadPackage == null) throw new ApplicationException("Cannot find package");
-                        var url = downloadPackage.DownloadUrl;
-                        var client = new WebClient();
-                        var tcs = new TaskCompletionSource<bool>();
-                        client.DownloadProgressChanged += (o, e) => DownloadProgressChanged?.Invoke(e.ProgressPercentage);
-                        client.DownloadFileCompleted += (o, e) => tcs.SetResult(true);
-                        client.DownloadFileAsync(url, sourceName);
-                        await tcs.Task;
+                        // Let's search in our cache
+                        try
+                        {
+                            package = MachineCache.Default.FindPackage(packageId, version.ToSemanticVersion(), allowPrereleaseVersions: true, allowUnlisted: true);
+                        }
+                        catch (InvalidDataException)
+                        {
+                            // Package is somehow corrupted. We ignore this and  will redownload the file.
+                        }
+                        // It represents the name of the .nupkg in our cache
+                        var sourceName = Path.Combine(CacheDirectory, PathResolver.GetPackageFileName(packageId, version.ToSemanticVersion()));
+                        if (package == null)
+                        {
+                            // Always recreate cache in case it was deleted.
+                            if (!Directory.Exists(CacheDirectory))
+                            {
+                                Directory.CreateDirectory(CacheDirectory);
+                            }
+                            package = manager.SourceRepository.FindPackage(packageId, version.ToSemanticVersion(), NullConstraintProvider.Instance, allowPrereleaseVersions: true, allowUnlisted: true);
+                            if (package == null) throw new ApplicationException("Cannot find package");
 
-                        package = downloadPackage;
+                            // Package has to be downloaded if it is a DataServicePackage which was not found in our cache.
+                            if (package is DataServicePackage)
+                            {
+                                var downloadPackage = (DataServicePackage) package;
+                                var url = downloadPackage.DownloadUrl;
+                                var client = new WebClient();
+                                var tcs = new TaskCompletionSource<bool>();
+                                progress?.UpdateProgress(ProgressAction.Download, 0);
+                                client.DownloadProgressChanged += (o, e) => progress?.UpdateProgress(ProgressAction.Download, e.ProgressPercentage);
+                                client.DownloadFileCompleted += (o, e) => tcs.SetResult(true);
+                                client.DownloadFileAsync(url, sourceName);
+                                await tcs.Task;
+
+                                progress?.UpdateProgress(ProgressAction.Download, 100);
+                            }
+                        }
+
+                        progress?.UpdateProgress(ProgressAction.Install, -1);
+                        manager.InstallPackage(package, ignoreDependencies: false, allowPrereleaseVersions: true);
+
+                        OptimizedZipPackage.PurgeCache();
                     }
 
-                    Directory.CreateDirectory(PathResolver.GetInstallPath(package));
-                    File.Copy(sourceName, Path.Combine(PathResolver.GetInstallPath(package), PathResolver.GetPackageFileName(package)));
-                    manager.InstallPackage(packageId, version.ToSemanticVersion(), ignoreDependencies: false, allowPrereleaseVersions: true);
+                    // Every time a new package is installed, we are updating the common targets
+                    UpdateTargetsHelper();
                 }
-
-                // Every time a new package is installed, we are updating the common targets
-                UpdateTargetsHelper();
+                finally
+                {
+                    currentProgressReport = null;
+                }
             }
         }
 
@@ -441,15 +497,41 @@ namespace SiliconStudio.Packages
         /// </summary>
         /// <remarks>It is safe to call it concurrently be cause we operations are done using the FileLock.</remarks>
         /// <param name="package">Package to uninstall.</param>
-        public void UninstallPackage(NugetPackage package)
+        public void UninstallPackage(NugetPackage package, ProgressReport progress)
         {
             using (GetLocalRepositoryLock())
             {
-                Directory.Delete(PathResolver.GetInstallPath(package.IPackage), true);
+                currentProgressReport = progress;
+                try
+                {
+                    manager.UninstallPackage(package.IPackage);
 
-                // Every time a new package is installed, we are updating the common targets
-                UpdateTargetsHelper();
+                    // Every time a new package is installed, we are updating the common targets
+                    UpdateTargetsHelper();
+                }
+                finally
+                {
+                    currentProgressReport = null;
+                }
             }
+        }
+
+        /// <summary>
+        /// Find the installed package <paramref name="packageId"/> using the version <paramref name="version"/> if not null, otherwise the <paramref name="constraintProvider"/> if specified.
+        /// If no constraints are specified, the first found entry, whatever it means for NuGet, is used.
+        /// </summary>
+        /// <param name="packageId">Name of the package.</param>
+        /// <param name="version">The version.</param>
+        /// <param name="constraintProvider">The package constraint provider.</param>
+        /// <param name="allowPrereleaseVersions">if set to <c>true</c> [allow prelease version].</param>
+        /// <param name="allowUnlisted">if set to <c>true</c> [allow unlisted].</param>
+        /// <returns>A Package matching the search criterion or null if not found.</returns>
+        /// <exception cref="System.ArgumentNullException">packageId</exception>
+        /// <returns></returns>
+        public NugetPackage FindLocalPackage(string packageId, PackageVersion version = null, ConstraintProvider constraintProvider = null, bool allowPrereleaseVersions = true, bool allowUnlisted = false)
+        {
+            var package = manager.LocalRepository.FindPackage(packageId, version?.ToSemanticVersion(), constraintProvider?.Provider(), allowPrereleaseVersions, allowUnlisted);
+            return package != null ? new NugetPackage(package) : null;
         }
 
         /// <summary>
@@ -571,6 +653,102 @@ namespace SiliconStudio.Packages
             // repository, NuGet expands the files in a global temporary folders. It needs to
             // be purged.
             OptimizedZipPackage.PurgeCache();
+        }
+
+        private void OnPackageInstalling(object sender, NuGet.PackageOperationEventArgs args)
+        {
+            NugetPackageInstalling?.Invoke(sender, new PackageOperationEventArgs(args));
+        }
+
+        private void OnPackageInstalled(object sender, NuGet.PackageOperationEventArgs args)
+        {
+            var packageInstallPath = Path.Combine(args.InstallPath, "tools\\packageinstall.exe");
+            if (File.Exists(packageInstallPath))
+            {
+                RunPackageInstall(packageInstallPath, "/install", currentProgressReport);
+            }
+
+            NugetPackageInstalled?.Invoke(sender, new PackageOperationEventArgs(args));
+        }
+
+        private void OnPackageUninstalling(object sender, NuGet.PackageOperationEventArgs args)
+        {
+            NugetPackageUninstalling?.Invoke(sender, new PackageOperationEventArgs(args));
+
+            try
+            {
+                var packageInstallPath = Path.Combine(args.InstallPath, "tools\\packageinstall.exe");
+                if (File.Exists(packageInstallPath))
+                {
+                    RunPackageInstall(packageInstallPath, "/uninstall", currentProgressReport);
+                }
+            }
+            catch (Exception)
+            {
+                // We mute errors during uninstall since they are usually non-fatal (OTOH, if we don't catch the exception, the NuGet package isn't uninstalled, which is probably not what we want)
+                // If we really wanted to deal with them at some point, we should use another mechanism than exception (i.e. log)
+            }
+        }
+
+        private void OnPackageUninstalled(object sender, NuGet.PackageOperationEventArgs args)
+        {
+            NugetPackageUninstalled?.Invoke(sender, new PackageOperationEventArgs(args));
+        }
+
+        private static void RunPackageInstall(string packageInstall, string arguments, ProgressReport progress)
+        {
+            // Run packageinstall.exe
+            using (var process = Process.Start(new ProcessStartInfo(packageInstall, arguments)
+            {
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                WorkingDirectory = Path.GetDirectoryName(packageInstall),
+            }))
+            {
+                if (process == null)
+                    throw new InvalidOperationException($"Could not start install package process [{packageInstall}] with options {arguments}");
+
+                var errorOutput = new StringBuilder();
+
+                process.OutputDataReceived += (_, args) =>
+                {
+                    // Report progress
+                    if (progress != null && !string.IsNullOrEmpty(args.Data))
+                    {
+                        var matches = powerShellProgressRegex.Match(args.Data);
+                        int percentageResult;
+                        if (matches.Success && int.TryParse(matches.Groups[1].Value, out percentageResult))
+                        {
+                            progress.UpdateProgress(percentageResult);
+                        }
+                    }
+                };
+                process.ErrorDataReceived += (_, args) =>
+                {
+                    if (!string.IsNullOrEmpty(args.Data))
+                    {
+                        // Save errors
+                        lock (process)
+                        {
+                            errorOutput.AppendLine(args.Data);
+                        }
+                    }
+                };
+
+                // Process output and wait for exit
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+                process.WaitForExit();
+
+                // Check exit code
+                var exitCode = process.ExitCode;
+                if (exitCode != 0)
+                {
+                    throw new InvalidOperationException($"Error code {exitCode} while running install package process [{packageInstall}]\n\n" + errorOutput);
+                }
+            }
         }
     }
 

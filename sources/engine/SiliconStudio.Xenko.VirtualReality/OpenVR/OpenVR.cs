@@ -1,4 +1,6 @@
-﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 
 using System;
 using SharpDX.Direct3D11;
@@ -173,6 +175,13 @@ namespace SiliconStudio.Xenko.VirtualReality
             Valve.VR.OpenVR.Compositor.SetTrackingSpace(ETrackingUniverseOrigin.TrackingUniverseSeated);
 
             return true;
+        }
+
+        public static void Shutdown()
+        {
+            if (!InitDone) return;
+            Valve.VR.OpenVR.Shutdown();
+            InitDone = false;
         }
 
         public static bool Submit(int eyeIndex, Texture texture, ref RectangleF viewport)

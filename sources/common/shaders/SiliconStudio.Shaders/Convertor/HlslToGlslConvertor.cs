@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -3002,7 +3002,7 @@ namespace SiliconStudio.Shaders.Convertor
             // http://msdn.microsoft.com/en-us/library/bb219850%28v=vs.85%29.aspx
             foreach (var semanticModifier in SemanticModifiers)
             {
-                if (semantic.ToLower().EndsWith(semanticModifier))
+                if (semantic.ToLowerInvariant().EndsWith(semanticModifier))
                 {
                     // Console.WriteLine("Warning, unsupported semantic modifier [{0}] for semantic [{1}]", semanticModifier, semantic);
                     semantic = semantic.Substring(0, semantic.Length - semanticModifier.Length);

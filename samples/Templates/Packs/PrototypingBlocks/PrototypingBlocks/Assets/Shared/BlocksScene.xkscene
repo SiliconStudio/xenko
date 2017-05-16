@@ -200,7 +200,7 @@ Hierarchy:
                         Id: b13e2f04-9c11-402b-8aa3-bf1e00af6d66
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: 00000000-0000-0000-0000-000000000000
         -   Entity:
                 Id: 1474d948-0c3a-4a91-a2a3-07f858c3be8c
                 Name: Wall0x4x10Window

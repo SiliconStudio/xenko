@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using SiliconStudio.Shaders.Ast;
 
 namespace SiliconStudio.Shaders.Utility
@@ -64,7 +64,7 @@ namespace SiliconStudio.Shaders.Utility
         /// <inheritdoc/>
         public override string ToString()
         {
-            return string.Format("{0}: {1} {2} : {3}", this.Span, this.Level.ToString().ToLower(), this.Code, this.Text);
+            return string.Format("{0}: {1} {2} : {3}", this.Span, this.Level.ToString().ToLowerInvariant(), this.Code, this.Text);
         }
 
         #endregion

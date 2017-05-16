@@ -24,6 +24,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="AnonymousBuildStepProvider.cs" />
     <Compile Include="AssemblyHash.cs" />
     <Compile Include="BuildResultCode.cs" />
@@ -117,7 +120,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>-->
   </ItemGroup>
-  <Import Project="..\..\..\tools\SiliconStudio.VisualStudio.Debugging\SiliconStudio.VisualStudio.Debugging.projitems" Label="Shared" />
+  <Import Project="..\..\..\tools\SiliconStudio.VisualStudio\SiliconStudio.VisualStudio.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

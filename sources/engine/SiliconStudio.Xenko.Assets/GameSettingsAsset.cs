@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Assets
     /// Settings for a game with the default scene, resolution, graphics profile...
     /// </summary>
     [DataContract("GameSettingsAsset")]
-    [AssetDescription(FileExtensions, AlwaysMarkAsRoot = true, AllowArchetype = false)]
+    [AssetDescription(FileExtension, AlwaysMarkAsRoot = true, AllowArchetype = false)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetContentType(typeof(GameSettings))]
     [Display(10000, "Game Settings")]
@@ -47,8 +47,6 @@ namespace SiliconStudio.Xenko.Assets
         /// The default file extension used by the <see cref="GameSettingsAsset"/>.
         /// </summary>
         public const string FileExtension = ".xkgamesettings";
-
-        public const string FileExtensions = FileExtension + ";.pdxgamesettings";
 
         public const string GameSettingsLocation = GameSettings.AssetUrl;
 

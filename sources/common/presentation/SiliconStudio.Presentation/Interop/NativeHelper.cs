@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.Runtime.CompilerServices;
@@ -608,6 +608,54 @@ namespace SiliconStudio.Presentation.Interop
         public static bool SetCursorPos(Point pt)
         {
             return SetCursorPos((int)pt.X, (int)pt.Y);
+        }
+
+        /// <summary>
+        /// Enables window minimize button
+        /// </summary>
+        /// <param name="handle">Native window handle</param>
+        public static void EnableMinimizeButton(IntPtr handle)
+        {
+            if (handle == IntPtr.Zero)
+                throw new InvalidOperationException("Invalid window handle.");
+
+            SetWindowLong(handle, GWL_STYLE, GetWindowLong(handle, GWL_STYLE) | WS_MINIMIZEBOX);
+        }
+
+        /// <summary>
+        /// Disables window minimize button
+        /// </summary>
+        /// <param name="handle">Native window handle</param>
+        public static void DisableMinimizeButton(IntPtr handle)
+        {
+            if (handle == IntPtr.Zero)
+                throw new InvalidOperationException("Invalid window handle.");
+
+            SetWindowLong(handle, GWL_STYLE, GetWindowLong(handle, GWL_STYLE) & ~WS_MINIMIZEBOX);
+        }
+
+        /// <summary>
+        /// Enables window maximize button
+        /// </summary>
+        /// <param name="handle">Native window handle</param>
+        public static void EnableMaximizeButton(IntPtr handle)
+        {
+            if (handle == IntPtr.Zero)
+                throw new InvalidOperationException("Invalid window handle.");
+
+            SetWindowLong(handle, GWL_STYLE, GetWindowLong(handle, GWL_STYLE) | WS_MAXIMIZEBOX);
+        }
+
+        /// <summary>
+        /// Disables window maximize button
+        /// </summary>
+        /// <param name="handle">Native window handle</param>
+        public static void DisableMaximizeButton(IntPtr handle)
+        {
+            if (handle == IntPtr.Zero)
+                throw new InvalidOperationException("Invalid window handle.");
+
+            SetWindowLong(handle, GWL_STYLE, GetWindowLong(handle, GWL_STYLE) & ~WS_MAXIMIZEBOX);
         }
     }
 }

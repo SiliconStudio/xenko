@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.ComponentModel;
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <userdoc>The factor specifying how much the persistence decreases at each frame (1 means infinite persistence, while 0 means no persistence at all)</userdoc>
         [DataMember(10)]
         [DefaultValue(0.9f)]
-        [DataMemberRange(0f, 1f, 0.01f, 0.1f)]
+        [DataMemberRange(0f, 1f, 0.01f, 0.1f, 3)]
         public float FadeOutSpeed { get; set; }
 
         /// <summary>

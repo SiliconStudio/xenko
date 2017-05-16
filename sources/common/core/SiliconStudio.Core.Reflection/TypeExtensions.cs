@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -81,16 +83,28 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
-        /// Return if an object is a numeric value.
+        /// Indicates if a type is a integral or decimal numeric type. 
         /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>True if object is a numeric value.</returns>
+        /// <param name="type">The type to evaluate.</param>
+        /// <returns>True if the type is a numeric type, false otherwise.</returns>
+        /// <seealso cref="IsIntegral"/>
         public static bool IsNumeric([NotNull] this Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
+            return type.IsIntegral() || type == typeof(float) || type == typeof(double) || type == typeof(decimal);
+        }
+
+        /// <summary>
+        /// Indicates if a type is a integral numeric type. 
+        /// </summary>
+        /// <param name="type">The type to evaluate.</param>
+        /// <returns>True if the type is a numeric type, false otherwise.</returns>
+        /// <seealso cref="IsNumeric"/>
+        public static bool IsIntegral([NotNull] this Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
             return type == typeof(sbyte) || type == typeof(short) || type == typeof(int) || type == typeof(long) ||
-                   type == typeof(byte) || type == typeof(ushort) || type == typeof(uint) || type == typeof(ulong) ||
-                   type == typeof(float) || type == typeof(double) || type == typeof(decimal);
+                   type == typeof(byte) || type == typeof(ushort) || type == typeof(uint) || type == typeof(ulong);
         }
 
         /// <summary>

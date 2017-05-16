@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Theme Coloring Source: https://github.com/fsprojects/VisualFSharpPowerTools
 //
@@ -19,20 +19,14 @@
 //
 using System;
 using System.Collections.Generic;
-using EnvDTE80;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Win32;
+using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.PlatformUI;
 
 namespace SiliconStudio.Xenko.VisualStudio.Classifiers
 {
-    internal class VisualStudioThemeEngine : IVsBroadcastMessageEvents, IDisposable
+    internal class VisualStudioThemeEngine : IDisposable
     {
-        private const uint WM_SYSCOLORCHANGE = 0x0015;
-
-        private readonly DTE2 dte;
-        private readonly IVsShell shellService;
-        private uint broadcastCookie;
+        private dynamic colorThemeService;
 
         private readonly Dictionary<Guid, VisualStudioTheme> availableThemes = new Dictionary<Guid, VisualStudioTheme>
         {
@@ -45,90 +39,52 @@ namespace SiliconStudio.Xenko.VisualStudio.Classifiers
 
         public VisualStudioThemeEngine(IServiceProvider serviceProvider)
         {
-            dte = (DTE2)serviceProvider.GetService(typeof(SDTE));
+            colorThemeService = serviceProvider.GetService(typeof(SVsColorThemeService));
 
-            // Register to Visual Studio theme change
-            shellService = serviceProvider.GetService(typeof(SVsShell)) as IVsShell;
-            if (shellService != null)
-                ErrorHandler.ThrowOnFailure(shellService.AdviseBroadcastMessages(this, out broadcastCookie));
+            VSColorTheme.ThemeChanged += RaiseThemeChanged;
         }
 
         public void Dispose()
         {
-            if (shellService != null && broadcastCookie != 0)
-            {
-                shellService.UnadviseBroadcastMessages(broadcastCookie);
-                broadcastCookie = 0;
-            }
+            VSColorTheme.ThemeChanged -= RaiseThemeChanged;
         }
 
         public VisualStudioTheme GetCurrentTheme()
         {
-            var currentUser32 = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
-            
-            int version = 0;
-            if (!int.TryParse(dte.Version.Split('.')[0], out version))
-                version = 12;
-
-            if (version >= 14)
+            if (colorThemeService == null)
             {
-                // VS2015 and after
-                using (var subkey = currentUser32.OpenSubKey(string.Format(@"{0}\ApplicationPrivateSettings\Microsoft\VisualStudio", dte.RegistryRoot)))
-                {
-                    if (subkey == null)
-                        return VisualStudioTheme.Unknown;
-
-                    // We expect this prefix (not sure what else could happen there?)
-                    const string prefix = "0*System.String*";
-
-                    var themeValue = (string)subkey.GetValue("ColorTheme");
-                    if (themeValue == null || !themeValue.StartsWith(prefix))
-                        return VisualStudioTheme.Unknown;
-
-                    // Remove prefix
-                    themeValue = themeValue.Substring(prefix.Length);
-
-                    Guid themeGuid;
-                    if (!Guid.TryParse(themeValue, out themeGuid))
-                        return VisualStudioTheme.Unknown;
-
-                    VisualStudioTheme theme;
-                    availableThemes.TryGetValue(themeGuid, out theme);
-
-                    return theme;
-                }
+                return GuessUnknownTheme();
             }
-            else
+
+            var themeGuid = (Guid)colorThemeService.CurrentTheme.ThemeId;
+
+
+            VisualStudioTheme theme;
+            if (!availableThemes.TryGetValue(themeGuid, out theme))
             {
-                // VS2013 and before
-                using (var subkey = currentUser32.OpenSubKey(string.Format(@"{0}\General", dte.RegistryRoot)))
-                {
-                    if (subkey == null)
-                        return VisualStudioTheme.Unknown;
-
-                    var themeValue = (string)subkey.GetValue("CurrentTheme");
-                    if (themeValue == null)
-                        return VisualStudioTheme.Unknown;
-
-                    Guid themeGuid;
-                    if (!Guid.TryParse(themeValue, out themeGuid))
-                        return VisualStudioTheme.Unknown;
-
-                    VisualStudioTheme theme;
-                    availableThemes.TryGetValue(themeGuid, out theme);
-
-                    return theme;
-                }
+                return GuessUnknownTheme();
             }
+
+            return theme;
         }
 
-        public int OnBroadcastMessage(uint msg, IntPtr wParam, IntPtr lParam)
+        private VisualStudioTheme GuessUnknownTheme()
         {
-            if (msg == WM_SYSCOLORCHANGE)
-            {
-                OnThemeChanged?.Invoke(this, EventArgs.Empty);
-            }
-            return VSConstants.S_OK;
+            var backgroundColor = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
+            return (backgroundColor.R > 0x80) ? VisualStudioTheme.UnknownLight : VisualStudioTheme.UnknownDark;
+        }
+
+        private void RaiseThemeChanged(ThemeChangedEventArgs e)
+        {
+            OnThemeChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        // Source: http://stackoverflow.com/q/29943319 (note: didn't work to cast it as IVsColorThemeService so using dynamic)
+        [ComImport]
+        [Guid("0D915B59-2ED7-472A-9DE8-9161737EA1C5")]
+        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        interface SVsColorThemeService
+        {
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -101,7 +101,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>The list of the dependency properties attached to the UI element.</userdoc>
         [DataMember]
-        public PropertyContainerClass DependencyProperties;
+        public PropertyContainerClass DependencyProperties { get; }
 
         /// <summary>
         /// Gets or sets the LocalMatrix of this element.
@@ -223,7 +223,7 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Width of this element. If NaN, the default width will be used instead.</userdoc>
         [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
+        [DataMemberRange(0.0f, 3)]
         [Display(category: LayoutCategory)]
         [DefaultValue(float.NaN)]
         public float Width
@@ -242,7 +242,7 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Height of this element. If NaN, the default height will be used instead.</userdoc>
         [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
+        [DataMemberRange(0.0f, 3)]
         [Display(category: LayoutCategory)]
         [DefaultValue(float.NaN)]
         public float Height
@@ -261,7 +261,7 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Depth of this element. If NaN, the default depth will be used instead.</userdoc>
         [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
+        [DataMemberRange(0.0f, 3)]
         [Display(category: LayoutCategory)]
         [DefaultValue(float.NaN)]
         public float Depth
@@ -362,7 +362,7 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Minimum width of this element.</userdoc>
         [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue)]
+        [DataMemberRange(0.0f, 3)]
         [Display(category: LayoutCategory)]
         [DefaultValue(0.0f)]
         public float MinimumWidth
@@ -383,7 +383,7 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Minimum height of this element.</userdoc>
         [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue)]
+        [DataMemberRange(0.0f, 3)]
         [Display(category: LayoutCategory)]
         [DefaultValue(0.0f)]
         public float MinimumHeight
@@ -404,7 +404,7 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Minimum depth of this element.</userdoc>
         [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue)]
+        [DataMemberRange(0.0f, 3)]
         [Display(category: LayoutCategory)]
         [DefaultValue(0.0f)]
         public float MinimumDepth
@@ -425,7 +425,7 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>The value is coerced in the range [0, <see cref="float.PositiveInfinity"/>].</remarks>
         /// <userdoc>Maximum width of this element.</userdoc>
         [DataMember]
-        [DataMemberRange(0.0f, float.PositiveInfinity)]
+        [DataMemberRange(0.0f, 3)]
         [Display(category: LayoutCategory)]
         [DefaultValue(float.PositiveInfinity)]
         public float MaximumWidth
@@ -446,7 +446,7 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>The value is coerced in the range [0, <see cref="float.PositiveInfinity"/>].</remarks>
         /// <userdoc>Maximum height of this element.</userdoc>
         [DataMember]
-        [DataMemberRange(0.0f, float.PositiveInfinity)]
+        [DataMemberRange(0.0f, 3)]
         [Display(category: LayoutCategory)]
         [DefaultValue(float.PositiveInfinity)]
         public float MaximumHeight
@@ -467,7 +467,7 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>The value is coerced in the range [0, <see cref="float.PositiveInfinity"/>].</remarks>
         /// <userdoc>Maximum depth of this element.</userdoc>
         [DataMember]
-        [DataMemberRange(0.0f, float.PositiveInfinity)]
+        [DataMemberRange(0.0f, 3)]
         [Display(category: LayoutCategory)]
         [DefaultValue(float.PositiveInfinity)]
         public float MaximumDepth
@@ -488,7 +488,7 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Default width of this element.</userdoc>
         [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue)]
+        [DataMemberRange(0.0f, 3)]
         [Display(category: LayoutCategory)]
         [DefaultValue(0.0f)]
         public float DefaultWidth
@@ -509,7 +509,7 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Default height of this element.</userdoc>
         [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue)]
+        [DataMemberRange(0.0f, 3)]
         [Display(category: LayoutCategory)]
         [DefaultValue(0.0f)]
         public float DefaultHeight
@@ -530,7 +530,7 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Default depth of this element.</userdoc>
         [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue)]
+        [DataMemberRange(0.0f, 3)]
         [Display(category: LayoutCategory)]
         [DefaultValue(0.0f)]
         public float DefaultDepth
@@ -649,7 +649,7 @@ namespace SiliconStudio.Xenko.UI
                 {
                     foreach (var setter in currentStyle.Setters)
                     {
-                        setter.ApplyIfNotSet(ref DependencyProperties);
+                        setter.ApplyIfNotSet(DependencyProperties);
                     }
                     currentStyle = currentStyle.BasedOn;
                 }

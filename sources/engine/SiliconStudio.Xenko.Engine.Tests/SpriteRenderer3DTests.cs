@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace SiliconStudio.Xenko.Engine.Tests
@@ -97,7 +101,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             foreach (var entity in entities)
                 SceneSystem.SceneInstance.RootScene.Entities.Add(entity);
 
-            cameraScript = new TestCamera();
+            cameraScript = new TestCamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor);
             CameraComponent = cameraScript.Camera;
             Script.Add(cameraScript);
 

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using SiliconStudio.Core;
@@ -19,27 +19,43 @@ namespace SiliconStudio.Xenko.Navigation
         /// <summary>
         /// Height of the actor
         /// </summary>
-        [DataMemberRange(0, float.MaxValue)]
+        /// <userdoc>
+        /// The height of the entities in this group. Entities can't enter areas with ceilings lower than this value.
+        /// </userdoc>
+        [DataMember(0)]
+        [DataMemberRange(0, 3)]
         public float Height;
-
-        /// <summary>
-        /// Radius of the actor
-        /// </summary>
-        [DataMemberRange(0, float.MaxValue)]
-        public float Radius;
 
         /// <summary>
         /// Maximum vertical distance this agent can climb
         /// </summary>
-        [Display("Maximum Climb Height")]
-        [DataMemberRange(0, float.MaxValue)]
+        /// <userdoc>
+        /// The maximum height that entities in this group can climb. 
+        /// </userdoc>
+        [DataMember(1)]
+        [Display("Maximum climb height")]
+        [DataMemberRange(0, 3)]
         public float MaxClimb;
 
         /// <summary>
-        /// Maximum slope angle this agent can climb (in degrees)
+        /// Maximum slope angle this agent can climb
         /// </summary>
-        [Display("Maximum Slope")]
+        /// <userdoc>
+        /// The maximum incline (in degrees) that entities in this group can climb. Entities can't go up or down slopes higher than this value. 
+        /// </userdoc>
+        [Display("Maximum slope")]
+        [DataMember(2)]
         public AngleSingle MaxSlope;
+
+        /// <summary>
+        /// Radius of the actor
+        /// </summary>
+        /// <userdoc>
+        /// The larger this value, the larger the area of the navigation mesh entities use. Entities can't pass through gaps of less than twice the radius.
+        /// </userdoc>
+        [DataMember(3)]
+        [DataMemberRange(0, 3)]
+        public float Radius;
 
         public override int GetHashCode()
         {

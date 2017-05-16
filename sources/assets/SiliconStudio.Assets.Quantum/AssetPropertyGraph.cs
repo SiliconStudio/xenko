@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -70,13 +70,14 @@ namespace SiliconStudio.Assets.Quantum
             if (assetItem.Asset == null) throw new ArgumentException(@"The asset in the given AssetItem is null.", nameof(assetItem));
             AssetItem = assetItem;
             Container = container;
+            Definition = AssetQuantumRegistry.GetDefinition(AssetItem.Asset.GetType());
             AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);
             CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
             Asset = assetItem.Asset;
             RootNode = (AssetObjectNode)Container.NodeContainer.GetOrCreateNode(assetItem.Asset);
             var overrides = assetItem.YamlMetadata?.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
             ApplyOverrides(RootNode, overrides);
-            nodeListener = new AssetGraphNodeChangeListener(RootNode, this);
+            nodeListener = new AssetGraphNodeChangeListener(RootNode, Definition);
             nodeListener.ValueChanging += AssetContentChanging;
             nodeListener.ValueChanged += AssetContentChanged;
             nodeListener.ItemChanging += AssetItemChanging;
@@ -111,6 +112,11 @@ namespace SiliconStudio.Assets.Quantum
         /// The container containing all asset property graphs.
         /// </summary>
         public AssetPropertyGraphContainer Container { get; }
+
+        /// <summary>
+        /// The <see cref="AssetPropertyGraphDefinition"/> associated to the type of the asset.
+        /// </summary>
+        public AssetPropertyGraphDefinition Definition { get; }
 
         /// <summary>
         /// The property graph of the archetype asset, if it has one.
@@ -258,18 +264,13 @@ namespace SiliconStudio.Assets.Quantum
             }
             if (visitRoot != null)
             {
-                var visitor = new AssetGraphVisitorBase(this);
+                var visitor = new AssetGraphVisitorBase(Definition);
                 // If we're in scenario where rootNode is an object node and index is not empty, we might already have the node in the dictionary so let's check this in Visiting
                 visitor.Visiting += (node, path) => { if (!nodesToReset.ContainsKey(node)) nodesToReset.Add(node, Index.Empty); };
                 visitor.Visit(rootNode);
             }
             // Then we reconcile (recursively) with the base.
             ReconcileWithBase(rootNode, nodesToReset);
-        }
-
-        public virtual bool IsObjectReference(IGraphNode targetNode, Index index, object value)
-        {
-            return false;
         }
 
         /// <summary>
@@ -279,7 +280,7 @@ namespace SiliconStudio.Assets.Quantum
         public virtual void ClearReferencesToObjects([NotNull] IEnumerable<Guid> objectIds)
         {
             if (objectIds == null) throw new ArgumentNullException(nameof(objectIds));
-            var visitor = new ClearObjectReferenceVisitor(this, objectIds);
+            var visitor = new ClearObjectReferenceVisitor(Definition, objectIds);
             visitor.Visit(RootNode);
         }
 
@@ -289,7 +290,7 @@ namespace SiliconStudio.Assets.Quantum
         /// <returns>A new instance of <see cref="GraphVisitorBase"/> for reconciliation.</returns>
         public virtual GraphVisitorBase CreateReconcilierVisitor()
         {
-            return new AssetGraphVisitorBase(this);
+            return new AssetGraphVisitorBase(Definition);
         }
 
         public virtual IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
@@ -412,7 +413,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
 
-            var visitor = new ObjectReferencePathGenerator(this);
+            var visitor = new ObjectReferencePathGenerator(Definition);
             visitor.Visit(rootNode);
             return visitor.Result;
         }
@@ -730,7 +731,7 @@ namespace SiliconStudio.Assets.Quantum
             if (!Container.PropagateChangesFromBase)
                 return;
 
-            if (node.IsReference && e.OldValue != null)
+            if (node.IsReference && e.OldValue != null && !e.OldValue.GetType().IsValueType)
             {
                 var oldNode = (IAssetNode)Container.NodeContainer.GetNode(e.OldValue);
                 UnlinkFromBase(oldNode);
@@ -771,7 +772,7 @@ namespace SiliconStudio.Assets.Quantum
 
                         object clonedValue;
                         // Object references
-                        if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty, memberNode.BaseNode.Retrieve()))
+                        if (baseValue is IIdentifiable && Definition.IsMemberTargetObjectReference((IMemberNode)memberNode.BaseNode, memberNode.BaseNode.Retrieve()))
                             clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseValue, memberNode);
                         else
                             clonedValue = CloneValueFromBase(baseValue, assetNode);
@@ -872,7 +873,7 @@ namespace SiliconStudio.Assets.Quantum
                                 object clonedValue;
                                 var baseItemValue = objectNode.BaseNode.Retrieve(index);
                                 // Object references
-                                if (baseItemValue is IIdentifiable && IsObjectReference(objectNode.BaseNode, index, objectNode.BaseNode.Retrieve(index)))
+                                if (baseItemValue is IIdentifiable && Definition.IsTargetItemObjectReference((IObjectNode)objectNode.BaseNode, index, objectNode.BaseNode.Retrieve(index)))
                                     clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseItemValue, objectNode);
                                 else
                                     clonedValue = CloneValueFromBase(baseItemValue, assetNode);
@@ -970,7 +971,7 @@ namespace SiliconStudio.Assets.Quantum
                 return false;
 
             // Object references
-            if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty, memberNode.BaseNode.Retrieve()))
+            if (baseValue is IIdentifiable && Definition.IsMemberTargetObjectReference((IMemberNode)memberNode.BaseNode, memberNode.BaseNode.Retrieve()))
             {
                 if (!reconcileObjectReference)
                     return false;
@@ -1014,7 +1015,7 @@ namespace SiliconStudio.Assets.Quantum
                 return false;
 
             // Object references
-            if (baseValue is IIdentifiable && IsObjectReference(node.BaseNode, baseIndex, node.BaseNode.Retrieve(baseIndex)))
+            if (baseValue is IIdentifiable && Definition.IsTargetItemObjectReference((IObjectNode)node.BaseNode, baseIndex, node.BaseNode.Retrieve(baseIndex)))
             {
                 if (!reconcileObjectReference)
                     return false;

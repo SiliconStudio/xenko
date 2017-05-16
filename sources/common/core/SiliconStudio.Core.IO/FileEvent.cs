@@ -1,11 +1,11 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 
 namespace SiliconStudio.Core.IO
 {
     /// <summary>
-    /// Ä file event used notified by <see cref="DirectoryWatcher"/>
+    /// ï¿½ file event used notified by <see cref="DirectoryWatcher"/>
     /// </summary>
     public class FileEvent : EventArgs
     {
@@ -65,7 +65,7 @@ namespace SiliconStudio.Core.IO
 
 
     /// <summary>
-    /// Ä file rename event used notified by <see cref="DirectoryWatcher"/>
+    /// ï¿½ file rename event used notified by <see cref="DirectoryWatcher"/>
     /// </summary>
     public class FileRenameEvent : FileEvent
     {

@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -85,7 +87,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// </summary>
         [DataMember(20)]
         [DefaultValue(1.0f)]
-        [DataMemberRange(0.5, 3.0, 0.01, 0.1)]
+        [DataMemberRange(0.5, 3.0, 0.01, 0.1, 3)]
         public float FilterRadius { get; set; }
 
         /// <summary>

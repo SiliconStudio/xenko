@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -222,10 +222,12 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
-        internal void Update(TransformComponent transformComponent, ref Matrix worldMatrix)
+        internal void Update(TransformComponent transformComponent)
         {
             if (!Enabled || model == null)
                 return;
+
+            ref Matrix worldMatrix = ref transformComponent.WorldMatrix;
 
             // Check if scaling is negative
             var up = Vector3.Cross(worldMatrix.Right, worldMatrix.Forward);

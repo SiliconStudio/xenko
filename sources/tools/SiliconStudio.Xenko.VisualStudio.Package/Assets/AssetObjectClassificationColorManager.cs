@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -28,6 +28,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Assets
 
             themeColors.Add(VisualStudioTheme.Blue, lightColors);
             themeColors.Add(VisualStudioTheme.Light, lightColors);
+            themeColors.Add(VisualStudioTheme.UnknownLight, lightColors);
             themeColors.Add(VisualStudioTheme.Unknown, lightColors);
 
             // Dark theme colors
@@ -41,6 +42,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Assets
             };
 
             themeColors.Add(VisualStudioTheme.Dark, darkColors);
+            themeColors.Add(VisualStudioTheme.UnknownDark, darkColors);
         }
     }
 }

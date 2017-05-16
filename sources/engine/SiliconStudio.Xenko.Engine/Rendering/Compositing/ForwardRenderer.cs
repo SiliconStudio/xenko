@@ -1,7 +1,10 @@
-﻿using System;
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
@@ -16,6 +19,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     /// <summary>
     /// Renders your game. It should use current <see cref="RenderContext.RenderView"/> and <see cref="CameraComponentRendererExtensions.GetCurrentCamera"/>.
     /// </summary>
+    [Display("Forward Renderer")]
     public partial class ForwardRenderer : SceneRendererBase, ISharedRenderer
     {
         // TODO: should we use GraphicsDeviceManager.PreferredBackBufferFormat?
@@ -516,7 +520,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     }
 
                     // Shafts if we have them
-                    LightShafts?.Draw(drawContext, depthStencil, ViewOutputTarget);
+                    LightShafts?.Draw(drawContext, depthStencil, renderTargets[colorTargetIndex]);
 
                     // Run post effects
                     // Note: OpaqueRenderStage can't be null otherwise colorTargetIndex would be -1
@@ -550,6 +554,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                 if (VRSettings.Enabled && VRSettings.VRDevice != null)
                 {
+                    var isFullViewport = (int)viewport.X == 0 && (int)viewport.Y == 0
+                                         && (int)viewport.Width == drawContext.CommandList.RenderTarget.ViewWidth
+                                         && (int)viewport.Height == drawContext.CommandList.RenderTarget.ViewHeight;
+                    if (!isFullViewport)
+                        return;
+
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
                         //make sure we don't use any default targets!
@@ -599,12 +609,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             VRSettings.VRDevice.Commit(drawContext.CommandList, vrFullSurface);
                         }
                     }
-
-                    var isFullViewport = (int)viewport.X == 0 && (int)viewport.Y == 0
-                                         && (int)viewport.Width == drawContext.CommandList.RenderTarget.ViewWidth
-                                         && (int)viewport.Height == drawContext.CommandList.RenderTarget.ViewHeight;
-                    if (!isFullViewport)
-                        throw new NotImplementedException("Can't render VR with a viewport smaller than texture");
 
                     //draw mirror to backbuffer (if size is matching and full viewport)
                     if (VRSettings.VRDevice.MirrorTexture.Size != drawContext.CommandList.RenderTarget.Size)

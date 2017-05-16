@@ -5,6 +5,7 @@ Tags: []
 Archetype: 9af53371-51ba-49fc-b420-ee7874892e75:DefaultGraphicsCompositorLevel9
 Cameras:
     de2e75c3b2b23e54162686363f3f138e:
+        Id: a070cf65-a750-4060-bcc0-e3303fca30b2
         Name: Main
 RenderStages:
     47116750c1a5d449b4ad3625f71439b3:
@@ -73,7 +74,7 @@ RenderFeatures:
     9013eab3ea0ef6c98bf133b86c173d45: !SiliconStudio.Xenko.Particles.Rendering.ParticleEmitterRenderFeature,SiliconStudio.Xenko.Particles
         RenderStageSelectors:
             af1bd241305893ef8ff7952184e1cb0b: !SiliconStudio.Xenko.Particles.Rendering.ParticleEmitterTransparentRenderStageSelector,SiliconStudio.Xenko.Particles
-                RenderGroup*: Group1
+                RenderGroup*: All
                 OpaqueRenderStage*: ref!! 1131b093-3589-47d1-bb60-62166a6647a3
                 TransparentRenderStage*: ref!! 1131b093-3589-47d1-bb60-62166a6647a3
                 EffectName: null
@@ -84,7 +85,7 @@ SharedRenderers:
         Clear:
             Id: 4bc4b2ca-027e-4e4a-94cb-2912709bef5f
             Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-        LightProbes: true
+        LightProbes: false
         OpaqueRenderStage: ref!! 50671147-a5c1-49d4-b4ad-3625f71439b3
         TransparentRenderStage: ref!! 0fa30591-02ee-486d-9347-2b6aee83d035
         ShadowMapRenderStages:
@@ -98,23 +99,20 @@ SharedRenderers:
             Overlays: {}
         MSAALevel: None
         MSAAResolver: {}
+    b83eea5d6052fff4db0c8d7efa7568f6: !SiliconStudio.Xenko.Rendering.Compositing.DebugRenderer,SiliconStudio.Xenko.Engine
+        Id: 77660a58-73b5-428e-bce5-c3407a62de31
+        DebugRenderStages: {}
 Game: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
-    Camera: {Index: 0}
+    Camera: ref!! a070cf65-a750-4060-bcc0-e3303fca30b2
     Child*: !SiliconStudio.Xenko.Rendering.Compositing.SceneRendererCollection,SiliconStudio.Xenko.Engine
         Id: cac20e52-d7fa-43d5-b4dc-e7038d008a9e
         Children:
-            27353063577da73eb9276a8bcc7568e6: !SiliconStudio.Xenko.Rendering.Compositing.ClearRenderer,SiliconStudio.Xenko.Engine
-                Id: 26f1d848-6fd7-45c2-a3d5-08fd6738320c
-                Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-            9a0d3711991545a23977ffa0536f5cd4: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
-            e3ea098ad38a015ce490de9a6ed115ea: !SiliconStudio.Xenko.Rendering.Compositing.ClearRenderer,SiliconStudio.Xenko.Engine
-                Id: e1e4c984-0dd6-4ea3-895e-f77538615aca
-                ClearFlags: DepthOnly
-                Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-            4ee948c12654526f60b93016e4c6e3c5: !SiliconStudio.Xenko.Rendering.Compositing.SingleStageRenderer,SiliconStudio.Xenko.Engine
-                Id: 98a81014-7f75-40cb-af3c-8eff6f086b81
+            ce29e81d8821fbf2a3d2264868e9921c*: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+            6efe857054d875d04a6788c9b40428bc*: !SiliconStudio.Xenko.Rendering.Compositing.SingleStageRenderer,SiliconStudio.Xenko.Engine
+                Id: 70784831-182a-490d-8fe4-b9ece8b7dbcf
                 RenderStage: ref!! 1131b093-3589-47d1-bb60-62166a6647a3
+            5c3efec9389bbcda4a9ec8113c233439*: !SiliconStudio.Xenko.Rendering.Compositing.DebugRenderer,SiliconStudio.Xenko.Engine ref!! 77660a58-73b5-428e-bce5-c3407a62de31
 SingleView: null
 Editor*: !SiliconStudio.Xenko.Rendering.Compositing.SceneRendererCollection,SiliconStudio.Xenko.Engine
     Id: c3f5d39a-57e9-4cd8-9895-ca0e78582b8a
@@ -130,3 +128,4 @@ Editor*: !SiliconStudio.Xenko.Rendering.Compositing.SceneRendererCollection,Sili
         b9a5c3cb9707ce953871585234ce7822: !SiliconStudio.Xenko.Rendering.Compositing.SingleStageRenderer,SiliconStudio.Xenko.Engine
             Id: 3e645954-bb86-47a8-9c6a-3a47bf1dd560
             RenderStage: ref!! 1131b093-3589-47d1-bb60-62166a6647a3
+BlockPositions: {}

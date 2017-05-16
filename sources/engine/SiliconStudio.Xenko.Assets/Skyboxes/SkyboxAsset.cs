@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         /// <summary>
         /// The default file extension used by the <see cref="SkyboxAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xksky;.pdxsky";
+        public const string FileExtension = ".xksky";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SkyboxAsset"/> class.
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         [DefaultValue(256)]
         [Display("Specular CubeMap Size")]
         [DataMember(30)]
-        [DataMemberRange(64, int.MaxValue)]
+        [DataMemberRange(64, 0)]
         public int SpecularCubeMapSize { get; set; }
 
         public IEnumerable<IReference> GetDependencies()

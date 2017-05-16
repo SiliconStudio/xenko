@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Animations;
@@ -8,7 +10,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     [DataContract("SpriteStudioAnimationAsset")] // Name of the Asset serialized in YAML
     [AssetContentType(typeof(AnimationClip))]
-    [AssetDescription(".xkss4a;.pdxss4a")] // A description used to display in the asset editor
+    [AssetDescription(FileExtension)] // A description used to display in the asset editor
     [Display("Sprite Studio Animation")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "0.0.0")]
@@ -18,6 +20,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 #endif
     public class SpriteStudioAnimationAsset : AssetWithSource
     {
+        public const string FileExtension = ".xkss4a";
+
         private const string CurrentVersion = "2.0.0.0";
 
         [DataMember(1)]

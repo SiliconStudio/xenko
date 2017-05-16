@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
@@ -26,7 +28,7 @@ namespace SiliconStudio.Xenko.Assets
         /// </userdoc>
         [DataMember(10)]
         [DefaultValue(30)]
-        [DataMemberRange(1, 1000)]
+        [DataMemberRange(1, 0)]
         public uint AnimationFrameRate = 30;
     }
 }

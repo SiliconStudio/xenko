@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,7 +85,12 @@ namespace SiliconStudio.Assets.Analysis
                 node = new BuildAssetNode(item, dependencyType, this);
                 nodes.TryAdd(nodeDesc, node);
             }
-            
+            else if (!ReferenceEquals(node.AssetItem, item))
+            {               
+                node = new BuildAssetNode(item, dependencyType, this);
+                nodes[nodeDesc] = node;
+            }
+
             return node;
         }
 
@@ -104,6 +111,12 @@ namespace SiliconStudio.Assets.Analysis
             BuildAssetNode node;
             if (!nodes.TryGetValue(nodeDesc, out node))
             {
+                return null;
+            }
+
+            if (!ReferenceEquals(node.AssetItem, item))
+            {
+                nodes.TryRemove(nodeDesc, out node);
                 return null;
             }
 

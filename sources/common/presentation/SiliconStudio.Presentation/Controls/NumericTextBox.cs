@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Globalization;
@@ -493,22 +493,22 @@ namespace SiliconStudio.Presentation.Controls
 
         private static void OnLargeIncreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
-            UpdateValueCommand(sender, x => x.Value ?? x.Minimum + x.LargeChange);
+            UpdateValueCommand(sender, x => (x.Value ?? x.Minimum) + x.LargeChange);
         }
 
         private static void OnLargeDecreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
-            UpdateValueCommand(sender, x => x.Value ?? x.Maximum - x.LargeChange);
+            UpdateValueCommand(sender, x => (x.Value ?? x.Maximum) - x.LargeChange);
         }
 
         private static void OnSmallIncreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
-            UpdateValueCommand(sender, x => x.Value ?? x.Minimum + x.SmallChange);
+            UpdateValueCommand(sender, x => (x.Value ?? x.Minimum) + x.SmallChange);
         }
 
         private static void OnSmallDecreaseCommand([NotNull] object sender, ExecutedRoutedEventArgs e)
         {
-            UpdateValueCommand(sender, x => x.Value ?? x.Maximum - x.SmallChange);
+            UpdateValueCommand(sender, x => (x.Value ?? x.Maximum) - x.SmallChange);
         }
 
         private static void OnResetValueCommand([NotNull] object sender, ExecutedRoutedEventArgs e)

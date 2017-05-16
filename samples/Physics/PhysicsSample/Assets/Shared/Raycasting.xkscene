@@ -244,7 +244,7 @@ Hierarchy:
                         Id: 7b8dae54-4ed8-4d4f-b279-6f323fdf0b14
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: 95fe37f1-35a8-41ff-9358-192ff159e956
         -   Entity:
                 Id: ef7d2057-b70a-4f12-af97-1ac2d8736797
                 Name: Ambient light

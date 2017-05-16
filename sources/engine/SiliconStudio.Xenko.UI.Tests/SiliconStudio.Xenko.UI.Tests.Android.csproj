@@ -250,7 +250,7 @@
     <Compile Include="Regression\ScrollViewerTest.cs" />
     <Compile Include="Regression\SliderTest.cs" />
     <Compile Include="Regression\StackPanelTest.cs" />
-    <Compile Include="Regression\TestCamera.cs" />
+    <Compile Include="Regression\TestUICamera.cs" />
     <Compile Include="Regression\TextBlockTest.cs" />
     <Compile Include="Regression\TextBlockWrappingTest.cs" />
     <Compile Include="Regression\ToggleButtonTest.cs" />

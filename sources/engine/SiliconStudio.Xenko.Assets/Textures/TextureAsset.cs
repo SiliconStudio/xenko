@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.ComponentModel;
 
@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// <summary>
         /// The default file extension used by the <see cref="TextureAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xktex;.pdxtex";
+        public const string FileExtension = ".xktex";
 
         /// <summary>
         /// Gets or sets the width.
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </userdoc>
         [DataMember(20)]
         [DefaultValue(100.0f)]
-        [DataMemberRange(0, 10000, 1, 10)]
+        [DataMemberRange(0, 100, 1, 10, 1)]
         [Display(null, "Size")]
         public float Width { get; set; } = 100.0f;
 
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </userdoc>
         [DataMember(30)]
         [DefaultValue(100.0f)]
-        [DataMemberRange(0, 10000, 1, 10)]
+        [DataMemberRange(0, 100, 1, 10, 1)]
         [Display(null, "Size")]
         public float Height { get; set; } = 100.0f;
 

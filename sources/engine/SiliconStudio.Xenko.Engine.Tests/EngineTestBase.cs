@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Threading.Tasks;
 
@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
     public class EngineTestBase : GameTestBase
     {
         protected Scene Scene;
-        protected Entity Camera = new Entity { new CameraComponent() };
+        protected Entity Camera;
         protected LightComponent AmbientLight;
 
         protected CameraComponent CameraComponent
@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 {
                     Camera.Add(value);
                 }
-                SceneSystem.GraphicsCompositor.Cameras[0] = value;
+                value.Slot = SceneSystem.GraphicsCompositor.Cameras[0].ToSlotId();
             }
         }
 
@@ -59,6 +59,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             await base.LoadContent();
 
             SceneSystem.GraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
+            Camera = new Entity { new CameraComponent { Slot = SceneSystem.GraphicsCompositor.Cameras[0].ToSlotId() } };
 
             Scene = new Scene();
             Scene.Entities.Add(Camera);

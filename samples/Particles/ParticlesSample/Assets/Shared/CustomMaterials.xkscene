@@ -248,7 +248,7 @@ Hierarchy:
                         Id: a4fb7eba-4b60-434a-ad26-405bedb9bcef
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: 3217b71f-b48d-4321-bab1-7cb4da999c19
         -   Entity:
                 Id: cec8cbd2-75a6-4610-83ca-6049954bf567
                 Name: Two Textures Particle System

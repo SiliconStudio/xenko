@@ -204,10 +204,13 @@ Hierarchy:
                         Id: d676a1e3-287f-44e1-bccf-44d85bbd6588
                         Model: 55733c87-8e99-4d26-8eac-32a172399d18:Knight/knight
                         Materials: {}
-                    b64ad55d83b63142a5553396fa1fe1e8: !AnimationComponent
-                        Id: 5dd54ab6-b683-4231-a555-3396fa1fe1e8
+                    1901b0f9a0c012ff8dfc2b906210eba4: !UIElementLink.AnimationStart,UIElementLink.Game
+                        Id: 17752bbd-a756-42b9-8820-56d36ffd661e
                         Animations:
-                            02e43a0b0a19d6459045f27c12de752e~Default: 4fc92370-763a-4adc-b117-1874582a31d6:Knight/he03_run Animation
+                            d08997ed238c76ff9e45ce0950f60b9e:
+                                Clip: 4fc92370-763a-4adc-b117-1874582a31d6:Knight/he03_run Animation
+                                BlendOperation: LinearBlend
+                                StartTime: 0.0
         -   Entity:
                 Id: d9876ddf-0675-4113-8dc5-5d363fbae7f6
                 Name: UICamera
@@ -227,7 +230,7 @@ Hierarchy:
                         NearClipPlane: 500.0
                         FarClipPlane: 1500.0
                         AspectRatio: 1.777778
-                        Slot: {Index: 0}
+                        Slot: 39e59472-e064-4463-9097-403dadbc041e
         -   Entity:
                 Id: ef08d60e-261c-480b-abf4-c7b8ba929ca6
                 Name: Ball

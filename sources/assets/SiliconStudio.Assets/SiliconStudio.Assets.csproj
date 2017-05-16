@@ -66,7 +66,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Analysis\AssetAnalysis.cs" />
@@ -204,7 +204,6 @@
     <Compile Include="Compiler\AssetCompilerContext.cs" />
     <Compile Include="Compiler\AssetCompilerRegistry.cs" />
     <Compile Include="Compiler\FailedCommand.cs" />
-    <Compile Include="IAssetCompileTimeDependencies.cs" />
     <Compile Include="IAssetComposite.cs" />
     <Compile Include="IAssetFactory.cs" />
     <Compile Include="IAssetUpgrader.cs" />

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1449,7 +1449,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
             // Pad with float4, so we align to 16 bytes, independent of the packing rules of the shader compiler
             // This is not optimal. Ideally we would define all layouts manually.
-            var paddingVariable = new Variable(VectorType.Float4.ToNonGenericType(), $"__padding_{constantBuffer.Name}_{logicaGroupName}");
+            var paddingVariable = new Variable(VectorType.Float4.ToNonGenericType(), $"_padding_{constantBuffer.Name}_{logicaGroupName}");
 
             paddingVariable.SetTag(XenkoTags.ConstantBuffer, constantBuffer);
             paddingVariable.SetTag(XenkoTags.LogicalGroup, logicaGroupName);

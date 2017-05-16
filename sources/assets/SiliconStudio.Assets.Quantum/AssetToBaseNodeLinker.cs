@@ -1,3 +1,5 @@
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Linq;
 using SiliconStudio.Assets.Quantum.Internal;
@@ -16,7 +18,7 @@ namespace SiliconStudio.Assets.Quantum
         private readonly AssetPropertyGraph propertyGraph;
 
         public AssetToBaseNodeLinker(AssetPropertyGraph propertyGraph)
-            : base(propertyGraph)
+            : base(propertyGraph.Definition)
         {
             this.propertyGraph = propertyGraph;
         }

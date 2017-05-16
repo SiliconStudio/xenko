@@ -301,7 +301,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssetCompilerContextExtensions.cs" />
@@ -332,6 +332,7 @@
     <Compile Include="Rendering\GraphicsCompositorAsset.cs" />
     <Compile Include="Navigation\NavigationMeshAsset.cs" />
     <Compile Include="Navigation\NavigationMeshFactory.cs" />
+    <Compile Include="Serializers\SceneCameraSlotIdSerializer.cs" />
     <Compile Include="Textures\ColorTextureType.cs" />
     <Compile Include="Textures\GrayscaleTextureType.cs" />
     <Compile Include="Textures\ITextureType.cs" />
@@ -488,6 +489,7 @@
     </Content>
     <Compile Include="Navigation\NavigationMeshAssetCompiler.cs" />
   </ItemGroup>
+  <Import Project="..\..\assets\SiliconStudio.Archive\SiliconStudio.Archive.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

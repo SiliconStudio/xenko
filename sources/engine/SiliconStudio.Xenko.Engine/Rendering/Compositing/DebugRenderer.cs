@@ -1,7 +1,11 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Collections.Generic;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
+    [Display("Debug Renderer")]
     public class DebugRenderer : SceneRendererBase, ISharedRenderer
     {
         public List<RenderStage> DebugRenderStages { get; } = new List<RenderStage>();

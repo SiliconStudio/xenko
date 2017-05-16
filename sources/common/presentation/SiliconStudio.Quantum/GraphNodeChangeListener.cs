@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -16,10 +16,10 @@ namespace SiliconStudio.Quantum
     {
         private readonly IGraphNode rootNode;
         private readonly Func<IMemberNode, bool> shouldRegisterMemberTarget;
-        private readonly Func<IGraphNode, Index, bool> shouldRegisterItemTarget;
+        private readonly Func<IObjectNode, Index, bool> shouldRegisterItemTarget;
         protected readonly HashSet<IGraphNode> RegisteredNodes = new HashSet<IGraphNode>();
 
-        public GraphNodeChangeListener(IGraphNode rootNode, Func<IMemberNode, bool> shouldRegisterMemberTarget = null, Func<IGraphNode, Index, bool> shouldRegisterItemTarget = null)
+        public GraphNodeChangeListener(IGraphNode rootNode, Func<IMemberNode, bool> shouldRegisterMemberTarget = null, Func<IObjectNode, Index, bool> shouldRegisterItemTarget = null)
         {
             this.rootNode = rootNode;
             this.shouldRegisterMemberTarget = shouldRegisterMemberTarget;
@@ -154,23 +154,24 @@ namespace SiliconStudio.Quantum
                 case ContentChangeType.CollectionAdd:
                     if (e.Node.IsReference && e.NewValue != null)
                     {
+                        var objectNode = (IObjectNode)e.Node;
                         IGraphNode addedNode;
                         Index index;
                         var arg = (ItemChangeEventArgs)e;
                         if (!arg.Index.IsEmpty)
                         {
                             index = arg.Index;
-                            addedNode = (e.Node as IObjectNode)?.ItemReferences[arg.Index].TargetNode;
+                            addedNode = objectNode.ItemReferences[arg.Index].TargetNode;
                         }
                         else
                         {
                             // TODO: review this
-                            var reference = (e.Node as IObjectNode)?.ItemReferences.First(x => x.TargetNode.Retrieve() == e.NewValue);
+                            var reference = objectNode.ItemReferences.First(x => x.TargetNode.Retrieve() == e.NewValue);
                             index = reference.Index;
                             addedNode = reference.TargetNode;
                         }
 
-                        if (addedNode != null)
+                        if (addedNode != null && (shouldRegisterItemTarget?.Invoke(objectNode, index) ?? true))
                         {
                             var path = new GraphNodePath(e.Node);
                             path.PushIndex(index);

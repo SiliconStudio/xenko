@@ -1,10 +1,10 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Runtime.InteropServices;
 
-namespace SiliconStudio.VisualStudio.Debugging
+namespace SiliconStudio.VisualStudio
 {
     // Avoid COMException "Application is busy (RPC_E_CALL_REJECTED 0x80010001)"
     // https://msdn.microsoft.com/en-us/library/ms228772.aspx

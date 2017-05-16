@@ -157,6 +157,7 @@ Hierarchy:
                 Id: a89f94fa-840f-48d4-9b26-418e9e4a2358
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
+                Name: UniformGrid
                 Children: {}
         -   UIElement: !TextBlock
                 DependencyProperties: {}

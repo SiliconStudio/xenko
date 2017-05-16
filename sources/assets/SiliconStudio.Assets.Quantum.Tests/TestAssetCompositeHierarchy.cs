@@ -1,10 +1,13 @@
-﻿using System;
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Assets.Quantum.Tests.Helpers;
 using SiliconStudio.Assets.Tests.Helpers;
+using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Assets.Quantum.Tests
 {
@@ -18,7 +21,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.Asset));
             var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
-            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.None, out remapping);
+            var clone = AssetCompositeHierarchyPropertyGraph<Types.MyPartDesign, Types.MyPart>.CloneSubHierarchies(graph.Container.NodeContainer, graph.Asset, originalRoot.Part.Id.Yield(), SubHierarchyCloneFlags.None, out remapping);
             var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
@@ -49,7 +52,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.Asset));
             var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
-            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.None, out remapping);
+            var clone = AssetCompositeHierarchyPropertyGraph<Types.MyPartDesign, Types.MyPart>.CloneSubHierarchies(graph.Container.NodeContainer, graph.Asset, originalRoot.Part.Id.Yield(), SubHierarchyCloneFlags.None, out remapping);
             var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
@@ -81,7 +84,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.Asset));
             var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
-            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.None, out remapping);
+            var clone = AssetCompositeHierarchyPropertyGraph<Types.MyPartDesign, Types.MyPart>.CloneSubHierarchies(graph.Container.NodeContainer, graph.Asset, originalRoot.Part.Id.Yield(), SubHierarchyCloneFlags.None, out remapping);
             var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
@@ -113,7 +116,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.Asset));
             var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
-            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
+            var clone = AssetCompositeHierarchyPropertyGraph<Types.MyPartDesign, Types.MyPart>.CloneSubHierarchies(graph.Container.NodeContainer, graph.Asset, originalRoot.Part.Id.Yield(), SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
             var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
@@ -144,7 +147,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.Asset));
             var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
-            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
+            var clone = AssetCompositeHierarchyPropertyGraph<Types.MyPartDesign, Types.MyPart>.CloneSubHierarchies(graph.Container.NodeContainer, graph.Asset, originalRoot.Part.Id.Yield(), SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
             var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
@@ -176,7 +179,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Debug.Write(AssetHierarchyHelper.PrintHierarchy(graph.Asset));
             var originalRoot = graph.Asset.Hierarchy.Parts[graph.Asset.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
-            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
+            var clone = AssetCompositeHierarchyPropertyGraph<Types.MyPartDesign, Types.MyPart>.CloneSubHierarchies(graph.Container.NodeContainer, graph.Asset, originalRoot.Part.Id.Yield(), SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
             var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);

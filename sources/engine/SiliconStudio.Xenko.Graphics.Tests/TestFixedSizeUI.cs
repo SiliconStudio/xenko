@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Threading.Tasks;
 
 using NUnit.Framework;
@@ -137,14 +137,14 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             scene.Entities.Add(GetUIEntity(arial16, false, new Vector3(-2, 0, 0)));
             scene.Entities.Add(GetUIEntity(arial16, false, new Vector3(2, 1, -2)));
 
+            // Use this graphics compositor
+            SceneSystem.GraphicsCompositor = GraphicsCompositorHelper.CreateDefault(false, graphicsProfile: GraphicsProfile.Level_9_1);
 
             // Create a camera entity and add it to the scene
-            var cameraEntity = new Entity { new CameraComponent() };
+            var cameraEntity = new Entity { new CameraComponent { Slot = SceneSystem.GraphicsCompositor.Cameras[0].ToSlotId() } };
             cameraEntity.Transform.Position = new Vector3(0, 0, 5);
             scene.Entities.Add(cameraEntity);
 
-            // Use this graphics compositor
-            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(false, graphicsProfile: GraphicsProfile.Level_9_1);
 
             // Create a scene instance
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);

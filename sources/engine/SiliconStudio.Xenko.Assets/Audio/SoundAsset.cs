@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.ComponentModel;
 using SiliconStudio.Assets;
@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
         /// <summary>
         /// The default file extension used by the <see cref="SoundAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xksnd;.pdxsnd";
+        public const string FileExtension = ".xksnd";
 
         [DefaultValue(44100)]
         public int SampleRate { get; set; } = 44100;

@@ -44,12 +44,11 @@ Bin/
 ipch/
 obj/
 Cache/
-setup-cache*/
-setup-SetupFiles*/
 /doc/xenko_doc_output/
 /build/.vs
 /build/Xenko.version
 /build/Xenko.*VC.db
+/tools
 /externals/
 /sources/tools/Xenko.ShaderKeyGenerator/build/
 /sources/tools/Xenko.ProjectGenerator/build/
@@ -62,6 +61,7 @@ setup-SetupFiles*/
 /sources/games/GDC2013/build/*
 /gdc/demo_dragon/
 /package/
+/tools/
 launch-android.bat
 sources/tests/framework/Xenko.Framework.Audio.Tests/Resources/Resource.Designer.cs
 Win32
