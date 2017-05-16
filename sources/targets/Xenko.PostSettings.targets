@@ -108,11 +108,11 @@
   </PropertyGroup>
 
   <Target Name="SiliconStudioXenkoReplaceVersionInfo" Condition="'$(SiliconStudioPackageBuild)' == 'true'">
-    <Error Condition="!Exists('$(MSBuildThisFileDirectory)..\shared\SharedAssemblyInfo.NuGet.cs')" Text="File SharedAssemblyInfo.NuGet.cs doesn't seem to have been generated. Please make sure Xenko.build PackageEnvironment target has been run succesfully."/>
+    <Error Condition="!Exists('$(MSBuildThisFileDirectory)..\common\shared\SharedAssemblyInfo.NuGet.cs')" Text="File SharedAssemblyInfo.NuGet.cs doesn't seem to have been generated. Please make sure Xenko.build PackageEnvironment target has been run succesfully."/>
     <ItemGroup>
-      <XenkoSharedAssemblyFile Include="@(Compile)" Condition="'%(Compile.FullPath)' == '$([System.IO.Path]::GetFullPath(`$(MSBuildThisFileDirectory)..\shared\SharedAssemblyInfo.cs`))'"/>
+      <XenkoSharedAssemblyFile Include="@(Compile)" Condition="'%(Compile.FullPath)' == '$([System.IO.Path]::GetFullPath(`$(MSBuildThisFileDirectory)..\common\shared\SharedAssemblyInfo.cs`))'"/>
       <Compile Remove="@(XenkoSharedAssemblyFile)" />
-      <Compile Include="@(XenkoSharedAssemblyFile->'$(MSBuildThisFileDirectory)..\shared\SharedAssemblyInfo.NuGet.cs')" />
+      <Compile Include="@(XenkoSharedAssemblyFile->'$(MSBuildThisFileDirectory)..\common\shared\SharedAssemblyInfo.NuGet.cs')" />
     </ItemGroup>
   </Target>
   

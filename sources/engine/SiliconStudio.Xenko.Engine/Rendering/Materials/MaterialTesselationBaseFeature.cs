@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// The desired triangles' size in pixels. This drives the tessellation factor.
         /// </userdoc>
         [DataMember(10)]
-        [DataMemberRange(1, 100, 1, 5)]
+        [DataMemberRange(1, 100, 1, 5, 2)]
         [Display("Triangle Size")]
         public float TriangleSize { get; set; }
 

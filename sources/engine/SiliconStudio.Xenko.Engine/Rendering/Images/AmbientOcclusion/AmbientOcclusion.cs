@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         [DataMember(10)]
         [DefaultValue(13)]
-        [DataMemberRange(1, 50)]
+        [DataMemberRange(1, 50, 1, 5, 0)]
         [Display("Number of samples")]
         public int NumberOfSamples { get; set; } = 13;
 
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         [DataMember(70)]
         [DefaultValue(2)]
-        [DataMemberRange(0, 3)]
+        [DataMemberRange(0, 3, 1, 1, 0)]
         [Display("Blur Count")]
         public int NumberOfBounces { get; set; } = 2;
 

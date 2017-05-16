@@ -117,6 +117,9 @@
   </ItemGroup>
   <!-- Files for Direct3D  -->
   <ItemGroup>
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="AppContextType.cs" />
     <Compile Include="BatchBase.cs" />
     <Compile Include="BufferPool.cs" />
@@ -480,9 +483,6 @@
     <Compile Include="OpenGL\Texture.OpenGL.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Buffer.Argument.cs" />
     <Compile Include="Buffer.Constant.cs" />
     <Compile Include="Buffer.Index.cs" />

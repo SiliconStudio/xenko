@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <userdoc>The map specifying the metalness of the material.</userdoc>
         [Display("Metalness Map")]
         [NotNull]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar MetalnessMap { get; set; }
 
         public override void VisitFeature(MaterialGeneratorContext context)

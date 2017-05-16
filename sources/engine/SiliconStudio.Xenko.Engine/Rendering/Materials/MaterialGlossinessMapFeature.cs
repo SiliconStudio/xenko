@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <value>The smoothness map.</value>
         [Display("Glossiness Map")]
         [NotNull]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar GlossinessMap { get; set; }
 
         /// <summary>
