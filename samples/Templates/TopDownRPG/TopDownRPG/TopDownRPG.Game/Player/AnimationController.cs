@@ -28,7 +28,7 @@ namespace TopDownRPG.Player
         [Display("Punch")]
         public AnimationClip AnimationPunch { get; set; }
 
-        [DataMemberRange(0, 1, 0.001, 0.1)]
+        [DataMemberRange(0, 1, 0.01, 0.1, 3)]
         [Display("Walk Threshold")]
         public float WalkThreshold { get; set; } = 0.25f;
 
