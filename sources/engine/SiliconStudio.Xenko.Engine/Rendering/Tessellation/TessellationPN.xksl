@@ -23,10 +23,10 @@ shader TessellationPN : TessellationFlat
 
     float ComputeClippingGroup4(float3 f3Position1, float3 f3Position2, float3 f3Position3, float3 f3Position4, float4x4 f4x4ViewProjection)
     {
-        float4 clipPos1 = mul( float4( f3Position1.xyz, 1.0f ), f4x4ViewProjection );
-        float4 clipPos2 = mul( float4( f3Position2.xyz, 1.0f ), f4x4ViewProjection );
-        float4 clipPos3 = mul( float4( f3Position3.xyz, 1.0f ), f4x4ViewProjection );
-        float4 clipPos4 = mul( float4( f3Position4.xyz, 1.0f ), f4x4ViewProjection );
+        float4 clipPos1 = this.ComputeShadingPosition(float4(f3Position1.xyz, 1.0f));
+        float4 clipPos2 = this.ComputeShadingPosition(float4(f3Position2.xyz, 1.0f));
+        float4 clipPos3 = this.ComputeShadingPosition(float4(f3Position3.xyz, 1.0f));
+        float4 clipPos4 = this.ComputeShadingPosition(float4(f3Position4.xyz, 1.0f));
 
         float3 planeTest;
 
@@ -50,14 +50,14 @@ shader TessellationPN : TessellationFlat
 
     float ComputeClippingGroup8(float3 f3Position1, float3 f3Position2, float3 f3Position3, float3 f3Position4, float3 f3Position5, float3 f3Position6, float3 f3Position7, float3 f3Position8, float4x4 f4x4ViewProjection)
     {
-        float4 clipPos1 = mul( float4( f3Position1.xyz, 1.0f ), f4x4ViewProjection );
-        float4 clipPos2 = mul( float4( f3Position2.xyz, 1.0f ), f4x4ViewProjection );
-        float4 clipPos3 = mul( float4( f3Position3.xyz, 1.0f ), f4x4ViewProjection );
-        float4 clipPos4 = mul( float4( f3Position4.xyz, 1.0f ), f4x4ViewProjection );
-        float4 clipPos5 = mul( float4( f3Position5.xyz, 1.0f ), f4x4ViewProjection );
-        float4 clipPos6 = mul( float4( f3Position6.xyz, 1.0f ), f4x4ViewProjection );
-        float4 clipPos7 = mul( float4( f3Position7.xyz, 1.0f ), f4x4ViewProjection );
-        float4 clipPos8 = mul( float4( f3Position8.xyz, 1.0f ), f4x4ViewProjection );
+        float4 clipPos1 = this.ComputeShadingPosition(float4(f3Position1.xyz, 1.0f));
+        float4 clipPos2 = this.ComputeShadingPosition(float4(f3Position2.xyz, 1.0f));
+        float4 clipPos3 = this.ComputeShadingPosition(float4(f3Position3.xyz, 1.0f));
+        float4 clipPos4 = this.ComputeShadingPosition(float4(f3Position4.xyz, 1.0f));
+        float4 clipPos5 = this.ComputeShadingPosition(float4(f3Position5.xyz, 1.0f));
+        float4 clipPos6 = this.ComputeShadingPosition(float4(f3Position6.xyz, 1.0f));
+        float4 clipPos7 = this.ComputeShadingPosition(float4(f3Position7.xyz, 1.0f));
+        float4 clipPos8 = this.ComputeShadingPosition(float4(f3Position8.xyz, 1.0f));
 
         float3 planeTest;
 
