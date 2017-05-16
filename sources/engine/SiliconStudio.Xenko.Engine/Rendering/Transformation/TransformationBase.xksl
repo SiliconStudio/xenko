@@ -19,10 +19,7 @@ shader TransformationBase : ShaderBase
     
     // Used in cases where a shading position needs to be calculated from a given world position
     //  for example: in tesselation, which needs to determine the triangle size on the screen
-    stage float4 ComputeShadingPosition(float4 world)
-    {
-        return mul(world, Transformation.ViewProjection);
-    }
+    stage float4 ComputeShadingPosition(float4 world) { return 0; }
 
     stage void BaseTransformVS()
     {
