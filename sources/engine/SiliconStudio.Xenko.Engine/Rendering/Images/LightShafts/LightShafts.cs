@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 minmaxPipelineState.State.BlendState.RenderTarget0.BlendEnable = true;
                 minmaxPipelineState.State.BlendState.RenderTarget0.ColorSourceBlend = Blend.One;
                 minmaxPipelineState.State.BlendState.RenderTarget0.ColorDestinationBlend = Blend.One;
-                minmaxPipelineState.State.BlendState.RenderTarget0.ColorBlendFunction = i == 0 ? BlendFunction.Max : BlendFunction.Min;
+                minmaxPipelineState.State.BlendState.RenderTarget0.ColorBlendFunction = i == 0 ? BlendFunction.Min : BlendFunction.Max;
                 minmaxPipelineState.State.BlendState.RenderTarget0.ColorWriteChannels = i == 0 ? ColorWriteChannels.Red : ColorWriteChannels.Green;
 
                 minmaxPipelineState.State.DepthStencilState.DepthBufferEnable = false;
@@ -163,13 +163,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 if (lightShaft.LightComponent == null)
                     continue; // Skip entities without a light component
 
-                var shadowMapTexture = shadowMapRenderer.FindShadowMap(renderView.LightingView ?? renderView, lightShaft.LightComponent);
-                if (shadowMapTexture == null)
-                    continue; // Skip lights without shadow map
+                // Set sample count for this light
+                lightShaftsParameters.Set(LightShaftsEffectKeys.SampleCount, lightShaft.SampleCount);
 
                 // Setup the shader group used for sampling shadows
+                var shadowMapTexture = shadowMapRenderer.FindShadowMap(renderView.LightingView ?? renderView, lightShaft.LightComponent);
                 SetupLight(context, lightShaft, shadowMapTexture, lightShaftsParameters);
-
+                
                 var boundingVolumes = lightShaftBoundingVolumeProcessor.GetBoundingVolumesForComponent(lightShaft.Component);
                 if (boundingVolumes == null)
                     continue;
@@ -184,7 +184,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     using (context.PushRenderTargetsAndRestore())
                     {
                         // Clear bounding box buffer
-                        context.CommandList.Clear(boundingBoxBuffer, new Color4(0.0f, 1.0f, 0.0f, 0.0f));
+                        context.CommandList.Clear(boundingBoxBuffer, new Color4(1.0f, 0.0f, 0.0f, 0.0f));
 
                         context.CommandList.SetRenderTargetAndViewport(null, boundingBoxBuffer);
 
@@ -278,9 +278,18 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 throw new InvalidOperationException("Unsupported light type");
             }
 
-            data.ShadowType = shadowMapTexture.ShadowType;
-            data.ShadowMapRenderer = shadowMapTexture.Renderer;
-            var shadowGroup = data.ShadowMapRenderer.CreateShaderGroupData(data.ShadowType);
+            ILightShadowMapShaderGroupData shadowGroup = null;
+            if (shadowMapTexture != null)
+            {
+                data.ShadowType = shadowMapTexture.ShadowType;
+                data.ShadowMapRenderer = shadowMapTexture.Renderer;
+                shadowGroup = data.ShadowMapRenderer.CreateShaderGroupData(data.ShadowType);
+            }
+            else
+            {
+                data.ShadowType = 0;
+                data.ShadowMapRenderer = null;
+            }
             data.ShaderGroup = data.GroupRenderer.CreateLightShaderGroup(context, shadowGroup);
         }
 
@@ -296,9 +305,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 UpdateRenderData(context, data, lightShaft, shadowMapTexture);
             }
 
-            // Detect changed shadow map renderer or type
-            if (data.ShadowMapRenderer != shadowMapTexture.Renderer || data.ShadowType != shadowMapTexture.ShadowType)
+            if (shadowMapTexture != null && data.ShadowMapRenderer != null)
+            {
+                // Detect changed shadow map renderer or type
+                if (data.ShadowMapRenderer != shadowMapTexture.Renderer || data.ShadowType != shadowMapTexture.ShadowType)
+                    UpdateRenderData(context, data, lightShaft, shadowMapTexture);
+            }
+            else if (shadowMapTexture?.Renderer != data.ShadowMapRenderer) // Change from no shadows to shadows
+            {
                 UpdateRenderData(context, data, lightShaft, shadowMapTexture);
+            }
 
             data.RenderViews[0] = context.RenderContext.RenderView;
             data.ShaderGroup.Reset();
@@ -308,7 +324,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
             data.ShaderGroup.UpdateLayout("lightGroup");
 
             lightParameterCollection.Set(LightShaftsEffectKeys.LightGroup, data.ShaderGroup.ShaderSource);
-            lightParameterCollection.Set(LightShaftsEffectKeys.SampleCount, lightShaft.SampleCount);
 
             // Update the effect here so the layout is correct
             lightShaftsEffectShader.EffectInstance.UpdateEffect(GraphicsDevice);
