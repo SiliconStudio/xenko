@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
         /// <inheritdoc/>
         public override void Serialize(ref Texture texture, ArchiveMode mode, SerializationStream stream)
         {
-            TextureContentSerializer.Serialize(mode, stream, texture);
+            TextureContentSerializer.Serialize(mode, stream, texture, false);
         }
     }
 }

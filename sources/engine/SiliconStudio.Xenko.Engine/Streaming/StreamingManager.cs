@@ -136,6 +136,38 @@ namespace SiliconStudio.Xenko.Streaming
         }
 
         /// <inheritdoc />
+        public void FullyLoadTexture(Texture obj, ref ImageDescription imageDescription, ContentStorageHeader storageHeader)
+        {
+            Debug.Assert(obj != null && storageHeader != null);
+
+            // Get content storage container
+            var storage = ContentStreaming.GetStorage(storageHeader);
+            if (storage == null)
+                throw new Exception("Missing content storage.");
+
+            lock (resources)
+            {
+                // Find resource or create new
+                var resource = resources.Find(x => x.Resource == obj) as StreamingTexture;
+                if (resource == null)
+                {
+                    resource = new StreamingTexture(this, obj);
+                }
+
+                // Update resource storage/description information (may be modified on asset rebuilding)
+                resource.Init(storage, ref imageDescription);
+
+                // Stream texture to the maximum level
+                var task = resource.CreateStreamingTask(resource.MaxResidency);
+                task.Start();
+                task.Wait();
+
+                // Cleanup
+                resource.Dispose();
+            }
+        }
+
+        /// <inheritdoc />
         public void RegisterTexture(Texture obj, ref ImageDescription imageDescription, ContentStorageHeader storageHeader)
         {
             Debug.Assert(obj != null && storageHeader != null);
@@ -143,10 +175,7 @@ namespace SiliconStudio.Xenko.Streaming
             // Get content storage container
             var storage = ContentStreaming.GetStorage(storageHeader);
             if (storage == null)
-            {
-                // TODO: send error to log?
-                return;
-            }
+                throw new Exception("Missing content storage.");
 
             lock (resources)
             {

@@ -17,10 +17,10 @@ namespace SiliconStudio.Xenko.Graphics.Data
         /// <inheritdoc/>
         public override void Serialize(ContentSerializerContext context, SerializationStream stream, Texture texture)
         {
-            Serialize(context.Mode, stream, texture);
+            Serialize(context.Mode, stream, texture, context.AllowContentStreaming);
         }
 
-        internal static void Serialize(ArchiveMode mode, SerializationStream stream, Texture texture)
+        internal static void Serialize(ArchiveMode mode, SerializationStream stream, Texture texture, bool allowContentStreaming)
         {
             if (mode == ArchiveMode.Deserialize)
             {
@@ -73,10 +73,18 @@ namespace SiliconStudio.Xenko.Graphics.Data
                     // Check if streaming service is available
                     if (texturesStreamingProvider != null)
                     {
-                        // Register texture for streaming
-                        texturesStreamingProvider.RegisterTexture(texture, ref imageDescription, storageHeader);
+                        if (allowContentStreaming)
+                        {
+                            // Register texture for streaming
+                            texturesStreamingProvider.RegisterTexture(texture, ref imageDescription, storageHeader);
 
-                        // Note: here we don't load texture data and don't allocate GPU memory
+                            // Note: here we don't load texture data and don't allocate GPU memory
+                        }
+                        else
+                        {
+                            // Request texture loading (should be fully loaded)
+                            texturesStreamingProvider.FullyLoadTexture(texture, ref imageDescription, storageHeader);
+                        }
                     }
                     else
                     {
