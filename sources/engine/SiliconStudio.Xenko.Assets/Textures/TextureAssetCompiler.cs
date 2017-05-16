@@ -183,6 +183,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         {
             SourcePathFromDisk = sourcePathFromDisk;
             Texture = texture;
+            IsCompressed = texture.IsCompressed;
             IsStreamable = texture.IsStreamable;
             Platform = platform;
             GraphicsPlatform = graphicsPlatform;
@@ -196,6 +197,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
         public TextureAsset Texture;
 
         public bool IsStreamable;
+
+        public bool IsCompressed;
 
         public PlatformType Platform;
 

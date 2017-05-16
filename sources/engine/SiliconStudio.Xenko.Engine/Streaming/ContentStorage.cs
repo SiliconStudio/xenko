@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Streaming
     /// </summary>
     public class ContentStorage
     {
-        private readonly ContentChunk[] chunks;
+        private ContentChunk[] chunks;
         private long locks;
 
         /// <summary>
@@ -30,12 +30,12 @@ namespace SiliconStudio.Xenko.Streaming
         /// <summary>
         /// Gets the storage URL path.
         /// </summary>
-        public string Url { get; }
+        public string Url { get; private set; }
         
         /// <summary>
         /// Gets the time when container has been created.
         /// </summary>
-        public DateTime PackageTime { get; }
+        public DateTime PackageTime { get; private set; }
 
         /// <summary>
         /// Gets the last access time.
@@ -59,10 +59,13 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         public int ChunksCount => chunks.Length;
 
-        internal ContentStorage(ContentStreamingService service, ref ContentStorageHeader header)
+        internal ContentStorage(ContentStreamingService service)
         {
-            // Init
             Service = service;
+        }
+
+        internal void Init(ref ContentStorageHeader header)
+        {
             Url = header.DataUrl;
             chunks = new ContentChunk[header.ChunksCount];
             for (int i = 0; i < chunks.Length; i++)
@@ -73,7 +76,7 @@ namespace SiliconStudio.Xenko.Streaming
             PackageTime = header.PackageTime;
 
             // Validate hash code
-            if(GetHashCode() != header.HashCode)
+            if (GetHashCode() != header.HashCode)
                 throw new DataMisalignedException();
         }
 

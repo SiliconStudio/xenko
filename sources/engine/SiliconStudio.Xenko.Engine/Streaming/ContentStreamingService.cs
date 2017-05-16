@@ -40,9 +40,10 @@ namespace SiliconStudio.Xenko.Streaming
                 int hash = storageHeader.DataUrl.GetHashCode();
                 if (!containers.TryGetValue(hash, out result))
                 {
-                    result = new ContentStorage(this, ref storageHeader);
+                    result = new ContentStorage(this);
                     containers.Add(hash, result);
                 }
+                result.Init(ref storageHeader);
             }
 
             Debug.Assert(result != null && result.Url == storageHeader.DataUrl);
