@@ -7,8 +7,6 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Streaming
@@ -105,61 +103,8 @@ namespace SiliconStudio.Xenko.Streaming
             if (Texture.GraphicsDevice != null)
                 Texture.OnDestroyed();
         }
-
-        internal override Task UpdateAllocation(int residency)
-        {
-            return null;//todo: use UpdateSubresource and stream data to already allocated texture
-
-            Debug.Assert(MathUtil.IsInRange(residency, 0, TotalMipLevels));
-            Task result = null;
-
-            var allocatedResidency = AllocatedResidency;
-            Debug.Assert(allocatedResidency >= 0);
-
-            // Check if residency won't change
-            if (residency == allocatedResidency)
-            {
-            }
-            // Check if need to deallocate
-            else if (residency == 0)
-            {
-                // Release texture memory
-                Texture.OnDestroyed();
-            }
-            else
-            {
-                // Check if texture hasn't been allocated yet
-                if (allocatedResidency == 0)
-                {
-                    // Create texture description
-                    int mip = TotalMipLevels - residency;
-                    int width = TotalWidth >> mip;
-                    int height = TotalHeight >> mip;
-                    TextureDescription desc;
-                    if (IsCubeMap)
-                    {
-                        Debug.Assert(width == height);
-                        desc = TextureDescription.NewCube(width, residency, Format, TextureFlags.ShaderResource);
-                    }
-                    else
-                    {
-                        desc = TextureDescription.New2D(width, height, residency, Format, TextureFlags.ShaderResource);
-                    }
-
-                    // Initialize texture
-                    Texture.InitializeFrom(desc);
-                }
-                else
-                {
-                    // TODO: create async task to resize texture and copy contents to the new one (GPU async task)
-                    throw new NotImplementedException("StreamingTexture.UpdateAllocation: resize texture allocation");
-                }
-            }
-
-            return result;
-        }
-
-        private async void StreamingTask(int residency)
+        
+        private void StreamingTask(int residency)
         {
             // Cache data
             var texture = Texture;
@@ -213,7 +158,7 @@ namespace SiliconStudio.Xenko.Streaming
                         var chunk = Storage.GetChunk(totalMipIndex);
                         if (chunk == null || chunk.Size != slicePitch * newDesc.ArraySize)
                             throw new DataException("Data chunk is missing or has invalid size.");
-                        var data = await chunk.GetData(fileProvider);
+                        var data = chunk.GetData(fileProvider);
                         if (!chunk.IsLoaded)
                             throw new DataException("Data chunk is not loaded.");
 
@@ -242,10 +187,10 @@ namespace SiliconStudio.Xenko.Streaming
             }
         }
 
-        internal override Task CreateStreamingTask(int residency)
+        internal override Task StreamAsync(int residency)
         {
             Debug.Assert(CanBeUpdated && residency <= MaxResidency);
-            
+
             return _streamingTask = new Task(() => StreamingTask(residency));
         }
 

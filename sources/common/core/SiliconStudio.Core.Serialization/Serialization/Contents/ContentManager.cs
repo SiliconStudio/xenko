@@ -13,6 +13,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Storage;
+using SiliconStudio.Core.Streaming;
 
 namespace SiliconStudio.Core.Serialization.Contents
 {
@@ -26,6 +27,8 @@ namespace SiliconStudio.Core.Serialization.Contents
         public static DatabaseFileProvider FileProvider => GetFileProvider?.Invoke();
 
         public static Func<DatabaseFileProvider> GetFileProvider { get; set; }
+
+        private IServiceRegistry services;
 
         public ContentSerializer Serializer { get; private set; }
 
@@ -48,6 +51,7 @@ namespace SiliconStudio.Core.Serialization.Contents
             Serializer = new ContentSerializer();
             if (services != null)
             {
+                this.services = services;
                 services.AddService(typeof(IContentManager), this);
                 services.AddService(typeof(ContentManager), this);
                 Serializer.SerializerContextTags.Set(ServiceRegistry.ServiceRegistryKey, services);
@@ -454,6 +458,14 @@ namespace SiliconStudio.Core.Serialization.Contents
                 if (isRoot || parentReference.References.Add(reference))
                 {
                     IncrementReference(reference, isRoot);
+                }
+
+                // Check if need to fully stream resource
+                if (!settings.AllowContentStreaming)
+                {
+                    var streamingManager = services.GetService(typeof(IStreamingManager)) as IStreamingManager;
+                    if(streamingManager != null)
+                        streamingManager.FullyLoadResource(reference.Object);
                 }
 
                 return reference.Object;

@@ -103,20 +103,11 @@ namespace SiliconStudio.Xenko.Streaming
         }
 
         /// <summary>
-        /// Updates the resource allocation to the given residency level. May not be updated now but in an async operation.
-        /// </summary>
-        /// <param name="residency">The target allocation residency.</param>
-        /// <returns>Async task that updates resource allocation or null if already done it.</returns>
-        [CanBeNull]
-        internal abstract Task UpdateAllocation(int residency);
-
-        /// <summary>
-        /// Creates streaming task (or tasks sequence) to perform resource streaming for the desire residency level.
+        /// Stream resource to the target residency level.
         /// </summary>
         /// <param name="residency">The target residency.</param>
-        /// <returns>Async task or tasks that update resource residency level. Must be preceded with UpdateAllocation call.</returns>
         [NotNull]
-        internal abstract Task CreateStreamingTask(int residency);
+        internal abstract Task StreamAsync(int residency);
 
         /// <inheritdoc />
         protected override void Destroy()

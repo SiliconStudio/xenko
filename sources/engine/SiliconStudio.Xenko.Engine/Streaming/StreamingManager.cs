@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -22,7 +21,7 @@ namespace SiliconStudio.Xenko.Streaming
     /// </summary>
     /// <seealso cref="SiliconStudio.Xenko.Games.GameSystemBase" />
     /// <seealso cref="SiliconStudio.Xenko.Graphics.Data.ITexturesStreamingProvider" />
-    public class StreamingManager : GameSystemBase, ITexturesStreamingProvider
+    public class StreamingManager : GameSystemBase, IStreamingManager, ITexturesStreamingProvider
     {
         private readonly List<StreamableResource> resources = new List<StreamableResource>(512);
         private readonly List<StreamableResource> priorityUpdateQueue = new List<StreamableResource>(64); // Could be Queue<T> but it doesn't support .Remove(T)
@@ -62,6 +61,7 @@ namespace SiliconStudio.Xenko.Streaming
         public StreamingManager(IServiceRegistry services) : base(services)
         {
             services.AddService(typeof(StreamingManager), this);
+            services.AddService(typeof(IStreamingManager), this);
             services.AddService(typeof(ITexturesStreamingProvider), this);
 
             ContentStreaming = new ContentStreamingService();
@@ -77,6 +77,10 @@ namespace SiliconStudio.Xenko.Streaming
             if (Services.GetService(typeof(StreamingManager)) == this)
             {
                 Services.RemoveService(typeof(StreamingManager));
+            }
+            if (Services.GetService(typeof(IStreamingManager)) == this)
+            {
+                Services.RemoveService(typeof(IStreamingManager));
             }
             if (Services.GetService(typeof(ITexturesStreamingProvider)) == this)
             {
@@ -163,12 +167,11 @@ namespace SiliconStudio.Xenko.Streaming
                 // Get streaming object
                 var resource = CreateStreamingTexture(obj, ref imageDescription, ref storageHeader);
 
-                // Stream resource to the maximum level
+                // Use it temporary (dispose after load)
                 using (resource)
                 {
-                    var task = resource.CreateStreamingTask(resource.MaxResidency);
-                    task.Start();
-                    task.Wait();
+                    // Stream resource to the maximum level
+                    FullyLoadResource(resource);
                 }
             }
         }
@@ -211,6 +214,30 @@ namespace SiliconStudio.Xenko.Streaming
             {
                 manager.Destroy();
             }
+        }
+
+        /// <inheritdoc />
+        public void FullyLoadResource(object obj)
+        {
+            StreamableResource resource;
+            lock (resources)
+            {
+                resource = resources.Find(x => x.Resource == obj);
+            }
+
+            if(resource != null)
+                FullyLoadResource(resource);
+        }
+
+        public void FullyLoadResource(StreamableResource resource)
+        {
+            // Disable dynamic streaming for the esource
+            resource.ForceFullyLoaded = true;
+
+            // Stream resource to the maximum level
+            var task = resource.StreamAsync(resource.MaxResidency);
+            task.Start();
+            task.Wait();
         }
 
         private async Task Update()
@@ -299,7 +326,7 @@ namespace SiliconStudio.Xenko.Streaming
 
             // Calculate target quality for that asset
             StreamingQuality targetQuality = StreamingQuality.Maximum;
-            //if (resource.IsDynamic)
+            if (resource.ForceFullyLoaded == false)
             {
                 //targetQuality = handler.CalculateTargetQuality(resource, now);
                 targetQuality *= (testQuality / 100.0f); // apply quality scale for testing
@@ -342,40 +369,14 @@ namespace SiliconStudio.Xenko.Streaming
                 // Check if need to increase it's residency
                 if (targetResidency > currentResidency)
                 {
-                    // Check if need to allocate memory for that resource
-                    Task allocatingTask = null;
-                    if (allocatedResidency < targetResidency)
-                    {
-                        // TODO: check memory pool for that resource group -> if out of memory call memory decrease situation for a group
-
-                        // Update resource allocation
-                        allocatingTask = resource.UpdateAllocation(targetResidency);
-
-                        // Ensure that resource residency didn't change (just check for any leaks)
-                        Debug.Assert(currentResidency == resource.CurrentResidency);
-                    }
-
                     // Calculate residency level to stream in (resources may want to incease/decrease it's quality in steps rather than at once)
                     //var requestedResidency = handler.CalculateRequestedResidency(resource, targetResidency);// TODO: use resource groups and handlers
                     var requestedResidency = Math.Min(targetResidency, Math.Max(currentResidency + 1, 4)); // Stream target quality in steps but lower mips at once
                     //var requestedResidency = currentResidency + 1; // Stream target quality in steps
                     //var requestedResidency = targetResidency; // Stream target quality at once
-                    
-                    // TODO: merge allocate and stream tasks?
 
                     // Create streaming task (resource type specific)
-                    var streamingTask = resource.CreateStreamingTask(requestedResidency);
-
-                    // Start tasks
-                    if (allocatingTask != null)
-                    {
-                        allocatingTask.ContinueWith(x => streamingTask);
-                        allocatingTask.Start();
-                    }
-                    else
-                    {
-                        streamingTask.Start();
-                    }
+                    resource.StreamAsync(requestedResidency).Start();
                 }
                 else
                 {
@@ -384,7 +385,7 @@ namespace SiliconStudio.Xenko.Streaming
                     var requestedResidency = targetResidency; // Stream target quality at once
 
                     // Spawn streaming task (resource type specific)
-                    resource.CreateStreamingTask(requestedResidency).Start();
+                    resource.StreamAsync(requestedResidency).Start();
                 }
             }
             else

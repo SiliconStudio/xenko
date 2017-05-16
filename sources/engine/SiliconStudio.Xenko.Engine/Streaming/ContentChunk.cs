@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         /// <param name="fileProvider">Database file provider.</param>
         /// <exception cref="DataException">Cannot load content chunk. Missing File Provider.</exception>
-        public async Task<byte[]> GetData(DatabaseFileProvider fileProvider)
+        public byte[] GetData(DatabaseFileProvider fileProvider)
         {
             if (IsLoaded)
                 return data;
@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Streaming
             {
                 stream.Position = Location;
                 var bytes = new byte[Size];
-                await stream.ReadAsync(bytes, 0, Size);
+                stream.Read(bytes, 0, Size);
                 data = bytes;
             }
 
