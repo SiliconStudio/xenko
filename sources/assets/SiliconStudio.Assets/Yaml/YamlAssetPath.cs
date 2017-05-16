@@ -1,98 +1,188 @@
 // Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 
-namespace SiliconStudio.Core.Yaml
+namespace SiliconStudio.Assets.Yaml
 {
+    /// <summary>
+    /// A class representing the path of a member or item of an Asset as it is created/consumed by the YAML asset serializers.
+    /// </summary>
     [DataContract]
     public class YamlAssetPath : IEquatable<YamlAssetPath>
     {
-        public enum ItemType
+        /// <summary>
+        /// An enum representing the type of an element of the path.
+        /// </summary>
+        public enum ElementType
         {
+            /// <summary>
+            /// An element that is a member.
+            /// </summary>
             Member,
+            /// <summary>
+            /// An element that is an index or a key.
+            /// </summary>
             Index,
+            /// <summary>
+            /// An element that is an item identifier of a collection with ids
+            /// </summary>
+            /// <seealso cref="Core.Reflection.ItemId"/>
             ItemId
         }
 
-        public struct Item : IEquatable<Item>
+        /// <summary>
+        /// A structure representing an element of a <see cref="YamlAssetPath"/>.
+        /// </summary>
+        public struct Element : IEquatable<Element>
         {
-            public readonly ItemType Type;
+            /// <summary>
+            /// The type of the element.
+            /// </summary>
+            public readonly ElementType Type;
+            /// <summary>
+            /// The value of the element, corresonding to its <see cref="Type"/>.
+            /// </summary>
             public readonly object Value;
-            public Item(ItemType type, object value)
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Element"/> structure.
+            /// </summary>
+            /// <param name="type">The type of element.</param>
+            /// <param name="value">The value of the element.</param>
+            public Element(ElementType type, object value)
             {
                 Type = type;
                 Value = value;
             }
-            public string AsMember() { if (Type != ItemType.Member) throw new InvalidOperationException("This item is not a Member"); return (string)Value; }
-            public ItemId AsItemId() { if (Type != ItemType.ItemId) throw new InvalidOperationException("This item is not a item Id"); return (ItemId)Value; }
 
-            public bool Equals(Item other)
+            /// <summary>
+            /// Fetches the name of the member, considering this element is a <see cref="ElementType.Member"/>.
+            /// </summary>
+            /// <returns>The name of the member.</returns>
+            public string AsMember() { if (Type != ElementType.Member) throw new InvalidOperationException("This item is not a Member"); return (string)Value; }
+            /// <summary>
+            /// Returns the <see cref="ItemId"/> of this element, considering this element is a <see cref="ElementType.ItemId"/>.
+            /// </summary>
+            /// <returns>The <see cref="ItemId"/> of the item.</returns>
+            public ItemId AsItemId() { if (Type != ElementType.ItemId) throw new InvalidOperationException("This item is not a item Id"); return (ItemId)Value; }
+
+            /// <inheritdoc/>
+            public bool Equals(Element other)
             {
                 return Type == other.Type && Equals(Value, other.Value);
             }
 
+            /// <inheritdoc/>
             public override bool Equals(object obj)
             {
                 if (ReferenceEquals(null, obj))
                     return false;
-                return obj is Item && Equals((Item)obj);
+                return obj is Element && Equals((Element)obj);
             }
 
+            /// <inheritdoc/>
             public override int GetHashCode()
             {
-                unchecked
-                {
-                    return ((int)Type*397) ^ (Value?.GetHashCode() ?? 0);
-                }
+                unchecked { return ((int)Type*397) ^ (Value?.GetHashCode() ?? 0); }
             }
         }
 
-        private readonly List<Item> items = new List<Item>(16);
+        private readonly List<Element> elements = new List<Element>(16);
 
-        public IReadOnlyList<Item> Items => items;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="YamlAssetPath"/> class.
+        /// </summary>
+        public YamlAssetPath()
+        {
+        }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="YamlAssetPath"/> class.
+        /// </summary>
+        /// <param name="elements">The elements constituting this path, in proper order.</param>
+        public YamlAssetPath([NotNull] IEnumerable<Element> elements)
+        {
+            if (elements == null) throw new ArgumentNullException(nameof(elements));
+            this.elements.AddRange(elements);
+        }
+
+        /// <summary>
+        /// The elements constituting this path.
+        /// </summary>
+        public IReadOnlyList<Element> Elements => elements;
+
+        /// <summary>
+        /// Adds an additional element to the path representing an access to a member of an object.
+        /// </summary>
+        /// <param name="memberName">The name of the member.</param>
         public void PushMember(string memberName)
         {
-            items.Add(new Item(ItemType.Member, memberName));
+            elements.Add(new Element(ElementType.Member, memberName));
         }
 
+        /// <summary>
+        /// Adds an additional element to the path representing an access to an item of a collection or a value of a dictionary that does not use <see cref="ItemId"/>.
+        /// </summary>
+        /// <param name="index">The index of the item.</param>
+        /// <seealso cref="NonIdentifiableCollectionItemsAttribute"/>
+        /// <seealso cref="ItemId"/>
         public void PushIndex(object index)
         {
-            items.Add(new Item(ItemType.Index, index));
+            elements.Add(new Element(ElementType.Index, index));
         }
 
+        /// <summary>
+        /// Adds an additional element to the path representing an access to an item of an collection or a value of a dictionary.
+        /// </summary>
+        /// <param name="itemId">The <see cref="ItemId"/> of the item.</param>
         public void PushItemId(ItemId itemId)
         {
-            items.Add(new Item(ItemType.ItemId, itemId));
+            elements.Add(new Element(ElementType.ItemId, itemId));
         }
 
-        public void Push(Item item)
+        /// <summary>
+        /// Adds an additional element.
+        /// </summary>
+        /// <param name="element">The <see cref="Element"/> to add.</param>
+        public void Push(Element element)
         {
-            items.Add(item);
+            elements.Add(element);
         }
 
-        public void RemoveFirstItem()
+        /// <summary>
+        /// Appends the given <see cref="YamlAssetPath"/> to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="YamlAssetPath"/></param>
+        /// <returns>A new instance of <see cref="YamlAssetPath"/> corresonding to the given instance appended to this instance.</returns>
+        [NotNull, Pure]
+        public YamlAssetPath Append([CanBeNull] YamlAssetPath other)
         {
-            for (var i = 1; i < items.Count; ++i)
+            var result = new YamlAssetPath(elements);
+            result.elements.AddRange(elements);
+            if (other != null)
             {
-                items[i - 1] = items[i];
+                result.elements.AddRange(other.elements);
             }
-            if (items.Count > 0)
-            {
-                items.RemoveAt(items.Count - 1);
-            }
+            return result;
         }
 
+        /// <summary>
+        /// Creates a clone of this <see cref="YamlAssetPath"/> instance.
+        /// </summary>
+        /// <returns>A new copy of this <see cref="YamlAssetPath"/>.</returns>
+        [NotNull]
         public YamlAssetPath Clone()
         {
-            var clone = new YamlAssetPath();
-            clone.items.AddRange(items);
+            var clone = new YamlAssetPath(elements);
             return clone;
         }
 
@@ -106,14 +196,14 @@ namespace SiliconStudio.Core.Yaml
         {
             var currentObject = root;
             var memberPath = new MemberPath();
-            foreach (var item in Items)
+            foreach (var item in Elements)
             {
                 if (currentObject == null)
                     throw new InvalidOperationException($"The path [{ToString()}] contains access to a member of a null object.");
 
                 switch (item.Type)
                 {
-                    case ItemType.Member:
+                    case ElementType.Member:
                     {
                         var typeDescriptor = TypeDescriptorFactory.Default.Find(currentObject.GetType());
                         var name = item.AsMember();
@@ -123,7 +213,7 @@ namespace SiliconStudio.Core.Yaml
                         currentObject = memberDescriptor.Get(currentObject);
                         break;
                     }
-                    case ItemType.Index:
+                    case ElementType.Index:
                     {
                         var typeDescriptor = TypeDescriptorFactory.Default.Find(currentObject.GetType());
                         var arrayDescriptor = typeDescriptor as ArrayDescriptor;
@@ -149,7 +239,7 @@ namespace SiliconStudio.Core.Yaml
                         }
                         break;
                     }
-                    case ItemType.ItemId:
+                    case ElementType.ItemId:
                     {
                         var ids = CollectionItemIdHelper.GetCollectionItemIds(currentObject);
                         var key = ids.GetKey(item.AsItemId());
@@ -185,6 +275,12 @@ namespace SiliconStudio.Core.Yaml
             return memberPath;
         }
 
+        /// <summary>
+        /// Creates a <see cref="YamlAssetPath"/> out of a <see cref="MemberPath"/> instance.
+        /// </summary>
+        /// <param name="path">The <see cref="MemberPath"/> from which to create a <see cref="YamlAssetPath"/>.</param>
+        /// <param name="root">The root object of the given <see cref="MemberPath"/>.</param>
+        /// <returns>An instance of <see cref="YamlAssetPath"/> corresponding to the same target than the given <see cref="MemberPath"/>.</returns>
         [NotNull]
         public static YamlAssetPath FromMemberPath(MemberPath path, object root)
         {
@@ -238,20 +334,22 @@ namespace SiliconStudio.Core.Yaml
             return result;
         }
 
+        /// <inheritdoc/>
         public bool Equals(YamlAssetPath other)
         {
-            if (Items.Count != other?.Items.Count)
+            if (Elements.Count != other?.Elements.Count)
                 return false;
 
-            for (var i = 0; i < Items.Count; ++i)
+            for (var i = 0; i < Elements.Count; ++i)
             {
-                if (!Items[i].Equals(other.Items[i]))
+                if (!Elements[i].Equals(other.Elements[i]))
                     return false;
             }
 
             return true;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
@@ -263,39 +361,43 @@ namespace SiliconStudio.Core.Yaml
             return Equals((YamlAssetPath)obj);
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return items.Aggregate(0, (hashCode, item) => (hashCode * 397) ^ item.GetHashCode());
+            return elements.Aggregate(0, (hashCode, item) => (hashCode * 397) ^ item.GetHashCode());
         }
 
+        /// <inheritdoc/>
         public static bool operator ==(YamlAssetPath left, YamlAssetPath right)
         {
             return Equals(left, right);
         }
 
+        /// <inheritdoc/>
         public static bool operator !=(YamlAssetPath left, YamlAssetPath right)
         {
             return !Equals(left, right);
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             var sb = new StringBuilder();
             sb.Append("(object)");
-            foreach (var item in items)
+            foreach (var item in elements)
             {
                 switch (item.Type)
                 {
-                    case ItemType.Member:
+                    case ElementType.Member:
                         sb.Append('.');
                         sb.Append(item.Value);
                         break;
-                    case ItemType.Index:
+                    case ElementType.Index:
                         sb.Append('[');
                         sb.Append(item.Value);
                         sb.Append(']');
                         break;
-                    case ItemType.ItemId:
+                    case ElementType.ItemId:
                         sb.Append('{');
                         sb.Append(item.Value);
                         sb.Append('}');
@@ -307,7 +409,7 @@ namespace SiliconStudio.Core.Yaml
             return sb.ToString();
         }
 
-        public static bool IsCollectionWithIdType(Type type, object key, out ItemId id, out object actualKey)
+        internal static bool IsCollectionWithIdType(Type type, object key, out ItemId id, out object actualKey)
         {
             if (type.IsGenericType)
             {
@@ -331,22 +433,10 @@ namespace SiliconStudio.Core.Yaml
             return false;
         }
 
-        public static bool IsCollectionWithIdType(Type type, object key, out ItemId id)
+        internal static bool IsCollectionWithIdType(Type type, object key, out ItemId id)
         {
             object actualKey;
             return IsCollectionWithIdType(type, key, out id, out actualKey);
-        }
-
-        [NotNull, Pure]
-        public YamlAssetPath Append([CanBeNull] YamlAssetPath other)
-        {
-            var result = new YamlAssetPath();
-            result.items.AddRange(items);
-            if (other != null)
-            {
-                result.items.AddRange(other.items);
-            }
-            return result;
         }
     }
 }

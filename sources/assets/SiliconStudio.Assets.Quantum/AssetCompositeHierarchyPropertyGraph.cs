@@ -329,12 +329,12 @@ namespace SiliconStudio.Assets.Quantum
                 var fixedOverrides = new YamlAssetMetadata<OverrideType>();
                 foreach (var overrideEntry in overrides)
                 {
-                    var pathItems = overrideEntry.Key.Items;
+                    var pathItems = overrideEntry.Key.Elements;
                     // If this override target a part, we need to fixup the indices.
-                    if (pathItems.Count > 3 && startPath.Items[0].Equals(pathItems[0]) && startPath.Items[1].Equals(pathItems[1]))
+                    if (pathItems.Count > 3 && startPath.Elements[0].Equals(pathItems[0]) && startPath.Elements[1].Equals(pathItems[1]))
                     {
                         // Retrieve the previous index
-                        var oldIndex = (int)overrideEntry.Key.Items[2].Value;
+                        var oldIndex = (int)overrideEntry.Key.Elements[2].Value;
                         // Append the new index instead on a new YamlAssetPath
                         var newPath = startPath.Clone();
                         newPath.PushIndex(partIndexRemapping[oldIndex]);
