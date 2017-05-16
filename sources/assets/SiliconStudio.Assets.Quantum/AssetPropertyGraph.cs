@@ -334,12 +334,12 @@ namespace SiliconStudio.Assets.Quantum
             var currentNode = rootNode;
             index = Index.Empty;
             resolveOnIndex = false;
-            for (var i = 0; i < path.Items.Count; i++)
+            for (var i = 0; i < path.Elements.Count; i++)
             {
-                var item = path.Items[i];
+                var item = path.Elements[i];
                 switch (item.Type)
                 {
-                    case YamlAssetPath.ItemType.Member:
+                    case YamlAssetPath.ElementType.Member:
                     {
                         index = Index.Empty;
                         resolveOnIndex = false;
@@ -355,14 +355,14 @@ namespace SiliconStudio.Assets.Quantum
                         currentNode = (IAssetNode)objectNode.TryGetChild(name);
                         break;
                     }
-                    case YamlAssetPath.ItemType.Index:
+                    case YamlAssetPath.ElementType.Index:
                     {
                         index = new Index(item.Value);
                         resolveOnIndex = true;
                         var memberNode = currentNode as IMemberNode;
                         if (memberNode == null) throw new InvalidOperationException($"An IMemberNode was expected when processing the path [{path}]");
                         currentNode = (IAssetNode)memberNode.Target;
-                        if (currentNode.IsReference && i < path.Items.Count - 1)
+                        if (currentNode.IsReference && i < path.Elements.Count - 1)
                         {
                             var objNode = currentNode as IObjectNode;
                             if (objNode == null) throw new InvalidOperationException($"An IObjectNode was expected when processing the path [{path}]");
@@ -370,7 +370,7 @@ namespace SiliconStudio.Assets.Quantum
                         }
                         break;
                     }
-                    case YamlAssetPath.ItemType.ItemId:
+                    case YamlAssetPath.ElementType.ItemId:
                     {
                         var ids = CollectionItemIdHelper.GetCollectionItemIds(currentNode.Retrieve());
                         var key = ids.GetKey(item.AsItemId());
@@ -379,7 +379,7 @@ namespace SiliconStudio.Assets.Quantum
                         var memberNode = currentNode as IMemberNode;
                         if (memberNode == null) throw new InvalidOperationException($"An IMemberNode was expected when processing the path [{path}]");
                         currentNode = (IAssetNode)memberNode.Target;
-                        if (currentNode.IsReference && i < path.Items.Count - 1)
+                        if (currentNode.IsReference && i < path.Elements.Count - 1)
                         {
                             var objNode = currentNode as IObjectNode;
                             if (objNode == null) throw new InvalidOperationException($"An IObjectNode was expected when processing the path [{path}]");
