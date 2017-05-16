@@ -166,7 +166,6 @@
     <None Include="GoogleVR\GoogleVR.cpp" />
     <None Include="OculusOVR\OculusOVR.cpp" />
     <None Include="Fove\Fove.cpp" />
-    <None Include="Fove\Fove.cpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="..\..\native\Xenko.Native.targets" />
