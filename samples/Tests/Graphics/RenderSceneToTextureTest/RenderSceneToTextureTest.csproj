@@ -71,7 +71,7 @@
   <ItemGroup>
     <Compile Include="RenderSceneToTextureTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="$(SiliconStudioXenkoDir)\sources\shared\SharedAssemblyInfo.cs">
+    <Compile Include="$(SiliconStudioXenkoDir)\sources\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
   </ItemGroup>

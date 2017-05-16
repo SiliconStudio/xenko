@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
         /// cease to exist (physically correct, but more difficult to control).
         /// </userdoc>
         [DataMember(50)]
-        [DataMemberRange(0, 1, 0.001, 0.1)]
+        [DataMemberRange(0, 1, 0.01, 0.1, 3)]
         [Display("Energy conservation")]
         public float EnergyConservation { get; set; } = 0f;
 
