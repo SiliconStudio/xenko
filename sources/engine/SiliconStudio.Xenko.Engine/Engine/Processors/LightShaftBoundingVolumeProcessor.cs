@@ -43,6 +43,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             base.OnEntityComponentAdding(entity, component, data);
             component.LightShaftChanged += ComponentOnLightShaftChanged;
             component.ModelChanged += ComponentOnModelChanged;
+            component.EnabledChanged += ComponentOnEnabledChanged;
             isDirty = true;
         }
 
@@ -51,6 +52,12 @@ namespace SiliconStudio.Xenko.Engine.Processors
             base.OnEntityComponentRemoved(entity, component, data);
             component.LightShaftChanged -= ComponentOnLightShaftChanged;
             component.ModelChanged -= ComponentOnModelChanged;
+            component.EnabledChanged -= ComponentOnEnabledChanged;
+            isDirty = true;
+        }
+
+        private void ComponentOnEnabledChanged(object sender, EventArgs eventArgs)
+        {
             isDirty = true;
         }
 

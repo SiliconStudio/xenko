@@ -19,6 +19,13 @@ namespace SiliconStudio.Xenko.Engine
     {
         private Model model;
         private LightShaftComponent lightShaft;
+        private bool enabled = true;
+
+        public override bool Enabled
+        {
+            get { return enabled; }
+            set { enabled = value; EnabledChanged?.Invoke(this, null); }
+        }
 
         /// <summary>
         /// The model used to define the bounding volume
@@ -40,5 +47,6 @@ namespace SiliconStudio.Xenko.Engine
 
         public event EventHandler LightShaftChanged;
         public event EventHandler ModelChanged;
+        public event EventHandler EnabledChanged;
     }
 }
