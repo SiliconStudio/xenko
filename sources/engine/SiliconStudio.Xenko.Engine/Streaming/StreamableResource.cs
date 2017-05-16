@@ -5,6 +5,8 @@ using System;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Streaming
 {
@@ -13,6 +15,8 @@ namespace SiliconStudio.Xenko.Streaming
     /// </summary>
     public abstract class StreamableResource : ComponentBase
     {
+        protected DatabaseFileProvider fileProvider;
+
         /// <summary>
         /// Gets the manager.
         /// </summary>
@@ -47,6 +51,12 @@ namespace SiliconStudio.Xenko.Streaming
         /// Gets the target residency level.
         /// </summary>
         public int TargetResidency { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether always fully load that resource.
+        /// </summary>
+        /// <value><c>true</c> if always fully load that resource; otherwise, <c>false</c>.</value>
+        public bool ForceFullyLoaded { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this resource is allocated.
@@ -84,13 +94,14 @@ namespace SiliconStudio.Xenko.Streaming
             }
 
             Storage = storage;
+            fileProvider = ContentManager.FileProvider;
 
             if (Storage != null)
             {
                 // TODO: add reference?
             }
         }
-        
+
         /// <summary>
         /// Updates the resource allocation to the given residency level. May not be updated now but in an async operation.
         /// </summary>
@@ -110,6 +121,11 @@ namespace SiliconStudio.Xenko.Streaming
         /// <inheritdoc />
         protected override void Destroy()
         {
+            if (Storage != null)
+            {
+                // TODO: remove reference?
+            }
+
             Manager.UnregisterResource(this);
             Manager = null;
 

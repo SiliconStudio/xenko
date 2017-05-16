@@ -18,14 +18,7 @@ namespace SiliconStudio.Xenko.Streaming
         
         // Configuration
         public TimeSpan UnusedDataChunksLifetime = TimeSpan.FromSeconds(3);
-
-        internal Func<Task<IDisposable>> MountDatabase { get; set; }
-
-        internal ContentStreamingService()
-        {
-            MountDatabase = () => Task.FromResult((IDisposable)null);
-        }
-
+        
         /// <summary>
         /// Gets the storage container.
         /// </summary>

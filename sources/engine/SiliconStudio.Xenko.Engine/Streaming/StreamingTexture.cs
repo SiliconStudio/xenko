@@ -159,7 +159,7 @@ namespace SiliconStudio.Xenko.Streaming
             return result;
         }
 
-        private async void StreamingTask(MicroThread microThread, int residency)
+        private async void StreamingTask(int residency)
         {
             // Cache data
             var texture = Texture;
@@ -185,6 +185,9 @@ namespace SiliconStudio.Xenko.Streaming
                 newDesc.Width = TotalWidth >> (_desc.MipLevels - newDesc.MipLevels);
                 newDesc.Height = TotalHeight >> (_desc.MipLevels - newDesc.MipLevels);
                 var dataBoxes = new DataBox[newDesc.MipLevels * newDesc.ArraySize];
+                bool isBlockCompressed =
+                    (Format >= PixelFormat.BC1_Typeless && Format <= PixelFormat.BC5_SNorm) ||
+                    (Format >= PixelFormat.BC6H_Typeless && Format <= PixelFormat.BC7_UNorm_SRgb);
                 int dataBoxIndex = 0;
 
                 // Get data boxes data
@@ -196,6 +199,12 @@ namespace SiliconStudio.Xenko.Streaming
                         int mipWidth = TotalWidth >> totalMipIndex;
                         int mipheight = TotalHeight >> totalMipIndex;
 
+                        if (isBlockCompressed && ((mipWidth % 4) != 0 || (mipheight % 4) != 0))
+                        {
+                            mipWidth = unchecked((int)(((uint)(mipWidth + 3)) & ~(uint)3));
+                            mipheight = unchecked((int)(((uint)(mipheight + 3)) & ~(uint)3));
+                        }
+
                         int rowPitch, slicePitch;
                         int widthPacked;
                         int heightPacked;
@@ -204,7 +213,7 @@ namespace SiliconStudio.Xenko.Streaming
                         var chunk = Storage.GetChunk(totalMipIndex);
                         if (chunk == null || chunk.Size != slicePitch * newDesc.ArraySize)
                             throw new DataException("Data chunk is missing or has invalid size.");
-                        var data = await chunk.GetData(microThread);
+                        var data = await chunk.GetData(fileProvider);
                         if (!chunk.IsLoaded)
                             throw new DataException("Data chunk is not loaded.");
 
@@ -236,9 +245,8 @@ namespace SiliconStudio.Xenko.Streaming
         internal override Task CreateStreamingTask(int residency)
         {
             Debug.Assert(CanBeUpdated && residency <= MaxResidency);
-
-            var microThread = Scheduler.CurrentMicroThread;
-            return _streamingTask = new Task(() => StreamingTask(microThread, residency));
+            
+            return _streamingTask = new Task(() => StreamingTask(residency));
         }
 
         /// <inheritdoc />
