@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Graphics;
@@ -224,7 +225,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (Name != null && Profiling)
             {
-                context.CommandList.BeginProfile(Color.Green, Name);
+                context.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, new ProfilingKey(Name));
             }
 
             PreDrawCore(context);
@@ -256,7 +257,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (Name != null && Profiling)
             {
-                context.CommandList.EndProfile();
+                context.CommandList.GpuQueryProfiler.EndProfile();
             }
         }
     }

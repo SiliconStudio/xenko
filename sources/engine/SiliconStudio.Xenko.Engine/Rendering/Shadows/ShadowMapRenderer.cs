@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -165,7 +166,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     var shadowmapRenderView = renderView as ShadowMapRenderView;
                     if (shadowmapRenderView != null && shadowmapRenderView.RenderView == drawContext.RenderContext.RenderView)
                     {
-                        drawContext.CommandList.BeginProfile(Color.Black, $"Shadow Map {shadowmapRenderView.ShadowMapTexture.Light}");
+                        drawContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Black, new ProfilingKey($"Shadow Map {shadowmapRenderView.ShadowMapTexture.Light}"));
 
                         var shadowMapRectangle = shadowmapRenderView.Rectangle;
                         drawContext.CommandList.SetRenderTarget(shadowmapRenderView.ShadowMapTexture.Atlas.Texture, null);
@@ -174,7 +175,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                         renderSystem.Draw(drawContext, shadowmapRenderView, renderSystem.RenderStages[shadowmapRenderView.RenderStages[0].Index]);
                         
-                        drawContext.CommandList.EndProfile();
+                        drawContext.CommandList.GpuQueryProfiler.EndProfile();
                     }
                 }
             }

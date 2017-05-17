@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
@@ -88,7 +89,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                         throw new ArgumentOutOfRangeException();
                 }
 
-                DrawContext.CommandList.BeginProfile(Color.Red, $"Face {(CubeMapFace)face}");
+                DrawContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, new ProfilingKey($"Face {(CubeMapFace)face}"));
 
                 // Draw
                 context.GameSystems.Draw(context.DrawTime);
@@ -96,7 +97,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 // Copy to texture cube
                 DrawContext.CommandList.CopyRegion(DrawContext.CommandList.RenderTarget, 0, null, cubeTexture, face);
 
-                DrawContext.CommandList.EndProfile();
+                DrawContext.CommandList.GpuQueryProfiler.EndProfile();
             }
         }
 
@@ -110,11 +111,11 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 using (cubemapRenderer.DrawContext.PushRenderTargetsAndRestore())
                 {
                     // Render specular probe
-                    context.GraphicsContext.CommandList.BeginProfile(Color.Red, "SpecularProbe");
+                    context.GraphicsContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, new ProfilingKey("SpecularProbe"));
 
                     cubemapRenderer.Draw(position, cubeTexture);
 
-                    context.GraphicsContext.CommandList.EndProfile();
+                    context.GraphicsContext.CommandList.GpuQueryProfiler.EndProfile();
                 }
 
                 return cubeTexture;

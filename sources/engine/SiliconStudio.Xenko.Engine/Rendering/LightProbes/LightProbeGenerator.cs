@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;
@@ -42,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
                 using (cubemapRenderer.DrawContext.PushRenderTargetsAndRestore())
                 {
                     // Render light probe
-                    context.GraphicsContext.CommandList.BeginProfile(Color.Red, "LightProbes");
+                    context.GraphicsContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, new ProfilingKey("LightProbes"));
 
                     int lightProbeIndex = 0;
                     foreach (var entity in context.SceneSystem.SceneInstance)
@@ -54,12 +55,12 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
                         var lightProbePosition = lightProbe.Entity.Transform.WorldMatrix.TranslationVector;
                         context.GraphicsContext.ResourceGroupAllocator.Reset(context.GraphicsContext.CommandList);
 
-                        context.GraphicsContext.CommandList.BeginProfile(Color.Red, $"LightProbes {lightProbeIndex}");
+                        context.GraphicsContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, new ProfilingKey($"LightProbes {lightProbeIndex}"));
                         lightProbeIndex++;
 
                         cubemapRenderer.Draw(lightProbePosition, cubeTexture);
 
-                        context.GraphicsContext.CommandList.BeginProfile(Color.Red, "Prefilter SphericalHarmonics");
+                        context.GraphicsContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, new ProfilingKey("Prefilter SphericalHarmonics"));
 
                         // Compute SH coefficients
                         lambertFiltering.Draw(cubemapRenderer.DrawContext);
@@ -73,14 +74,14 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
 
                         lightProbesCoefficients.Add(lightProbe, lightProbeCoefficients);
 
-                        context.GraphicsContext.CommandList.EndProfile(); // Prefilter SphericalHarmonics
+                        context.GraphicsContext.CommandList.GpuQueryProfiler.EndProfile(); // Prefilter SphericalHarmonics
 
-                        context.GraphicsContext.CommandList.EndProfile(); // Face XXX
+                        context.GraphicsContext.CommandList.GpuQueryProfiler.EndProfile(); // Face XXX
 
                         // Debug render
                     }
 
-                    context.GraphicsContext.CommandList.EndProfile(); // LightProbes
+                    context.GraphicsContext.CommandList.GpuQueryProfiler.EndProfile(); // LightProbes
                 }
 
                 cubeTexture.Dispose();
