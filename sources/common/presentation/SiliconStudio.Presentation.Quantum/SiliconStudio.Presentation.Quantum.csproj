@@ -55,7 +55,6 @@
     <Compile Include="Presenters\ValueChangingEventArgs.cs" />
     <Compile Include="View\DifferentValueToParam.cs" />
     <Compile Include="View\NodeViewModelTemplateProvider.cs" />
-    <Compile Include="View\RangedValueTemplateProvider.cs" />
     <Compile Include="View\TypeMatchTemplateProvider.cs" />
   </ItemGroup>
   <ItemGroup>

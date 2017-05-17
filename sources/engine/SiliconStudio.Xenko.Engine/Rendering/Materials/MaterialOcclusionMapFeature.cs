@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Ambient occlusions are generally used to produce coarse occlusions on the material (shadows, etc...). It is geometry related and thus ignores possible UV scale overrides.</userdoc>
         [Display("Occlusion Map")]
         [DataMember(10)]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar AmbientOcclusionMap { get; set; }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [Display("Direct Lighting Influence")]
         [DataMember(15)]
         [NotNull]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar DirectLightingFactor { get; set; }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Cavity occlusions are generally used to produce fine grained artifacts on the material.</userdoc>
         [Display("Cavity Map")]
         [DataMember(20)]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar CavityMap { get; set; }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [Display("Diffuse Cavity")]
         [DataMember(30)]
         [NotNull]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar DiffuseCavity { get; set; }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [Display("Specular Cavity")]
         [DataMember(40)]
         [NotNull]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar SpecularCavity { get; set; }
 
 

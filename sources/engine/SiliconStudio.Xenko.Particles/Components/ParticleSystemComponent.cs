@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Particles.Components
         /// The speed scale at which this Particle System runs the simulation. Set it to 0 to pause it
         /// </userdoc>
         [DataMember(5)]
-        [DataMemberRange(0, 10, 0.01, 1)]
+        [DataMemberRange(0, 10, 0.01, 1, 3)]
         [Display("Speed Scale")]
         public float Speed { get; set; } = 1f;
 

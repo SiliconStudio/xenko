@@ -40,7 +40,7 @@
     </When>
   </Choose>
   <ItemGroup>
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Animations\AnimationCurveEvaluatorDirectBlittableGroup.cs" />
@@ -172,6 +172,7 @@
     <Compile Include="Rendering\Compositing\RenderTargetDescription.cs" />
     <Compile Include="Rendering\Compositing\RenderTextureSceneRenderer.cs" />
     <Compile Include="Rendering\Compositing\SceneCameraRenderer.cs" />
+    <Compile Include="Rendering\Compositing\SceneExternalCameraRenderer.cs" />
     <Compile Include="Rendering\Compositing\SceneRendererCollection.cs" />
     <Compile Include="Rendering\Compositing\SingleStageRenderer.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />

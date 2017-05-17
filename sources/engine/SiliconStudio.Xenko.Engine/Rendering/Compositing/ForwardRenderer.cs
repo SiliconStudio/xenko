@@ -1,10 +1,11 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
@@ -61,6 +62,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// <summary>
         /// The shadow map render stages for shadow casters. No shadow rendering will happen if null.
         /// </summary>
+        [MemberCollection(NotNullItems = true)]
         public List<RenderStage> ShadowMapRenderStages { get; } = new List<RenderStage>();
 
         /// <summary>
@@ -554,6 +556,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                 if (VRSettings.Enabled && VRSettings.VRDevice != null)
                 {
+                    var isFullViewport = (int)viewport.X == 0 && (int)viewport.Y == 0
+                                         && (int)viewport.Width == drawContext.CommandList.RenderTarget.ViewWidth
+                                         && (int)viewport.Height == drawContext.CommandList.RenderTarget.ViewHeight;
+                    if (!isFullViewport)
+                        return;
+
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
                         //make sure we don't use any default targets!
@@ -603,12 +611,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             VRSettings.VRDevice.Commit(drawContext.CommandList, vrFullSurface);
                         }
                     }
-
-                    var isFullViewport = (int)viewport.X == 0 && (int)viewport.Y == 0
-                                         && (int)viewport.Width == drawContext.CommandList.RenderTarget.ViewWidth
-                                         && (int)viewport.Height == drawContext.CommandList.RenderTarget.ViewHeight;
-                    if (!isFullViewport)
-                        throw new NotImplementedException("Can't render VR with a viewport smaller than texture");
 
                     //draw mirror to backbuffer (if size is matching and full viewport)
                     if (VRSettings.VRDevice.MirrorTexture.Size != drawContext.CommandList.RenderTarget.Size)

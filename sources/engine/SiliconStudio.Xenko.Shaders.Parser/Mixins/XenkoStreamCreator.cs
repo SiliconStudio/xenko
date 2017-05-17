@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -1137,7 +1137,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     {
                         var semantic = variable.Qualifiers.Values.OfType<Semantic>().FirstOrDefault();
                         if (semantic == null)
-                            variable.Qualifiers |= new Semantic(variable.Name.Text.ToUpper() + "_SEM");
+                            variable.Qualifiers |= new Semantic(variable.Name.Text.ToUpperInvariant() + "_SEM");
                     }
 
                     tempStruct.Fields.Add(variable);

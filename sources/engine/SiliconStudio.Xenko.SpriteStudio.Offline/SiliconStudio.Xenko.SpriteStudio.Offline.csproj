@@ -23,6 +23,9 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Module.cs" />
     <Compile Include="NodeAnimationData.cs" />
     <Compile Include="SpriteStudioAnimationAsset.cs" />

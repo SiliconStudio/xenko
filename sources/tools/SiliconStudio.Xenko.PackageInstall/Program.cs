@@ -19,90 +19,108 @@ namespace SiliconStudio.Xenko.PackageInstall
         private static readonly string[] NecessaryVS2017Workloads = new[] { "Microsoft.VisualStudio.Workload.ManagedDesktop" };
         private static readonly string[] NecessaryBuildTools2017Workloads = new[] { "Microsoft.VisualStudio.Workload.MSBuildTools", "Microsoft.Net.Component.4.6.1.TargetingPack" };
         private static readonly Guid NET461TargetingPackProductCode = new Guid("8BC3EEC9-090F-4C53-A8DA-1BEC913040F9");
+        private const bool AllowVisualStudioOnly = true; // Somehow this doesn't work well yet, so disabled for now
 
         static int Main(string[] args)
         {
-            if (args.Length == 0)
+            try
             {
-                throw new Exception("Expecting a parameter such as /install, /repair or /uninstall");
-            }
-
-            bool isRepair = false;
-            switch (args[0])
-            {
-                case "/install":
+                if (args.Length == 0)
                 {
-                    // In repair mode, we check if data.xz exists (means install failed)
-                    if (!isRepair || File.Exists(@"..\data.xz"))
+                    throw new Exception("Expecting a parameter such as /install, /repair or /uninstall");
+                }
+
+                bool isRepair = false;
+                switch (args[0])
+                {
+                    case "/install":
                     {
-                        var indexedArchive = new IndexedArchive();
-
-                        // Note: there is 2 phases while decompressing: Decompress (LZMA) and Expanding (file copying using index.txt)
-                        var progressReport = new XenkoLauncherProgressReport(2);
-
-                        // Extract files from LZMA archive
-                        indexedArchive.Extract(@"..\data.xz", @"..", progressReport);
-
-                        File.Delete(@"..\data.xz");
-                    }
-
-                    // Run prerequisites installer (if it exists)
-                    var prerequisitesInstallerPath = @"..\Bin\Prerequisites\install-prerequisites.exe";
-                    if (File.Exists(prerequisitesInstallerPath))
-                    {
-                        var prerequisitesInstalled = false;
-                        while (!prerequisitesInstalled)
+                        // In repair mode, we check if data.xz exists (means install failed)
+                        if (!isRepair || File.Exists(@"..\data.xz"))
                         {
-                            try
+                            var indexedArchive = new IndexedArchive();
+
+                            // Note: there is 2 phases while decompressing: Decompress (LZMA) and Expanding (file copying using index.txt)
+                            var progressReport = new XenkoLauncherProgressReport(2);
+
+                            // Extract files from LZMA archive
+                            indexedArchive.Extract(@"..\data.xz", @"..", progressReport);
+
+                            File.Delete(@"..\data.xz");
+                        }
+
+                        // Run prerequisites installer (if it exists)
+                        var prerequisitesInstallerPath = @"..\Bin\Prerequisites\install-prerequisites.exe";
+                        if (File.Exists(prerequisitesInstallerPath))
+                        {
+                            var prerequisitesInstalled = false;
+                            while (!prerequisitesInstalled)
                             {
-                                var prerequisitesInstallerProcess = Process.Start(prerequisitesInstallerPath);
-                                if (prerequisitesInstallerProcess == null)
-                                    throw new InvalidOperationException();
-                                prerequisitesInstallerProcess.WaitForExit();
-                                if (prerequisitesInstallerProcess.ExitCode != 0)
-                                   throw new InvalidOperationException();
-                                prerequisitesInstalled = true;
-                            }
-                            catch
-                            {
-                                // We'll enter this if UAC has been declined, but also if it timed out (which is a frequent case
-                                // if you don't stay in front of your computer during the installation.
-                                var result = MessageBox.Show("The installation of prerequisites has been canceled by user or failed to run. Do you want to run it again?", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                                if (result != DialogResult.Yes)
-                                    break;
+                                try
+                                {
+                                    var prerequisitesInstallerProcess = Process.Start(prerequisitesInstallerPath);
+                                    if (prerequisitesInstallerProcess == null)
+                                        throw new InvalidOperationException();
+                                    prerequisitesInstallerProcess.WaitForExit();
+                                    if (prerequisitesInstallerProcess.ExitCode != 0)
+                                        throw new InvalidOperationException();
+                                    prerequisitesInstalled = true;
+                                }
+                                catch
+                                {
+                                    // We'll enter this if UAC has been declined, but also if it timed out (which is a frequent case
+                                    // if you don't stay in front of your computer during the installation.
+                                    var result = MessageBox.Show("The installation of prerequisites has been canceled by user or failed to run. Do you want to run it again?", "Error",
+                                        MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                                    if (result != DialogResult.Yes)
+                                        break;
+                                }
                             }
                         }
+
+                        // Make sure we have the proper VS2017/BuildTools prerequisites
+                        CheckVisualStudioAndBuildTools();
+
+                        break;
                     }
-
-                    // Make sure we have the proper VS2017/BuildTools prerequisites
-                    CheckVisualStudioAndBuildTools();
-
-                    break;
+                    case "/repair":
+                    {
+                        isRepair = true;
+                        goto case "/install";
+                    }
                 }
-                case "/repair":
-                {
-                    isRepair = true;
-                    goto case "/install";
-                }
+
+                return 0;
             }
-
-            return 0;
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error: {e}");
+                return 1;
+            }
         }
 
         private static void CheckVisualStudioAndBuildTools()
         {
             // Check if there is any VS2017 installed with necessary workloads
-            if (!VisualStudioVersions.AvailableVisualStudioVersions.Any(x => NecessaryVS2017Workloads.All(workload => x.PackageVersions.ContainsKey(workload))))
+            var matchingVisualStudioInstallation = VisualStudioVersions.AvailableVisualStudioVersions.FirstOrDefault(x => NecessaryVS2017Workloads.All(workload => x.PackageVersions.ContainsKey(workload)));
+            if (AllowVisualStudioOnly && matchingVisualStudioInstallation != null)
+            {
+                if (!matchingVisualStudioInstallation.Complete)
+                    MessageBox.Show("We detected Visual Studio 2017 was already installed but is not in a complete state.\r\nYou probably have to reboot, otherwise Xenko projects won't properly compile.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
             {
                 // Check if there is actually a VS2017+ installed
                 var existingVisualStudio2017Install = VisualStudioVersions.AvailableVisualStudioVersions.FirstOrDefault(x => x.PackageVersions.ContainsKey("Microsoft.VisualStudio.Component.CoreEditor"));
                 var vsInstallerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Microsoft Visual Studio\Installer\vs_installer.exe");
-                if (existingVisualStudio2017Install != null && File.Exists(vsInstallerPath))
+                if (AllowVisualStudioOnly && existingVisualStudio2017Install != null && File.Exists(vsInstallerPath))
                 {
                     var vsInstaller = Process.Start(vsInstallerPath, $"modify --passive --norestart --installPath \"{existingVisualStudio2017Install.InstallationPath}\" {string.Join(" ", NecessaryVS2017Workloads.Select(x => $"--add {x}"))}");
                     if (vsInstaller == null)
                         throw new InvalidOperationException("Could not run vs_installer.exe");
                     vsInstaller.WaitForExit();
+
+                    MessageBox.Show("Visual Studio 2017 was missing the .NET desktop develpment workload.\r\nWe highly recommend a reboot after the installation is finished, otherwise Xenko projects won't compile.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {

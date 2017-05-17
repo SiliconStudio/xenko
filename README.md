@@ -22,9 +22,9 @@ By downloading or using files in this repository, you affirm that you have read,
 ## Documentation
 
 Find explanations and information about Xenko:
-* [Xenko Manual](http://doc.xenko.com/latest/manual)
-* [API Reference](http://doc.xenko.com/latest/api/SiliconStudio.Assets.html)
-* [Release Notes](http://doc.xenko.com/latest/manual)
+* [Xenko Manual](https://doc.xenko.com/latest/manual/index.html)
+* [API Reference](https://doc.xenko.com/latest/api/SiliconStudio.Assets.html)
+* [Release Notes](https://doc.xenko.com/latest/ReleaseNotes/index.html)
 
 ## Community
 
@@ -46,7 +46,7 @@ Ask for help or report issues:
 
 ### Build Xenko
 
-1. Clone Xenko with LFS: `git lfs clone git@github.com:SiliconStudio/xenko.git`
+1. Clone Xenko with LFS: `git lfs clone https://git.xenko.com/xenko/Xenko-Runtime.git`
 2. Set *SiliconStudioXenkoDir* environment variable to point to your `<XenkoDir>`
 3. Open `<XenkoDir>\build\Xenko.sln` with Visual Studio 2017, and build.
 4. Open `<XenkoDir>\samples\XenkoSamples.sln` and play with the samples.
