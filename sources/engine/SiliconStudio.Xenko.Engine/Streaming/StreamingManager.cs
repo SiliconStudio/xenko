@@ -26,7 +26,6 @@ namespace SiliconStudio.Xenko.Streaming
         private readonly List<StreamableResource> resources = new List<StreamableResource>(512);
         private readonly List<StreamableResource> priorityUpdateQueue = new List<StreamableResource>(64); // Could be Queue<T> but it doesn't support .Remove(T)
         private int lastUpdateResourcesIndex;
-        private DateTime lastUpdateTime = DateTime.MinValue;
         private bool isDisposing;
 
         // Configuration
@@ -265,13 +264,10 @@ namespace SiliconStudio.Xenko.Streaming
                 // Update resources
                 lock (resources)
                 {
-                    // Check if update resources
-                    var now = DateTime.UtcNow;
-                    var delta = now - lastUpdateTime;
                     int resourcesCount = Resources.Count;
-                    if (Resources.Count > 0 && delta >= ManagerUpdatesInterval)
+                    if (resourcesCount > 0)
                     {
-                        lastUpdateTime = now;
+                        var now = DateTime.UtcNow;
                         int resourcesUpdates = Math.Min(MaxResourcesPerUpdate, resourcesCount);
 
                         // Update high priority queue and then rest of the resources
@@ -307,9 +303,8 @@ namespace SiliconStudio.Xenko.Streaming
                 }
                 
                 ContentStreaming.Update();
-
-                // TODO: sleep microThread for ManagerUpdatesInterval ??
-                await ((Game)Game).Script.NextFrame();
+                
+                await Task.Delay(ManagerUpdatesInterval);
             }
         }
         
@@ -341,6 +336,7 @@ namespace SiliconStudio.Xenko.Streaming
             var targetResidency = (int)((resource as StreamingTexture).Description.MipLevels * targetQuality); // TODO: remove hardoded value for textures, use steraming groups/handlers
 
             // Compressed formats have aligment restrictions on the dimensions of the texture
+            // TODO: remove hardcoded textures part to specilized object
             if ((resource as StreamingTexture).Format.IsCompressed() && (resource as StreamingTexture).Description.MipLevels >= 3)
                 targetResidency = MathUtil.Clamp(targetResidency, 3, (resource as StreamingTexture).Description.MipLevels);
 

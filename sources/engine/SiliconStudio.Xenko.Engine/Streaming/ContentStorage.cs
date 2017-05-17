@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -134,21 +133,7 @@ namespace SiliconStudio.Xenko.Streaming
             for (int i = 0; i < chunksCount; i++)
                 chunksOrder.Add(i);
             chunksOrder.Sort((a, b) => chunksData[a].Length - chunksData[b].Length);
-
-            // Calculate first chunk location (in file)
-            /*int offset =
-                // Version
-                sizeof(int)
-                // Package Time (ticks)
-                + sizeof(long)
-                // Chunks count
-                + sizeof(int)
-                // Header hash code
-                + sizeof(int)
-                // Chunk locations and sizes
-                + (sizeof(int) + sizeof(int)) * chunksCount;*/
-            int offset = 0;
-
+            
             // Calculate header hash code (used to provide simple data verification during loading)
             // Note: this must match ContentStorage.GetHashCode()
             int hashCode = (int)packageTime.Ticks;
@@ -164,6 +149,9 @@ namespace SiliconStudio.Xenko.Streaming
                 HashCode = hashCode,
                 Chunks = new ContentStorageHeader.ChunkEntry[chunksCount]
             };
+
+            // Calculate chunks locations in the file
+            int offset = 0;
             for (int i = 0; i < chunksCount; i++)
             {
                 int chunkIndex = chunksOrder[i];
