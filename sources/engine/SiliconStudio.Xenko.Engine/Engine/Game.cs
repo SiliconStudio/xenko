@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -16,7 +16,6 @@ using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Graphics.Data;
 using SiliconStudio.Xenko.Graphics.Font;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Profiling;
@@ -360,8 +359,7 @@ namespace SiliconStudio.Xenko.Engine
 
             // TODO: data-driven?
             Content.Serializer.RegisterSerializer(new ImageSerializer());
-            Content.Serializer.RegisterSerializer(new DeprecatedTextureContentSerializer());
-            
+
             // enable multi-touch by default
             Input.MultiTouchEnabled = true;
 

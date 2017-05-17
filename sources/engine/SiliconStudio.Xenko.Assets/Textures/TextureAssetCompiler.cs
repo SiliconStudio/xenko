@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -69,6 +69,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
             private ResultStatus Import(ICommandContext commandContext, TextureTool textureTool, TexImage texImage, TextureHelper.ImportParameters convertParameters)
             {
+                var assetManager = new ContentManager();
                 bool useSeparateDataContainer = Parameters.IsStreamable;
 
                 // Note: for streamable textures we want to store mip maps in a separate storage container and read them on request instead of whole asset deserialization (at once)
@@ -80,8 +81,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
                     if (importResult != ResultStatus.Successful)
                         return importResult;
 
-                    var assetManager = new ContentManager();
-                    
                     // Make sure we don't compress mips data
                     var dataUrl = Url + "_Data";
                     commandContext.AddTag(new ObjectUrl(UrlType.ContentLink, dataUrl), disableCompressionSymbol);
@@ -134,7 +133,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                 }
 
                 // Import texture and save to file
-                return TextureHelper.ImportTextureImage(textureTool, texImage, convertParameters, CancellationToken, commandContext.Logger);
+                return TextureHelper.ImportTextureImage(assetManager, textureTool, texImage, convertParameters, CancellationToken, commandContext.Logger);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
