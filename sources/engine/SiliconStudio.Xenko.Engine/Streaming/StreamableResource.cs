@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -13,6 +14,7 @@ namespace SiliconStudio.Xenko.Streaming
     /// <summary>
     /// Base class for all resources that can be dynamicly streamed.
     /// </summary>
+    [DebuggerDisplay("Resource {Storage.Url}; Residency: {CurrentResidency}/{MaxResidency}")]
     public abstract class StreamableResource : ComponentBase
     {
         protected DatabaseFileProvider fileProvider;
