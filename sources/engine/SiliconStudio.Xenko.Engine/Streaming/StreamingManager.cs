@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Streaming
 
             lock (resources)
             {
-                resources.ForEach(x => x.Dispose());
+                resources.ForEach(x => x.Release());
                 resources.Clear();
                 priorityUpdateQueue.Clear();
             }

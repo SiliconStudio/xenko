@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -108,6 +108,14 @@ namespace SiliconStudio.Xenko.Streaming
         /// <param name="residency">The target residency.</param>
         [NotNull]
         internal abstract Task StreamAsync(int residency);
+
+        /// <summary>
+        /// Releases this resources on StreamingManager shutdown.
+        /// </summary>
+        internal virtual void Release()
+        {
+            Dispose();
+        }
 
         /// <inheritdoc />
         protected override void Destroy()
