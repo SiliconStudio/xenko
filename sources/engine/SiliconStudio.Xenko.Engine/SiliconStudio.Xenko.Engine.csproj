@@ -141,6 +141,7 @@
     </Compile>
     <Compile Include="Rendering\BackToFrontSortMode.cs" />
     <Compile Include="Rendering\Compositing\ClearRenderer.cs" />
+    <Compile Include="Rendering\Compositing\CompositingProfilingKeys.cs" />
     <Compile Include="Rendering\Compositing\DebugRenderer.cs" />
     <Compile Include="Rendering\Compositing\EditorTopLevelCompositor.cs" />
     <Compile Include="Rendering\Compositing\DelegateSceneRenderer.cs" />
@@ -210,6 +211,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Images\ImageEffectProfilingKeys.cs" />
     <Compile Include="Rendering\Images\ImageScaler\SamplingPattern.cs" />
     <Compile Include="Rendering\Images\RangeConversion\RangeCompressorShader.cs">
       <AutoGen>True</AutoGen>

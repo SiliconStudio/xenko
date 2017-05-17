@@ -225,7 +225,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (Name != null && Profiling)
             {
-                context.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, new ProfilingKey(Name));
+                //context.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, new ProfilingKey(Name));
             }
 
             PreDrawCore(context);
@@ -257,7 +257,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (Name != null && Profiling)
             {
-                context.CommandList.GpuQueryProfiler.EndProfile();
+                //context.CommandList.GpuQueryProfiler.EndProfile();
             }
         }
     }
