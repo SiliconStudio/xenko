@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core;
@@ -122,9 +122,9 @@ namespace SiliconStudio.Xenko.Graphics.Data
             {
                 var services = stream.Context.Tags.Get(ServiceRegistry.ServiceRegistryKey);
                 var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
-                var texturesStreamingProvider = services.GetSafeServiceAs<ITexturesStreamingProvider>();
+                var texturesStreamingProvider = services.GetService(typeof(ITexturesStreamingProvider)) as ITexturesStreamingProvider;
 
-                texturesStreamingProvider.UnregisterTexture(texture);
+                texturesStreamingProvider?.UnregisterTexture(texture);
 
                 // TODO: Error handling?
                 using (var textureData = Image.Load(stream.NativeStream))
