@@ -2,8 +2,8 @@
 // See LICENSE.md for full license information.
 
 using System;
-using System.Data;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Streaming
         protected ImageDescription _desc;
         protected int _residentMips;
         protected Task _streamingTask;
+        protected CancellationTokenSource _cancellationToken;
 
         internal StreamingTexture(StreamingManager manager, [NotNull] Texture texture)
             : base(manager)
@@ -94,7 +95,7 @@ namespace SiliconStudio.Xenko.Streaming
         internal void Init([NotNull] ContentStorage storage, ref ImageDescription imageDescription)
         {
             if(imageDescription.Depth != 1)
-                throw new NotSupportedException("Texture streaming supports only 2D textures and 2D texture arrays.");
+                throw new ContentStreamingException("Texture streaming supports only 2D textures and 2D texture arrays.", storage);
 
             Init(storage);
             _desc = imageDescription;
@@ -106,6 +107,9 @@ namespace SiliconStudio.Xenko.Streaming
         
         private void StreamingTask(int residency)
         {
+            if (_cancellationToken.IsCancellationRequested)
+                return;
+
             // Cache data
             var texture = Texture;
             int mipsChange = residency - CurrentResidency;
@@ -157,10 +161,12 @@ namespace SiliconStudio.Xenko.Streaming
 
                         var chunk = Storage.GetChunk(totalMipIndex);
                         if (chunk == null || chunk.Size != slicePitch * newDesc.ArraySize)
-                            throw new DataException("Data chunk is missing or has invalid size.");
+                            throw new ContentStreamingException("Data chunk is missing or has invalid size.", Storage);
                         var data = chunk.GetData(fileProvider);
                         if (!chunk.IsLoaded)
-                            throw new DataException("Data chunk is not loaded.");
+                            throw new ContentStreamingException("Data chunk is not loaded.", Storage);
+                        if (_cancellationToken.IsCancellationRequested)
+                            return;
 
                         unsafe
                         {
@@ -170,9 +176,6 @@ namespace SiliconStudio.Xenko.Streaming
                             dataBoxes[dataBoxIndex].SlicePitch = slicePitch;
                             dataBoxIndex++;
                         }
-
-                        if (IsDisposed) // TODO: use cancellation token
-                            return;
                     }
                 }
 
@@ -192,7 +195,8 @@ namespace SiliconStudio.Xenko.Streaming
         {
             Debug.Assert(CanBeUpdated && residency <= MaxResidency);
 
-            return _streamingTask = new Task(() => StreamingTask(residency));
+            _cancellationToken = new CancellationTokenSource();
+            return _streamingTask = new Task(() => StreamingTask(residency), _cancellationToken.Token);
         }
 
         /// <inheritdoc />
@@ -208,7 +212,12 @@ namespace SiliconStudio.Xenko.Streaming
         protected override void Destroy()
         {
             // Stop streaming
-            // TODO: stop steaming using cancellationToken
+            if (_streamingTask != null && !_streamingTask.IsCompleted)
+            {
+                _cancellationToken.Cancel();
+                _streamingTask.Wait();
+            }
+            _streamingTask = null;
 
             base.Destroy();
         }
