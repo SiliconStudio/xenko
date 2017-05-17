@@ -28,7 +28,7 @@ shader PostEffectBoundingRay<int SampleCount> : ImageEffectShader, DepthBase, Tr
 
     float4 ComputeFinalColor(float3 lightAcc) 
     {
-        return float4(lightAcc.xxx, 1.0);
+        return float4(lightAcc.xxx, 1.0f);
     }
 
     stage override void PSMain()
@@ -37,12 +37,12 @@ shader PostEffectBoundingRay<int SampleCount> : ImageEffectShader, DepthBase, Tr
         // minmax.y = max
         float2 minmax = Texture0.Sample(PointSampler, streams.TexCoord).xy;
 
-        float backsideMin = Texture1.Sample(PointSampler, 0.5).x;
+        float backsideMin = Texture1.Sample(PointSampler, 0.0f).x;
         if(backsideMin < 1.0f)
-            minmax.x = 0;
+            minmax.x = 0.0f;
 
         // Need at least a maximum value for this pixel to be contained in the bounding box
-        if(minmax.y < 1)
+        if(minmax.y < 1.0f)
         {
             float currentZ = GetZProjDepthFromUV(streams.TexCoord);
             float minZ = minmax.x;
@@ -52,15 +52,16 @@ shader PostEffectBoundingRay<int SampleCount> : ImageEffectShader, DepthBase, Tr
             float maxDistance = ComputeDepthFromZProj(maxZ);
 
             // Compute world space direction and position of the ending position
-            float4 positionClipSpace = float4((1.0 - streams.TexCoord.xy * 2.0) * float2(-1.0f, 1.0f), maxZ, 1.0f);
+            float4 positionClipSpace = float4((1.0f - streams.TexCoord.xy * 2.0f) * float2(-1.0f, 1.0f), maxZ, 1.0f);
             float4 positionVS = mul(positionClipSpace, ProjectionInverse);
             positionVS.xyzw /= positionVS.w;
             float4 endingPosition = mul(positionVS, ViewInverse);
-            float4 directionWS = float4(endingPosition.xyz - Eye.xyz, 0);
+            float3 endingPositionDelta = endingPosition.xyz - Eye.xyz;
+            float4 directionWS = float4(endingPositionDelta, 0.0f);
             directionWS = normalize(directionWS);
             
             // Compute depth slope and apply it to the world space direction so it can be multiplied by depth distances
-            float depthSlope = length(endingPosition.xyz - Eye.xyz) / maxDistance;
+            float depthSlope = length(endingPositionDelta) / maxDistance;
             directionWS *= depthSlope;
 
             float stepRange = (maxDistance - minDistance); 
@@ -82,7 +83,7 @@ shader PostEffectBoundingRay<int SampleCount> : ImageEffectShader, DepthBase, Tr
                 for(int i = 0; i < SampleCount; i++) 
                 {
                     lightResult += this.ComputeColorIn(positionWS, stepSize, i);
-                    positionWS.xyz += stepSize * directionWS;
+                    positionWS += stepSize * directionWS;
                     streams.DepthVS += stepSize;
                 }
             }
