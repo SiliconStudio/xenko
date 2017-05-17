@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -13,6 +13,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Storage;
+using SiliconStudio.Core.Streaming;
 
 namespace SiliconStudio.Core.Serialization.Contents
 {
@@ -26,6 +27,8 @@ namespace SiliconStudio.Core.Serialization.Contents
         public static DatabaseFileProvider FileProvider => GetFileProvider?.Invoke();
 
         public static Func<DatabaseFileProvider> GetFileProvider { get; set; }
+
+        private IServiceRegistry services;
 
         public ContentSerializer Serializer { get; private set; }
 
@@ -48,6 +51,7 @@ namespace SiliconStudio.Core.Serialization.Contents
             Serializer = new ContentSerializer();
             if (services != null)
             {
+                this.services = services;
                 services.AddService(typeof(IContentManager), this);
                 services.AddService(typeof(ContentManager), this);
                 Serializer.SerializerContextTags.Set(ServiceRegistry.ServiceRegistryKey, services);
@@ -456,6 +460,14 @@ namespace SiliconStudio.Core.Serialization.Contents
                     IncrementReference(reference, isRoot);
                 }
 
+                // Check if need to fully stream resource
+                if (!settings.AllowContentStreaming)
+                {
+                    var streamingManager = services.GetService(typeof(IStreamingManager)) as IStreamingManager;
+                    if(streamingManager != null)
+                        streamingManager.FullyLoadResource(reference.Object);
+                }
+
                 return reference.Object;
             }
 
@@ -492,7 +504,11 @@ namespace SiliconStudio.Core.Serialization.Contents
                     var serializer = Serializer.GetSerializer(headerObjType, objType);
                     if (serializer == null)
                         throw new InvalidOperationException(string.Format("Content serializer for {0}/{1} could not be found.", headerObjType, objType));
-                    contentSerializerContext = new ContentSerializerContext(url, ArchiveMode.Deserialize, this) { LoadContentReferences = settings.LoadContentReferences };
+                    contentSerializerContext = new ContentSerializerContext(url, ArchiveMode.Deserialize, this)
+                    {
+                        LoadContentReferences = settings.LoadContentReferences,
+                        AllowContentStreaming = settings.AllowContentStreaming
+                    };
 
                     // Read chunk references
                     if (chunkHeader != null && chunkHeader.OffsetToReferences != -1)

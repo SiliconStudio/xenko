@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System.ComponentModel;
@@ -103,6 +103,18 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DefaultValue(true)]
         [Display(null, "Format")]
         public bool GenerateMipmaps { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to stream texture.
+        /// </summary>
+        /// <value><c>true</c> if strema texture; otherwise, <c>false</c>.</value>
+        /// <userdoc>
+        /// If checked, texture will be dynamically streamed at runtime.
+        /// </userdoc>
+        [DataMember(80)]
+        [DefaultValue(true)]
+        [Display("Enable Streaming")]
+        public bool IsStreamable { get; set; } = true;
 
         /// <summary>
         /// The description of the data contained in the texture. See remarks.

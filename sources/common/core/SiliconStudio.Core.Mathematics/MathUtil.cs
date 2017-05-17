@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 //
 // -----------------------------------------------------------------------------
@@ -407,6 +407,30 @@ namespace SiliconStudio.Core.Mathematics
             return (amount <= 0) ? 0
                 : (amount >= 1) ? 1
                 : amount * amount * amount * (amount * ((amount * 6) - 15) + 10);
+        }
+
+        /// <summary>
+        /// Determines whether the value is inside the given range
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="min">The minimum value of the range.</param>
+        /// <param name="max">The maximum value of the range.</param>
+        /// <returns><c>true</c> if valie is inside the specified range; otherwise, <c>false</c>.</returns>
+        public static bool IsInRange(float value, float min, float max)
+        {
+            return min <= value && value <= max;
+        }
+
+        /// <summary>
+        /// Determines whether the value is inside the given range
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="min">The minimum value of the range.</param>
+        /// <param name="max">The maximum value of the range.</param>
+        /// <returns><c>true</c> if valie is inside the specified range; otherwise, <c>false</c>.</returns>
+        public static bool IsInRange(int value, int min, int max)
+        {
+            return min <= value && value <= max;
         }
 
         /// <summary>

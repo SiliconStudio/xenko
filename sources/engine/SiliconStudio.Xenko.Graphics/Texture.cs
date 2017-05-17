@@ -39,6 +39,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<Texture>), Profile = "Content")]
     [ContentSerializer(typeof(TextureContentSerializer))]
+    [ContentSerializer(typeof(DeprecatedTextureContentSerializer))]
     [DebuggerDisplay("Texture {ViewWidth}x{ViewHeight}x{ViewDepth} {Format} ({ViewFlags})")]
     [DataSerializer(typeof(TextureSerializer))]
     public sealed partial class Texture : GraphicsResource
