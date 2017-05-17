@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
@@ -454,7 +455,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 PrepareLightprobeConstantBuffer(context);
 
                 // TODO: Temporarily using ShadowMap shader
-                drawContext.CommandList.BeginProfile(Color.Green, "GBuffer");
+                drawContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, new ProfilingKey("GBuffer"));
 
                 using (drawContext.PushRenderTargetsAndRestore())
                 {
@@ -465,7 +466,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     renderSystem.Draw(drawContext, context.RenderView, GBufferRenderStage);
                 }
 
-                drawContext.CommandList.EndProfile();
+                drawContext.CommandList.GpuQueryProfiler.EndProfile();
 
                 // Bake lightprobes against Z-buffer
                 BakeLightProbes(context, drawContext);
