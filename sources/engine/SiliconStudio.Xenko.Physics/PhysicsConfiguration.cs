@@ -7,7 +7,7 @@ using SiliconStudio.Xenko.Data;
 namespace SiliconStudio.Xenko.Physics
 {
     [DataContract]
-    [Display("Physics Settings")]
+    [Display("Physics")]
     public class PhysicsSettings : Configuration
     {
         [DataMember(10)]
