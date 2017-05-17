@@ -1,9 +1,7 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
-using System.Data;
-using System.Threading.Tasks;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Xenko.Streaming
@@ -69,14 +67,13 @@ namespace SiliconStudio.Xenko.Streaming
         /// Loads chunk data from the storage container.
         /// </summary>
         /// <param name="fileProvider">Database file provider.</param>
-        /// <exception cref="DataException">Cannot load content chunk. Missing File Provider.</exception>
         public byte[] GetData(DatabaseFileProvider fileProvider)
         {
             if (IsLoaded)
                 return data;
 
             if (fileProvider == null)
-                throw new DataException("Cannot load content chunk. Missing File Provider.");
+                throw new ContentStreamingException("Missing file provider.", Storage);
 
             using (var stream = fileProvider.OpenStream(Storage.Url, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read, StreamFlags.Seekable))
             {

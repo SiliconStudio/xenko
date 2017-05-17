@@ -1,10 +1,9 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using SiliconStudio.Core.Streaming;
 
 namespace SiliconStudio.Xenko.Streaming
@@ -52,6 +51,9 @@ namespace SiliconStudio.Xenko.Streaming
             }
         }
 
+        /// <summary>
+        /// Performs resources disposing.
+        /// </summary>
         public void Dispose()
         {
             lock (containers)
