@@ -18,6 +18,7 @@ using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Assets.Textures.Packing;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.TextureConverter;
+using SiliconStudio.Xenko.Graphics.Data;
 
 namespace SiliconStudio.Xenko.Assets.Sprite
 {
@@ -119,6 +120,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var assetManager = new ContentManager();
+                assetManager.Serializer.RegisterSerializer(new ImageTextureSerializer());
 
                 // Create atlas texture
                 Dictionary<SpriteInfo, PackedSpriteInfo> spriteToPackedSprite = null;
@@ -273,6 +275,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             /// <returns>Status of building</returns>
             private ResultStatus CreateAtlasTextures(Logger logger, out Dictionary<SpriteInfo, PackedSpriteInfo> spriteToPackedSprite)
             {
+                var assetManager = new ContentManager();
                 spriteToPackedSprite = new Dictionary<SpriteInfo, PackedSpriteInfo>();
 
                 // Pack textures
@@ -347,7 +350,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                         {
                             var outputUrl = SpriteSheetAsset.BuildTextureAtlasUrl(Url, textureAtlasIndex);
                             var convertParameters = new TextureHelper.ImportParameters(Parameters) { OutputUrl = outputUrl };
-                            resultStatus = TextureHelper.ImportTextureImage(texTool, texImage, convertParameters, CancellationToken, logger);
+                            resultStatus = TextureHelper.ImportTextureImage(assetManager, texTool, texImage, convertParameters, CancellationToken, logger);
                         }
 
                         foreach (var texture in atlasLayout.Textures)

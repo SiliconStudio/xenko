@@ -110,60 +110,49 @@ namespace SiliconStudio.Xenko.Graphics.Data
         }
     }
 
-    // Previously Textures were serializated to Image format.
-    internal class DeprecatedTextureContentSerializer : ContentSerializerBase<Texture>
+    internal class ImageTextureSerializer : ContentSerializerBase<Image>
     {
-        public override Type SerializationType => typeof(Image);
+        public delegate void DeserializeImageDelegate(IServiceRegistry services, Image obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader);
+
+        public static DeserializeImageDelegate DeserializeImage;
 
         /// <inheritdoc/>
-        public override void Serialize(ContentSerializerContext context, SerializationStream stream, Texture texture)
+        public override Type SerializationType => typeof(Texture);
+
+        public override void Serialize(ContentSerializerContext context, SerializationStream stream, Image textureData)
         {
             if (context.Mode == ArchiveMode.Deserialize)
             {
-                var services = stream.Context.Tags.Get(ServiceRegistry.ServiceRegistryKey);
-                var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
-                var texturesStreamingProvider = services.GetService(typeof(ITexturesStreamingProvider)) as ITexturesStreamingProvider;
-
-                texturesStreamingProvider?.UnregisterTexture(texture);
-
-                // TODO: Error handling?
-                using (var textureData = Image.Load(stream.NativeStream))
+                var isStreamable = stream.ReadBoolean();
+                if (!isStreamable)
                 {
-                    if (texture.GraphicsDevice != null)
-                        texture.OnDestroyed(); //Allows fast reloading todo review maybe?
+                    var image = Image.Load(stream.NativeStream);
+                    textureData.InitializeFrom(image);
+                }
+                else
+                {
+                    // Read image header
+                    var imageDescription = new ImageDescription();
+                    ImageHelper.ImageDescriptionSerializer.Serialize(ref imageDescription, ArchiveMode.Deserialize, stream);
 
-                    texture.AttachToGraphicsDevice(graphicsDeviceService.GraphicsDevice);
-                    texture.InitializeFrom(textureData.Description, new TextureViewDescription(), textureData.ToDataBox());
+                    // Read content storage header
+                    ContentStorageHeader storageHeader;
+                    ContentStorageHeader.Read(stream, out storageHeader);
 
-                    // Setup reload callback (reload from asset manager)
-                    var contentSerializerContext = stream.Context.Get(ContentSerializerContext.ContentSerializerContextProperty);
-                    if (contentSerializerContext != null)
-                    {
-                        var assetManager = contentSerializerContext.ContentManager;
-                        var url = contentSerializerContext.Url;
-
-                        texture.Reload = (graphicsResource) =>
-                        {
-                            var textureDataReloaded = assetManager.Load<Image>(url);
-                            ((Texture)graphicsResource).Recreate(textureDataReloaded.ToDataBox());
-                            assetManager.Unload(textureDataReloaded);
-                        };
-                    }
+                    // Deserialize whole texture to image without streaming feature
+                    var services = stream.Context.Tags.Get(ServiceRegistry.ServiceRegistryKey);
+                    DeserializeImage(services, textureData, ref imageDescription, ref storageHeader);
                 }
             }
             else
             {
-                var textureData = texture.GetSerializationData();
-                if (textureData == null)
-                    throw new InvalidOperationException("Trying to serialize a Texture without CPU info.");
-
-                textureData.Image.Save(stream.NativeStream, ImageFileType.Xenko);
+                textureData.Save(stream.NativeStream, ImageFileType.Xenko);
             }
         }
 
         public override object Construct(ContentSerializerContext context)
         {
-            return new Texture();
+            return new Image();
         }
     }
 }

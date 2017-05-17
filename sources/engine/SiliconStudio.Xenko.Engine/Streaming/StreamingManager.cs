@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -48,6 +48,7 @@ namespace SiliconStudio.Xenko.Streaming
         {
             // Register default texture deserialization if no streaming available
             TextureContentSerializer.DeserializeTexture = DeserializeTexture;
+            ImageTextureSerializer.DeserializeImage = DeserializeImage;
         }
 
         /// <summary>
@@ -208,6 +209,26 @@ namespace SiliconStudio.Xenko.Streaming
             try
             {
                 manager.FullyLoadTexture(obj, ref imageDescription, ref storageHeader);
+            }
+            finally
+            {
+                manager.Destroy();
+            }
+        }
+
+        private static void DeserializeImage(IServiceRegistry services, Image obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader)
+        {
+            Debug.Assert(obj != null);
+
+            var manager = new StreamingManager(services);
+            try
+            {
+                // Get content storage container
+                var storage = manager.ContentStreaming.GetStorage(ref storageHeader);
+                if (storage == null)
+                    throw new Exception("Missing content storage.");
+                
+                var img = new Image();
             }
             finally
             {

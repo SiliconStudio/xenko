@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -502,10 +502,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
             return ResultStatus.Successful;
         }
 
-        public static ResultStatus ImportTextureImage(TextureTool textureTool, TexImage texImage, ImportParameters parameters, CancellationToken cancellationToken, Logger logger)
+        public static ResultStatus ImportTextureImage(ContentManager assetManager, TextureTool textureTool, TexImage texImage, ImportParameters parameters, CancellationToken cancellationToken, Logger logger)
         {
-            var assetManager = new ContentManager();
-
             // Convert image to the final format
             var result = ImportTextureImageRaw(textureTool, texImage, parameters, cancellationToken, logger);
             if (result != ResultStatus.Successful)
