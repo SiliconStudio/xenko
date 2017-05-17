@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -187,11 +187,21 @@ namespace SiliconStudio.Xenko.Streaming
             }
         }
 
+        /// <inheritdoc />
         internal override Task StreamAsync(int residency)
         {
             Debug.Assert(CanBeUpdated && residency <= MaxResidency);
 
             return _streamingTask = new Task(() => StreamingTask(residency));
+        }
+
+        /// <inheritdoc />
+        internal override void Release()
+        {
+            // Unlink from the texture
+            this.RemoveDisposeBy(Texture);
+
+            base.Release();
         }
 
         /// <inheritdoc />
