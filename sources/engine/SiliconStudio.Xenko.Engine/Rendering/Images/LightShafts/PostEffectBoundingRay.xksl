@@ -37,6 +37,10 @@ shader PostEffectBoundingRay<int SampleCount> : ImageEffectShader, DepthBase, Tr
         // minmax.y = max
         float2 minmax = Texture0.Sample(PointSampler, streams.TexCoord).xy;
 
+        float backsideMin = Texture1.Sample(PointSampler, 0.5).x;
+        if(backsideMin < 1.0f)
+            minmax.x = 0;
+
         // Need at least a maximum value for this pixel to be contained in the bounding box
         if(minmax.y < 1)
         {

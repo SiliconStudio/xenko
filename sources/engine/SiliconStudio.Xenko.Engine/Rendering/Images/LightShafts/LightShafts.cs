@@ -34,6 +34,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         [DataMemberRange(1, 32)]
         public int BoundingVolumeBufferDownsampleLevel { get; set; } = 8;
+        
+        /// <summary>
+        /// Size of the orthographic projection used to find minimum bounding volume distance behind the camera
+        /// </summary>
+        private const float backSideOrthographicSize = 0.0001f;
 
         private ImageEffectShader lightShaftsEffectShader;
 
@@ -98,7 +103,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                 minmaxPipelineState.State.DepthStencilState.DepthBufferEnable = false;
                 minmaxPipelineState.State.DepthStencilState.DepthBufferWriteEnable = false;
-                minmaxPipelineState.State.RasterizerState.DepthClipEnable = false;
+                minmaxPipelineState.State.RasterizerState.DepthClipEnable = true;
                 minmaxPipelineState.State.RasterizerState.CullMode = i == 0 ? CullMode.Back : CullMode.Front;
 
                 minmaxPipelineStates[i] = minmaxPipelineState;
@@ -133,6 +138,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Create a min/max buffer generated from scene bounding volumes
             var boundingBoxBuffer = NewScopedRenderTarget2D(depthInput.Width / BoundingVolumeBufferDownsampleLevel, depthInput.Height / BoundingVolumeBufferDownsampleLevel, PixelFormat.R32G32_Float);
+
+            // Buffer that holds the minimum distance in case of being inside the bounding box
+            var backSideRaycastBuffer = NewScopedRenderTarget2D(2, 2, PixelFormat.R32G32_Float);
 
             // Create a single channel light buffer
             PixelFormat lightBufferPixelFormat = needsColorLightBuffer ? PixelFormat.R16G16B16A16_Float : PixelFormat.R16_Float;
@@ -185,12 +193,17 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     {
                         // Clear bounding box buffer
                         context.CommandList.Clear(boundingBoxBuffer, new Color4(1.0f, 0.0f, 0.0f, 0.0f));
-
                         context.CommandList.SetRenderTargetAndViewport(null, boundingBoxBuffer);
-
+                        
                         // If nothing visible, skip second part
                         if (!DrawBoundingVolumeMinMax(context, singleBoundingVolume))
                             continue;
+
+                        context.CommandList.Clear(backSideRaycastBuffer, new Color4(1.0f, 0.0f, 0.0f, 0.0f));
+                        context.CommandList.SetRenderTargetAndViewport(null, backSideRaycastBuffer);
+
+                        // If nothing visible, skip second part
+                        DrawBoundingVolumeBackside(context, singleBoundingVolume);
                     }
 
                     if (!lightBufferUsed)
@@ -212,6 +225,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                     // Set min/max input
                     lightShaftsEffectShader.SetInput(0, boundingBoxBuffer);
+                    lightShaftsEffectShader.SetInput(1, backSideRaycastBuffer);
 
                     // Light accumulation pass (on low resolution buffer)
                     DrawLightShaft(context, lightShaft);
@@ -343,6 +357,18 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         private bool DrawBoundingVolumeMinMax(RenderDrawContext context, IReadOnlyList<LightShaftBoundingVolumeProcessor.Data> boundingVolumes)
         {
+            return DrawBoundingVolumes(context, boundingVolumes, context.RenderContext.RenderView.ViewProjection);
+        }
+
+        private void DrawBoundingVolumeBackside(RenderDrawContext context, IReadOnlyList<LightShaftBoundingVolumeProcessor.Data> boundingVolumes)
+        {
+            float backSideMaximumDistance = context.RenderContext.RenderView.FarClipPlane;
+            Matrix backSideProjection = context.RenderContext.RenderView.View * Matrix.Scaling(1, 1, -1) * Matrix.OrthoRH(backSideOrthographicSize, backSideOrthographicSize, 0, backSideMaximumDistance);
+            DrawBoundingVolumes(context, boundingVolumes, backSideProjection);
+        }
+
+        private bool DrawBoundingVolumes(RenderDrawContext context, IReadOnlyList<LightShaftBoundingVolumeProcessor.Data> boundingVolumes, Matrix viewProjection)
+        {
             var commandList = context.CommandList;
 
             bool effectUpdated = minmaxVolumeEffectShader.UpdateEffect(GraphicsDevice);
@@ -369,8 +395,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     minmaxPipelineState.State.Output.RenderTargetFormat0 = commandList.RenderTarget.Format;
                     pipelineDirty = true;
                 }
-
-                Matrix viewProjection = context.RenderContext.RenderView.ViewProjection;
 
                 MeshDraw currentDraw = null;
                 var frustum = new BoundingFrustum(ref viewProjection);
