@@ -3,6 +3,7 @@
 
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -58,6 +59,11 @@ namespace SiliconStudio.Xenko.Graphics
 
             queryEvents.Add(queryEvent);
 
+            if (commandList.GraphicsDevice.IsDebugMode)
+            {
+                commandList.BeginProfile(Color.Green, profilingKey.Name);
+            }
+
             return eventId;
         }
 
@@ -66,6 +72,11 @@ namespace SiliconStudio.Xenko.Graphics
             if (queryEvents[eventId].EndQuery.HasValue)
             {
                 commandList.WriteTimestamp(timestampQueryPool, queryEvents[eventId].EndQuery.Value);
+
+                if (commandList.GraphicsDevice.IsDebugMode)
+                {
+                    commandList.EndProfile();
+                }
             }
         }
     }
