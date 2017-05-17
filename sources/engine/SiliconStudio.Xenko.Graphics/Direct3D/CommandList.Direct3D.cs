@@ -43,6 +43,9 @@ namespace SiliconStudio.Xenko.Graphics
             nativeDeviceContext = device.NativeDeviceContext;
             nativeDeviceContext1 = new SharpDX.Direct3D11.DeviceContext1(nativeDeviceContext.NativePointer);
             nativeDeviceProfiler = device.IsDebugMode ? SharpDX.ComObject.QueryInterfaceOrNull<SharpDX.Direct3D11.UserDefinedAnnotation>(nativeDeviceContext.NativePointer) : null;
+
+            gpuQueryProfiler = new GpuQueryProfiler(this);
+
             InitializeStages();
 
             ClearState();
@@ -493,7 +496,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Begins profiling.
+        /// Begins debug event.
         /// </summary>
         /// <param name="profileColor">Color of the profile.</param>
         /// <param name="name">The name.</param>
@@ -506,7 +509,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Ends profiling.
+        /// Ends debug event.
         /// </summary>
         public void EndProfile()
         {

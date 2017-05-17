@@ -65,6 +65,9 @@ namespace SiliconStudio.Xenko.Graphics
         private QueryPoolManager queryPoolManager = new QueryPoolManager();
         public QueryPoolManager QueryPoolManager => queryPoolManager;
 
+        private GpuQueryProfiler gpuQueryProfiler = null;
+        public GpuQueryProfiler GpuQueryProfiler => gpuQueryProfiler;
+
         /// <summary>
         /// Clears the state and restore the state of the device.
         /// </summary>
