@@ -228,7 +228,11 @@ namespace SiliconStudio.Xenko.Streaming
                 if (storage == null)
                     throw new ContentStreamingException("Missing content storage.");
                 
-                var img = new Image();
+                //var img = new Image();
+                //obj.InitializeFrom(img);
+
+                // TODO: finish this
+                throw new NotImplementedException();
             }
             finally
             {
