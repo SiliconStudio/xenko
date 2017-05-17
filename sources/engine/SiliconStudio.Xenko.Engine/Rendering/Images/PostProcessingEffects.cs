@@ -317,6 +317,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // do AA here, first. (hybrid method from Karis2013)
             if (aaFirst && needAA)
             {
+                context.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, ImageEffectProfilingKeys.HybridFxaa);
+
                 // explanation:
                 // The Karis method (Unreal Engine 4.1x), uses a hybrid pipeline to execute AA.
                 // The AA is usually done at the end of the pipeline, but we don't benefit from
@@ -345,26 +347,36 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 rangeDecompress.SetOutput(aaSurface);
                 rangeDecompress.Draw(context);
                 currentInput = aaSurface;
+
+                context.CommandList.GpuQueryProfiler.EndProfile();
             }
 
             if (ambientOcclusion.Enabled && inputDepthTexture != null)
             {
+                context.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, ImageEffectProfilingKeys.AmbientOcclusion);
+
                 // Ambient Occlusion
                 var aoOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
                 ambientOcclusion.SetColorDepthInput(currentInput, inputDepthTexture);
                 ambientOcclusion.SetOutput(aoOutput);
                 ambientOcclusion.Draw(context);
                 currentInput = aoOutput;
+
+                context.CommandList.GpuQueryProfiler.EndProfile();
             }
 
             if (depthOfField.Enabled && inputDepthTexture != null)
             {
+                context.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, ImageEffectProfilingKeys.DepthOfField);
+
                 // DoF
                 var dofOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
                 depthOfField.SetColorDepthInput(currentInput, inputDepthTexture);
                 depthOfField.SetOutput(dofOutput);
                 depthOfField.Draw(context);
                 currentInput = dofOutput;
+
+                context.CommandList.GpuQueryProfiler.EndProfile();
             }
 
             // Luminance pass (only if tone mapping is enabled)
@@ -372,6 +384,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var toneMap = colorTransformsGroup.Transforms.Get<ToneMap>();
             if (colorTransformsGroup.Enabled && toneMap != null && toneMap.Enabled)
             {
+                context.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, ImageEffectProfilingKeys.AverageLumiance);
+
                 const int localLuminanceDownScale = 3;
 
                 // The luminance chain uses power-of-two intermediate targets, so it expects to output to one as well
@@ -387,10 +401,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                 // Set this parameter that will be used by the tone mapping
                 colorTransformsGroup.Parameters.Set(LuminanceEffect.LuminanceResult, new LuminanceResult(luminanceEffect.AverageLuminance, luminanceTexture));
+
+                context.CommandList.GpuQueryProfiler.EndProfile();
             }
 
             if (brightFilter.Enabled && (bloom.Enabled || lightStreak.Enabled || lensFlare.Enabled))
             {
+                context.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, ImageEffectProfilingKeys.BrightFilter);
+
                 // Bright filter pass
                 Texture brightTexture = null;
                 brightTexture = NewScopedRenderTarget2D(currentInput.Width, currentInput.Height, currentInput.Format, 1);
@@ -399,28 +417,42 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 brightFilter.SetOutput(brightTexture);
                 brightFilter.Draw(context);
 
+                context.CommandList.GpuQueryProfiler.EndProfile();
+
                 // Bloom pass
                 if (bloom.Enabled)
                 {
+                    context.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, ImageEffectProfilingKeys.Bloom);
+
                     bloom.SetInput(brightTexture);
                     bloom.SetOutput(currentInput);
                     bloom.Draw(context);
+
+                    context.CommandList.GpuQueryProfiler.EndProfile();
                 }
 
                 // Light streak pass
                 if (lightStreak.Enabled)
                 {
+                    context.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, ImageEffectProfilingKeys.LightStreak);
+
                     lightStreak.SetInput(brightTexture);
                     lightStreak.SetOutput(currentInput);
                     lightStreak.Draw(context);
+
+                    context.CommandList.GpuQueryProfiler.EndProfile();
                 }
 
                 // Lens flare pass
                 if (lensFlare.Enabled)
                 {
+                    context.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, ImageEffectProfilingKeys.LensFlare);
+
                     lensFlare.SetInput(brightTexture);
                     lensFlare.SetOutput(currentInput);
                     lensFlare.Draw(context);
+
+                    context.CommandList.GpuQueryProfiler.EndProfile();
                 }
             }
 
@@ -445,18 +477,26 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 luminanceToChannelTransform.Enabled = false;
             }
 
+            context.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, ImageEffectProfilingKeys.ColorTransformGroup);
+
             // Color transform group pass (tonemap, color grading)
             var lastEffect = colorTransformsGroup.Enabled ? (ImageEffect)colorTransformsGroup : Scaler;
             lastEffect.SetInput(currentInput);
             lastEffect.SetOutput(toneOutput);
             lastEffect.Draw(context);
 
+            context.CommandList.GpuQueryProfiler.EndProfile();
+
             // do AA here, last, if not already done.
             if (aaLast)
             {
+                context.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, ImageEffectProfilingKeys.Fxaa);
+
                 ssaa.SetInput(toneOutput);
                 ssaa.SetOutput(output);
                 ssaa.Draw(context);
+
+                context.CommandList.GpuQueryProfiler.EndProfile();
             }
         }
     }
