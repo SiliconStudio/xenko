@@ -128,6 +128,7 @@
     <Compile Include="CompiledCommandList.cs" />
     <Compile Include="DefaultCommandListLock.cs" />
     <Compile Include="Direct3D12\CompiledCommandList.Direct3D12.cs" />
+    <Compile Include="Direct3D\QueryPool.cs" />
     <Compile Include="Direct3D\SharpDXInterop.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFont.cs" />
     <Compile Include="Null\CommandList.Null.cs" />
@@ -143,6 +144,9 @@
     <Compile Include="OpenGL\MappedResource.OpenGL.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFontSerializer.cs" />
     <Compile Include="PipelineStateDescriptionWithHash.cs" />
+    <Compile Include="Query.cs" />
+    <Compile Include="QueryPool.cs" />
+    <Compile Include="QueryType.cs" />
     <Compile Include="RenderingSettings.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
     <Compile Include="DescriptorPool.cs" />
