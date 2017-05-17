@@ -1,9 +1,8 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -76,7 +75,7 @@ namespace SiliconStudio.Xenko.Streaming
 
             // Validate hash code
             if (GetHashCode() != header.HashCode)
-                throw new DataMisalignedException();
+                throw new ContentStreamingException("Invalid hash code.", this);
         }
 
         /// <summary>
@@ -171,7 +170,7 @@ namespace SiliconStudio.Xenko.Streaming
 
                 // Validate calculated offset
                 if (offset != outputStream.Position)
-                    throw new DataException("Invalid storage offset.");
+                    throw new ContentStreamingException("Invalid storage offset.");
             }
         }
 

@@ -2800,6 +2800,7 @@
     <Compile Include="Starter\iOSXenkoView.cs" />
     <Compile Include="Streaming\ContentChunk.cs" />
     <Compile Include="Streaming\ContentStorage.cs" />
+    <Compile Include="Streaming\ContentStreamingException.cs" />
     <Compile Include="Streaming\ContentStreamingService.cs" />
     <Compile Include="Streaming\StreamableResource.cs" />
     <Compile Include="Streaming\StreamingManager.cs" />

@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Streaming
             // Get content storage container
             var storage = ContentStreaming.GetStorage(ref storageHeader);
             if (storage == null)
-                throw new Exception("Missing content storage.");
+                throw new ContentStreamingException("Missing content storage.");
 
             // Find resource or create new
             var resource = resources.Find(x => x.Resource == obj) as StreamingTexture;
@@ -226,7 +226,7 @@ namespace SiliconStudio.Xenko.Streaming
                 // Get content storage container
                 var storage = manager.ContentStreaming.GetStorage(ref storageHeader);
                 if (storage == null)
-                    throw new Exception("Missing content storage.");
+                    throw new ContentStreamingException("Missing content storage.");
                 
                 var img = new Image();
             }
