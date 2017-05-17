@@ -178,14 +178,17 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 var boundingVolumes = lightShaftBoundingVolumeProcessor.GetBoundingVolumesForComponent(lightShaft.Component);
                 if (boundingVolumes == null)
                     continue;
-
-                // Draw bounding boxes as separate light shafts, since we don't have a way to make minimum-depth work correctly
-                //  from inside bounding boxes if we combine them
+                
+                // Check if we can pack bounding volumes together or need to draw them one by one
+                var boundingVolumeLoop = lightShaft.SeparateBoundingVolumes ? boundingVolumes.Count : 1;
                 var lightBufferUsed = false;
-                for (int i = 0; i < boundingVolumes.Count; ++i)
+                for (int i = 0; i < boundingVolumeLoop; ++i)
                 {
-                    singleBoundingVolume[0] = boundingVolumes[i];
-
+                    // Generate list of bounding volume (either all or one by one depending on SeparateBoundingVolumes)
+                    var currentBoundingVolumes = (lightShaft.SeparateBoundingVolumes) ? singleBoundingVolume : boundingVolumes;
+                    if (lightShaft.SeparateBoundingVolumes)
+                        singleBoundingVolume[0] = boundingVolumes[i];
+                    
                     using (context.PushRenderTargetsAndRestore())
                     {
                         // Clear bounding box buffer
@@ -193,14 +196,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
                         context.CommandList.SetRenderTargetAndViewport(null, boundingBoxBuffer);
                         
                         // If nothing visible, skip second part
-                        if (!DrawBoundingVolumeMinMax(context, singleBoundingVolume))
+                        if (!DrawBoundingVolumeMinMax(context, currentBoundingVolumes))
                             continue;
 
                         context.CommandList.Clear(backSideRaycastBuffer, new Color4(1.0f, 0.0f, 0.0f, 0.0f));
                         context.CommandList.SetRenderTargetAndViewport(null, backSideRaycastBuffer);
 
                         // If nothing visible, skip second part
-                        DrawBoundingVolumeBackside(context, singleBoundingVolume);
+                        DrawBoundingVolumeBackside(context, currentBoundingVolumes);
                     }
 
                     if (!lightBufferUsed)

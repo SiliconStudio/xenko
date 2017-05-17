@@ -33,5 +33,14 @@ namespace SiliconStudio.Xenko.Engine
         /// Number of samples taken per pixel
         /// </userdoc>
         public int SampleCount { get; set; } = 16;
+
+        /// <summary>
+        /// If true, all bounding volumes will be drawn one by one.
+        /// </summary>
+        /// <remarks>
+        /// If this is off, the light shafts might be lower in quality if the bounding volumes overlap (in the same pixel). 
+        /// If this is on, and the bounding volumes overlap (in space), the light shafts inside the overlapping area will become twice as bright.
+        /// </remarks>
+        public bool SeparateBoundingVolumes { get; set; } = true;
     }
 }

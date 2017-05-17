@@ -54,6 +54,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             public int SampleCount => Component.SampleCount;
             public Matrix LightWorld => Component.Entity.Transform.WorldMatrix;
             public float DensityFactor => Component.DensityFactor;
+            public bool SeparateBoundingVolumes => Component.SeparateBoundingVolumes;
         }
     }
 }
