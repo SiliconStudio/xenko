@@ -104,6 +104,18 @@ namespace SiliconStudio.Xenko.Streaming
             if (Texture.GraphicsDevice != null)
                 Texture.OnDestroyed();
         }
+
+        private void GetMipSize(bool isBlockCompressed, int mipIndex, out int width, out int height)
+        {
+            width = TotalWidth >> mipIndex;
+            height = TotalHeight >> mipIndex;
+
+            if (isBlockCompressed && ((width % 4) != 0 || (height % 4) != 0))
+            {
+                width = unchecked((int)(((uint)(width + 3)) & ~(uint)3));
+                height = unchecked((int)(((uint)(height + 3)) & ~(uint)3));
+            }
+        }
         
         private void StreamingTask(int residency)
         {
@@ -127,16 +139,16 @@ namespace SiliconStudio.Xenko.Streaming
             {
                 Storage.LockChunks();
 
+                bool isBlockCompressed =
+                    (Format >= PixelFormat.BC1_Typeless && Format <= PixelFormat.BC5_SNorm) ||
+                    (Format >= PixelFormat.BC6H_Typeless && Format <= PixelFormat.BC7_UNorm_SRgb);
+
                 // Setup texture description
                 TextureDescription newDesc = _desc;
                 int newHighestResidentMipIndex = TotalMipLevels - mipsCount;
                 newDesc.MipLevels = mipsCount;
-                newDesc.Width = TotalWidth >> (_desc.MipLevels - newDesc.MipLevels);
-                newDesc.Height = TotalHeight >> (_desc.MipLevels - newDesc.MipLevels);
+                GetMipSize(isBlockCompressed, _desc.MipLevels - newDesc.MipLevels, out newDesc.Width, out newDesc.Height);
                 var dataBoxes = new DataBox[newDesc.MipLevels * newDesc.ArraySize];
-                bool isBlockCompressed =
-                    (Format >= PixelFormat.BC1_Typeless && Format <= PixelFormat.BC5_SNorm) ||
-                    (Format >= PixelFormat.BC6H_Typeless && Format <= PixelFormat.BC7_UNorm_SRgb);
                 int dataBoxIndex = 0;
 
                 // Get data boxes data
@@ -145,19 +157,13 @@ namespace SiliconStudio.Xenko.Streaming
                     for (int mipIndex = 0; mipIndex < newDesc.MipLevels; mipIndex++)
                     {
                         int totalMipIndex = newHighestResidentMipIndex + mipIndex;
-                        int mipWidth = TotalWidth >> totalMipIndex;
-                        int mipheight = TotalHeight >> totalMipIndex;
-
-                        if (isBlockCompressed && ((mipWidth % 4) != 0 || (mipheight % 4) != 0))
-                        {
-                            mipWidth = unchecked((int)(((uint)(mipWidth + 3)) & ~(uint)3));
-                            mipheight = unchecked((int)(((uint)(mipheight + 3)) & ~(uint)3));
-                        }
+                        int mipWidth, mipHeight;
+                        GetMipSize(isBlockCompressed, totalMipIndex, out mipWidth, out mipHeight);
 
                         int rowPitch, slicePitch;
                         int widthPacked;
                         int heightPacked;
-                        Image.ComputePitch(Format, mipWidth, mipheight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
+                        Image.ComputePitch(Format, mipWidth, mipHeight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
 
                         var chunk = Storage.GetChunk(totalMipIndex);
                         if (chunk == null || chunk.Size != slicePitch * newDesc.ArraySize)
