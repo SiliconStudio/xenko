@@ -101,6 +101,9 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             }
         }
 
+        private static readonly ProfilingKey CubemapSceneRendererProfilingKey = new ProfilingKey("CubemapSceneRenderer");
+        private static readonly ProfilingKey SpecularProbeProfilingKey = new ProfilingKey(CubemapSceneRendererProfilingKey, "SpecularProbe");
+
         public static Texture GenerateCubemap(ISceneRendererContext context, Vector3 position, int textureSize)
         {
             using (var cubemapRenderer = new CubemapSceneRenderer(context, textureSize))
@@ -111,7 +114,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 using (cubemapRenderer.DrawContext.PushRenderTargetsAndRestore())
                 {
                     // Render specular probe
-                    context.GraphicsContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, new ProfilingKey("SpecularProbe"));
+                    context.GraphicsContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, SpecularProbeProfilingKey);
 
                     cubemapRenderer.Draw(position, cubeTexture);
 

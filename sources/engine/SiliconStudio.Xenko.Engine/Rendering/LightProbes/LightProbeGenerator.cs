@@ -24,6 +24,9 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
     {
         public const int LambertHamonicOrder = 3;
 
+        private static readonly ProfilingKey LightProbeProfilingKey = new ProfilingKey("LightProbes");
+        private static readonly ProfilingKey PrefilterSH = new ProfilingKey(LightProbeProfilingKey, "Prefilter SphericalHarmonics");
+
         public static Dictionary<LightProbeComponent, FastList<Color3>> GenerateCoefficients(ISceneRendererContext context, LightProbeComponent[] lightProbes)
         {
             using (var cubemapRenderer = new CubemapSceneRenderer(context, 256))
@@ -43,7 +46,7 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
                 using (cubemapRenderer.DrawContext.PushRenderTargetsAndRestore())
                 {
                     // Render light probe
-                    context.GraphicsContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, new ProfilingKey("LightProbes"));
+                    context.GraphicsContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, LightProbeProfilingKey);
 
                     int lightProbeIndex = 0;
                     foreach (var entity in context.SceneSystem.SceneInstance)
@@ -55,12 +58,12 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
                         var lightProbePosition = lightProbe.Entity.Transform.WorldMatrix.TranslationVector;
                         context.GraphicsContext.ResourceGroupAllocator.Reset(context.GraphicsContext.CommandList);
 
-                        context.GraphicsContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, new ProfilingKey($"LightProbes {lightProbeIndex}"));
+                        context.GraphicsContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, new ProfilingKey(LightProbeProfilingKey, $"LightProbes {lightProbeIndex}"));
                         lightProbeIndex++;
 
                         cubemapRenderer.Draw(lightProbePosition, cubeTexture);
 
-                        context.GraphicsContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, new ProfilingKey("Prefilter SphericalHarmonics"));
+                        context.GraphicsContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, PrefilterSH);
 
                         // Compute SH coefficients
                         lambertFiltering.Draw(cubemapRenderer.DrawContext);
