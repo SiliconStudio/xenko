@@ -477,6 +477,21 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.FrameDrawCalls++;
         }
 
+        public void WriteTimestamp(QueryPool queryPool, Query query)
+        {
+            nativeDeviceContext.End(queryPool.NativeObjects[query.InternalIndex]);    
+        }
+
+        public void BeginQuery(QueryPool queryPool, Query query)
+        {
+            nativeDeviceContext.Begin(queryPool.NativeObjects[query.InternalIndex]);    
+        }
+
+        public void EndQuery(QueryPool queryPool, Query query)
+        {
+            nativeDeviceContext.End(queryPool.NativeObjects[query.InternalIndex]);
+        }
+
         /// <summary>
         /// Begins profiling.
         /// </summary>

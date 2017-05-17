@@ -62,6 +62,8 @@ namespace SiliconStudio.Xenko.Graphics
         public Viewport[] Viewports => viewports;
         public int ViewportCount => boundViewportCount;
 
+        private QueryPoolManager queryPoolManager = new QueryPoolManager();
+        public QueryPoolManager QueryPoolManager => queryPoolManager;
 
         /// <summary>
         /// Clears the state and restore the state of the device.
