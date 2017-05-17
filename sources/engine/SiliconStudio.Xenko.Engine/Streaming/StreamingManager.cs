@@ -167,12 +167,11 @@ namespace SiliconStudio.Xenko.Streaming
                 // Get streaming object
                 var resource = CreateStreamingTexture(obj, ref imageDescription, ref storageHeader);
 
-                // Use it temporary (dispose after load)
-                using (resource)
-                {
-                    // Stream resource to the maximum level
-                    FullyLoadResource(resource);
-                }
+                // Stream resource to the maximum level
+                FullyLoadResource(resource);
+
+                // Release streaming object
+                resource.Release();
             }
         }
 
