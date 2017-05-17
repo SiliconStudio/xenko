@@ -47,17 +47,17 @@ namespace SiliconStudio.Xenko.Engine
         public SceneInstance SceneInstance { get; set; }
 
         /// <summary>
-        /// URL of the initial scene that should be used upon loading
+        /// URL of the initial scene used on loading
         /// </summary>
         public string InitialSceneUrl { get; set; }
 
         /// <summary>
-        /// URL of the initial graphics compositor that should be used upon loading
+        /// URL of the initial graphics compositor used on loading
         /// </summary>
         public string InitialGraphicsCompositorUrl { get; set; }
 
         /// <summary>
-        /// URL of the splash screen texture that should be used upon loading
+        /// URL of the splash screen texture used when on loading
         /// </summary>
         public string SplashScreenUrl { get; set; }
 
@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Engine
         public Color4 SplashScreenColor { get; set; }
 
         /// <summary>
-        /// If splahs screen rendering is enabeld, true if a splash screen texture is present, and only happens in release builds
+        /// If splash screen rendering is enabled, true if a splash screen texture is present, and only in release builds
         /// </summary>
         public bool SplashScreenEnabled { get; set; }
 

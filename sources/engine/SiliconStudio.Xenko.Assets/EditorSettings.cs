@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets
         }
 
         /// <userdoc>
-        /// This setting applies to thumbnails and asset previews
+        /// Applies to thumbnails and asset previews
         /// </userdoc>
         [DataMember(0)]
         public RenderingMode RenderingMode = RenderingMode.HDR;

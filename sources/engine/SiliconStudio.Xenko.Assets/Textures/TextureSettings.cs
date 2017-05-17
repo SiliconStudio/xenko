@@ -7,7 +7,7 @@ using SiliconStudio.Xenko.Data;
 namespace SiliconStudio.Xenko.Assets.Textures
 {
     [DataContract]
-    [Display("Texture Settings")]
+    [Display("Texture")]
     public class TextureSettings : Configuration
     {
         public TextureSettings()
