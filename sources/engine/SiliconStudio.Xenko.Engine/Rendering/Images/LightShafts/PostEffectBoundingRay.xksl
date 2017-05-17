@@ -6,12 +6,12 @@
 /// </remarks>
 shader PostEffectBoundingRay<int SampleCount> : ImageEffectShader, DepthBase, Transformation, PositionStream4
 {
-    float ComputeColorOut() 
+    float3 ComputeColorOut() 
     {
         return 0;
     }
 
-    float ComputeColorIn(float4 positionWS, float stepSize, int stepIndex) 
+    float3 ComputeColorIn(float4 positionWS, float stepSize, int stepIndex) 
     {
         return 0;
     }
@@ -26,7 +26,7 @@ shader PostEffectBoundingRay<int SampleCount> : ImageEffectShader, DepthBase, Tr
         return stepSize * Math.FastRandom(HashXYZ(input));
     }
 
-    float ComputeFinalColor(float lightAcc) 
+    float4 ComputeFinalColor(float3 lightAcc) 
     {
         return float4(lightAcc.xxx, 1.0);
     }
@@ -47,7 +47,7 @@ shader PostEffectBoundingRay<int SampleCount> : ImageEffectShader, DepthBase, Tr
             float currentZ = GetZProjDepthFromUV(streams.TexCoord);
             float minZ = minmax.x;
             float maxZ = min(minmax.y, currentZ);
-
+            
             float minDistance = ComputeDepthFromZProj(minZ);
             float maxDistance = ComputeDepthFromZProj(maxZ);
 
@@ -91,7 +91,7 @@ shader PostEffectBoundingRay<int SampleCount> : ImageEffectShader, DepthBase, Tr
         }
         else // Outside the bounding box
         {
-            streams.ColorTarget = this.ComputeColorOut();
+            streams.ColorTarget = ComputeFinalColor(this.ComputeColorOut());
         }
     }
 };

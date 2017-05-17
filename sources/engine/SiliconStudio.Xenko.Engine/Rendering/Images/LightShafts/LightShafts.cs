@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Size of the orthographic projection used to find minimum bounding volume distance behind the camera
         /// </summary>
-        private const float backSideOrthographicSize = 0.0001f;
+        private const float BackSideOrthographicSize = 0.0001f;
 
         private ImageEffectShader lightShaftsEffectShader;
 
@@ -137,7 +137,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var boundingBoxBuffer = NewScopedRenderTarget2D(depthInput.Width / BoundingVolumeBufferDownsampleLevel, depthInput.Height / BoundingVolumeBufferDownsampleLevel, PixelFormat.R32G32_Float);
 
             // Buffer that holds the minimum distance in case of being inside the bounding box
-            var backSideRaycastBuffer = NewScopedRenderTarget2D(2, 2, PixelFormat.R32G32_Float);
+            var backSideRaycastBuffer = NewScopedRenderTarget2D(1, 1, PixelFormat.R32G32_Float);
 
             // Create a single channel light buffer
             PixelFormat lightBufferPixelFormat = needsColorLightBuffer ? PixelFormat.R16G16B16A16_Float : PixelFormat.R16_Float;
@@ -363,7 +363,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private void DrawBoundingVolumeBackside(RenderDrawContext context, IReadOnlyList<LightShaftBoundingVolumeProcessor.Data> boundingVolumes)
         {
             float backSideMaximumDistance = context.RenderContext.RenderView.FarClipPlane;
-            Matrix backSideProjection = context.RenderContext.RenderView.View * Matrix.Scaling(1, 1, -1) * Matrix.OrthoRH(backSideOrthographicSize, backSideOrthographicSize, 0, backSideMaximumDistance);
+            float backSideMinimumDistance = -context.RenderContext.RenderView.NearClipPlane;
+            Matrix backSideProjection = context.RenderContext.RenderView.View * Matrix.Scaling(1, 1, -1) * Matrix.OrthoRH(BackSideOrthographicSize, BackSideOrthographicSize, backSideMinimumDistance, backSideMaximumDistance);
             DrawBoundingVolumes(context, boundingVolumes, backSideProjection);
         }
 
