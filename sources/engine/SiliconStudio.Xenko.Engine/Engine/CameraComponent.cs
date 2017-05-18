@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Gets or sets the projection.
         /// </summary>
         /// <value>The projection.</value>
-        /// <userdoc>The type of projection used by the camera.</userdoc>
+        /// <userdoc>The type of projection used by the camera</userdoc>
         [DataMember(0)]
         [NotNull]
         public CameraProjectionMode Projection { get; set; }
@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <value>
         /// The vertical field of view.
         /// </value>
-        /// <userdoc>The vertical field-of-view used by the camera (in degrees).</userdoc>
+        /// <userdoc>The vertical field of view (in degrees)</userdoc>
         [DataMember(5)]
         [DefaultValue(DefaultVerticalFieldOfView)]
         [Display("Field Of View")]
