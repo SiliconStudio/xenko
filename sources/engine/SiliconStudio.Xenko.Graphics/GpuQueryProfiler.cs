@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 
 using System.Collections.Generic;
+
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
@@ -20,14 +21,15 @@ namespace SiliconStudio.Xenko.Graphics
             public ProfilingState ProfilingState;
         }
 
-        private readonly QueryPool timestampQueryPool;  
+        private readonly QueryPool timestampQueryPool;
+        
         private long[] queryResults = new long[TimestampQueryPoolCapacity];
 
-        private readonly Stack<QueryEvent> queryEventsStack = new Stack<QueryEvent>();
         private readonly FastList<QueryEvent> queryEvents = new FastList<QueryEvent>();
+        private readonly Stack<QueryEvent> queryEventStack = new Stack<QueryEvent>();
 
-        private CommandList commandList;
-        
+        private readonly CommandList commandList = null;
+
         public GpuQueryProfiler(CommandList commandList)
         {
             timestampQueryPool = commandList.QueryPoolManager.GetOrCreatePool(commandList, QueryType.Timestamp, TimestampQueryPoolCapacity);
@@ -35,6 +37,9 @@ namespace SiliconStudio.Xenko.Graphics
             this.commandList = commandList;
         }
 
+        /// <summary>
+        /// Retrieves timestamp from GPU and sends the results to Profiler.
+        /// </summary>
         public void SubmitResults()
         {
             timestampQueryPool.GetData(commandList, ref queryResults);
@@ -48,47 +53,58 @@ namespace SiliconStudio.Xenko.Graphics
             queryEvents.Clear(true);
         }
 
+        /// <summary>
+        /// Begins profile.
+        /// </summary>
+        /// <param name="profileColor">The profile event color.</param>
+        /// <param name="profilingKey">The <see cref="ProfilingKey"/></param>
         public void BeginProfile(Color4 profileColor, ProfilingKey profilingKey)
         {
-            QueryEvent queryEvent = new QueryEvent()
+            var queryEvent = new QueryEvent()
             {
                 BeginQuery = timestampQueryPool.AllocateQuery(),
                 EndQuery = timestampQueryPool.AllocateQuery(),
                 ProfilingState = Profiler.New(profilingKey),
             };
             
+            // Query might be null if the pool is full
             if (queryEvent.BeginQuery.HasValue)
             {
                 commandList.WriteTimestamp(timestampQueryPool, queryEvent.BeginQuery.Value);
             }
 
-            queryEventsStack.Push(queryEvent);
+            queryEventStack.Push(queryEvent);
 
+            // Sets a debug marker if debug mode is enabled
             if (commandList.GraphicsDevice.IsDebugMode)
             {
-                commandList.BeginProfile(profileColor, profilingKey.Name);
+                commandList.BeginDebugEvent(profileColor, profilingKey.Name);
             }
         }
 
+        /// <summary>
+        /// Ends profile.
+        /// </summary>
         public void EndProfile()
         {
-            if (queryEventsStack.Count == 0)
+            if (queryEventStack.Count == 0)
             {
                 return;
             }
 
-            QueryEvent latestQueryEvent = queryEventsStack.Pop();
+            var latestQueryEvent = queryEventStack.Pop();
 
             if (latestQueryEvent.EndQuery.HasValue)
             {
                 commandList.WriteTimestamp(timestampQueryPool, latestQueryEvent.EndQuery.Value);
-
-                if (commandList.GraphicsDevice.IsDebugMode)
-                {
-                    commandList.EndProfile();
-                }
             }
 
+            if (commandList.GraphicsDevice.IsDebugMode)
+            {
+                commandList.EndDebugEvent();
+            }
+
+            // Adds the event to the event list
             queryEvents.Add(latestQueryEvent);
         }
     }

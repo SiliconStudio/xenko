@@ -52,6 +52,10 @@ namespace SiliconStudio.Xenko.Graphics
             return this;
         }
 
+        /// <summary>
+        /// Allocate a query from the <see cref="QueryPool"/>.
+        /// </summary>
+        /// <returns><see cref="Query"/> from the pool; <see cref="null"/> otherwise.</returns>
         public Query? AllocateQuery()
         {
             if (IsFull)
@@ -123,10 +127,5 @@ namespace SiliconStudio.Xenko.Graphics
 
             Reset(commandList);
         }
-
-        internal double GetTickToMsRatio()
-        {
-            return 1000.0;
-        }      
     }
 }
