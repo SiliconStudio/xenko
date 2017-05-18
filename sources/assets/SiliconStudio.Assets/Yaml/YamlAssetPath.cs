@@ -334,6 +334,20 @@ namespace SiliconStudio.Assets.Yaml
             return result;
         }
 
+        public bool StartsWith(YamlAssetPath path)
+        {
+            if (path.elements.Count > elements.Count)
+                return false;
+
+            for (var i = 0; i < path.Elements.Count; ++i)
+            {
+                if (!Elements[i].Equals(path.Elements[i]))
+                    return false;
+            }
+
+            return true;
+        }
+
         /// <inheritdoc/>
         public bool Equals(YamlAssetPath other)
         {
