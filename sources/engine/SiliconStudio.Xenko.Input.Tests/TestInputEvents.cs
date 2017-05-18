@@ -65,13 +65,28 @@ namespace SiliconStudio.Xenko.Input.Tests
             }
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS
-            // Toggle raw input
             WriteLine($"Raw input: {Input.UseRawInput} (Ctrl+R to toggle)");
-            if ((Input.IsKeyDown(Keys.LeftCtrl) || Input.IsKeyDown(Keys.RightCtrl)) && Input.IsKeyPressed(Keys.R))
-            {
-                Input.UseRawInput = !Input.UseRawInput;
-            }
 #endif
+            WriteLine($"Locked mouse position: {Input.IsMousePositionLocked} (Ctrl+E to toggle)");
+
+            if ((Input.IsKeyDown(Keys.LeftCtrl) || Input.IsKeyDown(Keys.RightCtrl)))
+            {
+#if SILICONSTUDIO_PLATFORM_WINDOWS
+                // Toggle raw input
+                if (Input.IsKeyPressed(Keys.R))
+                {
+                    Input.UseRawInput = !Input.UseRawInput;
+                }
+#endif
+                // Toggle mouse lock
+                if (Input.IsKeyPressed(Keys.E))
+                {
+                    if(Input.IsMousePositionLocked)
+                        Input.UnlockMousePosition();
+                    else
+                        Input.LockMousePosition(Input.IsKeyDown(Keys.LeftShift) || Input.IsKeyDown(Keys.RightShift));   
+                }
+            }
 
             WriteLine("Input Events:");
             foreach (var evt in eventLog)
