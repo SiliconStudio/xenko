@@ -62,6 +62,9 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         [NonIdentifiableCollectionItems]
         public AssetPartCollection<Link> Links { get; } = new AssetPartCollection<Link>();
 
+        /// <inheritdoc/>
+        IIdentifiable IAssetPartDesign.Part => this;
+
         Method IAssetPartDesign<Method>.Part { get { return this; } set { throw new InvalidOperationException(); } }
     }
 }

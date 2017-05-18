@@ -216,6 +216,7 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
         {
             public BasePart Base { get; set; }
             // ReSharper disable once NotNullMemberIsNotInitialized
+            IIdentifiable IAssetPartDesign.Part => Part;
             public MyPart Part { get; set; }
             public override string ToString() => $"Design: {Part.Name} [{Part.Id}]";
         }
