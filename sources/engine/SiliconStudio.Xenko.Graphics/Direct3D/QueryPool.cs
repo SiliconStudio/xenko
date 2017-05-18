@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
+
 using System;
 using SharpDX.Direct3D11;
 
@@ -129,3 +131,5 @@ namespace SiliconStudio.Xenko.Graphics
         }
     }
 }
+
+#endif
