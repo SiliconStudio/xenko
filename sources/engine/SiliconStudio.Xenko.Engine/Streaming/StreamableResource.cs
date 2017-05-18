@@ -87,7 +87,6 @@ namespace SiliconStudio.Xenko.Streaming
         protected StreamableResource(StreamingManager manager)
         {
             Manager = manager;
-            Manager.RegisterResource(this);
             LastUpdate = TargetResidencyChange = DateTime.MinValue;
         }
 
