@@ -187,7 +187,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             if (AssetItem.Asset.Archetype != null)
             {
-                Archetype = Container.GetGraph(AssetItem.Asset.Archetype.Id);
+                Archetype = Container.TryGetGraph(AssetItem.Asset.Archetype.Id);
                 if (Archetype == null)
                     throw new InvalidOperationException($"Unable to find the base [{AssetItem.Asset.Archetype.Location}] of asset [{AssetItem.Location}].");
             }

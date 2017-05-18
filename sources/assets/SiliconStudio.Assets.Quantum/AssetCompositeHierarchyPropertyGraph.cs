@@ -245,7 +245,7 @@ namespace SiliconStudio.Assets.Quantum
                 // The part might be being moved and could possibly be currently not into the Parts collection.
                 if (Asset.Hierarchy.Parts.TryGetValue(part.Id, out partDesign) && partDesign.Base != null)
                 {
-                    var baseAssetGraph = Container.GetGraph(partDesign.Base.BasePartAsset.Id);
+                    var baseAssetGraph = Container.TryGetGraph(partDesign.Base.BasePartAsset.Id);
                     // Base asset might have been deleted
                     if (baseAssetGraph == null)
                         return base.FindTarget(sourceNode, target);
@@ -616,7 +616,7 @@ namespace SiliconStudio.Assets.Quantum
             var currentParts = Asset.Hierarchy.RootParts.DepthFirst(x => Asset.EnumerateChildParts(x, false)).Select(x => Asset.Hierarchy.Parts[x.Id]);
             foreach (var part in currentParts.Where(x => x.Base != null))
             {
-                var baseAssetGraph = Container.GetGraph(part.Base.BasePartAsset.Id) as AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>;
+                var baseAssetGraph = Container.TryGetGraph(part.Base.BasePartAsset.Id) as AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>;
                 if (baseAssetGraph != null)
                 {
                     HashSet<Guid> instanceIds;
@@ -673,7 +673,7 @@ namespace SiliconStudio.Assets.Quantum
             var baseAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)e.Asset;
             var newPart = baseAsset.Hierarchy.Parts[e.PartId];
             var newPartParent = baseAsset.GetParent(newPart.Part);
-            var baseAssetGraph = Container.GetGraph(baseAsset.Id) as AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>;
+            var baseAssetGraph = Container.TryGetGraph(baseAsset.Id) as AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>;
             if (baseAssetGraph == null) throw new InvalidOperationException("Unable to find the graph corresponding to the base part");
 
 
