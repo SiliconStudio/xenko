@@ -145,10 +145,29 @@ namespace SiliconStudio.Xenko.Streaming
                 int newHighestResidentMipIndex = TotalMipLevels - mipsCount;
                 newDesc.MipLevels = mipsCount;
                 GetMipSize(isBlockCompressed, _desc.MipLevels - newDesc.MipLevels, out newDesc.Width, out newDesc.Height);
-                var dataBoxes = new DataBox[newDesc.MipLevels * newDesc.ArraySize];
-                int dataBoxIndex = 0;
 
-                // Get data boxes data
+                // Load chunks
+                var chunksData = new byte[newDesc.MipLevels][];
+                for (int mipIndex = 0; mipIndex < newDesc.MipLevels; mipIndex++)
+                {
+                    int totalMipIndex = newHighestResidentMipIndex + mipIndex;
+                    var chunk = Storage.GetChunk(totalMipIndex);
+                    if (chunk == null)
+                        throw new ContentStreamingException("Data chunk is missing.", Storage);
+
+                    var data = chunk.GetData(fileProvider);
+                    if (!chunk.IsLoaded)
+                        throw new ContentStreamingException("Data chunk is not loaded.", Storage);
+
+                    if (_cancellationToken.IsCancellationRequested)
+                        return;
+
+                    chunksData[mipIndex] = data;
+                }
+
+                // Get data boxes
+                int dataBoxIndex = 0;
+                var dataBoxes = new DataBox[newDesc.MipLevels * newDesc.ArraySize];
                 for (int arrayIndex = 0; arrayIndex < newDesc.ArraySize; arrayIndex++)
                 {
                     for (int mipIndex = 0; mipIndex < newDesc.MipLevels; mipIndex++)
@@ -161,19 +180,13 @@ namespace SiliconStudio.Xenko.Streaming
                         int widthPacked;
                         int heightPacked;
                         Image.ComputePitch(Format, mipWidth, mipHeight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
-
-                        var chunk = Storage.GetChunk(totalMipIndex);
-                        if (chunk == null || chunk.Size != slicePitch * newDesc.ArraySize)
-                            throw new ContentStreamingException("Data chunk is missing or has invalid size.", Storage);
-                        var data = chunk.GetData(fileProvider);
-                        if (!chunk.IsLoaded)
-                            throw new ContentStreamingException("Data chunk is not loaded.", Storage);
-                        if (_cancellationToken.IsCancellationRequested)
-                            return;
+                        
+                        if (chunksData[mipIndex].Length != slicePitch * newDesc.ArraySize)
+                            throw new ContentStreamingException("Data chunk has invalid size.", Storage);
 
                         unsafe
                         {
-                            fixed (byte* p = data)
+                            fixed (byte* p = chunksData[mipIndex])
                                 dataBoxes[dataBoxIndex].DataPointer = (IntPtr)p + slicePitch * arrayIndex;
                             dataBoxes[dataBoxIndex].RowPitch = rowPitch;
                             dataBoxes[dataBoxIndex].SlicePitch = slicePitch;
@@ -181,6 +194,9 @@ namespace SiliconStudio.Xenko.Streaming
                         }
                     }
                 }
+
+                if (_cancellationToken.IsCancellationRequested)
+                    return;
 
                 // Recreate texture
                 texture.OnDestroyed();
