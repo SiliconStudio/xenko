@@ -19,6 +19,14 @@
     <XenkoMTouchExtras></XenkoMTouchExtras>
   </PropertyGroup>
 
+  <Target Name="_SiliconStudioSetupNativeLibraries" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <NativeReference Include="@(_SiliconStudioDependencyNativeLib)">
+        <Kind>Static</Kind>
+      </NativeReference>
+    </ItemGroup>
+  </Target>
+
   <!-- Rewrite BuildDependsOn and ResolveReferencesDependsOn -->
   <PropertyGroup Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
     <!-- iOS: Ensure assets have been deployed before calling _CollectBundleResources (on Xamarin iOS 7 we use BeforeTargets) -->
@@ -31,23 +39,9 @@
   <!-- Override PostSettings target CopySiliconStudioNativeLibraries. 
        Copy the libcore.a library to the project root directory for future native link. -->
   <Target Name="CopyXenkoNativeiOsLibrary" Condition=" '$(SiliconStudioIsExecutable)' == 'true'" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences">
-    <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
-      <!-- strip any "lib" prefix and populate the LibraryName value -->
-      <_SiliconStudioDependencyNativeLib>
-        <LibraryName>$([System.Text.RegularExpressions.Regex]::Match('%(Filename)', `(lib)*(.+)`).get_Groups().get_Item(2).ToString())</LibraryName>
-      </_SiliconStudioDependencyNativeLib>
-
-      <None Include="@(_SiliconStudioDependencyNativeLib)">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-
     <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
-      <MtouchExtraArgsLibs>$(XenkoMTouchExtras) -L"%24{ProjectDir}" @(_SiliconStudioDependencyNativeLib->'-l%(LibraryName) "%24{ProjectDir}/%(Filename)%(Extension)"',' ')</MtouchExtraArgsLibs>
       <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags '-lstdc++ $(MtouchExtraArgsLibs)'</MtouchExtraArgs>
     </PropertyGroup>
-
-    <!--<Copy SessionId="$(BuildSessionId)" SourceFiles="@(_SiliconStudioDependencyNativeLib)" DestinationFiles="@(_SiliconStudioDependencyNativeLib->'$(ProjectDir)%(Filename)%(Extension)')"/>-->
   </Target>
 
   <!-- Deploy assets and native libraries (Xamarin iOS 8.2+ version) -->

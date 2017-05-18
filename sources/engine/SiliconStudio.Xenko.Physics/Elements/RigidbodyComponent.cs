@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Physics
         /// The mass of this Rigidbody
         /// </userdoc>
         [DataMember(80)]
-        [DataMemberRange(0, float.MaxValue)]
+        [DataMemberRange(0, 6)]
         public float Mass
         {
             get
