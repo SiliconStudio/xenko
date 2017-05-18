@@ -60,6 +60,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="profilingKey">The <see cref="ProfilingKey"/></param>
         public void BeginProfile(Color4 profileColor, ProfilingKey profilingKey)
         {
+            if (!Profiler.IsEnabled(profilingKey))
+            {
+                return;
+            }
+
             var queryEvent = new QueryEvent()
             {
                 BeginQuery = timestampQueryPool.AllocateQuery(),
@@ -106,6 +111,15 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Adds the event to the event list
             queryEvents.Add(latestQueryEvent);
+        }
+
+        public double GetTimestampFrequency()
+        {
+            #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+                return timestampQueryPool.GetGpuFrequency(commandList) / 1000.0;
+            #else
+                return 1000.0;
+            #endif
         }
     }
 }
