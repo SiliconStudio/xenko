@@ -289,7 +289,7 @@ at full size and full measure";
             var sizeIncreament = 15;
             var scale = 0.8f;
             var position = GetVirtualPosition(contentPosition);
-            var text = "Japanese dynamic sprite font\nあい��?��おかきくけこ   天竜�?\nアイウエオカキクケコ   ��??町の\n��?二三四五�?��??九十   ��?��濁り";
+            var text = "Japanese dynamic sprite font\nあいうえおかきくけこ   天竜の\nアイウエオカキクケコ   幅八町の\n一二三四五六七八九十   梅雨濁り";
 
             position.X -= spriteBatch.MeasureString(JapaneseFont, text, scale * (DynamicFontContentSize + sizeIncreament), screenSize).X / 2;
             spriteBatch.DrawString(JapaneseFont, text, scale * (DynamicFontContentSize + sizeIncreament), position, Color.White * GetInterpolatedAlpha());
