@@ -8,6 +8,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Streaming;
 
 namespace SiliconStudio.Xenko.Streaming
 {
@@ -59,7 +60,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         /// <value><c>true</c> if always fully load that resource; otherwise, <c>false</c>.</value>
         public bool ForceFullyLoaded { get; set; }
-        
+
         /// <summary>
         /// Gets a value indicating whether this resource is allocated.
         /// </summary>

@@ -10,10 +10,6 @@ namespace SiliconStudio.Xenko.Graphics.Data
 {
     internal class TextureContentSerializer : ContentSerializerBase<Texture>
     {
-        public delegate void DeserializeTextureDelegate(IServiceRegistry services, Texture obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader);
-
-        public static DeserializeTextureDelegate DeserializeTexture;
-
         /// <inheritdoc/>
         public override void Serialize(ContentSerializerContext context, SerializationStream stream, Texture texture)
         {
@@ -60,6 +56,9 @@ namespace SiliconStudio.Xenko.Graphics.Data
                 }
                 else
                 {
+                    if (texture.GraphicsDevice != null)
+                        texture.OnDestroyed();
+
                     texture.AttachToGraphicsDevice(graphicsDeviceService.GraphicsDevice);
                     texture.Reload = null;
 
@@ -90,7 +89,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
                     else
                     {
                         // Deserialize whole texture without streaming feature
-                        DeserializeTexture(services, texture, ref imageDescription, ref storageHeader);
+                        DeserializeTexture(texture, ref imageDescription, ref storageHeader);
                     }
                 }
             }
@@ -108,14 +107,69 @@ namespace SiliconStudio.Xenko.Graphics.Data
         {
             return new Texture();
         }
+
+        private static void DeserializeTexture(Texture texture, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader)
+        {
+            using (var content = new ContentStreamingService())
+            {
+                // Get content storage container
+                var storage = content.GetStorage(ref storageHeader);
+                if (storage == null)
+                    throw new ContentStreamingException("Missing content storage.");
+
+                // Cache data
+                var fileProvider = ContentManager.FileProvider;
+                var format = imageDescription.Format;
+                bool isBlockCompressed =
+                    (format >= PixelFormat.BC1_Typeless && format <= PixelFormat.BC5_SNorm) ||
+                    (format >= PixelFormat.BC6H_Typeless && format <= PixelFormat.BC7_UNorm_SRgb);
+                var dataBoxes = new DataBox[imageDescription.MipLevels * imageDescription.ArraySize];
+                int dataBoxIndex = 0;
+
+                // Get data boxes data
+                for (int arrayIndex = 0; arrayIndex < imageDescription.ArraySize; arrayIndex++)
+                {
+                    for (int mipIndex = 0; mipIndex < imageDescription.MipLevels; mipIndex++)
+                    {
+                        int mipWidth = imageDescription.Width >> mipIndex;
+                        int mipHeight = imageDescription.Height >> mipIndex;
+                        if (isBlockCompressed && ((mipWidth % 4) != 0 || (mipHeight % 4) != 0))
+                        {
+                            mipWidth = unchecked((int)(((uint)(mipWidth + 3)) & ~(uint)3));
+                            mipHeight = unchecked((int)(((uint)(mipHeight + 3)) & ~(uint)3));
+                        }
+
+                        int rowPitch, slicePitch;
+                        int widthPacked;
+                        int heightPacked;
+                        Image.ComputePitch(format, mipWidth, mipHeight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
+
+                        var chunk = storage.GetChunk(mipIndex);
+                        if (chunk == null || chunk.Size != slicePitch * imageDescription.ArraySize)
+                            throw new ContentStreamingException("Data chunk is missing or has invalid size.", storage);
+                        var data = chunk.GetData(fileProvider);
+                        if (!chunk.IsLoaded)
+                            throw new ContentStreamingException("Data chunk is not loaded.", storage);
+
+                        unsafe
+                        {
+                            fixed (byte* p = data)
+                                dataBoxes[dataBoxIndex].DataPointer = (IntPtr)p + slicePitch * arrayIndex;
+                            dataBoxes[dataBoxIndex].RowPitch = rowPitch;
+                            dataBoxes[dataBoxIndex].SlicePitch = slicePitch;
+                            dataBoxIndex++;
+                        }
+                    }
+                }
+
+                // Initialize texture
+                texture.InitializeFrom(imageDescription, new TextureViewDescription(), dataBoxes);
+            }
+        }
     }
 
     internal class ImageTextureSerializer : ContentSerializerBase<Image>
     {
-        public delegate void DeserializeImageDelegate(IServiceRegistry services, Image obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader);
-
-        public static DeserializeImageDelegate DeserializeImage;
-
         /// <inheritdoc/>
         public override Type SerializationType => typeof(Texture);
 
@@ -153,6 +207,12 @@ namespace SiliconStudio.Xenko.Graphics.Data
         public override object Construct(ContentSerializerContext context)
         {
             return new Image();
+        }
+
+        private static void DeserializeImage(IServiceRegistry services, Image obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader)
+        {
+            // TODO: finish this
+            throw new NotImplementedException();
         }
     }
 }

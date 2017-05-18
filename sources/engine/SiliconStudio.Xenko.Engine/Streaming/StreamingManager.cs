@@ -44,13 +44,6 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         public ICollection<StreamableResource> Resources => resources;
 
-        static StreamingManager()
-        {
-            // Register default texture deserialization if no streaming available
-            TextureContentSerializer.DeserializeTexture = DeserializeTexture;
-            ImageTextureSerializer.DeserializeImage = DeserializeImage;
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingManager"/> class.
         /// </summary>
@@ -197,45 +190,6 @@ namespace SiliconStudio.Xenko.Streaming
             {
                 var resource = resources.Find(x => x.Resource == obj) as StreamingTexture;
                 resource?.Dispose();
-            }
-        }
-
-        private static void DeserializeTexture(IServiceRegistry services, Texture obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader)
-        {
-            Debug.Assert(obj != null);
-
-            var manager = new StreamingManager(services);
-            try
-            {
-                manager.FullyLoadTexture(obj, ref imageDescription, ref storageHeader);
-            }
-            finally
-            {
-                manager.Destroy();
-            }
-        }
-
-        private static void DeserializeImage(IServiceRegistry services, Image obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader)
-        {
-            Debug.Assert(obj != null);
-
-            var manager = new StreamingManager(services);
-            try
-            {
-                // Get content storage container
-                var storage = manager.ContentStreaming.GetStorage(ref storageHeader);
-                if (storage == null)
-                    throw new ContentStreamingException("Missing content storage.");
-                
-                //var img = new Image();
-                //obj.InitializeFrom(img);
-
-                // TODO: finish this
-                throw new NotImplementedException();
-            }
-            finally
-            {
-                manager.Destroy();
             }
         }
 
