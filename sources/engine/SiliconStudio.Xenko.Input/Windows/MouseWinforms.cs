@@ -85,11 +85,11 @@ namespace SiliconStudio.Xenko.Input
             {
                 wasVisibleBeforeCapture = game.IsMouseVisible;
                 game.IsMouseVisible = false;
+                capturedPosition = Cursor.Position;
                 if (forceCenter)
                 {
                     capturedPosition = uiControl.PointToScreen(new Point(uiControl.ClientSize.Width/2, uiControl.ClientSize.Height/2));
                 }
-                capturedPosition = Cursor.Position;
                 isPositionLocked = true;
             }
         }
