@@ -92,6 +92,9 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         }
 
         /// <inheritdoc/>
+        IIdentifiable IAssetPartDesign.Part => this;
+
+        /// <inheritdoc/>
         Block IAssetPartDesign<Block>.Part { get { return this; } set { throw new InvalidOperationException(); } }
 
         protected virtual void OnSlotAdd(Slot slot)
