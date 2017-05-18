@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using SiliconStudio.Core.Streaming;
+using SiliconStudio.Core.Extensions;
 
-namespace SiliconStudio.Xenko.Streaming
+namespace SiliconStudio.Core.Streaming
 {
     /// <summary>
     /// Streamable resources content management service.
@@ -14,8 +14,10 @@ namespace SiliconStudio.Xenko.Streaming
     public class ContentStreamingService : IDisposable
     {
         private readonly Dictionary<int, ContentStorage> containers = new Dictionary<int, ContentStorage>();
-        
-        // Configuration
+
+        /// <summary>
+        /// The unused data chunks lifetime.
+        /// </summary>
         public TimeSpan UnusedDataChunksLifetime = TimeSpan.FromSeconds(3);
         
         /// <summary>
@@ -42,7 +44,10 @@ namespace SiliconStudio.Xenko.Streaming
             return result;
         }
 
-        internal void Update()
+        /// <summary>
+        /// Updates this service.
+        /// </summary>
+        public void Update()
         {
             lock (containers)
             {
@@ -58,6 +63,7 @@ namespace SiliconStudio.Xenko.Streaming
         {
             lock (containers)
             {
+                containers.ForEach(x => x.Value.ReleaseChunks());
                 containers.Clear();
             }
         }

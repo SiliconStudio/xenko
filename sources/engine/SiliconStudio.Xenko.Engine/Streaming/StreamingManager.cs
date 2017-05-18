@@ -361,7 +361,7 @@ namespace SiliconStudio.Xenko.Streaming
 
             // Compressed formats have aligment restrictions on the dimensions of the texture
             // TODO: remove hardcoded textures part to specilized object
-            if ((resource as StreamingTexture).Format.IsCompressed() && (resource as StreamingTexture).Description.MipLevels >= 3)
+            if (targetResidency > 0 && (resource as StreamingTexture).Format.IsCompressed() && (resource as StreamingTexture).Description.MipLevels >= 3)
                 targetResidency = MathUtil.Clamp(targetResidency, 3, (resource as StreamingTexture).Description.MipLevels);
 
             Debug.Assert(allocatedResidency >= currentResidency && allocatedResidency >= 0);
