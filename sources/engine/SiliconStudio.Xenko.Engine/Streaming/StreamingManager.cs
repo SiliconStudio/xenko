@@ -13,6 +13,7 @@ using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Data;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Streaming
 {
@@ -24,9 +25,11 @@ namespace SiliconStudio.Xenko.Streaming
     public class StreamingManager : GameSystemBase, IStreamingManager, ITexturesStreamingProvider
     {
         private readonly List<StreamableResource> resources = new List<StreamableResource>(512);
+        //private readonly Dictionary<int, StreamableResource> resourcesLookup = new Dictionary<int, StreamableResource>(512);
         private readonly List<StreamableResource> priorityUpdateQueue = new List<StreamableResource>(64); // Could be Queue<T> but it doesn't support .Remove(T)
         private int lastUpdateResourcesIndex;
         private bool isDisposing;
+        private int frameIndex;
 
         // Configuration
         public TimeSpan ManagerUpdatesInterval = TimeSpan.FromMilliseconds(10);
@@ -84,12 +87,21 @@ namespace SiliconStudio.Xenko.Streaming
             {
                 resources.ForEach(x => x.Release());
                 resources.Clear();
+                //resourcesLookup.Clear();
                 priorityUpdateQueue.Clear();
             }
 
             ContentStreaming.Dispose();
 
             base.Destroy();
+        }
+
+        private T Get<T>(object obj) where T: StreamableResource
+        {
+            StreamableResource result;
+            result = resources.Find(x => x.Resource == obj);
+            //resourcesLookup.TryGetValue(obj.GetHashCode(), out result);
+            return result as T;
         }
 
         internal void RegisterResource(StreamableResource resource)
@@ -101,6 +113,7 @@ namespace SiliconStudio.Xenko.Streaming
                 Debug.Assert(!resources.Contains(resource));
 
                 resources.Add(resource);
+                //resourcesLookup.Add(resource.Resource.GetHashCode(), resource);
             }
         }
 
@@ -116,6 +129,7 @@ namespace SiliconStudio.Xenko.Streaming
                 Debug.Assert(resources.Contains(resource));
 
                 resources.Remove(resource);
+                //resourcesLookup.Remove(resource.Resource.GetHashCode());
                 priorityUpdateQueue.RemoveAll(x => x == resource);
             }
         }
@@ -128,7 +142,7 @@ namespace SiliconStudio.Xenko.Streaming
                 throw new ContentStreamingException("Missing content storage.");
 
             // Find resource or create new
-            var resource = resources.Find(x => x.Resource == obj) as StreamingTexture;
+            var resource = Get<StreamingTexture>(obj);
             if (resource == null)
             {
                 resource = new StreamingTexture(this, obj);
@@ -188,7 +202,7 @@ namespace SiliconStudio.Xenko.Streaming
 
             lock (resources)
             {
-                var resource = resources.Find(x => x.Resource == obj) as StreamingTexture;
+                var resource = Get<StreamingTexture>(obj);
                 resource?.Dispose();
             }
         }
@@ -199,7 +213,7 @@ namespace SiliconStudio.Xenko.Streaming
             StreamableResource resource;
             lock (resources)
             {
-                resource = resources.Find(x => x.Resource == obj);
+                resource = Get<StreamableResource>(obj);
             }
 
             if(resource != null)
@@ -216,7 +230,7 @@ namespace SiliconStudio.Xenko.Streaming
             task.Start();
             task.Wait();
         }
-
+        private int streamingsCount = 0;
         private async Task Update()
         {
             while (!IsDisposed)
@@ -228,6 +242,19 @@ namespace SiliconStudio.Xenko.Streaming
                     await ((Game)Game).Script.NextFrame();
                     continue;
                 }*/
+
+                if (streamingsCount > 0)
+                {
+                    // Before:
+                    // All: 183
+                    // Disabled models: 183
+
+                    // After
+                    // All: 
+                    // Disabled models: 
+
+                    int a = 2;
+                }
 
                 // temp for testing quality changing
                 if (((Game)Game).Input.IsKeyPressed(Keys.K))
@@ -281,7 +308,8 @@ namespace SiliconStudio.Xenko.Streaming
                 }
                 
                 ContentStreaming.Update();
-                
+
+                frameIndex++;
                 await Task.Delay(ManagerUpdatesInterval);
             }
         }
@@ -298,14 +326,19 @@ namespace SiliconStudio.Xenko.Streaming
             //var handler = group.Handler;
 
             // Calculate target quality for that asset
-            StreamingQuality targetQuality = StreamingQuality.Maximum;
-            if (resource.ForceFullyLoaded == false)
+            StreamingQuality targetQuality = StreamingQuality.Mininum;
+            if (resource.ForceFullyLoaded)
+            {
+                targetQuality = StreamingQuality.Maximum;
+            }
+            else if (resource.LastTimeUsed > 0)
             {
                 //targetQuality = handler.CalculateTargetQuality(resource, now);
-                targetQuality *= (testQuality / 100.0f); // apply quality scale for testing
+                targetQuality = (testQuality / 100.0f); // apply quality scale for testing
                 // TODO: here we should apply resources group master scale (based on game settings quality level and memory level)
                 targetQuality.Normalize();
             }
+            // TODO: if resource hasn't been used for a while decrease quality
 
             // Calculate target residency level (discrete value)
             var currentResidency = resource.CurrentResidency;
@@ -348,7 +381,7 @@ namespace SiliconStudio.Xenko.Streaming
                     var requestedResidency = Math.Min(targetResidency, Math.Max(currentResidency + 1, 4)); // Stream target quality in steps but lower mips at once
                     //var requestedResidency = currentResidency + 1; // Stream target quality in steps
                     //var requestedResidency = targetResidency; // Stream target quality at once
-
+                    streamingsCount++;
                     // Create streaming task (resource type specific)
                     resource.StreamAsync(requestedResidency).Start();
                 }
@@ -357,7 +390,7 @@ namespace SiliconStudio.Xenko.Streaming
                     // Calculate residency level to stream in (resources may want to incease/decrease it's quality in steps rather than at once)
                     //var requestedResidency = handler.CalculateRequestedResidency(resource, targetResidency);// TODO: use resource groups and handlers
                     var requestedResidency = targetResidency; // Stream target quality at once
-
+                    streamingsCount++;
                     // Spawn streaming task (resource type specific)
                     resource.StreamAsync(requestedResidency).Start();
                 }
@@ -368,6 +401,31 @@ namespace SiliconStudio.Xenko.Streaming
 
                 // TODO: deallocate or decrease memory usage after timout? (timeout should be smaller on low mem)
             }
+        }
+
+        /// <summary>
+        /// Called when render mesh is submited to rendering. Registers referenced resources to stream them.
+        /// </summary>
+        /// <param name="renderMesh">The render mesh.</param>
+        public void OnDraw(RenderMesh renderMesh)
+        {
+            if (renderMesh.Material != null && renderMesh.Material.Parameters.ObjectValues != null)
+            {
+                // Register all binded textures
+                foreach (var e in renderMesh.Material.Parameters.ObjectValues)
+                {
+                    if (e is Texture t)
+                    {
+                        var resource = Get<StreamingTexture>(t);
+                        if (resource != null)
+                        {
+                            resource.LastTimeUsed = frameIndex;
+                        }
+                    }
+                }
+            }
+
+            // TODO: register model (renderMesh.RenderModel.Model)
         }
     }
 }

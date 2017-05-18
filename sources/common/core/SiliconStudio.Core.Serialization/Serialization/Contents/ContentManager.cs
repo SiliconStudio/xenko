@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -463,7 +463,7 @@ namespace SiliconStudio.Core.Serialization.Contents
                 // Check if need to fully stream resource
                 if (!settings.AllowContentStreaming)
                 {
-                    var streamingManager = services.GetService(typeof(IStreamingManager)) as IStreamingManager;
+                    var streamingManager = services.GetServiceAs<IStreamingManager>();
                     if(streamingManager != null)
                         streamingManager.FullyLoadResource(reference.Object);
                 }
