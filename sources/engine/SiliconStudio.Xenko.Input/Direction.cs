@@ -36,6 +36,9 @@ namespace SiliconStudio.Xenko.Input
                 value = (int)(Math.Atan2(direction.X, direction.Y) * FullAngle);
         }
 
+        /// <summary>
+        /// <c>true</c> if the direction is in a neutral position. Same as checking against Direction.None
+        /// </summary>
         public bool IsNeutral => !value.HasValue;
 
         /// <summary>
