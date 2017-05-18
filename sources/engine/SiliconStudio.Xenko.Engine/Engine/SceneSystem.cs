@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Engine
         public string InitialGraphicsCompositorUrl { get; set; }
 
         /// <summary>
-        /// URL of the splash screen texture used when on loading
+        /// URL of the splash screen texture used on loading
         /// </summary>
         public string SplashScreenUrl { get; set; }
 
