@@ -82,6 +82,8 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         internal DateTime TargetResidencyChange;
 
+        internal int LastTimeUsed;
+
         protected StreamableResource(StreamingManager manager)
         {
             Manager = manager;

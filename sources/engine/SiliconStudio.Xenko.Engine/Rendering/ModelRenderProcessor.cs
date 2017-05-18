@@ -9,6 +9,7 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
+using SiliconStudio.Xenko.Streaming;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -114,6 +115,9 @@ namespace SiliconStudio.Xenko.Rendering
                     renderMesh.IsScalingNegative = nodeTransformations[nodeIndex].IsScalingNegative;
                     renderMesh.BoundingBox = new BoundingBoxExt(meshInfo.BoundingBox);                    
                     renderMesh.BlendMatrices = meshInfo.BlendMatrices;
+                    
+                    // Register usage
+                    Services.GetServiceAs<StreamingManager>()?.OnDraw(renderMesh);
                 }
             }
         }
