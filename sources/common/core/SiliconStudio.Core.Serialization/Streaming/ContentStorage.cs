@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Streaming;
 
-namespace SiliconStudio.Xenko.Streaming
+namespace SiliconStudio.Core.Streaming
 {
     /// <summary>
     /// Streamable resources content storage containter.
@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// Gets the storage URL path.
         /// </summary>
         public string Url { get; private set; }
-        
+
         /// <summary>
         /// Gets the time when container has been created.
         /// </summary>
@@ -103,12 +103,26 @@ namespace SiliconStudio.Xenko.Streaming
             }
         }
 
-        internal void LockChunks()
+        internal void ReleaseChunks()
+        {
+            if (Interlocked.Read(ref locks) != 0)
+                return;
+
+            chunks.ForEach(x => x.Unload());
+        }
+
+        /// <summary>
+        /// Locks the chunks.
+        /// </summary>
+        public void LockChunks()
         {
             Interlocked.Increment(ref locks);
         }
 
-        internal void UnlockChunks()
+        /// <summary>
+        /// Unlocks the chunks.
+        /// </summary>
+        public void UnlockChunks()
         {
             Interlocked.Decrement(ref locks);
         }
@@ -132,7 +146,7 @@ namespace SiliconStudio.Xenko.Streaming
             for (int i = 0; i < chunksCount; i++)
                 chunksOrder.Add(i);
             chunksOrder.Sort((a, b) => chunksData[a].Length - chunksData[b].Length);
-            
+
             // Calculate header hash code (used to provide simple data verification during loading)
             // Note: this must match ContentStorage.GetHashCode()
             int hashCode = (int)packageTime.Ticks;

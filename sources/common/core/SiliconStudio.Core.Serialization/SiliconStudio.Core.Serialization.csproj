@@ -87,7 +87,11 @@
     <Compile Include="Serialization\Contents\ContentSerializerContext.cs" />
     <Compile Include="Serialization\Contents\DataContentSerializer.cs" />
     <Compile Include="Serialization\Contents\IContentSerializer.cs" />
+    <Compile Include="Streaming\ContentChunk.cs" />
+    <Compile Include="Streaming\ContentStorage.cs" />
     <Compile Include="Streaming\ContentStorageHeader.cs" />
+    <Compile Include="Streaming\ContentStreamingException.cs" />
+    <Compile Include="Streaming\ContentStreamingService.cs" />
     <Compile Include="Streaming\IStreamingManager.cs" />
   </ItemGroup>
   <ItemGroup>

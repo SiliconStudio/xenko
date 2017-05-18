@@ -4,7 +4,7 @@
 using System;
 using SiliconStudio.Core.IO;
 
-namespace SiliconStudio.Xenko.Streaming
+namespace SiliconStudio.Core.Streaming
 {
     /// <summary>
     /// Content storage data chunk.

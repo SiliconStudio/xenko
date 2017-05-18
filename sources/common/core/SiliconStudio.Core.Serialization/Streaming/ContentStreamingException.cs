@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Xenko.Streaming
+namespace SiliconStudio.Core.Streaming
 {
     /// <summary>
     /// The exception that is thrown when an internal error happened in the Audio System. That is an error that is not due to the user behavior.
@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         /// <param name="msg">The message.</param>
         /// <param name="storage">The storage container.</param>
-        internal ContentStreamingException(string msg, ContentStorage storage = null)
+        public ContentStreamingException(string msg, ContentStorage storage = null)
             : base("An internal error happened in the content streaming service [details:'" + msg + "'")
         {
             Storage = storage;
