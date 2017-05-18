@@ -17,18 +17,8 @@ namespace SiliconStudio.Assets.Analysis
         Reference = 1,
 
         /// <summary>
-        /// An inheritance between two assets.
-        /// </summary>
-        Inheritance = 2,
-
-        /// <summary>
-        /// An inheritance via composition between the two assets.
-        /// </summary>
-        CompositionInheritance = 4,
-
-        /// <summary>
         /// All type of links.
         /// </summary>
-        All = Reference | Inheritance | CompositionInheritance,
+        All = Reference,
     }
 }

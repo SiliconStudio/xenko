@@ -24,11 +24,7 @@ namespace SiliconStudio.Xenko.Rendering
             Data = data;
         }
 
-        public T this[ViewObjectNodeReference index]
-        {
-            get { return Data[index.Index]; }
-            set { Data[index.Index] = value; }
-        }
+        public ref T this[ViewObjectNodeReference index] => ref Data[index.Index];
     }
 
 	public struct ViewObjectPropertyKey<T>
@@ -141,11 +137,7 @@ namespace SiliconStudio.Xenko.Rendering
             Data = data;
         }
 
-        public T this[ObjectNodeReference index]
-        {
-            get { return Data[index.Index]; }
-            set { Data[index.Index] = value; }
-        }
+        public ref T this[ObjectNodeReference index] => ref Data[index.Index];
     }
 
 	public struct ObjectPropertyKey<T>
@@ -258,11 +250,7 @@ namespace SiliconStudio.Xenko.Rendering
             Data = data;
         }
 
-        public T this[RenderNodeReference index]
-        {
-            get { return Data[index.Index]; }
-            set { Data[index.Index] = value; }
-        }
+        public ref T this[RenderNodeReference index] => ref Data[index.Index];
     }
 
 	public struct RenderPropertyKey<T>
@@ -375,11 +363,7 @@ namespace SiliconStudio.Xenko.Rendering
             Data = data;
         }
 
-        public T this[EffectObjectNodeReference index]
-        {
-            get { return Data[index.Index]; }
-            set { Data[index.Index] = value; }
-        }
+        public ref T this[EffectObjectNodeReference index] => ref Data[index.Index];
     }
 
 	public struct EffectObjectPropertyKey<T>
@@ -492,11 +476,7 @@ namespace SiliconStudio.Xenko.Rendering
             Data = data;
         }
 
-        public T this[ViewNodeReference index]
-        {
-            get { return Data[index.Index]; }
-            set { Data[index.Index] = value; }
-        }
+        public ref T this[ViewNodeReference index] => ref Data[index.Index];
     }
 
 	public struct ViewPropertyKey<T>
@@ -609,11 +589,7 @@ namespace SiliconStudio.Xenko.Rendering
             Data = data;
         }
 
-        public T this[StaticObjectNodeReference index]
-        {
-            get { return Data[index.Index]; }
-            set { Data[index.Index] = value; }
-        }
+        public ref T this[StaticObjectNodeReference index] => ref Data[index.Index];
     }
 
 	public struct StaticObjectPropertyKey<T>

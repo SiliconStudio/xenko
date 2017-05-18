@@ -1,41 +1,40 @@
 !SceneAsset
 Id: 6a8212fb-d3f3-4e1d-84be-67aca35be26e
-SerializedVersion: {Xenko: 1.10.0-beta03}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - 163fe69c-57fb-43e8-82cb-c5e6ec95c450
-        - 6581fcc3-7d6c-4fb6-8d64-08ccb25be862
-        - 71ba3d07-c95b-43b4-8dcb-820ad44f3cfd
-        - 6dea5e4c-ee6a-4a3e-aca5-d2748796eb3a
-        - d14bba72-c4f0-4245-b8dd-99758a1bda46
-        - 2ec79281-cf5a-4b8d-961e-4e070c8f43a8
-        - 44c5bc97-f618-4988-9e92-05b892f095a6
-        - fce550a1-75be-42db-b233-24f6c9e3bd08
-        - 8a659fa3-54e3-432e-8817-f037c28b10d6
-        - d0f0fbe0-2c10-40d1-a59e-2313ef11a862
-        - 41a04b64-ab17-41ba-afe6-cc3a784982a0
-        - 6cea5bcd-c61e-4eaf-8618-a2cd5d68a600
-        - 5be06945-0111-4973-b75c-48db403e7675
-        - 1a82230f-e174-4926-bfc6-79576fda24ee
-        - d8fd6a70-e5df-4a33-a6a4-6fed4b82a220
-        - 28c5b50a-f68f-4423-88a8-57bd597ad015
-        - 6df18ec9-95cc-4a39-967e-dd42f9026345
-        - 0bda35da-d45f-4011-9973-ebd5cef981fb
-        - 52b69f01-e4f0-4767-9702-5f586171140c
-        - 17bf1e46-4668-4cbf-a52a-5b67f26e45e4
-        - 06cb9112-a1c2-4731-a3ac-a900d2c99026
-        - 433436c7-fc9e-415f-846e-ab71f02de6dd
-        - b64257c8-cd59-43bd-a709-74a96515ae2b
-        - c09f965b-401c-445f-90b0-170cdfeb56ce
-        - 13571fdf-4fe3-44bd-a899-7093b3b659bc
-        - ddde1038-3405-4c04-838e-1cba39219169
-        - e899ccad-7314-43fd-8291-777099fd4dfa
+    RootParts:
+        - ref!! 163fe69c-57fb-43e8-82cb-c5e6ec95c450
+        - ref!! 6581fcc3-7d6c-4fb6-8d64-08ccb25be862
+        - ref!! 71ba3d07-c95b-43b4-8dcb-820ad44f3cfd
+        - ref!! 6dea5e4c-ee6a-4a3e-aca5-d2748796eb3a
+        - ref!! d14bba72-c4f0-4245-b8dd-99758a1bda46
+        - ref!! 2ec79281-cf5a-4b8d-961e-4e070c8f43a8
+        - ref!! 44c5bc97-f618-4988-9e92-05b892f095a6
+        - ref!! fce550a1-75be-42db-b233-24f6c9e3bd08
+        - ref!! 8a659fa3-54e3-432e-8817-f037c28b10d6
+        - ref!! d0f0fbe0-2c10-40d1-a59e-2313ef11a862
+        - ref!! 41a04b64-ab17-41ba-afe6-cc3a784982a0
+        - ref!! 6cea5bcd-c61e-4eaf-8618-a2cd5d68a600
+        - ref!! 5be06945-0111-4973-b75c-48db403e7675
+        - ref!! 1a82230f-e174-4926-bfc6-79576fda24ee
+        - ref!! d8fd6a70-e5df-4a33-a6a4-6fed4b82a220
+        - ref!! 28c5b50a-f68f-4423-88a8-57bd597ad015
+        - ref!! 6df18ec9-95cc-4a39-967e-dd42f9026345
+        - ref!! 0bda35da-d45f-4011-9973-ebd5cef981fb
+        - ref!! 52b69f01-e4f0-4767-9702-5f586171140c
+        - ref!! 17bf1e46-4668-4cbf-a52a-5b67f26e45e4
+        - ref!! 06cb9112-a1c2-4731-a3ac-a900d2c99026
+        - ref!! 433436c7-fc9e-415f-846e-ab71f02de6dd
+        - ref!! b64257c8-cd59-43bd-a709-74a96515ae2b
+        - ref!! c09f965b-401c-445f-90b0-170cdfeb56ce
+        - ref!! 13571fdf-4fe3-44bd-a899-7093b3b659bc
+        - ref!! ddde1038-3405-4c04-838e-1cba39219169
+        - ref!! e899ccad-7314-43fd-8291-777099fd4dfa
     Parts:
-        -   Folder: Level
-            Entity:
+        -   Entity:
                 Id: 06cb9112-a1c2-4731-a3ac-a900d2c99026
                 Name: Cube (10)
                 Components:
@@ -49,8 +48,8 @@ Hierarchy:
                         Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca810
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Folder: Level
-            Entity:
+            Folder: Level
+        -   Entity:
                 Id: 0bda35da-d45f-4011-9973-ebd5cef981fb
                 Name: Cube (3)
                 Components:
@@ -64,8 +63,8 @@ Hierarchy:
                         Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca811
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Folder: Level
-            Entity:
+            Folder: Level
+        -   Entity:
                 Id: 13571fdf-4fe3-44bd-a899-7093b3b659bc
                 Name: Model
                 Components:
@@ -80,6 +79,7 @@ Hierarchy:
                         Model: 879181e4-ed39-495f-8f1d-e586e650cc82:Model
                         Materials:
                             47ea5b5e38e12cbd1e42e7cbef9d8b6d~0: 6a254330-7598-451f-8d7b-7671199c5e46:MaterialTests/Base/MaterialDiffuseColor
+            Folder: Level
         -   Entity:
                 Id: 163fe69c-57fb-43e8-82cb-c5e6ec95c450
                 Name: Camera
@@ -94,9 +94,8 @@ Hierarchy:
                         Id: 19a0c02c-4f0c-4dd0-bfc6-7d1a8d476b57
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
-        -   Folder: Level
-            Entity:
+                        Slot: ff905194-0c14-428b-b341-ef7bf51cb6e5
+        -   Entity:
                 Id: 17bf1e46-4668-4cbf-a52a-5b67f26e45e4
                 Name: Cube (9)
                 Components:
@@ -110,8 +109,8 @@ Hierarchy:
                         Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca812
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Folder: Level
-            Entity:
+            Folder: Level
+        -   Entity:
                 Id: 1a82230f-e174-4926-bfc6-79576fda24ee
                 Name: Cube (14)
                 Components:
@@ -125,6 +124,7 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde80
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
+            Folder: Level
             Base:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: 714f23c7-a8f6-4d5b-823d-c65c1425f716
@@ -147,8 +147,7 @@ Hierarchy:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: e5bf512d-96b3-49b2-a76e-30e706ffedeb
                 InstanceId: 1c0068ff-c7d9-4aeb-bc83-3944aa9e409c
-        -   Folder: Level
-            Entity:
+        -   Entity:
                 Id: 28c5b50a-f68f-4423-88a8-57bd597ad015
                 Name: Cube (6)
                 Components:
@@ -162,8 +161,8 @@ Hierarchy:
                         Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca813
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Folder: Level
-            Entity:
+            Folder: Level
+        -   Entity:
                 Id: 2ec79281-cf5a-4b8d-961e-4e070c8f43a8
                 Name: Cube
                 Components:
@@ -177,6 +176,7 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde82
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
+            Folder: Level
         -   Entity:
                 Id: 31567627-e196-4c7f-a2fc-9eebd6c9defb
                 Name: Cube (14)
@@ -195,8 +195,7 @@ Hierarchy:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: 714f23c7-a8f6-4d5b-823d-c65c1425f716
                 InstanceId: 1c0068ff-c7d9-4aeb-bc83-3944aa9e409c
-        -   Folder: Level
-            Entity:
+        -   Entity:
                 Id: 41a04b64-ab17-41ba-afe6-cc3a784982a0
                 Name: Cube (11)
                 Components:
@@ -210,12 +209,12 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde84
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
+            Folder: Level
             Base:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: e5bf512d-96b3-49b2-a76e-30e706ffedeb
                 InstanceId: a77f0985-9d4f-4e54-b497-7e7bb0013c14
-        -   Folder: Level
-            Entity:
+        -   Entity:
                 Id: 433436c7-fc9e-415f-846e-ab71f02de6dd
                 Name: Cube (7)
                 Components:
@@ -229,8 +228,8 @@ Hierarchy:
                         Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca814
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Folder: Level
-            Entity:
+            Folder: Level
+        -   Entity:
                 Id: 44c5bc97-f618-4988-9e92-05b892f095a6
                 Name: Cube (15)
                 Components:
@@ -244,8 +243,8 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde85
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Folder: Level
-            Entity:
+            Folder: Level
+        -   Entity:
                 Id: 52b69f01-e4f0-4767-9702-5f586171140c
                 Name: Cube (8)
                 Components:
@@ -259,8 +258,8 @@ Hierarchy:
                         Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca815
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Folder: Level
-            Entity:
+            Folder: Level
+        -   Entity:
                 Id: 5be06945-0111-4973-b75c-48db403e7675
                 Name: Cube (13)
                 Components:
@@ -274,6 +273,7 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde86
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
+            Folder: Level
             Base:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: b52d69c0-517c-44d3-ab0d-f6e735d44bbb
@@ -310,8 +310,7 @@ Hierarchy:
                         ExtinctionRatio: 10.0
                         DensityFactor: 0.02
                         SeparateBoundingVolumes: true
-        -   Folder: Level
-            Entity:
+        -   Entity:
                 Id: 6cea5bcd-c61e-4eaf-8618-a2cd5d68a600
                 Name: Cube (12)
                 Components:
@@ -325,6 +324,7 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde87
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
+            Folder: Level
             Base:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: 3ca94d85-c01e-4fe6-80fb-54b079c16096
@@ -347,8 +347,7 @@ Hierarchy:
                     e4650e63c36742ddbd435e191ae1cff6: !BackgroundComponent
                         Id: d95c1dac-de55-418e-8057-b172bb09c4ba
                         Texture: 10360b72-66be-48f0-b0e9-a013a352ee95:skybox_texture_ldr
-        -   Folder: Level
-            Entity:
+        -   Entity:
                 Id: 6df18ec9-95cc-4a39-967e-dd42f9026345
                 Name: Cube (4)
                 Components:
@@ -362,6 +361,7 @@ Hierarchy:
                         Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca816
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
+            Folder: Level
         -   Entity:
                 Id: 6e1b78ba-ea4b-44cf-9cd3-da0c31c20c21
                 Name: Cube (13)
@@ -432,8 +432,7 @@ Hierarchy:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: 3ca94d85-c01e-4fe6-80fb-54b079c16096
                 InstanceId: 1c0068ff-c7d9-4aeb-bc83-3944aa9e409c
-        -   Folder: Level
-            Entity:
+        -   Entity:
                 Id: 8a659fa3-54e3-432e-8817-f037c28b10d6
                 Name: Cube (18)
                 Components:
@@ -447,8 +446,8 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde8a
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Folder: Level
-            Entity:
+            Folder: Level
+        -   Entity:
                 Id: b64257c8-cd59-43bd-a709-74a96515ae2b
                 Name: Cube (5)
                 Components:
@@ -462,8 +461,8 @@ Hierarchy:
                         Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca817
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Folder: Level
-            Entity:
+            Folder: Level
+        -   Entity:
                 Id: c09f965b-401c-445f-90b0-170cdfeb56ce
                 Name: Model2 (2)
                 Components:
@@ -477,8 +476,8 @@ Hierarchy:
                         Id: 88936499-c6cf-41d3-b046-78aa2611020f
                         Model: 878181e4-ea39-495f-8f1d-e586e650cc82:Model2
                         Materials: {}
-        -   Folder: Level
-            Entity:
+            Folder: Level
+        -   Entity:
                 Id: d0f0fbe0-2c10-40d1-a59e-2313ef11a862
                 Name: Cube (16)
                 Components:
@@ -492,6 +491,7 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde8b
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
+            Folder: Level
         -   Entity:
                 Id: d14bba72-c4f0-4245-b8dd-99758a1bda46
                 Name: Point light
@@ -512,8 +512,7 @@ Hierarchy:
                                 Size: Small
                                 BiasParameters: {}
                         Intensity: 70.0
-        -   Folder: Level
-            Entity:
+        -   Entity:
                 Id: d8fd6a70-e5df-4a33-a6a4-6fed4b82a220
                 Name: Cube (2)
                 Components:
@@ -527,8 +526,8 @@ Hierarchy:
                         Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca819
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Folder: Level
-            Entity:
+            Folder: Level
+        -   Entity:
                 Id: ddde1038-3405-4c04-838e-1cba39219169
                 Name: Cube (19)
                 Components:
@@ -542,6 +541,7 @@ Hierarchy:
                             1c4127337f9677d418105f1d8c6f6bed: ref!! 3bb538d1-c12c-4352-bd55-408ce75cbd61
                             4035dd511fc921fa0fe5db21bc5bb2dd: ref!! 3bb538d1-c12c-4352-bd55-408ce75cbd69
                             8fc7209de078aaa11555ff131fdb0c56: ref!! 3bb538d1-c12c-4352-bd55-408ce75cbd68
+            Folder: Level
         -   Entity:
                 Id: e899ccad-7314-43fd-8291-777099fd4dfa
                 Name: Entity
@@ -561,8 +561,7 @@ Hierarchy:
                         Enabled: false
                         Model: 879181e4-ed39-495f-8f1d-e586e650cc82:Model
                         Materials: {}
-        -   Folder: Level
-            Entity:
+        -   Entity:
                 Id: fce550a1-75be-42db-b233-24f6c9e3bd08
                 Name: Cube (17)
                 Components:
@@ -576,3 +575,4 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde8c
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
+            Folder: Level
