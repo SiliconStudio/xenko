@@ -480,6 +480,11 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.FrameDrawCalls++;
         }
 
+        /// <summary>
+        /// Submits a GPU timestamp query.
+        /// </summary>
+        /// <param name="queryPool">The <see cref="QueryPool"/> owning "query".</param>
+        /// <param name="query">The <see cref="Query"/>.</param>
         public void WriteTimestamp(QueryPool queryPool, Query query)
         {
             nativeDeviceContext.End(queryPool.NativeObjects[query.InternalIndex]);    
@@ -500,7 +505,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="profileColor">Color of the profile.</param>
         /// <param name="name">The name.</param>
-        public unsafe void BeginProfile(Color4 profileColor, string name)
+        public unsafe void BeginDebugEvent(Color4 profileColor, string name)
         {
             if (nativeDeviceProfiler != null)
             {
@@ -511,7 +516,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Ends debug event.
         /// </summary>
-        public void EndProfile()
+        public void EndDebugEvent()
         {
             if (nativeDeviceProfiler != null)
             {

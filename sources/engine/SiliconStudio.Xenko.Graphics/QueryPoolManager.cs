@@ -10,9 +10,9 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly List<QueryPool> poolList = new List<QueryPool>();
 
         /// <summary>
-        /// Gets or creates a <see cref="QueryPool"/> respecting the parameters provided.
+        /// Gets or creates a <see cref="QueryPool"/>, according to the parameters provided.
         /// </summary>
-        /// <param name="graphicsDevice">The <see cref="GraphicsDevice"/>.</param>
+        /// <param name="commandList">The <see cref="CommandList"/>.</param>
         /// <param name="queryType">The <see cref="QueryType"/> of the pool.</param>
         /// <param name="queryCount">The capacity of the pool.</param>
         /// <returns>A recycled or a new <see cref="QueryPool"/>.</returns>
@@ -26,8 +26,7 @@ namespace SiliconStudio.Xenko.Graphics
                     return pool;
                 }
             }
-
-            QueryPool newPool = QueryPool.New(commandList, queryType, queryCount);
+            var newPool = QueryPool.New(commandList, queryType, queryCount);
             poolList.Add(newPool);
 
             return newPool;

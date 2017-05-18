@@ -535,7 +535,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     {
                         drawContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, CompositingProfilingKeys.LightShafts);
 
-                        LightShafts?.Draw(drawContext, depthStencil, renderTargets[colorTargetIndex]);
+                        LightShafts.Draw(drawContext, depthStencil, renderTargets[colorTargetIndex]);
 
                         drawContext.CommandList.GpuQueryProfiler.EndProfile();
                     }

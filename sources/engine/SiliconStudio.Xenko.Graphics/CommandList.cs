@@ -63,9 +63,16 @@ namespace SiliconStudio.Xenko.Graphics
         public int ViewportCount => boundViewportCount;
 
         private QueryPoolManager queryPoolManager = new QueryPoolManager();
+        private GpuQueryProfiler gpuQueryProfiler = null;
+
+        /// <summary>
+        /// Gets the <see cref="QueryPoolManager"/> currently sets on this instance.
+        /// </summary>
         public QueryPoolManager QueryPoolManager => queryPoolManager;
 
-        private GpuQueryProfiler gpuQueryProfiler = null;
+        /// <summary>
+        /// Gets the <see cref="GpuQueryProfiler"/> currently sets on this instance.
+        /// </summary>
         public GpuQueryProfiler GpuQueryProfiler => gpuQueryProfiler;
 
         /// <summary>
