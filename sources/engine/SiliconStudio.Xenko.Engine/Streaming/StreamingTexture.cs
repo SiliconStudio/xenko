@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Streaming;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Streaming
@@ -100,9 +101,6 @@ namespace SiliconStudio.Xenko.Streaming
             Init(storage);
             _desc = imageDescription;
             _residentMips = 0;
-
-            if (Texture.GraphicsDevice != null)
-                Texture.OnDestroyed();
         }
 
         private void GetMipSize(bool isBlockCompressed, int mipIndex, out int width, out int height)
@@ -126,6 +124,9 @@ namespace SiliconStudio.Xenko.Streaming
             var texture = Texture;
             int mipsChange = residency - CurrentResidency;
             int mipsCount = residency;
+            bool isBlockCompressed =
+                (Format >= PixelFormat.BC1_Typeless && Format <= PixelFormat.BC5_SNorm) ||
+                (Format >= PixelFormat.BC6H_Typeless && Format <= PixelFormat.BC7_UNorm_SRgb);
             Debug.Assert(mipsChange != 0);
             
             // TODO: allocation task should dispose texture or merge those tasks?
@@ -138,10 +139,6 @@ namespace SiliconStudio.Xenko.Streaming
             try
             {
                 Storage.LockChunks();
-
-                bool isBlockCompressed =
-                    (Format >= PixelFormat.BC1_Typeless && Format <= PixelFormat.BC5_SNorm) ||
-                    (Format >= PixelFormat.BC6H_Typeless && Format <= PixelFormat.BC7_UNorm_SRgb);
 
                 // Setup texture description
                 TextureDescription newDesc = _desc;
