@@ -9,17 +9,24 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class QueryPool
     {
+        private const int DisjointQueryCount = 5;
+
         private int latestAllocatedIndex;
 
         internal SharpDX.Direct3D11.Query[] nativeObjects;
         
+        internal SharpDX.Direct3D11.Query[] disjointQuery;
+        private int currentDisjointQueryIndex = 0;
+        private int currentDisjointQueryReadIndex = 0;
+        private long[] disjointQueryResults = new long[DisjointQueryCount];
+
         public SharpDX.Direct3D11.Query[] NativeObjects => nativeObjects;
 
         public bool IsFull { get; private set; }
 
         internal QueryPool InitializeImpl(CommandList commandList, QueryType queryType, int queryCount)
         {
-            if (queryCount == 0) throw new ArgumentOutOfRangeException("Query Pool capacity must be > 0");
+            if (queryCount == 0) throw new ArgumentOutOfRangeException("QueryPool capacity must be > 0");
 
             capacity = queryCount;
             // this.queryType = queryType;
@@ -50,6 +57,17 @@ namespace SiliconStudio.Xenko.Graphics
 
                 nativeObjects[i] = new SharpDX.Direct3D11.Query(NativeDevice, queryDescription);
             }
+
+            // Create disjoint query (required to convert ticks to milliseconds)
+            disjointQuery = new SharpDX.Direct3D11.Query[DisjointQueryCount];
+
+            var disjointQueryDescription = new QueryDescription { Type = SharpDX.Direct3D11.QueryType.TimestampDisjoint };
+            for (var i = 0; i < DisjointQueryCount; i++)
+            {
+                disjointQuery[i] = new SharpDX.Direct3D11.Query(NativeDevice, disjointQueryDescription);
+            }
+
+            commandList.NativeDeviceContext.Begin(disjointQuery[currentDisjointQueryIndex]);
 
             return this;
         }
@@ -85,6 +103,29 @@ namespace SiliconStudio.Xenko.Graphics
         {
             latestAllocatedIndex = 0;
             IsFull = false;
+
+            // D3D11 disjoint queries update, readback, ...
+            commandList.NativeDeviceContext.End(disjointQuery[currentDisjointQueryIndex]);
+            commandList.NativeDeviceContext.GetData(disjointQuery[currentDisjointQueryReadIndex], out QueryDataTimestampDisjoint result);
+
+            disjointQueryResults[currentDisjointQueryReadIndex] = result.Frequency;
+
+            if (!result.Disjoint && result.Frequency != 0)
+            {
+                currentDisjointQueryReadIndex++;
+                if (currentDisjointQueryReadIndex >= DisjointQueryCount)
+                {
+                    currentDisjointQueryReadIndex = 0;
+                }
+            }
+
+            currentDisjointQueryIndex++;
+            if (currentDisjointQueryIndex >= DisjointQueryCount)
+            {
+                currentDisjointQueryIndex = 0;
+            }
+
+            commandList.NativeDeviceContext.Begin(disjointQuery[currentDisjointQueryIndex]);
         }
 
         internal void OnRecreateImpl()
@@ -112,6 +153,15 @@ namespace SiliconStudio.Xenko.Graphics
 
                 nativeObjects[i] = new SharpDX.Direct3D11.Query(NativeDevice, queryDescription);
             }
+
+            // Create disjoint query (required to convert ticks to milliseconds)
+            disjointQuery = new SharpDX.Direct3D11.Query[DisjointQueryCount];
+
+            var disjointQueryDescription = new QueryDescription{ Type = SharpDX.Direct3D11.QueryType.TimestampDisjoint };
+            for (var i = 0; i < DisjointQueryCount; i++)
+            {
+                disjointQuery[i] = new SharpDX.Direct3D11.Query(NativeDevice, disjointQueryDescription);
+            }
         }
 
         /// <summary>
@@ -128,6 +178,15 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             Reset(commandList);
+        }
+
+        /// <summary>
+        /// Gets GPU frequency, using D3D11 disjoint query.
+        /// </summary>
+        /// <returns></returns>
+        internal double GetGpuFrequency(CommandList commandList)
+        {
+            return disjointQueryResults[currentDisjointQueryReadIndex];
         }
     }
 }
