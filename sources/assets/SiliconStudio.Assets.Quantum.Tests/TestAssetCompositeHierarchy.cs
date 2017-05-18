@@ -26,7 +26,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
             Assert.AreEqual(1, clone.RootParts.Count);
-            foreach (var part in clone.Parts)
+            foreach (var part in clone.Parts.Values)
             {
                 var matchingPart = graph.Asset.Hierarchy.Parts[part.Part.Id];
                 Assert.AreNotEqual(matchingPart, part);
@@ -57,7 +57,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
             Assert.AreEqual(1, clone.RootParts.Count);
-            foreach (var part in clone.Parts)
+            foreach (var part in clone.Parts.Values)
             {
                 var matchingPart = graph.Asset.Hierarchy.Parts[part.Part.Id];
                 Assert.AreNotEqual(matchingPart, part);
@@ -89,7 +89,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
             Assert.AreEqual(1, clone.RootParts.Count);
-            foreach (var part in clone.Parts)
+            foreach (var part in clone.Parts.Values)
             {
                 var matchingPart = graph.Asset.Hierarchy.Parts[part.Part.Id];
                 Assert.AreNotEqual(matchingPart, part);
@@ -121,7 +121,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
             Assert.AreEqual(1, clone.RootParts.Count);
-            foreach (var part in clone.Parts)
+            foreach (var part in clone.Parts.Values)
             {
                 var matchingPart = graph.Asset.Hierarchy.Parts[part.Part.Id];
                 Assert.AreNotEqual(matchingPart, part);
@@ -152,7 +152,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
             Assert.AreEqual(1, clone.RootParts.Count);
-            foreach (var part in clone.Parts)
+            foreach (var part in clone.Parts.Values)
             {
                 var matchingPart = graph.Asset.Hierarchy.Parts[part.Part.Id];
                 Assert.AreNotEqual(matchingPart, part);
@@ -184,7 +184,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
             Assert.AreEqual(1, clone.RootParts.Count);
-            foreach (var part in clone.Parts)
+            foreach (var part in clone.Parts.Values)
             {
                 var matchingPart = graph.Asset.Hierarchy.Parts[part.Part.Id];
                 Assert.AreNotEqual(matchingPart, part);

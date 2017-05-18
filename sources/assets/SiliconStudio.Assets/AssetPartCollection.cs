@@ -1,59 +1,101 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Assets
 {
-    [DataSerializer(typeof(AssetPartCollectionSerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
-    public class AssetPartCollection<TAssetPart> : KeyedSortedList<Guid, TAssetPart> where TAssetPart : IIdentifiable
-    {
-        protected override Guid GetKeyForItem(TAssetPart item)
-        {
-            return item.Id;
-        }
-
-        public void AddRange(IEnumerable<TAssetPart> partDesigns)
-        {
-            foreach (var partDesign in partDesigns)
-            {
-                Add(partDesign);
-            }
-        }
-    }
-
     [DataSerializer(typeof(AssetPartCollectionSerializer<,>), Mode = DataSerializerGenericMode.GenericArguments)]
-    public class AssetPartCollection<TAssetPartDesign, TAssetPart> : KeyedSortedList<Guid, TAssetPartDesign>
+    public class AssetPartCollection<TAssetPartDesign, TAssetPart> : SortedList<Guid, TAssetPartDesign>
         where TAssetPartDesign : IAssetPartDesign<TAssetPart>
         where TAssetPart : IIdentifiable
     {
-        protected override Guid GetKeyForItem([NotNull] TAssetPartDesign item)
+        public void Add([NotNull] TAssetPartDesign part)
         {
-            return item.Part.Id;
+            if (part == null) throw new ArgumentNullException(nameof(part));
+            Add(part.Part.Id, part);
         }
 
-        public void AddRange([ItemNotNull, NotNull]  IEnumerable<TAssetPartDesign> partDesigns)
+        public void Add(KeyValuePair<Guid, TAssetPartDesign> part)
         {
-            foreach (var partDesign in partDesigns)
+            if (part.Value == null) throw new ArgumentNullException(nameof(part));
+            if (part.Key != part.Value.Part.Id) throw new ArgumentException(@"The guid of the key does not match the guid of the value", nameof(part));
+            Add(part.Key, part.Value);
+        }
+
+        /// <summary>
+        /// Refreshes the keys of this collection. Must be called if some ids of the contained parts have changed.
+        /// </summary>
+        public void RefreshKeys()
+        {
+            var values = Values.ToList();
+            Clear();
+            foreach (var value in values)
             {
-                Add(partDesign);
+                Add(value.Part.Id, value);
             }
         }
     }
 
-    public class AssetPartCollectionSerializer<TAssetPart> : KeyedSortedListSerializer<AssetPartCollection<TAssetPart>, Guid, TAssetPart>
-    where TAssetPart : IIdentifiable
-    {
-    }
-
-    public class AssetPartCollectionSerializer<TAssetPartDesign, TAssetPart> : KeyedSortedListSerializer<AssetPartCollection<TAssetPartDesign, TAssetPart>, Guid, TAssetPartDesign>
+    public class AssetPartCollectionSerializer<TAssetPartDesign, TAssetPart> : DataSerializer<AssetPartCollection<TAssetPartDesign, TAssetPart>>, IDataSerializerGenericInstantiation
         where TAssetPartDesign : IAssetPartDesign<TAssetPart>
         where TAssetPart : IIdentifiable
     {
+        private DataSerializer<TAssetPartDesign> valueSerializer;
+
+        /// <inheritdoc/>
+        public override void Initialize(SerializerSelector serializerSelector)
+        {
+            valueSerializer = MemberSerializer<TAssetPartDesign>.Create(serializerSelector);
+        }
+
+        /// <inheritdoc/>
+        public override void PreSerialize(ref AssetPartCollection<TAssetPartDesign, TAssetPart> obj, ArchiveMode mode, SerializationStream stream)
+        {
+            if (mode == ArchiveMode.Deserialize)
+            {
+                // TODO: Peek the SortedList size
+                if (obj == null)
+                    obj = new AssetPartCollection<TAssetPartDesign, TAssetPart>();
+                else
+                    obj.Clear();
+            }
+        }
+
+        /// <inheritdoc/>
+        public override void Serialize(ref AssetPartCollection<TAssetPartDesign, TAssetPart> obj, ArchiveMode mode, SerializationStream stream)
+        {
+            if (mode == ArchiveMode.Deserialize)
+            {
+                // Should be null if it was
+                var count = stream.ReadInt32();
+                for (var i = 0; i < count; ++i)
+                {
+                    var value = default(TAssetPartDesign);
+                    valueSerializer.Serialize(ref value, mode, stream);
+                    var key = value.Part.Id;
+                    obj.Add(key, value);
+                }
+            }
+            else if (mode == ArchiveMode.Serialize)
+            {
+                stream.Write(obj.Count);
+                foreach (var item in obj)
+                {
+                    valueSerializer.Serialize(item.Value, stream);
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, [NotNull] IList<Type> genericInstantiations)
+        {
+            genericInstantiations.Add(typeof(Guid));
+            genericInstantiations.Add(typeof(TAssetPartDesign));
+        }
     }
 }

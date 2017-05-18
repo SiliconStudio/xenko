@@ -153,6 +153,7 @@
     <Compile Include="Serializers\IdentifiableObjectSerializer.cs" />
     <Compile Include="TextAccessors\StringTextAccessor.cs" />
     <Compile Include="TextAccessors\DefaultTextAccessor.cs" />
+    <Compile Include="Yaml\AssetPartCollectionSerializer.cs" />
     <Compile Include="Yaml\AttachedYamlAssetMetadata.cs" />
     <Compile Include="Yaml\IYamlAssetMetadata.cs" />
     <Compile Include="Serializers\ScalarOrObjectSerializer.cs" />

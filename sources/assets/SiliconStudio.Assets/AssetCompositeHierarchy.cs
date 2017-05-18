@@ -87,14 +87,14 @@ namespace SiliconStudio.Assets
         [NotNull]
         public override IEnumerable<AssetPart> CollectParts()
         {
-            return Hierarchy.Parts.Select(x => new AssetPart(x.Part.Id, x.Base, newBase => x.Base = newBase));
+            return Hierarchy.Parts.Values.Select(x => new AssetPart(x.Part.Id, x.Base, newBase => x.Base = newBase));
         }
 
         /// <inheritdoc />
         [CanBeNull]
         public override IIdentifiable FindPart(Guid partId)
         {
-            return Hierarchy.Parts.FirstOrDefault(x => x.Part.Id == partId)?.Part;
+            return Hierarchy.Parts.Values.FirstOrDefault(x => x.Part.Id == partId)?.Part;
         }
 
         /// <inheritdoc />
@@ -107,9 +107,11 @@ namespace SiliconStudio.Assets
         public override Asset CreateDerivedAsset(string baseLocation, out Dictionary<Guid, Guid> idRemapping)
         {
             var newAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)base.CreateDerivedAsset(baseLocation, out idRemapping);
+            // Part ids have changed during the clone, we have to make sure the collection of part is properly refreshed.
+            newAsset.Hierarchy.Parts.RefreshKeys();
 
             var instanceId = Guid.NewGuid();
-            foreach (var part in Hierarchy.Parts)
+            foreach (var part in Hierarchy.Parts.Values)
             {
                 var newPart = newAsset.Hierarchy.Parts[idRemapping[part.Part.Id]];
                 newPart.Base = new BasePart(new AssetReference(Id, baseLocation), part.Part.Id, instanceId);

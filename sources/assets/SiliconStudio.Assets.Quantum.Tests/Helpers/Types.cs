@@ -232,7 +232,7 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
             {
                 Dictionary<Guid, Guid> idRemapping;
                 var instance = (MyAssetHierarchy)CreateDerivedAsset("", out idRemapping);
-                var instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
+                var instanceId = instance.Hierarchy.Parts.Values.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
                 return instance.Hierarchy;
             }
         }
