@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             Dictionary<Guid, Guid> idRemapping;
             var instance = (PrefabAsset)CreateDerivedAsset(targetLocation, out idRemapping);
-            instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
+            instanceId = instance.Hierarchy.Parts.Values.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
             return instance.Hierarchy;
         }
     }
