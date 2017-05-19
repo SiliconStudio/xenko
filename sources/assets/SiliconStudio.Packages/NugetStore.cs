@@ -86,7 +86,7 @@ namespace SiliconStudio.Packages
 
             var rootFileSystem = new PhysicalFileSystem(rootDirectory);
             RootDirectory = rootFileSystem.Root;
-            settings = Settings.LoadDefaultSettings(rootFileSystem, configFileName, null);
+            settings = new Settings(rootFileSystem, configFileName, false);
 
             InstallPath = settings.GetValue(ConfigurationConstants.Config, RepositoryPathKey, true);
             if (!string.IsNullOrEmpty(InstallPath))
