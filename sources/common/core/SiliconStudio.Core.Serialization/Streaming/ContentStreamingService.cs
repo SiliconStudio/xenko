@@ -67,5 +67,13 @@ namespace SiliconStudio.Core.Streaming
                 containers.Clear();
             }
         }
+
+        internal void UnregisterStorage(ContentStorage storage)
+        {
+            lock (containers)
+            {
+                containers.Remove(storage.Url.GetHashCode());
+            }
+        }
     }
 }

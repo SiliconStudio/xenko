@@ -4,8 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Streaming;
 using SiliconStudio.Xenko.Engine;
@@ -25,7 +27,7 @@ namespace SiliconStudio.Xenko.Streaming
     public class StreamingManager : GameSystemBase, IStreamingManager, ITexturesStreamingProvider
     {
         private readonly List<StreamableResource> resources = new List<StreamableResource>(512);
-        private readonly Dictionary<int, StreamableResource> resourcesLookup = new Dictionary<int, StreamableResource>(512);
+        private readonly Dictionary<object, StreamableResource> resourcesLookup = new Dictionary<object, StreamableResource>(512);
         private readonly List<StreamableResource> priorityUpdateQueue = new List<StreamableResource>(64); // Could be Queue<T> but it doesn't support .Remove(T)
         private int lastUpdateResourcesIndex;
         private bool isDisposing;
@@ -96,10 +98,12 @@ namespace SiliconStudio.Xenko.Streaming
             base.Destroy();
         }
 
+        [CanBeNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private T Get<T>(object obj) where T: StreamableResource
         {
             StreamableResource result;
-            resourcesLookup.TryGetValue(obj.GetHashCode(), out result);
+            resourcesLookup.TryGetValue(obj, out result);
             return result as T;
         }
 
@@ -112,7 +116,7 @@ namespace SiliconStudio.Xenko.Streaming
                 Debug.Assert(!resources.Contains(resource));
 
                 resources.Add(resource);
-                resourcesLookup.Add(resource.Resource.GetHashCode(), resource);
+                resourcesLookup.Add(resource.Resource, resource);
             }
         }
 
@@ -128,7 +132,7 @@ namespace SiliconStudio.Xenko.Streaming
                 Debug.Assert(resources.Contains(resource));
 
                 resources.Remove(resource);
-                resourcesLookup.Remove(resource.Resource.GetHashCode());
+                resourcesLookup.Remove(resource.Resource);
                 priorityUpdateQueue.RemoveAll(x => x == resource);
             }
         }
