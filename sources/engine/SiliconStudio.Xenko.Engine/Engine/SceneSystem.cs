@@ -42,22 +42,22 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Gets or sets the root scene.
         /// </summary>
-        /// <value>The scene.</value>
+        /// <value>The scene</value>
         /// <exception cref="System.ArgumentNullException">Scene cannot be null</exception>
         public SceneInstance SceneInstance { get; set; }
 
         /// <summary>
-        /// URL of the initial scene used on loading
+        /// URL of the scene loaded at initialization
         /// </summary>
         public string InitialSceneUrl { get; set; }
 
         /// <summary>
-        /// URL of the initial graphics compositor used on loading
+        /// URL of the graphics compositor loaded at initialization
         /// </summary>
         public string InitialGraphicsCompositorUrl { get; set; }
 
         /// <summary>
-        /// URL of the splash screen texture used on loading
+        /// URL of the splash screen texture loaded at initialization
         /// </summary>
         public string SplashScreenUrl { get; set; }
 
