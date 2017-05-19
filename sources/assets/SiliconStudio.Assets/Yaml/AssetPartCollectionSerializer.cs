@@ -2,15 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Serializers;
-using SiliconStudio.Core;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
-namespace SiliconStudio.Assets.Yaml
+namespace SiliconStudio.Core.Yaml
 {
     /// <summary>
     /// A custom serializer for asset part collections, that serializes this dictionary in the form of a collection.
@@ -45,11 +45,16 @@ namespace SiliconStudio.Assets.Yaml
 
             if (objectContext.SerializerContext.IsSerializing)
             {
+                var guidToIndex = new Dictionary<Guid, int>();
                 // If we're writing, lets copy values of the dictionary into the list.
+                var i = 0;
                 foreach (DictionaryEntry entry in (IDictionary)objectContext.Instance)
                 {
                     list.Add(entry.Value);
+                    guidToIndex.Add((Guid)entry.Key, i++);
                 }
+                // We need to convert path in attached YAML metadata, from the guid keys of the dictionary to the indices of the list.
+                FixupPaths(ref objectContext, guidToIndex);
             }
             else
             {
@@ -78,6 +83,20 @@ namespace SiliconStudio.Assets.Yaml
             objectContext.Instance = partCollection;
 
             // We need to convert path in attached YAML metadata, from the integer indices of the list to the Guid that are keys of the dictionary.
+            FixupPaths(ref objectContext, indexToGuid);
+            base.TransformObjectAfterRead(ref objectContext);
+        }
+
+        /// <summary>
+        /// Converts all <see cref="YamlAssetPath"/> from the metadata to switch between <see cref="Guid"/> keys of the
+        /// <see cref="AssetPartCollection{TAssetPartDesign, TAssetPart}"/> and the integer indices of the serialized list, and vice-versa.
+        /// </summary>
+        /// <typeparam name="TIndexSource">The current type of indices in the metadata.</typeparam>
+        /// <typeparam name="TIndexTarget">The type of indices to convert to.</typeparam>
+        /// <param name="objectContext">The current object context of the serialization.</param>
+        /// <param name="mapping">The mapping between the source indices and the target indices.</param>
+        private static void FixupPaths<TIndexSource, TIndexTarget>(ref ObjectContext objectContext, Dictionary<TIndexSource, TIndexTarget> mapping)
+        {
             var currentPath = AssetObjectSerializerBackend.GetCurrentPath(ref objectContext, false);
             foreach (var property in objectContext.SerializerContext.Properties)
             {
@@ -92,12 +111,12 @@ namespace SiliconStudio.Assets.Yaml
                         {
                             // Use the same beginning for the path.
                             var replacementPath = currentPath.Clone();
-                            // Retrieve the index that was used.
-                            var index = (int)path.Elements[currentPath.Elements.Count].Value;
-                            // Fetch the corresponding Guid.
-                            var id = indexToGuid[index];
-                            // Replace the index by the Guid in our new path.
-                            replacementPath.PushIndex(id);
+                            // Retrieve the index that was used (int or Guid).
+                            var indexSource = (TIndexSource)path.Elements[currentPath.Elements.Count].Value;
+                            // Fetch the corresponding target index (int or Guid).
+                            var indexTarget = mapping[indexSource];
+                            // Replace the initial index by the target index in our new path.
+                            replacementPath.PushIndex(indexTarget);
                             // Finally push the rest of the original path, that shouldn't be different.
                             path.Elements.Skip(replacementPath.Elements.Count).ForEach(x => replacementPath.Push(x));
                             // And replace the entry in the dictionary of metadata
@@ -107,7 +126,6 @@ namespace SiliconStudio.Assets.Yaml
                     }
                 }
             }
-            base.TransformObjectAfterRead(ref objectContext);
         }
 
         /// <inheritdoc/>

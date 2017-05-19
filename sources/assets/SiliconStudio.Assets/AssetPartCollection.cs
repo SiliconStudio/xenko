@@ -10,7 +10,7 @@ using SiliconStudio.Core.Serialization;
 namespace SiliconStudio.Assets
 {
     [DataSerializer(typeof(AssetPartCollectionSerializer<,>), Mode = DataSerializerGenericMode.GenericArguments)]
-    public class AssetPartCollection<TAssetPartDesign, TAssetPart> : SortedList<Guid, TAssetPartDesign>
+    public sealed class AssetPartCollection<TAssetPartDesign, TAssetPart> : SortedList<Guid, TAssetPartDesign>
         where TAssetPartDesign : IAssetPartDesign<TAssetPart>
         where TAssetPart : IIdentifiable
     {
