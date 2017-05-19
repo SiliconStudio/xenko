@@ -100,8 +100,8 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     var renderPerViewNode = RootRenderFeature.GetViewObjectNode(renderPerViewNodeReference);
                     ref var renderModelFrameInfo = ref renderModelObjectInfoData[renderPerViewNode.ObjectNode];
+                    ref var renderModelViewInfo = ref renderModelViewInfoData[renderPerViewNodeReference];
 
-                    var renderModelViewInfo = new RenderModelViewInfo();
                     Matrix.Multiply(ref renderModelFrameInfo.World, ref view.View, out renderModelViewInfo.WorldView);
                     Matrix.Multiply(ref renderModelFrameInfo.World, ref view.ViewProjection, out renderModelViewInfo.WorldViewProjection);
                 });
