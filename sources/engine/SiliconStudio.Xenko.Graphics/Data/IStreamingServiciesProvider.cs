@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using SiliconStudio.Core.Streaming;
@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
         /// <param name="imageDescription">The image description.</param>
         /// <param name="storageHeader">The storage header.</param>
         void FullyLoadTexture(Texture obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader);
-
+        
         /// <summary>
         /// Registers the texture in a streaming service.
         /// </summary>

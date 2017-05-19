@@ -1,8 +1,7 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Runtime.InteropServices;
-using System.Text;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
@@ -13,7 +12,7 @@ namespace SiliconStudio.Xenko.Graphics
     {
         internal static DataSerializer<ImageDescription> ImageDescriptionSerializer = SerializerSelector.Default.GetSerializer<ImageDescription>();
         internal static readonly FourCC MagicCode = "TKTX";
-
+        
         public static unsafe Image LoadFromMemory(IntPtr pSource, int size, bool makeACopy, GCHandle? handle)
         {
             var stream = new BinarySerializationReader(new NativeMemoryStream((byte*)pSource, size));
