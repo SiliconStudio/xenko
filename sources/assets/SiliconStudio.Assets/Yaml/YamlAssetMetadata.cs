@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Yaml
 {
@@ -32,11 +31,12 @@ namespace SiliconStudio.Assets.Yaml
         /// Removes attached metadata from the given YAML path.
         /// </summary>
         /// <param name="path">The path at which to remove metadata.</param>
-        public void Remove([NotNull] YamlAssetPath path)
+        public void Remove(YamlAssetPath path)
         {
             if (isAttached) throw new InvalidOperationException("Cannot modify a YamlAssetMetadata after it has been attached.");
             metadata.Remove(path);
         }
+
 
         /// <summary>
         /// Tries to retrieve the metadata for the given path.
@@ -45,10 +45,15 @@ namespace SiliconStudio.Assets.Yaml
         /// <returns>The metadata attached to the given path, or the default value of <typeparamref name="T"/> if no metadata is attached at the given path.</returns>
         public T TryGet([NotNull] YamlAssetPath path)
         {
-            T value;
-            metadata.TryGetValue(path, out value);
+            metadata.TryGetValue(path, out T value);
             return value;
         }
+
+        /// <inheritdoc/>
+        void IYamlAssetMetadata.Set(YamlAssetPath path, object value) => Set(path, (T)value);
+
+        /// <inheritdoc/>
+        object IYamlAssetMetadata.TryGet(YamlAssetPath path) => TryGet(path);
 
         /// <inheritdoc/>
         void IYamlAssetMetadata.Attach()
@@ -56,7 +61,7 @@ namespace SiliconStudio.Assets.Yaml
             isAttached = true;
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => ((IDictionary)metadata).GetEnumerator();
 
         public IEnumerator<KeyValuePair<YamlAssetPath, T>> GetEnumerator() => metadata.GetEnumerator();
     }
