@@ -5,9 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Analysis
@@ -15,14 +13,17 @@ namespace SiliconStudio.Assets.Analysis
     public class BuildAssetNode
     {
         private readonly BuildDependencyManager buildDependencyManager;
-        private readonly ConcurrentDictionary<AssetId, BuildAssetNode> dependencyLinks = new ConcurrentDictionary<AssetId, BuildAssetNode>();
+        private readonly ConcurrentDictionary<AssetId, BuildAssetNode> references = new ConcurrentDictionary<AssetId, BuildAssetNode>();
+        private readonly ConcurrentDictionary<BuildAssetNode, AssetId> referencedBy = new ConcurrentDictionary<BuildAssetNode, AssetId>();
         private long version = -1;
 
         public AssetItem AssetItem { get; }
 
         public BuildDependencyType DependencyType { get; }
 
-        public ICollection<BuildAssetNode> DependencyNodes => dependencyLinks.Values;
+        public ICollection<BuildAssetNode> References => references.Values;
+
+        public ICollection<BuildAssetNode> ReferencedBy => referencedBy.Keys;
 
         public BuildAssetNode(AssetItem assetItem, BuildDependencyType type, BuildDependencyManager dependencyManager)
         {
@@ -49,42 +50,55 @@ namespace SiliconStudio.Assets.Analysis
                     typesToExclude.Add(type);
                 }
             }
+            if (typesToInclude != null)
+            {
+                foreach (var inputType in mainCompiler.GetInputTypes(context, AssetItem))
+                {
+                    typesToInclude.Add(inputType);
+                }
+            }
 
             var assetVersion = AssetItem.Version;
             if (Interlocked.Exchange(ref version, assetVersion) == assetVersion) return; //same version, skip analysis, do not clear links
 
             //rebuild the dependency links, we clean first
-            dependencyLinks.Clear();
+            //remove self from current childs
+            foreach (var buildAssetNode in references)
+            {
+                referencedBy.TryRemove(buildAssetNode.Value, out AssetId _);
+            }
+            //clean up our references
+            references.Clear();
 
             //DependencyManager check
             //for now we use the dependency manager itself to resolve runtime dependencies, in the future we might want to unify the builddependency manager with the dependency manager
-            var dependencies = AssetItem.Package.Session.DependencyManager.ComputeDependencies(AssetItem.Id, AssetDependencySearchOptions.Out, ContentLinkType.Reference);
-            if (dependencies != null)
+            var dependencies = AssetItem.Package.Session.DependencyManager.ComputeDependencies(AssetItem.Id, AssetDependencySearchOptions.Out);
+            foreach (var assetDependency in dependencies.LinksOut)
             {
-                foreach (var assetDependency in dependencies.LinksOut)
+                var assetType = assetDependency.Item.Asset.GetType();
+                if (typesToExclude == null || !typesToExclude.Contains(assetType)) //filter out what we do not need
                 {
-                    var assetType = assetDependency.Item.Asset.GetType();
-                    if (typesToExclude == null || !typesToExclude.Contains(assetType)) //filter out what we do not need
+                    if (typesToInclude != null)
                     {
-                        if (typesToInclude != null)
+                        foreach (var input in typesToInclude.Where(x => x.Key == assetType))
                         {
-                            foreach (var input in typesToInclude.Where(x => x.Key == assetType))
-                            {
-                                var dependencyType = input.Value;
-                                var node = buildDependencyManager.FindOrCreateNode(assetDependency.Item, dependencyType);
-                                dependencyLinks.TryAdd(assetDependency.Item.Id, node);
-                            }
+                            var dependencyType = input.Value;
+                            var node = buildDependencyManager.FindOrCreateNode(assetDependency.Item, dependencyType);
+                            references.TryAdd(assetDependency.Item.Id, node);
+                            node.referencedBy.TryAdd(this, AssetItem.Id); //add this as referenced by child
                         }
-
-                        foreach (var inputType in mainCompiler.GetInputTypes(context, assetDependency.Item)) //resolve by type since dependency manager will provide us the assets needed
+                    }
+                    else
+                    {
+                        foreach (var inputType in mainCompiler.GetInputTypes(context, AssetItem)) //resolve by type since dependency manager will provide us the assets needed
                         {
                             if (inputType.Key == assetType)
                             {
                                 var dependencyType = inputType.Value;
                                 var node = buildDependencyManager.FindOrCreateNode(assetDependency.Item, dependencyType);
-                                dependencyLinks.TryAdd(assetDependency.Item.Id, node);
+                                references.TryAdd(assetDependency.Item.Id, node);
+                                node.referencedBy.TryAdd(this, AssetItem.Id); //add this as referenced by child
                             }
-                            typesToInclude?.Add(inputType);
                         }
                     }
                 }
@@ -101,7 +115,8 @@ namespace SiliconStudio.Assets.Analysis
                     {
                         var dependencyType = inputFile.Type == UrlType.Content ? BuildDependencyType.CompileContent : BuildDependencyType.CompileAsset; //Content means we need to load the content, the rest is just asset dependency
                         var node = buildDependencyManager.FindOrCreateNode(asset, dependencyType);
-                        dependencyLinks.TryAdd(asset.Id, node);
+                        references.TryAdd(asset.Id, node);
+                        node.referencedBy.TryAdd(this, AssetItem.Id); //add this as referenced by child
                     }
                 }
             }

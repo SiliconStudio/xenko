@@ -12,7 +12,7 @@ namespace SiliconStudio.Assets.Analysis
     /// Build dependency manager
     /// Basically is a container of BuildAssetNode
     /// </summary>
-    public sealed class BuildDependencyManager
+    public class BuildDependencyManager
     {
         public struct BuildNodeDesc
         {
@@ -92,6 +92,24 @@ namespace SiliconStudio.Assets.Analysis
             }
 
             return node;
+        }
+
+        private void AnalyzeNode(BuildAssetNode node, AssetCompilerContext context, HashSet<KeyValuePair<Type, BuildDependencyType>> includes, HashSet<Type> excludes)
+        {
+            node.Analyze(context, includes, excludes);
+            foreach (var buildAssetNode in node.References)
+            {
+                AnalyzeNode(buildAssetNode, context, includes, excludes);
+            }
+        }
+
+        public void AssetChanged(AssetItem sender)
+        {
+            var node = FindOrCreateNode(sender, BuildDependencyType.Runtime); // update only runtime ones ( as they are root )
+            var context = new AssetCompilerContext();
+            var includes = new HashSet<KeyValuePair<Type, BuildDependencyType>>();
+            var excludes = new HashSet<Type>();
+            AnalyzeNode(node, context, includes, excludes);
         }
 
         /// <summary>

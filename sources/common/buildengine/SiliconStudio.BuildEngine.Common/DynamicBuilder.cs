@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Threading;
@@ -29,7 +29,7 @@ namespace SiliconStudio.BuildEngine
         public DynamicBuilder(Builder builder, IBuildStepProvider buildStepProvider, string name = null)
         {
             this.builder = builder;
-            dynamicBuildStep = new DynamicBuildStep(buildStepProvider, builder.ThreadCount) { MaxHighPriorityParallelSteps = -2 };
+            dynamicBuildStep = new DynamicBuildStep(buildStepProvider, builder.ThreadCount);
             builderThread = new Thread(SafeAction.Wrap(BuilderThread)) { IsBackground = true };
             if (!string.IsNullOrEmpty(name))
             {

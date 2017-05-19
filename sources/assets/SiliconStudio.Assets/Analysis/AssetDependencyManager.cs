@@ -51,8 +51,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <exception cref="System.ArgumentNullException">session</exception>
         internal AssetDependencyManager(PackageSession session)
         {
-            if (session == null) throw new ArgumentNullException(nameof(session));
-            this.session = session;
+            this.session = session ?? throw new ArgumentNullException(nameof(session));
             this.session.Packages.CollectionChanged += Packages_CollectionChanged;
             session.AssetDirtyChanged += Session_AssetDirtyChanged;
             AssetsWithMissingReferences = new Dictionary<AssetId, AssetDependencies>();
