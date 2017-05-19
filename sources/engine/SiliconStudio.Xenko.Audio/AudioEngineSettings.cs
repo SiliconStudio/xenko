@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Audio
     {
         
         /// <userdoc>
-        /// Enable HRTF audio. Note that only audio emitters with HRTF enabled produce HRTF audio
+        /// Enables HRTF audio. Note that only audio emitters with HRTF enabled produce HRTF audio
         /// </userdoc>
         [DataMember(10)]
         [Display("HRTF (if available)")]
