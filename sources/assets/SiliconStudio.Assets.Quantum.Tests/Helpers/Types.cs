@@ -201,12 +201,12 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
         {
             [NonOverridable]
             public Guid Id { get; set; }
-            public string Name { get; set; }
-            public MyPart Parent { get; set; }
-            public MyPart MyReference { get; set; }
-            public List<MyPart> MyReferences { get; set; }
-            public List<MyPart> Children { get; } = new List<MyPart>();
-            public SomeObject Object { get; set; }
+            [DefaultValue(null)] public string Name { get; set; }
+            [DefaultValue(null)] public MyPart Parent { get; set; }
+            [DefaultValue(null)] public MyPart MyReference { get; set; }
+            [DefaultValue(null)] public List<MyPart> MyReferences { get; set; }
+            [DefaultValue(null)] public SomeObject Object { get; set; }
+            [NonIdentifiableCollectionItems] public List<MyPart> Children { get; } = new List<MyPart>();
             public void AddChild([NotNull] MyPart child) { Children.Add(child); child.Parent = this; }
             public override string ToString() => $"{Name} [{Id}]";
         }
@@ -214,13 +214,16 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
         [DataContract("MyPartDesign")]
         public class MyPartDesign : IAssetPartDesign<MyPart>
         {
+            [DefaultValue(null)]
             public BasePart Base { get; set; }
-            // ReSharper disable once NotNullMemberIsNotInitialized
             IIdentifiable IAssetPartDesign.Part => Part;
+            // ReSharper disable once NotNullMemberIsNotInitialized
             public MyPart Part { get; set; }
             public override string ToString() => $"Design: {Part.Name} [{Part.Id}]";
         }
 
+        [DataContract("MyAssetHierarchy")]
+        [AssetDescription(FileExtension)]
         public class MyAssetHierarchy : AssetCompositeHierarchy<MyPartDesign, MyPart>
         {
             public override MyPart GetParent(MyPart part) => part.Parent;

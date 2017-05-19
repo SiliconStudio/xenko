@@ -8,11 +8,12 @@ using NUnit.Framework;
 using SiliconStudio.Assets.Quantum.Tests.Helpers;
 using SiliconStudio.Assets.Tests.Helpers;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum.Tests
 {
     [TestFixture]
-    public class TestAssetCompositeHierarchy
+    public class TestAssetCompositeHierarchyCloning
     {
         [Test]
         public void TestSimpleCloneSubHierarchy()

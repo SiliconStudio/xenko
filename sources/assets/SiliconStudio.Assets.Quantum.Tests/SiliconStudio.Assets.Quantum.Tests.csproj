@@ -50,12 +50,14 @@
     <Compile Include="Helpers\AssetHierarchyHelper.cs" />
     <Compile Include="Helpers\AssetTestContainer.cs" />
     <Compile Include="Helpers\DeriveAssetTest.cs" />
+    <Compile Include="Helpers\SerializationHelper.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestArchetypesAdvanced.cs" />
     <Compile Include="TestArchetypesBasic.cs" />
-    <Compile Include="TestAssetCompositeHierarchy.cs" />
+    <Compile Include="TestAssetCompositeHierarchyCloning.cs" />
     <Compile Include="TestAssetCompositeHierarchyBases.cs" />
+    <Compile Include="TestAssetCompositeHierarchySerialization.cs" />
     <Compile Include="TestAssetPropertyGraph.cs" />
     <Compile Include="TestCollectionUpdates.cs" />
     <Compile Include="TestObjectReferenceGraph.cs" />
