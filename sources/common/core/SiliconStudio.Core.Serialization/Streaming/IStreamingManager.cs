@@ -1,9 +1,5 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
-
-using System;
-using System.Runtime.Serialization;
-using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Core.Streaming
 {
@@ -12,6 +8,10 @@ namespace SiliconStudio.Core.Streaming
     /// </summary>
     public interface IStreamingManager
     {
+        /// <summary>
+        /// Puts request to load given resource up to the maximum residency level.
+        /// </summary>
+        /// <param name="obj">The streamable resource object.</param>
         void FullyLoadResource(object obj);
     }
 }
