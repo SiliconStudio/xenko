@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System.Diagnostics;
@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
     public sealed class TextureSerializationData
     {
         internal const int Version = 4;
-
+        
         /// <summary>
         /// The texture image.
         /// </summary>

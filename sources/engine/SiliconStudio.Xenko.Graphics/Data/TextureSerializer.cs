@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using SiliconStudio.Core.Serialization;
@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
         {
             // Do not create object during preserialize (OK because not recursive)
         }
-
+        
         /// <inheritdoc/>
         public override void Serialize(ref Texture texture, ArchiveMode mode, SerializationStream stream)
         {
