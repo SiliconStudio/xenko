@@ -122,7 +122,7 @@ namespace SiliconStudio.Assets.Compiler
                 }
 
                 //Go thru the dependencies of the node and prepare them as well
-                foreach (var dependencyNode in assetNode.DependencyNodes)
+                foreach (var dependencyNode in assetNode.References)
                 {
                     if ((dependencyNode.DependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent || //only if content is required Content.Load
                         (dependencyNode.DependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime) //or the asset is required anyway at runtime
@@ -143,7 +143,7 @@ namespace SiliconStudio.Assets.Compiler
                         finalResult.BuildSteps.Add(cachedResult.BuildSteps);
 
                     //link
-                    if (parentBuildStep != null && ((dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent)) //only if content is required Content.Load
+                    if (parentBuildStep != null && (dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent) //only if content is required Content.Load
                         BuildStep.LinkBuildSteps(cachedResult.BuildSteps, parentBuildStep);
                 }
             }
