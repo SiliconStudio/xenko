@@ -116,8 +116,8 @@ namespace SiliconStudio.Xenko.Rendering
                     renderMesh.BoundingBox = new BoundingBoxExt(meshInfo.BoundingBox);                    
                     renderMesh.BlendMatrices = meshInfo.BlendMatrices;
                     
-                    // Register usage
-                    Services.GetServiceAs<StreamingManager>()?.OnDraw(renderMesh);
+                    // Register resources usage
+                    Services.GetServiceAs<StreamingManager>()?.StreamResources(renderMesh);
                 }
             }
         }
