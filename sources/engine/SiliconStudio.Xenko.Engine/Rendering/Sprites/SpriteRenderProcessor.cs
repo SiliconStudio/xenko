@@ -5,6 +5,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Streaming;
 
 namespace SiliconStudio.Xenko.Rendering.Sprites
 {
@@ -25,9 +26,12 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
         public override void Draw(RenderContext gameTime)
         {
+            var streamingManager = Services.GetServiceAs<StreamingManager>();
+
             foreach (var spriteStateKeyPair in ComponentDatas)
             {
                 var renderSprite = spriteStateKeyPair.Value.RenderSprite;
+                var currentSprite = renderSprite.SpriteComponent.CurrentSprite;
 
                 renderSprite.Enabled = renderSprite.SpriteComponent.Enabled;
 
@@ -39,12 +43,16 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     // For now we only set a center for sorting, but no extent (which disable culling)
                     renderSprite.BoundingBox = new BoundingBoxExt { Center = transform.WorldMatrix.TranslationVector };
                     renderSprite.RenderGroup = renderSprite.SpriteComponent.RenderGroup;
+
+                    // Register resources usage
+                    if(currentSprite != null)
+                        streamingManager?.StreamResources(currentSprite.Texture);
                 }
 
                 // TODO Should we allow adding RenderSprite without a CurrentSprite instead? (if yes, need some improvement in RenderSystem)
-                if (spriteStateKeyPair.Value.Active != (spriteStateKeyPair.Key.CurrentSprite != null))
+                if (spriteStateKeyPair.Value.Active != (currentSprite != null))
                 {
-                    spriteStateKeyPair.Value.Active = (spriteStateKeyPair.Key.CurrentSprite != null);
+                    spriteStateKeyPair.Value.Active = (currentSprite != null);
                     if (spriteStateKeyPair.Value.Active)
                         VisibilityGroup.RenderObjects.Add(renderSprite);
                     else

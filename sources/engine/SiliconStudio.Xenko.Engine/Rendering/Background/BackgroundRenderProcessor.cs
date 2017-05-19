@@ -6,6 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Streaming;
 
 namespace SiliconStudio.Xenko.Rendering.Background
 {
@@ -57,6 +58,9 @@ namespace SiliconStudio.Xenko.Rendering.Background
                     renderBackground.Intensity = backgroundComponent.Intensity;
                     renderBackground.RenderGroup = backgroundComponent.RenderGroup;
                     renderBackground.Rotation = Quaternion.RotationMatrix(backgroundComponent.Entity.Transform.WorldMatrix);
+
+                    // Register texture usage
+                    Services.GetServiceAs<StreamingManager>()?.StreamResources(renderBackground.Texture);
 
                     ActiveBackground = renderBackground;
                     break;

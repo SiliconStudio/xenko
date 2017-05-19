@@ -1,10 +1,12 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Particles.Components;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Streaming;
 
 namespace SiliconStudio.Xenko.Particles.Rendering
 {
@@ -84,6 +86,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         {
             base.Draw(context);
 
+            var streamingManager = Services.GetServiceAs<StreamingManager>();
+
             foreach (var componentData in ComponentDatas)
             {
                 var renderSystem = componentData.Value;
@@ -101,6 +105,9 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                         emitter.StateSortKey = ((uint) emitter.ParticleEmitter.DrawPriority) << 16;     // Maybe include the RenderStage precision as well
                         emitter.RenderGroup = renderSystem.ParticleSystemComponent.RenderGroup;
                     }
+
+                    // Register resources usage
+                    streamingManager?.StreamResources(emitter.ParticleEmitter.Material.Parameters);
                 }
             }
         }

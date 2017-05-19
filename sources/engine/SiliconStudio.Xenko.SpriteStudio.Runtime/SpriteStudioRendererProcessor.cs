@@ -2,10 +2,12 @@
 // See LICENSE.md for full license information.
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Streaming;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
@@ -45,15 +47,24 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
         public override void Draw(RenderContext context)
         {
+            var streamingManager = Services.GetServiceAs<StreamingManager>();
+
             foreach (var spriteStateKeyPair in ComponentDatas)
             {
                 var renderSpriteStudio = spriteStateKeyPair.Value;
                 renderSpriteStudio.Enabled = renderSpriteStudio.SpriteStudioComponent.Enabled;
 
-                if(!renderSpriteStudio.Enabled || !renderSpriteStudio.SpriteStudioComponent.ValidState) continue;
+                if (!renderSpriteStudio.Enabled || !renderSpriteStudio.SpriteStudioComponent.ValidState) continue;
 
                 renderSpriteStudio.BoundingBox = new BoundingBoxExt { Center = renderSpriteStudio.TransformComponent.WorldMatrix.TranslationVector };
-                renderSpriteStudio.RenderGroup = renderSpriteStudio.SpriteStudioComponent.RenderGroup;               
+                renderSpriteStudio.RenderGroup = renderSpriteStudio.SpriteStudioComponent.RenderGroup;
+
+                // Register resources usage
+                if (streamingManager != null)
+                {
+                    foreach (var sprite in renderSpriteStudio.SpriteStudioComponent.Sheet.Sprites)
+                        streamingManager.StreamResources(sprite.Texture);
+                }
             }
         }
 

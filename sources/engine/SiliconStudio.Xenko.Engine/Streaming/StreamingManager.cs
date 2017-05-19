@@ -16,6 +16,7 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Data;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace SiliconStudio.Xenko.Streaming
 {
@@ -35,9 +36,10 @@ namespace SiliconStudio.Xenko.Streaming
 
         // Configuration
         public TimeSpan ManagerUpdatesInterval = TimeSpan.FromMilliseconds(10);
+
         public TimeSpan ResourceUpdatesInterval = TimeSpan.FromMilliseconds(200);
         public const int MaxResourcesPerUpdate = 30;
-        private static int testQuality = 50;// temp for testing
+        private static int testQuality = 50; // temp for testing
 
         /// <summary>
         /// Gets the content streaming service.
@@ -66,7 +68,7 @@ namespace SiliconStudio.Xenko.Streaming
 
             (Game as Game)?.Script.AddTask(Update);
         }
-        
+
         /// <inheritdoc />
         protected override void Destroy()
         {
@@ -100,7 +102,7 @@ namespace SiliconStudio.Xenko.Streaming
 
         [CanBeNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private T Get<T>(object obj) where T: StreamableResource
+        private T Get<T>(object obj) where T : StreamableResource
         {
             StreamableResource result;
             resourcesLookup.TryGetValue(obj, out result);
@@ -136,7 +138,7 @@ namespace SiliconStudio.Xenko.Streaming
                 priorityUpdateQueue.RemoveAll(x => x == resource);
             }
         }
-        
+
         private StreamingTexture CreateStreamingTexture(Texture obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader)
         {
             // Get content storage container
@@ -193,7 +195,7 @@ namespace SiliconStudio.Xenko.Streaming
             {
                 // Get streaming object
                 var resource = CreateStreamingTexture(obj, ref imageDescription, ref storageHeader);
-                
+
                 // Register quicker update for that resource
                 RequestUpdate(resource);
             }
@@ -220,7 +222,7 @@ namespace SiliconStudio.Xenko.Streaming
                 resource = Get<StreamableResource>(obj);
             }
 
-            if(resource != null)
+            if (resource != null)
                 FullyLoadResource(resource);
         }
 
@@ -246,7 +248,7 @@ namespace SiliconStudio.Xenko.Streaming
                     await ((Game)Game).Script.NextFrame();
                     continue;
                 }*/
-                
+
                 // temp code for testing quality changing using K/L keys
                 if (((Game)Game).Input.IsKeyPressed(Keys.K))
                 {
@@ -298,18 +300,18 @@ namespace SiliconStudio.Xenko.Streaming
                         // TODO: add StreamingManager stats, update time per frame, updates per frame, etc.
                     }
                 }
-                
+
                 ContentStreaming.Update();
 
                 frameIndex++;
                 await Task.Delay(ManagerUpdatesInterval);
             }
         }
-        
+
         private void Update(StreamableResource resource, ref DateTime now)
         {
             Debug.Assert(resource != null && resource.CanBeUpdated);
-            
+
             // Pick group and handler dedicated for that resource
             // TODO: finish resource groups and streaming handlers implementation
             //var group = resource.Group;
@@ -397,12 +399,26 @@ namespace SiliconStudio.Xenko.Streaming
         /// Called when render mesh is submited to rendering. Registers referenced resources to stream them.
         /// </summary>
         /// <param name="renderMesh">The render mesh.</param>
-        public void OnDraw(RenderMesh renderMesh)
+        public void StreamResources(RenderMesh renderMesh)
         {
-            if (renderMesh.Material?.Parameters.ObjectValues != null)
+            if (renderMesh.Material != null)
+            {
+                StreamResources(renderMesh.Material.Parameters);
+            }
+
+            StreamResources(renderMesh.RenderModel.Model);
+        }
+
+        /// <summary>
+        /// Called when material parameters are submited to rendering. Registers referenced resources to stream them.
+        /// </summary>
+        /// <param name="parameters">The material parameters.</param>
+        public void StreamResources(ParameterCollection parameters)
+        {
+            if (parameters.ObjectValues != null)
             {
                 // Register all binded textures
-                foreach (var e in renderMesh.Material.Parameters.ObjectValues)
+                foreach (var e in parameters.ObjectValues)
                 {
                     if (e is Texture t)
                     {
@@ -414,8 +430,28 @@ namespace SiliconStudio.Xenko.Streaming
                     }
                 }
             }
+        }
 
-            // TODO: register model (renderMesh.RenderModel.Model)
+        /// <summary>
+        /// Called when texture is submited to be used during rendering. Registers referenced resources to stream them.
+        /// </summary>
+        /// <param name="texture">The texture.</param>
+        public void StreamResources(Texture texture)
+        {
+            var resource = Get<StreamingTexture>(texture);
+            if (resource != null)
+            {
+                resource.LastTimeUsed = frameIndex;
+            }
+        }
+
+        /// <summary>
+        /// Called when model is submited to be used during rendering. Registers referenced resources to stream them.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        public void StreamResources(Model model)
+        {
+            // TODO: register model streaming
         }
     }
 }
