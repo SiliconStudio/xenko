@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Streaming
         {
             if (Storage != null)
             {
-                // TODO: remove reference?
+                Storage.RemoveDisposeBy(this);
             }
 
             Storage = storage;
@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Streaming
 
             if (Storage != null)
             {
-                // TODO: add reference?
+                Storage.DisposeBy(this);
             }
         }
 
@@ -124,11 +124,6 @@ namespace SiliconStudio.Xenko.Streaming
         /// <inheritdoc />
         protected override void Destroy()
         {
-            if (Storage != null)
-            {
-                // TODO: remove reference?
-            }
-
             Manager.UnregisterResource(this);
             Manager = null;
 

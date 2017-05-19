@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -15,7 +16,7 @@ namespace SiliconStudio.Core.Streaming
     /// <summary>
     /// Streamable resources content storage containter.
     /// </summary>
-    public class ContentStorage
+    public class ContentStorage : DisposeBase
     {
         private ContentChunk[] chunks;
         private long locks;
@@ -199,6 +200,17 @@ namespace SiliconStudio.Core.Streaming
                     hashCode = (hashCode * 397) ^ chunks[i].Size;
                 return hashCode;
             }
+        }
+
+        /// <inheritdoc/>
+        protected override void Destroy()
+        {
+            Debug.Assert(locks == 0);
+
+            Service.UnregisterStorage(this);
+            ReleaseChunks();
+
+            base.Destroy();
         }
     }
 }
