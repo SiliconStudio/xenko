@@ -32,11 +32,9 @@ namespace SiliconStudio.Assets.Quantum
             return graph;
         }
 
-        [CanBeNull]
-        public AssetPropertyGraph GetGraph(AssetId assetId)
+        public AssetPropertyGraph TryGetGraph(AssetId assetId)
         {
-            AssetPropertyGraph graph;
-            registeredGraphs.TryGetValue(assetId, out graph);
+            registeredGraphs.TryGetValue(assetId, out var graph);
             return graph;
         }
 

@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Particles.Components
         /// </userdoc>
         [DataMember(40)]
         [Display("Thumbnail Warm-up")]
-        [DataMemberRange(0, 5, 0.01, 1)]
+        [DataMemberRange(0, 5, 0.01, 1, 3)]
         [DefaultValue(0.5f)]
         public float ThumbnailWarmupTime { get; set; } = 0.5f;
 

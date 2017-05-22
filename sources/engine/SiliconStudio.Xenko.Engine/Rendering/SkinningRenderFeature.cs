@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Rendering
                 var renderMesh = (RenderMesh)objectNode.RenderObject;
                 var staticObjectNode = renderMesh.StaticObjectNode;
 
-                var skinningInfo = skinningInfos[staticObjectNode];
+                ref var skinningInfo = ref skinningInfos[staticObjectNode];
                 var parameters = renderMesh.Mesh.Parameters;
                 if (parameters != skinningInfo.Parameters || parameters.PermutationCounter != skinningInfo.PermutationCounter)
                 {
@@ -68,8 +68,6 @@ namespace SiliconStudio.Xenko.Rendering
                     skinningInfo.HasSkinningPosition = parameters.Get(MaterialKeys.HasSkinningPosition);
                     skinningInfo.HasSkinningNormal = parameters.Get(MaterialKeys.HasSkinningNormal);
                     skinningInfo.HasSkinningTangent = parameters.Get(MaterialKeys.HasSkinningTangent);
-
-                    skinningInfos[staticObjectNode] = skinningInfo;
                 }
 
                 for (int i = 0; i < effectSlotCount; ++i)

@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </userdoc>
         [DataMember(20)]
         [DefaultValue(100.0f)]
-        [DataMemberRange(0, 10000, 1, 10)]
+        [DataMemberRange(0, 100, 1, 10, 1)]
         [Display(null, "Size")]
         public float Width { get; set; } = 100.0f;
 
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </userdoc>
         [DataMember(30)]
         [DefaultValue(100.0f)]
-        [DataMemberRange(0, 10000, 1, 10)]
+        [DataMemberRange(0, 100, 1, 10, 1)]
         [Display(null, "Size")]
         public float Height { get; set; } = 100.0f;
 

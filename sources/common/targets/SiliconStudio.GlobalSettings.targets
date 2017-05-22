@@ -44,7 +44,7 @@
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'UWP' ">
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <AutoIncludeSystemAssembly>true</AutoIncludeSystemAssembly>
-    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>

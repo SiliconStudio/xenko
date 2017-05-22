@@ -31,6 +31,14 @@ namespace SiliconStudio.Xenko.Physics
         [DataMemberIgnore]
         internal XenkoMotionState MotionState;
 
+        private bool isKinematic;
+        private float mass = 1.0f;
+        private RigidBodyTypes type;
+        private Vector3 gravity = Vector3.Zero;
+        private float angularDamping;
+        private float linearDamping;
+        private bool overrideGravity;
+
         /// <summary>
         /// Gets the linked constraints.
         /// </summary>
@@ -46,8 +54,13 @@ namespace SiliconStudio.Xenko.Physics
             ProcessCollisions = true;
         }
 
-        private bool isKinematic;
-
+        /// <summary>
+        /// Gets or sets the kinematic property
+        /// </summary>
+        /// <value>true, false</value>
+        /// <userdoc>
+        /// Kinematic if checked. Dynamic if unchecked.
+        /// </userdoc>
         [DataMember(75)]
         public bool IsKinematic
         {
@@ -61,8 +74,6 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        private float mass = 1.0f;
-
         /// <summary>
         /// Gets or sets the mass of this Rigidbody
         /// </summary>
@@ -73,7 +84,7 @@ namespace SiliconStudio.Xenko.Physics
         /// The mass of this Rigidbody
         /// </userdoc>
         [DataMember(80)]
-        [DataMemberRange(0, float.MaxValue)]
+        [DataMemberRange(0, 6)]
         public float Mass
         {
             get
@@ -129,8 +140,6 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        private float linearDamping;
-
         /// <summary>
         /// Gets or sets the linear damping of this rigidbody
         /// </summary>
@@ -155,8 +164,6 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        private float angularDamping;
-
         /// <summary>
         /// Gets or sets the angular damping of this rigidbody
         /// </summary>
@@ -180,8 +187,6 @@ namespace SiliconStudio.Xenko.Physics
                 InternalRigidBody?.SetDamping(LinearDamping, value);
             }
         }
-
-        private bool overrideGravity;
 
         /// <summary>
         /// Gets or sets if this Rigidbody overrides world gravity
@@ -220,16 +225,14 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        private Vector3 gravity = Vector3.Zero;
-
         /// <summary>
-        /// Gets or sets the angular damping of this rigidbody
+        /// Gets or sets the gravity acceleration applied to this RigidBody
         /// </summary>
         /// <value>
-        /// true, false
+        /// A vector representing moment and direction
         /// </value>
         /// <userdoc>
-        /// The angular damping of this Rigidbody
+        /// The gravity acceleration applied to this RigidBody
         /// </userdoc>
         [DataMember(100)]
         public Vector3 Gravity
@@ -248,8 +251,6 @@ namespace SiliconStudio.Xenko.Physics
                 }
             }
         }
-
-        private RigidBodyTypes type;
 
         /// <summary>
         /// Gets or sets the type.

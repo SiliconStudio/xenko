@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <remarks>The value is coerced in the range [0, <see cref="int.MaxValue"/>].</remarks>
         /// <remarks>First row has 0 as index</remarks>
-        [DataMemberRange(0, int.MaxValue)]
+        [DataMemberRange(0, 0)]
         [Display(category: LayoutCategory)]
         public static readonly PropertyKey<int> RowPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(RowPropertyKey), typeof(GridBase), 0, CoerceGridPositionsValue, InvalidateParentGridMeasure);
 
@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// The key to the RowSpan attached dependency property. This defines the number of rows an item takes.
         /// </summary>
         /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
-        [DataMemberRange(1, int.MaxValue)]
+        [DataMemberRange(1, 0)]
         [Display(category: LayoutCategory)]
         public static readonly PropertyKey<int> RowSpanPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(RowSpanPropertyKey), typeof(GridBase), 1, CoerceSpanValue, InvalidateParentGridMeasure);
 
@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <remarks>The value is coerced in the range [0, <see cref="int.MaxValue"/>].</remarks>
         /// <remarks>First column has 0 as index</remarks>
-        [DataMemberRange(0, int.MaxValue)]
+        [DataMemberRange(0, 0)]
         [Display(category: LayoutCategory)]
         public static readonly PropertyKey<int> ColumnPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(ColumnPropertyKey), typeof(GridBase), 0, CoerceGridPositionsValue, InvalidateParentGridMeasure);
 
@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// The key to the ColumnSpan attached dependency property. This defines the number of columns an item takes.
         /// </summary>
         /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
-        [DataMemberRange(1, int.MaxValue)]
+        [DataMemberRange(1, 0)]
         [Display(category: LayoutCategory)]
         public static readonly PropertyKey<int> ColumnSpanPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(ColumnSpanPropertyKey), typeof(GridBase), 1, CoerceSpanValue, InvalidateParentGridMeasure);
 
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <remarks>The value is coerced in the range [0, <see cref="int.MaxValue"/>].</remarks>
         /// <remarks>First layer has 0 as index</remarks>
-        [DataMemberRange(0, int.MaxValue)]
+        [DataMemberRange(0, 0)]
         [Display(category: LayoutCategory)]
         public static readonly PropertyKey<int> LayerPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(LayerPropertyKey), typeof(GridBase), 0, CoerceGridPositionsValue, InvalidateParentGridMeasure);
 
@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// The key to the LayerSpan attached dependency property. This defines the number of layers an item takes.
         /// </summary>
         /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
-        [DataMemberRange(1, int.MaxValue)]
+        [DataMemberRange(1, 0)]
         [Display(category: LayoutCategory)]
         public static readonly PropertyKey<int> LayerSpanPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(LayerSpanPropertyKey), typeof(GridBase), 1, CoerceSpanValue, InvalidateParentGridMeasure);
 
