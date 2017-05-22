@@ -79,11 +79,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Need the shadow map renderer in order to render light shafts
             var meshRenderFeature = Context.RenderSystem.RenderFeatures.OfType<MeshRenderFeature>().FirstOrDefault();
             if (meshRenderFeature == null)
-                throw new ArgumentNullException("Missing mesh render feature");
-
+                throw new InvalidOperationException("Missing mesh render feature");
+            
             var forwardLightingFeature = meshRenderFeature.RenderFeatures.OfType<ForwardLightingRenderFeature>().FirstOrDefault();
             if (forwardLightingFeature == null)
-                throw new ArgumentNullException("Missing forward lighting render feature");
+                throw new InvalidOperationException("Missing forward lighting render feature");
 
             shadowMapRenderer = forwardLightingFeature.ShadowMapRenderer;
 
