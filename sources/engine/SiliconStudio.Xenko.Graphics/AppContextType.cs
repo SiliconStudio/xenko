@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Games
         /// <summary>
         /// Game running on UWP in a SwapChainPanel.
         /// </summary>
-        UWPSwapChain,
+        UWPSwapChainPanel,
 
         /// <summary>
         /// Game running on UWP in a CoreWindow.

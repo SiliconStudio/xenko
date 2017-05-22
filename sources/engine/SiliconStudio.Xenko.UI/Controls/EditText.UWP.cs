@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     {
         private static EditText activeEditText;
         private Windows.UI.Xaml.Controls.TextBox editText;
-        private GameContextUWP gameContext;
+        private GameContextUWPSwapChainPanel gameContext;
 
         private static void InitializeStaticImpl()
         {
@@ -47,21 +47,18 @@ namespace SiliconStudio.Xenko.UI.Controls
                 if (game == null)
                     throw new ArgumentException("Provided services need to contain a provider for the IGame interface.");
 
-                Debug.Assert(game.Context is GameContextUWP, "There is only one possible descendant of GameContext for Windows Store.");
-
-                gameContext = (GameContextUWP)game.Context;
-
                 // Detach previous EditText (if any)
                 if (activeEditText != null)
                     activeEditText.IsSelectionActive = false;
                 activeEditText = this;
 
-                // TODO Enable EditText for d3d applications
-                var swapChainControl = gameContext.Control as SwapChainControlUWP;
-                if (swapChainControl == null)
+                // Handle only GameContextUWPSwapChainPanel for now
+                // TODO: Implement EditText for GameContextUWPCoreWindow
+                gameContext = game.Context as GameContextUWPSwapChainPanel;
+                if (gameContext == null)
                     return;
 
-                var swapChainPanel = swapChainControl.SwapChainPanel;
+                var swapChainPanel = gameContext.Control;
 
                 // Make sure it doesn't have a parent (another text box being edited)
                 editText = gameContext.EditTextBox;
@@ -118,8 +115,8 @@ namespace SiliconStudio.Xenko.UI.Controls
                 var stackPanel = (Windows.UI.Xaml.Controls.Panel)editText.Parent;
                 stackPanel.Children.Remove(editText);
 
-                var swapChainControl = gameContext.Control as SwapChainControlUWP;
-                swapChainControl?.SwapChainPanel.Children.Remove(stackPanel);
+                var swapChainControl = gameContext?.Control;
+                swapChainControl?.Children.Remove(stackPanel);
 
                 editText = null;
                 activeEditText = null;

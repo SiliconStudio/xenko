@@ -72,9 +72,9 @@ namespace SiliconStudio.Xenko.Games
 
         internal override GameWindow GetSupportedGameWindow(AppContextType type)
         {
-            if (type == AppContextType.UWPCoreWindow || type == AppContextType.UWPSwapChain)
+            if (type == AppContextType.UWPCoreWindow || type == AppContextType.UWPSwapChainPanel)
             {
-                return new GameWindowUWPSwapChainPanel();
+                return new GameWindowUWP();
             }
             else
             {

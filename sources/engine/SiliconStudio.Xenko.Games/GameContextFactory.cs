@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Games
             type = AppContextType.Desktop;
     #endif
 #elif SILICONSTUDIO_PLATFORM_UWP
-            type = AppContextType.UWPSwapChain; // Can change later to CoreWindow
+            type = AppContextType.UWPSwapChainPanel; // Can change later to CoreWindow
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             type = AppContextType.Android;
 #elif SILICONSTUDIO_PLATFORM_IOS
@@ -64,9 +64,11 @@ namespace SiliconStudio.Xenko.Games
                 case AppContextType.DesktopWpf:
                     res = NewGameContextWpf();
                     break;
-                case AppContextType.UWPSwapChain:
+                case AppContextType.UWPSwapChainPanel:
+                    res = NewGameContextUWPSwapChainPanel();
+                    break;
                 case AppContextType.UWPCoreWindow:
-                    res = NewGameContextUWP();
+                    res = NewGameContextUWPCoreWindow();
                     break;
                 case AppContextType.iOS:
                     res = NewGameContextiOS();
@@ -118,10 +120,19 @@ namespace SiliconStudio.Xenko.Games
 #endif
         }
 
-        public static GameContext NewGameContextUWP()
+        public static GameContext NewGameContextUWPSwapChainPanel()
         {
 #if SILICONSTUDIO_PLATFORM_UWP
-            return new GameContextUWP(null);
+            return new GameContextUWPSwapChainPanel(null);
+#else
+            return null;
+#endif
+        }
+
+        public static GameContext NewGameContextUWPCoreWindow()
+        {
+#if SILICONSTUDIO_PLATFORM_UWP
+            return new GameContextUWPCoreWindow(null);
 #else
             return null;
 #endif
