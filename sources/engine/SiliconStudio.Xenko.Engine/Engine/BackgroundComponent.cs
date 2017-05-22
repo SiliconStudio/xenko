@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>The intensity of the background color</userdoc>
         [DataMember(20)]
         [DefaultValue(1.0f)]
-        [DataMemberRange(0.0, 100.0, 0.01f, 1.0f)]
+        [DataMemberRange(0.0, 100.0, 0.01f, 1.0f, 2)]
         public float Intensity { get; set; }
 
         /// <summary>

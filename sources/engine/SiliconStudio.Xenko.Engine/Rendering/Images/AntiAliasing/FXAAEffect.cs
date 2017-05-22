@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [DataContract("FXAAEffect")]
     public class FXAAEffect : ImageEffectShader, IScreenSpaceAntiAliasingEffect
     {
-        private const int DefaultQuality = 15;
+        private const int DefaultQuality = 3;
         internal static readonly PermutationParameterKey<int> GreenAsLumaKey = ParameterKeys.NewPermutation(0);
         internal static readonly PermutationParameterKey<int> QualityKey = ParameterKeys.NewPermutation(15);
 
@@ -23,25 +23,32 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         public FXAAEffect() : this("FXAAShaderEffect")
         {
-            Quality = DefaultQuality;
             InputLuminanceInAlpha = true;
         }
 
         /// <summary>
-        /// Animates the film grain.
+        /// The dithering type used (directly related to rendering style).
         /// </summary>
-        /// <userdoc>The quality of the anti-alising filter.</userdoc>
+        /// <userdoc>The dithering type used (directly related to rendering style).</userdoc>
         [DataMember(10)]
+        [DefaultValue(DitherType.Low)]
+        public DitherType Dither { get; set; } = DitherType.Low;
+
+        /// <summary>
+        /// The quality of the FXAA (directly related to performance). From 0 to 5 with <see cref="DitherType.Medium"/>, from 0 to 9 with <see cref="DitherType.Low"/> and unavailable (should be 9) with <see cref="DitherType.None"/>.
+        /// </summary>
+        /// <userdoc>The quality of the FXAA (directly related to performance). From 0 to 5 with Medium dither, from 0 to 9 with Low dither and unavailable (should be 9) with no dither.</userdoc>
+        [DataMember(20)]
         [DefaultValue(DefaultQuality)]
-        [DataMemberRange(10, 39, 1, 5, 0)]
-        public int Quality { get; set; }
+        [DataMemberRange(0, 9, 1, 2, 0)]
+        public int Quality { get; set; } = DefaultQuality;
 
         /// <summary>
         /// Gets or sets a value indicating whether the luminance will be retrieved from the alpha channel of the input color. Otherwise, the green component of the input color is used as a luminance.
         /// </summary>
         /// <value><c>true</c> the luminance will be retrieved from the alpha channel of the input color. Otherwise, the green component of the input color is used as a luminance.</value>
         /// <userdoc>The luminance will be retrieved from the alpha channel of the input color. Otherwise, the green component of the input color is used as an approximation to the luminance.</userdoc>
-        [DataMember(20)]
+        [DataMember(30)]
         [DefaultValue(true)]
         [Display("Input luminance from alpha?")]
         public bool InputLuminanceInAlpha { get; set; }
@@ -56,11 +63,45 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (antialiasShaderName == null) throw new ArgumentNullException("antialiasShaderName");
         }
 
+        public static (int, int) GetQualityRange(DitherType dither)
+        {
+            // Returns valid ranges for FXAA_QUALITY__PRESET (as in FXAAShader.xksl)
+            switch (dither)
+            {
+                case DitherType.Medium:
+                    return (0, 5);
+                case DitherType.Low:
+                    return (0, 9);
+                case DitherType.None:
+                    return (9, 9);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(Dither));
+            }
+        }
+
         protected override void UpdateParameters()
         {
             base.UpdateParameters();
             Parameters.Set(GreenAsLumaKey, InputLuminanceInAlpha ? 0 : 1);
-            Parameters.Set(QualityKey, Quality);
+            var (minQuality, maxQuality) = GetQualityRange(Dither);
+            if (Quality < minQuality || Quality > maxQuality)
+                throw new ArgumentOutOfRangeException(nameof(Quality), $"Quality should be between {minQuality} and {maxQuality} for dither level {Dither}");
+            Parameters.Set(QualityKey, (int)Dither + Quality);
+        }
+
+        /// <summary>
+        /// The dithering level used by FXAA.
+        /// </summary>
+        public enum DitherType
+        {
+            [Display("Medium (Fastest)")]
+            Medium = 10,
+
+            [Display("Low (Normal)")]
+            Low = 20,
+
+            [Display("None (Slowest)")]
+            None = 30,
         }
     }
 }

@@ -248,7 +248,7 @@ namespace SiliconStudio.Xenko.Engine
         /// If 0 the sound will be omnidirectional, 1 fully directional
         /// </userdoc>
         [DataMember(30)]
-        [DataMemberRange(0.0, 1.0, 0.1, 0.2)]
+        [DataMemberRange(0.0, 1.0, 0.1, 0.2, 3)]
         public float DirectionalFactor { get; set; }
 
         /// <summary>

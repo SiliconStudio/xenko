@@ -41,7 +41,7 @@ Ask for help or report issues:
 1. [Git](https://git-scm.com/downloads) with Git LFS option, or install [Git LFS](https://git-lfs.github.com/) separately.
 2. [Visual Studio 2017](https://www.visualstudio.com/downloads/) with the following workloads:
   * .NET desktop development
-  * Desktop development with C++ (with C++/CLI and VC++ 2015.3 v140 toolset optional components)
+  * Desktop development with C++ (with "C++/CLI" and "Windows 8.1 SDK and UCRT SDK" optional components)
 3. [FBX SDK 2017.0.1 VS2015](http://usa.autodesk.com/adsk/servlet/pc/item?siteID=123112&id=25408427)
 
 ### Build Xenko

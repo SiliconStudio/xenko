@@ -21,7 +21,6 @@ namespace SiliconStudio.Xenko.Rendering.RenderTextures
         /// The width in pixel.
         /// </summary>
         [DefaultValue(512)]
-        [DataMemberRange(0, 10000, 1, 10)]
         [Display(null, "Size")]
         public int Width { get; set; } = 512;
 
@@ -29,7 +28,6 @@ namespace SiliconStudio.Xenko.Rendering.RenderTextures
         /// The height in pixel.
         /// </summary>
         [DefaultValue(512)]
-        [DataMemberRange(0, 10000, 1, 10)]
         [Display(null, "Size")]
         public int Height { get; set; } = 512;
 

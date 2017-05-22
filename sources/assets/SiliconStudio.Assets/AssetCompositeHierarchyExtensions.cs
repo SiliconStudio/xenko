@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -19,14 +20,15 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <typeparam name="TAssetPartDesign">The type used for the design information of a part.</typeparam>
         /// <typeparam name="TAssetPart">The type used for the actual parts,</typeparam>
-        /// <param name="this">This hierarchy.</param>
+        /// <param name="asset">This hierarchy.</param>
         /// <returns>A sequence containing the root design parts of this hierarchy.</returns>
         [ItemNotNull, NotNull, Pure]
-        public static IEnumerable<TAssetPartDesign> EnumerateRootPartDesigns<TAssetPartDesign, TAssetPart>([NotNull] this AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> @this)
+        public static IEnumerable<TAssetPartDesign> EnumerateRootPartDesigns<TAssetPartDesign, TAssetPart>([NotNull] this AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> asset)
             where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
             where TAssetPart : class, IIdentifiable
         {
-            return @this.RootParts.Select(x => @this.Parts[x.Id]);
+            if (asset == null) throw new ArgumentNullException(nameof(asset));
+            return asset.RootParts.Select(x => asset.Parts[x.Id]);
         }
 
         /// <summary>
@@ -37,15 +39,19 @@ namespace SiliconStudio.Assets
         /// </remarks>
         /// <typeparam name="TAssetPartDesign">The type used for the design information of a part.</typeparam>
         /// <typeparam name="TAssetPart">The type used for the actual parts,</typeparam>
-        /// <param name="this">This hierarchy.</param>
+        /// <param name="asset">This hierarchy.</param>
         /// <param name="other">The other hierarchy which parts will added to this hierarchy.</param>
-        public static void MergeInto<TAssetPartDesign, TAssetPart>([NotNull] this AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> @this,
+        public static void MergeInto<TAssetPartDesign, TAssetPart>([NotNull] this AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> asset,
             [NotNull] AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> other)
             where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
             where TAssetPart : class, IIdentifiable
         {
-            @this.RootParts.AddRange(other.RootParts);
-            @this.Parts.AddRange(other.Parts);
+            if (asset == null) throw new ArgumentNullException(nameof(asset));
+            asset.RootParts.AddRange(other.RootParts);
+            foreach (var part in other.Parts)
+            {
+                asset.Parts.Add(part.Value);
+            }
         }
     }
 }

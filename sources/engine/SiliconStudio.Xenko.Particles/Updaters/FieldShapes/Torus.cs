@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
         /// Small radius of the torus, given as a relative to the big radius (percentage between 0 and 1)
         /// </userdoc>
         [DataMember(20)]
-        [DataMemberRange(0, 1, 0.001, 0.1)]
+        [DataMemberRange(0, 1, 0.01, 0.1, 3)]
         [Display("Small radius")]
         public float SmallRadius
         {
