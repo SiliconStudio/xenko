@@ -243,7 +243,7 @@ namespace SiliconStudio.Xenko.Input
             var windowHandle = Game.Window.NativeWindow;
             switch (windowHandle.Context)
             {
-                case AppContextType.UWPSwapChain:
+                case AppContextType.UWPSwapChainPanel:
                     InitializeFromFrameworkElement((FrameworkElement)windowHandle.NativeWindow);
                     break;
 
@@ -512,7 +512,7 @@ namespace SiliconStudio.Xenko.Input
         private bool HandleKey(VirtualKey virtualKey, CorePhysicalKeyStatus keyStatus, InputEventType type)
         {
             // If our EditText TextBox is active, let's ignore all key events
-            if (Game.Context is GameContextUWP && ((GameContextUWP)Game.Context).Control is SwapChainControlUWP && ((GameContextUWP)Game.Context).EditTextBox.Parent != null)
+            if ((Game.Context as GameContextUWPSwapChainPanel)?.EditTextBox.Parent != null)
             {
                 return false;
             }

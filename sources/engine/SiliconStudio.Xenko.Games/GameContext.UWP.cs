@@ -27,70 +27,26 @@ using Windows.UI.Xaml.Controls;
 
 namespace SiliconStudio.Xenko.Games
 {
-    /// <summary>
-    /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="Control"/>.
-    /// </summary>
-    public class GameContextUWP : GameContextWindows<IGameControlUWP>
+    public class GameContextUWPSwapChainPanel : GameContextWindows<SwapChainPanel>
     {
         // Used internally by systems such as UI to capture input in a TextBox
-        internal TextBox EditTextBox = null;
+        internal TextBox EditTextBox = new TextBox();
 
         /// <inheritDoc/>
-        public GameContextUWP(IGameControlUWP control, int requestedWidth = 0, int requestedHeight = 0)
-            : base (control, requestedWidth, requestedHeight)
+        public GameContextUWPSwapChainPanel(SwapChainPanel control, int requestedWidth = 0, int requestedHeight = 0)
+            : base (control ?? new SwapChainPanel(), requestedWidth, requestedHeight)
         {
-            if (control is SwapChainControlUWP)
-            {
-                EditTextBox = new TextBox();
-                ContextType = AppContextType.UWPSwapChain;
-            }
-            else if (control is CoreWindowControlUWP)
-            {
-                ContextType = AppContextType.UWPCoreWindow;
-            }
-            else
-            {
-                throw  new ArgumentException($"{nameof(control)} can only be CoreWindowControlUWP or SwapChainControlUWP!");
-            }
+            ContextType = AppContextType.UWPSwapChainPanel;
         }
     }
 
-    public interface IGameControlUWP
+    public class GameContextUWPCoreWindow : GameContextWindows<CoreWindow>
     {
-        
-    }
-
-    public class CoreWindowControlUWP : IGameControlUWP
-    {
-        private readonly CoreWindow coreWindow;
-
-        public CoreWindow CoreWindow => coreWindow;
-
-        public CoreWindowControlUWP()
+        /// <inheritDoc/>
+        public GameContextUWPCoreWindow(CoreWindow control, int requestedWidth = 0, int requestedHeight = 0)
+            : base(control ?? CoreWindow.GetForCurrentThread(), requestedWidth, requestedHeight)
         {
-            coreWindow = CoreWindow.GetForCurrentThread();
-        }
-
-        public CoreWindowControlUWP(CoreWindow coreWindow)
-        {
-            this.coreWindow = coreWindow;
-        }
-    }
-
-    public class SwapChainControlUWP : IGameControlUWP
-    {
-        private readonly SwapChainPanel swapChainPanel;
-
-        public SwapChainPanel SwapChainPanel => swapChainPanel;
-
-        public SwapChainControlUWP()
-        {
-            swapChainPanel = new SwapChainPanel();
-        }
-
-        public SwapChainControlUWP(SwapChainPanel swapChainPanel)
-        {
-            this.swapChainPanel = swapChainPanel;
+            ContextType = AppContextType.UWPCoreWindow;
         }
     }
 }

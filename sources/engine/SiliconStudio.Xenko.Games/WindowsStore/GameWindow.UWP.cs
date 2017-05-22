@@ -39,9 +39,9 @@ using Windows.UI.Xaml.Media;
 namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
-    /// An abstract window.
+    /// <see cref="GameWindow"/> implementation for UWP. Handles both <see cref="SwapChainPanel"/> and <see cref="CoreWindow"/>.
     /// </summary>
-    internal class GameWindowUWPSwapChainPanel : GameWindow<IGameControlUWP>
+    internal class GameWindowUWP : GameWindow
     {
 #region Fields
         private const DisplayOrientations PortraitOrientations = DisplayOrientations.Portrait | DisplayOrientations.PortraitFlipped;
@@ -51,7 +51,6 @@ namespace SiliconStudio.Xenko.Games
         private int currentWidth;
         private int currentHeight;
 
-        private IGameControlUWP coreControl;
         private SwapChainPanel swapChainPanel = null;
         private CoreWindow coreWindow = null;
 
@@ -65,12 +64,6 @@ namespace SiliconStudio.Xenko.Games
 #endregion
 
 #region Public Properties
-
-        public GameWindowUWPSwapChainPanel()
-        {
-            // Assing a default core window. It can be overwritten later if we initialize with the CoreWindowControlUWP control
-            coreWindow = CoreWindow.GetForCurrentThread();
-        } 
 
         public override bool AllowUserResizing
         {
@@ -100,25 +93,13 @@ namespace SiliconStudio.Xenko.Games
                     return new Rectangle((int)(coreWindow.Bounds.X), (int)(coreWindow.Bounds.Y), (int)(coreWindow.Bounds.Width), (int)(coreWindow.Bounds.Height));
                 }
 
-                throw new ArgumentException($"{nameof(GameWindow)} should have either {nameof(SwapChainPanel)}(via {nameof(SwapChainControlUWP)}) or {nameof(CoreWindow)} (via {nameof(CoreWindowControlUWP)})!");
+                throw new ArgumentException($"{nameof(GameWindow)} should have either a {nameof(SwapChainPanel)} or a {nameof(CoreWindow)}");
             }
         }
 
-        public override DisplayOrientation CurrentOrientation
-        {
-            get
-            {
-                return DisplayOrientation.Default;
-            }
-        }
+        public override DisplayOrientation CurrentOrientation => DisplayOrientation.Default;
 
-        public override bool IsMinimized
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool IsMinimized => false;
 
         private bool isMouseVisible;
         private CoreCursor cursor;
@@ -211,25 +192,27 @@ namespace SiliconStudio.Xenko.Games
 
 #region Methods
 
-        protected override void Initialize(GameContext<IGameControlUWP> windowContext)
+        protected internal override void Initialize(GameContext windowContext)
         {
-            Debug.Assert(windowContext is GameContextUWP, "By design only one descendant of GameContext<SwapChainPanel>");
+            swapChainPanel = (windowContext as GameContextUWPSwapChainPanel)?.Control;
+            coreWindow = (windowContext as GameContextUWPCoreWindow)?.Control;
 
-            var swapChainControl = windowContext.Control as SwapChainControlUWP;
-            var coreWindowControl = windowContext.Control as CoreWindowControlUWP;
-            if (swapChainControl != null)
+            if (swapChainPanel != null)
             {
                 resizeTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
                 resizeTimer.Tick += ResizeTimerOnTick;
 
-                swapChainPanel = swapChainControl.SwapChainPanel;
-                windowHandle = new WindowHandle(AppContextType.UWPSwapChain, swapChainPanel, IntPtr.Zero);
+                coreWindow = CoreWindow.GetForCurrentThread();
+                windowHandle = new WindowHandle(AppContextType.UWPSwapChainPanel, swapChainPanel, IntPtr.Zero);
             }
-            else if (coreWindowControl != null)
+            else if (coreWindow != null)
             {
-                coreWindow = coreWindowControl.CoreWindow;
                 coreWindow.SizeChanged += ResizeOnWindowChange;
                 windowHandle = new WindowHandle(AppContextType.UWPCoreWindow, coreWindow, IntPtr.Zero);
+            }
+            else
+            {
+                Debug.Assert(swapChainPanel == null && coreWindow == null, "GameContext was neither UWPSwapChainPanel nor UWPCoreWindow");
             }
 
             applicationView = ApplicationView.GetForCurrentView();            
