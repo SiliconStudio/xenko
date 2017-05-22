@@ -1,29 +1,31 @@
 !SceneAsset
 Id: 413fc3cf-56da-4cfd-ba3f-370f6a1f4b87
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - 121144a7-d914-42cf-851e-3aac370c336f
-        - 9e0edc07-f97f-48ed-b363-5d22f2865f9d
-        - 40b50304-4226-47bf-8ea6-2fa899574180
-        - 184df18b-afc8-4c9a-b0c6-ae108ba4ddd7
-        - 97ddc423-ce5d-45a8-a37d-ac0e53f9678e
-        - 422689ef-7d4f-4d01-9a99-a22584ae849f
-        - 5361ab21-8647-4c2e-8d17-df0fba6c2c00
-        - 5baf917b-3c1c-4dbf-ab58-d251b33d2f6d
-        - 3d2744bf-a0f7-4185-b3f1-dbe10dc66af4
-        - bfc01958-63e8-4d7b-a457-fe144ba678fa
-        - d6126c1f-087c-4cbe-892c-f28f634ee998
-        - 90a7660f-37e2-45c0-be72-474c2b0a9021
-        - 5b1812d9-0604-4511-a106-16324294502b
-        - 36819535-1828-4623-b229-22987ad0d5a0
-        - eab78ae2-ab62-439c-811b-bc51957bf109
-        - 8967ed06-9b29-45d0-a52b-a3020bb70355
-        - c719333c-2c49-4db4-ae4b-7b1dddaeb6eb
-        - f72ac81c-ef07-4575-9a6d-6e16c676225c
+    RootParts:
+        - ref!! 121144a7-d914-42cf-851e-3aac370c336f
+        - ref!! 9e0edc07-f97f-48ed-b363-5d22f2865f9d
+        - ref!! 40b50304-4226-47bf-8ea6-2fa899574180
+        - ref!! 184df18b-afc8-4c9a-b0c6-ae108ba4ddd7
+        - ref!! 97ddc423-ce5d-45a8-a37d-ac0e53f9678e
+        - ref!! 422689ef-7d4f-4d01-9a99-a22584ae849f
+        - ref!! 5361ab21-8647-4c2e-8d17-df0fba6c2c00
+        - ref!! 5baf917b-3c1c-4dbf-ab58-d251b33d2f6d
+        - ref!! 3d2744bf-a0f7-4185-b3f1-dbe10dc66af4
+        - ref!! 3c313f44-0d41-42ec-9eb2-e99c66ad1b19
+        - ref!! 8fc34074-cb2d-4b34-9a46-1046511a1405
+        - ref!! bfc01958-63e8-4d7b-a457-fe144ba678fa
+        - ref!! d6126c1f-087c-4cbe-892c-f28f634ee998
+        - ref!! 90a7660f-37e2-45c0-be72-474c2b0a9021
+        - ref!! 5b1812d9-0604-4511-a106-16324294502b
+        - ref!! 36819535-1828-4623-b229-22987ad0d5a0
+        - ref!! eab78ae2-ab62-439c-811b-bc51957bf109
+        - ref!! 8967ed06-9b29-45d0-a52b-a3020bb70355
+        - ref!! c719333c-2c49-4db4-ae4b-7b1dddaeb6eb
+        - ref!! f72ac81c-ef07-4575-9a6d-6e16c676225c
     Parts:
         -   Entity:
                 Id: 121144a7-d914-42cf-851e-3aac370c336f
@@ -75,6 +77,27 @@ Hierarchy:
                                 CascadeCount: OneCascade
                                 DepthRange: {}
                                 PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic {}
+                                BiasParameters: {}
+        -   Entity:
+                Id: 3c313f44-0d41-42ec-9eb2-e99c66ad1b19
+                Name: PointLightShadowCubeMap
+                Components:
+                    93cb20a0f6e457499b9d150db41ed4bf: !TransformComponent
+                        Id: b1e2ed5e-ec96-47b5-b5c5-662d158d0079
+                        Position: {X: -1.90864909, Y: 0.2006323, Z: 3.19424534}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
+                    8551faf0eafc944d85ac72edfffab013: !LightComponent
+                        Id: 50d709e3-d352-42f4-a1aa-1325ad0d67e4
+                        Enabled: false
+                        Type: !LightPoint
+                            Color: !ColorRgbProvider
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Radius: 2.0
+                            Shadow:
+                                Enabled: true
+                                Size: Small
                                 BiasParameters: {}
         -   Entity:
                 Id: 3d2744bf-a0f7-4185-b3f1-dbe10dc66af4
@@ -138,7 +161,7 @@ Hierarchy:
                         Id: cd6898f8-c09f-4361-ac6c-2ab28aef9437
                         Name: null
                         Projection: Perspective
-                        Slot: 13aa7ab5-25e6-4d23-912b-299544a49a65
+                        Slot: ff905194-0c14-428b-b341-ef7bf51cb6e5
         -   Entity:
                 Id: 5b1812d9-0604-4511-a106-16324294502b
                 Name: DirectionalLightShadowOneCascade
@@ -203,6 +226,28 @@ Hierarchy:
                                 DepthRange: {}
                                 PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic {}
                                 BiasParameters: {}
+        -   Entity:
+                Id: 8fc34074-cb2d-4b34-9a46-1046511a1405
+                Name: PointLightShadowParaboloid
+                Components:
+                    93cb20a0f6e457499b9d150db41ed4bf: !TransformComponent
+                        Id: 6cb5a25e-f121-4711-8d18-a8a48fe0bfe1
+                        Position: {X: -1.90864909, Y: 0.2006323, Z: 3.19424534}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
+                    8551faf0eafc944d85ac72edfffab013: !LightComponent
+                        Id: e15865e9-a79c-4a58-93f7-8ff2afe0cd46
+                        Enabled: false
+                        Type: !LightPoint
+                            Color: !ColorRgbProvider
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Radius: 2.0
+                            Shadow:
+                                Enabled: true
+                                Size: Small
+                                BiasParameters: {}
+                                Type: DualParaboloid
         -   Entity:
                 Id: 90a7660f-37e2-45c0-be72-474c2b0a9021
                 Name: DirectionalLight
