@@ -1,31 +1,31 @@
 !SceneAsset
 Id: f6bccb59-7642-46d9-9bf2-e1ada940d20d
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - 163fe69c-57fb-43e8-82cb-c5e6ec95c450
-        - 6581fcc3-7d6c-4fb6-8d64-08ccb25be862
-        - d14bba72-c4f0-4245-b8dd-99758a1bda46
-        - 7a3b7ec6-a5a4-4245-a139-2c4a51db90d8
-        - b024e761-901c-4d9f-bc85-2561afd9a296
-        - 0a243ac2-7c0e-42ef-932f-1e2080756821
-        - 2ec79281-cf5a-4b8d-961e-4e070c8f43a8
-        - 44c5bc97-f618-4988-9e92-05b892f095a6
-        - fce550a1-75be-42db-b233-24f6c9e3bd08
-        - 8a659fa3-54e3-432e-8817-f037c28b10d6
-        - d0f0fbe0-2c10-40d1-a59e-2313ef11a862
-        - 41a04b64-ab17-41ba-afe6-cc3a784982a0
-        - 6cea5bcd-c61e-4eaf-8618-a2cd5d68a600
-        - 5be06945-0111-4973-b75c-48db403e7675
-        - 1a82230f-e174-4926-bfc6-79576fda24ee
-        - 6df18ec9-95cc-4a39-967e-dd42f9026345
-        - 0bda35da-d45f-4011-9973-ebd5cef981fb
-        - b64257c8-cd59-43bd-a709-74a96515ae2b
-        - ddde1038-3405-4c04-838e-1cba39219169
-        - e899ccad-7314-43fd-8291-777099fd4dfa
+    RootParts:
+        - ref!! 163fe69c-57fb-43e8-82cb-c5e6ec95c450
+        - ref!! 6581fcc3-7d6c-4fb6-8d64-08ccb25be862
+        - ref!! d14bba72-c4f0-4245-b8dd-99758a1bda46
+        - ref!! 7a3b7ec6-a5a4-4245-a139-2c4a51db90d8
+        - ref!! b024e761-901c-4d9f-bc85-2561afd9a296
+        - ref!! 0a243ac2-7c0e-42ef-932f-1e2080756821
+        - ref!! 2ec79281-cf5a-4b8d-961e-4e070c8f43a8
+        - ref!! 44c5bc97-f618-4988-9e92-05b892f095a6
+        - ref!! fce550a1-75be-42db-b233-24f6c9e3bd08
+        - ref!! 8a659fa3-54e3-432e-8817-f037c28b10d6
+        - ref!! d0f0fbe0-2c10-40d1-a59e-2313ef11a862
+        - ref!! 41a04b64-ab17-41ba-afe6-cc3a784982a0
+        - ref!! 6cea5bcd-c61e-4eaf-8618-a2cd5d68a600
+        - ref!! 5be06945-0111-4973-b75c-48db403e7675
+        - ref!! 1a82230f-e174-4926-bfc6-79576fda24ee
+        - ref!! 6df18ec9-95cc-4a39-967e-dd42f9026345
+        - ref!! 0bda35da-d45f-4011-9973-ebd5cef981fb
+        - ref!! b64257c8-cd59-43bd-a709-74a96515ae2b
+        - ref!! ddde1038-3405-4c04-838e-1cba39219169
+        - ref!! e899ccad-7314-43fd-8291-777099fd4dfa
     Parts:
         -   Entity:
                 Id: 0a243ac2-7c0e-42ef-932f-1e2080756821
@@ -231,6 +231,7 @@ Hierarchy:
                         Id: 780b7663-a294-4e8e-8c09-52c6bb41d543
                         DensityFactor: 0.04
                         SampleCount: 16
+                        SeparateBoundingVolumes: true
         -   Entity:
                 Id: 6cea5bcd-c61e-4eaf-8618-a2cd5d68a600
                 Name: Cube (12)
