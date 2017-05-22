@@ -65,6 +65,8 @@ namespace SiliconStudio.Core.Diagnostics
         private static bool enableAll;
         private static int profileId;
 
+        public static long GpuClockFrequency;
+
         /// <summary>
         /// Enables all profilers.
         /// </summary>
