@@ -40,12 +40,17 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Retrieves timestamp from GPU and sends the results to Profiler.
         /// </summary>
-        public void SubmitResults()
+        public void SubmitResults(bool fetchResults)
         {
-            timestampQueryPool.GetData(commandList, ref queryResults);
-            
+            if (fetchResults)
+            {
+                timestampQueryPool.GetData(commandList, ref queryResults);
+            }
+
             foreach (QueryEvent queryEvent in queryEvents)
             {
+                queryEvent.ProfilingState.SetAttribute("isGpuQuery", true);
+
                 queryEvent.ProfilingState.Begin(queryResults[queryEvent.BeginQuery.Value.InternalIndex]);
                 queryEvent.ProfilingState.End(queryResults[queryEvent.EndQuery.Value.InternalIndex]);
             }
@@ -103,6 +108,10 @@ namespace SiliconStudio.Xenko.Graphics
             if (latestQueryEvent.EndQuery.HasValue)
             {
                 commandList.WriteTimestamp(timestampQueryPool, latestQueryEvent.EndQuery.Value);
+            }
+            else
+            {
+                return;
             }
 
             if (commandList.GraphicsDevice.IsDebugMode)
