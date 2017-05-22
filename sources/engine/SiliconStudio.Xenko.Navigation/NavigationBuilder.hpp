@@ -3,7 +3,6 @@
 
 #pragma once
 #include "../../../deps/Recast/include/Recast.h"
-#include "../../../deps/NativePath/TINYSTL/vector.h"
 
 class NavigationBuilder
 {
@@ -16,8 +15,6 @@ class NavigationBuilder
 	BuildSettings m_buildSettings;
 	rcContext* m_context;
 
-	// Calculated navmesh vertices
-	tinystl::vector<Vector3> m_navmeshVertices;
 	// Detour returned navigation mesh data
 	// free with dtFree()
 	uint8_t* m_navmeshData = nullptr;
@@ -32,6 +29,5 @@ public:
 	void SetSettings(BuildSettings buildSettings);
 
 private:
-	void GenerateNavMeshVertices();
 	bool CreateDetourMesh();
 };

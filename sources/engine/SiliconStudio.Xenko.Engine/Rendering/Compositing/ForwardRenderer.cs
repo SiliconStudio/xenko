@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
@@ -61,6 +62,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// <summary>
         /// The shadow map render stages for shadow casters. No shadow rendering will happen if null.
         /// </summary>
+        [MemberCollection(NotNullItems = true)]
         public List<RenderStage> ShadowMapRenderStages { get; } = new List<RenderStage>();
 
         /// <summary>
