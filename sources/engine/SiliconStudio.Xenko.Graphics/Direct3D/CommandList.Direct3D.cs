@@ -44,8 +44,6 @@ namespace SiliconStudio.Xenko.Graphics
             nativeDeviceContext1 = new SharpDX.Direct3D11.DeviceContext1(nativeDeviceContext.NativePointer);
             nativeDeviceProfiler = device.IsDebugMode ? SharpDX.ComObject.QueryInterfaceOrNull<SharpDX.Direct3D11.UserDefinedAnnotation>(nativeDeviceContext.NativePointer) : null;
 
-            gpuQueryProfiler = new GpuQueryProfiler(this);
-
             InitializeStages();
 
             ClearState();
@@ -483,21 +481,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Submits a GPU timestamp query.
         /// </summary>
-        /// <param name="queryPool">The <see cref="QueryPool"/> owning "query".</param>
-        /// <param name="query">The <see cref="Query"/>.</param>
-        public void WriteTimestamp(QueryPool queryPool, Query query)
+        /// <param name="queryPool">The <see cref="QueryPool"/> owning the query.</param>
+        /// <param name="index">The query index.</param>
+        public void WriteTimestamp(QueryPool queryPool, int index)
         {
-            nativeDeviceContext.End(queryPool.NativeObjects[query.InternalIndex]);    
-        }
-
-        public void BeginQuery(QueryPool queryPool, Query query)
-        {
-            nativeDeviceContext.Begin(queryPool.NativeObjects[query.InternalIndex]);    
-        }
-
-        public void EndQuery(QueryPool queryPool, Query query)
-        {
-            nativeDeviceContext.End(queryPool.NativeObjects[query.InternalIndex]);
+            nativeDeviceContext.End(queryPool.NativeQueries[index]);    
         }
 
         /// <summary>
@@ -505,23 +493,17 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="profileColor">Color of the profile.</param>
         /// <param name="name">The name.</param>
-        public unsafe void BeginDebugEvent(Color4 profileColor, string name)
+        public void BeginProfile(Color4 profileColor, string name)
         {
-            if (nativeDeviceProfiler != null)
-            {
-                nativeDeviceProfiler.BeginEvent(name);
-            }
+            nativeDeviceProfiler?.BeginEvent(name);
         }
 
         /// <summary>
         /// Ends debug event.
         /// </summary>
-        public void EndDebugEvent()
+        public void EndProfile()
         {
-            if (nativeDeviceProfiler != null)
-            {
-                nativeDeviceProfiler.EndEvent();
-            }
+            nativeDeviceProfiler?.EndEvent();
         }
 
         /// <summary>

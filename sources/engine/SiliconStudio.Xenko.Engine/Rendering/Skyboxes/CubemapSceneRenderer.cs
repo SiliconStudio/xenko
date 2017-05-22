@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                         throw new ArgumentOutOfRangeException();
                 }
 
-                DrawContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, new ProfilingKey($"Face {(CubeMapFace)face}"));
+                DrawContext.CommandList.BeginProfile(Color.Red, $"Face {(CubeMapFace)face}");
 
                 // Draw
                 context.GameSystems.Draw(context.DrawTime);
@@ -97,12 +97,9 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 // Copy to texture cube
                 DrawContext.CommandList.CopyRegion(DrawContext.CommandList.RenderTarget, 0, null, cubeTexture, face);
 
-                DrawContext.CommandList.GpuQueryProfiler.EndProfile();
+                DrawContext.CommandList.EndProfile();
             }
         }
-
-        private static readonly ProfilingKey CubemapSceneRendererProfilingKey = new ProfilingKey("CubemapSceneRenderer");
-        private static readonly ProfilingKey SpecularProbeProfilingKey = new ProfilingKey(CubemapSceneRendererProfilingKey, "SpecularProbe");
 
         public static Texture GenerateCubemap(ISceneRendererContext context, Vector3 position, int textureSize)
         {
@@ -114,11 +111,11 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 using (cubemapRenderer.DrawContext.PushRenderTargetsAndRestore())
                 {
                     // Render specular probe
-                    context.GraphicsContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, SpecularProbeProfilingKey);
+                    context.GraphicsContext.CommandList.BeginProfile(Color.Red, "SpecularProbe");
 
                     cubemapRenderer.Draw(position, cubeTexture);
 
-                    context.GraphicsContext.CommandList.GpuQueryProfiler.EndProfile();
+                    context.GraphicsContext.CommandList.EndProfile();
                 }
 
                 return cubeTexture;

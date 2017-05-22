@@ -3,6 +3,7 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using SharpDX.Direct3D12;
 using SharpDX.Mathematics.Interop;
 using SiliconStudio.Core.Mathematics;
@@ -223,20 +224,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             scissorsDirty = false;
-        }
-
-        /// <summary>
-        ///     Unsets the read/write buffers.
-        /// </summary>
-        public void UnsetReadWriteBuffers()
-        {
-        }
-
-        /// <summary>
-        /// Unsets the render targets.
-        /// </summary>
-        public void UnsetRenderTargets()
-        {
         }
 
         /// <summary>
@@ -554,14 +541,31 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="profileColor">Color of the profile.</param>
         /// <param name="name">The name.</param>
-        public unsafe void BeginProfile(Color4 profileColor, string name)
+        public void BeginProfile(Color4 profileColor, string name)
         {
+            //currentCommandList.NativeCommandList.BeginEvent();
         }
 
         /// <summary>
         /// Ends profiling.
         /// </summary>
         public void EndProfile()
+        {
+            //currentCommandList.NativeCommandList.EndEvent();
+        }
+
+        /// <summary>
+        /// Submit a timestamp query.
+        /// </summary>
+        /// <param name="queryPool">The QueryPool owning the query.</param>
+        /// <param name="index">The query index.</param>
+        public void WriteTimestamp(QueryPool queryPool, int index)
+        {
+            currentCommandList.NativeCommandList.EndQuery(queryPool.NativeQueryHeap, SharpDX.Direct3D12.QueryType.Timestamp, index);
+            queryPool.PendingValue = queryPool.CompletedValue + 1;
+        }
+
+        public void ResetQueryPool(QueryPool queryPool)
         {
         }
 
