@@ -100,7 +100,7 @@ namespace SiliconStudio.Assets.Serializers
                             if (throwOnDuplicateIds)
                                 throw new InvalidOperationException(message);
                         }
-                        ReferenceableObjects.Add(identifiable.Id, identifiable);
+                        ReferenceableObjects[identifiable.Id] = identifiable;
                     }
                 }
                 base.VisitObject(obj, descriptor, visitMembers);
