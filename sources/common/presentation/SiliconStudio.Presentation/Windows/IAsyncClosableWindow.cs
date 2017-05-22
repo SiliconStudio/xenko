@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Threading.Tasks;
 
 namespace SiliconStudio.Presentation.Windows
 {
@@ -8,9 +10,12 @@ namespace SiliconStudio.Presentation.Windows
     public interface IAsyncClosableWindow
     {
         /// <summary>
-        /// Tries to close the window.
+        /// Attempts to close the window.
         /// </summary>
-        /// <returns>A task that completes either when the window is closed, or when the request to close has been cancelled. The result of the task indicates if the window has been closed.</returns>
+        /// <returns>
+        /// A task that completes either when the window is closed, or when the request to close has been cancelled.
+        /// The result of the task indicates whether the window has been closed.
+        /// </returns>
         Task<bool> TryClose();
     }
 }

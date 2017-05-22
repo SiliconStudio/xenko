@@ -95,7 +95,7 @@ namespace SiliconStudio.Presentation.Dialogs
             return DialogHelper.BlockingCheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, checkboxMessage, buttons, image);
         }
 
-        public async void CloseMainWindow(Action onClosed)
+        public async Task CloseMainWindow(Action onClosed)
         {
             var window = Application.Current.MainWindow;
             if (window != null)
@@ -123,6 +123,7 @@ namespace SiliconStudio.Presentation.Dialogs
 
         private void MainWindowClosing(object sender, CancelEventArgs e)
         {
+            ((Window)sender).Closing -= MainWindowClosing;
             if (e.Cancel)
             {
                 ((Window)sender).Closed -= MainWindowClosed;
@@ -131,8 +132,8 @@ namespace SiliconStudio.Presentation.Dialogs
 
         private void MainWindowClosed(object sender, EventArgs e)
         {
-            onClosedAction?.Invoke();
             ((Window)sender).Closed -= MainWindowClosed;
+            onClosedAction?.Invoke();
         }
     }
 }
