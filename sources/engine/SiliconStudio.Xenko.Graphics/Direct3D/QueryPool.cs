@@ -184,7 +184,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets GPU frequency, using D3D11 disjoint query.
         /// </summary>
         /// <returns></returns>
-        internal double GetGpuFrequency(CommandList commandList)
+        internal long GetGpuFrequency(CommandList commandList)
         {
             return disjointQueryResults[currentDisjointQueryReadIndex];
         }

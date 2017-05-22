@@ -50,7 +50,8 @@ namespace SiliconStudio.Xenko.Graphics
                 queryEvent.ProfilingState.End(queryResults[queryEvent.EndQuery.Value.InternalIndex]);
             }
 
-            queryEvents.Clear(true);
+            Profiler.GpuClockFrequency = GetTimestampFrequency();
+            queryEvents.Clear();
         }
 
         /// <summary>
@@ -113,10 +114,10 @@ namespace SiliconStudio.Xenko.Graphics
             queryEvents.Add(latestQueryEvent);
         }
 
-        public double GetTimestampFrequency()
+        public long GetTimestampFrequency()
         {
             #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
-                return timestampQueryPool.GetGpuFrequency(commandList) / 1000.0;
+                return timestampQueryPool.GetGpuFrequency(commandList) / 1000;
             #else
                 return 1000.0;
             #endif

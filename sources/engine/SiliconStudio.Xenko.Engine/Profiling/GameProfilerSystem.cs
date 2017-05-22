@@ -250,11 +250,27 @@ namespace SiliconStudio.Xenko.Profiling
         {
             profilersStringBuilder.AppendFormat("{0,-7:P1}", profilingResult.AccumulatedTime / elapsedTime);
             profilersStringBuilder.Append(" |  ");
-            Profiler.AppendTime(profilersStringBuilder, profilingResult.MinTime);
-            profilersStringBuilder.Append(" |  ");
-            Profiler.AppendTime(profilersStringBuilder, profilingResult.Count != 0 ? profilingResult.AccumulatedTime / profilingResult.Count : 0);
-            profilersStringBuilder.Append(" |  ");
-            Profiler.AppendTime(profilersStringBuilder, profilingResult.MaxTime);
+
+            if (e.Attributes != null && e.Attributes.TryGetValue("isGpuQuery", out object isGpuQuery) && (bool)isGpuQuery)
+            {
+                double minTimeMs = profilingResult.MinTime / (double)Profiler.GpuClockFrequency;
+                double accTimeMs = (profilingResult.Count != 0 ? profilingResult.AccumulatedTime / (double)profilingResult.Count : 0.0) / (double)Profiler.GpuClockFrequency;
+                double maxTimeMs = profilingResult.MaxTime / (double)Profiler.GpuClockFrequency;
+
+                profilersStringBuilder.AppendFormat("{0:000.000}ms", minTimeMs);
+                profilersStringBuilder.Append(" |  ");
+                profilersStringBuilder.AppendFormat("{0:000.000}ms", accTimeMs);
+                profilersStringBuilder.Append(" |  ");
+                profilersStringBuilder.AppendFormat("{0:000.000}ms", maxTimeMs);
+            }
+            else
+            {
+                Profiler.AppendTime(profilersStringBuilder, profilingResult.MinTime);
+                profilersStringBuilder.Append(" |  ");
+                Profiler.AppendTime(profilersStringBuilder, profilingResult.Count != 0 ? profilingResult.AccumulatedTime / profilingResult.Count : 0);
+                profilersStringBuilder.Append(" |  ");
+                Profiler.AppendTime(profilersStringBuilder, profilingResult.MaxTime);
+            }
 
             profilersStringBuilder.Append(" | ");
             profilersStringBuilder.Append(e.Key);
