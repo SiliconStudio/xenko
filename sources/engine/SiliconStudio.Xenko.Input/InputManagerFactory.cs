@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Input
                     break;
 
                 case AppContextType.UWPCoreWindow:
-                case AppContextType.UWPSwapChainPanel:
+                case AppContextType.UWPXaml:
                     res = NewInputManagerUWP(registry);
                     break;
 

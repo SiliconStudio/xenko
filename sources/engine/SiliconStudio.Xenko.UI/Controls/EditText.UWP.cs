@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     {
         private static EditText activeEditText;
         private Windows.UI.Xaml.Controls.TextBox editText;
-        private GameContextUWPSwapChainPanel gameContext;
+        private GameContextUWPXaml gameContext;
 
         private static void InitializeStaticImpl()
         {
@@ -52,9 +52,9 @@ namespace SiliconStudio.Xenko.UI.Controls
                     activeEditText.IsSelectionActive = false;
                 activeEditText = this;
 
-                // Handle only GameContextUWPSwapChainPanel for now
+                // Handle only GameContextUWPXaml for now
                 // TODO: Implement EditText for GameContextUWPCoreWindow
-                gameContext = game.Context as GameContextUWPSwapChainPanel;
+                gameContext = game.Context as GameContextUWPXaml;
                 if (gameContext == null)
                     return;
 

@@ -54,9 +54,9 @@ namespace SiliconStudio.Xenko.Games
         Android,
 
         /// <summary>
-        /// Game running on UWP in a SwapChainPanel.
+        /// Game running on UWP in a Xaml SwapChainPanel.
         /// </summary>
-        UWPSwapChainPanel,
+        UWPXaml,
 
         /// <summary>
         /// Game running on UWP in a CoreWindow.

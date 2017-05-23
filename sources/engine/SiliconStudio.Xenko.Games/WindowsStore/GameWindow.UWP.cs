@@ -194,7 +194,7 @@ namespace SiliconStudio.Xenko.Games
 
         protected internal override void Initialize(GameContext windowContext)
         {
-            swapChainPanel = (windowContext as GameContextUWPSwapChainPanel)?.Control;
+            swapChainPanel = (windowContext as GameContextUWPXaml)?.Control;
             coreWindow = (windowContext as GameContextUWPCoreWindow)?.Control;
 
             if (swapChainPanel != null)
@@ -203,7 +203,7 @@ namespace SiliconStudio.Xenko.Games
                 resizeTimer.Tick += ResizeTimerOnTick;
 
                 coreWindow = CoreWindow.GetForCurrentThread();
-                windowHandle = new WindowHandle(AppContextType.UWPSwapChainPanel, swapChainPanel, IntPtr.Zero);
+                windowHandle = new WindowHandle(AppContextType.UWPXaml, swapChainPanel, IntPtr.Zero);
             }
             else if (coreWindow != null)
             {
@@ -212,7 +212,7 @@ namespace SiliconStudio.Xenko.Games
             }
             else
             {
-                Debug.Assert(swapChainPanel == null && coreWindow == null, "GameContext was neither UWPSwapChainPanel nor UWPCoreWindow");
+                Debug.Assert(swapChainPanel == null && coreWindow == null, "GameContext was neither UWPXaml nor UWPCoreWindow");
             }
 
             applicationView = ApplicationView.GetForCurrentView();            

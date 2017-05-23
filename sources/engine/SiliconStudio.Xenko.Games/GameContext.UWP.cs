@@ -27,16 +27,16 @@ using Windows.UI.Xaml.Controls;
 
 namespace SiliconStudio.Xenko.Games
 {
-    public class GameContextUWPSwapChainPanel : GameContextWindows<SwapChainPanel>
+    public class GameContextUWPXaml : GameContextWindows<SwapChainPanel>
     {
         // Used internally by systems such as UI to capture input in a TextBox
         internal TextBox EditTextBox = new TextBox();
 
         /// <inheritDoc/>
-        public GameContextUWPSwapChainPanel(SwapChainPanel control, int requestedWidth = 0, int requestedHeight = 0)
+        public GameContextUWPXaml(SwapChainPanel control, int requestedWidth = 0, int requestedHeight = 0)
             : base (control ?? new SwapChainPanel(), requestedWidth, requestedHeight)
         {
-            ContextType = AppContextType.UWPSwapChainPanel;
+            ContextType = AppContextType.UWPXaml;
         }
     }
 
