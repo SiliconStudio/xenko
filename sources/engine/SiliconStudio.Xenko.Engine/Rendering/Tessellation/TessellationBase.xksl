@@ -51,8 +51,8 @@ shader TessellationBase : ShaderBase, TransformationBase, MaterialDomainStream, 
         // Compute screen space position of current control point and next one
         // TODO: Reuse ShadingPosition?
         // However, not sure if we can do tessellation directly through ShadingPosition interpolation (in which case we wouldn't need to do it in domain shader either)
-        float2 screenPosition0 = GetScreenSpacePosition(input[uCPID].PositionWS, ViewProjection, ViewSize.x, ViewSize.y);
-        float2 screenPosition1 = GetScreenSpacePosition(input[NextCPID].PositionWS, ViewProjection, ViewSize.x, ViewSize.y);
+        float2 screenPosition0 = GetScreenSpacePosition(input[uCPID].PositionWS, ViewSize.x, ViewSize.y);
+        float2 screenPosition1 = GetScreenSpacePosition(input[NextCPID].PositionWS, ViewSize.x, ViewSize.y);
         
         // Screen space tessellation based on desired triangle size
         streams.oppositeEdgeLOD = distance(screenPosition0, screenPosition1) / DesiredTriangleSize;
@@ -109,13 +109,12 @@ shader TessellationBase : ShaderBase, TransformationBase, MaterialDomainStream, 
 
     float2 GetScreenSpacePosition( 
                                     float4 f3Position,              // View space position of patch control point
-                                    float4x4 f4x4ViewProjection,    // ViewProjection matrix
                                     float fScreenWidth,             // Screen width
                                     float fScreenHeight             // Screen height
                                     )
     {
-        float4 f4ProjectedPosition = mul( float4( f3Position.xyz, 1.0f ), f4x4ViewProjection );
-        float2 f2ScreenPosition = f4ProjectedPosition.xy / f4ProjectedPosition.ww;
+        float4 f4ProjectedPosition = this.ComputeShadingPosition(f3Position);
+        float2 f2ScreenPosition = f4ProjectedPosition.xy / f4ProjectedPosition.w;
         f2ScreenPosition = ( f2ScreenPosition + 1.0f ) * 0.5f * float2( fScreenWidth, -fScreenHeight );
         return f2ScreenPosition;
     }
