@@ -17,8 +17,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             public Query? BeginQuery;
             public Query? EndQuery;
-
-            public ProfilingState ProfilingState;
+            public ProfilingKey ProfilingKey;
         }
 
         private readonly QueryPool timestampQueryPool;
@@ -49,10 +48,9 @@ namespace SiliconStudio.Xenko.Graphics
 
             foreach (QueryEvent queryEvent in queryEvents)
             {
-                queryEvent.ProfilingState.SetAttribute("isGpuQuery", true);
-
-                queryEvent.ProfilingState.Begin(queryResults[queryEvent.BeginQuery.Value.InternalIndex]);
-                queryEvent.ProfilingState.End(queryResults[queryEvent.EndQuery.Value.InternalIndex]);
+                var profStat = Profiler.Begin(queryEvent.ProfilingKey, queryResults[queryEvent.BeginQuery.Value.InternalIndex]);
+                profStat.SetAttribute("isGpuQuery", true);
+                profStat.End(queryResults[queryEvent.EndQuery.Value.InternalIndex]);
             }
 
             Profiler.GpuClockFrequency = GetTimestampFrequency();
@@ -75,7 +73,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 BeginQuery = timestampQueryPool.AllocateQuery(),
                 EndQuery = timestampQueryPool.AllocateQuery(),
-                ProfilingState = Profiler.New(profilingKey),
+                ProfilingKey = profilingKey,
             };
             
             // Query might be null if the pool is full
