@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
-    shader ShadowMapCasterCubeMapProjection : ShaderBase, PositionStream4, Texturing
+    shader ShadowMapCasterCubeMapProjection : TransformationBase, PositionStream4, Texturing
     {
         cbuffer PerView.ShadowCaster
         {
@@ -14,11 +14,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         // Used to write the distance from an object to the light to the depth buffer
         stage stream float PixelDepth : SV_DEPTH;
         
-        stage override void VSMain()
+        stage override void PostTransformPosition()
         {
             // Project into light view space
             float3 lightPosition = Transformation.ViewInverse[3].xyz;
-            float4 lightSpace = mul(streams.Position, Transformation.WorldView);
+            float4 lightSpace = mul(streams.PositionWS, Transformation.View);
 
             // Store length and normalize
             float distanceToLight = length(lightSpace.xyz);

@@ -14,8 +14,13 @@ shader TransformationWAndVP : TransformationBase, PositionStream4, PositionHStre
     stage override void PostTransformPosition()
     {
         base.PostTransformPosition();
-        streams.ShadingPosition = mul(streams.PositionWS, Transformation.ViewProjection);
+        streams.ShadingPosition = ComputeShadingPosition(streams.PositionWS);
         streams.PositionH = streams.ShadingPosition;
         streams.DepthVS = streams.ShadingPosition.w;
+    }
+    
+    stage override float4 ComputeShadingPosition(float4 world)
+    {
+        return mul(world, Transformation.ViewProjection);
     }
 };

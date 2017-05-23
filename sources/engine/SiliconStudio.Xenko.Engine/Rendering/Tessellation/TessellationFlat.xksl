@@ -15,14 +15,14 @@ shader TessellationFlat : TessellationBase
 {
     stage override float ComputeClipping(InputPatch<Input, InputControlPointCount> input, const OutputPatch<Input2, 3> output, inout Constants constants)
     {
-        return ComputeClippingGroup3(input[0].PositionWS, input[1].PositionWS, input[2].PositionWS, ViewProjection);
+        return ComputeClippingGroup3(input[0].PositionWS, input[1].PositionWS, input[2].PositionWS);
     }
 
-    float ComputeClippingGroup3(float4 f3Position1, float4 f3Position2, float4 f3Position3, float4x4 f4x4ViewProjection)
+    float ComputeClippingGroup3(float4 f3Position1, float4 f3Position2, float4 f3Position3)
     {
-        float4 clipPos1 = mul( float4( f3Position1.xyz, 1.0f ), f4x4ViewProjection );
-        float4 clipPos2 = mul( float4( f3Position2.xyz, 1.0f ), f4x4ViewProjection );
-        float4 clipPos3 = mul( float4( f3Position3.xyz, 1.0f ), f4x4ViewProjection );
+        float4 clipPos1 = this.ComputeShadingPosition(float4(f3Position1.xyz, 1.0f));
+        float4 clipPos2 = this.ComputeShadingPosition(float4(f3Position2.xyz, 1.0f));
+        float4 clipPos3 = this.ComputeShadingPosition(float4(f3Position3.xyz, 1.0f));
 
         float3 clipPos1P = sign(clipPos1.xyz + clipPos1.www);
         float3 clipPos1M = sign(clipPos1.xyz - clipPos1.www);
