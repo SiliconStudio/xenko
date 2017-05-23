@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Assets
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetContentType(typeof(GameSettings))]
     [Display(10000, "Game Settings")]
-    [CategoryOrder(1550, "Splash Screen")]
+    [CategoryOrder(1550, "Splash screen")]
     [NonIdentifiableCollectionItems]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.6.1-alpha01")]
@@ -53,20 +53,26 @@ namespace SiliconStudio.Xenko.Assets
         public const string DefaultSceneLocation = "MainScene";
 
         /// <summary>
-        /// Gets or sets the default scene.
+        /// Gets or sets the default scene
         /// </summary>
-        /// <userdoc>The default scene that will be loaded at game startup.</userdoc>
+        /// <userdoc>The default scene loaded when the game starts</userdoc>
         [DataMember(1000)]
         public Scene DefaultScene { get; set; }
 
         [DataMember(1500)]
         public GraphicsCompositor GraphicsCompositor { get; set; }
 
-        [Display("Texture", "Splash Screen")]
+        /// <userdoc>
+        /// The image (eg company logo) displayed as the splash screen 
+        /// </userdoc>
+        [Display("Texture", "Splash screen")]
         [DataMember(1600)]
         public Texture SplashScreenTexture { get; set; }
 
-        [Display("Color", "Splash Screen")]
+        /// <userdoc>
+        /// The color the splash screen fades in on top of
+        /// </userdoc>
+        [Display("Color", "Splash screen")]
         [DataMember(1700)]
         public Color SplashScreenColor { get; set; } = Color.Black;
 
