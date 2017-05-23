@@ -301,6 +301,7 @@ namespace SiliconStudio.Core.Diagnostics
             else if (profilingType == ProfilingMessageType.End)
             {
                 beginText = null;
+                isEnabled = false;
             }
 
             // Create profiler event
