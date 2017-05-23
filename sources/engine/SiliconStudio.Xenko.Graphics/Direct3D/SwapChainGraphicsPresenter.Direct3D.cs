@@ -321,7 +321,7 @@ namespace SiliconStudio.Xenko.Graphics
             SwapChain swapChain = null;
             switch (Description.DeviceWindowHandle.Context)
             {
-                case Games.AppContextType.UWPSwapChainPanel:
+                case Games.AppContextType.UWPXaml:
                 {
                     var nativePanel = ComObject.As<ISwapChainPanelNative>(Description.DeviceWindowHandle.NativeWindow);
 
