@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -22,32 +22,31 @@
 // THE SOFTWARE.
 #if SILICONSTUDIO_PLATFORM_UWP
 using System;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 
 namespace SiliconStudio.Xenko.Games
 {
-    /// <summary>
-    /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="Control"/>.
-    /// </summary>
-    public partial class GameContextUWP : GameContextWindows<SwapChainPanel>
+    public class GameContextUWPXaml : GameContextWindows<SwapChainPanel>
     {
         // Used internally by systems such as UI to capture input in a TextBox
         internal TextBox EditTextBox = new TextBox();
 
         /// <inheritDoc/>
-        public GameContextUWP(SwapChainPanel control, int requestedWidth = 0, int requestedHeight = 0)
+        public GameContextUWPXaml(SwapChainPanel control, int requestedWidth = 0, int requestedHeight = 0)
             : base (control ?? new SwapChainPanel(), requestedWidth, requestedHeight)
         {
-            ContextType = AppContextType.UWP;
+            ContextType = AppContextType.UWPXaml;
         }
     }
 
-    [Obsolete("Use GameContextUWP instead")]
-    public class GameContextWindowsRuntime : GameContextUWP
+    public class GameContextUWPCoreWindow : GameContextWindows<CoreWindow>
     {
-        public GameContextWindowsRuntime(SwapChainPanel control, int requestedWidth = 0, int requestedHeight = 0)
-            : base(control, requestedWidth, requestedHeight)
+        /// <inheritDoc/>
+        public GameContextUWPCoreWindow(CoreWindow control, int requestedWidth = 0, int requestedHeight = 0)
+            : base(control ?? CoreWindow.GetForCurrentThread(), requestedWidth, requestedHeight)
         {
+            ContextType = AppContextType.UWPCoreWindow;
         }
     }
 }
