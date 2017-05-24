@@ -112,7 +112,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             Assert.AreEqual(targetPosition, Input.MousePosition);
 
             mouse.SetPosition(targetPosition = new Vector2(0.6f, 0.5f));
-            mouse.HandleButtonDown(MouseButton.Left);
+            mouse.SimulateMouseDown(MouseButton.Left);
             Input.Update(DrawTime);
             
             // Check for pointer events (2, 1 move, 1 down)
@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             // Check if new absolute delta matches the one reported in the input manager
             Assert.AreEqual(Input.PointerEvents[0].AbsoluteDeltaPosition, Input.AbsoluteMouseDelta);
 
-            mouse.HandleButtonUp(MouseButton.Left);
+            mouse.SimulateMouseUp(MouseButton.Left);
             Input.Update(DrawTime);
 
             // Check up

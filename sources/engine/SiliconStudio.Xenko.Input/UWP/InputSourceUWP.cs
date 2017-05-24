@@ -5,12 +5,11 @@
 using System;
 using System.Collections.Generic;
 using Windows.Devices.Input;
-using Windows.System;
-using Windows.Devices.Sensors;
 using Windows.Gaming.Input;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Games;
 using WindowsAccelerometer = Windows.Devices.Sensors.Accelerometer;
 using WindowsGyroscope = Windows.Devices.Sensors.Gyrometer;
 using WindowsOrientation = Windows.Devices.Sensors.OrientationSensor;
@@ -44,20 +43,27 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Initialize(InputManager inputManager)
         {
-            var windowHandle = inputManager.Game.Window.NativeWindow;
-            var uiControl = (FrameworkElement)windowHandle.NativeWindow;
+            var nativeWindow = inputManager.Game.Window.NativeWindow;
+            
+            CoreWindow coreWindow;
+            if (nativeWindow.Context == AppContextType.UWPCoreWindow)
+                coreWindow = (CoreWindow)nativeWindow.NativeWindow;
+            else if(nativeWindow.Context == AppContextType.UWPXaml)
+                coreWindow = Window.Current.CoreWindow;
+            else
+                throw new ArgumentException(string.Format("WindowContext [{0}] not supported", nativeWindow.Context));
 
             var mouseCapabilities = new MouseCapabilities();
             if (mouseCapabilities.MousePresent > 0)
             {
-                pointer = new PointerUWP(this, uiControl);
+                pointer = new MouseUWP(this, coreWindow);
                 RegisterDevice(pointer);
             }
 
             var keyboardCapabilities = new KeyboardCapabilities();
             if (keyboardCapabilities.KeyboardPresent > 0)
             {
-                keyboard = new KeyboardUWP(this, inputManager.Game, uiControl);
+                keyboard = new KeyboardUWP(this, coreWindow);
                 RegisterDevice(keyboard);
             }
 
@@ -103,6 +109,14 @@ namespace SiliconStudio.Xenko.Input
             Gamepad.GamepadRemoved += GamepadOnGamepadRemoved;
             
             Scan();
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            Gamepad.GamepadAdded -= GamepadOnGamepadAdded;
+            Gamepad.GamepadRemoved -= GamepadOnGamepadRemoved;
         }
 
         public override void Scan()
@@ -264,5 +278,4 @@ namespace SiliconStudio.Xenko.Input
         }
     }
 }
-
 #endif

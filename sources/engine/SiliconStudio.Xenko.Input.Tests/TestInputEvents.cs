@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Input.Tests
     /// </summary>
     public class TestInputEvents : InputTestBase
     {
-        private const int MaximumLogEntries = 32;
+        private const int MaximumLogEntries = 30;
         private List<EventLog> eventLog = new List<EventLog>();
 
         private Dictionary<Type, Color> eventColors = new Dictionary<Type, Color>

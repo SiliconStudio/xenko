@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using Windows.Gaming.Input;
-using Windows.System;
 
 namespace SiliconStudio.Xenko.Input
 {

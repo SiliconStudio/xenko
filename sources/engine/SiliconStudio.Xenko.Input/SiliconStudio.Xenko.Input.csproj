@@ -143,6 +143,8 @@
     <Compile Include="UWP\GamePadUWP.cs" />
     <Compile Include="UWP\InputSourceUWP.cs" />
     <Compile Include="UWP\KeyboardUWP.cs" />
+    <Compile Include="UWP\MouseDeviceStateUWP.cs" />
+    <Compile Include="UWP\MouseUWP.cs" />
     <Compile Include="UWP\PointerUWP.cs" />
     <Compile Include="UWP\WinFormsKeys.cs" />
     <Compile Include="VirtualButton\IVirtualButton.cs" />

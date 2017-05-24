@@ -10,33 +10,28 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// Base class for pointer devices
+    /// Contains logic to generate pointer events and store the resulting state
     /// </summary>
-    public abstract class PointerDeviceBase : IPointerDevice
+    public class PointerDeviceState
     {
-        protected readonly List<PointerInputEvent> PointerInputEvents = new List<PointerInputEvent>();
-        protected readonly List<PointerData> PointerDatas = new List<PointerData>();
+        public readonly List<InputEvent> PointerInputEvents = new List<InputEvent>();
+        public readonly List<PointerData> PointerDatas = new List<PointerData>();
 
-        protected readonly HashSet<PointerPoint> pressedPointers = new HashSet<PointerPoint>();
-        protected readonly HashSet<PointerPoint> releasedPointers = new HashSet<PointerPoint>();
-        protected readonly HashSet<PointerPoint> downPointers = new HashSet<PointerPoint>();
-        
+        private readonly HashSet<PointerPoint> pressedPointers = new HashSet<PointerPoint>();
+        private readonly HashSet<PointerPoint> releasedPointers = new HashSet<PointerPoint>();
+        private readonly HashSet<PointerPoint> downPointers = new HashSet<PointerPoint>();
+
         private Vector2 surfaceSize;
         private Vector2 invSurfaceSize;
         private float aspectRatio;
-
-        protected PointerDeviceBase()
+        
+        public PointerDeviceState(IPointerDevice pointerDevice)
         {
+            this.SourceDevice = pointerDevice;
             PressedPointers = new ReadOnlySet<PointerPoint>(pressedPointers);
             ReleasedPointers = new ReadOnlySet<PointerPoint>(releasedPointers);
             DownPointers = new ReadOnlySet<PointerPoint>(downPointers);
         }
-
-        public abstract string Name { get; }
-        public abstract Guid Id { get; }
-        public abstract PointerType Type { get; }
-        public int Priority { get; set; }
-        public abstract IInputSource Source { get; }
 
         public Vector2 SurfaceSize => surfaceSize;
         public Vector2 InverseSurfaceSize => invSurfaceSize;
@@ -46,18 +41,14 @@ namespace SiliconStudio.Xenko.Input
         public IReadOnlySet<PointerPoint> ReleasedPointers { get; }
         public IReadOnlySet<PointerPoint> DownPointers { get; }
 
-        public event EventHandler<SurfaceSizeChangedEventArgs> SurfaceSizeChanged;
+        public IPointerDevice SourceDevice;
 
-        public virtual void Update(List<InputEvent> inputEvents)
+        /// <summary>
+        /// Generate input events
+        /// </summary>
+        public void Update(List<Input.InputEvent> inputEvents)
         {
-            // Reset delta for all pointers before processing newly received events
-            foreach (var pointerData in PointerDatas)
-            {
-                pointerData.Delta = Vector2.Zero;
-            }
-
-            pressedPointers.Clear();
-            releasedPointers.Clear();
+            Reset();
 
             // Turn internal input events into pointer events and mouse position + delta
             foreach (var evt in PointerInputEvents)
@@ -71,29 +62,26 @@ namespace SiliconStudio.Xenko.Input
         /// Updates the surface size of the pointing device, updates <see cref="SurfaceSize"/>, <see cref="SurfaceAspectRatio"/>, <see cref="invSurfaceSize"/> and calls <see cref="SurfaceSizeChanged"/>
         /// </summary>
         /// <param name="newSize">New size of the surface</param>
-        protected void SetSurfaceSize(Vector2 newSize)
+        public void SetSurfaceSize(Vector2 newSize)
         {
             surfaceSize = newSize;
-            aspectRatio = SurfaceSize.Y/SurfaceSize.X;
-            invSurfaceSize = 1.0f/SurfaceSize;
-            SurfaceSizeChanged?.Invoke(this, new SurfaceSizeChangedEventArgs { NewSurfaceSize = newSize });
+            aspectRatio = SurfaceSize.Y / SurfaceSize.X;
+            invSurfaceSize = 1.0f / SurfaceSize;
         }
 
         /// <summary>
-        /// Processes a <see cref="PointerInputEvent"/>, converting it to a <see cref="PointerEvent"/>. Also calls <see cref="OnPointer"/> and updates <see cref="CurrentPointerEvents"/>
+        /// Processes a <see cref="InputEvent"/>, converting it to a <see cref="PointerEvent"/>. Also calls <see cref="OnPointer"/> and updates <see cref="CurrentPointerEvents"/>
         /// </summary>
         /// <param name="evt"></param>
-        protected PointerEvent ProcessPointerEvent(PointerInputEvent evt)
+        public PointerEvent ProcessPointerEvent(InputEvent evt)
         {
-            var data = GetPointerData(evt.Id);
-            
-            var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(this);
+            var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(SourceDevice);
             pointerEvent.Position = evt.Position;
             pointerEvent.PointerId = evt.Id;
             pointerEvent.PointerType = Type;
             pointerEvent.EventType = evt.Type;
             UpdatePointerState(pointerEvent);
-            
+
             return pointerEvent;
         }
 
@@ -101,20 +89,26 @@ namespace SiliconStudio.Xenko.Input
         /// Updates a pointer event with position / type / id set and updates the storted pointer data
         /// </summary>
         /// <param name="evt"></param>
-        protected void UpdatePointerState(PointerEvent evt)
+        public void UpdatePointerState(PointerEvent evt, bool updateDelta = true)
         {
             var data = GetPointerData(evt.PointerId);
 
-            // Update pointer position + delta
-            // Update delta
-            data.Delta = evt.Position - data.Position;
+            if (updateDelta)
+            {
+                // Update delta based on change in position
+                evt.DeltaPosition = data.Delta = evt.Position - data.Position;
+            }
+            else
+            {
+                data.Delta = evt.DeltaPosition;
+            }
 
             // Update position
             data.Position = evt.Position;
 
             if (evt.EventType == PointerEventType.Pressed)
             {
-                // Start presset events with time 0
+                // Start pressed events with time 0
                 data.Clock.Restart();
                 data.IsDown = true;
                 pressedPointers.Add(data);
@@ -129,25 +123,44 @@ namespace SiliconStudio.Xenko.Input
 
             evt.IsDown = data.IsDown;
             evt.DeltaTime = data.Clock.Elapsed;
-            evt.DeltaPosition = data.Delta;
-            
+
             // Reset pointer clock
             data.Clock.Restart();
         }
 
-        protected PointerData GetPointerData(int pointerId)
+        /// <summary>
+        /// Retrueves a pointer data structure unqiue to the given pointer ID
+        /// </summary>
+        /// <param name="pointerId"></param>
+        /// <returns></returns>
+        public PointerData GetPointerData(int pointerId)
         {
             while (PointerDatas.Count <= pointerId)
             {
-                PointerDatas.Add(new PointerData {Pointer = this});
+                PointerDatas.Add(new PointerData { Pointer = SourceDevice });
             }
             return PointerDatas[pointerId];
         }
 
         /// <summary>
+        /// Resets the state before processing input
+        /// </summary>
+        private void Reset()
+        {
+            // Reset delta for all pointers before processing newly received events
+            foreach (var pointerData in PointerDatas)
+            {
+                pointerData.Delta = Vector2.Zero;
+            }
+
+            pressedPointers.Clear();
+            releasedPointers.Clear();
+        }
+
+        /// <summary>
         /// Some additional data kept on top of <see cref="PointerPoint"/> for the purpose of generating <see cref="PointerEvent"/>
         /// </summary>
-        protected class PointerData : PointerPoint
+        public class PointerData : PointerPoint
         {
             public Stopwatch Clock = new Stopwatch();
         }
@@ -155,12 +168,58 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Simplified event data used to generate the full events when <see cref="Update"/> gets called
         /// </summary>
-        protected struct PointerInputEvent
+        public struct InputEvent
         {
             public PointerEventType Type;
             public Vector2 Position;
             public Vector2 Delta;
             public int Id;
+        }
+    }
+
+    /// <summary>
+    /// Base class for pointer devices
+    /// </summary>
+    public abstract class PointerDeviceBase : IPointerDevice
+    {
+        protected PointerDeviceState PointerState;
+
+        protected PointerDeviceBase()
+        {
+            PointerState = new PointerDeviceState(this);
+        }
+
+        public Vector2 SurfaceSize => PointerState.SurfaceSize;
+        public float SurfaceAspectRatio => PointerState.SurfaceAspectRatio;
+        public IReadOnlySet<PointerPoint> PressedPointers => PointerState.PressedPointers;
+        public IReadOnlySet<PointerPoint> ReleasedPointers => PointerState.ReleasedPointers;
+        public IReadOnlySet<PointerPoint> DownPointers => PointerState.DownPointers;
+        public event EventHandler<SurfaceSizeChangedEventArgs> SurfaceSizeChanged;
+
+        public int Priority { get; set; }
+
+        public abstract string Name { get; }
+        public abstract Guid Id { get; }
+        public abstract IInputSource Source { get; }
+
+        public virtual void Update(List<InputEvent> inputEvents)
+        {
+            PointerState.Update(inputEvents);
+        }
+
+        /// <summary>
+        /// Calls <see cref="PointerDeviceState.SetSurfaceSize"/> and invokes the <see cref="SurfaceSizeChanged"/> event
+        /// </summary>
+        /// <param name="newSize">New size of the surface</param>
+        protected void SetSurfaceSize(Vector2 newSize)
+        {
+            PointerState.SetSurfaceSize(newSize);
+            SurfaceSizeChanged?.Invoke(this, new SurfaceSizeChangedEventArgs { NewSurfaceSize = newSize });
+        }
+
+        protected Vector2 Normalize(Vector2 position)
+        {
+            return position * PointerState.InverseSurfaceSize;
         }
     }
 }

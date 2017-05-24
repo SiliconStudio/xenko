@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Input
             keyboard = new KeyboardWinforms(this, uiControl);
             RegisterDevice(keyboard);
 
-            mouse = new MouseWinforms(this, game, uiControl);
+            mouse = new MouseWinforms(this, uiControl);
             RegisterDevice(mouse);
         }
 
@@ -83,13 +83,7 @@ namespace SiliconStudio.Xenko.Input
                 }
             }
 
-            if (mouse != null)
-            {
-                foreach (var button in mouse.DownButtons.ToArray())
-                {
-                    mouse.HandleButtonUp(button);
-                }
-            }
+            mouse?.ForceReleaseButtons();
         }
 
         private IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam)

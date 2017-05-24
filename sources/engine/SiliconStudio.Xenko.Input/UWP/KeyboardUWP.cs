@@ -1,24 +1,19 @@
-// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 #if SILICONSTUDIO_PLATFORM_UWP
 using System;
+using Windows.UI.Core;
 using System.Collections.Generic;
 using Windows.System;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Input;
-using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Input
 {
-    /// <summary>
-    /// UWP Keyboard
-    /// </summary>
-    internal class KeyboardUWP : KeyboardDeviceBase
+    internal class KeyboardUWP : KeyboardDeviceBase, IDisposable
     {
         private static readonly Dictionary<VirtualKey, Keys> mapKeys;
-        private readonly FrameworkElement uiControl;
-        private readonly GameBase game;
+
+        private readonly CoreWindow uiControl;
 
         static KeyboardUWP()
         {
@@ -203,42 +198,48 @@ namespace SiliconStudio.Xenko.Input
             AddKeys(WinFormsKeys.OemClear, Keys.OemClear);
         }
 
-        public KeyboardUWP(InputSourceUWP source, GameBase game, FrameworkElement uiControl)
+        public KeyboardUWP(InputSourceUWP source, CoreWindow uiControl)
         {
             Source = source;
-            this.game = game;
             this.uiControl = uiControl;
-            uiControl.KeyDown += UIControlOnKeyDown;
-            uiControl.KeyUp += UIControlOnKeyUp;
+            uiControl.KeyDown += CoreWindowOnKeyDown;
+            uiControl.KeyUp += CoreWindowOnKeyUp;
         }
 
-        public override string Name { get; } = "UWP Keyboard";
-
-        public override Guid Id { get; } = new Guid("64f10812-74a6-448e-8454-7b8e47f39cf4");
+        public void Dispose()
+        {
+            uiControl.KeyDown -= CoreWindowOnKeyDown;
+            uiControl.KeyUp -= CoreWindowOnKeyUp;
+        }
 
         public override IInputSource Source { get; }
 
-        void HandleKey(bool state, KeyRoutedEventArgs args)
-        {
-            // If our EditText TextBox is active, let's ignore all key events
-            if (((GameContextUWP)game.Context).EditTextBox.Parent != null)
-            {
-                return;
-            }
+        public override string Name { get; } = "UWP Keyboard";
 
-            VirtualKey virtualKey = args.Key;
+        public override Guid Id { get; } = new Guid("2296CBDF-46EA-4D68-B8E5-5900C25C774D");
+
+        private static void AddKeys(WinFormsKeys fromKey, Keys toKey)
+        {
+            if (!mapKeys.ContainsKey((VirtualKey)fromKey))
+            {
+                mapKeys.Add((VirtualKey)fromKey, toKey);
+            }
+        }
+
+        private void HandleKey(bool isDown, VirtualKey virtualKey, CorePhysicalKeyStatus keyStatus)
+        {
             // Remap certain keys
             switch (virtualKey)
             {
                 case VirtualKey.Shift:
                     // Only way to differentiate left and right shift is through the scan code
-                    virtualKey = args.KeyStatus.ScanCode == 54 ? VirtualKey.RightShift : VirtualKey.LeftShift;
+                    virtualKey = keyStatus.ScanCode == 54 ? VirtualKey.RightShift : VirtualKey.LeftShift;
                     break;
                 case VirtualKey.Control:
-                    virtualKey = args.KeyStatus.IsExtendedKey ? VirtualKey.RightControl : VirtualKey.LeftControl;
+                    virtualKey = keyStatus.IsExtendedKey ? VirtualKey.RightControl : VirtualKey.LeftControl;
                     break;
                 case VirtualKey.Menu:
-                    virtualKey = args.KeyStatus.IsExtendedKey ? VirtualKey.RightMenu : VirtualKey.LeftMenu;
+                    virtualKey = keyStatus.IsExtendedKey ? VirtualKey.RightMenu : VirtualKey.LeftMenu;
                     break;
             }
 
@@ -251,7 +252,7 @@ namespace SiliconStudio.Xenko.Input
             if (!mapKeys.TryGetValue(virtualKey, out xenkoKey))
                 return;
 
-            if (state)
+            if (isDown)
             {
                 HandleKeyDown(xenkoKey);
             }
@@ -261,22 +262,14 @@ namespace SiliconStudio.Xenko.Input
             }
         }
         
-        private void UIControlOnKeyDown(object sender, KeyRoutedEventArgs args)
+        private void CoreWindowOnKeyDown(CoreWindow sender, KeyEventArgs args)
         {
-            HandleKey(true, args);
+            HandleKey(true, args.VirtualKey, args.KeyStatus);
         }
 
-        private void UIControlOnKeyUp(object sender, KeyRoutedEventArgs args)
-        {   
-            HandleKey(false, args);
-        }
-
-        private static void AddKeys(WinFormsKeys fromKey, Keys toKey)
+        private void CoreWindowOnKeyUp(CoreWindow sender, KeyEventArgs args)
         {
-            if (!mapKeys.ContainsKey((VirtualKey)fromKey))
-            {
-                mapKeys.Add((VirtualKey)fromKey, toKey);
-            }
+            HandleKey(false, args.VirtualKey, args.KeyStatus);
         }
     }
 }

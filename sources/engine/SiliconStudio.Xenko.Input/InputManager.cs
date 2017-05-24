@@ -597,7 +597,8 @@ namespace SiliconStudio.Xenko.Input
                     break;
 #endif
 #if SILICONSTUDIO_PLATFORM_UWP
-                case  AppContextType.UWP:
+                case AppContextType.UWPXaml:
+                case AppContextType.UWPCoreWindow:
                     Sources.Add(new InputSourceUWP());
                     break;
 #endif
