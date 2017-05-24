@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         {
             var originAsset = CreateOriginAsset();
             var newAsset = AssetCloner.Clone(originAsset);
-            CheckAsset(originAsset, newAsset, originAsset.Hierarchy.Parts.Select(x => x.Entity.Id).ToDictionary(x => x, x => x));
+            CheckAsset(originAsset, newAsset, originAsset.Hierarchy.Parts.Select(x => x.Value.Entity.Id).ToDictionary(x => x, x => x));
         }
 
         [Test]
@@ -111,21 +111,21 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             foreach (var entityDesign in originAsset.Hierarchy.Parts)
             {
-                var newEntityDesign = newAsset.Hierarchy.Parts[idRemapping[entityDesign.Entity.Id]];
+                var newEntityDesign = newAsset.Hierarchy.Parts[idRemapping[entityDesign.Value.Entity.Id]];
                 Assert.NotNull(newEntityDesign);
 
                 // Check properties
-                Assert.AreEqual(entityDesign.Entity.Name, newEntityDesign.Entity.Name);
+                Assert.AreEqual(entityDesign.Value.Entity.Name, newEntityDesign.Entity.Name);
 
                 // Check that we have the same amount of components
-                Assert.AreEqual(entityDesign.Entity.Components.Count, newEntityDesign.Entity.Components.Count);
+                Assert.AreEqual(entityDesign.Value.Entity.Components.Count, newEntityDesign.Entity.Components.Count);
 
                 // Check that we have the same children
-                Assert.AreEqual(entityDesign.Entity.Transform.Children.Count, newEntityDesign.Entity.Transform.Children.Count);
+                Assert.AreEqual(entityDesign.Value.Entity.Transform.Children.Count, newEntityDesign.Entity.Transform.Children.Count);
 
-                for (int i = 0; i < entityDesign.Entity.Transform.Children.Count; i++)
+                for (int i = 0; i < entityDesign.Value.Entity.Transform.Children.Count; i++)
                 {
-                    var children = entityDesign.Entity.Transform.Children[i];
+                    var children = entityDesign.Value.Entity.Transform.Children[i];
                     var newChildren = newEntityDesign.Entity.Transform.Children[i];
                     // Make sure that it is the same entity id
                     Assert.AreEqual(idRemapping[children.Entity.Id], newChildren.Entity.Id);
@@ -136,10 +136,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 }
             }
 
-            var entity1 = originAsset.Hierarchy.Parts.First(it => it.Entity.Name == "E1").Entity;
-            var entity2 = originAsset.Hierarchy.Parts.First(it => it.Entity.Name == "E2").Entity;
-            var entity3 = originAsset.Hierarchy.Parts.First(it => it.Entity.Name == "E3").Entity;
-            var entity4 = originAsset.Hierarchy.Parts.First(it => it.Entity.Name == "E4").Entity;
+            var entity1 = originAsset.Hierarchy.Parts.First(it => it.Value.Entity.Name == "E1").Value.Entity;
+            var entity2 = originAsset.Hierarchy.Parts.First(it => it.Value.Entity.Name == "E2").Value.Entity;
+            var entity3 = originAsset.Hierarchy.Parts.First(it => it.Value.Entity.Name == "E3").Value.Entity;
+            var entity4 = originAsset.Hierarchy.Parts.First(it => it.Value.Entity.Name == "E4").Value.Entity;
 
             // Check that we have exactly the same root entities
             var newEntityDesign1 = newAsset.Hierarchy.Parts[idRemapping[entity1.Id]];
