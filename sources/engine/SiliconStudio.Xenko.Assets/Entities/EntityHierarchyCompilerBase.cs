@@ -1,16 +1,10 @@
 // Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
-using System.Linq;
-using System.Threading.Tasks;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.BuildEngine;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Extensions;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
@@ -19,7 +13,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (T)assetItem.Asset;
-            foreach (var entityData in asset.Hierarchy.Parts)
+            foreach (var entityData in asset.Hierarchy.Parts.Values)
             {
                 // TODO: How to make this code pluggable?
                 var modelComponent = entityData.Entity.Components.Get<ModelComponent>();                

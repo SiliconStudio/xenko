@@ -67,7 +67,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
         public BasePart Base { get; set; }
 
         /// <inheritdoc/>
-        Entity IAssetPartDesign<Entity>.Part { get { return Entity; } set { Entity = value; } }
+        IIdentifiable IAssetPartDesign.Part => Entity;
+
+        /// <inheritdoc/>
+        Entity IAssetPartDesign<Entity>.Part { get => Entity; set => Entity = value; }
 
         /// <inheritdoc />
         public bool Equals(EntityDesign other)
