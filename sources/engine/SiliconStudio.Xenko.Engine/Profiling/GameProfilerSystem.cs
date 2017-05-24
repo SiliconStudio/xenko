@@ -251,7 +251,7 @@ namespace SiliconStudio.Xenko.Profiling
             profilersStringBuilder.AppendFormat("{0,-7:P1}", profilingResult.AccumulatedTime / elapsedTime);
             profilersStringBuilder.Append(" |  ");
 
-            if ((e.Key.Flags & ProfilingKeyFlags.GpuProfiling) == 0)
+            if ((e.Key.Flags & ProfilingKeyFlags.GpuProfiling) == ProfilingKeyFlags.GpuProfiling)
             {
                 double minTimeMs = profilingResult.MinTime / (double)Profiler.GpuClockFrequency;
                 double accTimeMs = (profilingResult.Count != 0 ? profilingResult.AccumulatedTime / (double)profilingResult.Count : 0.0) / (double)Profiler.GpuClockFrequency;
@@ -322,18 +322,8 @@ namespace SiliconStudio.Xenko.Profiling
             gcProfiler.Dispose();
         }
 
-        private int testStuff = 0;
         public override void Draw(GameTime gameTime)
         {
-            testStuff++;
-
-            Game.GraphicsContext.CommandList.GpuQueryProfiler.SubmitResults(testStuff >= 3);
-
-            if (testStuff >= 3)
-            {
-                testStuff = 0;
-            }
-
             if (spriteBatch == null)
             {
                 spriteBatch = new SpriteBatch(Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice);
