@@ -166,7 +166,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     var shadowmapRenderView = renderView as ShadowMapRenderView;
                     if (shadowmapRenderView != null && shadowmapRenderView.RenderView == drawContext.RenderContext.RenderView)
                     {
-                        drawContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Black, shadowmapRenderView.ShadowMapTexture.ProfilingKey);
+                        drawContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Black, shadowmapRenderView.ProfilingKey);
 
                         var shadowMapRectangle = shadowmapRenderView.Rectangle;
                         drawContext.CommandList.SetRenderTarget(shadowmapRenderView.ShadowMapTexture.Atlas.Texture, null);
