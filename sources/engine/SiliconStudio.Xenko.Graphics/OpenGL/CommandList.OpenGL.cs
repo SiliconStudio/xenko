@@ -84,6 +84,8 @@ namespace SiliconStudio.Xenko.Graphics
         {
             device.InternalMainCommandList = this;
 
+            gpuQueryProfiler = new GpuQueryProfiler(this);
+
             // Default state
             DepthStencilBoundState.DepthBufferWriteEnable = true;
             DepthStencilBoundState.StencilWriteMask = 0xFF;
@@ -759,6 +761,27 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.FrameDrawCalls++;
         }
 
+        /// <summary>
+        /// Begins profiling.
+        /// Submits a GPU timestamp query.
+        /// </summary>
+        /// <param name="queryPool">The <see cref="QueryPool"/> owning "query".</param>
+        /// <param name="query">The <see cref="Query"/>.</param>
+        public void WriteTimestamp(QueryPool queryPool, Query query)
+        {
+
+        }
+
+        public void BeginQuery(QueryPool queryPool, Query query)
+        {
+
+        }
+
+        public void EndQuery(QueryPool queryPool, Query query)
+        {
+
+        }
+
         public void DrawAuto(PrimitiveType primitiveType)
         {
 #if DEBUG
@@ -894,7 +917,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
         }
 
-        public void BeginProfile(Color4 profileColor, string name)
+        public void BeginDebugEvent(Color4 profileColor, string name)
         {
 #if !SILICONSTUDIO_PLATFORM_IOS
             if (GraphicsDevice.ProfileEnabled)
@@ -909,7 +932,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
         }
 
-        public void EndProfile()
+        public void EndDebugEvent()
         {
 #if !SILICONSTUDIO_PLATFORM_IOS
             if (GraphicsDevice.ProfileEnabled)

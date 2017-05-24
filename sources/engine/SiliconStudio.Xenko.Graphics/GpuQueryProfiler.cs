@@ -123,11 +123,11 @@ namespace SiliconStudio.Xenko.Graphics
 
         public long GetTimestampFrequency()
         {
-            #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
-                return timestampQueryPool.GetGpuFrequency(commandList) / 1000;
-            #else
-                return 1000.0;
-            #endif
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11 || SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+            return timestampQueryPool.GetGpuFrequency(commandList) / 1000;
+#else
+            return 1000;
+#endif
         }
     }
 }

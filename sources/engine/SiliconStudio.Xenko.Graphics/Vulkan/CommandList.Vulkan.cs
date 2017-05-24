@@ -52,6 +52,8 @@ namespace SiliconStudio.Xenko.Graphics
             allocatedTypeCounts = new uint[DescriptorSetLayout.DescriptorTypeCount];
             allocatedSetCount = 0;
 
+            gpuQueryProfiler = new GpuQueryProfiler(this);
+
             Reset();
         }
 
@@ -535,6 +537,26 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
+        /// Submits a GPU timestamp query.
+        /// </summary>
+        /// <param name="queryPool">The <see cref="QueryPool"/> owning "query".</param>
+        /// <param name="query">The <see cref="Query"/>.</param>
+        public void WriteTimestamp(QueryPool queryPool, Query query)
+        {
+
+        }
+
+        public void BeginQuery(QueryPool queryPool, Query query)
+        {
+
+        }
+
+        public void EndQuery(QueryPool queryPool, Query query)
+        {
+
+        }
+
+        /// <summary>
         /// Draw geometry of an unknown size.
         /// </summary>
         public void DrawAuto()
@@ -640,7 +662,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="profileColor">Color of the profile.</param>
         /// <param name="name">The name.</param>
-        public unsafe void BeginProfile(Color4 profileColor, string name)
+        public unsafe void BeginDebugEvent(Color4 profileColor, string name)
         {
             if (GraphicsDevice.IsProfilingSupported)
             {
@@ -662,7 +684,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Ends profiling.
         /// </summary>
-        public void EndProfile()
+        public void EndDebugEvent()
         {
             if (GraphicsDevice.IsProfilingSupported)
             {
