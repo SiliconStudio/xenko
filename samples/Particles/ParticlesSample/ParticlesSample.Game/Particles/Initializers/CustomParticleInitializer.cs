@@ -17,7 +17,7 @@ namespace ParticlesSample.Particles.Initializers
     public class CustomParticleInitializer : ParticleInitializer
     {
         [DataMember(100)]
-        [DataMemberRange(0, 120, 0.01, 0.1)]
+        [DataMemberRange(0, 120, 1, 5, 2)]
         [Display("Arc")]
         public float Angle = 20f;
 

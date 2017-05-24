@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             var sceneAsset = CreateBase(SkyIntensity, SunIntensity);
 
             // Add a sky light to the scene
-            var skyboxEntity = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).Single(x => x.Name == SkyboxEntityName);
+            var skyboxEntity = sceneAsset.Hierarchy.Parts.Select(x => x.Value.Entity).Single(x => x.Name == SkyboxEntityName);
             skyboxEntity.Add(new LightComponent
             {
                 Intensity = 1.0f,

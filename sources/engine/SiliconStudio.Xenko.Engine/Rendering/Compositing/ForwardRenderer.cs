@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
@@ -61,6 +62,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// <summary>
         /// The shadow map render stages for shadow casters. No shadow rendering will happen if null.
         /// </summary>
+        [MemberCollection(NotNullItems = true)]
         public List<RenderStage> ShadowMapRenderStages { get; } = new List<RenderStage>();
 
         /// <summary>
@@ -588,7 +590,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                                     // Clear render target and depth stencil
                                     Clear?.Draw(drawContext);
 
-                                    ViewIndex = 0;
+                                    ViewIndex = i;
 
                                     DrawView(context, drawContext);
                                     drawContext.CommandList.CopyRegion(ViewOutputTarget, 0, null, vrFullSurface, 0, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2 * i);

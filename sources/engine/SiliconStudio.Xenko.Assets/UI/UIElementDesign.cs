@@ -49,7 +49,10 @@ namespace SiliconStudio.Xenko.Assets.UI
         public BasePart Base { get; set; }
 
         /// <inheritdoc/>
-        UIElement IAssetPartDesign<UIElement>.Part { get { return UIElement; } set { UIElement = value; } }
+        IIdentifiable IAssetPartDesign.Part => UIElement;
+
+        /// <inheritdoc/>
+        UIElement IAssetPartDesign<UIElement>.Part { get => UIElement; set => UIElement = value; }
 
         /// <inheritdoc />
         public bool Equals(UIElementDesign other)

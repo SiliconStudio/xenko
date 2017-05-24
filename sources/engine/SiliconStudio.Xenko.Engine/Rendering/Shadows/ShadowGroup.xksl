@@ -7,9 +7,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     shader ShadowGroup : ShadowStream
     {
-        void ComputeShadow(int lightIndex)
+        // Computes the shadow for a given world position and light index
+        float3 ComputeShadow(float3 position, int lightIndex)
         {
-            streams.shadowColor = 1.0f;
+            return 1.0f;
         }
     };
 }
