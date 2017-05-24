@@ -24,8 +24,8 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
     {
         public const int LambertHamonicOrder = 3;
 
-        private static readonly ProfilingKey LightProbeProfilingKey = new ProfilingKey("LightProbes");
-        private static readonly ProfilingKey PrefilterSH = new ProfilingKey(LightProbeProfilingKey, "Prefilter SphericalHarmonics");
+        private static readonly ProfilingKey LightProbeProfilingKey = new ProfilingKey("LightProbes", ProfilingKeyFlags.GpuProfiling);
+        private static readonly ProfilingKey PrefilterSH = new ProfilingKey(LightProbeProfilingKey, "Prefilter SphericalHarmonics", ProfilingKeyFlags.GpuProfiling);
 
         public static Dictionary<LightProbeComponent, FastList<Color3>> GenerateCoefficients(ISceneRendererContext context, LightProbeComponent[] lightProbes)
         {
@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
                         var lightProbePosition = lightProbe.Entity.Transform.WorldMatrix.TranslationVector;
                         context.GraphicsContext.ResourceGroupAllocator.Reset(context.GraphicsContext.CommandList);
 
-                        context.GraphicsContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, new ProfilingKey(LightProbeProfilingKey, $"LightProbes {lightProbeIndex}"));
+                        context.GraphicsContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, new ProfilingKey(LightProbeProfilingKey, $"LightProbes {lightProbeIndex}", ProfilingKeyFlags.GpuProfiling));
                         lightProbeIndex++;
 
                         cubemapRenderer.Draw(lightProbePosition, cubeTexture);

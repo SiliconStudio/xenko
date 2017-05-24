@@ -4,6 +4,7 @@
 using System;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Lights;
@@ -15,6 +16,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     public class LightShadowMapTexture
     {
+        public ProfilingKey ProfilingKey { get; private set; }
+
         public RenderView RenderView { get; private set; }
 
         public LightComponent LightComponent { get; private set; }
@@ -93,6 +96,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             Atlas = null; // Reset the atlas, It will be setup after
             CascadeCount = 1;
 
+            ProfilingKey = new ProfilingKey($"Shadow Map {Light}", ProfilingKeyFlags.GpuProfiling);
             ShadowType = renderer.GetShadowType(Shadow);
         }
 
