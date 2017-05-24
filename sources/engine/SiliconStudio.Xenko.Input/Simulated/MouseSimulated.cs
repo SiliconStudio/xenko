@@ -27,47 +27,50 @@ namespace SiliconStudio.Xenko.Input
 
         public override IInputSource Source { get; }
 
+        public new MouseDeviceState MouseState => base.MouseState;
+        public new PointerDeviceState PointerState => base.PointerState;
+
         public override void Update(List<InputEvent> inputEvents)
         {
             base.Update(inputEvents);
 
             if (positionLocked)
             {
-                Position = capturedPosition;
-                GetPointerData(0).Position = capturedPosition;
+                MouseState.Position = capturedPosition;
+                PointerState.GetPointerData(0).Position = capturedPosition;
             }
         }
 
         public void SimulateMouseDown(MouseButton button)
         {
-            HandleButtonDown(button);
+            MouseState.HandleButtonDown(button);
         }
 
         public void SimulateMouseUp(MouseButton button)
         {
-            HandleButtonUp(button);
+            MouseState.HandleButtonUp(button);
         }
 
         public void SimulateMouseWheel(float wheelDelta)
         {
-            HandleMouseWheel(wheelDelta);
+            MouseState.HandleMouseWheel(wheelDelta);
         }
 
         public override void SetPosition(Vector2 position)
         {
             if (IsPositionLocked)
             {
-                HandleMouseDelta(position * SurfaceSize - capturedPosition);
+                MouseState.HandleMouseDelta(position * SurfaceSize - capturedPosition);
             }
             else
             {
-                HandleMove(position * SurfaceSize);
+                MouseState.HandleMove(position * SurfaceSize);
             }
         }
             
         public void SimulatePointer(PointerEventType pointerEventType, Vector2 position, int id = 0)
         {
-            PointerInputEvents.Add(new PointerInputEvent { Id = id, Position = position, Type = pointerEventType });
+            PointerState.PointerInputEvents.Add(new PointerDeviceState.InputEvent { Id = id, Position = position, Type = pointerEventType });
         }
 
         public override void LockPosition(bool forceCenter = false)

@@ -1,70 +1,97 @@
-// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 #if SILICONSTUDIO_PLATFORM_UWP
 using System;
 using Windows.Devices.Input;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Input;
+using Windows.UI.Core;
 using SiliconStudio.Core.Mathematics;
-using Point = Windows.Foundation.Point;
+using PointerPointUWP = Windows.UI.Input.PointerPoint;
+using PointUWP = Windows.Foundation.Point;
 
 namespace SiliconStudio.Xenko.Input
 {
-    /// <summary>
-    /// UWP Mouse device
-    /// </summary>
-    internal class PointerUWP : PointerDeviceBase
+    internal class PointerUWP : PointerDeviceBase, IDisposable
     {
-        private readonly FrameworkElement uiControl;
+        protected CoreWindow UIControl;
 
-        public PointerUWP(InputSourceUWP source, FrameworkElement uiControl)
+        public PointerUWP(InputSourceUWP source, CoreWindow uiControl)
         {
+            this.UIControl = uiControl;
             Source = source;
-            this.uiControl = uiControl;
 
             uiControl.SizeChanged += UIControlOnSizeChanged;
-            uiControl.PointerMoved += (sender, args) => HandlePointer(PointerEventType.Moved, args);
-            uiControl.PointerPressed += (sender, args) => HandlePointer(PointerEventType.Pressed, args);
-            uiControl.PointerReleased += (sender, args) => HandlePointer(PointerEventType.Released, args);
-            uiControl.PointerExited += (sender, args) => HandlePointer(PointerEventType.Canceled, args);
-            uiControl.PointerCanceled += (sender, args) => HandlePointer(PointerEventType.Canceled, args);
-            uiControl.PointerCaptureLost += (sender, args) => HandlePointer(PointerEventType.Canceled, args);
+            uiControl.PointerMoved += UIControlOnPointerMoved;
+            uiControl.PointerPressed += UIControlOnPointerPressed;
+            uiControl.PointerReleased += UIControlOnPointerReleased;
+            uiControl.PointerExited += UIControlOnPointerExited;
+            uiControl.PointerCaptureLost += UIControlOnPointerCaptureLost;
 
             // Set initial surface size
-            SetSurfaceSize(new Vector2((float)uiControl.Width, (float)uiControl.Height));
+            SetSurfaceSize(new Vector2((float)uiControl.Bounds.Width, (float)uiControl.Bounds.Height));
         }
+
+        public virtual void Dispose()
+        {
+            UIControl.SizeChanged -= UIControlOnSizeChanged;
+            UIControl.PointerMoved -= UIControlOnPointerMoved;
+            UIControl.PointerPressed -= UIControlOnPointerPressed;
+            UIControl.PointerReleased -= UIControlOnPointerReleased;
+            UIControl.PointerExited -= UIControlOnPointerExited;
+            UIControl.PointerCaptureLost -= UIControlOnPointerCaptureLost;
+        }
+
+        public override IInputSource Source { get; }
 
         public override string Name { get; } = "UWP Pointer";
 
         public override Guid Id { get; } = new Guid("9b1e36b6-de69-4313-89dd-7cbfbe1a436e");
 
-        public override PointerType Type { get; } = PointerType.Unknown;
-
-        public override IInputSource Source { get; }
-
-        protected virtual void HandlePointer(PointerEventType type, PointerRoutedEventArgs args)
+        private void UIControlOnPointerCaptureLost(CoreWindow sender, PointerEventArgs args)
         {
-            var pointer = args.Pointer;
-            var point = args.GetCurrentPoint(uiControl);
+            HandlePointer(PointerEventType.Canceled, args.CurrentPoint);
+        }
 
-            if (point.PointerDevice.PointerDeviceType == PointerDeviceType.Mouse)
+        private void UIControlOnPointerExited(CoreWindow o, PointerEventArgs args)
+        {
+            HandlePointer(PointerEventType.Canceled, args.CurrentPoint);
+        }
+
+        protected virtual void UIControlOnPointerReleased(CoreWindow o, PointerEventArgs args)
+        {
+            HandlePointer(PointerEventType.Released, args.CurrentPoint);
+        }
+
+        protected virtual void UIControlOnPointerPressed(CoreWindow o, PointerEventArgs args)
+        {
+            HandlePointer(PointerEventType.Pressed, args.CurrentPoint);
+        }
+
+        protected virtual void UIControlOnPointerMoved(CoreWindow o, PointerEventArgs args)
+        {
+            HandlePointer(PointerEventType.Moved, args.CurrentPoint);
+        }
+
+
+        private void HandlePointer(PointerEventType type, PointerPointUWP point)
+        {
+            if (point.PointerDevice.PointerDeviceType == PointerDeviceType.Touch || point.PointerDevice.PointerDeviceType == PointerDeviceType.Pen)
             {
-                PointerInputEvents.Add(new PointerInputEvent
+                PointerState.PointerInputEvents.Add(new PointerDeviceState.InputEvent
                 {
-                    Id = (int)pointer.PointerId,
-                    Position = PointToVector2(point.Position),
+                    Id = (int)point.PointerId,
+                    Position = Normalize(PointToVector2(point.Position)),
                     Type = type
                 });
             }
         }
-        private void UIControlOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+
+        private void UIControlOnSizeChanged(CoreWindow sender, WindowSizeChangedEventArgs sizeChangedEventArgs)
         {
-            var newSize = sizeChangedEventArgs.NewSize;
+            var newSize = sizeChangedEventArgs.Size;
             SetSurfaceSize(new Vector2((float)newSize.Width, (float)newSize.Height));
         }
-
-        private Vector2 PointToVector2(Point point)
+        private Vector2 PointToVector2(PointUWP point)
         {
             return new Vector2((float)point.X, (float)point.Y);
         }

@@ -9,9 +9,9 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// Base class for mouse devices, implements some common functionality of <see cref="IMouseDevice"/>, inherits from <see cref="PointerDeviceBase"/>
+    /// An extension to <see cref="PointerDeviceState"/> that handle mouse input and translates it to pointer input
     /// </summary>
-    public abstract class MouseDeviceBase : PointerDeviceBase, IMouseDevice
+    public class MouseDeviceState
     {
         private Vector2 nextDelta = Vector2.Zero;
 
@@ -21,31 +21,33 @@ namespace SiliconStudio.Xenko.Input
         private readonly HashSet<MouseButton> releasedButtons = new HashSet<MouseButton>();
         private readonly HashSet<MouseButton> downButtons = new HashSet<MouseButton>();
 
-        protected MouseDeviceBase()
+        protected IMouseDevice MouseDevice;
+        protected PointerDeviceState PointerState;
+
+        public MouseDeviceState(PointerDeviceState pointerState, IMouseDevice mouseDevice)
         {
+            this.PointerState = pointerState;
+            this.MouseDevice = mouseDevice;
+
             DownButtons = new ReadOnlySet<MouseButton>(downButtons);
             PressedButtons = new ReadOnlySet<MouseButton>(pressedButtons);
             ReleasedButtons = new ReadOnlySet<MouseButton>(releasedButtons);
         }
 
-        public abstract bool IsPositionLocked { get; }
-        
-        public Vector2 Position { get; protected set; }
-        public Vector2 Delta { get; protected set; }
-
         public IReadOnlySet<MouseButton> PressedButtons { get; }
         public IReadOnlySet<MouseButton> ReleasedButtons { get; }
         public IReadOnlySet<MouseButton> DownButtons { get; }
-
-        public override PointerType Type => PointerType.Mouse;
         
-        public override void Update(List<InputEvent> inputEvents)
-        {
-            base.Update(inputEvents);
-            
-            pressedButtons.Clear();
-            releasedButtons.Clear();
+        public Vector2 Position { get; set; }
+        public Vector2 Delta { get; set; }
 
+        /// <summary>
+        /// Generate input events
+        /// </summary>
+        public void Update(List<InputEvent> inputEvents)
+        {
+            Reset();
+            
             // Collect events from queue
             foreach (var evt in Events)
             {
@@ -63,6 +65,14 @@ namespace SiliconStudio.Xenko.Input
                         releasedButtons.Add(mouseButtonEvent.Button);
                     }
                 }
+
+                // Pass mouse-side generate pointer events through the pointer state
+                // These should only be delta movement events so don't update it from this functions
+                var pointerEvent = evt as PointerEvent;
+                if (pointerEvent != null)
+                {
+                    PointerState.UpdatePointerState(pointerEvent, false);
+                }
             }
             Events.Clear();
 
@@ -71,38 +81,23 @@ namespace SiliconStudio.Xenko.Input
             nextDelta = Vector2.Zero;
         }
         
-        public abstract void SetPosition(Vector2 normalizedPosition);
-        
-        public abstract void LockPosition(bool forceCenter = false);
-        
-        public abstract void UnlockPosition();
-
         /// <summary>
         /// Special move that generates pointer events with just delta
         /// </summary>
         /// <param name="delta">The movement delta</param>
-        protected void HandleMouseDelta(Vector2 delta)
+        public void HandleMouseDelta(Vector2 delta)
         {
             if (delta == Vector2.Zero)
                 return;
 
             // Normalize delta
-            delta *= InverseSurfaceSize;
-
-            var data = GetPointerData(0);
-
-            // Update pointer position + delta
-            // Update delta
-            data.Delta = delta;
-            nextDelta += delta;
+            delta *= PointerState.InverseSurfaceSize;
             
-            data.Clock.Restart();
+            nextDelta += delta;
 
-            var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(this);
-            pointerEvent.Position = data.Position;
-            pointerEvent.DeltaPosition = data.Delta;
-            pointerEvent.DeltaTime = data.Clock.Elapsed;
-            pointerEvent.IsDown = data.IsDown;
+            var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(MouseDevice);
+            pointerEvent.Position = Position;
+            pointerEvent.DeltaPosition = delta;
             pointerEvent.PointerId = 0;
             pointerEvent.PointerType = Type;
             pointerEvent.EventType = PointerEventType.Moved;
@@ -118,7 +113,7 @@ namespace SiliconStudio.Xenko.Input
 
             downButtons.Add(button);
 
-            var buttonEvent = InputEventPool<MouseButtonEvent>.GetOrCreate(this);
+            var buttonEvent = InputEventPool<MouseButtonEvent>.GetOrCreate(MouseDevice);
             buttonEvent.Button = button;
             buttonEvent.IsDown = true;
             Events.Add(buttonEvent);
@@ -136,7 +131,7 @@ namespace SiliconStudio.Xenko.Input
 
             downButtons.Remove(button);
 
-            var buttonEvent = InputEventPool<MouseButtonEvent>.GetOrCreate(this);
+            var buttonEvent = InputEventPool<MouseButtonEvent>.GetOrCreate(MouseDevice);
             buttonEvent.Button = button;
             buttonEvent.IsDown = false;
             Events.Add(buttonEvent);
@@ -148,35 +143,35 @@ namespace SiliconStudio.Xenko.Input
 
         public void HandleMouseWheel(float wheelDelta)
         {
-            var wheelEvent = InputEventPool<MouseWheelEvent>.GetOrCreate(this);
+            var wheelEvent = InputEventPool<MouseWheelEvent>.GetOrCreate(MouseDevice);
             wheelEvent.WheelDelta = wheelDelta;
             Events.Add(wheelEvent);
         }
-        
+
         /// <summary>
         /// Handles a single pointer down
         /// </summary>
-        protected void HandlePointerDown()
+        public void HandlePointerDown()
         {
-            PointerInputEvents.Add(new PointerInputEvent { Type = PointerEventType.Pressed, Position = Position, Id = 0 });
+            PointerState.PointerInputEvents.Add(new PointerDeviceState.InputEvent { Type = PointerEventType.Pressed, Position = Position, Id = 0 });
         }
 
         /// <summary>
         /// Handles a single pointer up
         /// </summary>
-        protected void HandlePointerUp()
+        public void HandlePointerUp()
         {
-            PointerInputEvents.Add(new PointerInputEvent { Type = PointerEventType.Released, Position = Position, Id = 0 });
+            PointerState.PointerInputEvents.Add(new PointerDeviceState.InputEvent { Type = PointerEventType.Released, Position = Position, Id = 0 });
         }
 
         /// <summary>
         /// Handles a single pointer move
         /// </summary>
         /// <param name="newPosition">New position of the pointer</param>
-        protected void HandleMove(Vector2 newPosition)
+        public void HandleMove(Vector2 newPosition)
         {
             // Normalize position
-            newPosition *= InverseSurfaceSize;
+            newPosition *= PointerState.InverseSurfaceSize;
 
             if (newPosition != Position)
             {
@@ -184,8 +179,48 @@ namespace SiliconStudio.Xenko.Input
                 Position = newPosition;
 
                 // Generate Event
-                PointerInputEvents.Add(new PointerInputEvent { Type = PointerEventType.Moved, Position = newPosition, Id = 0 });
+                PointerState.PointerInputEvents.Add(new PointerDeviceState.InputEvent { Type = PointerEventType.Moved, Position = newPosition, Id = 0 });
             }
         }
+
+        void Reset()
+        {
+            pressedButtons.Clear();
+            releasedButtons.Clear();
+        }
+    }
+
+    /// <summary>
+    /// Base class for mouse devices, implements some common functionality of <see cref="IMouseDevice"/>, inherits from <see cref="PointerDeviceBase"/>
+    /// </summary>
+    public abstract class MouseDeviceBase : PointerDeviceBase, IMouseDevice
+    {
+        protected MouseDeviceState MouseState;
+
+        protected MouseDeviceBase()
+        {
+            MouseState = new MouseDeviceState(PointerState, this);
+        }
+
+        public abstract bool IsPositionLocked { get; }
+
+        public IReadOnlySet<MouseButton> PressedButtons => MouseState.PressedButtons;
+        public IReadOnlySet<MouseButton> ReleasedButtons => MouseState.ReleasedButtons;
+        public IReadOnlySet<MouseButton> DownButtons => MouseState.DownButtons;
+
+        public Vector2 Position => MouseState.Position;
+        public Vector2 Delta => MouseState.Delta;
+
+        public override void Update(List<InputEvent> inputEvents)
+        {
+            base.Update(inputEvents);
+            MouseState.Update(inputEvents);
+        }
+        
+        public abstract void SetPosition(Vector2 normalizedPosition);
+        
+        public abstract void LockPosition(bool forceCenter = false);
+        
+        public abstract void UnlockPosition();
     }
 }

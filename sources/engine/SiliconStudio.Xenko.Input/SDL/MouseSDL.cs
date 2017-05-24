@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Input
         private void OnMouseWheelEvent(SDL.SDL_MouseWheelEvent sdlMouseWheelEvent)
         {
             var flip = sdlMouseWheelEvent.direction == (uint)SDL.SDL_MouseWheelDirection.SDL_MOUSEWHEEL_FLIPPED ? -1 : 1;
-            HandleMouseWheel(sdlMouseWheelEvent.y * flip);
+            MouseState.HandleMouseWheel(sdlMouseWheelEvent.y * flip);
         }
 
         private void OnMouseInputEvent(SDL.SDL_MouseButtonEvent e)
@@ -101,11 +101,11 @@ namespace SiliconStudio.Xenko.Input
 
             if (e.type == SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN)
             {
-                HandleButtonDown(button);
+                MouseState.HandleButtonDown(button);
             }
             else
             {
-                HandleButtonUp(button);
+                MouseState.HandleButtonUp(button);
             }
         }
 
@@ -113,7 +113,7 @@ namespace SiliconStudio.Xenko.Input
         {
             if (IsPositionLocked)
             {
-                HandleMouseDelta(new Vector2(e.x - relativeCapturedPosition.X, e.y - relativeCapturedPosition.Y));
+                MouseState.HandleMouseDelta(new Vector2(e.x - relativeCapturedPosition.X, e.y - relativeCapturedPosition.Y));
 
                 // Restore position to prevent mouse from going out of the window where we would not get
                 // mouse move event.
@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Input
             }
             else
             {
-                HandleMove(new Vector2(e.x, e.y));
+                MouseState.HandleMove(new Vector2(e.x, e.y));
             }
         }
 

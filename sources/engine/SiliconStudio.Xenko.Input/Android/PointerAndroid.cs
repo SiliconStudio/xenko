@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Input
                     var evt = new PointerInputEvent
                     {
                         Id = e.GetPointerId(i),
-                        Position = new Vector2(e.GetX(i), e.GetY(i)) * pointer.InverseSurfaceSize,
+                        Position = Normalize(new Vector2(e.GetX(i), e.GetY(i))),
                         Type = actionType
                     };
 

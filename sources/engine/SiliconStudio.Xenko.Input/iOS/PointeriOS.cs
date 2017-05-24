@@ -68,9 +68,8 @@ namespace SiliconStudio.Xenko.Input
                     var uitouch = (UITouch)item;
                     var pointerEvent = new PointerInputEvent();
                     var touchId = uitouch.Handle.ToInt32();
-                    
 
-                    pointerEvent.Position = CGPointToVector2(uitouch.LocationInView(uiControl.GameView))*InverseSurfaceSize;
+                    pointerEvent.Position = Normalize(CGPointToVector2(uitouch.LocationInView(uiControl.GameView)));
                     switch (uitouch.Phase)
                     {
                         case UITouchPhase.Began:
@@ -121,7 +120,7 @@ namespace SiliconStudio.Xenko.Input
                     }
 
                     pointerEvent.Id = touchFingerIndex;
-                    PointerInputEvents.Add(pointerEvent);
+                    PointerState.PointerInputEvents.Add(pointerEvent);
                 }
             }
         }

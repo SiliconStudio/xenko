@@ -14,20 +14,17 @@ namespace SiliconStudio.Xenko.Input
 {
     internal class MouseWinforms : MouseDeviceBase, IDisposable
     {
-        private readonly GameBase game;
         private readonly Control uiControl;
         private bool isPositionLocked;
-        private bool wasVisibleBeforeCapture;
         private Point capturedPosition;
 
         // Stored position for SetPosition
         private Point targetPosition;
         private bool shouldSetPosition;
 
-        public MouseWinforms(InputSourceWinforms source, GameBase game, Control uiControl)
+        public MouseWinforms(InputSourceWinforms source, Control uiControl)
         {
             Source = source;
-            this.game = game;
             this.uiControl = uiControl;
             
             uiControl.MouseMove += OnMouseMove;
@@ -83,8 +80,6 @@ namespace SiliconStudio.Xenko.Input
         {
             if (!isPositionLocked)
             {
-                wasVisibleBeforeCapture = game.IsMouseVisible;
-                game.IsMouseVisible = false;
                 capturedPosition = Cursor.Position;
                 if (forceCenter)
                 {
@@ -100,7 +95,14 @@ namespace SiliconStudio.Xenko.Input
             {
                 isPositionLocked = false;
                 capturedPosition = System.Drawing.Point.Empty;
-                game.IsMouseVisible = wasVisibleBeforeCapture;
+            }
+        }
+
+        internal void ForceReleaseButtons()
+        {
+            foreach (var button in DownButtons.ToArray())
+            {
+                MouseState.HandleButtonUp(button);
             }
         }
 
@@ -109,13 +111,13 @@ namespace SiliconStudio.Xenko.Input
             if (isPositionLocked)
             {
                 // Register mouse delta and reset
-                HandleMouseDelta(new Vector2(Cursor.Position.X - capturedPosition.X, Cursor.Position.Y - capturedPosition.Y));
+                MouseState.HandleMouseDelta(new Vector2(Cursor.Position.X - capturedPosition.X, Cursor.Position.Y - capturedPosition.Y));
                 targetPosition = capturedPosition;
                 shouldSetPosition = true;
             }
             else
             {
-                HandleMove(new Vector2(e.X, e.Y));
+                MouseState.HandleMove(new Vector2(e.X, e.Y));
             }
         }
 
@@ -130,18 +132,18 @@ namespace SiliconStudio.Xenko.Input
             if (!uiControl.ClientRectangle.Contains(uiControl.PointToClient(Control.MousePosition)))
                 return;
 
-            HandleMouseWheel((float)mouseEventArgs.Delta / (float)SystemInformation.MouseWheelScrollDelta);
+            MouseState.HandleMouseWheel((float)mouseEventArgs.Delta / (float)SystemInformation.MouseWheelScrollDelta);
         }
 
         private void OnMouseUp(object sender, MouseEventArgs mouseEventArgs)
         {
-            HandleButtonUp(ConvertMouseButton(mouseEventArgs.Button));
+            MouseState.HandleButtonUp(ConvertMouseButton(mouseEventArgs.Button));
         }
 
         private void OnMouseDown(object sender, MouseEventArgs mouseEventArgs)
         {
             uiControl.Focus();
-            HandleButtonDown(ConvertMouseButton(mouseEventArgs.Button));
+            MouseState.HandleButtonDown(ConvertMouseButton(mouseEventArgs.Button));
         }
 
         private void OnLostMouseCapture(object sender, EventArgs args)
@@ -149,7 +151,7 @@ namespace SiliconStudio.Xenko.Input
             var buttonsToRelease = DownButtons.ToArray();
             foreach (var button in buttonsToRelease)
             {
-                HandleButtonUp(button);
+                MouseState.HandleButtonUp(button);
             }
         }
 
