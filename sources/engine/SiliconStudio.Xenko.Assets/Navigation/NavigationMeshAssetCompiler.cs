@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 if(sceneAsset == null)
                     yield break;
 
-                var sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
+                var sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Value.Entity).ToList();
                 foreach (var entity in sceneEntities)
                 {
                     var collider = entity.Get<StaticColliderComponent>();
@@ -109,6 +109,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 gameSettingsAsset = context.GetGameSettingsAsset();
                 asset = value;
                 assetUrl = url;
+                
+                Version = 1; // Removed separate debug model stored in the navigation mesh
             }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
@@ -250,7 +252,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                         clonedSceneAsset = (SceneAsset)AssetCloner.Clone(sceneAsset);
 
                         // Turn the entire entity hierarchy into a single list
-                        var sceneEntities = clonedSceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
+                        var sceneEntities = clonedSceneAsset.Hierarchy.Parts.Select(x => x.Value.Entity).ToList();
 
                         sceneHash = 0;
                         foreach (var entity in sceneEntities)

@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Assets.UI
             if (instance.Hierarchy.RootParts.All(x => x.Id != rootElementId))
                 throw new ArgumentException(@"The given id cannot be found in the root parts of this library.", nameof(elementId));
 
-            instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
+            instanceId = instance.Hierarchy.Parts.Values.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
 
             var result = new AssetCompositeHierarchyData<UIElementDesign, UIElement>();
             result.RootParts.Add(instance.Hierarchy.Parts[rootElementId].UIElement);
