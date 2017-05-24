@@ -49,7 +49,6 @@ namespace SiliconStudio.Xenko.Graphics
             foreach (QueryEvent queryEvent in queryEvents)
             {
                 var profStat = Profiler.Begin(queryEvent.ProfilingKey, queryResults[queryEvent.BeginQuery.Value.InternalIndex]);
-                profStat.SetAttribute("isGpuQuery", true);
                 profStat.End(queryResults[queryEvent.EndQuery.Value.InternalIndex]);
             }
 

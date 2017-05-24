@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                         throw new ArgumentOutOfRangeException();
                 }
 
-                DrawContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, new ProfilingKey($"Face {(CubeMapFace)face}"));
+                DrawContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Red, CubemapFacesProfilingKey[face]);
 
                 // Draw
                 context.GameSystems.Draw(context.DrawTime);
@@ -101,8 +101,18 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             }
         }
 
-        private static readonly ProfilingKey CubemapSceneRendererProfilingKey = new ProfilingKey("CubemapSceneRenderer");
-        private static readonly ProfilingKey SpecularProbeProfilingKey = new ProfilingKey(CubemapSceneRendererProfilingKey, "SpecularProbe");
+        private static readonly ProfilingKey[] CubemapFacesProfilingKey =
+        {
+            new ProfilingKey($"Face {(CubeMapFace)0}", ProfilingKeyFlags.GpuProfiling),
+            new ProfilingKey($"Face {(CubeMapFace)1}", ProfilingKeyFlags.GpuProfiling),
+            new ProfilingKey($"Face {(CubeMapFace)2}", ProfilingKeyFlags.GpuProfiling),
+            new ProfilingKey($"Face {(CubeMapFace)3}", ProfilingKeyFlags.GpuProfiling),
+            new ProfilingKey($"Face {(CubeMapFace)4}", ProfilingKeyFlags.GpuProfiling),
+            new ProfilingKey($"Face {(CubeMapFace)5}", ProfilingKeyFlags.GpuProfiling),
+        };
+
+        private static readonly ProfilingKey CubemapSceneRendererProfilingKey = new ProfilingKey("CubemapSceneRenderer", ProfilingKeyFlags.GpuProfiling);
+        private static readonly ProfilingKey SpecularProbeProfilingKey = new ProfilingKey(CubemapSceneRendererProfilingKey, "SpecularProbe", ProfilingKeyFlags.GpuProfiling);
 
         public static Texture GenerateCubemap(ISceneRendererContext context, Vector3 position, int textureSize)
         {
