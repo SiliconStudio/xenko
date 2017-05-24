@@ -18,9 +18,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float2 DepthParameters[TLightCount];
         };
         
-        override void ComputeShadow(int lightIndex)
+        override float3 ComputeShadow(float3 position, int lightIndex)
         {
-            float4 lightSpace = mul(float4(streams.PositionWS.xyz, 1), View[lightIndex]);
+            float4 lightSpace = mul(float4(position, 1), View[lightIndex]);
             
             // Store length and normalize
             float distanceToLight = length(lightSpace.xyz);
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             }
             
             // Compare distance to light to value inside of the shadow map
-            streams.shadowColor = FilterShadow(samplePosition, distanceToLight);
+            return FilterShadow(samplePosition, distanceToLight);
         }
     };
 }

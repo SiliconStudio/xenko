@@ -307,7 +307,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         {
             var classSource = (ShaderClassSource)mixinInfo.ShaderSource;
 
-            // If we allow to parse non instantiated generics, put empty generic arguments to let the ShaderLoader expanding correctly the class
+            // If we allow to parse non instantiated generics, put empty generic arguments to let the ShaderLoader correctly expand the class
             var shaderClass = ShaderLoader.LoadClassSource(classSource, mixinInfo.Macros, mixinInfo.Log, AllowNonInstantiatedGenerics);
 
             // If result is null, there was some errors while parsing.

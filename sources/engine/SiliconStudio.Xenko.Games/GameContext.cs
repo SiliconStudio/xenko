@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -113,7 +113,6 @@ namespace SiliconStudio.Xenko.Games
 
         // This code is for backward compatibility only where the generated games
         // would not explicitly create the context, but would just use a Winform
-        // or a SwapChainPanel.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 #if (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
         /// <summary>
@@ -141,17 +140,6 @@ namespace SiliconStudio.Xenko.Games
         }
 #endif
 #endif
-#elif SILICONSTUDIO_PLATFORM_UWP
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="Windows.UI.Xaml.Controls.SwapChainPanel"/> to <see cref="GameContextUWP"/>.
-        /// </summary>
-        /// <param name="panel">SwapChainPanel</param>
-        /// <returns>The result of the conversion.</returns>
-        [Obsolete ("Use new GameContextWindowsRuntime(panel) instead.")]
-        public static implicit operator GameContext(Windows.UI.Xaml.Controls.SwapChainPanel panel)
-        {
-            return new GameContextUWP(panel);
-        }
 #endif
     }
 

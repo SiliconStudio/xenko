@@ -16,8 +16,21 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
-    public static partial class LightShaftsShaderKeys
+    internal static partial class ShaderMixins
     {
-        public static readonly ValueParameterKey<float> DensityFactor = ParameterKeys.NewValue<float>();
+        internal partial class AdditiveLightEffect  : IShaderMixinBuilder
+        {
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
+            {
+                context.Mixin(mixin, "AdditiveLightShader", context.GetParam(AdditiveLightEffectKeys.Color));
+            }
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
+            {
+                ShaderMixinManager.Register("AdditiveLightEffect", new AdditiveLightEffect());
+            }
+        }
     }
 }

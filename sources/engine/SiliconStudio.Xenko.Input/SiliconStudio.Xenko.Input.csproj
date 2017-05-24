@@ -46,7 +46,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'UWP' ">
       <ItemGroup>
         <Reference Include="SharpDX.XInput">
           <SpecificVersion>False</SpecificVersion>
