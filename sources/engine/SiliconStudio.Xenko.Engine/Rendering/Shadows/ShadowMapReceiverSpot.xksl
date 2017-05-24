@@ -11,23 +11,21 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </remarks>
     internal shader ShadowMapReceiverSpot<int TLightCount, bool TCascadeDebug> : ShadowMapReceiverBase<PerDraw.Lighting, 1, TLightCount>
     {
-        override void ComputeShadow(int lightIndex)
+        override float3 ComputeShadow(float3 position, int lightIndex)
         {
-            base.ComputeShadow(lightIndex);
-
             // Offset the shadow position
-            float3 shadowPosition = streams.PositionWS.xyz;
+            float3 shadowPosition = position.xyz;
             shadowPosition += GetShadowPositionOffset(OffsetScales[lightIndex], streams.NdotL, streams.normalWS);
             float shadow = ComputeShadowFromCascade(shadowPosition, 0, lightIndex);
 
             // Output the shadow color
             if (TCascadeDebug)
             {
-                streams.shadowColor = float3(0, 1, 0) * shadow;
+                return float3(0, 1, 0) * shadow;
             }
             else
             {
-                streams.shadowColor = shadow;
+                return shadow;
             }
         }
     };
