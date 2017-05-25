@@ -4,57 +4,19 @@
 namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
-    /// A pool holding <see cref="Query"/> with a specific <see cref="QueryType"/>.
+    /// A pool holding queries with a specific <see cref="QueryType"/>.
     /// </summary>
     public partial class QueryPool : GraphicsResourceBase
     {
-        private const QueryType queryType = QueryType.Timestamp;
-
-        private Query[] queries;
-        private int capacity;
-        private bool isInUse;
-
         /// <summary>
-        /// <see cref="QueryType"/> for this QueryPool.
+        /// <see cref="QueryType"/> for this pool.
         /// </summary>
-        public QueryType QueryType => queryType;
+        public QueryType QueryType { get; }
 
         /// <summary>
         /// Capacity of this pool.
         /// </summary>
-        public int Capacity => capacity;
-
-        /// <summary>
-        /// Whether or not the pool is currently used by a <see cref="CommandList"/>
-        /// </summary>
-        public bool IsInUse
-        {
-            get
-            {
-                return isInUse;
-            }
-            set
-            {
-                if (!isInUse)
-                {
-                    isInUse = value;
-                }
-            }
-        }
-
-        public QueryPool()
-        {
-
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QueryPool"/> class.
-        /// </summary>
-        /// <param name="graphicsDevice">The <see cref="GraphicsDevice"/>.</param>
-        internal QueryPool(GraphicsDevice graphicsDevice) : base(graphicsDevice)
-        {
-
-        }
+        public int QueryCount { get; }
 
         /// <summary>
         /// Creates a new <see cref="QueryPool" /> instance.
@@ -63,37 +25,26 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="queryType">The <see cref="QueryType"/> of the pool.</param>
         /// <param name="queryCount">The capacity of the pool.</param>
         /// <returns>An instance of a new <see cref="QueryPool" /></returns>
-        public static QueryPool New(CommandList commandList, QueryType queryType, int queryCount)
+        public static QueryPool New(GraphicsDevice graphicsDevice, QueryType queryType, int queryCount)
         {
-            return new QueryPool(commandList.GraphicsDevice).InitializeImpl(commandList, queryType, queryCount);
+            return new QueryPool(graphicsDevice, queryType, queryCount);
         }
 
-        /// <summary>
-        /// Clones this instance.
-        /// </summary>
-        /// <returns>A clone of this instance</returns>
-        public QueryPool Clone(CommandList commandList)
+        protected QueryPool(GraphicsDevice graphicsDevice, QueryType queryType, int queryCount) : base(graphicsDevice)
         {
-            return new QueryPool(GraphicsDevice).InitializeImpl(commandList, queryType, capacity);
+            QueryType = queryType;
+            QueryCount = queryCount;
+
+            Recreate();
         }
 
+        /// <inheritdoc/>
         protected internal override bool OnRecreate()
         {
             base.OnRecreate();
 
-            OnRecreateImpl();
-
+            Recreate();
             return true;
-        }
-
-        /// <summary>
-        /// Releases this instance.
-        /// </summary>
-        /// <param name="commandList">The <see cref="CommandList"/>.</param>
-        public void Release(CommandList commandList)
-        {
-            Reset(commandList);
-            isInUse = false;
         }
     }
 }

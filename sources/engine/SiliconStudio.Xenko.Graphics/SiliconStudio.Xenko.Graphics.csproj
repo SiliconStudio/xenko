@@ -132,7 +132,6 @@
     <Compile Include="Direct3D\QueryPool.Direct3D.cs" />
     <Compile Include="Direct3D\SharpDXInterop.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFont.cs" />
-    <Compile Include="GpuQueryProfiler.cs" />
     <Compile Include="Null\CommandList.Null.cs" />
     <Compile Include="Null\DescriptorPool.Null.cs" />
     <Compile Include="Null\DescriptorSet.Null.cs" />
@@ -147,9 +146,7 @@
     <Compile Include="Font\SignedDistanceFieldSpriteFontSerializer.cs" />
     <Compile Include="OpenGL\QueryPool.OpenGL.cs" />
     <Compile Include="PipelineStateDescriptionWithHash.cs" />
-    <Compile Include="Query.cs" />
     <Compile Include="QueryPool.cs" />
-    <Compile Include="QueryPoolManager.cs" />
     <Compile Include="QueryType.cs" />
     <Compile Include="RenderingSettings.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
@@ -665,6 +662,7 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>UIEffectShader.cs</LastGenOutput>
     </None>
+    <Compile Include="Vulkan\QueryPool.Vulkan.cs" />
   </ItemGroup>
   <Import Project="..\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

@@ -3,61 +3,64 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 
 using System;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+using OpenTK.Graphics.ES30;
+#else
+using OpenTK.Graphics.OpenGL;
+#endif
 
 namespace SiliconStudio.Xenko.Graphics
 {
     public partial class QueryPool
     {
-        public bool IsFull { get; private set; }
+        internal int[] NativeQueries;
 
-        internal QueryPool InitializeImpl(CommandList commandList, QueryType queryType, int queryCount)
+        public bool TryGetData(long[] dataArray)
         {
-            if (queryCount == 0) throw new ArgumentOutOfRangeException("QueryPool capacity must be > 0");
-            return this;
+            for (var index = 0; index < NativeQueries.Length; index++)
+            {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                GL.Ext.GetQueryObject(NativeQueries[index], GetQueryObjectParam.QueryResultAvailable, out long availability);
+#else
+                GL.GetQueryObject(NativeQueries[index], GetQueryObjectParam.QueryResultAvailable, out long availability);
+#endif
+                if (availability == 0)
+                    return false;
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                GL.Ext.GetQueryObject(NativeQueries[index], GetQueryObjectParam.QueryResult, out dataArray[index]);
+#else
+                GL.GetQueryObject(NativeQueries[index], GetQueryObjectParam.QueryResult, out dataArray[index]);
+#endif
+            }
+
+            return true;
         }
 
-        /// <summary>
-        /// Allocate a query from the <see cref="QueryPool"/>.
-        /// </summary>
-        /// <returns><see cref="Query"/> from the pool; <see cref="null"/> otherwise.</returns>
-        public Query? AllocateQuery()
+        /// <inheritdoc/>
+        protected internal override void OnDestroyed()
         {
-            return null;
+            GL.DeleteQueries(QueryCount, NativeQueries);
+            NativeQueries = null;
+
+            base.OnDestroyed();
         }
 
-        /// <summary>
-        /// Resets this instance.
-        /// </summary>
-        /// <param name="commandList">The <see cref="CommandList"/>.</param>
-        public void Reset(CommandList commandList)
+        private void Recreate()
         {
-           
-        }
+            switch (QueryType)
+            {
+                case QueryType.Timestamp:
+                    break;
 
-        internal void OnRecreateImpl()
-        {
-            
-        }
+                default:
+                    throw new NotImplementedException();
+            }
 
-        /// <summary>
-        /// Gets the result of the queries to an array of data.
-        /// </summary>
-        /// <typeparam name="T">Expected data type returned by a query.</typeparam>
-        /// <param name="commandList">The <see cref="CommandList"/>.</param>
-        /// <param name="dataArray">A preallocated array of data.</param>
-        public void GetData<T>(CommandList commandList, ref T[] dataArray) where T : struct
-        {
-
-        }
-
-        /// <summary>
-        /// Gets GPU frequency, using D3D11 disjoint query.
-        /// </summary>
-        /// <returns></returns>
-        internal long GetGpuFrequency(CommandList commandList)
-        {
-            return 1000;
+            NativeQueries = new int[QueryCount];
+            GL.GenQueries(QueryCount, NativeQueries);
         }
     }
 }
+
 #endif

@@ -15,6 +15,7 @@ using OpenTK.Graphics.ES30;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
 using PrimitiveTypeGl = OpenTK.Graphics.ES30.PrimitiveType;
 using DebugSourceExternal = OpenTK.Graphics.ES30.All;
+using QueryCounterTarget = OpenTK.Graphics.ES30.All;
 #else
 using OpenTK.Graphics.OpenGL;
 using PrimitiveTypeGl = OpenTK.Graphics.OpenGL.PrimitiveType;
@@ -945,6 +946,24 @@ namespace SiliconStudio.Xenko.Graphics
                     GL.PopDebugGroup();
             }
 #endif
+        }
+
+        /// <summary>
+        /// Submit a timestamp query.
+        /// </summary>
+        /// <param name="queryPool">The QueryPool owning the query.</param>
+        /// <param name="index">The query index.</param>
+        public void WriteTimestamp(QueryPool queryPool, int index)
+        {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            GL.Ext.QueryCounter(queryPool.NativeQueries[index], QueryCounterTarget.TimestampExt);
+#else
+            GL.QueryCounter(queryPool.NativeQueries[index], QueryCounterTarget.Timestamp);
+#endif
+        }
+
+        public void ResetQueryPool(QueryPool queryPool)
+        {
         }
 
         public MappedResource MapSubresource(GraphicsResource resource, int subResourceIndex, MapMode mapMode, bool doNotWait = false, int offsetInBytes = 0, int lengthInBytes = 0)
