@@ -14,11 +14,6 @@ namespace SiliconStudio.Xenko.Input
     public interface IPointerDevice : IInputDevice
     {
         /// <summary>
-        /// The type of the pointer device
-        /// </summary>
-        PointerType Type { get; }
-
-        /// <summary>
         /// The size of the surface used by the pointer, for a mouse this is the size of the window, for a touch device, the size of the touch area, etc.
         /// </summary>
         Vector2 SurfaceSize { get; }
