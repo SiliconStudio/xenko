@@ -762,27 +762,6 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.FrameDrawCalls++;
         }
 
-        /// <summary>
-        /// Begins profiling.
-        /// Submits a GPU timestamp query.
-        /// </summary>
-        /// <param name="queryPool">The <see cref="QueryPool"/> owning "query".</param>
-        /// <param name="query">The <see cref="Query"/>.</param>
-        public void WriteTimestamp(QueryPool queryPool, Query query)
-        {
-
-        }
-
-        public void BeginQuery(QueryPool queryPool, Query query)
-        {
-
-        }
-
-        public void EndQuery(QueryPool queryPool, Query query)
-        {
-
-        }
-
         public void DrawAuto(PrimitiveType primitiveType)
         {
 #if DEBUG
