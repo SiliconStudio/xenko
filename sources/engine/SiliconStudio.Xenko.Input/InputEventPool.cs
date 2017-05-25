@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Input
     /// <typeparam name="TEventType">The type of event to pool</typeparam>
     public static class InputEventPool<TEventType> where TEventType : InputEvent, new()
     {
-        private static PoolListStruct<TEventType> eventPool;
+        [ThreadStatic] private static PoolListStruct<TEventType> eventPool;
 
         /// <summary>
         /// The number of events in circulation, if this number keeps increasing, Enqueue is possible not called somewhere
