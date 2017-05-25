@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             float3 lightDirection = -light.DirectionWS;
 
             float attenuation = 1;
-            attenuation *= GetDistanceAttenuation(lightVector , lightInvSquareRadius);
+            attenuation *= GetDistanceAttenuation(lightVector, lightInvSquareRadius);
             attenuation *= GetAngleAttenuation(lightVectorNorm, lightDirection, lightAngleAndOffset.x, lightAngleAndOffset.y);
             return attenuation;
         }
