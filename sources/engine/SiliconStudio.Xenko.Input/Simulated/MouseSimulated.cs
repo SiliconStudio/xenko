@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override string Name => "Simulated Mouse";
 
-        public override Guid Id => new Guid(10, 10, 2, 0, 0, 0, 0, 0, 0, 0, 0);
+        public override Guid Id => new Guid("B6B2EE26-23F2-4B8B-8431-529DBCF9AC83");
 
         public override bool IsPositionLocked => positionLocked;
 
