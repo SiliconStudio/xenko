@@ -78,7 +78,6 @@ namespace SiliconStudio.Xenko.Input
             var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(SourceDevice);
             pointerEvent.Position = evt.Position;
             pointerEvent.PointerId = evt.Id;
-            pointerEvent.PointerType = Type;
             pointerEvent.EventType = evt.Type;
             UpdatePointerState(pointerEvent);
 

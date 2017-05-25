@@ -56,12 +56,6 @@ namespace SiliconStudio.Xenko.Input
         public PointerEventType EventType { get; internal set; }
 
         /// <summary>
-        /// Gets the type of the pointer.
-        /// </summary>
-        /// <value>The type of the pointer.</value>
-        public PointerType PointerType { get; internal set; }
-
-        /// <summary>
         /// Gets if the pointer is down, useful for filtering out move events that are not placed between drags
         /// </summary>
         public bool IsDown { get; internal set; }
@@ -73,7 +67,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override string ToString()
         {
-            return $"Pointer {PointerId} {EventType}, {AbsolutePosition}, Delta: {AbsoluteDeltaPosition}, DT: {DeltaTime}, {nameof(IsDown)}: {IsDown}, {nameof(PointerType)}: {PointerType}, {nameof(Pointer)}: {Pointer.Name}";
+            return $"Pointer {PointerId} {EventType}, {AbsolutePosition}, Delta: {AbsoluteDeltaPosition}, DT: {DeltaTime}, {nameof(IsDown)}: {IsDown}, {nameof(Pointer)}: {Pointer.Name}";
         }
 
         /// <summary>
@@ -90,7 +84,6 @@ namespace SiliconStudio.Xenko.Input
                 DeltaPosition = DeltaPosition,
                 DeltaTime = DeltaTime,
                 EventType = EventType,
-                PointerType = PointerType,
                 IsDown = IsDown
             };
         }

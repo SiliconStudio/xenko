@@ -99,7 +99,6 @@ namespace SiliconStudio.Xenko.Input
             pointerEvent.Position = Position;
             pointerEvent.DeltaPosition = delta;
             pointerEvent.PointerId = 0;
-            pointerEvent.PointerType = Type;
             pointerEvent.EventType = PointerEventType.Moved;
 
             Events.Add(pointerEvent);

@@ -45,8 +45,6 @@ namespace SiliconStudio.Xenko.Input
 
         public override Guid Id => new Guid("6fa378ee-1ffe-41c1-947a-b425adcd5258");
 
-        public override PointerType Type => PointerType.Touch;
-
         public override IInputSource Source { get; }
 
         public void Dispose()
