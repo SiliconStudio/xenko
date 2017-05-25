@@ -253,9 +253,11 @@ namespace SiliconStudio.Xenko.Profiling
 
             if ((e.Key.Flags & ProfilingKeyFlags.GpuProfiling) == ProfilingKeyFlags.GpuProfiling)
             {
-                double minTimeMs = profilingResult.MinTime / (double)Profiler.GpuClockFrequency;
-                double accTimeMs = (profilingResult.Count != 0 ? profilingResult.AccumulatedTime / (double)profilingResult.Count : 0.0) / (double)Profiler.GpuClockFrequency;
-                double maxTimeMs = profilingResult.MaxTime / (double)Profiler.GpuClockFrequency;
+                double gpuTimestampFrequency = GraphicsDevice.TimestampFrequency / 1000.0;
+
+                double minTimeMs = profilingResult.MinTime / gpuTimestampFrequency;
+                double accTimeMs = (profilingResult.Count != 0 ? profilingResult.AccumulatedTime / (double)profilingResult.Count : 0.0) / gpuTimestampFrequency;
+                double maxTimeMs = profilingResult.MaxTime / gpuTimestampFrequency;
 
                 profilersStringBuilder.AppendFormat("{0:000.000}ms", minTimeMs);
                 profilersStringBuilder.Append(" |  ");
