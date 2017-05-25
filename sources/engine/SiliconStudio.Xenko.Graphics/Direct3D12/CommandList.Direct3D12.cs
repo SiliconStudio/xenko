@@ -549,7 +549,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Ends profiling.
         /// </summary>
-        public void EndDebugEvent()
+        public void EndProfile()
         {
             //currentCommandList.NativeCommandList.EndEvent();
         }
