@@ -85,8 +85,6 @@ namespace SiliconStudio.Xenko.Graphics
         {
             device.InternalMainCommandList = this;
 
-            gpuQueryProfiler = new GpuQueryProfiler(this);
-
             // Default state
             DepthStencilBoundState.DepthBufferWriteEnable = true;
             DepthStencilBoundState.StencilWriteMask = 0xFF;
