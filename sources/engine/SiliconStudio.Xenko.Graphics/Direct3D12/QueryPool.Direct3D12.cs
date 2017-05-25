@@ -1,53 +1,85 @@
-﻿// Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
-
 using System;
+using SharpDX.Direct3D12;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Graphics
 {
     public partial class QueryPool
     {
-        public bool IsFull { get; private set; }
+        private Resource readbackBuffer;
+        private Fence readbackFence;
 
-        internal QueryPool InitializeImpl(CommandList commandList, QueryType queryType, int queryCount)
+        internal long CompletedValue;
+        internal long PendingValue;
+        internal QueryHeap NativeQueryHeap;
+
+        public unsafe bool TryGetData(long[] dataArray)
         {
-            if (queryCount == 0) throw new ArgumentOutOfRangeException("QueryPool capacity must be > 0");
-            return this;
+            // If readback has completed, return the data from the staging buffer
+            if (readbackFence.CompletedValue == PendingValue)
+            {
+                CompletedValue = PendingValue;
+
+                var mappedData = readbackBuffer.Map(0);
+                fixed (long* dataPointer = &dataArray[0])
+                {
+                    Utilities.CopyMemory(new IntPtr(dataPointer), mappedData, QueryCount * 8);
+                }
+                readbackBuffer.Unmap(0);
+                return true;
+            }
+
+            // Otherwise, queue readback
+            var commandList = GraphicsDevice.NativeCopyCommandList;
+
+            commandList.Reset(GraphicsDevice.NativeCopyCommandAllocator, null);
+            commandList.ResolveQueryData(NativeQueryHeap, SharpDX.Direct3D12.QueryType.Timestamp, 0, QueryCount, readbackBuffer, 0);
+            commandList.Close();
+
+            GraphicsDevice.NativeCommandQueue.ExecuteCommandList(GraphicsDevice.NativeCopyCommandList);
+            GraphicsDevice.NativeCommandQueue.Signal(readbackFence, PendingValue);
+
+            return false;
         }
 
-        /// <summary>
-        /// Allocate a query from the <see cref="QueryPool"/>.
-        /// </summary>
-        /// <returns><see cref="Query"/> from the pool; <see cref="null"/> otherwise.</returns>
-        public Query? AllocateQuery()
+        private void Recreate()
         {
-            return null;
-        }
+            var description = new QueryHeapDescription { Count = QueryCount };
 
-        /// <summary>
-        /// Resets this instance.
-        /// </summary>
-        /// <param name="commandList">The <see cref="CommandList"/>.</param>
-        public void Reset(CommandList commandList)
-        {
+            switch (QueryType)
+            {
+                case QueryType.Timestamp:
+                    description.Type = QueryHeapType.Timestamp;
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
            
+            NativeQueryHeap = NativeDevice.CreateQueryHeap(description);
+            readbackBuffer = NativeDevice.CreateCommittedResource(new HeapProperties(HeapType.Readback), HeapFlags.None, ResourceDescription.Buffer(QueryCount * 8), ResourceStates.CopyDestination);
+            readbackFence = NativeDevice.CreateFence(0, FenceFlags.None);
+            CompletedValue = 0;
+            PendingValue = 0;
         }
 
-        internal void OnRecreateImpl()
+        /// <inheritdoc/>
+        protected internal override void OnDestroyed()
         {
-            
+            NativeQueryHeap.Dispose();
+            readbackBuffer.Dispose();
+            readbackFence.Dispose();
+
+            base.OnDestroyed();
         }
 
-        /// <summary>
-        /// Gets the result of the queries to an array of data.
-        /// </summary>
-        /// <typeparam name="T">Expected data type returned by a query.</typeparam>
-        /// <param name="commandList">The <see cref="CommandList"/>.</param>
-        /// <param name="dataArray">A preallocated array of data.</param>
-        public void GetData<T>(CommandList commandList, ref T[] dataArray) where T : struct
+        internal void ResetInternal()
         {
-
+            if (CompletedValue <= readbackFence.CompletedValue)
+                CompletedValue = readbackFence.CompletedValue + 1;
         }
     }
 }

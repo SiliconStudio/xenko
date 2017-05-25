@@ -66,6 +66,11 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly FastList<SharpDX.Direct3D12.CommandList> nativeCommandLists = new FastList<SharpDX.Direct3D12.CommandList>();
 
         /// <summary>
+        /// The tick frquency of timestamp queries in Hertz.
+        /// </summary>
+        public long TimestampFrequency { get; private set; }
+
+        /// <summary>
         ///     Gets the status of this device.
         /// </summary>
         /// <value>The graphics device status.</value>
@@ -262,6 +267,7 @@ namespace SiliconStudio.Xenko.Graphics
             NativeCommandQueue = nativeDevice.CreateCommandQueue(queueDesc);
             //queueDesc.Type = CommandListType.Copy;
             NativeCopyCommandQueue = nativeDevice.CreateCommandQueue(queueDesc);
+            TimestampFrequency = NativeCommandQueue.TimestampFrequency;
 
             SrvHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
             SamplerHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.Sampler);

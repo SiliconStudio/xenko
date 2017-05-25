@@ -1,62 +1,58 @@
-﻿// Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
-
 using System;
+using SharpVulkan;
 
 namespace SiliconStudio.Xenko.Graphics
 {
     public partial class QueryPool
     {
-        public bool IsFull { get; private set; }
+        internal SharpVulkan.QueryPool NativeQueryPool;
 
-        internal QueryPool InitializeImpl(CommandList commandList, QueryType queryType, int queryCount)
+        public unsafe bool TryGetData(long[] dataArray)
         {
-            if (queryCount == 0) throw new ArgumentOutOfRangeException("QueryPool capacity must be > 0");
-            return this;
+            fixed (long* dataPointer = &dataArray[0])
+            {
+                // Read back all results
+                var result = GraphicsDevice.NativeDevice.GetQueryPoolResults(NativeQueryPool, 0, (uint)QueryCount, QueryCount * 8, new IntPtr(dataPointer), 8, QueryResultFlags.Is64Bits);
+
+                // Some queries are not ready yet
+                if (result == Result.NotReady)
+                    return false;
+            }
+
+            return true;
         }
 
-        /// <summary>
-        /// Allocate a query from the <see cref="QueryPool"/>.
-        /// </summary>
-        /// <returns><see cref="Query"/> from the pool; <see cref="null"/> otherwise.</returns>
-        public Query? AllocateQuery()
+        private unsafe void Recreate()
         {
-            return null;
+            var createInfo = new QueryPoolCreateInfo
+            {
+                StructureType = StructureType.QueryPoolCreateInfo,
+                QueryCount = (uint)QueryCount,
+            };
+
+            switch (QueryType)
+            {
+                case QueryType.Timestamp:
+                    createInfo.QueryType = SharpVulkan.QueryType.Timestamp;
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+            NativeQueryPool = GraphicsDevice.NativeDevice.CreateQueryPool(ref createInfo);
         }
 
-        /// <summary>
-        /// Resets this instance.
-        /// </summary>
-        /// <param name="commandList">The <see cref="CommandList"/>.</param>
-        public void Reset(CommandList commandList)
+        /// <inheritdoc/>
+        protected internal override void OnDestroyed()
         {
-           
-        }
+            GraphicsDevice.Collect(NativeQueryPool);
+            NativeQueryPool = SharpVulkan.QueryPool.Null;
 
-        internal void OnRecreateImpl()
-        {
-            
-        }
-
-        /// <summary>
-        /// Gets the result of the queries to an array of data.
-        /// </summary>
-        /// <typeparam name="T">Expected data type returned by a query.</typeparam>
-        /// <param name="commandList">The <see cref="CommandList"/>.</param>
-        /// <param name="dataArray">A preallocated array of data.</param>
-        public void GetData<T>(CommandList commandList, ref T[] dataArray) where T : struct
-        {
-
-        }
-
-        /// <summary>
-        /// Gets GPU frequency, using D3D11 disjoint query.
-        /// </summary>
-        /// <returns></returns>
-        internal long GetGpuFrequency(CommandList commandList)
-        {
-            return 1000;
+            base.OnDestroyed();
         }
     }
 }

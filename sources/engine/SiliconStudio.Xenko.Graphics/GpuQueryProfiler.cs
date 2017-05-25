@@ -11,122 +11,122 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public class GpuQueryProfiler
     {
-        private const int TimestampQueryPoolCapacity = 64;
+//        private const int TimestampQueryPoolCapacity = 64;
 
-        private struct QueryEvent
-        {
-            public Query? BeginQuery;
-            public Query? EndQuery;
-            public ProfilingKey ProfilingKey;
-        }
+//        private struct QueryEvent
+//        {
+//            public Query? BeginQuery;
+//            public Query? EndQuery;
+//            public ProfilingKey ProfilingKey;
+//        }
 
-        private readonly QueryPool timestampQueryPool;
+//        private readonly QueryPool timestampQueryPool;
         
-        private long[] queryResults = new long[TimestampQueryPoolCapacity];
+//        private long[] queryResults = new long[TimestampQueryPoolCapacity];
 
-        private readonly FastList<QueryEvent> queryEvents = new FastList<QueryEvent>();
-        private readonly Stack<QueryEvent> queryEventStack = new Stack<QueryEvent>();
+//        private readonly FastList<QueryEvent> queryEvents = new FastList<QueryEvent>();
+//        private readonly Stack<QueryEvent> queryEventStack = new Stack<QueryEvent>();
 
-        private readonly CommandList commandList = null;
+//        private readonly CommandList commandList = null;
 
-        public GpuQueryProfiler(CommandList commandList)
-        {
-            timestampQueryPool = commandList.QueryPoolManager.GetOrCreatePool(commandList, QueryType.Timestamp, TimestampQueryPoolCapacity);
+//        public GpuQueryProfiler(CommandList commandList)
+//        {
+//            timestampQueryPool = commandList.QueryPoolManager.GetOrCreatePool(commandList, QueryType.Timestamp, TimestampQueryPoolCapacity);
 
-            this.commandList = commandList;
-        }
+//            this.commandList = commandList;
+//        }
 
-        /// <summary>
-        /// Retrieves timestamp from GPU and sends the results to Profiler.
-        /// </summary>
-        public void SubmitResults(bool fetchResults)
-        {
-            if (fetchResults)
-            {
-                timestampQueryPool.GetData(commandList, ref queryResults);
-            }
+//        /// <summary>
+//        /// Retrieves timestamp from GPU and sends the results to Profiler.
+//        /// </summary>
+//        public void SubmitResults(bool fetchResults)
+//        {
+//            if (fetchResults)
+//            {
+//                timestampQueryPool.GetData(commandList, ref queryResults);
+//            }
 
-            foreach (QueryEvent queryEvent in queryEvents)
-            {
-                var profStat = Profiler.Begin(queryEvent.ProfilingKey, queryResults[queryEvent.BeginQuery.Value.InternalIndex]);
-                profStat.End(queryResults[queryEvent.EndQuery.Value.InternalIndex]);
-            }
+//            foreach (QueryEvent queryEvent in queryEvents)
+//            {
+//                var profStat = Profiler.Begin(queryEvent.ProfilingKey, queryResults[queryEvent.BeginQuery.Value.InternalIndex]);
+//                profStat.End(queryResults[queryEvent.EndQuery.Value.InternalIndex]);
+//            }
 
-            Profiler.GpuClockFrequency = GetTimestampFrequency();
-            queryEvents.Clear();
-        }
+//            Profiler.GpuClockFrequency = GetTimestampFrequency();
+//            queryEvents.Clear();
+//        }
 
-        /// <summary>
-        /// Begins profile.
-        /// </summary>
-        /// <param name="profileColor">The profile event color.</param>
-        /// <param name="profilingKey">The <see cref="ProfilingKey"/></param>
-        public void BeginProfile(Color4 profileColor, ProfilingKey profilingKey)
-        {
-            if (!Profiler.IsEnabled(profilingKey))
-            {
-                return;
-            }
+//        /// <summary>
+//        /// Begins profile.
+//        /// </summary>
+//        /// <param name="profileColor">The profile event color.</param>
+//        /// <param name="profilingKey">The <see cref="ProfilingKey"/></param>
+//        public void BeginProfile(Color4 profileColor, ProfilingKey profilingKey)
+//        {
+//            if (!Profiler.IsEnabled(profilingKey))
+//            {
+//                return;
+//            }
 
-            var queryEvent = new QueryEvent()
-            {
-                BeginQuery = timestampQueryPool.AllocateQuery(),
-                EndQuery = timestampQueryPool.AllocateQuery(),
-                ProfilingKey = profilingKey,
-            };
+//            var queryEvent = new QueryEvent()
+//            {
+//                BeginQuery = timestampQueryPool.AllocateQuery(),
+//                EndQuery = timestampQueryPool.AllocateQuery(),
+//                ProfilingKey = profilingKey,
+//            };
             
-            // Query might be null if the pool is full
-            if (queryEvent.BeginQuery.HasValue)
-            {
-                commandList.WriteTimestamp(timestampQueryPool, queryEvent.BeginQuery.Value);
-            }
+//            // Query might be null if the pool is full
+//            if (queryEvent.BeginQuery.HasValue)
+//            {
+//                commandList.WriteTimestamp(timestampQueryPool, queryEvent.BeginQuery.Value);
+//            }
 
-            queryEventStack.Push(queryEvent);
+//            queryEventStack.Push(queryEvent);
 
-            // Sets a debug marker if debug mode is enabled
-            if (commandList.GraphicsDevice.IsDebugMode)
-            {
-                commandList.BeginDebugEvent(profileColor, profilingKey.Name);
-            }
-        }
+//            // Sets a debug marker if debug mode is enabled
+//            if (commandList.GraphicsDevice.IsDebugMode)
+//            {
+//                commandList.BeginDebugEvent(profileColor, profilingKey.Name);
+//            }
+//        }
 
-        /// <summary>
-        /// Ends profile.
-        /// </summary>
-        public void EndProfile()
-        {
-            if (queryEventStack.Count == 0)
-            {
-                return;
-            }
+//        /// <summary>
+//        /// Ends profile.
+//        /// </summary>
+//        public void EndProfile()
+//        {
+//            if (queryEventStack.Count == 0)
+//            {
+//                return;
+//            }
 
-            var latestQueryEvent = queryEventStack.Pop();
+//            var latestQueryEvent = queryEventStack.Pop();
 
-            if (latestQueryEvent.EndQuery.HasValue)
-            {
-                commandList.WriteTimestamp(timestampQueryPool, latestQueryEvent.EndQuery.Value);
-            }
-            else
-            {
-                return;
-            }
+//            if (latestQueryEvent.EndQuery.HasValue)
+//            {
+//                commandList.WriteTimestamp(timestampQueryPool, latestQueryEvent.EndQuery.Value);
+//            }
+//            else
+//            {
+//                return;
+//            }
 
-            if (commandList.GraphicsDevice.IsDebugMode)
-            {
-                commandList.EndDebugEvent();
-            }
+//            if (commandList.GraphicsDevice.IsDebugMode)
+//            {
+//                commandList.EndDebugEvent();
+//            }
 
-            // Adds the event to the event list
-            queryEvents.Add(latestQueryEvent);
-        }
+//            // Adds the event to the event list
+//            queryEvents.Add(latestQueryEvent);
+//        }
 
-        public long GetTimestampFrequency()
-        {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11 || SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
-            return timestampQueryPool.GetGpuFrequency(commandList) / 1000;
-#else
-            return 1000;
-#endif
-        }
+//        public long GetTimestampFrequency()
+//        {
+//#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11 || SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+//            return timestampQueryPool.GetGpuFrequency(commandList) / 1000;
+//#else
+//            return 1000;
+//#endif
+//        }
     }
 }

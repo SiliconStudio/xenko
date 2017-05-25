@@ -3,14 +3,8 @@
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 using System;
-
-using SharpDX.DXGI;
-
-using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Shaders;
-using SharpDX.Mathematics.Interop;
-using SiliconStudio.Core.Diagnostics;
+using System.Collections.Generic;
+using SharpDX.Direct3D11;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -23,13 +17,19 @@ namespace SiliconStudio.Xenko.Graphics
         private bool simulateReset = false;
         private string rendererName;
 
-        private SharpDX.Direct3D11.Device nativeDevice;
-        private SharpDX.Direct3D11.DeviceContext nativeDeviceContext;
+        private Device nativeDevice;
+        private DeviceContext nativeDeviceContext;
+        private readonly Queue<Query> disjointQueries = new Queue<Query>();
+        private Query currentDisjointQuery;
+
         internal GraphicsProfile RequestedProfile;
 
         private SharpDX.Direct3D11.DeviceCreationFlags creationFlags;
 
-        // Used by Texture.SetData
+        /// <summary>
+        /// The tick frquency of timestamp queries in Hertz.
+        /// </summary>
+        public long TimestampFrequency { get; private set; }
 
         /// <summary>
         ///     Gets the status of this device.
@@ -111,6 +111,21 @@ namespace SiliconStudio.Xenko.Graphics
         {
             FrameTriangleCount = 0;
             FrameDrawCalls = 0;
+
+            // Try to read back the oldest disjoint query and reuse it. If not ready, create a new one.
+            if (disjointQueries.Count > 0 && NativeDeviceContext.GetData(disjointQueries.Peek(), out QueryDataTimestampDisjoint result))
+            {
+                TimestampFrequency = result.Frequency;
+                currentDisjointQuery = disjointQueries.Dequeue();
+            }
+            else
+            {
+                var disjointQueryDiscription = new QueryDescription { Type = SharpDX.Direct3D11.QueryType.TimestampDisjoint };
+                currentDisjointQuery = new Query(NativeDevice, disjointQueryDiscription);
+            }
+
+            disjointQueries.Enqueue(currentDisjointQuery);
+            NativeDeviceContext.Begin(currentDisjointQuery);
         }
 
         /// <summary>
@@ -126,6 +141,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public void End()
         {
+            NativeDeviceContext.End(currentDisjointQuery);
         }
 
         /// <summary>
@@ -244,6 +260,12 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void ReleaseDevice()
         {
+            foreach (var query in disjointQueries)
+            {
+                query.Dispose();
+            }
+            disjointQueries.Clear();
+
             // Display D3D11 ref counting info
             NativeDevice.ImmediateContext.ClearState();
             NativeDevice.ImmediateContext.Flush();
@@ -268,7 +290,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void TagResource(GraphicsResourceLink resourceLink)
         {
-            resourceLink.Resource.DiscardNextMap = true;
+            if (resourceLink.Resource is GraphicsResource resource)
+                resource.DiscardNextMap = true;
         }
     }
 }

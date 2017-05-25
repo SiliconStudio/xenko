@@ -457,8 +457,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 PrepareLightprobeConstantBuffer(context);
 
                 // TODO: Temporarily using ShadowMap shader
-                drawContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, CompositingProfilingKeys.GBuffer);
-
+                using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.GBuffer))
                 using (drawContext.PushRenderTargetsAndRestore())
                 {
                     drawContext.CommandList.Clear(drawContext.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
@@ -467,8 +466,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     // Draw [main view | z-prepass stage]
                     renderSystem.Draw(drawContext, context.RenderView, GBufferRenderStage);
                 }
-
-                drawContext.CommandList.GpuQueryProfiler.EndProfile();
 
                 // Bake lightprobes against Z-buffer
                 BakeLightProbes(context, drawContext);
@@ -479,18 +476,18 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 // Draw [main view | main stage]
                 if (OpaqueRenderStage != null)
                 {
-                    drawContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, CompositingProfilingKeys.Opaque);
-                    renderSystem.Draw(drawContext, context.RenderView, OpaqueRenderStage);
-                    drawContext.CommandList.GpuQueryProfiler.EndProfile();
+                    using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.Opaque))
+                    {
+                        renderSystem.Draw(drawContext, context.RenderView, OpaqueRenderStage);
+                    }
                 }
 
                 // Draw [main view | transparent stage]
                 Texture depthStencilSRV = null;
                 if (TransparentRenderStage != null)
                 {
-                    drawContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, CompositingProfilingKeys.Transparent);
-
                     // Some transparent shaders will require the depth as a shader resource - resolve it only once and set it here
+                    using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.Transparent))
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
                         depthStencilSRV = ResolveDepthAsSRV(drawContext);
@@ -501,8 +498,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                         renderSystem.Draw(drawContext, context.RenderView, TransparentRenderStage);
                     }
-
-                    drawContext.CommandList.GpuQueryProfiler.EndProfile();
                 }
 
                 var colorTargetIndex = OpaqueRenderStage?.OutputValidator.Find(typeof(ColorTargetSemantic)) ?? -1;
@@ -518,28 +513,26 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     // Resolve MSAA targets
                     if (actualMultisampleCount != MultisampleCount.None)
                     {
-                        drawContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, CompositingProfilingKeys.MsaaResolve);
+                        using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.MsaaResolve))
+                        {
+                            // If lightprobes (which need Z-Prepass) are enabled, depth is already resolved
+                            //if (!lightProbes)
+                            // TODO: is that comment above true? i don't know lightprobes rendering stuff but if it does it should override ResolveDepthMSAA? maybe some redesign...
+                            renderTargets = currentRenderTargetsMSAA;
+                            ResolveDepthMSAA(drawContext);
+                            ResolveMSAA(drawContext);
 
-                        // If lightprobes (which need Z-Prepass) are enabled, depth is already resolved
-                        //if (!lightProbes)
-                        // TODO: is that comment above true? i don't know lightprobes rendering stuff but if it does it should override ResolveDepthMSAA? maybe some redesign...
-                        renderTargets = currentRenderTargetsMSAA;
-                        ResolveDepthMSAA(drawContext);
-                        ResolveMSAA(drawContext);
-
-                        depthStencil = ViewDepthStencilNoMSAA;
-
-                        drawContext.CommandList.GpuQueryProfiler.EndProfile();
+                            depthStencil = ViewDepthStencilNoMSAA;
+                        }
                     }
 
                     // Shafts if we have them
                     if (LightShafts != null)
                     {
-                        drawContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, CompositingProfilingKeys.LightShafts);
-
-                        LightShafts.Draw(drawContext, depthStencil, renderTargets[colorTargetIndex]);
-
-                        drawContext.CommandList.GpuQueryProfiler.EndProfile();
+                        using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.LightShafts))
+                        {
+                            LightShafts.Draw(drawContext, depthStencil, renderTargets[colorTargetIndex]);
+                        }
                     }
 
                     // Run post effects
@@ -550,12 +543,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 {
                     if (actualMultisampleCount != MultisampleCount.None)
                     {
-                        drawContext.CommandList.GpuQueryProfiler.BeginProfile(Color.Green, CompositingProfilingKeys.MsaaResolve);
-
-                        ResolveMSAA(drawContext);
-                        drawContext.CommandList.Copy(currentRenderTargetsMSAA[colorTargetIndex], ViewOutputTarget);
-
-                        drawContext.CommandList.GpuQueryProfiler.EndProfile();
+                        using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.MsaaResolve))
+                        {
+                            ResolveMSAA(drawContext);
+                            drawContext.CommandList.Copy(currentRenderTargetsMSAA[colorTargetIndex], ViewOutputTarget);
+                        }
                     }
                 }
 
