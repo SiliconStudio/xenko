@@ -662,7 +662,6 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>UIEffectShader.cs</LastGenOutput>
     </None>
-    <Compile Include="Vulkan\QueryPool.Vulkan.cs" />
   </ItemGroup>
   <Import Project="..\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
