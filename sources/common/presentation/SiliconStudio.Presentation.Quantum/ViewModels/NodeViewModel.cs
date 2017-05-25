@@ -512,7 +512,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             OnPropertyChanged(nameof(VisibleChildrenCount));
 
             OnPropertyChanged(nameof(NodeValue));
-            owner.NotifyNodeChanged(Path);
+            owner.NotifyNodeChanged(this);
 
             valueChanging = false;
         }
