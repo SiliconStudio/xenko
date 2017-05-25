@@ -106,8 +106,6 @@ namespace SiliconStudio.Xenko.Graphics
             ResetCommandList();
 
             boundPipelineState = null;
-
-            gpuQueryProfiler = new GpuQueryProfiler(this);
         }
 
         /// <summary>
