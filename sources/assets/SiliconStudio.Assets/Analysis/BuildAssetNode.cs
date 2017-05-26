@@ -167,7 +167,7 @@ namespace SiliconStudio.Assets.Analysis
 
             public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
             {
-                if (obj != null && types.Contains(obj.GetType()))
+                if (obj != null && types.Any(x => obj.GetType().IsAssignableFrom(x)))
                 {
                     //from now on we want store references
                     writeReferences = true;
