@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Concurrent;
@@ -6,12 +6,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using SiliconStudio.Assets.Compiler;
+using SiliconStudio.Assets.Visitors;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Analysis
 {
     public class BuildAssetNode
     {
+        public static PropertyKey<bool> VisitRuntimeTypes = new PropertyKey<bool>("VisitRuntimeTypes", typeof(BuildAssetNode));
+
         private readonly BuildDependencyManager buildDependencyManager;
         private readonly ConcurrentDictionary<AssetId, BuildAssetNode> references = new ConcurrentDictionary<AssetId, BuildAssetNode>();
         private readonly ConcurrentDictionary<BuildAssetNode, AssetId> referencedBy = new ConcurrentDictionary<BuildAssetNode, AssetId>();
@@ -118,6 +124,87 @@ namespace SiliconStudio.Assets.Analysis
                         references.TryAdd(asset.Id, node);
                         node.referencedBy.TryAdd(this, AssetItem.Id); //add this as referenced by child
                     }
+                }
+            }
+
+            bool shouldVisitTypes;
+            context.Properties.TryGet(VisitRuntimeTypes, out shouldVisitTypes);
+            if (shouldVisitTypes)
+            {
+                var collector = new RuntimeDependenciesCollector(mainCompiler.GetRuntimeTypes(context, AssetItem));
+                var deps = collector.GetDependencies(AssetItem);
+                foreach (var reference in deps)
+                {
+                    var asset = AssetItem.Package.FindAsset(reference.Id);
+                    if (asset != null)
+                    {
+                        var dependencyType = BuildDependencyType.Runtime;
+                        var node = buildDependencyManager.FindOrCreateNode(asset, dependencyType);
+                        references.TryAdd(asset.Id, node);
+                        node.referencedBy.TryAdd(this, AssetItem.Id); //add this as referenced by child
+                    }
+                }
+            }
+        }
+
+        private class RuntimeDependenciesCollector : AssetVisitorBase
+        {
+            private bool writeReferences;
+            private object stopperObject;
+            private readonly HashSet<IReference> references = new HashSet<IReference>();
+            private readonly HashSet<Type> types;
+
+            public RuntimeDependenciesCollector(IEnumerable<Type> enumerable)
+            {
+                types = new HashSet<Type>(enumerable);
+            }
+
+            public IEnumerable<IReference> GetDependencies(AssetItem item)
+            {
+                Visit(item.Asset);
+                return references;
+            }
+
+            public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
+            {
+                if (obj != null && types.Contains(obj.GetType()))
+                {
+                    //from now on we want store references
+                    writeReferences = true;
+                    stopperObject = obj;
+                }
+
+                if (!writeReferences)
+                {
+                    base.VisitObject(obj, descriptor, visitMembers);
+                }
+                else
+                {
+                    // references and base
+                    IReference reference = obj as AssetReference;
+                    if (reference != null)
+                    {
+                        references.Add(reference);
+                    }
+                    else if (AssetRegistry.IsContentType(obj.GetType()))
+                    {
+                        reference = AttachedReferenceManager.GetAttachedReference(obj);
+                        if (reference != null)
+                        {
+                            references.Add(reference);
+                        }
+                    }
+                    else
+                    {
+                        base.VisitObject(obj, descriptor, visitMembers);
+                    }
+                }
+
+                if (stopperObject != null && stopperObject == obj)
+                {
+                    //from now on we stop storing references
+                    writeReferences = true;
+                    stopperObject = null;
                 }
             }
         }

@@ -12,7 +12,8 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public class RootPackageAssetEnumerator : IPackageCompilerSource
     {
-        private readonly Package package;
+        private readonly Package rootPackage;
+        private readonly BuildDependencyManager buildDependencyManager;
 
         /// <summary>
         /// Initializes a new instance.
@@ -21,14 +22,15 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="extraRoots">The extra roots that needs to be collected with their dependencies.</param>
         public RootPackageAssetEnumerator(Package package)
         {
-            this.package = package;
+            rootPackage = package;
+            buildDependencyManager = new BuildDependencyManager(typeof(AssetCompilationContext));
         }
 
         /// <inheritdoc/>
         public IEnumerable<AssetItem> GetAssets(AssetCompilerResult assetCompilerResult)
         {
             // Check integrity of the packages
-            var packageAnalysis = new PackageSessionAnalysis(package.Session, new PackageAnalysisParameters());
+            var packageAnalysis = new PackageSessionAnalysis(rootPackage.Session, new PackageAnalysisParameters());
             packageAnalysis.Run(assetCompilerResult);
             if (assetCompilerResult.HasErrors)
             {
@@ -38,7 +40,7 @@ namespace SiliconStudio.Assets.Compiler
             // Compute list of assets to compile and their dependencies
             var packagesProcessed = new HashSet<Package>();
             var assetsReferenced = new HashSet<AssetItem>();
-            CollectReferences(package, assetsReferenced, packagesProcessed);
+            CollectReferences(rootPackage, assetsReferenced, packagesProcessed);
 
             foreach (var assetItem in assetsReferenced)
             {
@@ -66,7 +68,10 @@ namespace SiliconStudio.Assets.Compiler
                 // Locate reference
                 var asset = package.Session.FindAsset(reference.Id) ?? package.Session.FindAsset(reference.Location);
                 if (asset != null)
-                    CollectReferences(asset, assetsReferenced);
+                {
+                    assetsReferenced.Add(asset);
+                    //CollectReferences(asset, assetsReferenced);
+                }
             }
 
             //  2. Process referenced packages as well (for their roots)
@@ -93,7 +98,8 @@ namespace SiliconStudio.Assets.Compiler
             {
                 if (AssetRegistry.IsAssetTypeAlwaysMarkAsRoot(assetItem.Asset.GetType()))
                 {
-                    CollectReferences(assetItem, assetsReferenced);
+                    assetsReferenced.Add(assetItem);
+                    //CollectReferences(assetItem, assetsReferenced);
                 }
             }
         }
@@ -109,7 +115,7 @@ namespace SiliconStudio.Assets.Compiler
             foreach (var dependency in dependencies.LinksOut)
             {
                 // Try to find real asset (dependecy might be a copy)
-                var dependencyAssetItem = package.FindAsset(dependency.Item.Id);
+                var dependencyAssetItem = rootPackage.FindAsset(dependency.Item.Id);
                 if (dependencyAssetItem != null)
                     CollectReferences(dependencyAssetItem, assetsReferenced);
             }

@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.ServiceModel;
 
@@ -13,6 +14,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.MicroThreading;
 using System.Threading;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko;
 using SiliconStudio.Xenko.Assets;
@@ -135,6 +137,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 var assetBuilder = new PackageCompiler(new RootPackageAssetEnumerator(package));
                 assetBuilder.AssetCompiled += RegisterBuildStepProcessedHandler;
 
+                context.Properties.Set(BuildAssetNode.VisitRuntimeTypes, true);
                 var assetBuildResult = assetBuilder.Prepare(context);
                 assetBuildResult.CopyTo(builderOptions.Logger);
                 if (assetBuildResult.HasErrors)
