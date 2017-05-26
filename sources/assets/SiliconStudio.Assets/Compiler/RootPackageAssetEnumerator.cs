@@ -70,7 +70,6 @@ namespace SiliconStudio.Assets.Compiler
                 if (asset != null)
                 {
                     assetsReferenced.Add(asset);
-                    //CollectReferences(asset, assetsReferenced);
                 }
             }
 
@@ -99,25 +98,7 @@ namespace SiliconStudio.Assets.Compiler
                 if (AssetRegistry.IsAssetTypeAlwaysMarkAsRoot(assetItem.Asset.GetType()))
                 {
                     assetsReferenced.Add(assetItem);
-                    //CollectReferences(assetItem, assetsReferenced);
                 }
-            }
-        }
-
-        private void CollectReferences(AssetItem assetItem, HashSet<AssetItem> assetsReferenced)
-        {
-            // Check if already added
-            if (!assetsReferenced.Add(assetItem))
-                return;
-
-            // Collect references recursively
-            var dependencies = assetItem.Package.Session.DependencyManager.ComputeDependencies(assetItem.Id, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
-            foreach (var dependency in dependencies.LinksOut)
-            {
-                // Try to find real asset (dependecy might be a copy)
-                var dependencyAssetItem = rootPackage.FindAsset(dependency.Item.Id);
-                if (dependencyAssetItem != null)
-                    CollectReferences(dependencyAssetItem, assetsReferenced);
             }
         }
     }
