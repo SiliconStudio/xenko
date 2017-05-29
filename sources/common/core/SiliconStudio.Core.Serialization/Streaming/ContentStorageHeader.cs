@@ -12,17 +12,45 @@ namespace SiliconStudio.Core.Streaming
     /// </summary>
     public struct ContentStorageHeader
     {
+        /// <summary>
+        /// Describies single data chunk storage information.
+        /// </summary>
         public struct ChunkEntry
         {
+            /// <summary>
+            /// The location (adress in file).
+            /// </summary>
             public int Location;
+
+            /// <summary>
+            /// The size in bytes.
+            /// </summary>
             public int Size;
         }
 
+        /// <summary>
+        /// The data container url.
+        /// </summary>
         public string DataUrl;
+
+        /// <summary>
+        /// Time when package has been created (in UTC).
+        /// </summary>
         public DateTime PackageTime;
+
+        /// <summary>
+        /// The hash code for the package header. Used to ensure data consistency.
+        /// </summary>
         public int HashCode;
+
+        /// <summary>
+        /// The data chunks.
+        /// </summary>
         public ChunkEntry[] Chunks;
 
+        /// <summary>
+        /// Gets the amount of data chunks.
+        /// </summary>
         public int ChunksCount => Chunks.Length;
 
         /// <summary>

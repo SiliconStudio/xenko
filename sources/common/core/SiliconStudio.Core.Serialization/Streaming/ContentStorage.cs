@@ -32,7 +32,7 @@ namespace SiliconStudio.Core.Streaming
         public string Url { get; private set; }
 
         /// <summary>
-        /// Gets the time when container has been created.
+        /// Gets the time when container has been created (in UTC).
         /// </summary>
         public DateTime PackageTime { get; private set; }
 
