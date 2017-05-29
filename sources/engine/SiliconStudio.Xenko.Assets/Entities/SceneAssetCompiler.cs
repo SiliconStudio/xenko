@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System.Threading.Tasks;
@@ -34,9 +34,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     Offset = Parameters.Offset
                 };
 
-                foreach (var rootEntity in Parameters.Hierarchy.RootPartIds)
+                foreach (var rootEntity in Parameters.Hierarchy.RootParts)
                 {
-                    scene.Entities.Add(Parameters.Hierarchy.Parts[rootEntity].Entity);
+                    scene.Entities.Add(rootEntity);
                 }
                 assetManager.Save(Url, scene);
 

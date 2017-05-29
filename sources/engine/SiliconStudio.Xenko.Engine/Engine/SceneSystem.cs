@@ -34,7 +34,6 @@ namespace SiliconStudio.Xenko.Engine
         public SceneSystem(IServiceRegistry registry)
             : base(registry)
         {
-            registry.AddService(typeof(SceneSystem), this);
             Enabled = true;
             Visible = true;
             GraphicsCompositor = new GraphicsCompositor();
@@ -43,22 +42,22 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Gets or sets the root scene.
         /// </summary>
-        /// <value>The scene.</value>
+        /// <value>The scene</value>
         /// <exception cref="System.ArgumentNullException">Scene cannot be null</exception>
         public SceneInstance SceneInstance { get; set; }
 
         /// <summary>
-        /// URL of the initial scene that should be used upon loading
+        /// URL of the scene loaded at initialization
         /// </summary>
         public string InitialSceneUrl { get; set; }
 
         /// <summary>
-        /// URL of the initial graphics compositor that should be used upon loading
+        /// URL of the graphics compositor loaded at initialization
         /// </summary>
         public string InitialGraphicsCompositorUrl { get; set; }
 
         /// <summary>
-        /// URL of the splash screen texture that should be used upon loading
+        /// URL of the splash screen texture loaded at initialization
         /// </summary>
         public string SplashScreenUrl { get; set; }
 
@@ -68,7 +67,7 @@ namespace SiliconStudio.Xenko.Engine
         public Color4 SplashScreenColor { get; set; }
 
         /// <summary>
-        /// If splahs screen rendering is enabeld, true if a splash screen texture is present, and only happens in release builds
+        /// If splash screen rendering is enabled, true if a splash screen texture is present, and only in release builds
         /// </summary>
         public bool SplashScreenEnabled { get; set; }
 

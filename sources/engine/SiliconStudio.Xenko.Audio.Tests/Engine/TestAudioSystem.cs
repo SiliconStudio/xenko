@@ -582,7 +582,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
         }
 
         /// <summary>
-        /// Simple test to check that the audio system is localizing properly the sounds.
+        /// Simple test to check that the audio system is localizing the sounds properly.
         /// </summary>
         [Test, Ignore("TODO: UPDATE TO USE Scene and Graphics Composer")]
         public void TestLocalizationCoherency()

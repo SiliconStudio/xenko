@@ -51,7 +51,7 @@ namespace SiliconStudio.Core.Serialization.Contents
             Serializer = new ContentSerializer();
             if (services != null)
             {
-                this.services = services;
+				this.services = services;
                 services.AddService(typeof(IContentManager), this);
                 services.AddService(typeof(ContentManager), this);
                 Serializer.SerializerContextTags.Set(ServiceRegistry.ServiceRegistryKey, services);

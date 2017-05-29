@@ -90,6 +90,7 @@
     <Compile Include="Analysis\IAssetDependencyManager.cs" />
     <Compile Include="Analysis\IdentifiableObjectAnalysis.cs" />
     <Compile Include="AssetCollectionItemIdHelper.cs" />
+    <Compile Include="AssetCompositeHierarchy.Upgraders.cs" />
     <Compile Include="AssetCompositeHierarchy.cs" />
     <Compile Include="AssetCompositeHierarchyData.cs" />
     <Compile Include="AssetCompositeHierarchyExtensions.cs" />
@@ -105,6 +106,8 @@
     <Compile Include="Compiler\ICompilationContext.cs" />
     <Compile Include="Diagnostics\AssetSerializableLogMessage.cs" />
     <Compile Include="DynamicYaml\DynamicYamlExtensions.cs" />
+    <Compile Include="Reflection\AbstractObjectInstantiator.cs" />
+    <Compile Include="SolutionPlatformTemplate.cs" />
     <Compile Include="TextAccessors\FileTextAccessor.cs" />
     <Compile Include="IAssetFinder.cs" />
     <Compile Include="IAssetPartDesign.cs" />
@@ -151,6 +154,7 @@
     <Compile Include="Serializers\IdentifiableObjectSerializer.cs" />
     <Compile Include="TextAccessors\StringTextAccessor.cs" />
     <Compile Include="TextAccessors\DefaultTextAccessor.cs" />
+    <Compile Include="Yaml\AssetPartCollectionSerializer.cs" />
     <Compile Include="Yaml\AttachedYamlAssetMetadata.cs" />
     <Compile Include="Yaml\IYamlAssetMetadata.cs" />
     <Compile Include="Serializers\ScalarOrObjectSerializer.cs" />

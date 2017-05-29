@@ -12,7 +12,6 @@ shader ComputeColorColorBurn : ComputeColor
 
         // http://en.wikipedia.org/wiki/Blend_modes#Dodge_and_burn
         // The Color Burn mode divides the inverted bottom layer by the top layer, and then inverts the result
-
-         return 1.0f - BlendUtils.ColorDivide((1.0f - backColor), frontColor);
+         return float4(1.0f - BlendUtils.ColorDivide((1.0f - backColor.rgb), frontColor.rgb), 1.0f);
     }
 };

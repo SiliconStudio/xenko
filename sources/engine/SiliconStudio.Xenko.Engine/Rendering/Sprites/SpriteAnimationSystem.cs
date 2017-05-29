@@ -29,8 +29,6 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         public SpriteAnimationSystem(IServiceRegistry registry)
             : base(registry)
         {
-            registry.AddService(typeof(SpriteAnimationSystem), this);
-
             DefaultFramesPerSecond = 30;
         }
 

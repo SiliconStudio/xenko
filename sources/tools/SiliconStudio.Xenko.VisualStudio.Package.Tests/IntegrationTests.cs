@@ -193,7 +193,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Package.Tests
                 Unattended = true,
             };
 
-            NewGameTemplateGenerator.SetParameters(parameters, new SolutionPlatformCollection() { AssetRegistry.SupportedPlatforms.First(x => x.Type == Core.PlatformType.Windows) });
+            NewGameTemplateGenerator.SetParameters(parameters, AssetRegistry.SupportedPlatforms.Where(x => x.Type == Core.PlatformType.Windows).Select(x => new SelectedSolutionPlatform(x, null)));
 
             var templateGenerator = TemplateManager.FindTemplateGenerator(parameters);
             templateGenerator.PrepareForRun(parameters);

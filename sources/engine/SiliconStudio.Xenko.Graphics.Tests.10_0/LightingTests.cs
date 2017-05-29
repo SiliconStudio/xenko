@@ -24,6 +24,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public bool PointLight { get; set; }
 
+        public bool PointLightShadowCubeMap { get; set; }
+
+        public bool PointLightShadowParaboloid { get; set; }
+
         public bool SpotLight { get; set; }
 
         public bool SpotLightShadow { get; set; }
@@ -44,7 +48,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public LightingTests()
         {
-            CurrentVersion = 15;
+            CurrentVersion = 16; // Changed cubemap shadows to 1/z depth
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
         }
 
@@ -76,6 +80,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             // Setup lights
             SceneSystem.SceneInstance.First(x => x.Name == nameof(AmbientLight)).Get<LightComponent>().Enabled = AmbientLight;
             SceneSystem.SceneInstance.First(x => x.Name == nameof(PointLight)).Get<LightComponent>().Enabled = PointLight;
+            SceneSystem.SceneInstance.First(x => x.Name == nameof(PointLightShadowCubeMap)).Get<LightComponent>().Enabled = PointLightShadowCubeMap;
+            SceneSystem.SceneInstance.First(x => x.Name == nameof(PointLightShadowParaboloid)).Get<LightComponent>().Enabled = PointLightShadowParaboloid;
             SceneSystem.SceneInstance.First(x => x.Name == nameof(SpotLight)).Get<LightComponent>().Enabled = SpotLight;
             SceneSystem.SceneInstance.First(x => x.Name == nameof(SpotLightShadow)).Get<LightComponent>().Enabled = SpotLightShadow;
             SceneSystem.SceneInstance.First(x => x.Name == nameof(DirectionalLight)).Get<LightComponent>().Enabled = DirectionalLight;
@@ -111,6 +117,18 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         public void ScenePointLight()
         {
             RunGameTest(new LightingTests { PointLight = true });
+        }
+
+        [Test]
+        public void ScenePointLightShadowCubeMap()
+        {
+            RunGameTest(new LightingTests { PointLightShadowCubeMap = true });
+        }
+
+        [Test]
+        public void ScenePointLightShadowParaboloid()
+        {
+            RunGameTest(new LightingTests { PointLightShadowParaboloid = true });
         }
 
         [Test]

@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 #if SILICONSTUDIO_PLATFORM_UWP
@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Input;
+using Windows.Gaming.Input;
 using Point = Windows.Foundation.Point;
 using WinRTPointerDeviceType = Windows.Devices.Input.PointerDeviceType;
 using WinRTPointerPoint = Windows.UI.Input.PointerPoint;
@@ -231,7 +232,7 @@ namespace SiliconStudio.Xenko.Input
             HasKeyboard = true;
             HasPointer = true;
 
-            //GamePadFactories.Add(new XInputGamePadFactory());
+            GamePadFactories.Add(new XInputGamePadFactory());
             HasMouse = new Windows.Devices.Input.MouseCapabilities().MousePresent > 0;
         }
 
@@ -242,9 +243,14 @@ namespace SiliconStudio.Xenko.Input
             var windowHandle = Game.Window.NativeWindow;
             switch (windowHandle.Context)
             {
-                case AppContextType.UWP:
+                case AppContextType.UWPXaml:
                     InitializeFromFrameworkElement((FrameworkElement)windowHandle.NativeWindow);
                     break;
+
+                case AppContextType.UWPCoreWindow:
+                    InitializeFromCoreWindow(windowHandle.NativeWindow as CoreWindow);
+                    break;
+
                 default:
                     throw new ArgumentException(string.Format("WindowContext [{0}] not supported", Game.Context.ContextType));
             }
@@ -506,7 +512,7 @@ namespace SiliconStudio.Xenko.Input
         private bool HandleKey(VirtualKey virtualKey, CorePhysicalKeyStatus keyStatus, InputEventType type)
         {
             // If our EditText TextBox is active, let's ignore all key events
-            if (Game.Context is GameContextUWP && ((GameContextUWP)Game.Context).EditTextBox.Parent != null)
+            if ((Game.Context as GameContextUWPXaml)?.EditTextBox.Parent != null)
             {
                 return false;
             }

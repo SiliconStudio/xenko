@@ -406,8 +406,6 @@ namespace SiliconStudio.Xenko.Navigation
                             {
                                 outputVerts.Add(navmeshVerts[j]);
                             }
-
-                            meshTile.MeshVertices = outputVerts.ToArray();
                         }
 
                         Navigation.DestroyBuilder(builder);

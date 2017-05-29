@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -19,23 +19,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [DataContract]
     public abstract partial class EntityHierarchyAssetBase : AssetCompositeHierarchy<EntityDesign, Entity>
     {
-        /// <summary>
-        /// Dumps this asset to a writer for debug purposes.
-        /// </summary>
-        /// <param name="writer">A text writer output</param>
-        /// <param name="name">Name of this asset</param>
-        /// <returns><c>true</c> if the dump was sucessful, <c>false</c> otherwise</returns>
-        public bool DumpTo([NotNull] TextWriter writer, string name)
-        {
-            if (writer == null) throw new ArgumentNullException(nameof(writer));
-
-            writer.WriteLine();
-            writer.WriteLine("*************************************");
-            writer.WriteLine($"{GetType().Name}: {name}");
-            writer.WriteLine("=====================================");
-            return Hierarchy.DumpTo(writer);
-        }
-
         /// <inheritdoc/>
         public override Entity GetParent(Entity entity)
         {
@@ -48,7 +31,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             if (part == null) throw new ArgumentNullException(nameof(part));
             var parent = GetParent(part);
-            return parent?.Transform.Children.IndexOf(part.Transform) ?? Hierarchy.RootPartIds.IndexOf(part.Id);
+            return parent?.Transform.Children.IndexOf(part.Transform) ?? Hierarchy.RootParts.IndexOf(part);
         }
 
         /// <inheritdoc/>

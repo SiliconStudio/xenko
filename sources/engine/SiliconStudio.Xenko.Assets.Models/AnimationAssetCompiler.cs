@@ -67,7 +67,14 @@ namespace SiliconStudio.Xenko.Assets.Models
             }
             sourceBuildStep.ScaleImport = asset.ScaleImport;
             sourceBuildStep.PivotPosition = asset.PivotPosition;
-            sourceBuildStep.SkeletonUrl = skeleton?.Location;
+
+            if (skeleton != null)
+            {
+                sourceBuildStep.SkeletonUrl = skeleton.Location;
+                // Note: skeleton override values
+                sourceBuildStep.ScaleImport = ((SkeletonAsset)skeleton.Asset).ScaleImport;
+                sourceBuildStep.PivotPosition = ((SkeletonAsset)skeleton.Asset).PivotPosition;
+            }
 
             if (asset.Type.Type == AnimationAssetTypeEnum.AnimationClip)
             {
@@ -114,7 +121,14 @@ namespace SiliconStudio.Xenko.Assets.Models
 
                 baseBuildStep.ScaleImport = asset.ScaleImport;
                 baseBuildStep.PivotPosition = asset.PivotPosition;
-                baseBuildStep.SkeletonUrl = skeleton?.Location;
+
+                if (skeleton != null)
+                {
+                    baseBuildStep.SkeletonUrl = skeleton.Location;
+                    // Note: skeleton override values
+                    baseBuildStep.ScaleImport = ((SkeletonAsset)skeleton.Asset).ScaleImport;
+                    baseBuildStep.PivotPosition = ((SkeletonAsset)skeleton.Asset).PivotPosition;
+                }
 
                 // Import base and main animation
                 buildStep.Add(sourceBuildStep);

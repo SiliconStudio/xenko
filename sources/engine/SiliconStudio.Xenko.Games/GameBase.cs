@@ -108,9 +108,12 @@ namespace SiliconStudio.Xenko.Games
 
             // Content manager
             Content = new ContentManager(Services);
+            Services.AddService(typeof(IContentManager), Content);
+            Services.AddService(typeof(ContentManager), Content);
 
             LaunchParameters = new LaunchParameters();
             GameSystems = new GameSystemCollection(Services);
+            Services.AddService(typeof(IGameSystemCollection), GameSystems);
 
             // Create Platform
             gamePlatform = GamePlatform.Create(this);
@@ -121,6 +124,7 @@ namespace SiliconStudio.Xenko.Games
 
             // Setup registry
             Services.AddService(typeof(IGame), this);
+            Services.AddService(typeof(IGraphicsDeviceFactory), gamePlatform);
             Services.AddService(typeof(IGamePlatform), gamePlatform);
 
             IsActive = true;

@@ -72,7 +72,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
                 }
                 else
                 {
-                    itemPath.PushIndex(index);
+                    itemPath.PushIndex(index.Value);
                 }
                 var value = objectNode.Retrieve(index) as IIdentifiable;
                 if (value == null)

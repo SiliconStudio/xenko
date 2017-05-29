@@ -31,5 +31,17 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             ProcessLight(data);
         }
+
+        override float ComputeAttenuation(float3 position, int lightIndex)
+        {
+            // TODO: Workaraound for SPIR-V compiler. Revert later
+            SpotLightDataInternal data;
+            data.PositionWS = Lights[lightIndex].PositionWS;
+            data.DirectionWS = Lights[lightIndex].DirectionWS;
+            data.AngleOffsetAndInvSquareRadius = Lights[lightIndex].AngleOffsetAndInvSquareRadius;
+
+            float3 lightVectorNorm;
+            return ComputeAttenuation(data, position, lightVectorNorm);
+        }
     };
 }

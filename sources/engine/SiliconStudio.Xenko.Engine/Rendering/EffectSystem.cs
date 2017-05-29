@@ -65,7 +65,6 @@ namespace SiliconStudio.Xenko.Rendering
         public EffectSystem(IServiceRegistry services)
             : base(services)
         {
-            Services.AddService(typeof(EffectSystem), this);
         }
 
         public override void Initialize()

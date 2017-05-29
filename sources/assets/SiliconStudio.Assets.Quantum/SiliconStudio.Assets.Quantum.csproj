@@ -69,6 +69,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssetBaseToDerivedRegistry.cs" />
+    <Compile Include="AssetCloningHelper.cs" />
     <Compile Include="AssetCompositeHierarchyPropertyGraphDefinition.cs" />
     <Compile Include="AssetPropertyGraphDefinition.cs" />
     <Compile Include="AssetPropertyGraphDefinitionAttribute.cs" />

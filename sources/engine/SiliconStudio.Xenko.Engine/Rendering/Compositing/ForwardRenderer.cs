@@ -590,7 +590,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                                     // Clear render target and depth stencil
                                     Clear?.Draw(drawContext);
 
-                                    ViewIndex = 0;
+                                    ViewIndex = i;
 
                                     DrawView(context, drawContext);
                                     drawContext.CommandList.CopyRegion(ViewOutputTarget, 0, null, vrFullSurface, 0, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2 * i);

@@ -21,6 +21,6 @@ namespace SiliconStudio.Xenko.Navigation
         /// The size of one edge of the bounding box
         /// </summary>
         [DataMember(0)]
-        public Vector3 Size;
+        public Vector3 Size { get; set; } = Vector3.One;
     }
 }

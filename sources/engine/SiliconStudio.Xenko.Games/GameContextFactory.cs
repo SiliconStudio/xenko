@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2015-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Games
             type = AppContextType.Desktop;
     #endif
 #elif SILICONSTUDIO_PLATFORM_UWP
-            type = AppContextType.UWP;
+            type = AppContextType.UWPXaml; // Can change later to CoreWindow
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             type = AppContextType.Android;
 #elif SILICONSTUDIO_PLATFORM_IOS
@@ -64,8 +64,11 @@ namespace SiliconStudio.Xenko.Games
                 case AppContextType.DesktopWpf:
                     res = NewGameContextWpf();
                     break;
-                case AppContextType.UWP:
-                    res = NewGameContextUWP();
+                case AppContextType.UWPXaml:
+                    res = NewGameContextUWPXaml();
+                    break;
+                case AppContextType.UWPCoreWindow:
+                    res = NewGameContextUWPCoreWindow();
                     break;
                 case AppContextType.iOS:
                     res = NewGameContextiOS();
@@ -117,10 +120,19 @@ namespace SiliconStudio.Xenko.Games
 #endif
         }
 
-        public static GameContext NewGameContextUWP()
+        public static GameContext NewGameContextUWPXaml()
         {
 #if SILICONSTUDIO_PLATFORM_UWP
-            return new GameContextUWP(null);
+            return new GameContextUWPXaml(null);
+#else
+            return null;
+#endif
+        }
+
+        public static GameContext NewGameContextUWPCoreWindow()
+        {
+#if SILICONSTUDIO_PLATFORM_UWP
+            return new GameContextUWPCoreWindow(null);
 #else
             return null;
 #endif
