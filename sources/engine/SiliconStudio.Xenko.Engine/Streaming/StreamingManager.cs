@@ -426,18 +426,18 @@ namespace SiliconStudio.Xenko.Streaming
         /// <param name="parameters">The material parameters.</param>
         public void StreamResources(ParameterCollection parameters)
         {
-            if (parameters.ObjectValues != null)
+            if (parameters.ObjectValues == null)
+                return;
+
+            // Register all binded textures
+            foreach (var e in parameters.ObjectValues)
             {
-                // Register all binded textures
-                foreach (var e in parameters.ObjectValues)
+                if (e is Texture t)
                 {
-                    if (e is Texture t)
+                    var resource = Get<StreamingTexture>(t);
+                    if (resource != null)
                     {
-                        var resource = Get<StreamingTexture>(t);
-                        if (resource != null)
-                        {
-                            resource.LastTimeUsed = frameIndex;
-                        }
+                        resource.LastTimeUsed = frameIndex;
                     }
                 }
             }
@@ -449,6 +449,9 @@ namespace SiliconStudio.Xenko.Streaming
         /// <param name="texture">The texture.</param>
         public void StreamResources(Texture texture)
         {
+            if (texture == null)
+                return;
+
             var resource = Get<StreamingTexture>(texture);
             if (resource != null)
             {
