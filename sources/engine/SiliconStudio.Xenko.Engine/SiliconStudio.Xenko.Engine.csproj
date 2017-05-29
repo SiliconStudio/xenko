@@ -271,6 +271,20 @@
     <Compile Include="Rendering\Materials\IEnergyConservativeDiffuseModelFeature.cs" />
     <Compile Include="Rendering\MaterialPass.cs" />
     <Compile Include="Rendering\MaterialPassCollection.cs" />
+    <Compile Include="Rendering\Materials\IMaterialSpecularMicrofacetEnvironmentFunction.cs" />
+    <Compile Include="Rendering\Materials\MaterialSpecularMicrofacetEnvironmentGGXPolynomial.cs" />
+    <Compile Include="Rendering\Materials\Shaders\IMaterialSpecularMicrofacetEnvironmentFunction.cs">
+      <DependentUpon>IMaterialSpecularMicrofacetEnvironmentFunction.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentGGXPolynomial.cs">
+      <DependentUpon>MaterialSpecularMicrofacetEnvironmentGGXPolynomial.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceNormalStreamShading.cs">
       <DependentUpon>MaterialSurfaceNormalStreamShading.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -746,6 +760,14 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeSphericalHarmonics.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Materials\Shaders\IMaterialSpecularMicrofacetEnvironmentFunction.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>IMaterialSpecularMicrofacetEnvironmentFunction.cs</LastGenOutput>
+    </None>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentGGXPolynomial.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSpecularMicrofacetEnvironmentGGXPolynomial.cs</LastGenOutput>
     <None Include="Rendering\Materials\Shaders\MaterialSurfaceNormalStreamShading.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceNormalStreamShading.cs</LastGenOutput>

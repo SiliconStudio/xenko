@@ -25,6 +25,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             Fresnel = new MaterialSpecularMicrofacetFresnelSchlick();
             Visibility = new MaterialSpecularMicrofacetVisibilitySmithSchlickGGX();
             NormalDistribution = new MaterialSpecularMicrofacetNormalDistributionGGX();
+            Environment = new MaterialSpecularMicrofacetEnvironmentGGXPolynomial();
         }
 
         public bool IsLightDependent
@@ -60,6 +61,13 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [NotNull]
         public IMaterialSpecularMicrofacetNormalDistributionFunction NormalDistribution { get; set; }
 
+        /// <userdoc>Specify the function to use to calculate the environment DFG term in the micro-facet lighting equation. 
+        /// This defines how the material reflects specular cubemaps.</userdoc>
+        [DataMember(50)]
+        [Display("Environment (DFG)")]
+        [NotNull]
+        public IMaterialSpecularMicrofacetEnvironmentFunction Environment { get; set; }
+
         public override void GenerateShader(MaterialGeneratorContext context)
         {
             var shaderSource = new ShaderMixinSource();
@@ -83,6 +91,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             if (NormalDistribution != null)
             {
                 shaderSource.AddComposition("normalDistributionFunction", NormalDistribution.Generate());
+            }
+
+            if (Environment != null)
+            {
+                shaderSource.AddComposition("environmentFunction", Environment.Generate(context));
             }
 
             context.AddShading(this, shaderSource);
