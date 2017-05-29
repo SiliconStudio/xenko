@@ -59,13 +59,14 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         [DataMember(-5)]
+        [Obsolete("This property is no longer used.")]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the projection.
         /// </summary>
         /// <value>The projection.</value>
-        /// <userdoc>The type of projection used by the camera.</userdoc>
+        /// <userdoc>The type of projection used by the camera</userdoc>
         [DataMember(0)]
         [NotNull]
         public CameraProjectionMode Projection { get; set; }
@@ -76,7 +77,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <value>
         /// The vertical field of view.
         /// </value>
-        /// <userdoc>The vertical field-of-view used by the camera (in degrees).</userdoc>
+        /// <userdoc>The vertical field of view (in degrees)</userdoc>
         [DataMember(5)]
         [DefaultValue(DefaultVerticalFieldOfView)]
         [Display("Field Of View")]
@@ -89,7 +90,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <value>
         /// The height of the orthographic projection.
         /// </value>
-        /// <userdoc>The height of the orthographic projection (the width is automatically calculated based on the target ratio).</userdoc>
+        /// <userdoc>The height of the orthographic projection (the orthographic width is automatically calculated based on the target ratio)</userdoc>
         [DataMember(10)]
         [DefaultValue(DefaultOrthographicSize)]
         [Display("Orthographic Size")]
@@ -101,7 +102,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <value>
         /// The near plane distance.
         /// </value>
-        /// <userdoc>The value of the near clip plane.</userdoc>
+        /// <userdoc>The nearest point the camera can see</userdoc>
         [DataMember(20)]
         [DefaultValue(DefaultNearClipPlane)]
         public float NearClipPlane { get; set; }
@@ -112,7 +113,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <value>
         /// The far plane distance.
         /// </value>
-        /// <userdoc>The value of the far clip plane.</userdoc>
+        /// <userdoc>The furthest point the camera can see</userdoc>
         [DataMember(30)]
         [DefaultValue(DefaultFarClipPlane)]
         public float FarClipPlane { get; set; }
@@ -121,7 +122,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Gets or sets a value indicating whether to use a custom <see cref="AspectRatio"/>. Default is <c>false</c>, meaning that the aspect ratio is calculated from the ratio of the current viewport when rendering.
         /// </summary>
         /// <value>The use custom aspect ratio.</value>
-        /// <userdoc>If checked, use the value contained in 'Aspect Ratio' to calculate the projection matrices. Otherwise, automatically adjust the aspect ratio to the ratio of the render target.</userdoc>
+        /// <userdoc>If selected, use a custom aspect ratio you specify. Otherwise, automatically adjust the aspect ratio to the render target ratio</userdoc>
         [DataMember(35)]
         [DefaultValue(false)]
         [Display("Custom Aspect Ratio")]
@@ -133,11 +134,12 @@ namespace SiliconStudio.Xenko.Engine
         /// <value>
         /// The aspect ratio.
         /// </value>
-        /// <userdoc>The aspect ratio used to build the projection matrices when 'Custom Aspect Ratio?' is checked.</userdoc>
+        /// <userdoc>The aspect ratio for the camera (when the Custom aspect ratio option is selected)</userdoc>
         [DataMember(40)]
         [DefaultValue(DefaultAspectRatio)]
         public float AspectRatio { get; set; }
 
+        /// <userdoc>The camera slot used in the graphics compositor)</userdoc>
         [DataMember(50)]
         public SceneCameraSlotId Slot;
 

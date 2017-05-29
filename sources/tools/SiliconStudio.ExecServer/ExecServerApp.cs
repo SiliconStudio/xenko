@@ -419,7 +419,7 @@ namespace SiliconStudio.ExecServer
             }
 
             // NOTE: We are not using Process.Start as it is for some unknown reasons blocking the process calling this process on Process.ExitProcess
-            // Handling directly the creation of the process with Win32 function solves this. Not sure why.
+            // Handling the creation of the process with Win32 function directly solves this. Not sure why.
             // TODO: We might want the process to not inherit environment
             var result = ProcessHelper.LaunchProcess(finalExecServerPath, $"/server \"{Assembly.GetEntryAssembly()?.Location}\" \"{executablePath}\" {serverInstanceIndex}", out processHandle, out processId);
             return result;

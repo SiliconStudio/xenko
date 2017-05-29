@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -22,10 +22,11 @@ namespace SiliconStudio.Xenko.Assets.Entities
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
+    [AssetUpgrader(XenkoConfig.PackageName, "2.0.0.0", "2.1.0.1", typeof(RootPartIdsToRootPartsUpgrader))]    
     [Display(1950, "Prefab")]
     public class PrefabAsset : EntityHierarchyAssetBase
     {
-        private const string CurrentVersion = "2.0.0.0";
+        private const string CurrentVersion = "2.1.0.1";
 
         /// <summary>
         /// The default file extension used by the <see cref="PrefabAsset"/>.
@@ -55,7 +56,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             Dictionary<Guid, Guid> idRemapping;
             var instance = (PrefabAsset)CreateDerivedAsset(targetLocation, out idRemapping);
-            instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
+            instanceId = instance.Hierarchy.Parts.Values.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
             return instance.Hierarchy;
         }
     }

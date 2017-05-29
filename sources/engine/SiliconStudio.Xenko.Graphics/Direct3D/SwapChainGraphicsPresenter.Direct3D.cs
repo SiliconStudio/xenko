@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -321,14 +321,39 @@ namespace SiliconStudio.Xenko.Graphics
             SwapChain swapChain = null;
             switch (Description.DeviceWindowHandle.Context)
             {
-                case Games.AppContextType.UWP:
+                case Games.AppContextType.UWPXaml:
                 {
                     var nativePanel = ComObject.As<ISwapChainPanelNative>(Description.DeviceWindowHandle.NativeWindow);
+
                     // Creates the swap chain for XAML composition
                     swapChain = new SwapChain1(GraphicsAdapterFactory.NativeFactory, GraphicsDevice.NativeDevice, ref description);
 
                     // Associate the SwapChainPanel with the swap chain
                     nativePanel.SwapChain = swapChain;
+
+                    break;
+                }
+
+                case Games.AppContextType.UWPCoreWindow:
+                {
+                    using (var dxgiDevice = GraphicsDevice.NativeDevice.QueryInterface<SharpDX.DXGI.Device2>())
+                    {
+                        // Ensure that DXGI does not queue more than one frame at a time. This both reduces
+                        // latency and ensures that the application will only render after each VSync, minimizing
+                        // power consumption.
+                        dxgiDevice.MaximumFrameLatency = 1;
+
+                        // Next, get the parent factory from the DXGI Device.
+                        using (var dxgiAdapter = dxgiDevice.Adapter)
+                        using (var dxgiFactory = dxgiAdapter.GetParent<SharpDX.DXGI.Factory2>())
+                            // Finally, create the swap chain.
+                        using (var coreWindow = new SharpDX.ComObject(Description.DeviceWindowHandle.NativeWindow))
+                        {
+                            swapChain = new SharpDX.DXGI.SwapChain1(dxgiFactory
+                                , GraphicsDevice.NativeDevice, coreWindow, ref description);
+                        }
+                    }
+
                     break;
                 }
                 default:

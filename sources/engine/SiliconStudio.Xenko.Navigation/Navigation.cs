@@ -37,6 +37,17 @@ namespace SiliconStudio.Xenko.Navigation
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        public unsafe struct Poly
+        {
+            public uint FirstLink;
+            public fixed ushort Vertices[6];
+            public fixed ushort Neighbours[6];
+            public ushort Flags;
+            public byte VertexCount;
+            public byte AreaAndType;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
         public struct BuildSettings
         {
             public BoundingBox BoundingBox;
@@ -182,5 +193,10 @@ namespace SiliconStudio.Xenko.Navigation
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationRaycastQuery", CallingConvention = CallingConvention.Cdecl)]
         public static extern void DoRaycastQuery(IntPtr query, RaycastQuery pathFindQuery, IntPtr resultStructure);
+        
+        public static int DtAlign4(int size)
+        {
+            return (size + 3) & ~3;
+        }
     }
 }

@@ -20,25 +20,26 @@ namespace SiliconStudio.Core.Tests
         public void TestSimpleNotEnabled()
         {
             Profiler.Reset();
-            using (var watcher = ExpectLog(new List<MatchMessageDelegate>()))
+            var watcher = ExpectLog(new List<MatchMessageDelegate>());
             {
                 using (var profile = Profiler.Begin(TestKey))
                 {
                     Utilities.Sleep(100);
                 }
             }
+            watcher.Finish();
         }
 
         [Test]
         public void TestSimpleEnabled()
         {
             Profiler.Reset();
-            const int timeToWait = 200;
-            using (var watcher = ExpectLog(new List<MatchMessageDelegate>()
-                {
-                    MessageStartWith("[Profiler] #0: Begin: TestProfiler.Test"),
-                    MessageStartWith("[Profiler] #0: End: TestProfiler.Test", timeToWait),
-                }))
+            const int timeToWait = 20;
+            var watcher = ExpectLog(new List<MatchMessageDelegate>()
+            {
+                MessageStartWith("[Profiler] #0: Begin: TestProfiler.Test"),
+                MessageStartWith("[Profiler] #0: End: TestProfiler.Test", timeToWait),
+            });
             {
 
                 Profiler.Enable(TestKey);
@@ -47,20 +48,21 @@ namespace SiliconStudio.Core.Tests
                     Utilities.Sleep(timeToWait);
                 }
             }
+            watcher.Finish();
         }
 
         [Test]
         public void TestSimpleNested()
         {
             Profiler.Reset();
-            const int timeToWait = 200;
-            using (var watcher = ExpectLog(new List<MatchMessageDelegate>()
-                {
-                    MessageStartWith("[Profiler] #0: Begin: TestProfiler.Test"),
-                    MessageStartWith("[Profiler] #1: Begin: TestProfiler.Test2"),
-                    MessageStartWith("[Profiler] #1: End: TestProfiler.Test2", timeToWait),
-                    MessageStartWith("[Profiler] #0: End: TestProfiler.Test", timeToWait),
-                }))
+            const int timeToWait = 20;
+            var watcher = ExpectLog(new List<MatchMessageDelegate>()
+            {
+                MessageStartWith("[Profiler] #0: Begin: TestProfiler.Test"),
+                MessageStartWith("[Profiler] #1: Begin: TestProfiler.Test2"),
+                MessageStartWith("[Profiler] #1: End: TestProfiler.Test2", timeToWait),
+                MessageStartWith("[Profiler] #0: End: TestProfiler.Test", timeToWait),
+            });
             {
 
                 Profiler.EnableAll();
@@ -72,21 +74,22 @@ namespace SiliconStudio.Core.Tests
                     }
                 }
             }
+            watcher.Finish();
         }
 
         [Test]
         public void TestWithMarkers()
         {
             Profiler.Reset();
-            const int timeToWait = 100;
+            const int timeToWait = 10;
 
-            using (var watcher = ExpectLog(new List<MatchMessageDelegate>()
-                {
-                    MessageStartWith("[Profiler] #0: Begin: TestProfiler.Test"),
-                    MessageStartWith("[Profiler] #0: Mark: TestProfiler.Test", timeToWait),
-                    MessageStartWith("[Profiler] #0: Mark: TestProfiler.Test", timeToWait * 2),
-                    MessageStartWith("[Profiler] #0: End: TestProfiler.Test", timeToWait * 2),
-                }))
+            var watcher = ExpectLog(new List<MatchMessageDelegate>()
+            {
+                MessageStartWith("[Profiler] #0: Begin: TestProfiler.Test"),
+                MessageStartWith("[Profiler] #0: Mark: TestProfiler.Test", timeToWait),
+                MessageStartWith("[Profiler] #0: Mark: TestProfiler.Test", timeToWait * 2),
+                MessageStartWith("[Profiler] #0: End: TestProfiler.Test", timeToWait * 2),
+            });
             {
 
                 Profiler.EnableAll();
@@ -99,6 +102,7 @@ namespace SiliconStudio.Core.Tests
                     profile.Mark();
                 }
             }
+            watcher.Finish();
         }
 
 
@@ -106,14 +110,14 @@ namespace SiliconStudio.Core.Tests
         public void TestWitAttributes()
         {
             Profiler.Reset();
-            const int timeToWait = 100;
+            const int timeToWait = 10;
 
-            using (var watcher = ExpectLog(new List<MatchMessageDelegate>()
-                {
-                    MessageStartWith("[Profiler] #0: Begin: TestProfiler.Test"),
-                    MessageStartWith("[Profiler] #0: Mark: TestProfiler.Test", message => message.Contains("MyAttribute")),
-                    MessageStartWith("[Profiler] #0: End: TestProfiler.Test", timeToWait),
-                }))
+            var watcher = ExpectLog(new List<MatchMessageDelegate>()
+            {
+                MessageStartWith("[Profiler] #0: Begin: TestProfiler.Test"),
+                MessageStartWith("[Profiler] #0: Mark: TestProfiler.Test", message => message.Contains("MyAttribute")),
+                MessageStartWith("[Profiler] #0: End: TestProfiler.Test", timeToWait),
+            });
             {
 
                 Profiler.EnableAll();
@@ -124,13 +128,14 @@ namespace SiliconStudio.Core.Tests
                     profile.Mark();
                 }
             }
+            watcher.Finish();
         }
 
 
         private static Regex matchElapsed = new Regex(@"Elapsed = ([\d\.]+)");
 
         // Maximum time difference accepted between elapsed time
-        private const double ElapsedTimeDeltaMax = 100;
+        private const double ElapsedTimeEpsilon = 10;
 
         public static MatchMessageDelegate MessageStartWith(string text, Func<string, bool> matchFunction = null)
         {
@@ -157,7 +162,8 @@ namespace SiliconStudio.Core.Tests
                         var elapsedStr = match.Groups[1].Value;
                         double elapsed;
                         Assert.That(double.TryParse(elapsedStr, out elapsed), "Expecting parsable double for elapsed [{0}]", elapsedStr);
-                        Assert.That(Math.Abs(elapsed - expectedElapsed) < ElapsedTimeDeltaMax, "Elapsed time [{0}] doesn't match expected value [{1}]", elapsed, expectedElapsed);
+                        // Note: just checking minimum time (max time depends too much on OS scheduling to be reliable)
+                        Assert.That(elapsed >= expectedElapsed - ElapsedTimeEpsilon, "Elapsed time [{0}] is faster than expected value [{1}]", elapsed, expectedElapsed);
                     }
                     return true;
                 });
@@ -165,7 +171,7 @@ namespace SiliconStudio.Core.Tests
 
         public delegate bool MatchMessageDelegate(string message, out string expectingMessage, bool getOnlyExpectingMessage);
 
-        private class ProfilerWatcher : IDisposable
+        private class ProfilerWatcher
         {
             public int CurrentMessage;
 
@@ -178,7 +184,8 @@ namespace SiliconStudio.Core.Tests
                 ExpectedMessages = expectedMessages;
             }
 
-            public void Dispose()
+            // THis is not a using/Dispose because otherwise it would swallow any inner exception and emit an unrelated exception about missing profiler events
+            public void Finish()
             {
                 GlobalLogger.GlobalMessageLogged -= LogAction;
                 var missingMessage = new StringBuilder();

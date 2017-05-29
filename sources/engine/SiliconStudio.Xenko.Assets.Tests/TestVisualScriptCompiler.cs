@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Generate slots
             foreach (var block in method.Blocks)
-                block.GenerateSlots(block.Slots, new SlotGeneratorContext());
+                block.Value.GenerateSlots(block.Value.Slots, new SlotGeneratorContext());
 
             // Build links
             method.Links.Add(new Link(functionStart, writeTrue));
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Generate slots
             foreach (var block in method.Blocks)
-                block.GenerateSlots(block.Slots, new SlotGeneratorContext());
+                block.Value.GenerateSlots(block.Value.Slots, new SlotGeneratorContext());
 
             // Build links
             method.Links.Add(new Link(functionStart, conditionalBranch));
@@ -101,7 +101,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Generate slots
             foreach (var block in method.Blocks)
-                block.GenerateSlots(block.Slots, new SlotGeneratorContext());
+                block.Value.GenerateSlots(block.Value.Slots, new SlotGeneratorContext());
 
             // Build links
             method.Links.Add(new Link(functionStart, conditionalBranch));
@@ -151,7 +151,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Generate slots
             foreach (var block in method.Blocks)
-                block.GenerateSlots(block.Slots, new SlotGeneratorContext());
+                block.Value.GenerateSlots(block.Value.Slots, new SlotGeneratorContext());
 
             // Build links
             method.Links.Add(new Link(functionStart, conditionSet));

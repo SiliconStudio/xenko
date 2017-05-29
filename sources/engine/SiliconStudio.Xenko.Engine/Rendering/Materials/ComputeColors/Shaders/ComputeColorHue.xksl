@@ -22,11 +22,13 @@ shader ComputeColorHue : ComputeColor
 
         float3 color;
 
-        if(HSVUtils.GetSaturation(frontColor.rgb) == 0.0f)
-            color = float3(HSVUtils.GetValue(backColor.rgb));
-        else
+        if(HSVUtils.GetSaturation(frontColor.rgb) == 0.0f) {
+			float colorValue = HSVUtils.GetValue(backColor.rgb);
+            color = float3(colorValue, colorValue, colorValue);
+        } else {
             color = HSVUtils.ToRGB(float3(HSVUtils.GetHue(frontColor.rgb), HSVUtils.GetSaturation(backColor.rgb), HSVUtils.GetValue(backColor.rgb)));
-
+		}
+		
         return float4(color,
                       BlendUtils.BasicAlphaBlend(backColor.a, frontColor.a));
     }

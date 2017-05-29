@@ -23,11 +23,13 @@ shader ComputeColorColor : ComputeColor
         float3 color;
         float frontSaturation = HSVUtils.GetSaturation(frontColor.rgb);
         
-        if(frontSaturation == 0.0f)
-            color = float3(HSVUtils.GetValue(backColor.rgb));
-        else
+        if(frontSaturation == 0.0f) {
+			float valueResult = HSVUtils.GetValue(backColor.rgb);
+            color = float3(valueResult, valueResult, valueResult);
+        } else {
             color = HSVUtils.ToRGB(float3(HSVUtils.GetHue(frontColor.rgb), frontSaturation, HSVUtils.GetValue(backColor.rgb)));
-
+		}
+		
         return float4(color, BlendUtils.BasicAlphaBlend(backColor.a, frontColor.a));
     }
 };

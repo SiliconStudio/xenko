@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Games
             if (registry == null) throw new ArgumentNullException("registry");
             this.registry = registry;
             game = (GameBase)Services.GetServiceAs<IGame>();
-            contentManager = Services.GetSafeServiceAs<IContentManager>();
+            contentManager = Services.GetServiceAs<IContentManager>();
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Games
         }
 
         /// <summary>
-        /// Gets the content manager.
+        /// Gets the content manager. This value can be null in a mock environment.
         /// </summary>
         /// <value>The content.</value>
         protected IContentManager Content

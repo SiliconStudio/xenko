@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System.Linq;
 using SiliconStudio.Assets;
@@ -54,13 +54,13 @@ namespace SiliconStudio.Xenko.Assets.Entities
             var sceneAsset = new SceneAsset();
 
             sceneAsset.Hierarchy.Parts.Add(new EntityDesign(cameraEntity));
-            sceneAsset.Hierarchy.RootPartIds.Add(cameraEntity.Id);
+            sceneAsset.Hierarchy.RootParts.Add(cameraEntity);
 
             sceneAsset.Hierarchy.Parts.Add(new EntityDesign(lightEntity));
-            sceneAsset.Hierarchy.RootPartIds.Add(lightEntity.Id);
+            sceneAsset.Hierarchy.RootParts.Add(lightEntity);
 
             sceneAsset.Hierarchy.Parts.Add(new EntityDesign(skyboxEntity));
-            sceneAsset.Hierarchy.RootPartIds.Add(skyboxEntity.Id);
+            sceneAsset.Hierarchy.RootParts.Add(skyboxEntity);
 
             return sceneAsset;
         }
@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             ambientLight.Transform.Position = new Vector3(-2.0f, 2.0f, 0.0f);
 
             sceneAsset.Hierarchy.Parts.Add(new EntityDesign(ambientLight));
-            sceneAsset.Hierarchy.RootPartIds.Add(ambientLight.Id);
+            sceneAsset.Hierarchy.RootParts.Add(ambientLight);
 
             return sceneAsset;
         }
@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             var sceneAsset = CreateBase(SkyIntensity, SunIntensity);
 
             // Add a sky light to the scene
-            var skyboxEntity = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).Single(x => x.Name == SkyboxEntityName);
+            var skyboxEntity = sceneAsset.Hierarchy.Parts.Select(x => x.Value.Entity).Single(x => x.Name == SkyboxEntityName);
             skyboxEntity.Add(new LightComponent
             {
                 Intensity = 1.0f,

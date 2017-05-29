@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Navigation
     /// Settings for the dynamic navigation mesh builder (<see cref="DynamicNavigationMeshSystem"/>)
     /// </summary>
     [DataContract]
-    [Display("Navigation Settings")]
+    [Display("Navigation")]
     [ObjectFactory(typeof(NavigationSettingsFactory))]
     [CategoryOrder(0, "Dynamic navigation mesh", Expand = ExpandRule.Never)]
     public class NavigationSettings : Configuration

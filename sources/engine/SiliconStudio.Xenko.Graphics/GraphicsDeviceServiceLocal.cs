@@ -27,10 +27,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="graphicsDevice">The graphics device.</param>
         public GraphicsDeviceServiceLocal(IServiceRegistry registry, GraphicsDevice graphicsDevice)
         {
-            if (registry != null)
-            {
-                registry.AddService(typeof(IGraphicsDeviceService), this);
-            }
             GraphicsDevice = graphicsDevice;
         }
 

@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Games
 
     public abstract class GameWindow<TK> : GameWindow
     {
-        internal sealed override void Initialize(GameContext gameContext)
+        protected internal sealed override void Initialize(GameContext gameContext)
         {
             var context = gameContext as GameContext<TK>;
             if (context != null)
@@ -192,7 +192,7 @@ namespace SiliconStudio.Xenko.Games
 
         #region Methods
 
-        internal abstract void Initialize(GameContext gameContext);
+        protected internal abstract void Initialize(GameContext gameContext);
 
         internal bool Exiting;
 

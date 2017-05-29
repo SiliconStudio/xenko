@@ -395,7 +395,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             // Sets the texture for this sprite effect.
             // Use an optimized version in order to avoid to reapply the sprite effect here just to change texture
-            // We are calling directly the PixelShaderStage. We assume that the texture is on slot 0 as it is
+            // We are calling the PixelShaderStage directly. We assume that the texture is on slot 0 as it is
             // setup in the original BasicEffect.fx shader.
             if (textureUpdater.HasValue)
                 Effect.Parameters.Set(textureUpdater.Value, texture);

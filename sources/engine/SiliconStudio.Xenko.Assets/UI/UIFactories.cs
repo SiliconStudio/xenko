@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using SiliconStudio.Assets;
 using SiliconStudio.Xenko.Assets.Entities;
@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Assets.UI
 
             return new UIPageAsset
             {
-                Hierarchy = { RootPartIds = { grid.Id }, Parts = { new UIElementDesign(grid) } }
+                Hierarchy = { RootParts = { grid }, Parts = { new UIElementDesign(grid) } }
             };
         }
 
