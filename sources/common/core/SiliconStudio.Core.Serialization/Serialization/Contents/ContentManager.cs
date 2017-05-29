@@ -52,8 +52,6 @@ namespace SiliconStudio.Core.Serialization.Contents
             if (services != null)
             {
 				this.services = services;
-                services.AddService(typeof(IContentManager), this);
-                services.AddService(typeof(ContentManager), this);
                 Serializer.SerializerContextTags.Set(ServiceRegistry.ServiceRegistryKey, services);
             }
         }

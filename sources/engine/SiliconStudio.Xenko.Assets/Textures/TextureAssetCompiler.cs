@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
             private ResultStatus Import(ICommandContext commandContext, TextureTool textureTool, TexImage texImage, TextureHelper.ImportParameters convertParameters)
             {
                 var assetManager = new ContentManager();
-                bool useSeparateDataContainer = Parameters.IsStreamable;
+                bool useSeparateDataContainer = Parameters.IsStreamable && (texImage.Dimension == TexImage.TextureDimension.Texture2D || texImage.Dimension == TexImage.TextureDimension.TextureCube);
 
                 // Note: for streamable textures we want to store mip maps in a separate storage container and read them on request instead of whole asset deserialization (at once)
 

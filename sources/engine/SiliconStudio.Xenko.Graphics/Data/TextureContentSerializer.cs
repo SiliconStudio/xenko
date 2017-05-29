@@ -211,8 +211,93 @@ namespace SiliconStudio.Xenko.Graphics.Data
 
         private static void DeserializeImage(IServiceRegistry services, Image obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader)
         {
-            // TODO: finish this
-            throw new NotImplementedException();
+            using (var content = new ContentStreamingService())
+            {
+                // Get content storage container
+                var storage = content.GetStorage(ref storageHeader);
+                if (storage == null)
+                    throw new ContentStreamingException("Missing content storage.");
+
+                // Cache data
+                var fileProvider = ContentManager.FileProvider;
+                var format = imageDescription.Format;
+                bool isBlockCompressed =
+                    (format >= PixelFormat.BC1_Typeless && format <= PixelFormat.BC5_SNorm) ||
+                    (format >= PixelFormat.BC6H_Typeless && format <= PixelFormat.BC7_UNorm_SRgb);
+
+                // Calculate total size
+                int size = 0;
+                for (int mipIndex = 0; mipIndex < imageDescription.MipLevels; mipIndex++)
+                {
+                    int mipWidth = imageDescription.Width >> mipIndex;
+                    int mipHeight = imageDescription.Height >> mipIndex;
+                    if (isBlockCompressed && ((mipWidth % 4) != 0 || (mipHeight % 4) != 0))
+                    {
+                        mipWidth = unchecked((int)(((uint)(mipWidth + 3)) & ~(uint)3));
+                        mipHeight = unchecked((int)(((uint)(mipHeight + 3)) & ~(uint)3));
+                    }
+
+                    int rowPitch, slicePitch;
+                    int widthPacked;
+                    int heightPacked;
+                    Image.ComputePitch(format, mipWidth, mipHeight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
+
+                    size += slicePitch;
+                }
+                size *= imageDescription.ArraySize;
+
+                // Allocate buffer for image data
+                var buffer = Utilities.AllocateMemory(size);
+
+                try
+                {
+                    unsafe
+                    {
+                        // Load image data to the buffer
+                        var bufferPtr = buffer;
+                        for (int arrayIndex = 0; arrayIndex < imageDescription.ArraySize; arrayIndex++)
+                        {
+                            for (int mipIndex = 0; mipIndex < imageDescription.MipLevels; mipIndex++)
+                            {
+                                int mipWidth = imageDescription.Width >> mipIndex;
+                                int mipHeight = imageDescription.Height >> mipIndex;
+                                if (isBlockCompressed && ((mipWidth % 4) != 0 || (mipHeight % 4) != 0))
+                                {
+                                    mipWidth = unchecked((int)(((uint)(mipWidth + 3)) & ~(uint)3));
+                                    mipHeight = unchecked((int)(((uint)(mipHeight + 3)) & ~(uint)3));
+                                }
+
+                                int rowPitch, slicePitch;
+                                int widthPacked;
+                                int heightPacked;
+                                Image.ComputePitch(format, mipWidth, mipHeight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
+
+                                var chunk = storage.GetChunk(mipIndex);
+                                if (chunk == null || chunk.Size != slicePitch * imageDescription.ArraySize)
+                                    throw new ContentStreamingException("Data chunk is missing or has invalid size.", storage);
+                                var data = chunk.GetData(fileProvider);
+                                if (!chunk.IsLoaded)
+                                    throw new ContentStreamingException("Data chunk is not loaded.", storage);
+
+                                fixed (byte* p = data)
+                                    Utilities.CopyMemory(bufferPtr, new IntPtr(p), data.Length);
+                                bufferPtr += data.Length;
+                            }
+                        }
+                    }
+
+                    // Initialize image
+                    var image = new Image(imageDescription, buffer, 0, null, true);
+                    obj.InitializeFrom(image);
+                }
+                catch
+                {
+                    // Free memory in case of error
+                    Utilities.FreeMemory(buffer);
+
+                    throw;
+                }
+            }
         }
     }
 }
