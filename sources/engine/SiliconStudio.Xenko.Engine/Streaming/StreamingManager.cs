@@ -52,6 +52,11 @@ namespace SiliconStudio.Xenko.Streaming
         public ICollection<StreamableResource> Resources => resources;
 
         /// <summary>
+        /// Gets or sets a value indicating whether resources streaming should be disabled.
+        /// </summary>
+        public bool DisableStreaming { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="StreamingManager"/> class.
         /// </summary>
         /// <param name="services">The servicies registry.</param>
@@ -156,6 +161,12 @@ namespace SiliconStudio.Xenko.Streaming
 
             // Update resource storage/description information (may be modified on asset rebuilding)
             resource.Init(storage, ref imageDescription);
+            
+            // Check if cannot use streaming
+            if (DisableStreaming)
+            {
+                FullyLoadResource(resource);
+            }
 
             return resource;
         }
