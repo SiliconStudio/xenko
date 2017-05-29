@@ -33,6 +33,8 @@ namespace SiliconStudio.Assets.Compiler
             yield break;
         }
 
+        public virtual bool AlwaysCheckRuntimeTypes { get; } = false;
+
         public virtual IEnumerable<Type> GetRuntimeTypes(AssetCompilerContext context, AssetItem assetItem)
         {
             yield break;
