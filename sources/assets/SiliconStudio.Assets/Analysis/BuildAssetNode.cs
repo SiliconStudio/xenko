@@ -129,7 +129,7 @@ namespace SiliconStudio.Assets.Analysis
 
             bool shouldVisitTypes;
             context.Properties.TryGet(VisitRuntimeTypes, out shouldVisitTypes);
-            if (shouldVisitTypes)
+            if (shouldVisitTypes || mainCompiler.AlwaysCheckRuntimeTypes)
             {
                 var collector = new RuntimeDependenciesCollector(mainCompiler.GetRuntimeTypes(context, AssetItem));
                 var deps = collector.GetDependencies(AssetItem);
@@ -167,7 +167,7 @@ namespace SiliconStudio.Assets.Analysis
 
             public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
             {
-                if (obj != null && types.Any(x => obj.GetType().IsAssignableFrom(x)))
+                if (obj != null && types.Any(x => x.IsInstanceOfType(obj)))
                 {
                     //from now on we want store references
                     writeReferences = true;
