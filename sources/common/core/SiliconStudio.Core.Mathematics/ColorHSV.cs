@@ -101,12 +101,12 @@ namespace SiliconStudio.Core.Mathematics
             if (delta > 0.0f)
             {
                 if (color.R >= max)
-                    h = (color.G - color.B);
+                    h = (color.G - color.B) / delta;
                 else if (color.G >= max)
-                    h = (color.B - color.R) + 2.0f;
+                    h = (color.B - color.R) / delta + 2.0f;
                 else
-                    h = (color.R - color.G) + 4.0f;
-                h *= 60.0f / delta;
+                    h = (color.R - color.G) / delta + 4.0f;
+                h *= 60.0f;
 
                 if (h < 0)
                     h += 360f;
