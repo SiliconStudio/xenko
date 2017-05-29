@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Shaders;
@@ -27,13 +28,15 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// </summary>
     public class MaterialGeneratorContext : ShaderGeneratorContext
     {
+        public const int DefaultFinalCallbackOrder = 0;
+
         public delegate void MaterialGeneratorCallback(MaterialShaderStage stage, MaterialGeneratorContext context);
 
         private readonly Dictionary<string, ShaderSource> registeredStreamBlend = new Dictionary<string, ShaderSource>();
 
         private readonly Dictionary<KeyValuePair<MaterialShaderStage, Type>, ShaderSource> finalInputStreamModifiers = new Dictionary<KeyValuePair<MaterialShaderStage, Type>, ShaderSource>();
 
-        private readonly Dictionary<MaterialShaderStage, List<MaterialGeneratorCallback>> finalCallbacks = new Dictionary<MaterialShaderStage, List<MaterialGeneratorCallback>>();
+        private readonly Dictionary<MaterialShaderStage, List<(int Order, MaterialGeneratorCallback Callback)>> finalCallbacks = new Dictionary<MaterialShaderStage, List<(int, MaterialGeneratorCallback)>>();
 
         private readonly Stack<IMaterialDescriptor> materialStack = new Stack<IMaterialDescriptor>();
 
@@ -51,7 +54,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
             {
-                finalCallbacks[stage] = new List<MaterialGeneratorCallback>();
+                finalCallbacks[stage] = new List<(int, MaterialGeneratorCallback)>();
             }
 
             // By default return the asset
@@ -103,10 +106,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             PassCount = passCount;
         }
 
-        public void AddFinalCallback(MaterialShaderStage stage, MaterialGeneratorCallback callback)
+        public void AddFinalCallback(MaterialShaderStage stage, MaterialGeneratorCallback callback, int order = DefaultFinalCallbackOrder)
         {
             EnsureStep(MaterialGeneratorStep.GenerateShader);
-            finalCallbacks[stage].Add(callback);
+            finalCallbacks[stage].Add((order, callback));
         }
 
         public void SetStreamFinalModifier<T>(MaterialShaderStage stage, ShaderSource shaderSource)
@@ -309,10 +312,16 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             SetStream(MaterialShaderStage.Pixel, stream, computeNode, defaultTexturingKey, defaultValueKey, defaultTextureValue);
         }
 
-        public void AddShading<T>(T shadingModel, ShaderSource shaderSource) where T : class, IMaterialShadingModelFeature
+        public ShadingModelShaderBuilder AddShading<T>(T shadingModel) where T : class, IMaterialShadingModelFeature
         {
             EnsureStep(MaterialGeneratorStep.GenerateShader);
-            currentLayerContext.ShadingModels.Add(shadingModel, shaderSource);
+            return currentLayerContext.ShadingModels.Add(shadingModel);
+        }
+
+        public ShadingModelShaderBuilder GetShading<T>(T shadingModel) where T : class, IMaterialShadingModelFeature
+        {
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
+            return currentLayerContext.ShadingModels[shadingModel.GetType()].ShaderBuilder;
         }
 
         private void ProcessLayer(MaterialBlendLayerContext layer, bool isLastLayer)
@@ -545,9 +554,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             {
                 var stage = callbackKeyPair.Key;
                 var callbacks = callbackKeyPair.Value;
-                foreach (var callback in callbacks)
+                foreach (var callback in callbacks.OrderBy(x => x.Order))
                 {
-                    callback(stage, this);
+                    callback.Callback(stage, this);
                 }
                 callbacks.Clear();
             }

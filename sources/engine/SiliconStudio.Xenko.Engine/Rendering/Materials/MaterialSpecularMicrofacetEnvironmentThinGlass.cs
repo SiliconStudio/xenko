@@ -14,25 +14,25 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// Based on https://knarkowicz.wordpress.com/2014/12/27/analytical-dfg-term-for-ibl/.
     /// Note: their glossiness-roughness conversion formula is not same as ours, this will need to be recomputed.
     /// </remarks>
-    [DataContract("MaterialSpecularMicrofacetEnvironmentGGXPolynomial")]
-    [Display("GGX+Schlick+ShclickGGX (Polynomial)")]
-    public class MaterialSpecularMicrofacetEnvironmentGGXPolynomial : IMaterialSpecularMicrofacetEnvironmentFunction
+    [DataContract("MaterialSpecularMicrofacetEnvironmentThinGlass")]
+    [Display("Thin Glass")]
+    public class MaterialSpecularMicrofacetEnvironmentThinGlass : IMaterialSpecularMicrofacetEnvironmentFunction
     {
         public ShaderSource Generate()
         {
-            return new ShaderClassSource("MaterialSpecularMicrofacetEnvironmentGGXPolynomial");
+            return new ShaderClassSource("MaterialSpecularMicrofacetEnvironmentThinGlass");
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj is MaterialSpecularMicrofacetEnvironmentGGXPolynomial;
+            return obj is MaterialSpecularMicrofacetEnvironmentThinGlass;
         }
 
         public override int GetHashCode()
         {
-            return typeof(MaterialSpecularMicrofacetEnvironmentGGXPolynomial).GetHashCode();
+            return typeof(MaterialSpecularMicrofacetEnvironmentThinGlass).GetHashCode();
         }
     }
 }

@@ -13,15 +13,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("Lambert")]
     public class MaterialDiffuseLambertModelFeature : MaterialFeature, IMaterialDiffuseModelFeature, IEnergyConservativeDiffuseModelFeature
     {
-        public bool IsLightDependent
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-
         [DataMemberIgnore]
         bool IEnergyConservativeDiffuseModelFeature.IsEnergyConservative { get; set; }
 
@@ -29,8 +20,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public override void GenerateShader(MaterialGeneratorContext context)
         {
-            var shaderSource = new ShaderClassSource("MaterialSurfaceShadingDiffuseLambert", IsEnergyConservative);
-            context.AddShading(this, shaderSource);
+            var shaderBuilder = context.AddShading(this);
+            shaderBuilder.LightDependentSurface = new ShaderClassSource("MaterialSurfaceShadingDiffuseLambert", IsEnergyConservative);
         }
 
         public bool Equals(MaterialDiffuseLambertModelFeature other)

@@ -59,7 +59,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             alpha.ClampFloat(0, 1);
 
             // Use pre-multiplied alpha to support both additive and alpha blending
-            context.MaterialPass.BlendState = BlendStates.AlphaBlend;
+            if (context.MaterialPass.BlendState == null)
+                context.MaterialPass.BlendState = BlendStates.AlphaBlend;
             context.MaterialPass.HasTransparency = true;
             // TODO GRAPHICS REFACTOR
             //context.Parameters.SetResourceSlow(Effect.BlendStateKey, BlendState.NewFake(blendDesc));

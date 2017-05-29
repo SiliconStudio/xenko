@@ -39,7 +39,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         stage stream float2  matDiffuseSpecularAlphaBlend;
         stage stream float3  matAlphaBlendColor;
         stage stream float   matAlphaDiscard;
-        stage stream float3  matTransmittance;
 
         // Inputs while shading a material surface
         stage stream float3 viewWS;

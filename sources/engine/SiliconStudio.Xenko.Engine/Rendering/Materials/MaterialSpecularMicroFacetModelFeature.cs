@@ -16,8 +16,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("Microfacet")]
     public class MaterialSpecularMicrofacetModelFeature : MaterialFeature, IMaterialSpecularModelFeature, IEquatable<MaterialSpecularMicrofacetModelFeature>
     {
-        public bool IsLightDependent => true;
-
         /// <userdoc>Specify the function to use to calculate the Fresnel component of the micro-facet lighting equation. 
         /// This defines the amount of the incoming light that is reflected.</userdoc>
         [DataMember(10)]
@@ -50,10 +48,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             var shaderSource = new ShaderMixinSource();
             shaderSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingSpecularMicrofacet"));
 
-
             GenerateShaderCompositions(context, shaderSource);
 
-            context.AddShading(this, shaderSource);
+            var shaderBuilder = context.AddShading(this);
+            shaderBuilder.LightDependentSurface = shaderSource;
         }
 
         protected virtual void GenerateShaderCompositions(MaterialGeneratorContext context, ShaderMixinSource shaderSource)

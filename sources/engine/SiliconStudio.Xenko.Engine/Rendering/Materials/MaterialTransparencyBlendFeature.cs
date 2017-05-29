@@ -16,6 +16,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("Blend")]
     public class MaterialTransparencyBlendFeature : MaterialFeature, IMaterialTransparencyFeature
     {
+        public const int ShadingColorAlphaFinalCallbackOrder = MaterialGeneratorContext.DefaultFinalCallbackOrder;
+
         private static readonly MaterialStreamDescriptor AlphaBlendStream = new MaterialStreamDescriptor("DiffuseSpecularAlphaBlend", "matDiffuseSpecularAlphaBlend", MaterialKeys.DiffuseSpecularAlphaBlendValue.PropertyType);
 
         private static readonly MaterialStreamDescriptor AlphaBlendColorStream = new MaterialStreamDescriptor("DiffuseSpecularAlphaBlend - Color", "matAlphaBlendColor", MaterialKeys.AlphaBlendColorValue.PropertyType);
@@ -58,7 +60,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             alpha.ClampFloat(0, 1);
 
             // Use pre-multiplied alpha to support both additive and alpha blending
-            context.MaterialPass.BlendState = BlendStates.AlphaBlend;
+            if (context.MaterialPass.BlendState == null)
+                context.MaterialPass.BlendState = BlendStates.AlphaBlend;
             context.MaterialPass.HasTransparency = true;
             // TODO GRAPHICS REFACTOR
             //context.Parameters.SetResourceSlow(Effect.BlendStateKey, BlendState.NewFake(blendDesc));
@@ -69,7 +72,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             if (!context.Tags.Get(HasFinalCallback))
             {
                 context.Tags.Set(HasFinalCallback, true);
-                context.AddFinalCallback(MaterialShaderStage.Pixel, AddDiffuseSpecularAlphaBlendColor);
+                context.AddFinalCallback(MaterialShaderStage.Pixel, AddDiffuseSpecularAlphaBlendColor, ShadingColorAlphaFinalCallbackOrder);
             }
         }
     
