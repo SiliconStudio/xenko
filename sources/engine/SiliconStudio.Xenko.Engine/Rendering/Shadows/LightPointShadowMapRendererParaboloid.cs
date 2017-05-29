@@ -94,6 +94,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shadowRenderView.Rectangle = lightShadowMap.GetRectangle(i);
                 shadowRenderView.NearClipPlane = 0.0f;
                 shadowRenderView.FarClipPlane = GetShadowMapFarPlane(lightShadowMap);
+                shadowRenderView.ViewSize = new Vector2(lightShadowMap.GetRectangle(i).Width, lightShadowMap.GetRectangle(i).Height);
 
                 // Compute view parameters
                 // Note: we only need view here since we are doing paraboloid projection in the vertex shader
