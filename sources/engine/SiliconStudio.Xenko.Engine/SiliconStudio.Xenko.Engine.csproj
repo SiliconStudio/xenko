@@ -269,6 +269,8 @@
     <Compile Include="Rendering\Compositing\RenderOutputValidator.cs" />
     <Compile Include="Rendering\LightProbes\LightProbeProcessor.cs" />
     <Compile Include="Rendering\Materials\IEnergyConservativeDiffuseModelFeature.cs" />
+    <Compile Include="Rendering\MaterialPass.cs" />
+    <Compile Include="Rendering\MaterialPassCollection.cs" />
     <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceNormalStreamShading.cs">
       <DependentUpon>MaterialSurfaceNormalStreamShading.xksl</DependentUpon>
       <AutoGen>True</AutoGen>

@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
         }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             Vector4 emissiveMin = Vector4.Zero;
             Vector4 emissiveMax = new Vector4(float.MaxValue);

@@ -13,10 +13,18 @@ namespace SiliconStudio.Xenko.Rendering
         public readonly ModelComponent ModelComponent;
         public Model Model;
         public RenderMesh[] Meshes;
+        public MaterialInfo[] Materials;
 
         public RenderModel(ModelComponent modelComponent)
         {
             ModelComponent = modelComponent;
+        }
+
+        public struct MaterialInfo
+        {
+            public Material Material;
+            public int MeshStartIndex;
+            public int MeshCount;
         }
     }
 }

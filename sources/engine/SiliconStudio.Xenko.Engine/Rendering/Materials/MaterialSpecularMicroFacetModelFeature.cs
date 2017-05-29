@@ -27,13 +27,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             NormalDistribution = new MaterialSpecularMicrofacetNormalDistributionGGX();
         }
 
-        public bool IsLightDependent
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool IsLightDependent => true;
 
         /// <userdoc>Specify the function to use to calculate the Fresnel component of the micro-facet lighting equation. 
         /// This defines the amount of the incoming light that is reflected.</userdoc>
@@ -55,7 +49,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [NotNull]
         public IMaterialSpecularMicrofacetNormalDistributionFunction NormalDistribution { get; set; }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             var shaderSource = new ShaderMixinSource();
             shaderSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingSpecularMicrofacet"));
