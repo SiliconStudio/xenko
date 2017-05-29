@@ -115,6 +115,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             public SpriteSheetCommand(string url, SpriteSheetParameters parameters, Package package)
                 : base(url, parameters, package)
             {
+                Version = 1;
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
