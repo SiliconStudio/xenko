@@ -122,52 +122,6 @@ namespace SiliconStudio.Assets.Analysis
 
         }
 
-        /// <summary>
-        /// Gets a value indicating whether there is any missing references.
-        /// </summary>
-        /// <value><c>true</c> if this instance has missing references; otherwise, <c>false</c>.</value>
-        public bool HasMissingReferences
-        {
-            get
-            {
-                lock (Initialize())
-                {
-                    return AssetsWithMissingReferences.Count > 0;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Finds the assets with missing references.
-        /// </summary>
-        /// <returns>An enumeration of asset id that have missing references.</returns>
-        public IEnumerable<AssetId> FindAssetsWithMissingReferences()
-        {
-            lock (Initialize())
-            {
-                return AssetsWithMissingReferences.Keys.ToList();
-            }
-        }
-
-        /// <summary>
-        /// Finds the missing references for a particular asset.
-        /// </summary>
-        /// <param name="assetId">The asset identifier.</param>
-        /// <returns>IEnumerable{IReference}.</returns>
-        /// <exception cref="System.ArgumentNullException">item</exception>
-        public IEnumerable<IReference> FindMissingReferences(AssetId assetId)
-        {
-            lock (Initialize())
-            {
-                AssetDependencies dependencies;
-                if (AssetsWithMissingReferences.TryGetValue(assetId, out dependencies))
-                {
-                    return dependencies.BrokenLinksOut.Select(x => x.Element).ToList();
-                }
-            }
-
-            return Enumerable.Empty<IReference>();
-        }
 
         private object Initialize()
         {
