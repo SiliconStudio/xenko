@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         // Material
         // TODO: Extract with MaterialRenderFeature
-        public Material Material;
+        public MaterialPass MaterialPass;
 
         // TODO GRAPHICS REFACTOR store that in RenderData (StaticObjectNode?)
         internal MaterialRenderFeature.MaterialInfo MaterialInfo;

@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [NotNull]
         public IMaterialSpecularMicrofacetNormalDistributionFunction NormalDistribution { get; set; }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             var shaderSource = new ShaderMixinSource();
             shaderSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingSpecularCelShading"));

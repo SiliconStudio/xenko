@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     public interface IMaterialFeature : IMaterialShaderGenerator
     {
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="IGraphicsRenderer"/> is enabled.
+        /// Gets or sets a value indicating whether this <see cref="IMaterialFeature"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
         bool Enabled { get; set; }

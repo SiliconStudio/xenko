@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [CategoryOrder(5, "Geometry")]
     [CategoryOrder(10, "Shading")]
     [CategoryOrder(15, "Misc")]
-    public class MaterialAttributes : MaterialFeature, IMaterialAttributes
+    public class MaterialAttributes : IMaterialAttributes
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialAttributes"/> class.
@@ -27,6 +27,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             CullMode = CullMode.Back;
             Overrides = new MaterialOverrides();
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="MaterialAttributes"/> is enabled.
+        /// </summary>
+        /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+        [DataMember(-20)]
+        [DefaultValue(true)]
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the tessellation.
@@ -160,8 +168,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DefaultValue(CullMode.Back)]
         public CullMode CullMode{ get; set; }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public void Visit(MaterialGeneratorContext context)
         {
+            if (!Enabled)
+                return;
+
             // Push overrides of this attributes
             context.PushOverrides(Overrides);
 
@@ -209,11 +220,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             context.PopOverrides();
 
             // Only set the cullmode to something 
-            if (CullMode != CullMode.Back)
+            if (context.Step == MaterialGeneratorStep.GenerateShader && CullMode != CullMode.Back)
             {
-                if (context.Material.CullMode == null)
+                if (context.MaterialPass.CullMode == null)
                 {
-                    context.Material.CullMode = CullMode;
+                    context.MaterialPass.CullMode = CullMode;
                 }
             }
         }
