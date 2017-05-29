@@ -29,7 +29,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             GenerateShaderCompositions(context, shaderSource);
 
-            context.AddShading(this, shaderSource);
+            var shaderBuilder = context.AddShading(this);
+            shaderBuilder.LightDependentSurface = shaderSource;
         }
 
         protected override void GenerateShaderCompositions(MaterialGeneratorContext context, ShaderMixinSource shaderSource)

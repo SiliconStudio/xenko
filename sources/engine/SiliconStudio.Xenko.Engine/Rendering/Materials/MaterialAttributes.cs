@@ -192,11 +192,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
 
             // Diffuse - these 2 features are always used as a pair
-            if (Diffuse != null && DiffuseModel != null)
-            {
-                context.Visit(Diffuse);
+            context.Visit(Diffuse);
+            if (Diffuse != null)
                 context.Visit(DiffuseModel);
-            }
 
             // Surface Geometry
             context.Visit(Tessellation);
@@ -205,11 +203,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             context.Visit(MicroSurface);
 
             // Specular - these 2 features are always used as a pair
-            if (Specular != null && SpecularModel != null)
-            {
-                context.Visit(Specular);
+            context.Visit(Specular);
+            if (Specular != null)
                 context.Visit(SpecularModel);
-            }
 
             // Misc
             context.Visit(Occlusion);

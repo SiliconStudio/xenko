@@ -15,14 +15,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("Cel Shading")]
     public class MaterialDiffuseCelShadingModelFeature : MaterialFeature, IMaterialDiffuseModelFeature, IEquatable<MaterialDiffuseCelShadingModelFeature>, IEnergyConservativeDiffuseModelFeature
     {
-        public bool IsLightDependent
-        {
-            get
-            {
-                return true;
-            }
-        }
-
         [DataMemberIgnore]
         bool IEnergyConservativeDiffuseModelFeature.IsEnergyConservative { get; set; }
 
@@ -49,7 +41,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 shaderSource.AddComposition("celLightFunction", RampFunction.Generate(context));
             }
 
-            context.AddShading(this, shaderSource);
+            var shaderBuilder = context.AddShading(this);
+            shaderBuilder.LightDependentSurface = shaderSource;
         }
 
         public bool Equals(MaterialDiffuseCelShadingModelFeature other)
