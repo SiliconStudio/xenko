@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     var requiredDescs = VRSettings.RequiredApis.ToArray();
                     vrSystem.PreferredApis = requiredDescs.Select(x => x.Api).ToArray();
                     vrSystem.PreferredScalings = requiredDescs.ToDictionary(x => x.Api, x => x.ResolutionScale);
-                    vrSystem.RequireMirror = true;
+                    vrSystem.RequireMirror = VRSettings.CopyMirror;
                     vrSystem.MirrorWidth = GraphicsDevice.Presenter.BackBuffer.Width;
                     vrSystem.MirrorHeight = GraphicsDevice.Presenter.BackBuffer.Height;
 
@@ -613,15 +613,18 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     }
 
                     //draw mirror to backbuffer (if size is matching and full viewport)
-                    if (VRSettings.VRDevice.MirrorTexture.Size != drawContext.CommandList.RenderTarget.Size)
+                    if (VRSettings.CopyMirror)
                     {
-                        VRSettings.MirrorScaler.SetInput(0, VRSettings.VRDevice.MirrorTexture);
-                        VRSettings.MirrorScaler.SetOutput(drawContext.CommandList.RenderTarget);
-                        VRSettings.MirrorScaler.Draw(drawContext);
-                    }
-                    else
-                    {
-                        drawContext.CommandList.Copy(VRSettings.VRDevice.MirrorTexture, drawContext.CommandList.RenderTarget);
+                        if (VRSettings.VRDevice.MirrorTexture.Size != drawContext.CommandList.RenderTarget.Size)
+                        {
+                            VRSettings.MirrorScaler.SetInput(0, VRSettings.VRDevice.MirrorTexture);
+                            VRSettings.MirrorScaler.SetOutput(drawContext.CommandList.RenderTarget);
+                            VRSettings.MirrorScaler.Draw(drawContext);
+                        }
+                        else
+                        {
+                            drawContext.CommandList.Copy(VRSettings.VRDevice.MirrorTexture, drawContext.CommandList.RenderTarget);
+                        }
                     }
                 }
                 else
