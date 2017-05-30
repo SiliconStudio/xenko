@@ -28,6 +28,9 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 var effectReflection = pipelineStateDescription.EffectBytecode.Reflection;
 
+                var computeShader = pipelineStateDescription.EffectBytecode.Stages.FirstOrDefault(e => e.Stage == ShaderStage.Compute);
+                IsCompute = computeShader != null;
+
                 var rootSignatureParameters = new List<RootParameter>();
                 var immutableSamplers = new List<StaticSamplerDescription>();
                 SrvBindCounts = new int[pipelineStateDescription.RootSignature.EffectDescriptorSetReflection.Layouts.Count];
@@ -68,7 +71,8 @@ namespace SiliconStudio.Xenko.Graphics
                             {
                                 if (item.ImmutableSampler != null)
                                 {
-                                    immutableSamplers.Add(new StaticSamplerDescription((ShaderVisibility)binding.Stage, binding.SlotStart, 0)
+                                    var shaderVisibility = binding.Stage != ShaderStage.Compute ? (ShaderVisibility)binding.Stage : ShaderVisibility.All;
+                                    immutableSamplers.Add(new StaticSamplerDescription(shaderVisibility, binding.SlotStart, 0)
                                     {
                                         // TODO D3D12 ImmutableSampler should only be a state description instead of a GPU object?
                                         Filter = (Filter)item.ImmutableSampler.Description.Filter,
@@ -189,8 +193,6 @@ namespace SiliconStudio.Xenko.Graphics
                 }
 
                 // Check if it should use compute pipeline state
-                var computeShader = pipelineStateDescription.EffectBytecode.Stages.FirstOrDefault(e => e.Stage == ShaderStage.Compute);
-                IsCompute = computeShader != null;
                 if (IsCompute)
                 {
                     var nativePipelineStateDescription = new ComputePipelineStateDescription
